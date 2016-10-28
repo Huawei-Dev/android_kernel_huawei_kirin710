@@ -54,7 +54,7 @@ struct proc_dir_entry {
 	spinlock_t pde_unload_lock; /* proc_fops checks and pde_users bumps */
 	u8 namelen;
 	char name[];
-};
+} __randomize_layout;
 
 union proc_op {
 	int (*proc_get_link)(struct dentry *, struct path *);
@@ -73,7 +73,7 @@ struct proc_inode {
 	struct hlist_node sysctl_inodes;
 	const struct proc_ns_operations *ns_ops;
 	struct inode vfs_inode;
-};
+} __randomize_layout;
 
 /*
  * General functions
@@ -299,7 +299,7 @@ struct proc_maps_private {
 #ifdef CONFIG_NUMA
 	struct mempolicy *task_mempolicy;
 #endif
-};
+} __randomize_layout;
 
 struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode);
 

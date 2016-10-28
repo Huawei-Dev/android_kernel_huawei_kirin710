@@ -234,7 +234,7 @@ struct signal_struct {
 /*  if the process will die by system call exit , it will send SIGABORT to notify userspace*/
 #define EXIT_CATCH_ABORT_FLAG       (0x4)
 
-};
+} __randomize_layout;
 
 /*
  * Bits in flags field of signal_struct.

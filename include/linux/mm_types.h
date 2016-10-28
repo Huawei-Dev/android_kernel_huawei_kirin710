@@ -348,7 +348,7 @@ struct vm_area_struct {
 	seqcount_t vm_sequence;
 	atomic_t vm_ref_count;		/* see vma_get(), vma_put() */
 #endif
-};
+} __randomize_layout;
 
 struct core_thread {
 	struct task_struct *task;
@@ -526,7 +526,7 @@ struct mm_struct {
 #ifdef CONFIG_SPECULATIVE_PAGE_FAULT
 	rwlock_t mm_rb_lock;
 #endif
-};
+} __randomize_layout;
 
 extern struct mm_struct init_mm;
 
