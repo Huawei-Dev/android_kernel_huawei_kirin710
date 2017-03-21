@@ -961,6 +961,9 @@ KBUILD_CFLAGS   += $(call cc-option,-Wno=incompatible-pointer-types)
 # Relax pragma-pack usage
 KBUILD_CFLAGS   += $(call cc-option,-Wno-pragma-pack)
 
+# Require designated initializers for all marked structures
+KBUILD_CFLAGS   += $(call cc-option,-Werror=designated-init)
+
 # use the deterministic mode of AR if available
 KBUILD_ARFLAGS := $(call ar-option,D)
 
