@@ -2,7 +2,7 @@
 #ifndef __SDP_INTERNAL_H__
 #define __SDP_INTERNAL_H__
 
-#include <linux/fscrypt_common.h>
+#include <linux/fscrypt.h>
 #include <linux/types.h>
 #include <crypto/kpp.h>
 #include <crypto/ecdh.h>

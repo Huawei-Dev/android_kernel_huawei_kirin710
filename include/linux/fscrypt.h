@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 /*
  * fscrypt.h: declarations for per-file encryption
  *
@@ -18,8 +17,89 @@
 
 #define FS_CRYPTO_BLOCK_SIZE		16
 
-struct fscrypt_ctx;
-struct fscrypt_info;
+/* Encryption parameters */
+#define FS_IV_SIZE                     16
+#define FS_KEY_DERIVATION_NONCE_SIZE           64
+#define FS_KEY_DERIVATION_IV_SIZE              16
+#define FS_KEY_DERIVATION_TAG_SIZE             16
+#define FS_KEY_DERIVATION_CIPHER_SIZE          (64 + 16) /* nonce + tag */
+
+/**
+ * Encryption context for inode
+ *
+ * Protector format:
+ *  1 byte: Protector format (2 = this version)
+ *  1 byte: File contents encryption mode
+ *  1 byte: File names encryption mode
+ *  1 byte: Flags
+ *  8 bytes: Master Key descriptor
+ *  80 bytes: Encryption Key derivation nonce (encrypted)
+ *  12 bytes: IV
+ */
+struct fscrypt_context {
+        u8 format;
+        u8 contents_encryption_mode;
+        u8 filenames_encryption_mode;
+        u8 flags;
+        u8 master_key_descriptor[FS_KEY_DESCRIPTOR_SIZE];
+        u8 nonce[FS_KEY_DERIVATION_CIPHER_SIZE];
+        u8 iv[FS_KEY_DERIVATION_IV_SIZE];
+} __packed;
+
+/*
+ * A pointer to this structure is stored in the file system's in-core
+ * representation of an inode.
+ */
+struct fscrypt_info {
+	u8 ci_data_mode;
+	u8 ci_filename_mode;
+	u8 ci_flags;
+	struct crypto_skcipher *ci_ctfm;
+	struct crypto_aead *ci_gtfm;
+	struct crypto_cipher *ci_essiv_tfm;
+	u8 ci_master_key[FS_KEY_DESCRIPTOR_SIZE];
+	void *ci_key;
+	int ci_key_len;
+	int ci_key_index;
+	u8  ci_hw_enc_flag;
+};
+
+struct fscrypt_ctx {
+	union {
+		struct {
+			struct page *bounce_page;	/* Ciphertext page */
+			struct page *control_page;	/* Original page  */
+		} w;
+		struct {
+			struct bio *bio;
+			struct work_struct work;
+		} r;
+		struct list_head free_list;	/* Free list */
+	};
+	u8 flags;				/* Flags */
+};
+
+/**
+ * For encrypted symlinks, the ciphertext length is stored at the beginning
+ * of the string in little-endian format.
+ */
+struct fscrypt_symlink_data {
+	__le16 len;
+	char encrypted_path[1];
+} __packed;
+
+struct fscrypt_str {
+	unsigned char *name;
+	u32 len;
+};
+
+struct fscrypt_name {
+	const struct qstr *usr_fname;
+	struct fscrypt_str disk_name;
+	u32 hash;
+	u32 minor_hash;
+	struct fscrypt_str crypto_buf;
+};
 
 #define FSTR_INIT(n, l)		{ .name = n, .len = l }
 #define FSTR_TO_QSTR(f)		QSTR_INIT((f)->name, (f)->len)
@@ -236,6 +316,53 @@ static inline int fscrypt_encrypt_symlink(struct inode *inode,
 	if (IS_ENCRYPTED(inode))
 		return __fscrypt_encrypt_symlink(inode, target, len, disk_link);
 	return 0;
+}
+
+/*
+ * fscrypt superblock flags
+ */
+#define FS_CFLG_OWN_PAGES (1U << 1)
+
+/*
+ * crypto opertions for filesystems
+ */
+struct fscrypt_operations {
+	unsigned int flags;
+	const char *key_prefix;
+	int (*get_context)(struct inode *, void *, size_t);
+	int (*set_context)(struct inode *, const void *, size_t, void *);
+	bool (*dummy_context)(struct inode *);
+	bool (*is_encrypted)(struct inode *);
+	bool (*is_inline_encrypted)(struct inode *);
+	bool (*empty_dir)(struct inode *);
+	unsigned int max_namelen;
+	int (*get_keyinfo)(struct inode *, void *, int *);
+	int (*is_file_sdp_encrypted)(struct inode *);
+};
+
+static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
+					u32 filenames_mode)
+{
+	if (contents_mode == FS_ENCRYPTION_MODE_AES_128_CBC &&
+	    filenames_mode == FS_ENCRYPTION_MODE_AES_128_CTS)
+		return true;
+
+	if (contents_mode == FS_ENCRYPTION_MODE_AES_256_XTS &&
+	    filenames_mode == FS_ENCRYPTION_MODE_AES_256_CTS)
+		return true;
+
+	return false;
+}
+
+static inline bool fscrypt_is_dot_dotdot(const struct qstr *str)
+{
+	if (str->len == 1 && str->name[0] == '.')
+		return true;
+
+	if (str->len == 2 && str->name[0] == '.' && str->name[1] == '.')
+		return true;
+
+	return false;
 }
 
 #endif	/* _LINUX_FSCRYPT_H */

@@ -13,13 +13,21 @@
 
 #include <linux/mm.h>
 #include <linux/slab.h>
-#include <linux/fscrypt_common.h>
+
 /*
  * fscrypt superblock flags
  */
 #define FS_CFLG_OWN_PAGES (1U << 1)
 
+static inline void *fscrypt_ci_key(struct inode *inode)
+{
+	return inode->i_crypt_info->ci_key;
+}
 
+static inline int fscrypt_ci_key_len(struct inode *inode)
+{
+	return inode->i_crypt_info->ci_key_len;
+}
 
 static inline bool fscrypt_has_encryption_key(const struct inode *inode)
 {
@@ -31,7 +39,6 @@ static inline bool fscrypt_dummy_context_enabled(struct inode *inode)
         return inode->i_sb->s_cop->dummy_context &&
                 inode->i_sb->s_cop->dummy_context(inode);
 }
-
 
 /* crypto.c */
 extern struct kmem_cache *fscrypt_info_cachep;
