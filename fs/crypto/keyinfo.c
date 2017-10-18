@@ -19,17 +19,6 @@
 
 static struct crypto_shash *essiv_hash_tfm;
 
-static void derive_crypt_complete(struct crypto_async_request *req, int rc)
-{
-        struct fscrypt_completion_result *ecr = req->data;
-
-        if (rc == -EINPROGRESS)
-                return;
-
-        ecr->res = rc;
-        complete(&ecr->completion);
-}
-
 int fscrypt_set_gcm_key(struct crypto_aead *tfm,
                        const u8 deriving_key[FS_AES_256_GCM_KEY_SIZE])
 {
@@ -67,7 +56,7 @@ int fscrypt_derive_gcm_key(struct crypto_aead *tfm,
 {
 	int res = 0;
 	struct aead_request *req = NULL;
-	DECLARE_FS_COMPLETION_RESULT(ecr);
+	DECLARE_CRYPTO_WAIT(wait);
 	struct scatterlist src_sg, dst_sg;
 	unsigned int ilen;
 
@@ -89,7 +78,7 @@ int fscrypt_derive_gcm_key(struct crypto_aead *tfm,
 
 	aead_request_set_callback(req,
 			CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
-			derive_crypt_complete, &ecr);
+			crypto_req_done, &wait);
 
 
 	ilen = enc ? FS_KEY_DERIVATION_NONCE_SIZE :
@@ -101,11 +90,8 @@ int fscrypt_derive_gcm_key(struct crypto_aead *tfm,
 	aead_request_set_ad(req, 0);
 
 	aead_request_set_crypt(req, &src_sg, &dst_sg, ilen, iv);
-	res = enc ? crypto_aead_encrypt(req) : crypto_aead_decrypt(req);
-	if (res == -EINPROGRESS || res == -EBUSY) {
-		wait_for_completion(&ecr.completion);
-		res = ecr.res;
-	}
+	res = crypto_wait_req(enc ? crypto_aead_encrypt(req) :
+			      crypto_aead_decrypt(req), &wait);
 out:
 	if (req)
 		aead_request_free(req);
