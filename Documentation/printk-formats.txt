@@ -49,7 +49,8 @@ Pointer Types
 
 Pointers printed without a specifier extension (i.e unadorned %p) are
 hashed to give a unique identifier without leaking kernel addresses to user
-space. On 64 bit machines the first 32 bits are zeroed.
+space. On 64 bit machines the first 32 bits are zeroed. If you _really_
+want the address see %px below.
 
 ::
 
