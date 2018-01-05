@@ -93,8 +93,7 @@ static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
 }
 
 /* crypto.c */
-/* expose fscrypt_info_cachep to f2fs */
-// extern struct kmem_cache *fscrypt_info_cachep;
+extern struct kmem_cache *fscrypt_info_cachep;
 extern int fscrypt_initialize(unsigned int cop_flags);
 extern int fscrypt_do_page_crypto(const struct inode *inode,
 				  fscrypt_direction_t rw, u64 lblk_num,
