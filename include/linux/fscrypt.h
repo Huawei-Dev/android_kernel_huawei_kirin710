@@ -17,67 +17,8 @@
 
 #define FS_CRYPTO_BLOCK_SIZE		16
 
-/* Encryption parameters */
-#define FS_IV_SIZE                     16
-#define FS_KEY_DERIVATION_NONCE_SIZE           64
-#define FS_KEY_DERIVATION_IV_SIZE              16
-#define FS_KEY_DERIVATION_TAG_SIZE             16
-#define FS_KEY_DERIVATION_CIPHER_SIZE          (64 + 16) /* nonce + tag */
-
-/**
- * Encryption context for inode
- *
- * Protector format:
- *  1 byte: Protector format (2 = this version)
- *  1 byte: File contents encryption mode
- *  1 byte: File names encryption mode
- *  1 byte: Flags
- *  8 bytes: Master Key descriptor
- *  80 bytes: Encryption Key derivation nonce (encrypted)
- *  12 bytes: IV
- */
-struct fscrypt_context {
-        u8 format;
-        u8 contents_encryption_mode;
-        u8 filenames_encryption_mode;
-        u8 flags;
-        u8 master_key_descriptor[FS_KEY_DESCRIPTOR_SIZE];
-        u8 nonce[FS_KEY_DERIVATION_CIPHER_SIZE];
-        u8 iv[FS_KEY_DERIVATION_IV_SIZE];
-} __packed;
-
-/*
- * A pointer to this structure is stored in the file system's in-core
- * representation of an inode.
- */
-struct fscrypt_info {
-	u8 ci_data_mode;
-	u8 ci_filename_mode;
-	u8 ci_flags;
-	struct crypto_skcipher *ci_ctfm;
-	struct crypto_aead *ci_gtfm;
-	struct crypto_cipher *ci_essiv_tfm;
-	u8 ci_master_key[FS_KEY_DESCRIPTOR_SIZE];
-	void *ci_key;
-	int ci_key_len;
-	int ci_key_index;
-	u8  ci_hw_enc_flag;
-};
-
-struct fscrypt_ctx {
-	union {
-		struct {
-			struct page *bounce_page;	/* Ciphertext page */
-			struct page *control_page;	/* Original page  */
-		} w;
-		struct {
-			struct bio *bio;
-			struct work_struct work;
-		} r;
-		struct list_head free_list;	/* Free list */
-	};
-	u8 flags;				/* Flags */
-};
+struct fscrypt_ctx;
+struct fscrypt_info;
 
 /**
  * For encrypted symlinks, the ciphertext length is stored at the beginning

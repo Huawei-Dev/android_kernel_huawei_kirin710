@@ -29,6 +29,21 @@ static inline int fscrypt_ci_key_len(struct inode *inode)
 	return inode->i_crypt_info->ci_key_len;
 }
 
+struct fscrypt_ctx {
+	union {
+		struct {
+			struct page *bounce_page;	/* Ciphertext page */
+			struct page *control_page;	/* Original page  */
+		} w;
+		struct {
+			struct bio *bio;
+			struct work_struct work;
+		} r;
+		struct list_head free_list;	/* Free list */
+	};
+	u8 flags;				/* Flags */
+};
+
 static inline bool fscrypt_has_encryption_key(const struct inode *inode)
 {
         return (inode->i_crypt_info != NULL);
