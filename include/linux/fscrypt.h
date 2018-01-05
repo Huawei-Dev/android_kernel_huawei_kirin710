@@ -259,28 +259,6 @@ static inline int fscrypt_encrypt_symlink(struct inode *inode,
 	return 0;
 }
 
-/*
- * fscrypt superblock flags
- */
-#define FS_CFLG_OWN_PAGES (1U << 1)
-
-/*
- * crypto opertions for filesystems
- */
-struct fscrypt_operations {
-	unsigned int flags;
-	const char *key_prefix;
-	int (*get_context)(struct inode *, void *, size_t);
-	int (*set_context)(struct inode *, const void *, size_t, void *);
-	bool (*dummy_context)(struct inode *);
-	bool (*is_encrypted)(struct inode *);
-	bool (*is_inline_encrypted)(struct inode *);
-	bool (*empty_dir)(struct inode *);
-	unsigned int max_namelen;
-	int (*get_keyinfo)(struct inode *, void *, int *);
-	int (*is_file_sdp_encrypted)(struct inode *);
-};
-
 static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
 					u32 filenames_mode)
 {
