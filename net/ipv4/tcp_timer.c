@@ -266,6 +266,12 @@ int tcp_write_timeout(struct sock *sk)
 #endif
 
 	tcp_fastopen_active_detect_blackhole(sk, expired);
+
+	if (BPF_SOCK_OPS_TEST_FLAG(tp, BPF_SOCK_OPS_RTO_CB_FLAG))
+		tcp_call_bpf_3arg(sk, BPF_SOCK_OPS_RTO_CB,
+				  icsk->icsk_retransmits,
+				  icsk->icsk_rto, (int)expired);
+
 	if (expired) {
 		/* Has it gone just too far? */
 #ifdef CONFIG_HUAWEI_XENGINE
@@ -274,6 +280,7 @@ int tcp_write_timeout(struct sock *sk)
 		tcp_write_err(sk);
 		return 1;
 	}
+
 	return 0;
 }
 
