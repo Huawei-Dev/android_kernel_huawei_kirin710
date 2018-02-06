@@ -473,7 +473,7 @@ static noinline void use_after_scope_test(void)
 	p[1023] = 1;
 }
 
-static noinline void kasan_alloca_oob_left(void)
+static noinline void __init kasan_alloca_oob_left(void)
 {
 	volatile int i = 10;
 	char alloca_array[i];
@@ -483,7 +483,7 @@ static noinline void kasan_alloca_oob_left(void)
 	*(volatile char *)p;
 }
 
-static noinline void kasan_alloca_oob_right(void)
+static noinline void __init kasan_alloca_oob_right(void)
 {
 	volatile int i = 10;
 	char alloca_array[i];
@@ -493,7 +493,7 @@ static noinline void kasan_alloca_oob_right(void)
 	*(volatile char *)p;
 }
 
-int kmalloc_tests_init(void)
+static int __init kmalloc_tests_init(void)
 {
 	/*
 	 * Temporarily enable multi-shot mode. Otherwise, we'd only get a
@@ -523,6 +523,8 @@ int kmalloc_tests_init(void)
 	memcg_accounted_kmem_cache();
 	kasan_stack_oob();
 	kasan_global_oob();
+	kasan_alloca_oob_left();
+	kasan_alloca_oob_right();
 	ksize_unpoisons_memory();
 	copy_user_test();
 	use_after_scope_test();
