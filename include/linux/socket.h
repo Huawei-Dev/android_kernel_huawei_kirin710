@@ -287,6 +287,7 @@ struct ucred {
 #define MSG_SENDPAGE_NOTLAST 0x20000 /* sendpage() internal : not the last page */
 #define MSG_BATCH	0x40000 /* sendmmsg(): more messages coming */
 #define MSG_EOF         MSG_FIN
+#define MSG_NO_SHARED_FRAGS 0x80000 /* sendpage() internal : page frags are not shared */
 
 #ifdef CONFIG_HUAWEI_BASTET
 #define MSG_HRT		0x400000
