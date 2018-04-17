@@ -309,8 +309,8 @@ out_rcu_unlock:
 	goto out;
 }
 
-int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
-		 bool force_bind_address_no_port, bool with_lock)
+static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+			bool force_bind_address_no_port, bool with_lock)
 {
 	struct sockaddr_in6 *addr = (struct sockaddr_in6 *)uaddr;
 	struct inet_sock *inet = inet_sk(sk);
@@ -457,7 +457,6 @@ out_unlock:
 	rcu_read_unlock();
 	goto out;
 }
-
 
 /* bind for INET6 API */
 int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
