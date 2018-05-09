@@ -4383,31 +4383,6 @@ static int btrfs_log_changed_extents(struct btrfs_trans_handle *trans,
 		num++;
 	}
 
-	/*
-	 * Add all prealloc extents beyond the inode's i_size to make sure we
-	 * don't lose them after doing a fast fsync and replaying the log.
-	 */
-	if (inode->flags & BTRFS_INODE_PREALLOC) {
-		struct rb_node *node;
-
-		for (node = rb_last(&tree->map); node; node = rb_prev(node)) {
-			em = rb_entry(node, struct extent_map, rb_node);
-			if (em->start < i_size_read(&inode->vfs_inode))
-				break;
-			if (!list_empty(&em->list))
-				continue;
-			/* Same as above loop. */
-			if (++num > 32768) {
-				list_del_init(&tree->modified_extents);
-				ret = -EFBIG;
-				goto process;
-			}
-			refcount_inc(&em->refs);
-			set_bit(EXTENT_FLAG_LOGGING, &em->flags);
-			list_add_tail(&em->list, &extents);
-		}
-	}
-
 	list_sort(NULL, &extents, extent_cmp);
 	btrfs_get_logged_extents(inode, logged_list, logged_start, logged_end);
 	/*
