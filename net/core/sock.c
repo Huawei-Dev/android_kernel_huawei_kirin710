@@ -2885,6 +2885,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 	sk->hicom_flag = 0;
 #endif
 
+	sk_rx_queue_clear(sk);
 	/*
 	 * Before updating sk_refcnt, we must commit prior changes to memory
 	 * (Documentation/RCU/rculist_nulls.txt for details)
