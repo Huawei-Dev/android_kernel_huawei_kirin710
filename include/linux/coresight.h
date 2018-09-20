@@ -322,6 +322,12 @@ extern void *get_etb_drvdata_bydevnode(struct device_node *np);
 extern int etbetf_restore(void *drv);
 extern void *get_funnel_drvdata_bydevnode(struct device_node *np);
 extern int funnel_restore(void *drv);
+
+extern int coresight_claim_device(void __iomem *base);
+extern int coresight_claim_device_unlocked(void __iomem *base);
+
+extern void coresight_disclaim_device(void __iomem *base);
+extern void coresight_disclaim_device_unlocked(void __iomem *base);
 #else
 static inline struct coresight_device *
 coresight_register(struct coresight_desc *desc) { return NULL; }
@@ -341,6 +347,18 @@ static inline void *get_etb_drvdata_bydevnode(struct device_node *np) { return N
 static inline int etbetf_restore(void *drv) { return -1; }
 static inline void *get_funnel_drvdata_bydevnode(struct device_node *np) { return NULL; }
 static inline int funnel_restore(void *drv) { return -1; }
+static inline int coresight_claim_device_unlocked(void __iomem *base)
+{
+	return -EINVAL;
+}
+
+static inline int coresight_claim_device(void __iomem *base)
+{
+	return -EINVAL;
+}
+
+static inline void coresight_disclaim_device(void __iomem *base) {}
+static inline void coresight_disclaim_device_unlocked(void __iomem *base) {}
 #endif
 
 #ifdef CONFIG_OF
