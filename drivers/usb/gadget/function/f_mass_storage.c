@@ -224,6 +224,8 @@
 
 #include <linux/nospec.h>
 
+#include <linux/nospec.h>
+
 #include "configfs.h"
 
 #include <chipset_common/hwusb/hw_usb_rwswitch.h>
