@@ -3237,6 +3237,8 @@ static inline void f2fs_update_iostat(struct f2fs_sb_info *sbi,
 	spin_unlock(&sbi->iostat_lock);
 }
 
+#define __is_large_section(sbi)		((sbi)->segs_per_sec > 1)
+
 static inline block_t fs_free_space_threshold(struct f2fs_sb_info *sbi)
 {
         return (block_t)(SM_I(sbi)->main_segments * sbi->blocks_per_seg *
@@ -3248,7 +3250,6 @@ static inline block_t device_free_space_threshold(struct f2fs_sb_info *sbi)
         return (block_t)(SM_I(sbi)->main_segments * sbi->blocks_per_seg *
                                         DEVICE_FREE_SPACE_PERCENT) / 100;
 }
-
 
 #define __is_meta_io(fio) (PAGE_TYPE_OF_BIO(fio->type) == META &&	\
 				(!is_read_io(fio->op) || fio->is_meta))
