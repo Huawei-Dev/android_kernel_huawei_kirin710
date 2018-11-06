@@ -230,9 +230,13 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
 				current->pid, path, current->comm);
 	}
 
+	if (S_ISDIR(inode->i_mode))
+		goto go_write;
+
 	pgcache_log_path(BIT_FSYNC_SYSCALL_DUMP, &(file->f_path),
 			"f2fs sync file start");
 	fsync_begin = local_clock();
+
 	/* if fdatasync is triggered, let's do in-place-update */
 	if (datasync || get_dirty_pages(inode) <= SM_I(sbi)->min_fsync_blocks)
 		set_inode_flag(inode, FI_NEED_IPU);
