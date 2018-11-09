@@ -1668,7 +1668,7 @@ static void handle_port_status(struct xhci_hcd *xhci,
 		hcd = xhci->shared_hcd;
 
 	if (!hcd) {
-		xhci_warn(xhci, "hcd had been remove, ignore this event!\n");
+		xhci_dbg(xhci, "No hcd found for port %u event\n", port_id);
 		bogus_port_status = true;
 		goto cleanup;
 	}
