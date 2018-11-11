@@ -1140,6 +1140,8 @@ enum count_type {
 	F2FS_RD_DATA,
 	F2FS_RD_NODE,
 	F2FS_RD_META,
+	F2FS_DIO_WRITE,
+	F2FS_DIO_READ,
 	F2FS_LOG_FILE,
 	NR_COUNT_TYPE,
 };
@@ -1637,6 +1639,13 @@ struct f2fs_sb_info {
 #ifdef CONFIG_F2FS_CHECK_FS
 	atomic_t in_cp;
 #endif
+};
+
+struct f2fs_private_dio {
+	struct inode *inode;
+	void *orig_private;
+	bio_end_io_t *orig_end_io;
+	bool write;
 };
 
 #ifdef CONFIG_F2FS_FAULT_INJECTION
@@ -3702,6 +3711,7 @@ struct f2fs_stat_info {
 	int total_count, utilization;
 	int bg_gc, nr_wb_cp_data, nr_wb_data;
 	int nr_rd_data, nr_rd_node, nr_rd_meta;
+	int nr_dio_read, nr_dio_write;
 	unsigned int io_skip_bggc, other_skip_bggc;
 	int nr_flushing, nr_flushed, flush_list_empty;
 	int nr_discarding, nr_discarded;
