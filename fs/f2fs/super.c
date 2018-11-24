@@ -113,7 +113,7 @@ static int __init pw_init(void){
 
 #ifdef CONFIG_F2FS_FAULT_INJECTION
 
-char *f2fs_fault_name[FAULT_MAX] = {
+const char *f2fs_fault_name[FAULT_MAX] = {
 	[FAULT_KMALLOC]		= "kmalloc",
 	[FAULT_KVMALLOC]	= "kvmalloc",
 	[FAULT_PAGE_ALLOC]	= "page alloc",
