@@ -1419,11 +1419,9 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 
 	/* Flush all the NAT/SIT pages */
 	cp_flush_meta_begin = local_clock();
-	while (get_pages(sbi, F2FS_DIRTY_META)) {
-		f2fs_sync_meta_pages(sbi, META, LONG_MAX, FS_CP_META_IO);
-		if (unlikely(f2fs_cp_error(sbi)))
-			break;
-	}
+	f2fs_sync_meta_pages(sbi, META, LONG_MAX, FS_CP_META_IO);
+	f2fs_bug_on(sbi, get_pages(sbi, F2FS_DIRTY_META) &&
+					!f2fs_cp_error(sbi));
 	cp_flush_meta_end = local_clock();
 	cp_flush_meta_time += cp_flush_meta_end - cp_flush_meta_begin;
 
@@ -1511,14 +1509,6 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 		for (i = 0; i < nm_i->nat_bits_blocks; i++)
 			f2fs_update_meta_page(sbi, nm_i->nat_bits +
 					(i << F2FS_BLKSIZE_BITS), blk + i);
-
-		/* Flush all the NAT BITS pages */
-		while (get_pages(sbi, F2FS_DIRTY_META)) {
-			f2fs_sync_meta_pages(sbi, META, LONG_MAX,
-							FS_CP_META_IO);
-			if (unlikely(f2fs_cp_error(sbi)))
-				break;
-		}
 	}
 
 	/* write out checkpoint buffer at block 0 */
@@ -1578,6 +1568,8 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 
 	/* Here, we have one bio having CP pack except cp pack 2 page */
 	f2fs_sync_meta_pages(sbi, META, LONG_MAX, FS_CP_META_IO);
+	f2fs_bug_on(sbi, get_pages(sbi, F2FS_DIRTY_META) &&
+					!f2fs_cp_error(sbi));
 
 	/* wait for previous submitted meta pages writeback */
 	f2fs_wait_on_all_pages_writeback(sbi);
