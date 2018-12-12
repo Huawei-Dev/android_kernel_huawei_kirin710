@@ -729,7 +729,7 @@ static int parse_options(struct super_block *sb, char *options)
 			set_hw_opt(sbi, FORCE_CRC);
 			break;
 		case Opt_inline_encrypt:
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 			set_hw_opt(sbi, INLINE_ENCRYPT);
 #else
 			f2fs_msg(sb, KERN_INFO,
@@ -868,7 +868,7 @@ static int parse_options(struct super_block *sb, char *options)
 			kfree(name);
 			break;
 		case Opt_test_dummy_encryption:
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 			if (!f2fs_sb_has_encrypt(sb)) {
 				f2fs_msg(sb, KERN_ERR, "Encrypt feature is off");
 				return -EINVAL;
@@ -1511,7 +1511,7 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
 		seq_puts(seq, "adaptive");
 	else if (test_opt(sbi, LFS))
 		seq_puts(seq, "lfs");
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	if (test_hw_opt(sbi, INLINE_ENCRYPT))
 		seq_puts(seq, ",inline_encrypt");
 	if (test_hw_opt(sbi, SDP_ENCRYPT))
@@ -1559,7 +1559,7 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
 		seq_printf(seq, ",whint_mode=%s", "user-based");
 	else if (F2FS_OPTION(sbi).whint_mode == WHINT_MODE_FS)
 		seq_printf(seq, ",whint_mode=%s", "fs-based");
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	if (F2FS_OPTION(sbi).test_dummy_encryption)
 		seq_puts(seq, ",test_dummy_encryption");
 #endif
@@ -1615,7 +1615,7 @@ static void default_options(struct f2fs_sb_info *sbi)
 
 	f2fs_build_fault_attr(sbi, 0, 0);
 
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	set_hw_opt(sbi, SDP_ENCRYPT);
 #endif
 }
@@ -2376,7 +2376,7 @@ static const struct super_operations f2fs_sops = {
 #endif
 };
 
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 static int f2fs_get_context(struct inode *inode, void *ctx, size_t len)
 {
 
@@ -3514,7 +3514,7 @@ try_onemore:
 #endif
 
 	sb->s_op = &f2fs_sops;
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	sb->s_cop = &f2fs_cryptops;
 #endif
 	sb->s_xattr = f2fs_xattr_handlers;

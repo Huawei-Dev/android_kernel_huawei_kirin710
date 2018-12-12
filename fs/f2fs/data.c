@@ -336,7 +336,7 @@ static struct bio *__bio_alloc(struct f2fs_sb_info *sbi, block_t blk_addr,
 	if (wbc)
 		wbc_init_bio(wbc, bio);
 
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	bio->hisi_bio.ci_key = NULL;
 	bio->hisi_bio.ci_key_len = 0;
 	bio->hisi_bio.ci_key_index = -1;
@@ -561,7 +561,7 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 	bio = __bio_alloc(fio->sbi, fio->new_blkaddr, fio->io_wbc,
 				1, is_read_io(fio->op), fio->type, fio->temp);
 
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	if (fio->ci_key) {
 		bio->hisi_bio.ci_key = fio->ci_key;
 		bio->hisi_bio.ci_key_len = fio->ci_key_len;
@@ -628,7 +628,7 @@ next:
 	    (io->fio.op != fio->op || io->fio.op_flags != fio->op_flags) ||
 			!__same_bdev(sbi, fio->new_blkaddr, io->bio)))
 		__submit_merged_bio(io);
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	else if ((io->bio) && ((io->bio->hisi_bio.ci_key != fio->ci_key) ||
 				(io->bio->hisi_bio.ci_key_len != fio->ci_key_len) ||
 				(fio->ci_key && io->last_index_in_bio !=
@@ -664,7 +664,7 @@ alloc_new:
 			io->bio->bi_opf |= REQ_NOMERGE;
 
 		io->fio = *fio;
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 		io->bio->hisi_bio.ci_key = fio->ci_key;
 		io->bio->hisi_bio.ci_key_len = fio->ci_key_len;
 		io->bio->hisi_bio.ci_key_index = fio->ci_key_index;
@@ -672,7 +672,7 @@ alloc_new:
 			io->bio->hisi_bio.index = bio_page->index;
 #endif
 	}
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	f2fs_bug_on(sbi, (io->bio->hisi_bio.ci_key != fio->ci_key) ||
 			(io->bio->hisi_bio.ci_key_len != fio->ci_key_len));
 #endif
@@ -693,7 +693,7 @@ alloc_new:
 		wbc_account_io(fio->io_wbc, bio_page, PAGE_SIZE);
 
 	io->last_block_in_bio = fio->new_blkaddr;
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	io->last_index_in_bio = bio_page->index;
 #endif
 	f2fs_trace_ios(fio, 0);
@@ -746,7 +746,7 @@ static struct bio *f2fs_grab_read_bio(struct inode *inode, block_t blkaddr,
 			need_key = true;
 		}
 	}
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	if (need_key) {
 		bio->hisi_bio.ci_key = fscrypt_ci_key(inode);
 		bio->hisi_bio.ci_key_len = fscrypt_ci_key_len(inode);
@@ -1961,7 +1961,7 @@ retry_encrypt:
 		if (!fscrypt_has_encryption_key(inode)) {
 			return -ENOKEY;
 		}
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 		fio->ci_key = fscrypt_ci_key(inode);
 		fio->ci_key_len = fscrypt_ci_key_len(inode);
 		fio->ci_key_index = fscrypt_ci_key_index(inode);

@@ -26,7 +26,6 @@
 #include <linux/overflow.h>
 #include <linux/math64.h>
 
-#define __FS_HAS_ENCRYPTION IS_ENABLED(CONFIG_F2FS_FS_ENCRYPTION)
 #include <linux/fscrypt.h>
 #include <linux/reboot.h>
 
@@ -1224,7 +1223,7 @@ struct f2fs_io_info {
 	block_t old_blkaddr;	/* old block address before Cow */
 	struct page *page;	/* page to be written */
 	struct page *encrypted_page;	/* encrypted page */
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	void *ci_key;
 	int ci_key_len;
 	int ci_key_index;
@@ -1248,7 +1247,7 @@ struct f2fs_bio_info {
 	sector_t last_block_in_bio;	/* last block number */
 	struct f2fs_io_info fio;	/* store buffered io info. */
 	struct rw_semaphore io_rwsem;	/* blocking op for bio */
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	pgoff_t last_index_in_bio;
 #endif
 	spinlock_t io_lock;		/* serialize DATA/NODE IOs */
@@ -1374,7 +1373,7 @@ enum fsync_mode {
 	FSYNC_MODE_NOBARRIER,	/* fsync behaves nobarrier based on posix */
 };
 
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 #define DUMMY_ENCRYPTION_ENABLED(sbi) \
 			(unlikely(F2FS_OPTION(sbi).test_dummy_encryption))
 #else
@@ -4139,7 +4138,7 @@ static inline bool f2fs_encrypted_file(struct inode *inode)
 
 static inline void f2fs_set_encrypted_inode(struct inode *inode)
 {
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	file_set_encrypt(inode);
 	f2fs_set_inode_flags(inode);
 #endif
@@ -4152,7 +4151,7 @@ static inline bool f2fs_inline_encrypted_inode(struct inode *inode)
 
 static inline void f2fs_set_inline_encrypted_inode(struct inode *inode)
 {
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
         file_set_inline_encrypt(inode);
 #endif
 }
@@ -4231,7 +4230,7 @@ static inline void set_opt_mode(struct f2fs_sb_info *sbi, unsigned int mt)
 
 static inline bool f2fs_may_encrypt(struct inode *inode)
 {
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
+#ifdef CONFIG_FS_ENCRYPTION
 	umode_t mode = inode->i_mode;
 
 	return (S_ISREG(mode) || S_ISDIR(mode) || S_ISLNK(mode));
