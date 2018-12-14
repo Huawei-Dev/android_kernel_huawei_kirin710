@@ -468,7 +468,7 @@ inline void acm_f2fs_init_cache(void)
 inline void acm_f2fs_free_cache(void)
 {
 	if (g_last_pkg_cache)
-		kfree(g_last_pkg_cache);
+		kvfree(g_last_pkg_cache);
 	g_last_pkg_cache = NULL;
 }
 
@@ -583,7 +583,7 @@ static int monitor_acm(struct inode *dir, struct dentry *dentry,
 				err = -EACCES;
 		}
 
-	kfree(pkg);
+	kvfree(pkg);
 
 monitor_ret:
 	return err;
@@ -995,7 +995,7 @@ out_f2fs_handle_failed_inode:
 	f2fs_handle_failed_inode(inode);
 out_free_encrypted_link:
 	if (disk_link.name != (unsigned char *)symname)
-		kfree(disk_link.name);
+		kvfree(disk_link.name);
 	return err;
 }
 

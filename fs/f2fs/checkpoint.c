@@ -958,7 +958,7 @@ free_fail_no_cp:
 	f2fs_put_page(cp1, 1);
 	f2fs_put_page(cp2, 1);
 fail_no_cp:
-	kfree(sbi->ckpt);
+	kvfree(sbi->ckpt);
 	return -EINVAL;
 }
 
@@ -1651,7 +1651,7 @@ static void report_bdev_access_info(struct f2fs_sb_info *sbi)
 		list_del(&at->list);
 		size += snprintf(buf + size, 1024 - size, "%ld, ",
 				at->time.tv_sec);
-		kfree(at);
+		kvfree(at);
 		if (size >= 1024) {
 			buf[1023] = '\0';
 			break;
@@ -1664,12 +1664,12 @@ do_dmd_report:
                                 open_cnt, buf ? : "null");
         dsm_client_notify(f2fs_dclient, DSM_F2FS_NEED_FSCK);
         if (buf)
-		kfree(buf);
+		kvfree(buf);
 #endif
 	spin_lock(&bdev_access_info.lock);
 	list_for_each_entry_safe(at, tmp, &bdev_access_info.access_list, list) {
 		list_del(&at->list);
-		kfree(at);
+		kvfree(at);
 	}
 	spin_unlock(&bdev_access_info.lock);
 }

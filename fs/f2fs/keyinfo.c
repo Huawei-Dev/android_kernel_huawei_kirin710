@@ -29,7 +29,7 @@ static void f2fs_put_crypt_info(struct fscrypt_info *ci)
 	/*lint -restore*/
 	if (prev == key && key) {
 		memzero_explicit(key, (size_t)FS_MAX_KEY_SIZE);
-		kfree(key);
+		kvfree(key);
 		ci->ci_key_len = 0;
 		ci->ci_key_index = -1;
 	}

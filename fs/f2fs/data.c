@@ -2935,7 +2935,7 @@ static inline void __f2fs_crypt_end_dio(struct f2fs_crypt_dio *dio,
 	bio->bi_private = dio->private;
 	bio->bi_end_io = dio->orig_end_io;
 
-	kfree(dio);
+	kvfree(dio);
 
 	bio_endio(bio);
 }
@@ -3114,7 +3114,7 @@ static void f2fs_submit_direct(struct bio *bio, struct inode *inode,
 	return;
 
 ctx_err:
-	kfree(dio);
+	kvfree(dio);
 dio_err:
 	if (ret != 0)
 		bio->bi_status = BLK_STS_IOERR;
@@ -3132,7 +3132,7 @@ static void f2fs_dio_end_io(struct bio *bio)
 	bio->bi_private = dio->orig_private;
 	bio->bi_end_io = dio->orig_end_io;
 
-	kfree(dio);
+	kvfree(dio);
 
 	bio_endio(bio);
 }

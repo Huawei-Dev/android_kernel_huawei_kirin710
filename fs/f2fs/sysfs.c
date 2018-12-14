@@ -1219,7 +1219,7 @@ static void f2fs_destroy_bd_stat(struct f2fs_sb_info *sbi)
 	remove_proc_entry("bd_encrypt_info", sbi->s_proc);
 
 	if (sbi->bd_info) {
-		kfree(sbi->bd_info);
+		kvfree(sbi->bd_info);
 		sbi->bd_info = NULL;
 	}
 }
