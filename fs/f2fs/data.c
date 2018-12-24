@@ -154,6 +154,8 @@ static bool f2fs_bio_post_read_required(struct bio *bio)
 
 static void f2fs_read_end_io(struct bio *bio)
 {
+	struct page *first_page = bio->bi_io_vec[0].bv_page;
+
 	if (time_to_inject(F2FS_P_SB(bio->bi_io_vec->bv_page), FAULT_READ_IO)) {
 		f2fs_show_injection_info(FAULT_READ_IO);
 		bio->bi_status = BLK_STS_IOERR;
@@ -165,6 +167,13 @@ static void f2fs_read_end_io(struct bio *bio)
 		ctx->cur_step = STEP_INITIAL;
 		bio_post_read_processing(ctx);
 		return;
+	}
+
+	if (first_page != NULL &&
+		__read_io_type(first_page) == F2FS_RD_DATA) {
+		trace_android_fs_dataread_end(first_page->mapping->host,
+						page_offset(first_page),
+						bio->bi_iter.bi_size);
 	}
 
 	__read_end_io(bio);
@@ -411,6 +420,32 @@ submit_io:
 	submit_bio(bio);
 }
 
+static void __f2fs_submit_read_bio(struct f2fs_sb_info *sbi,
+				struct bio *bio, enum page_type type)
+{
+	if (trace_android_fs_dataread_start_enabled() && (type == DATA)) {
+		struct page *first_page = bio->bi_io_vec[0].bv_page;
+
+		if (first_page != NULL &&
+			__read_io_type(first_page) == F2FS_RD_DATA) {
+			char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
+
+			path = android_fstrace_get_pathname(pathbuf,
+						MAX_TRACE_PATHBUF_LEN,
+						first_page->mapping->host);
+
+			trace_android_fs_dataread_start(
+				first_page->mapping->host,
+				page_offset(first_page),
+				bio->bi_iter.bi_size,
+				current->pid,
+				path,
+				current->comm);
+		}
+	}
+	__submit_bio(sbi, bio, type);
+}
+
 static void __submit_merged_bio(struct f2fs_bio_info *io)
 {
 	struct f2fs_io_info *fio = &io->fio;
@@ -566,7 +601,7 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 	inc_page_count(fio->sbi, is_read_io(fio->op) ?
 			__read_io_type(page): WB_DATA_TYPE(fio->page));
 
-	__submit_bio(fio->sbi, bio, fio->type);
+	__f2fs_submit_read_bio(fio->sbi, bio, fio->type);
 	return 0;
 }
 
@@ -758,7 +793,7 @@ static int f2fs_submit_page_read(struct inode *inode, struct page *page,
 	}
 	ClearPageError(page);
 	inc_page_count(F2FS_I_SB(inode), F2FS_RD_DATA);
-	__submit_bio(F2FS_I_SB(inode), bio, DATA);
+	__f2fs_submit_read_bio(F2FS_I_SB(inode), bio, DATA);
 	return 0;
 }
 
@@ -1843,7 +1878,7 @@ got_it:
 				last_index_in_bio != block_in_file - 1))) {
 submit_and_realloc:
 			io_submited++;
-			__submit_bio(F2FS_I_SB(inode), bio, DATA);
+			__f2fs_submit_read_bio(F2FS_I_SB(inode), bio, DATA);
 			bio = NULL;
 		}
 		if (bio == NULL) {
@@ -1877,7 +1912,7 @@ set_error_page:
 confused:
 		if (bio) {
 			io_submited++;
-			__submit_bio(F2FS_I_SB(inode), bio, DATA);
+			__f2fs_submit_read_bio(F2FS_I_SB(inode), bio, DATA);
 			bio = NULL;
 		}
 		unlock_page(page);
@@ -1888,7 +1923,7 @@ next_page:
 	BUG_ON(pages && !list_empty(pages));
 	if (bio) {
 		io_submited++;
-		__submit_bio(F2FS_I_SB(inode), bio, DATA);
+		__f2fs_submit_read_bio(F2FS_I_SB(inode), bio, DATA);
 	}
 
 	if (io_submited)
