@@ -3577,7 +3577,7 @@ int f2fs_allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 			struct f2fs_io_info *fio, bool add_list,
 			int contig_level);
 void f2fs_wait_on_page_writeback(struct page *page,
-			enum page_type type, bool ordered);
+			enum page_type type, bool ordered, bool locked);
 void f2fs_wait_on_block_writeback(struct inode *inode, block_t blkaddr);
 void f2fs_wait_on_block_writeback_range(struct inode *inode, block_t blkaddr,
 								block_t len);
