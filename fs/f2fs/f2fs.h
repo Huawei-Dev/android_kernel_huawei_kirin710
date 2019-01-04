@@ -3893,7 +3893,7 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
 
 int f2fs_build_stats(struct f2fs_sb_info *sbi);
 void f2fs_destroy_stats(struct f2fs_sb_info *sbi);
-int __init f2fs_create_root_stats(void);
+void __init f2fs_create_root_stats(void);
 void f2fs_destroy_root_stats(void);
 
 /* for f2fs bigdata collections */
@@ -4044,7 +4044,7 @@ static inline struct f2fs_bigdata_info *F2FS_BD_STAT(struct f2fs_sb_info *sbi)
 
 static inline int f2fs_build_stats(struct f2fs_sb_info *sbi) { return 0; }
 static inline void f2fs_destroy_stats(struct f2fs_sb_info *sbi) { }
-static inline int __init f2fs_create_root_stats(void) { return 0; }
+static inline void __init f2fs_create_root_stats(void) { }
 static inline void f2fs_destroy_root_stats(void) { }
 
 #define inc_bd_val(sbi, member, val)
