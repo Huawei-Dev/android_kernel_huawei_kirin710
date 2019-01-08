@@ -1726,6 +1726,7 @@ extern struct pid *cad_pid;
 #endif
 #define PF_WAKE_UP_IDLE		0x02000000	/* TTWU on an idle CPU */
 #define PF_MEMSTALL		0x01000000	/* Stalled due to lack of memory */
+#define PF_UMH			0x02000000	/* I'm an Usermodehelper process */
 #define PF_NO_SETAFFINITY	0x04000000	/* Userland is not allowed to meddle with cpus_allowed */
 #define PF_MCE_EARLY		0x08000000      /* Early kill for mce process policy */
 #define PF_MUTEX_GC		0x10000000	/* whether this task hold the GC mutex */
@@ -2129,6 +2130,14 @@ extern long sched_getaffinity(pid_t pid, struct cpumask *mask);
 #ifndef TASK_SIZE_OF
 #define TASK_SIZE_OF(tsk)	TASK_SIZE
 #endif
+
+void __exit_umh(struct task_struct *tsk);
+
+static inline void exit_umh(struct task_struct *tsk)
+{
+	if (unlikely(tsk->flags & PF_UMH))
+		__exit_umh(tsk);
+}
 
 #ifdef CONFIG_SCHED_HWSTATUS
 extern void sched_hwstatus_iodelay_caller(struct task_struct *tsk, u64 delta);
