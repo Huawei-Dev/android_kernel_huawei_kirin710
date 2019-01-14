@@ -375,7 +375,7 @@ struct discard_entry {
 /* max discard pend list number */
 #define MAX_PLIST_NUM		512
 #define plist_idx(blk_num)	((blk_num) >= MAX_PLIST_NUM ?		\
-					(MAX_PLIST_NUM - 1) : (blk_num - 1))
+					(MAX_PLIST_NUM - 1) : ((blk_num) - 1))
 #define FS_FREE_SPACE_PERCENT          20
 #define DEVICE_FREE_SPACE_PERCENT      10
 
@@ -3237,9 +3237,9 @@ static inline int get_inline_xattr_addrs(struct inode *inode)
 
 #define F2FS_OLD_ATTRIBUTE_SIZE	(offsetof(struct f2fs_inode, i_addr))
 #define F2FS_FITS_IN_INODE(f2fs_inode, extra_isize, field)		\
-		((offsetof(typeof(*f2fs_inode), field) +	\
+		((offsetof(typeof(*(f2fs_inode)), field) +	\
 		sizeof((f2fs_inode)->field))			\
-		<= (F2FS_OLD_ATTRIBUTE_SIZE + extra_isize))	\
+		<= (F2FS_OLD_ATTRIBUTE_SIZE + (extra_isize)))	\
 
 static inline void f2fs_reset_iostat(struct f2fs_sb_info *sbi)
 {
@@ -3280,8 +3280,8 @@ static inline block_t device_free_space_threshold(struct f2fs_sb_info *sbi)
                                         DEVICE_FREE_SPACE_PERCENT) / 100;
 }
 
-#define __is_meta_io(fio) (PAGE_TYPE_OF_BIO(fio->type) == META &&	\
-				(!is_read_io(fio->op) || fio->is_meta))
+#define __is_meta_io(fio) (PAGE_TYPE_OF_BIO((fio)->type) == META &&	\
+				(!is_read_io((fio)->op) || (fio)->is_meta))
 
 bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
 					block_t blkaddr, int type);
