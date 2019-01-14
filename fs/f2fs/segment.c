@@ -1285,6 +1285,8 @@ static void __init_discard_policy(struct f2fs_sb_info *sbi,
 				struct discard_policy *policy,
 				int discard_type, unsigned int granularity)
 {
+	dpolicy->timeout = 0;
+
 	if (discard_type == DPOLICY_BG) {
 	       *policy = dpolicys[DPOLICY_BG];
 	} else if (discard_type == DPOLICY_BL) {
@@ -1709,7 +1711,15 @@ static int __issue_discard_cmd(struct f2fs_sb_info *sbi,
 		mutex_unlock(&dcc->cmd_lock);
 	}
 	blk_start_plug(&plug);
+
+	if (dpolicy->timeout != 0)
+		f2fs_update_time(sbi, dpolicy->timeout);
+
 	for (i = MAX_PLIST_NUM - 1; i >= 0; i--) {
+		if (dpolicy->timeout != 0 &&
+				f2fs_time_over(sbi, dpolicy->timeout))
+			break;
+
 		if (i + 1 < dpolicy->granularity)
 			break;
 
@@ -1903,13 +1913,14 @@ void f2fs_stop_discard_thread(struct f2fs_sb_info *sbi)
 }
 
 /* This comes from f2fs_put_super */
-bool f2fs_wait_discard_bios(struct f2fs_sb_info *sbi)
+bool f2fs_issue_discard_timeout(struct f2fs_sb_info *sbi)
 {
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
 	struct discard_policy dpolicy;
 	bool dropped = false;
 
 	__init_discard_policy(sbi, &dpolicy, DPOLICY_UMOUNT, 0);
+	dpolicy.timeout = UMOUNT_DISCARD_TIMEOUT;
 	__issue_discard_cmd(sbi, &dpolicy);
 	dropped = __drop_discard_cmd(sbi);
 
