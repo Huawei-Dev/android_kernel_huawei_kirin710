@@ -3714,7 +3714,7 @@ try_onemore:
 	sb->s_root = d_make_root(root); /* allocate root dentry */
 	if (!sb->s_root) {
 		err = -ENOMEM;
-		goto free_root_inode;
+		goto free_node_inode;
 	}
 #ifdef CONFIG_F2FS_GRADING_SSR
 	f2fs_init_grading_ssr(sbi);
