@@ -581,6 +581,9 @@ KBUILD_AFLAGS	+= $(CLANG_FLAGS)
 export CLANG_FLAGS
 endif
 
+ifneq ($(LLVM),)
+KBUILD_CFLAGS += -fuse-ld=lld
+endif
 
 ifeq ($(mixed-targets),1)
 # ===========================================================================
