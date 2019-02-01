@@ -116,7 +116,7 @@ static int ad9834_write_frequency(struct ad9834_state *st,
 
 	clk_freq = clk_get_rate(st->mclk);
 
-	if (!clk_freq || fout > (clk_freq / 2))
+	if (fout > (clk_freq / 2))
 		return -EINVAL;
 
 	regval = ad9834_calc_freqreg(clk_freq, fout);
@@ -419,7 +419,14 @@ static int ad9834_probe(struct spi_device *spi)
 	spi_set_drvdata(spi, indio_dev);
 	st = iio_priv(indio_dev);
 	mutex_init(&st->lock);
-	st->mclk = 25000000;
+	st->mclk = devm_clk_get(&spi->dev, NULL);
+
+	ret = clk_prepare_enable(st->mclk);
+	if (ret) {
+		dev_err(&spi->dev, "Failed to enable master clock\n");
+		goto error_disable_reg;
+	}
+
 	st->spi = spi;
 	st->devid = spi_get_device_id(spi)->driver_data;
 	st->reg = reg;
