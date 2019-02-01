@@ -686,7 +686,7 @@ static void disconnect_work(struct work_struct *work)
 	rtnl_unlock();
 }
 
-static DECLARE_WORK(cfg80211_disconnect_work, disconnect_work);
+DECLARE_WORK(cfg80211_disconnect_work, disconnect_work);
 
 #ifdef CONFIG_HW_VOWIFI
 void cfg80211_drv_vowifi(struct net_device *dev, gfp_t gfp)
