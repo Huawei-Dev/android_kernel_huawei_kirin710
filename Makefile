@@ -828,6 +828,10 @@ endif
 # Use make W=1 to enable them (see scripts/Makefile.extrawarn)
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
 
+ifeq ($(ld-name),lld)
+LDFLAGS += -O2
+endif
+
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
 ifneq ($(LLVM),)
 KBUILD_CFLAGS += -fuse-ld=lld
