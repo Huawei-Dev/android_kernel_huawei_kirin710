@@ -513,6 +513,7 @@ smb2_tcon_has_lease(struct cifs_tcon *tcon, struct smb2_lease_break *rsp,
 				  &cinode->flags);
 
 		cifs_queue_oplock_break(cfile);
+		queue_work(cifsoplockd_wq, &cfile->oplock_break);
 		kfree(lw);
 		return true;
 	}
