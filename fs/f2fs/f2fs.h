@@ -4337,7 +4337,6 @@ static inline unsigned long long blks_to_mb(block_t blks,
 {
 	return div_u64((unsigned long long)blks * blocksize, F2FS_SIZE_MB);
 }
-#endif
 
 static inline bool is_journalled_quota(struct f2fs_sb_info *sbi)
 {
@@ -4351,3 +4350,5 @@ static inline bool is_journalled_quota(struct f2fs_sb_info *sbi)
 #endif
 	return false;
 }
+
+#endif
