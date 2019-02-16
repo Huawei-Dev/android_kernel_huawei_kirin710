@@ -618,6 +618,7 @@ struct f2fs_resize_from_end {
 
 /* for inline stuff */
 #define DEF_INLINE_RESERVED_SIZE	1
+#define DEF_MIN_INLINE_SIZE		1
 static inline int get_extra_isize(struct inode *inode);
 static inline int get_inline_xattr_addrs(struct inode *inode);
 #define MAX_INLINE_DATA(inode)	(sizeof(__le32) *			\
