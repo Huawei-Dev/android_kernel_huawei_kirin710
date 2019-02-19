@@ -3939,7 +3939,27 @@ void f2fs_update_device_state(struct f2fs_sb_info *sbi, nid_t ino,
 	}
 }
 
-/*lint -save -e454 -e456*/
+static void update_device_state(struct f2fs_io_info *fio)
+{
+	struct f2fs_sb_info *sbi = fio->sbi;
+	unsigned int devidx;
+
+	if (!f2fs_is_multi_device(sbi))
+		return;
+
+	devidx = f2fs_target_device_index(sbi, fio->new_blkaddr);
+
+	/* update device state for fsync */
+	f2fs_set_dirty_device(sbi, fio->ino, devidx, FLUSH_INO);
+
+	/* update device state for checkpoint */
+	if (!f2fs_test_bit(devidx, (char *)&sbi->dirty_device)) {
+		spin_lock(&sbi->dev_lock);
+		f2fs_set_bit(devidx, (char *)&sbi->dirty_device);
+		spin_unlock(&sbi->dev_lock);
+	}
+}
+
 static int do_write_page(struct f2fs_summary *sum, struct f2fs_io_info *fio)
 {
 	int type = __get_segment_type(fio);
@@ -3964,7 +3984,7 @@ reallocate:
 		goto reallocate;
 	}
 
-	f2fs_update_device_state(fio->sbi, fio->ino, fio->new_blkaddr);
+	update_device_state(fio);
 
 	if (keep_order)
 		up_read(&fio->sbi->io_order_lock);
@@ -4055,11 +4075,14 @@ int f2fs_inplace_write_data(struct f2fs_io_info *fio)
 	inc_bd_val(sbi, data_ipu_cnt, 1);
 	bd_mutex_unlock(&sbi->bd_mutex);
 
-	err = f2fs_submit_page_bio(fio);
-	if (!err)
-		f2fs_update_device_state(fio->sbi, fio->ino, fio->new_blkaddr);
-
-	f2fs_update_iostat(fio->sbi, fio->io_type, F2FS_BLKSIZE);
+	if (fio->bio)
+		err = f2fs_merge_page_bio(fio);
+	else
+		err = f2fs_submit_page_bio(fio);
+	if (!err) {
+		update_device_state(fio);
+		f2fs_update_iostat(fio->sbi, fio->io_type, F2FS_BLKSIZE);
+	}
 
 	return err;
 }
