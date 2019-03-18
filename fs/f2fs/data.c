@@ -3087,7 +3087,7 @@ static void f2fs_submit_direct(struct bio *bio, struct inode *inode,
 
 	if (!write) {
 		/*lint -save -e712*/
-		ctx = fscrypt_get_ctx(inode, GFP_NOFS);
+		ctx = fscrypt_get_ctx(GFP_NOFS);
 		if (IS_ERR(ctx)) {
 			ret = PTR_ERR(ctx);
 			goto ctx_err;
