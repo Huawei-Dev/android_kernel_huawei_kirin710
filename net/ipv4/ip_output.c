@@ -499,7 +499,7 @@ int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
 	skb_dst_set_noref(skb, &rt->dst);
 
 packet_routed:
-	if (inet_opt && inet_opt->opt.is_strictroute && rt->rt_uses_gateway)
+	if (inet_opt && inet_opt->opt.is_strictroute && rt->rt_gw_family)
 		goto no_route;
 
 #ifdef CONFIG_HUAWEI_BASTET
