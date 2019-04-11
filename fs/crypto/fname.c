@@ -40,10 +40,16 @@ int fname_encrypt(struct inode *inode, const struct qstr *iname,
 {
 	struct skcipher_request *req = NULL;
 	DECLARE_CRYPTO_WAIT(wait);
-	struct crypto_skcipher *tfm = inode->i_crypt_info->ci_ctfm;
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
+	struct crypto_skcipher *tfm;
 	int res = 0;
 	char iv[FS_CRYPTO_BLOCK_SIZE];
 	struct scatterlist sg;
+	
+	if (WARN_ON_ONCE(!ci))
+		return -ENOKEY;
+
+	tfm = ci->ci_ctfm;
 
 	/*
 	 * Copy the filename to the output buffer for encrypting in-place and
@@ -94,9 +100,15 @@ static int fname_decrypt(struct inode *inode,
 	struct skcipher_request *req = NULL;
 	DECLARE_CRYPTO_WAIT(wait);
 	struct scatterlist src_sg, dst_sg;
-	struct crypto_skcipher *tfm = inode->i_crypt_info->ci_ctfm;
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
+	struct crypto_skcipher *tfm;
 	int res = 0;
 	char iv[FS_CRYPTO_BLOCK_SIZE];
+	
+	if (WARN_ON_ONCE(!ci))
+		return -ENOKEY;
+
+	tfm = ci->ci_ctfm;
 
 	/* Allocate request */
 	req = skcipher_request_alloc(tfm, GFP_NOFS);
@@ -184,9 +196,14 @@ static int digest_decode(const char *src, int len, char *dst)
 bool fscrypt_fname_encrypted_size(const struct inode *inode, u32 orig_len,
 				  u32 max_len, u32 *encrypted_len_ret)
 {
-	int padding = 4 << (inode->i_crypt_info->ci_flags &
-			    FS_POLICY_FLAGS_PAD_MASK);
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
+	int padding;
 	u32 encrypted_len;
+
+	if (WARN_ON_ONCE(!ci))
+		return false;
+
+	padding = 4 << (ci->ci_flags & FS_POLICY_FLAGS_PAD_MASK);
 
 	if (orig_len > max_len)
 		return false;
@@ -267,7 +284,7 @@ int fscrypt_fname_disk_to_usr(struct inode *inode,
 	if (iname->len < FS_CRYPTO_BLOCK_SIZE)
 		return -EUCLEAN;
 
-	if (inode->i_crypt_info)
+	if (fscrypt_has_encryption_key(inode))
 		return fname_decrypt(inode, iname, oname);
 
 	if (iname->len <= FSCRYPT_FNAME_MAX_UNDIGESTED_SIZE) {
@@ -334,7 +351,7 @@ int fscrypt_setup_filename(struct inode *dir, const struct qstr *iname,
 	if (ret)
 		return ret;
 
-	if (dir->i_crypt_info) {
+	if (fscrypt_has_encryption_key(dir)) {
 		if (!fscrypt_fname_encrypted_size(dir, iname->len,
 						  dir->i_sb->s_cop->max_namelen,
 						  &fname->crypto_buf.len))

@@ -342,7 +342,7 @@ static int f2fs_get_sdp_ece_crypt_info(struct inode *inode, void *fs_data)
 		goto out;
 	}
 	crypt_info->ci_hw_enc_flag  = F2FS_XATTR_SDP_ECE_ENABLE_FLAG;
-	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) == NULL)
+	if (cmpxchg_release(&inode->i_crypt_info, NULL, crypt_info) == NULL)
 		crypt_info = NULL;
 
 	if (F2FS_INODE_IS_ENABLED_SDP_ECE_ENCRYPTION(flag))
@@ -553,7 +553,7 @@ static int f2fs_get_sdp_sece_crypt_info(struct inode *inode, void *fs_data)
 		goto out;
 	}
 	crypt_info->ci_hw_enc_flag  = F2FS_XATTR_SDP_SECE_ENABLE_FLAG;
-	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) == NULL)
+	if (cmpxchg_release(&inode->i_crypt_info, NULL, crypt_info) == NULL)
 		crypt_info = NULL;
 
 	if (F2FS_INODE_IS_ENABLED_SDP_SECE_ENCRYPTION(flag))
@@ -597,7 +597,7 @@ out:
 
 int f2fs_change_to_sdp_crypto(struct inode *inode, void *fs_data)
 {
-	struct fscrypt_info *ci_info = inode->i_crypt_info;
+	struct fscrypt_info *ci_info = READ_ONCE(inode->i_crypt_info);
 	struct fscrypt_context ctx;
 	struct f2fs_sdp_fscrypt_context sdp_ctx;
 	struct f2fs_sb_info *sb = F2FS_I_SB(inode);
@@ -687,7 +687,7 @@ out:
 static int f2fs_get_sdp_crypt_info(struct inode *inode, void *fs_data)
 {
 	int res = 0;
-	struct fscrypt_info *ci_info = inode->i_crypt_info;
+	struct fscrypt_info *ci_info = READ_ONCE(inode->i_crypt_info);
 	u32 flag = 0;
 
 	res = f2fs_inode_get_sdp_encrypt_flags(inode, fs_data, &flag);

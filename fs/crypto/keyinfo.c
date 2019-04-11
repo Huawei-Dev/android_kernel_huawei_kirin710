@@ -399,7 +399,7 @@ void __exit fscrypt_essiv_cleanup(void)
 
 int fscrypt_get_encryption_info(struct inode *inode)
 {
-	struct fscrypt_info *crypt_info;
+	struct fscrypt_info *crypt_info, *ci;
 	struct fscrypt_context ctx;
 	struct crypto_skcipher *ctfm;
 	struct fscrypt_mode *mode;
@@ -409,7 +409,8 @@ int fscrypt_get_encryption_info(struct inode *inode)
 
 	/* TicketNo:AR000B5MB3 -- HWAA file needs to check access control */
 	/* TicketNo:AR0009DF3P -- SDP file needs to check master key */
-	if (inode->i_crypt_info && !inode->i_crypt_info->ci_hw_enc_flag)
+	ci = READ_ONCE(inode->i_crypt_info);
+	if (ci && !ci->ci_hw_enc_flag)
 		return 0;
 	/* TicketNo:AR0009DF3P END */
 	/* TicketNo:AR000B5MB3 END */
@@ -540,7 +541,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
 			goto out;
 		}
 	}
-	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) == NULL)
+	if (cmpxchg_release(&inode->i_crypt_info, NULL, crypt_info) == NULL)
 		crypt_info = NULL;
 out:
 	if (res == -ENOKEY)
@@ -553,15 +554,19 @@ EXPORT_SYMBOL(fscrypt_get_encryption_info);
 
 void fscrypt_put_encryption_info(struct inode *inode)
 {
-	put_crypt_info(inode->i_crypt_info);
-	inode->i_crypt_info = NULL;
+	struct fscrypt_info *ci;
+
+	ci = xchg(&inode->i_crypt_info, NULL);
+	put_crypt_info(ci);
 }
 EXPORT_SYMBOL(fscrypt_put_encryption_info);
 
 void *fscrypt_ci_key(struct inode *inode)
 {
 #if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-	return inode->i_crypt_info->ci_key;
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
+
+	return ci ? ci->ci_key : NULL;
 #else
 	return NULL;
 #endif
@@ -571,7 +576,9 @@ EXPORT_SYMBOL(fscrypt_ci_key);
 int fscrypt_ci_key_len(struct inode *inode)
 {
 #if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-	return inode->i_crypt_info->ci_key_len;
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
+
+	return ci ? ci->ci_key_len : 0;
 #else
 	return 0;
 #endif
@@ -581,7 +588,9 @@ EXPORT_SYMBOL(fscrypt_ci_key_len);
 int fscrypt_ci_key_index(struct inode *inode)
 {
 #if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-	return inode->i_crypt_info->ci_key_index;
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
+
+	return ci ? ci->ci_key_index : -1;
 #else
 	return -1;
 #endif

@@ -140,11 +140,16 @@ int fscrypt_do_page_crypto(const struct inode *inode, fscrypt_direction_t rw,
 	struct skcipher_request *req = NULL;
 	DECLARE_CRYPTO_WAIT(wait);
 	struct scatterlist dst, src;
-	struct fscrypt_info *ci = inode->i_crypt_info;
-	struct crypto_skcipher *tfm = ci->ci_ctfm;
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
+	struct crypto_skcipher *tfm;
 	int res = 0;
 
 	BUG_ON(len == 0);
+	
+	if (WARN_ON_ONCE(!ci))
+		return -ENOKEY;
+
+	tfm = ci->ci_ctfm;
 
 	BUILD_BUG_ON(sizeof(iv) != FS_IV_SIZE);
 	BUILD_BUG_ON(AES_BLOCK_SIZE != FS_IV_SIZE);
@@ -388,7 +393,7 @@ static int fscrypt_d_revalidate(struct dentry *dentry, unsigned int flags)
 	spin_lock(&dentry->d_lock);
 	cached_with_key = dentry->d_flags & DCACHE_ENCRYPTED_WITH_KEY;
 	spin_unlock(&dentry->d_lock);
-	dir_has_key = (d_inode(dir)->i_crypt_info != NULL);
+	dir_has_key = fscrypt_has_encryption_key(d_inode(dir));
 	dput(dir);
 
 	/*

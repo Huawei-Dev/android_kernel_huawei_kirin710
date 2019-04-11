@@ -53,6 +53,7 @@ static int f2fs_create_sdp_encryption_context_from_policy(struct inode *inode,
 	int res = 0;
 	struct f2fs_sdp_fscrypt_context sdp_ctx = { 0 };
 	struct f2fs_sb_info *sb = F2FS_I_SB(inode);
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
 	u8 master_key_descriptor_tmp[FS_KEY_DESCRIPTOR_SIZE];
 
 	if (!policy)
@@ -102,7 +103,7 @@ static int f2fs_create_sdp_encryption_context_from_policy(struct inode *inode,
 		pr_err("f2fs_sdp %s: inode(%lu) set sdp config flags failed res(%d)\n",
 				__func__, inode->i_ino, res);
 
-	if (S_ISREG(inode->i_mode) && !res && (inode->i_crypt_info))
+	if (S_ISREG(inode->i_mode) && !res && ci)
 		res = f2fs_change_to_sdp_crypto(inode, NULL);
 
 	return res;
@@ -222,7 +223,7 @@ static int f2fs_fscrypt_ioctl_get_policy_type(struct file *filp,
 	u32 flags = 0;
 	struct inode *inode = file_inode(filp);
 	struct f2fs_sb_info *sb = F2FS_I_SB(inode);
-	struct fscrypt_info *ci = inode->i_crypt_info;
+	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
 	struct fscrypt_policy_type policy = { 0 };
 
 	if (!test_hw_opt(sb, SDP_ENCRYPT))
