@@ -327,7 +327,14 @@ enum {
 	META_SSA,
 	META_MAX,
 	META_POR,
-	DATA_GENERIC,
+	DATA_GENERIC,		/* check range only */
+	DATA_GENERIC_ENHANCE,	/* strong check on range and segment bitmap */
+	DATA_GENERIC_ENHANCE_READ,	/*
+					 * strong check on range and segment
+					 * bitmap but no warning due to race
+					 * condition of read on truncated area
+					 * by extent_cache
+					 */
 	META_GENERIC,
 };
 
@@ -3367,15 +3374,6 @@ static inline bool __is_valid_data_blkaddr(struct f2fs_sb_info *sbi,
 	if (sbi->s_ndevs && is_in_resvd_device(sbi, blkaddr))
 		return false;
 
-	return true;
-}
-
-static inline bool is_valid_data_blkaddr(struct f2fs_sb_info *sbi,
-						block_t blkaddr)
-{
-	if (!__is_valid_data_blkaddr(sbi, blkaddr))
-		return false;
-	verify_blkaddr(sbi, blkaddr, DATA_GENERIC);
 	return true;
 }
 
