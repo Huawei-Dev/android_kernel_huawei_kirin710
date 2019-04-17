@@ -430,8 +430,6 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
 	/* HISI do not use slot gpio */
 	if (mmc_gpio_alloc(host)) {
 		put_device(&host->class_dev);
-		ida_simple_remove(&mmc_host_ida, host->index);
-		kfree(host);
 		return NULL;
 	}
 #endif
