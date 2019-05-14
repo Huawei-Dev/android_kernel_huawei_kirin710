@@ -2909,6 +2909,9 @@ static inline void set_acl_inode(struct inode *inode, umode_t mode)
 
 static inline bool is_idle(struct f2fs_sb_info *sbi, int type)
 {
+	if (sbi->gc_mode == GC_URGENT)
+		return true;
+
 	if (get_pages(sbi, F2FS_RD_DATA) || get_pages(sbi, F2FS_RD_NODE) ||
 		get_pages(sbi, F2FS_RD_META) || get_pages(sbi, F2FS_WB_DATA) ||
 		get_pages(sbi, F2FS_WB_CP_DATA) ||
