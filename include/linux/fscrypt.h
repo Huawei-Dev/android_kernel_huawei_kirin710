@@ -139,6 +139,10 @@ static inline void fscrypt_set_encrypted_dentry(struct dentry *dentry)
 	spin_unlock(&dentry->d_lock);
 }
 
+extern int fscrypt_decrypt_block_inplace(const struct inode *inode,
+					 struct page *page, unsigned int len,
+					 unsigned int offs, u64 lblk_num);
+
 static inline bool fscrypt_is_bounce_page(struct page *page)
 {
 	return page->mapping == NULL;
@@ -336,6 +340,14 @@ static inline int fscrypt_decrypt_page(const struct inode *inode,
 				       struct page *page,
 				       unsigned int len, unsigned int offs,
 				       u64 lblk_num)
+{
+	return -EOPNOTSUPP;
+}
+
+static inline int fscrypt_decrypt_block_inplace(const struct inode *inode,
+						struct page *page,
+						unsigned int len,
+						unsigned int offs, u64 lblk_num)
 {
 	return -EOPNOTSUPP;
 }
