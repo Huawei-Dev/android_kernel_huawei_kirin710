@@ -388,11 +388,11 @@ static int uid_cputime_show(struct seq_file *m, void *v)
 		unsigned long long total_power = uid_entry->power +
 							uid_entry->active_power;
 		seq_printf(m, "%d: %llu %llu %llu\n", uid_entry->uid,
-			ktime_to_ms(total_utime), ktime_to_ms(total_stime),
+			ktime_to_us(total_utime), ktime_to_us(total_stime),
 			total_power);
 #else
 		seq_printf(m, "%d: %llu %llu\n", uid_entry->uid,
-			ktime_to_ms(total_utime), ktime_to_ms(total_stime));
+			ktime_to_us(total_utime), ktime_to_us(total_stime));
 #endif
 	}
 
