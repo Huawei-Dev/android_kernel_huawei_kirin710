@@ -4455,12 +4455,16 @@ static int restore_curseg_summaries(struct f2fs_sb_info *sbi)
 	if (nats_in_cursum(nat_j) >
 		(NAT_JOURNAL_ENTRIES + NAT_APPEND_JOURNAL_ENTRIES) ||
 	    sits_in_cursum(sit_j) >
-		(SIT_JOURNAL_ENTRIES + SIT_APPEND_JOURNAL_ENTRIES))
+		(SIT_JOURNAL_ENTRIES + SIT_APPEND_JOURNAL_ENTRIES)) {
 #else
 	if (nats_in_cursum(nat_j) > NAT_JOURNAL_ENTRIES ||
-			sits_in_cursum(sit_j) > SIT_JOURNAL_ENTRIES)
+			sits_in_cursum(sit_j) > SIT_JOURNAL_ENTRIES) {
 #endif
+		f2fs_msg(sbi->sb, KERN_ERR,
+			"invalid journal entries nats %u sits %u\n",
+			nats_in_cursum(nat_j), sits_in_cursum(sit_j));
 		return -EINVAL;
+	}
 
 #ifdef CONFIG_F2FS_JOURNAL_APPEND
 	restore_append_journal(sbi);
