@@ -212,6 +212,9 @@ struct f2fs_mount_info {
 	int alloc_mode;			/* segment allocation policy */
 	int fsync_mode;			/* fsync policy */
 	bool test_dummy_encryption;	/* test dummy encryption */
+	block_t unusable_cap;		/* Amount of space allowed to be
+					 * unusable when disabling checkpoint
+					 */
 };
 
 struct gc_loop_info {
@@ -3611,7 +3614,8 @@ void refresh_sit_entry(struct f2fs_sb_info *sbi, block_t old, block_t new,
 void f2fs_clear_prefree_segments(struct f2fs_sb_info *sbi,
 					struct cp_control *cpc);
 void f2fs_dirty_to_prefree(struct f2fs_sb_info *sbi);
-int f2fs_disable_cp_again(struct f2fs_sb_info *sbi);
+block_t f2fs_get_unusable_blocks(struct f2fs_sb_info *sbi);
+int f2fs_disable_cp_again(struct f2fs_sb_info *sbi, block_t unusable);
 void f2fs_release_discard_addrs(struct f2fs_sb_info *sbi);
 int f2fs_npages_for_summary_flush(struct f2fs_sb_info *sbi, bool for_ra);
 void get_new_segment(struct f2fs_sb_info *sbi,
