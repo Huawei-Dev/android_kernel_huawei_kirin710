@@ -90,6 +90,11 @@ enum {
 	CGRP_ROOT_CPUSET_V2_MODE = (1 << 4),
 
 	CGRP_ROOT_CPUSET_NOPREFIX = (1 << 5), /* only cpuset have no named prefix */
+
+	/*
+	 * Enable legacy local memory.events.
+	 */
+	CGRP_ROOT_MEMORY_LOCAL_EVENTS = (1 << 6),
 };
 
 /* cftype->flags */
