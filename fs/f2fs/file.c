@@ -29,6 +29,7 @@
 #include "gc.h"
 #include "trace.h"
 #include <trace/events/f2fs.h>
+#include <trace/events/android_fs.h>
 
 static int f2fs_filemap_fault(struct vm_fault *vmf)
 {
@@ -219,6 +220,16 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
 		return 0;
 
 	trace_f2fs_sync_file_enter(inode);
+
+	if (trace_android_fs_fsync_start_enabled()) {
+		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
+
+		path = android_fstrace_get_pathname(pathbuf,
+				MAX_TRACE_PATHBUF_LEN, inode);
+		trace_android_fs_fsync_start(inode,
+				current->pid, path, current->comm);
+	}
+
 	pgcache_log_path(BIT_FSYNC_SYSCALL_DUMP, &(file->f_path),
 			"f2fs sync file start");
 	fsync_begin = local_clock();
@@ -334,6 +345,8 @@ out:
 	pgcache_log_path(BIT_FSYNC_SYSCALL_DUMP, &(file->f_path),
 			"f2fs sync file end");
 	f2fs_trace_ios(NULL, 1);
+	trace_android_fs_fsync_end(inode, start, end - start);
+
 	if (fsync_begin && !ret) {
 		fsync_end = local_clock();
 		bd_mutex_lock(&sbi->bd_mutex);
