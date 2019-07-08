@@ -577,12 +577,11 @@ static void dw_mci_translate_sglist(struct dw_mci *host, struct mmc_data *data,
 
 			/* Set the OWN bit and disable interrupts for this descriptor */
 			desc->des0 = IDMAC_DES0_OWN | IDMAC_DES0_DIC | IDMAC_DES0_CH;
-			/*优化修改，防止内存不初始化*/
+
 			if(desc->des0 & IDMAC_DES0_CH) {
 				desc->des1 = 0;
 			}
 
-			/*优化修改，防止内存不初始化*/
 			if(desc->des0 & IDMAC_DES0_CH) {
 				desc->des1 = 0;
 			}
@@ -626,12 +625,10 @@ static void dw_mci_translate_sglist(struct dw_mci *host, struct mmc_data *data,
 				/* Set the OWN bit and disable interrupts for this descriptor */
 				desc->des0 = IDMAC_DES0_OWN | IDMAC_DES0_DIC | IDMAC_DES0_CH;
 
-				/*优化修改，防止内存不初始化*/
 				if(desc->des0 & IDMAC_DES0_CH) {
 				        desc->des2 = 0;
 				}
 
-				/*优化修改，防止内存不初始化*/
 				if(desc->des0 & IDMAC_DES0_CH) {
 					desc->des2 = 0;
 				}
@@ -705,7 +702,7 @@ static inline int dw_mci_prepare_desc64(struct dw_mci *host,
 			desc->des0 = IDMAC_DES0_OWN | IDMAC_DES0_DIC |
 						IDMAC_DES0_CH;
 
-			/*优化修改，防止内存不初始化*/
+			/*\D3呕\AF\D0薷模\AC\B7\C0止\C4诖娌籠B3\F5始\BB\AF*/
 			if(desc->des0 & IDMAC_DES0_CH) {
                                 desc->des1 = 0;
                         }
@@ -787,7 +784,7 @@ static inline int dw_mci_prepare_desc32(struct dw_mci *host,
 						 IDMAC_DES0_DIC |
 						 IDMAC_DES0_CH);
 
-			/*优化修改，防止内存不初始化*/
+			/*\D3呕\AF\D0薷模\AC\B7\C0止\C4诖娌籠B3\F5始\BB\AF*/
 			if(desc->des0 & IDMAC_DES0_CH) {
 				desc->des1 = 0;
 			}
@@ -1567,7 +1564,7 @@ static void dw_mci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		drv_data->set_ios(slot->host, ios);
 
 	mmc->f_min = DIV_ROUND_UP(slot->host->bus_hz, 510);
-	mmc->f_max = slot->host->bus_hz;/*上面设置的bus_hz*/
+	mmc->f_max = slot->host->bus_hz;/*\C9\CF\C3\E6\C9\E8\D6玫\C4bus_hz*/
 
 	/* Slot specific timing and width adjustment */
 	dw_mci_setup_bus(slot, false);
@@ -2170,6 +2167,10 @@ static void dw_mci_tasklet_func(unsigned long priv)
 
 			if (data && cmd->error &&
 					cmd != data->stop) {
+				if (cmd->error != -ETIMEDOUT) {
+					state = STATE_SENDING_DATA;
+					continue;
+				}
 				if (host->mrq->data->stop)
 					send_stop_cmd(host, host->mrq->data);
 				else {
