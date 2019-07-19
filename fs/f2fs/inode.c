@@ -770,7 +770,8 @@ retry:
 
 	if (err) {
 		f2fs_update_inode_page(inode);
-		set_sbi_flag(sbi, SBI_QUOTA_NEED_REPAIR);
+		if (dquot_initialize_needed(inode))
+			set_sbi_flag(sbi, SBI_QUOTA_NEED_REPAIR);
 	}
 
 	if (unlikely(is_inode_flag_set(inode, FI_DIRTY_INODE))) {
