@@ -302,6 +302,7 @@ static int ext4_ioctl_setflags(struct inode *inode,
 			err = -ENOTEMPTY;
 			goto flags_out;
 		}
+	}
 
 	/*
 	 * Wait for all pending directio and then flush all the dirty pages

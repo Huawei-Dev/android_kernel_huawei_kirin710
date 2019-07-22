@@ -27,6 +27,8 @@
 #include <linux/math64.h>
 
 #include <linux/fscrypt.h>
+#include <linux/fsverity.h>
+
 #include <linux/reboot.h>
 
 #include "sdp.h"
@@ -256,7 +258,7 @@ struct gc_loop_info {
 #define F2FS_FEATURE_QUOTA_INO		0x0080
 #define F2FS_FEATURE_INODE_CRTIME	0x0100
 #define F2FS_FEATURE_LOST_FOUND		0x0200
-#define F2FS_FEATURE_VERITY		0x0400	/* reserved */
+#define F2FS_FEATURE_VERITY		0x0400
 #define F2FS_FEATURE_SB_CHKSUM		0x0800
 
 #define __F2FS_HAS_FEATURE(raw_super, mask)				\
@@ -794,11 +796,10 @@ enum {
 #define FADVISE_ENC_NAME_BIT	0x08
 #define FADVISE_KEEP_SIZE_BIT	0x10
 #define FADVISE_HOT_BIT		0x20
-#define FADVISE_VERITY_BIT	0x40	/* reserved */
+#define FADVISE_VERITY_BIT	0x40
 #define FADVISE_INLINE_ENCRYPT_BIT     0x80
 #define FADVISE_ENCRYPT_CORRUPT_BIT    0x40
 #define FADVISE_ENCRYPT_FIXED_BIT      0x20
-
 
 #define FADVISE_MODIFIABLE_BITS	(FADVISE_COLD_BIT | FADVISE_HOT_BIT)
 
@@ -818,6 +819,8 @@ enum {
 #define file_is_hot(inode)	is_file(inode, FADVISE_HOT_BIT)
 #define file_set_hot(inode)	set_file(inode, FADVISE_HOT_BIT)
 #define file_clear_hot(inode)	clear_file(inode, FADVISE_HOT_BIT)
+#define file_is_verity(inode)	is_file(inode, FADVISE_VERITY_BIT)
+#define file_set_verity(inode)	set_file(inode, FADVISE_VERITY_BIT)
 #define file_is_inline_encrypt(inode) \
                 is_file(inode, FADVISE_INLINE_ENCRYPT_BIT)
 #define file_set_inline_encrypt(inode) \
@@ -2755,6 +2758,7 @@ enum {
 	FI_PROJ_INHERIT,	/* indicate file inherits projectid */
 	FI_PIN_FILE,		/* indicate file should not be gced */
 	FI_ATOMIC_REVOKE_REQUEST, /* request to drop atomic data */
+	FI_VERITY_IN_PROGRESS,	/* building fs-verity Merkle tree */
         FI_LOG_FILE,            /* indicate file is a log */
         FI_HOT_FILE,            /* indicate file is hot */
 };
@@ -2856,6 +2860,12 @@ static inline int get_blocktype_secs(struct f2fs_sb_info *sbi, int block_type)
 						sbi->log_blocks_per_seg;
 
 	return segs / sbi->segs_per_sec;
+}
+
+static inline bool f2fs_verity_in_progress(struct inode *inode)
+{
+	return IS_ENABLED(CONFIG_FS_VERITY) &&
+	       is_inode_flag_set(inode, FI_VERITY_IN_PROGRESS);
 }
 
 static inline void set_acl_inode(struct inode *inode, umode_t mode)
@@ -4178,6 +4188,9 @@ void f2fs_exit_sysfs(void);
 int f2fs_register_sysfs(struct f2fs_sb_info *sbi);
 void f2fs_unregister_sysfs(struct f2fs_sb_info *sbi);
 
+/* verity.c */
+extern const struct fsverity_operations f2fs_verityops;
+
 /*
  * crypto support
  */
@@ -4213,7 +4226,7 @@ static inline void f2fs_set_inline_encrypted_inode(struct inode *inode)
  */
 static inline bool f2fs_post_read_required(struct inode *inode)
 {
-	return f2fs_encrypted_file(inode);
+	return f2fs_encrypted_file(inode) || fsverity_active(inode);
 }
 
 #define F2FS_FEATURE_FUNCS(name, flagname) \
@@ -4231,6 +4244,7 @@ F2FS_FEATURE_FUNCS(flexible_inline_xattr, FLEXIBLE_INLINE_XATTR);
 F2FS_FEATURE_FUNCS(quota_ino, QUOTA_INO);
 F2FS_FEATURE_FUNCS(inode_crtime, INODE_CRTIME);
 F2FS_FEATURE_FUNCS(lost_found, LOST_FOUND);
+F2FS_FEATURE_FUNCS(verity, VERITY);
 F2FS_FEATURE_FUNCS(sb_chksum, SB_CHKSUM);
 
 #ifdef CONFIG_BLK_DEV_ZONED
