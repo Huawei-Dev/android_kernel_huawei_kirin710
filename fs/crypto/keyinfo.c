@@ -260,10 +260,9 @@ static struct fscrypt_mode *
 select_encryption_mode(const struct fscrypt_info *ci, const struct inode *inode)
 {
 	if (!fscrypt_valid_enc_modes(ci->ci_data_mode, ci->ci_filename_mode)) {
-		fscrypt_warn(inode->i_sb,
-			     "inode %lu uses unsupported encryption modes(contents mode %d, filenames mode %d)",
-			     inode->i_ino, ci->ci_data_mode,
-			     ci->ci_filename_mode);
+		fscrypt_warn(inode,
+			     "Unsupported encryption modes (contents mode %d, filenames mode %d)",
+			     ci->ci_data_mode, ci->ci_filename_mode);
 		return ERR_PTR(-EINVAL);
 	}
 
