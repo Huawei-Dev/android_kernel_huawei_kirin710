@@ -310,12 +310,10 @@ static void put_crypt_info(struct fscrypt_info *ci)
 	if (!ci)
 		return;
 
-	/*lint -save -e529 -e438*/
 	key = ACCESS_ONCE(ci->ci_key);
-	/*lint -restore*/
-	/*lint -save -e1072 -e747 -e50*/
+
 	prev = cmpxchg(&ci->ci_key, key, NULL);
-	/*lint -restore*/
+
 	if (prev == key && key) {
 		memzero_explicit(key, (size_t)FS_MAX_KEY_SIZE);
 		kfree(key);
@@ -339,9 +337,13 @@ static int derive_essiv_salt(const u8 *key, int keysize, u8 *salt)
 
 		tfm = crypto_alloc_shash("sha256", 0, 0);
 		if (IS_ERR(tfm)) {
-			fscrypt_warn(NULL,
-				     "error allocating SHA-256 transform: %ld",
-				     PTR_ERR(tfm));
+			if (PTR_ERR(tfm) == -ENOENT)
+				fscrypt_warn(NULL,
+					     "Missing crypto API support for SHA-256");
+			else
+				fscrypt_err(NULL,
+					    "Error allocating SHA-256 transform: %ld",
+					    PTR_ERR(tfm));
 			return PTR_ERR(tfm);
 		}
 		prev_tfm = cmpxchg(&essiv_hash_tfm, NULL, tfm);
@@ -530,9 +532,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
 			goto out;
 		}
 		crypt_info->ci_key_len = mode->keysize;
-		/*lint -save -e732 -e747*/
 		memcpy(crypt_info->ci_key, raw_key, crypt_info->ci_key_len);
-		/*lint -restore*/
 	}
 
 	if (S_ISREG(inode->i_mode) &&
