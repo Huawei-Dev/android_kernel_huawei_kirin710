@@ -337,13 +337,14 @@ static int derive_essiv_salt(const u8 *key, int keysize, u8 *salt)
 
 		tfm = crypto_alloc_shash("sha256", 0, 0);
 		if (IS_ERR(tfm)) {
-			if (PTR_ERR(tfm) == -ENOENT)
+			if (PTR_ERR(tfm) == -ENOENT) {
 				fscrypt_warn(NULL,
 					     "Missing crypto API support for SHA-256");
-			else
-				fscrypt_err(NULL,
-					    "Error allocating SHA-256 transform: %ld",
-					    PTR_ERR(tfm));
+				return -ENOPKG;
+			}
+			fscrypt_err(NULL,
+				    "Error allocating SHA-256 transform: %ld",
+				    PTR_ERR(tfm));
 			return PTR_ERR(tfm);
 		}
 		prev_tfm = cmpxchg(&essiv_hash_tfm, NULL, tfm);
