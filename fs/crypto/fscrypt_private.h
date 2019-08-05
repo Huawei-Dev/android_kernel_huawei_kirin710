@@ -61,6 +61,7 @@ struct fscrypt_info {
 	struct crypto_skcipher *ci_ctfm;
 	struct crypto_aead *ci_gtfm;
 	struct crypto_cipher *ci_essiv_tfm;
+	struct inode *ci_inode;
 	u8 ci_master_key[FSCRYPT_KEY_DESCRIPTOR_SIZE];
 	void *ci_key;
 	int ci_key_len;
