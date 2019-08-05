@@ -67,6 +67,8 @@ struct fscrypt_info {
 	struct crypto_cipher *ci_essiv_tfm;
 	struct fscrypt_mode *ci_mode;
 	struct inode *ci_inode;
+	struct key *ci_master_key;
+	struct list_head ci_master_key_link;
 	struct fscrypt_direct_key *ci_direct_key;
 	u8 ci_master_key_descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE];
 	u8 ci_nonce[FS_KEY_DERIVATION_NONCE_SIZE];
@@ -164,13 +166,51 @@ struct fscrypt_master_key_secret {
  */
 struct fscrypt_master_key {
 
-	/* The secret key material */
+	/*
+	 * The secret key material.  After FS_IOC_REMOVE_ENCRYPTION_KEY is
+	 * executed, this is wiped and no new inodes can be unlocked with this
+	 * key; however, there may still be inodes in ->mk_decrypted_inodes
+	 * which could not be evicted.  As long as some inodes still remain,
+	 * FS_IOC_REMOVE_ENCRYPTION_KEY can be retried, or
+	 * FS_IOC_ADD_ENCRYPTION_KEY can add the secret again.
+	 *
+	 * Locking: protected by key->sem.
+	 */
 	struct fscrypt_master_key_secret	mk_secret;
 
 	/* Arbitrary key descriptor which was assigned by userspace */
 	struct fscrypt_key_specifier		mk_spec;
+	
+	/*
+	 * Length of ->mk_decrypted_inodes, plus one if mk_secret is present.
+	 * Once this goes to 0, the master key is removed from ->s_master_keys.
+	 * The 'struct fscrypt_master_key' will continue to live as long as the
+	 * 'struct key' whose payload it is, but we won't let this reference
+	 * count rise again.
+	 */
+	refcount_t		mk_refcount;
+
+	/*
+	 * List of inodes that were unlocked using this key.  This allows the
+	 * inodes to be evicted efficiently if the key is removed.
+	 */
+	struct list_head	mk_decrypted_inodes;
+	spinlock_t		mk_decrypted_inodes_lock;
 
 } __randomize_layout;
+
+static inline bool
+is_master_key_secret_present(const struct fscrypt_master_key_secret *secret)
+{
+	/*
+	 * The READ_ONCE() is only necessary for fscrypt_drop_inode() and
+	 * fscrypt_key_describe().  These run in atomic context, so they can't
+	 * take key->sem and thus 'secret' can change concurrently which would
+	 * be a data race.  But they only need to know whether the secret *was*
+	 * present at the time of check, so READ_ONCE() suffices.
+	 */
+	return READ_ONCE(secret->size) != 0;
+}
 
 static inline const char *master_key_spec_type(
 				const struct fscrypt_key_specifier *spec)
