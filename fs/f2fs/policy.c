@@ -54,7 +54,7 @@ static int f2fs_create_sdp_encryption_context_from_policy(struct inode *inode,
 	struct f2fs_sdp_fscrypt_context sdp_ctx = { 0 };
 	struct f2fs_sb_info *sb = F2FS_I_SB(inode);
 	struct fscrypt_info *ci = READ_ONCE(inode->i_crypt_info);
-	u8 master_key_descriptor_tmp[FS_KEY_DESCRIPTOR_SIZE];
+	u8 master_key_descriptor_tmp[FSCRYPT_KEY_DESCRIPTOR_SIZE];
 
 	if (!policy)
 		return -EINVAL;
@@ -67,18 +67,18 @@ static int f2fs_create_sdp_encryption_context_from_policy(struct inode *inode,
 				     policy->filenames_encryption_mode))
 		return -EINVAL;
 
-	if (policy->flags & ~FS_POLICY_FLAGS_VALID)
+	if (policy->flags & ~FSCRYPT_POLICY_FLAGS_VALID)
 		return -EINVAL;
 
 	memcpy(master_key_descriptor_tmp, policy->master_key_descriptor,
-			FS_KEY_DESCRIPTOR_SIZE);
+			FSCRYPT_KEY_DESCRIPTOR_SIZE);
 	res = f2fs_inode_check_sdp_keyring(master_key_descriptor_tmp, 0);
 	if (res)
 		return res;
 
 	sdp_ctx.format = FS_ENCRYPTION_CONTEXT_FORMAT_V2;
 	memcpy(sdp_ctx.master_key_descriptor, policy->master_key_descriptor,
-					FS_KEY_DESCRIPTOR_SIZE);
+					FSCRYPT_KEY_DESCRIPTOR_SIZE);
 	sdp_ctx.contents_encryption_mode = policy->contents_encryption_mode;
 	sdp_ctx.filenames_encryption_mode = policy->filenames_encryption_mode;
 	sdp_ctx.flags = policy->flags;
@@ -124,7 +124,7 @@ static bool f2fs_is_sdp_context_consistent_with_policy(struct inode *inode,
 		return false;
 
 	return (memcmp(ctx.master_key_descriptor, policy->master_key_descriptor,
-			FS_KEY_DESCRIPTOR_SIZE) == 0 &&
+			FSCRYPT_KEY_DESCRIPTOR_SIZE) == 0 &&
 			(ctx.sdpclass == policy->sdpclass) &&
 			(ctx.flags == policy->flags) &&
 			(ctx.contents_encryption_mode ==
@@ -208,7 +208,7 @@ static int f2fs_fscrypt_ioctl_get_sdp_policy(struct file *filp,
 	policy.filenames_encryption_mode = ctx.filenames_encryption_mode;
 	policy.flags = ctx.flags;
 	memcpy(policy.master_key_descriptor, ctx.master_key_descriptor,
-				FS_KEY_DESCRIPTOR_SIZE);
+				FSCRYPT_KEY_DESCRIPTOR_SIZE);
 
 	if (copy_to_user(arg, &policy, sizeof(policy)))
 		return -EFAULT;
@@ -237,7 +237,7 @@ static int f2fs_fscrypt_ioctl_get_policy_type(struct file *filp,
 	policy.version = 0;
 	policy.encryption_type = FSCRYPT_CE_CLASS;
 	memcpy(policy.master_key_descriptor, ci->ci_master_key,
-		FS_KEY_DESCRIPTOR_SIZE);
+		FSCRYPT_KEY_DESCRIPTOR_SIZE);
 
 	if (!sb->s_sdp_cop->get_sdp_encrypt_flags)
 		goto out;
@@ -291,7 +291,7 @@ int f2fs_inode_check_sdp_keyring(u8 *descriptor, int enforce)
 	struct fscrypt_sdp_key *master_sdp_key;
 
 	keyring_key = fscrypt_request_key(descriptor,
-			FS_KEY_DESC_PREFIX, FS_KEY_DESC_PREFIX_SIZE);
+			FSCRYPT_KEY_DESC_PREFIX, FSCRYPT_KEY_DESC_PREFIX_SIZE);
 	if (IS_ERR(keyring_key))
 		return PTR_ERR(keyring_key);
 
@@ -316,7 +316,7 @@ int f2fs_inode_check_sdp_keyring(u8 *descriptor, int enforce)
 	master_sdp_key = (struct fscrypt_sdp_key *)ukp->data;
 	if (master_sdp_key->sdpclass == FSCRYPT_SDP_SECE_CLASS) {
 		if (enforce == 1) {
-			u8 sdp_pri_key[FS_MAX_KEY_SIZE] = { 0 };
+			u8 sdp_pri_key[FSCRYPT_MAX_KEY_SIZE] = { 0 };
 
 			if (master_sdp_key->size == 0
 					|| memcmp(master_sdp_key->raw, sdp_pri_key,

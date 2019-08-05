@@ -198,7 +198,7 @@ bool fscrypt_fname_encrypted_size(const struct inode *inode, u32 orig_len,
 	if (WARN_ON_ONCE(!ci))
 		return false;
 
-	padding = 4 << (ci->ci_flags & FS_POLICY_FLAGS_PAD_MASK);
+	padding = 4 << (ci->ci_flags & FSCRYPT_POLICY_FLAGS_PAD_MASK);
 
 	if (orig_len > max_len)
 		return false;

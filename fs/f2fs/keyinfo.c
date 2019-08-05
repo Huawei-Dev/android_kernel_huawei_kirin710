@@ -28,7 +28,7 @@ static void f2fs_put_crypt_info(struct fscrypt_info *ci)
 	prev = cmpxchg(&ci->ci_key, key, NULL);
 	/*lint -restore*/
 	if (prev == key && key) {
-		memzero_explicit(key, (size_t)FS_MAX_KEY_SIZE);
+		memzero_explicit(key, (size_t)FSCRYPT_MAX_KEY_SIZE);
 		kvfree(key);
 		ci->ci_key_len = 0;
 		ci->ci_key_index = -1;
@@ -51,8 +51,8 @@ f2fs_do_get_keyring_payload(u8 *descriptor, u8 *raw, int *size, bool filepubkey)
 	struct fscrypt_key *mst_key = NULL;
 	struct fscrypt_sdp_key *mst_sdp = NULL;
 
-	keyring_key = fscrypt_request_key(descriptor, FS_KEY_DESC_PREFIX,
-			FS_KEY_DESC_PREFIX_SIZE);
+	keyring_key = fscrypt_request_key(descriptor, FSCRYPT_KEY_DESC_PREFIX,
+			FSCRYPT_KEY_DESC_PREFIX_SIZE);
 	if (IS_ERR(keyring_key))
 		return PTR_ERR(keyring_key);
 
@@ -107,8 +107,8 @@ static int f2fs_do_get_keyindex(u8 *descriptor, int *keyindex)
 	const struct user_key_payload *ukp;
 	struct fscrypt_key *master_key = NULL;
 
-	keyring_key = fscrypt_request_key(descriptor, FS_KEY_DESC_PREFIX,
-			FS_KEY_DESC_PREFIX_SIZE);
+	keyring_key = fscrypt_request_key(descriptor, FSCRYPT_KEY_DESC_PREFIX,
+			FSCRYPT_KEY_DESC_PREFIX_SIZE);
 	if (IS_ERR(keyring_key))
 		return PTR_ERR(keyring_key);
 
@@ -144,7 +144,7 @@ f2fs_determine_cipher_type(struct fscrypt_info *ci,
 						   const char **cipher_str_ret,
 						   int *keysize_ret)
 {
-	if (ci->ci_data_mode != FS_ENCRYPTION_MODE_AES_256_XTS)
+	if (ci->ci_data_mode != FSCRYPT_MODE_AES_256_XTS)
 		return -ENOKEY;
 
 	*cipher_str_ret = "xts(aes)";
@@ -177,7 +177,7 @@ f2fs_derive_ctfm_from_fek(struct fscrypt_info *crypt_info, u8 *raw_key)
 		goto out;
 
 	kzfree(crypt_info->ci_key);
-	crypt_info->ci_key = kzalloc((size_t)FS_MAX_KEY_SIZE, GFP_NOFS);
+	crypt_info->ci_key = kzalloc((size_t)FSCRYPT_MAX_KEY_SIZE, GFP_NOFS);
 	if (!crypt_info->ci_key) {
 		res = -ENOMEM;
 		goto out;
@@ -203,7 +203,7 @@ static int f2fs_do_get_fek(u8 *descriptor, u8 *nonce, u8 *fek, u8 *iv, int enc)
 {
 	int res = 0;
 	struct crypto_aead *tfm = NULL;
-	u8 raw[FS_MAX_KEY_SIZE];
+	u8 raw[FSCRYPT_MAX_KEY_SIZE];
 	int size;
 
 	tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
@@ -224,7 +224,7 @@ static int f2fs_do_get_fek(u8 *descriptor, u8 *nonce, u8 *fek, u8 *iv, int enc)
 		res = fscrypt_derive_gcm_key(tfm, nonce, fek, iv, 0);
 out:
 	crypto_free_aead(tfm);
-	memzero_explicit(raw, (size_t)FS_MAX_KEY_SIZE);
+	memzero_explicit(raw, (size_t)FSCRYPT_MAX_KEY_SIZE);
 	return res;
 }
 
@@ -500,7 +500,7 @@ f2fs_get_sece_crypt_info_from_context(struct inode *inode,
 				__func__, res, inode->i_ino);
 	}
 out:
-	memzero_explicit(fek, (size_t)FS_MAX_KEY_SIZE);
+	memzero_explicit(fek, (size_t)FSCRYPT_MAX_KEY_SIZE);
     return res;
 }
 
@@ -637,7 +637,7 @@ int f2fs_change_to_sdp_crypto(struct inode *inode, void *fs_data)
 	}
 
 	memcpy(ci_info->ci_master_key, sdp_ctx.master_key_descriptor,
-		FS_KEY_DESCRIPTOR_SIZE);
+		FSCRYPT_KEY_DESCRIPTOR_SIZE);
 	ci_info->ci_flags = sdp_ctx.flags;
 	res = sb->s_sdp_cop->update_sdp_context(inode, &sdp_ctx,
 		sizeof(struct f2fs_sdp_fscrypt_context), fs_data);

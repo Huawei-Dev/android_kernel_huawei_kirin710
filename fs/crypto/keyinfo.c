@@ -103,7 +103,7 @@ struct key *fscrypt_request_key(const u8 *descriptor, const u8 *prefix,
 {
 	u8 *full_key_descriptor = NULL;
 	struct key *keyring_key = NULL;
-	int full_key_len = prefix_size + (FS_KEY_DESCRIPTOR_SIZE * 2) + 1;
+	int full_key_len = prefix_size + (FSCRYPT_KEY_DESCRIPTOR_SIZE * 2) + 1;
 
 	full_key_descriptor = kmalloc(full_key_len, GFP_NOFS);
 	if (!full_key_descriptor)
@@ -111,7 +111,7 @@ struct key *fscrypt_request_key(const u8 *descriptor, const u8 *prefix,
 
 	memcpy(full_key_descriptor, prefix, prefix_size);
 	sprintf(full_key_descriptor + prefix_size,
-			"%*phN", FS_KEY_DESCRIPTOR_SIZE,
+			"%*phN", FSCRYPT_KEY_DESCRIPTOR_SIZE,
 			descriptor);
 	full_key_descriptor[full_key_len - 1] = '\0';
 	keyring_key = request_key(&key_type_logon, full_key_descriptor, NULL);
@@ -128,7 +128,7 @@ struct key *fscrypt_request_key(const u8 *descriptor, const u8 *prefix,
 static struct key *
 find_and_lock_process_key(const struct fscrypt_context *ctx,
 			  const char *prefix,
-			  const u8 descriptor[FS_KEY_DESCRIPTOR_SIZE],
+			  const u8 descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE],
 			  unsigned int min_keysize,
 			  const struct fscrypt_key **payload_ret)
 {
@@ -151,7 +151,7 @@ find_and_lock_process_key(const struct fscrypt_context *ctx,
 	payload = (struct fscrypt_key *)ukp->data;
 
 	if (ukp->datalen != sizeof(struct fscrypt_key) ||
-	    payload->size < 1 || payload->size > FS_MAX_KEY_SIZE) {
+	    payload->size < 1 || payload->size > FSCRYPT_MAX_KEY_SIZE) {
 		fscrypt_warn(NULL,
 			     "key with description '%s' has invalid payload",
 			     key->description);
@@ -187,7 +187,7 @@ static int find_and_derive_key(const struct inode *inode,
 	u8 plain_text[FS_KEY_DERIVATION_CIPHER_SIZE] = {0};
 	int err;
 
-	key = find_and_lock_process_key(ctx, FS_KEY_DESC_PREFIX,
+	key = find_and_lock_process_key(ctx, FSCRYPT_KEY_DESC_PREFIX,
 					ctx->master_key_descriptor,
 					derived_keysize, &payload);
 	if (key == ERR_PTR(-ENOKEY) && inode->i_sb->s_cop->key_prefix) {
@@ -234,22 +234,22 @@ static struct fscrypt_mode {
 	int keysize;
 	bool logged_impl_name;
 } available_modes[] = {
-	[FS_ENCRYPTION_MODE_AES_256_XTS] = {
+	[FSCRYPT_MODE_AES_256_XTS] = {
 		.friendly_name = "AES-256-XTS",
 		.cipher_str = "xts(aes)",
 		.keysize = 64,
 	},
-	[FS_ENCRYPTION_MODE_AES_256_CTS] = {
+	[FSCRYPT_MODE_AES_256_CTS] = {
 		.friendly_name = "AES-256-CTS-CBC",
 		.cipher_str = "cts(cbc(aes))",
 		.keysize = 32,
 	},
-	[FS_ENCRYPTION_MODE_AES_128_CBC] = {
+	[FSCRYPT_MODE_AES_128_CBC] = {
 		.friendly_name = "AES-128-CBC",
 		.cipher_str = "cbc(aes)",
 		.keysize = 16,
 	},
-	[FS_ENCRYPTION_MODE_AES_128_CTS] = {
+	[FSCRYPT_MODE_AES_128_CTS] = {
 		.friendly_name = "AES-128-CTS-CBC",
 		.cipher_str = "cts(cbc(aes))",
 		.keysize = 16,
@@ -315,7 +315,7 @@ static void put_crypt_info(struct fscrypt_info *ci)
 	prev = cmpxchg(&ci->ci_key, key, NULL);
 
 	if (prev == key && key) {
-		memzero_explicit(key, (size_t)FS_MAX_KEY_SIZE);
+		memzero_explicit(key, (size_t)FSCRYPT_MAX_KEY_SIZE);
 		kfree(key);
 		ci->ci_key_len = 0;
 		ci->ci_key_index = -1;
@@ -440,9 +440,9 @@ int fscrypt_get_encryption_info(struct inode *inode)
 		/* Fake up a context for an unencrypted directory */
 		memset(&ctx, 0, sizeof(ctx));
 		ctx.format = FS_ENCRYPTION_CONTEXT_FORMAT_V2;
-		ctx.contents_encryption_mode = FS_ENCRYPTION_MODE_AES_256_XTS;
-		ctx.filenames_encryption_mode = FS_ENCRYPTION_MODE_AES_256_CTS;
-		memset(ctx.master_key_descriptor, 0x42, FS_KEY_DESCRIPTOR_SIZE);
+		ctx.contents_encryption_mode = FSCRYPT_MODE_AES_256_XTS;
+		ctx.filenames_encryption_mode = FSCRYPT_MODE_AES_256_CTS;
+		memset(ctx.master_key_descriptor, 0x42, FSCRYPT_KEY_DESCRIPTOR_SIZE);
 	} else if (res != sizeof(ctx)) {
 		fscrypt_warn(inode,
 			     "Unknown encryption context size (%d bytes)", res);
@@ -455,7 +455,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
 		return -EINVAL;
 	}
 
-	if (ctx.flags & ~FS_POLICY_FLAGS_VALID) {
+	if (ctx.flags & ~FSCRYPT_POLICY_FLAGS_VALID) {
 		fscrypt_warn(inode, "Unknown encryption context flags (0x%02x)",
 			     ctx.flags);
 		return -EINVAL;
@@ -527,7 +527,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
        if (S_ISREG(inode->i_mode) &&
 			inode->i_sb->s_cop->is_inline_encrypted &&
 			inode->i_sb->s_cop->is_inline_encrypted(inode)) {
-		crypt_info->ci_key = kzalloc((size_t)FS_MAX_KEY_SIZE, GFP_NOFS);
+		crypt_info->ci_key = kzalloc((size_t)FSCRYPT_MAX_KEY_SIZE, GFP_NOFS);
 		if (!crypt_info->ci_key) {
 			res = -ENOMEM;
 			goto out;
@@ -537,7 +537,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
 	}
 
 	if (S_ISREG(inode->i_mode) &&
-	    crypt_info->ci_data_mode == FS_ENCRYPTION_MODE_AES_128_CBC) {
+	    crypt_info->ci_data_mode == FSCRYPT_MODE_AES_128_CBC) {
 		res = init_essiv_generator(crypt_info, raw_key, mode->keysize);
 		if (res) {
 			fscrypt_warn(inode->i_sb,

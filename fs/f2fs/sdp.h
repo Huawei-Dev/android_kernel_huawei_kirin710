@@ -14,7 +14,7 @@ struct fscrypt_sdp_policy {
 	__u8 contents_encryption_mode;
 	__u8 filenames_encryption_mode;
 	__u8 flags;
-	__u8 master_key_descriptor[FS_KEY_DESCRIPTOR_SIZE];
+	__u8 master_key_descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE];
 } __packed;
 
 /* crypto policy type for f2fs */
@@ -23,7 +23,7 @@ struct fscrypt_policy_type {
 	__u8 encryption_type;
 	__u8 contents_encryption_mode;
 	__u8 filenames_encryption_mode;
-	__u8 master_key_descriptor[FS_KEY_DESCRIPTOR_SIZE];
+	__u8 master_key_descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE];
 } __packed;
 
 #define F2FS_IOC_SET_SDP_ENCRYPTION_POLICY     _IOW(F2FS_IOCTL_MAGIC, 12,\

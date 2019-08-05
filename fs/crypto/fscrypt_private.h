@@ -34,7 +34,7 @@ struct fscrypt_context {
         u8 contents_encryption_mode;
         u8 filenames_encryption_mode;
         u8 flags;
-        u8 master_key_descriptor[FS_KEY_DESCRIPTOR_SIZE];
+        u8 master_key_descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE];
         u8 nonce[FS_KEY_DERIVATION_CIPHER_SIZE];
         u8 iv[FS_KEY_DERIVATION_IV_SIZE];
 } __packed;
@@ -61,7 +61,7 @@ struct fscrypt_info {
 	struct crypto_skcipher *ci_ctfm;
 	struct crypto_aead *ci_gtfm;
 	struct crypto_cipher *ci_essiv_tfm;
-	u8 ci_master_key[FS_KEY_DESCRIPTOR_SIZE];
+	u8 ci_master_key[FSCRYPT_KEY_DESCRIPTOR_SIZE];
 	void *ci_key;
 	int ci_key_len;
 	int ci_key_index;
@@ -79,12 +79,12 @@ typedef enum {
 static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
 					   u32 filenames_mode)
 {
-	if (contents_mode == FS_ENCRYPTION_MODE_AES_128_CBC &&
-	    filenames_mode == FS_ENCRYPTION_MODE_AES_128_CTS)
+	if (contents_mode == FSCRYPT_MODE_AES_128_CBC &&
+	    filenames_mode == FSCRYPT_MODE_AES_128_CTS)
 		return true;
 
-	if (contents_mode == FS_ENCRYPTION_MODE_AES_256_XTS &&
-	    filenames_mode == FS_ENCRYPTION_MODE_AES_256_CTS)
+	if (contents_mode == FSCRYPT_MODE_AES_256_XTS &&
+	    filenames_mode == FSCRYPT_MODE_AES_256_CTS)
 		return true;
 
 	return false;

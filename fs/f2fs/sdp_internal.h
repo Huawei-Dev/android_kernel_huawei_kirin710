@@ -58,9 +58,9 @@ struct fscrypt_sdp_key {
 	u32 version;
 	u32 sdpclass;
 	u32 mode;
-	u8 raw[FS_MAX_KEY_SIZE];
+	u8 raw[FSCRYPT_MAX_KEY_SIZE];
 	u32 size;
-	u8 pubkey[FS_MAX_KEY_SIZE];
+	u8 pubkey[FSCRYPT_MAX_KEY_SIZE];
 	u32 pubkeysize;
 } __packed;
 
@@ -71,7 +71,7 @@ struct f2fs_sdp_fscrypt_context {
 	u8 contents_encryption_mode;
 	u8 filenames_encryption_mode;
 	u8 flags;
-	u8 master_key_descriptor[FS_KEY_DESCRIPTOR_SIZE];
+	u8 master_key_descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE];
 	u8 nonce[FS_KEY_DERIVATION_CIPHER_SIZE];
 	u8 iv[FS_KEY_DERIVATION_IV_SIZE];
 	u8 file_pub_key[FS_SDP_ECC_PUB_KEY_SIZE];
