@@ -163,7 +163,7 @@ extern int fscrypt_has_permitted_context(struct inode *, struct inode *);
 extern int fscrypt_inherit_context(struct inode *, struct inode *,
 					void *, bool);
 
-/* keyinfo.c */
+/* keysetup.c */
 extern int fscrypt_set_gcm_key(struct crypto_aead *, const u8 *);
 extern int fscrypt_derive_gcm_key(struct crypto_aead *,
 				const u8 *, u8 *, u8 *, int);
@@ -397,7 +397,7 @@ static inline int fscrypt_inherit_context(struct inode *parent,
 	return -EOPNOTSUPP;
 }
 
-/* keyinfo.c */
+/* keysetup.c */
 static inline int fscrypt_get_encryption_info(struct inode *inode)
 {
 	return -EOPNOTSUPP;
