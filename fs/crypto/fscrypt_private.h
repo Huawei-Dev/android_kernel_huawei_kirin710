@@ -61,8 +61,11 @@ struct fscrypt_info {
 	struct crypto_skcipher *ci_ctfm;
 	struct crypto_aead *ci_gtfm;
 	struct crypto_cipher *ci_essiv_tfm;
+	struct fscrypt_mode *ci_mode;
 	struct inode *ci_inode;
-	u8 ci_master_key[FSCRYPT_KEY_DESCRIPTOR_SIZE];
+	struct fscrypt_direct_key *ci_direct_key;
+	u8 ci_master_key_descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE];
+	u8 ci_nonce[FS_KEY_DERIVATION_NONCE_SIZE];
 	void *ci_key;
 	int ci_key_len;
 	int ci_key_index;
@@ -110,11 +113,61 @@ fscrypt_msg(const struct inode *inode, const char *level, const char *fmt, ...);
 #define fscrypt_err(inode, fmt, ...)		\
 	fscrypt_msg((inode), KERN_ERR, fmt, ##__VA_ARGS__)
 
+#define FSCRYPT_MAX_IV_SIZE	32
+
+union fscrypt_iv {
+	struct {
+		/* logical block number within the file */
+		__le64 lblk_num;
+
+		/* per-file nonce; only set in DIRECT_KEY mode */
+		u8 nonce[FS_KEY_DERIVATION_NONCE_SIZE];
+	};
+	u8 raw[FSCRYPT_MAX_IV_SIZE];
+};
+
+void fscrypt_generate_iv(union fscrypt_iv *iv, u64 lblk_num,
+			 const struct fscrypt_info *ci);
+
 /* fname.c */
 extern int fname_encrypt(struct inode *inode, const struct qstr *iname,
 			 u8 *out, unsigned int olen);
 extern bool fscrypt_fname_encrypted_size(const struct inode *inode,
 					 u32 orig_len, u32 max_len,
 					 u32 *encrypted_len_ret);
+
+/* keyinfo.c */
+
+struct fscrypt_mode {
+	const char *friendly_name;
+	const char *cipher_str;
+	int keysize;
+	int ivsize;
+	bool logged_impl_name;
+	bool needs_essiv;
+};
+
+static inline bool
+fscrypt_mode_supports_direct_key(const struct fscrypt_mode *mode)
+{
+	return mode->ivsize >= offsetofend(union fscrypt_iv, nonce);
+}
+
+extern struct crypto_skcipher *
+fscrypt_allocate_skcipher(struct fscrypt_mode *mode, const u8 *raw_key,
+			  const struct inode *inode);
+
+extern int fscrypt_set_derived_key(struct fscrypt_info *ci,
+				   const u8 *derived_key);
+
+/* keysetup_v1.c */
+
+extern void fscrypt_put_direct_key(struct fscrypt_direct_key *dk);
+
+extern int fscrypt_setup_v1_file_key(struct fscrypt_info *ci,
+				     const u8 *raw_master_key);
+
+extern int fscrypt_setup_v1_file_key_via_subscribed_keyrings(
+					struct fscrypt_info *ci);
 
 #endif /* _FSCRYPT_PRIVATE_H */

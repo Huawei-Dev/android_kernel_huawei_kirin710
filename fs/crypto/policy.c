@@ -257,7 +257,7 @@ int fscrypt_has_permitted_context(struct inode *parent, struct inode *child)
 		return 0;
 
 	/* TicketNo:AR0009DF3P -- For SDP file we should use original CE context
-	 *     since the ci_master_key in struct i_crypt_info is changed. This
+	 *     since the ci_master_key_descriptor in struct i_crypt_info is changed. This
 	 *     should be done before fscrypt_get_encryption_info since it can be
 	 *     called only once for sece file when lock.
 	 */
@@ -292,7 +292,7 @@ int fscrypt_has_permitted_context(struct inode *parent, struct inode *child)
 	child_ci = READ_ONCE(child->i_crypt_info);
 
 	if (parent_ci && child_ci) {
-		return memcmp(parent_ci->ci_master_key, child_ci->ci_master_key,
+		return memcmp(parent_ci->ci_master_key_descriptor, child_ci->ci_master_key_descriptor,
 			      FSCRYPT_KEY_DESCRIPTOR_SIZE) == 0 &&
 			(parent_ci->ci_data_mode == child_ci->ci_data_mode) &&
 			(parent_ci->ci_filename_mode ==
@@ -352,7 +352,7 @@ int fscrypt_inherit_context(struct inode *parent, struct inode *child,
 	ctx.contents_encryption_mode = ci->ci_data_mode;
 	ctx.filenames_encryption_mode = ci->ci_filename_mode;
 	ctx.flags = ci->ci_flags;
-	memcpy(ctx.master_key_descriptor, ci->ci_master_key,
+	memcpy(ctx.master_key_descriptor, ci->ci_master_key_descriptor,
 	       FSCRYPT_KEY_DESCRIPTOR_SIZE);
 
 	/* get nonce and iv */

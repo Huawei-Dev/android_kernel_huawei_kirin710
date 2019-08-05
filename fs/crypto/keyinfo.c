@@ -228,12 +228,7 @@ out:
 	return err;
 }
 
-static struct fscrypt_mode {
-	const char *friendly_name;
-	const char *cipher_str;
-	int keysize;
-	bool logged_impl_name;
-} available_modes[] = {
+static struct fscrypt_mode available_modes[] = {
 	[FSCRYPT_MODE_AES_256_XTS] = {
 		.friendly_name = "AES-256-XTS",
 		.cipher_str = "xts(aes)",
@@ -477,8 +472,8 @@ int fscrypt_get_encryption_info(struct inode *inode)
 	crypt_info->ci_key_len = 0;
 	crypt_info->ci_key_index = -1;
 	crypt_info->ci_hw_enc_flag = 0;
-	memcpy(crypt_info->ci_master_key, ctx.master_key_descriptor,
-				sizeof(crypt_info->ci_master_key));
+	memcpy(crypt_info->ci_master_key_descriptor, ctx.master_key_descriptor,
+				sizeof(crypt_info->ci_master_key_descriptor));
 
 	mode = select_encryption_mode(crypt_info, inode);
 	if (IS_ERR(mode)) {
@@ -558,6 +553,76 @@ out:
 	return res;
 }
 EXPORT_SYMBOL(fscrypt_get_encryption_info);
+
+/* Given the per-file key, set up the file's crypto transform object(s) */
+int fscrypt_set_derived_key(struct fscrypt_info *ci, const u8 *derived_key)
+{
+	struct fscrypt_mode *mode = ci->ci_mode;
+	struct crypto_skcipher *ctfm;
+	int err;
+
+	ctfm = fscrypt_allocate_skcipher(mode, derived_key, ci->ci_inode);
+	if (IS_ERR(ctfm))
+		return PTR_ERR(ctfm);
+
+	ci->ci_ctfm = ctfm;
+
+	if (mode->needs_essiv) {
+		err = init_essiv_generator(ci, derived_key, mode->keysize);
+		if (err) {
+			fscrypt_warn(ci->ci_inode,
+				     "Error initializing ESSIV generator: %d",
+				     err);
+			return err;
+		}
+	}
+	return 0;
+}
+
+/* Create a symmetric cipher object for the given encryption mode and key */
+struct crypto_skcipher *fscrypt_allocate_skcipher(struct fscrypt_mode *mode,
+						  const u8 *raw_key,
+						  const struct inode *inode)
+{
+	struct crypto_skcipher *tfm;
+	int err;
+
+	tfm = crypto_alloc_skcipher(mode->cipher_str, 0, 0);
+	if (IS_ERR(tfm)) {
+		if (PTR_ERR(tfm) == -ENOENT) {
+			fscrypt_warn(inode,
+				     "Missing crypto API support for %s (API name: \"%s\")",
+				     mode->friendly_name, mode->cipher_str);
+			return ERR_PTR(-ENOPKG);
+		}
+		fscrypt_err(inode, "Error allocating '%s' transform: %ld",
+			    mode->cipher_str, PTR_ERR(tfm));
+		return tfm;
+	}
+	if (unlikely(!mode->logged_impl_name)) {
+		/*
+		 * fscrypt performance can vary greatly depending on which
+		 * crypto algorithm implementation is used.  Help people debug
+		 * performance problems by logging the ->cra_driver_name the
+		 * first time a mode is used.  Note that multiple threads can
+		 * race here, but it doesn't really matter.
+		 */
+		mode->logged_impl_name = true;
+		pr_info("fscrypt: %s using implementation \"%s\"\n",
+			mode->friendly_name,
+			crypto_skcipher_alg(tfm)->base.cra_driver_name);
+	}
+	crypto_skcipher_set_flags(tfm, CRYPTO_TFM_REQ_WEAK_KEY);
+	err = crypto_skcipher_setkey(tfm, raw_key, mode->keysize);
+	if (err)
+		goto err_free_tfm;
+
+	return tfm;
+
+err_free_tfm:
+	crypto_free_skcipher(tfm);
+	return ERR_PTR(err);
+}
 
 /**
  * fscrypt_put_encryption_info - free most of an inode's fscrypt data

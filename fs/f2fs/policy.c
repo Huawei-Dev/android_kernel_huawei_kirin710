@@ -236,7 +236,7 @@ static int f2fs_fscrypt_ioctl_get_policy_type(struct file *filp,
 	policy.filenames_encryption_mode = ci->ci_filename_mode;
 	policy.version = 0;
 	policy.encryption_type = FSCRYPT_CE_CLASS;
-	memcpy(policy.master_key_descriptor, ci->ci_master_key,
+	memcpy(policy.master_key_descriptor, ci->ci_master_key_descriptor,
 		FSCRYPT_KEY_DESCRIPTOR_SIZE);
 
 	if (!sb->s_sdp_cop->get_sdp_encrypt_flags)

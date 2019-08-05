@@ -325,8 +325,8 @@ static int f2fs_get_sdp_ece_crypt_info(struct inode *inode, void *fs_data)
 	crypt_info->ci_key = NULL;
 	crypt_info->ci_key_len = 0;
 	crypt_info->ci_key_index = -1;
-	memcpy(crypt_info->ci_master_key, sdp_ctx.master_key_descriptor,
-		sizeof(crypt_info->ci_master_key));
+	memcpy(crypt_info->ci_master_key_descriptor, sdp_ctx.master_key_descriptor,
+		sizeof(crypt_info->ci_master_key_descriptor));
 
 	res = f2fs_inode_get_sdp_encrypt_flags(inode, fs_data, &flag);
 	if (res)
@@ -536,8 +536,8 @@ static int f2fs_get_sdp_sece_crypt_info(struct inode *inode, void *fs_data)
 	crypt_info->ci_key = NULL;
 	crypt_info->ci_key_len = 0;
 	crypt_info->ci_key_index = -1;
-	memcpy(crypt_info->ci_master_key, sdp_ctx.master_key_descriptor,
-		sizeof(crypt_info->ci_master_key));
+	memcpy(crypt_info->ci_master_key_descriptor, sdp_ctx.master_key_descriptor,
+		sizeof(crypt_info->ci_master_key_descriptor));
 
 	res = f2fs_inode_get_sdp_encrypt_flags(inode, fs_data, &flag);
 	if (res)
@@ -636,7 +636,7 @@ int f2fs_change_to_sdp_crypto(struct inode *inode, void *fs_data)
 		return res;
 	}
 
-	memcpy(ci_info->ci_master_key, sdp_ctx.master_key_descriptor,
+	memcpy(ci_info->ci_master_key_descriptor, sdp_ctx.master_key_descriptor,
 		FSCRYPT_KEY_DESCRIPTOR_SIZE);
 	ci_info->ci_flags = sdp_ctx.flags;
 	res = sb->s_sdp_cop->update_sdp_context(inode, &sdp_ctx,
@@ -695,7 +695,7 @@ static int f2fs_get_sdp_crypt_info(struct inode *inode, void *fs_data)
 		return res;
 
 	if (ci_info && F2FS_INODE_IS_ENABLED_SDP_ENCRYPTION(flag))
-		return f2fs_inode_check_sdp_keyring(ci_info->ci_master_key, 1);
+		return f2fs_inode_check_sdp_keyring(ci_info->ci_master_key_descriptor, 1);
 
 	/* means should change from ce to sdp crypto */
 	if (ci_info && F2FS_INODE_IS_CONFIG_SDP_ENCRYPTION(flag))
