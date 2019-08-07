@@ -38,6 +38,7 @@ struct wake_irq;
  * struct wakeup_source - Representation of wakeup sources
  *
  * @name: Name of the wakeup source
+ * @id: Wakeup source id
  * @entry: Wakeup source list entry
  * @lock: Wakeup source lock
  * @wakeirq: Optional device specific wakeirq
@@ -52,6 +53,7 @@ struct wake_irq;
  * @relax_count: Number of times the wakeup source was deactivated.
  * @expire_count: Number of times the wakeup source's timeout has expired.
  * @wakeup_count: Number of times the wakeup source might abort suspend.
+ * @dev: Struct device for sysfs statistics about the wakeup source.
  * @active: Status of the wakeup source.
  * @has_timeout: The wakeup source has been activated with a timeout.
  */
@@ -60,6 +62,7 @@ struct wakeup_source {
 #ifdef CONFIG_PM_FAIL_DEBUG
 	char app_name[APP_NAME_LEN_MAX];
 #endif
+	int			id;
 	struct list_head	entry;
 	spinlock_t		lock;
 	struct wake_irq		*wakeirq;
@@ -75,6 +78,7 @@ struct wakeup_source {
 	unsigned long		relax_count;
 	unsigned long		expire_count;
 	unsigned long		wakeup_count;
+	struct device		*dev;
 	bool			active:1;
 	bool			autosleep_enabled:1;
 #ifdef CONFIG_HUAWEI_DUBAI
@@ -106,7 +110,8 @@ extern void wakeup_source_drop(struct wakeup_source *ws);
 extern void wakeup_source_destroy(struct wakeup_source *ws);
 extern void wakeup_source_add(struct wakeup_source *ws);
 extern void wakeup_source_remove(struct wakeup_source *ws);
-extern struct wakeup_source *wakeup_source_register(const char *name);
+extern struct wakeup_source *wakeup_source_register(struct device *dev,
+						    const char *name);
 extern void wakeup_source_unregister(struct wakeup_source *ws);
 extern int device_wakeup_enable(struct device *dev);
 extern int device_wakeup_disable(struct device *dev);
@@ -148,7 +153,8 @@ static inline void wakeup_source_add(struct wakeup_source *ws) {}
 
 static inline void wakeup_source_remove(struct wakeup_source *ws) {}
 
-static inline struct wakeup_source *wakeup_source_register(const char *name)
+static inline struct wakeup_source *wakeup_source_register(struct device *dev,
+							   const char *name)
 {
 	return NULL;
 }
