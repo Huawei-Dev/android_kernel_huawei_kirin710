@@ -801,7 +801,7 @@ no_delete:
 		f2fs_bug_on(sbi, 1);
 	}
 
-	if (likely(!is_set_ckpt_flags(sbi, CP_ERROR_FLAG) &&
+	if (likely(!f2fs_cp_error(sbi) &&
 				!is_sbi_flag_set(sbi, SBI_CP_DISABLED)))
 		f2fs_bug_on(sbi, is_inode_flag_set(inode, FI_DIRTY_INODE));
 	else
