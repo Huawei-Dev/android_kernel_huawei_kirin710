@@ -292,15 +292,21 @@ static void *__init setup_machine_fdt_try_builtin(void *original_fdt)
 
 static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
-	void *dt_virt = fixmap_remap_fdt(dt_phys);
+	int size;
+	void *dt_virt = fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL);
 	const char *name;
 
 	if (!dt_virt || fdt_check_header(dt_virt))
 		goto invalid_fdt;
 
+	memblock_reserve(dt_phys, size);
+
 #if defined(CONFIG_ARM64_BUILTIN_APPENDED_DTB_OVERRIDE)
 	{
 		void *builtin_fdt;
+
+		if (fdt_check_header(dt_virt))
+			goto invalid_fdt;
 
 		builtin_fdt = setup_machine_fdt_try_builtin(dt_virt);
 		if (!builtin_fdt) {
@@ -312,6 +318,9 @@ static void __init setup_machine_fdt(phys_addr_t dt_phys)
 	if (!early_init_dt_scan(dt_virt))
 		goto invalid_fdt;
 #endif
+
+	/* Early fixups are done, map the bootloader FDT as read-only now */
+	fixmap_remap_fdt(dt_phys, &size, PAGE_KERNEL_RO);
 
 	name = of_flat_dt_get_machine_name();
 	if (!name)
