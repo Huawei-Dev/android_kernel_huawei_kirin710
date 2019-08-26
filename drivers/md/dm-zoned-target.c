@@ -136,8 +136,6 @@ static int dmz_submit_read_bio(struct dmz_target *dmz, struct dm_zone *zone,
 	/* Submit the clone */
 	atomic_inc(&bioctx->ref);
 	generic_make_request(clone);
-	if (clone->bi_status == BLK_STS_IOERR)
-		return -EIO;
 
 	return 0;
 }
