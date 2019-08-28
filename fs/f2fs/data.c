@@ -413,6 +413,9 @@ static inline void __submit_bio(struct f2fs_sb_info *sbi,
 			f2fs_bug_on(sbi, !IS_NODESEG(se->type));
 #endif
 
+		if (F2FS_IO_ALIGNED(sbi))
+			goto submit_io;
+		
 		start = bio->bi_iter.bi_size >> F2FS_BLKSIZE_BITS;
 		start %= F2FS_IO_SIZE(sbi);
 
@@ -783,7 +786,8 @@ alloc_new:
 		int bio_blocks = BIO_MAX_PAGES;
 		bool nomerge = false;
 
-		if ((fio->type == DATA || fio->type == NODE) &&
+		if (F2FS_IO_ALIGNED(sbi) &&
+				(fio->type == DATA || fio->type == NODE) &&
 				fio->new_blkaddr & F2FS_IO_SIZE_MASK(sbi)) {
 			dec_page_count(sbi, WB_DATA_TYPE(bio_page));
 			fio->retry = true;
