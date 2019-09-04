@@ -341,9 +341,9 @@ walt_dec_cumulative_runnable_avg(struct rq *rq,
 {
 }
 
-static void
-fixup_cumulative_runnable_avg(struct rq *rq,
-			      struct task_struct *p, u64 new_task_load)
+void
+walt_fixup_cumulative_runnable_avg(struct rq *rq,
+				   struct task_struct *p, u64 new_task_load)
 {
 }
 
@@ -1036,7 +1036,8 @@ static void update_history(struct rq *rq, struct task_struct *p,
 	 */
 	if (!task_has_dl_policy(p) || !p->dl.dl_throttled) {
 		if (task_on_rq_queued(p))
-			fixup_cumulative_runnable_avg(rq, p, demand);
+			p->sched_class->fixup_cumulative_runnable_avg(rq, p,
+								      demand);
 		else if (rq->curr == p)
 			fixup_cum_window_demand(rq, demand);
 	}
