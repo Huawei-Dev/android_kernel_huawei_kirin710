@@ -812,8 +812,7 @@ SYSCALL_DEFINE3(madvise, unsigned long, start, size_t, len_in, int, behavior)
 	size_t len;
 	struct blk_plug plug;
 
-	pgcache_log(BIT_MADVISE_SYSCALL_DUMP, "syscall madvise64(start:%ld, len:%d, behavior:%d)",
-			start, len_in, behavior);
+	start = untagged_addr(start);
 
 	if (!madvise_behavior_valid(behavior))
 		return error;
