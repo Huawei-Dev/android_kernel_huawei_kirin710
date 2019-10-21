@@ -559,10 +559,44 @@ static int verify_soc_image(enum SVC_SECBOOT_IMG_TYPE  image,
      operation.params[0].value.b = 0;/*SECBOOT_LOCKSTATE , not used currently*/
      operation.params[1].value.a = (u32)(paddr & 0xFFFFFFFF);
      operation.params[1].value.b = (u32)((u64)paddr >> 32);/* ÊÖ»úºÍMBB ¼æÈİ */
+     
+     pr_err("SYDNEYM_LOG SIZEOF: TEEC_Operation=%zu TEEC_Parameter=%zu params_array=%zu\n",
+       sizeof(TEEC_Operation),
+       sizeof(operation.params[0]),
+       sizeof(operation.params));
+
+    pr_err("SYDNEYM_LOG PARAMTYPES: paramTypes=0x%x expected_value_value_none_none=0x%x\n",
+       operation.paramTypes,
+       (u32)TEEC_PARAM_TYPES(TEEC_VALUE_INPUT, TEEC_VALUE_INPUT, TEEC_NONE, TEEC_NONE));
+
+    pr_err("SYDNEYM_LOG PARAMS: image=%u run_addr=0x%x paddr=0x%lx p0.a=0x%x p0.b=0x%x p1.a=0x%x p1.b=0x%x\n",
+       image,
+       run_addr,
+       paddr,
+       operation.params[0].value.a,
+       operation.params[0].value.b,
+       operation.params[1].value.a,
+       operation.params[1].value.b);
+     
+     pr_err("SYDNEYM_LOG LOADM_TEE: cmd_id=0x%x paramTypes=0x%x image=%u run_addr=0x%x paddr=0x%lx p0.a=0x%x p0.b=0x%x p1.a=0x%x p1.b=0x%x\n",
+       SECBOOT_CMD_ID_VERIFY_DATA_TYPE,
+       operation.paramTypes,
+       image,
+       run_addr,
+       paddr,
+       operation.params[0].value.a,
+       operation.params[0].value.b,
+       operation.params[1].value.a,
+       operation.params[1].value.b);
+     
      result = TEEK_InvokeCommand(session,
                                    SECBOOT_CMD_ID_VERIFY_DATA_TYPE,
                                     &operation,
                                     &origin);
+     
+     pr_err("SYDNEYM_LOG VERIFY_SOC_RET: proc=%s pid=%d image=%d run_addr=0x%x result=0x%x origin=%u\n",
+       current->comm, current->pid, image, run_addr, result, origin);
+     
      if (result != TEEC_SUCCESS){
         /* cov_verified_start */
         sec_print_err("start  failed, result is 0x%x!\n", result);
@@ -828,6 +862,9 @@ s32 load_image(enum SVC_SECBOOT_IMG_TYPE ecoretype, u32 run_addr, u32 ddr_size)
     }
     sec_print_err("load image %s to secos success\n", file_name);
 
+    pr_err("SYDNEYM_LOG LOAD_IMAGE_VERIFY: file=%s ecoretype=%d run_addr=0x%x image_etype=%d image_run=0x%x is_sec=%d\n",
+       file_name, ecoretype, run_addr, image->etype, image->run_addr, is_sec);
+    
     /*end of trans all data, start verify*/
     ret = verify_soc_image(ecoretype, run_addr);
     if(ret)
