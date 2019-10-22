@@ -325,6 +325,26 @@ Files in /sys/fs/f2fs/<devname>
 			      the number is less than this value, it triggers
 			      in-place-updates.
 
+ min_seq_blocks		      This parameter controls the threshold to serialize
+			      write IOs issued by multiple threads in parallel.
+
+ min_hot_blocks		      This parameter controls the threshold to allocate
+			      a hot data log for pending data blocks to write.
+
+ min_ssr_sections	      This parameter adds the threshold when deciding
+			      SSR block allocation. If this is large, SSR mode
+			      will be enabled early.
+
+ ram_thresh                   This parameter controls the memory footprint used
+			      by free nids and cached nat entries. By default,
+			      1 is set, which indicates 10 MB / 1 GB RAM.
+
+ ra_nid_pages		      When building free nids, F2FS reads NAT blocks
+			      ahead for speed up. Default is 0.
+
+ dirty_nats_ratio	      Given dirty ratio of cached nat entries, F2FS
+			      determines flushing them in background.
+
  max_victim_search	      This parameter controls the number of trials to
 			      find a victim segment when conducting SSR and
 			      cleaning operations. The default value is 4096
