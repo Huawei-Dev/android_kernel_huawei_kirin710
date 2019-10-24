@@ -3831,5 +3831,9 @@ int __init blk_dev_init(void)
 #ifdef CONFIG_HISI_BLOCK_FREQUENCE_CONTROL
 	hisi_blk_freq_ctrl_init();
 #endif
+
+	if (bio_crypt_ctx_init() < 0)
+		panic("Failed to allocate mem for bio crypt ctxs\n");
+
 	return 0;
 }
