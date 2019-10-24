@@ -45,10 +45,8 @@ obj-$(CONFIG_BLK_DEV_ZONED)	+= blk-zoned.o
 obj-$(CONFIG_BLK_WBT)		+= blk-wbt.o
 obj-$(CONFIG_BLK_DEBUG_FS)	+= blk-mq-debugfs.o
 obj-$(CONFIG_BLK_SED_OPAL)	+= sed-opal.o
+obj-$(CONFIG_BLK_INLINE_ENCRYPTION)	+= keyslot-manager.o
 
 obj-$(CONFIG_HISI_RPMB_UFS)       += hisi_blk_scsi_kern.o
 
-ifeq ($(TARGET_VERSION_MODE),factory)
-	EXTRA_CFLAGS += -DBYPASS_AUTHORITY_VERIFY
-endif
 obj-$(CONFIG_HW_SYSTEM_WR_PROTECT) += software_system_wp.o
