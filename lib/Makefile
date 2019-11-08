@@ -287,3 +287,5 @@ obj-$(CONFIG_HISI_SECUREC) += libc_sec/securec_v2/src/vsprintf_s.o \
 			      libc_sec/securec_v2/src/sscanf_s.o \
 			      libc_sec/securec_v2/src/vsscanf_s.o \
 			      libc_sec/securec_v2/src/secureinput_a.o
+
+obj-y += crypto/
