@@ -4185,6 +4185,9 @@ static int __init init_f2fs_fs(void)
 	err = f2fs_init_bio_entry_cache();
 	if (err)
 		goto free_post_read;
+	err = f2fs_init_bioset();
+	if (err)
+		goto free_bio_enrty_cache;
 
 #ifdef CONFIG_HUAWEI_F2FS_DSM
 	if(!f2fs_dclient)
@@ -4196,7 +4199,8 @@ static int __init init_f2fs_fs(void)
 	acm_f2fs_init_cache();
 #endif
 	return 0;
-
+free_bio_enrty_cache:
+	f2fs_destroy_bio_entry_cache();
 free_post_read:
 	f2fs_destroy_post_read_processing();
 free_root_stats:
@@ -4224,6 +4228,7 @@ fail:
 
 static void __exit exit_f2fs_fs(void)
 {
+	f2fs_destroy_bioset();
 	f2fs_destroy_bio_entry_cache();
 	f2fs_destroy_post_read_processing();
 	f2fs_destroy_root_stats();

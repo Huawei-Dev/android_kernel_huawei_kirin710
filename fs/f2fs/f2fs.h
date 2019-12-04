@@ -2568,35 +2568,6 @@ static inline void *f2fs_kmem_cache_alloc(struct kmem_cache *cachep,
 	return entry;
 }
 
-static inline struct bio *f2fs_bio_alloc(struct f2fs_sb_info *sbi,
-						int npages, bool no_fail)
-{
-	struct bio *bio;
-
-	if (no_fail) {
-		/* No failure on bio allocation */
-		bio = bio_alloc(GFP_NOIO, npages);
-		if (!bio)
-			bio = bio_alloc(GFP_NOIO | __GFP_NOFAIL, npages);
-#ifdef CONFIG_HISI_BLK
-		if (bio)
-			bio->dump_fs = f2fs_print_frag_info;
-#endif
-		return bio;
-	}
-	if (time_to_inject(sbi, FAULT_ALLOC_BIO)) {
-		f2fs_show_injection_info(sbi, FAULT_ALLOC_BIO);
-		return NULL;
-	}
-
-	bio = bio_alloc(GFP_KERNEL, npages);
-#ifdef CONFIG_HISI_BLK
-	if (bio)
-		bio->dump_fs = f2fs_print_frag_info;
-#endif
-	return bio;
-}
-
 static inline void f2fs_radix_tree_insert(struct radix_tree_root *root,
 				unsigned long index, void *item)
 {
@@ -3705,6 +3676,9 @@ void f2fs_destroy_checkpoint_caches(void);
 /*
  * data.c
  */
+int __init f2fs_init_bioset(void);
+void f2fs_destroy_bioset(void);
+struct bio *f2fs_bio_alloc(struct f2fs_sb_info *sbi, int npages, bool no_fail);
 int f2fs_init_post_read_processing(void);
 void f2fs_destroy_post_read_processing(void);
 int f2fs_init_bio_entry_cache(void);
