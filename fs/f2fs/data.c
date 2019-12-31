@@ -1038,11 +1038,8 @@ static struct bio *f2fs_grab_read_bio(struct inode *inode, block_t blkaddr,
 
 	if (post_read_steps) {
 		if (!f2fs_inline_encrypted_inode(inode)) {
+			/* Due to the mempool, this never fails. */
 			ctx = mempool_alloc(bio_post_read_ctx_pool, GFP_NOFS);
-			if (!ctx) {
-				bio_put(bio);
-				return ERR_PTR(-ENOMEM);
-			}
 			ctx->bio = bio;
 			ctx->enabled_steps = post_read_steps;
 			bio->bi_private = ctx;
