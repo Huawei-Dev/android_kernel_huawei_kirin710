@@ -4109,7 +4109,7 @@ int f2fs_inplace_write_data(struct f2fs_io_info *fio)
 	inc_bd_val(sbi, data_ipu_cnt, 1);
 	bd_mutex_unlock(&sbi->bd_mutex);
 
-	if (fio->bio)
+	if (fio->bio && !(SM_I(sbi)->ipu_policy & (1 << F2FS_IPU_NOCACHE)))
 		err = f2fs_merge_page_bio(fio);
 	else
 		err = f2fs_submit_page_bio(fio);
