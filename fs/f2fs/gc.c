@@ -204,7 +204,7 @@ static int gc_thread_func(void *data)
 				goto next;
 			}
 
-			if (!mutex_trylock(&sbi->gc_mutex)) {
+			if (!down_write_trylock(&sbi->gc_lock)) {
 				if (is_gc_test_set(sbi, GC_TEST_ENABLE_GC_STAT))
 					stat_other_skip_bggc_count(sbi);
 				goto next;
@@ -224,7 +224,7 @@ static int gc_thread_func(void *data)
 			int ssr_gc_count;
 			ssr_gc_count = atomic_read(&sbi->need_ssr_gc);
 			if (ssr_gc_count) {
-				mutex_lock(&sbi->gc_mutex);
+				down_write(&sbi->gc_lock);
 				f2fs_gc(sbi, true, false, NULL_SEGNO);
 				atomic_sub(ssr_gc_count, &sbi->need_ssr_gc);
 			}
@@ -235,7 +235,7 @@ static int gc_thread_func(void *data)
 
 			/* run into FG_GC
 			   we must wait & take sbi->gc_mutex before FG_GC */
-			mutex_lock(&sbi->gc_mutex);
+			down_write(&sbi->gc_lock);
 
 			f2fs_gc(sbi, false, false, NULL_SEGNO);
 			wake_up_all(&gc_th->fg_gc_wait);
@@ -260,7 +260,6 @@ static int gc_thread_func(void *data)
 			goto do_gc;
 		}
 
-
 #ifdef CONFIG_HISI_BLK
 		if (!gc_th->block_idle && !is_gc_test_set(sbi, GC_TEST_DISABLE_IO_AWARE)) {
 #else
@@ -269,7 +268,7 @@ static int gc_thread_func(void *data)
 			increase_sleep_time(gc_th, &wait_ms);
 			if (is_gc_test_set(sbi, GC_TEST_ENABLE_GC_STAT))
 				stat_io_skip_bggc_count(sbi);
-			mutex_unlock(&sbi->gc_mutex);
+			up_write(&sbi->gc_lock);
 			stat_io_skip_bggc_count(sbi);
 			goto next;
 		}
@@ -2099,7 +2098,7 @@ stop:
 	if (unlikely(sbi->gc_loop.check))
 		init_f2fs_gc_loop(sbi);
 
-	mutex_unlock(&sbi->gc_mutex);
+	up_write(&sbi->gc_lock);
 	if (gc_completed) {
 		bd_mutex_lock(&sbi->bd_mutex);
 		if (gc_type == FG_GC && fggc_begin) {
@@ -2165,9 +2164,9 @@ static int free_segment_range(struct f2fs_sb_info *sbi, unsigned int start,
 			.iroot = RADIX_TREE_INIT(GFP_NOFS),
 		};
 
-		mutex_lock(&sbi->gc_mutex);
+		down_write(&sbi->gc_lock);
 		do_garbage_collect(sbi, segno, &gc_list, FG_GC);
-		mutex_unlock(&sbi->gc_mutex);
+		up_write(&sbi->gc_lock);
 		put_gc_inode(&gc_list);
 
 		if (get_valid_blocks(sbi, segno, true))

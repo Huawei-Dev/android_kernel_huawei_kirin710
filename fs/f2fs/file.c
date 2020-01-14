@@ -2301,12 +2301,12 @@ static int f2fs_ioc_gc(struct file *filp, unsigned long arg)
 		return ret;
 
 	if (!sync) {
-		if (!mutex_trylock(&sbi->gc_mutex)) {
+		if (!down_write_trylock(&sbi->gc_lock)) {
 			ret = -EBUSY;
 			goto out;
 		}
 	} else {
-		mutex_lock(&sbi->gc_mutex);
+		down_write(&sbi->gc_lock);
 	}
 
 	f2fs_msg(sbi->sb, KERN_INFO,
@@ -2353,12 +2353,12 @@ static int f2fs_ioc_gc_range(struct file *filp, unsigned long arg)
 
 do_more:
 	if (!range.sync) {
-		if (!mutex_trylock(&sbi->gc_mutex)) {
+		if (!down_write_trylock(&sbi->gc_lock)) {
 			ret = -EBUSY;
 			goto out;
 		}
 	} else {
-		mutex_lock(&sbi->gc_mutex);
+		down_write(&sbi->gc_lock);
 	}
 
 	current->flags |= PF_MUTEX_GC;
@@ -2794,7 +2794,7 @@ static int f2fs_ioc_flush_device(struct file *filp, unsigned long arg)
 	end_segno = min(start_segno + range.segments, dev_end_segno);
 
 	while (start_segno < end_segno) {
-		if (!mutex_trylock(&sbi->gc_mutex)) {
+		if (!down_write_trylock(&sbi->gc_lock)) {
 			ret = -EBUSY;
 			goto out;
 		}

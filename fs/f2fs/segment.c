@@ -678,14 +678,14 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
 		static unsigned FG_GC_count = 0;
 		unsigned long long total_size, free_size;
 
-		mutex_lock(&sbi->gc_mutex);
+		down_write(&sbi->gc_lock);
 		current->flags |= PF_MUTEX_GC;
 		f2fs_gc(sbi, false, false, NULL_SEGNO);
 		current->flags &= (~PF_MUTEX_GC);
 
 		/* here judgement for recover process */
 		if (unlikely(ACCESS_ONCE(gc_th->f2fs_gc_task) == NULL)) {
-			mutex_lock(&sbi->gc_mutex);
+			down_write(&sbi->gc_lock);
 			current->flags |= PF_MUTEX_GC;
 			f2fs_gc(sbi, false, false, NULL_SEGNO);
 			current->flags &= (~PF_MUTEX_GC);
@@ -715,7 +715,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
 
 		/* if f2fs_gc_task is not available, do f2fs_gc in the original task */
 		if (!gc_task_available) {
-			mutex_lock(&sbi->gc_mutex);
+			down_write(&sbi->gc_lock);
 			current->flags |= PF_MUTEX_GC;
 			f2fs_gc(sbi, false, false, NULL_SEGNO);
 			current->flags &= (~PF_MUTEX_GC);
@@ -726,7 +726,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
 			 wake_up(&gc_th->gc_wait_queue_head);
 		 } else {
 		 /* if f2fs_gc_task is not available, do f2fs_gc in the original task */
-			 mutex_lock(&sbi->gc_mutex);
+			 down_write(&sbi->gc_lock);
 			 current->flags |= PF_MUTEX_GC;
 			 f2fs_gc(sbi, true, false, NULL_SEGNO);
 			 current->flags &= (~PF_MUTEX_GC);
@@ -3527,11 +3527,11 @@ int f2fs_trim_fs(struct f2fs_sb_info *sbi, struct fstrim_range *range)
 	if (sbi->discard_blks == 0)
 		goto out;
 
-	mutex_lock(&sbi->gc_mutex);
+	down_write(&sbi->gc_lock);
 	current->flags |= PF_MUTEX_GC;
 	err = f2fs_write_checkpoint(sbi, &cpc);
 	current->flags &= (~PF_MUTEX_GC);
-	mutex_unlock(&sbi->gc_mutex);
+	up_write(&sbi->gc_lock);
 	if (interrupt_signal_pending(current))
 		err = -EINTR;
 	if (err)
