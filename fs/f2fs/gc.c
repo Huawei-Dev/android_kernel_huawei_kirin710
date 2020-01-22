@@ -278,7 +278,7 @@ static int gc_thread_func(void *data)
 		else
 			increase_sleep_time(gc_th, &wait_ms);
 do_gc:
-		stat_inc_bggc_count(sbi);
+		stat_inc_bggc_count(sbi->stat_info);
 
 #ifdef CONFIG_F2FS_STAT_FS
 	{
@@ -292,9 +292,9 @@ do_gc:
 
 		if (unlikely(__ratelimit(&bg_gc_rs))) {
 			f2fs_msg(sbi->sb, KERN_NOTICE,
-				"BG_GC: Size=%lluMB,Free=%lluMB,count=%d,free_sec=%u,reserved_sec=%u,node_secs=%d,dent_secs=%d\n",
+				"BG_GC: Size=%lluMB,Free=%lluMB,free_sec=%u,reserved_sec=%u,node_secs=%d,dent_secs=%d\n",
 				total_size, free_size,
-				sbi->bg_gc, free_sections(sbi), reserved_sections(sbi),
+				free_sections(sbi), reserved_sections(sbi),
 				get_blocktype_secs(sbi, F2FS_DIRTY_NODES), get_blocktype_secs(sbi, F2FS_DIRTY_DENTS));
 		}
 	}
