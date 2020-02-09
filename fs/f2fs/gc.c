@@ -1894,6 +1894,7 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
 							segno, gc_type);
 
 		stat_inc_seg_count(sbi, type, gc_type);
+		migrated++;
 
 freed:
 		if (gc_type == FG_GC &&
@@ -1910,8 +1911,6 @@ freed:
 		inc_bd_array_val(sbi, hotcold_gc_blk_cnt, hotcold_type + 1,
 					(unsigned long)get_valid_blocks(sbi, segno, 1));/*lint !e679*/
 		bd_mutex_unlock(&sbi->bd_mutex);
-
-		migrated++;
 
 		if (__is_large_section(sbi) && segno + 1 < end_segno)
 			sbi->next_victim_seg[gc_type] = segno + 1;
