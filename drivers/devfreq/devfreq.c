@@ -578,9 +578,6 @@ struct devfreq *devfreq_add_device(struct device *dev,
 {
 	struct devfreq *devfreq;
 	struct devfreq_governor *governor;
-#ifndef CONFIG_ARCH_HISI
-	static atomic_t devfreq_no = ATOMIC_INIT(-1);
-#endif
 	int err = 0;
 
 	if (!dev || !profile || !governor_name) {
@@ -623,13 +620,7 @@ struct devfreq *devfreq_add_device(struct device *dev,
 		mutex_lock(&devfreq->lock);
 	}
 
-#ifdef CONFIG_ARCH_HISI
 	dev_set_name(&devfreq->dev, "%s", dev_name(dev));
-#else
-	dev_set_name(&devfreq->dev, "devfreq%d",
-				atomic_inc_return(&devfreq_no));
-#endif
-
 	err = device_register(&devfreq->dev);
 	if (err) {
 		mutex_unlock(&devfreq->lock);
