@@ -2453,7 +2453,7 @@ static inline void dec_valid_node_count(struct f2fs_sb_info *sbi,
 	} else {
 		if (unlikely(inode->i_blocks == 0)) {
 			f2fs_msg(sbi->sb, KERN_WARNING,
-				"Inconsistent i_blocks, ino:%lu, iblocks:%llu",
+				"dec_valid_node_count: inconsistent i_blocks, ino:%lu, iblocks:%llu",
 				inode->i_ino,
 				(unsigned long long)inode->i_blocks);
 			set_sbi_flag(sbi, SBI_NEED_FSCK);
