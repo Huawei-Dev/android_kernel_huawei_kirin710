@@ -139,6 +139,8 @@ extern ssize_t f2fs_listxattr(struct dentry *, char *, size_t);
 struct f2fs_xattr_header* get_xattr_header(struct inode *, struct page *,
 					   struct page **);
 void put_xattr_header(struct page *);
+extern int f2fs_init_xattr_caches(struct f2fs_sb_info *);
+extern void f2fs_destroy_xattr_caches(struct f2fs_sb_info *);
 #else
 
 #define f2fs_xattr_handlers	NULL
@@ -159,6 +161,8 @@ static inline ssize_t f2fs_listxattr(struct dentry *dentry, char *buffer,
 {
 	return -EOPNOTSUPP;
 }
+static int f2fs_init_xattr_caches(struct f2fs_sb_info *sbi) { return 0; }
+static void f2fs_destroy_xattr_caches(struct f2fs_sb_info *sbi) { }
 #endif
 
 #ifdef CONFIG_F2FS_FS_SECURITY

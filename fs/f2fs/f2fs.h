@@ -1661,6 +1661,9 @@ struct f2fs_sb_info {
 #ifdef CONFIG_F2FS_CHECK_FS
 	atomic_t in_cp;
 #endif
+
+	struct kmem_cache *inline_xattr_slab;	/* inline xattr entry */
+	unsigned int inline_xattr_slab_size;	/* default inline xattr slab size */
 };
 
 struct f2fs_private_dio {
