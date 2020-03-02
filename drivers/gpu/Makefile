@@ -4,3 +4,4 @@
 obj-y                         += drm/ host1x/ ipu-v3/ vga/
 obj-$(CONFIG_GPU_GMC_GENERIC) += gmc/
 obj-$(CONFIG_MALI_MIDGARD)    += arm/
+obj-$(CONFIG_TRACE_GPU_MEM)		+= trace/
