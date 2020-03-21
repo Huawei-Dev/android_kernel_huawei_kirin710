@@ -463,7 +463,6 @@ struct page *f2fs_init_inode_metadata(struct inode *inode, struct dentry *dentry
 			struct page *dpage)
 {
 	struct page *page;
-	int dummy_encrypt = DUMMY_ENCRYPTION_ENABLED(F2FS_I_SB(dir));
 	int err;
 
 	if (is_inode_flag_set(inode, FI_NEW_INODE)) {
@@ -490,8 +489,7 @@ struct page *f2fs_init_inode_metadata(struct inode *inode, struct dentry *dentry
 		if (err)
 			goto put_error;
 
-		if ((IS_ENCRYPTED(dir) || dummy_encrypt) &&
-					f2fs_may_encrypt(inode)) {
+		if (IS_ENCRYPTED(inode)) {
 			err = fscrypt_inherit_context(dir, inode, page, false);
 			if (err)
 				goto put_error;
