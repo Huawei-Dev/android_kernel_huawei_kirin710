@@ -366,9 +366,20 @@ struct vfs_ns_cap_data {
 
 #define CAP_AUDIT_READ		37
 
-#define CAP_PERF_EVENT		38
+/*
+ * Allow system performance and observability privileged operations
+ * using perf_events, i915_perf and other kernel subsystems
+ */
 
-#define CAP_LAST_CAP         CAP_PERF_EVENT
+#define CAP_PERFMON		38
+
+/*
+ * Compatibility with older Android/Huawei backports that used
+ * CAP_PERF_EVENT for the same capability.
+ */
+#define CAP_PERF_EVENT		CAP_PERFMON
+
+#define CAP_LAST_CAP         CAP_PERFMON
 
 #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
 
