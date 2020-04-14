@@ -21,6 +21,8 @@ obj-$(CONFIG_MMC_BLOCK)		+= mmc_block.o
 mmc_block-objs			:= block.o queue.o
 obj-$(CONFIG_MMC_TEST)		+= mmc_test.o
 obj-$(CONFIG_SDIO_UART)		+= sdio_uart.o
+mmc_core-$(CONFIG_MMC_CRYPTO)	+= crypto.o
+
 obj-$(CONFIG_HISI_DEBUG_FS)	+= hisi_mmc_sysfs.o
 obj-$(CONFIG_HISI_BOOTDEVICE) 	+= emmc-rpmb.o
 obj-$(CONFIG_MMC_CQ_HCI) 	+= hisi_cmdq_core.o
@@ -36,6 +38,3 @@ obj-$(CONFIG_HUAWEI_EMMC_DSM) += dsm_emmc.o
 obj-$(CONFIG_HUAWEI_SDCARD_DSM) += dsm_sdcard.o
 obj-$(CONFIG_MMC_CQ_HCI) += hisi_cmdq_card.o
 obj-$(CONFIG_HISI_RPMB_MMC) += hisi_rpmb_ioctl.o
-ifeq ($(TARGET_VERSION_MODE),factory)
-	EXTRA_CFLAGS += -DBYPASS_AUTHORITY_VERIFY
-endif
