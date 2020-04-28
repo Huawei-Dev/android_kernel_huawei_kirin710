@@ -12,7 +12,6 @@
 #include <linux/spinlock.h>
 #include <asm/bug.h>
 #include <asm/cacheflush.h>
-#include <asm/memory.h>
 #include <asm/set_memory.h>
 
 #ifdef CONFIG_HUAWEI_VENDOR_EXCEPTION
