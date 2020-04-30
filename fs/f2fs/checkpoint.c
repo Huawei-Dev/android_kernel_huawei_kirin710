@@ -1230,6 +1230,11 @@ static int block_operations(struct f2fs_sb_info *sbi)
 	unsigned long sync_imeta_cycles = 0;
 	unsigned long sync_nodes_cycles = 0;
 
+	/*
+	 * Let's flush inline_data in dirty node pages.
+	 */
+	f2fs_flush_inline_data(sbi);
+
 retry_flush_quotas:
 	f2fs_lock_all(sbi);
 	if (__need_flush_quota(sbi)) {
