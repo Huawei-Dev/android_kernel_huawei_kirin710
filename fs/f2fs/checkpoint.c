@@ -1340,7 +1340,6 @@ static void unblock_operations(struct f2fs_sb_info *sbi)
 void f2fs_wait_on_all_pages(struct f2fs_sb_info *sbi, int type)
 {
 	DEFINE_WAIT(wait);
-	int ret;
 
 	for (;;) {
 		prepare_to_wait(&sbi->cp_wait, &wait, TASK_UNINTERRUPTIBLE);
@@ -1351,14 +1350,10 @@ void f2fs_wait_on_all_pages(struct f2fs_sb_info *sbi, int type)
 		if (unlikely(f2fs_cp_error(sbi)))
 			break;
 
-		ret = io_schedule_timeout(HZ/50);
-		if (ret == 0) {
-			struct hd_struct *part = sbi->sb->s_bdev->bd_part;
-			printk(KERN_EMERG "%s timeout writeback pages=%lld \r\n",
-					__func__, get_pages(sbi, F2FS_WB_DATA));
-			printk(KERN_EMERG "%s read io in flight %d, write io in flight %d \r\n ",
-					__func__, atomic_read(&part->in_flight[0]),atomic_read(&part->in_flight[1]));
-		}
+		if (type == F2FS_DIRTY_META)
+			f2fs_sync_meta_pages(sbi, META, LONG_MAX,
+							FS_CP_META_IO);
+		io_schedule_timeout(DEFAULT_IO_TIMEOUT);
 	}
 	finish_wait(&sbi->cp_wait, &wait);
 }
