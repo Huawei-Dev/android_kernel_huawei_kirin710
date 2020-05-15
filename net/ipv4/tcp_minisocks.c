@@ -443,7 +443,7 @@ void tcp_openreq_init_rwin(struct request_sock *req,
 
 	/* tcp_full_space because it is guaranteed to be the first packet */
 #ifdef CONFIG_MPTCP
-	tp->ops->select_initial_window(tcp_full_space(sk_listener),
+	tcp_select_initial_window(sock_net(sk_listener), tcp_full_space(sk_listener),
 		mss - (ireq->tstamp_ok ? TCPOLEN_TSTAMP_ALIGNED : 0) -
 		(ireq->saw_mpc ? MPTCP_SUB_LEN_DSM_ALIGN : 0),
 		&req->rsk_rcv_wnd,
@@ -452,7 +452,7 @@ void tcp_openreq_init_rwin(struct request_sock *req,
 		&rcv_wscale,
 		dst_metric(dst, RTAX_INITRWND), sk_listener);
 #else
-	tcp_select_initial_window(full_space,
+	tcp_select_initial_window(sock_net(sk_listener), full_space,
 		mss - (ireq->tstamp_ok ? TCPOLEN_TSTAMP_ALIGNED : 0),
 		&req->rsk_rcv_wnd,
 		&req->rsk_window_clamp,
