@@ -2222,3 +2222,6 @@ source "kernel/hwcfs/Kconfig"
 source "kernel/cpu_netlink/Kconfig"
 source "kernel/hwqos/Kconfig"
 source "init/sar_ramdisk/Kconfig"
+
+config ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+	bool
