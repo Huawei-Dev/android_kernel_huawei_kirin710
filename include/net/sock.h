@@ -2619,4 +2619,6 @@ static inline void sk_pacing_shift_update(struct sock *sk, int val)
 	sk->sk_pacing_shift = val;
 }
 
+int sock_bindtoindex(struct sock *sk, int ifindex);
+
 #endif	/* _SOCK_H */
