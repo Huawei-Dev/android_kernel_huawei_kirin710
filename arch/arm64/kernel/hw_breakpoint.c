@@ -767,6 +767,27 @@ static u64 get_distance_from_watchpoint(unsigned long addr, u64 val,
 		return 0;
 }
 
+static int watchpoint_report(struct perf_event *wp, unsigned long addr,
+			     struct pt_regs *regs)
+{
+	int step = is_default_overflow_handler(wp);
+	struct arch_hw_breakpoint *info = counter_arch_bp(wp);
+
+	info->trigger = addr;
+
+	/*
+	 * If we triggered a user watchpoint from a uaccess routine, then
+	 * handle the stepping ourselves since userspace really can't help
+	 * us with this.
+	 */
+	if (!user_mode(regs) && info->ctrl.privilege == AARCH64_BREAKPOINT_EL0)
+		step = 1;
+	else
+		perf_bp_event(wp, regs);
+
+	return step;
+}
+
 static int watchpoint_handler(unsigned long addr, unsigned int esr,
 			      struct pt_regs *regs)
 {
@@ -776,7 +797,9 @@ static int watchpoint_handler(unsigned long addr, unsigned int esr,
 	u64 val;
 	struct perf_event *wp, **slots;
 	struct debug_info *debug_info;
+#ifdef CONFIG_HAVE_HW_BREAKPOINT_ADDR_MASK
 	struct arch_hw_breakpoint *info;
+#endif
 	struct arch_hw_breakpoint_ctrl ctrl;
 
 	slots = this_cpu_ptr(wp_on_reg);
@@ -806,51 +829,45 @@ static int watchpoint_handler(unsigned long addr, unsigned int esr,
 		ctrl_reg = read_wb_reg(AARCH64_DBG_REG_WCR, i);
 		decode_ctrl_reg(ctrl_reg, &ctrl);
 
-		info = counter_arch_bp(wp);
 #ifdef CONFIG_HAVE_HW_BREAKPOINT_ADDR_MASK
+		info = counter_arch_bp(wp);
+
 		/* check addr range */
 		if (info->ctrl.mask != ARM_WATCHPOINT_ADDR_MASK_0) {
-			if (val != (addr & ~((1 << info->ctrl.mask) - 1))) {
+			if (val != (addr & ~((1 << info->ctrl.mask) - 1)))
 				continue;
-			}
 		} else {
 #endif
-		dist = get_distance_from_watchpoint(addr, val, &ctrl);
-		if (dist < min_dist) {
-			min_dist = dist;
-			closest_match = i;
-		}
-		/* Is this an exact match? */
-		if (dist != 0)
-			continue;
+			dist = get_distance_from_watchpoint(addr, val, &ctrl);
+			if (dist < min_dist) {
+				min_dist = dist;
+				closest_match = i;
+			}
+
+			/* Is this an exact match? */
+			if (dist != 0)
+				continue;
 
 #ifdef CONFIG_HAVE_HW_BREAKPOINT_ADDR_MASK
 		}
 #endif
 
-		info->trigger = addr;
-		perf_bp_event(wp, regs);
+		step |= watchpoint_report(wp, addr, regs);
 
 #ifdef CONFIG_HAVE_HW_BREAKPOINT_ADDR_MASK
-		/* We need to handle the stepping */
+		/*
+		 * Preserve Huawei behaviour: with address-mask watchpoints,
+		 * a reported exact/masked match always needs single-step
+		 * handling.
+		 */
 		step = 1;
-#else
-		/* Do we need to handle the stepping? */
-		if (is_default_overflow_handler(wp))
-			step = 1;
 #endif
 	}
-	if (min_dist > 0 && min_dist != -1) {
-		/* No exact match found. */
-		wp = slots[closest_match];
-		info = counter_arch_bp(wp);
-		info->trigger = addr;
-		perf_bp_event(wp, regs);
 
-		/* Do we need to handle the stepping? */
-		if (is_default_overflow_handler(wp))
-			step = 1;
-	}
+	/* No exact match found? */
+	if (min_dist > 0 && min_dist != -1)
+		step |= watchpoint_report(slots[closest_match], addr, regs);
+
 	rcu_read_unlock();
 
 	if (!step)
