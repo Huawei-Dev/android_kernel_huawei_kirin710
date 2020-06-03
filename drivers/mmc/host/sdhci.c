@@ -431,8 +431,8 @@ static void sdhci_read_block_pio(struct sdhci_host *host)
 {
 	unsigned long flags;
 	size_t blksize, len, chunk;
-	u32 uninitialized_var(scratch);
-	u8 *buf = NULL;
+	u32 scratch;
+	u8 *buf;
 
 	DBG("PIO reading\n");
 
