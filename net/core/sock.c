@@ -1566,16 +1566,9 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 
 		mem_cgroup_sk_alloc(sk);
 		cgroup_sk_alloc(&sk->sk_cgrp_data);
-#ifdef CONFIG_HWDPI_MODULE
-		sk->sk_hwdpi_mark = 0;
-#endif
-
 		sock_update_classid(&sk->sk_cgrp_data);
 		sock_update_netprioidx(&sk->sk_cgrp_data);
-
-#ifdef CONFIG_CGROUP_BPF
-		*(sk->sk_process_name) = '\0';
-#endif
+		sk_tx_queue_clear(sk);
 	}
 
 	return sk;
@@ -1788,6 +1781,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 		 */
 		sk_refcnt_debug_inc(newsk);
 		sk_set_socket(newsk, NULL);
+		sk_tx_queue_clear(newsk);
 		newsk->sk_wq = NULL;
 
 		if (newsk->sk_prot->sockets_allocated)
