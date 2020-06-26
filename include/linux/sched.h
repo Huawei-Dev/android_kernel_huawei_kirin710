@@ -2123,14 +2123,6 @@ extern long sched_getaffinity(pid_t pid, struct cpumask *mask);
 #define TASK_SIZE_OF(tsk)	TASK_SIZE
 #endif
 
-void __exit_umh(struct task_struct *tsk);
-
-static inline void exit_umh(struct task_struct *tsk)
-{
-	if (unlikely(tsk->flags & PF_UMH))
-		__exit_umh(tsk);
-}
-
 #ifdef CONFIG_SCHED_HWSTATUS
 extern void sched_hwstatus_iodelay_caller(struct task_struct *tsk, u64 delta);
 extern void sched_account_ui_thread_io_block_counts(int msecs);
