@@ -1215,6 +1215,9 @@ static void f2fs_put_super(struct super_block *sb)
 
 	f2fs_msg(sb, KERN_ALERT, "f2fs begin to put super\n");
 
+	/* unregister procfs/sysfs entries in advance to avoid race case */
+	f2fs_unregister_sysfs(sbi);
+
 	f2fs_quota_off_umount(sb);
 
 	/* prevent remaining shrinker jobs */
@@ -1283,8 +1286,6 @@ static void f2fs_put_super(struct super_block *sb)
 #endif
 
 	kvfree(sbi->ckpt);
-
-	f2fs_unregister_sysfs(sbi);
 
 	sb->s_fs_info = NULL;
 	if (sbi->s_chksum_driver)
