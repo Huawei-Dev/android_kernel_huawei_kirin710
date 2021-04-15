@@ -248,21 +248,21 @@ kallsyms()
 		if [ -s "${tmp_blacklist}" ]; then
 			# Generate debug log
 			if [ -n "${CONFIG_HUAWEI_HIDESYMS_DEBUGFS}" ]; then
-				${NM} -n ${1} | grep -w -f ${tmp_blacklist} > ${debug_blacklist}
+				${NM} -n ${1} 2>/dev/null | grep -w -f ${tmp_blacklist} > ${debug_blacklist}
 			fi
 
-			${NM} -n ${1} | \
+			${NM} -n ${1} 2>/dev/null | \
 				grep -vw -f ${tmp_blacklist} | \
 				scripts/kallsyms ${kallsymopt} > ${afile}
 			${CC} ${aflags} -c -o ${2} ${afile}
 		else
-			${NM} -n ${1} | scripts/kallsyms ${kallsymopt} > ${afile}
+			${NM} -n ${1} 2>/dev/null | scripts/kallsyms ${kallsymopt} > ${afile}
 			${CC} ${aflags} -c -o ${2} ${afile}
 		fi
 
 		rm ${tmp_blacklist}
 	else
-		${NM} -n ${1} | scripts/kallsyms ${kallsymopt} > ${afile}
+		${NM} -n ${1} 2>/dev/null | scripts/kallsyms ${kallsymopt} > ${afile}
 		${CC} ${aflags} -c -o ${2} ${afile}
 	fi
 }
