@@ -592,7 +592,6 @@ void ipc_mbx_irq_show(struct seq_file *s, const void __iomem *base, unsigned int
 			}
 			if (i == IPC_MBXDATA_TAG) {
 				source = GET_SHAREMEM_SOURCE(ipc_data);
-				dubai_update_wakeup_info("DUBAI_TAG_SENSORHUB_WAKEUP", "mem=%u source=%u", mem, source);
 			}
 		}
 		LOWPM_MSG(s, "SR:[MBXDATA%u]:0x%x\n", i, ipc_data); //lint !e666
@@ -733,14 +732,6 @@ void pm_status_show(struct seq_file *s)
 		(wake_status & HISEE_MASK) ? 1 : 0,
 		(wake_status & HOTPLUG_MASK(0)) ? 1 : 0,
 		(wake_status & HOTPLUG_MASK(1)) ? 1 : 0);
-	dubai_update_wakeup_info("DUBAI_TAG_WAKE_STATUS", "ap=%d modem=%d hifi=%d iomcu=%d hisee=%d hotplug0=%d hotplug1=%d",
-		(wake_status & AP_MASK) ? 1 : 0,
-		(wake_status & MODEM_MASK) ? 1 : 0,
-		(wake_status & HIFI_MASK) ? 1 : 0,
-		(wake_status & IOMCU_MASK) ? 1 : 0,
-		(wake_status & HISEE_MASK) ? 1 : 0,
-		(wake_status & HOTPLUG_MASK(0)) ? 1 : 0,
-		(wake_status & HOTPLUG_MASK(1)) ? 1 : 0);
 
 	LOWPM_MSG(s, "SR:system sleeped %u times.\n",
 		readl(sysreg_base.reserved_base + SYS_DSLEEP_CNT_OFFSET)); //lint !e666
@@ -817,7 +808,6 @@ void pm_status_show(struct seq_file *s)
 	ap_irq = readl(sysreg_base.reserved_base + AP_WAKE_IRQ_OFFSET);
 	if ((g_lpmcu_irq_num > ap_irq)
 		&& (g_lpmcu_irq_name != NULL)){
-		dubai_update_wakeup_info("DUBAI_TAG_AP_WAKE_IRQ", "name=%s", g_lpmcu_irq_name[ap_irq]);
 		LOWPM_MSG(s, "SR:AP WAKE IRQ(LPM3 NVIC): %d (%s)\n",
 				ap_irq, g_lpmcu_irq_name[ap_irq]);
 	} else {
