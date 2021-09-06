@@ -51,11 +51,6 @@ static struct hlist_head *all_lists[] = {
 	NULL,
 };
 
-static struct hlist_head *orphan_list[] = {
-	&clk_orphan_list,
-	NULL,
-};
-
 #define CREATE_TRACE_POINTS
 #include <trace/events/clk.h>
 
@@ -2157,6 +2152,11 @@ static struct dentry *rootdir;
 static int inited = 0;
 static DEFINE_MUTEX(clk_debug_lock);
 static HLIST_HEAD(clk_debug_list);
+
+static struct hlist_head *orphan_list[] = {
+	&clk_orphan_list,
+	NULL,
+};
 
 #ifdef CONFIG_HISI_CLK_DEBUG
 struct hlist_head *clk_all_lists_debug[] = {
