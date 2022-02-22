@@ -550,7 +550,7 @@ rndis_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 			u32 n;
 
 			/* return the result */
-			spin_lock(&rndis->params->resp_queue_lock);
+			spin_lock(&rndis->params->resp_lock);
 			buf = rndis_get_next_response(rndis->params, &n);
 			if (buf) {
 				memcpy(req->buf, buf, n);
@@ -559,7 +559,7 @@ rndis_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 				rndis_free_response(rndis->params, buf);
 				value = n;
 			}
-			spin_unlock(&rndis->params->resp_queue_lock);
+			spin_unlock(&rndis->params->resp_lock);
 			/* else stalls ... spec says to avoid that */
 		}
 		break;
