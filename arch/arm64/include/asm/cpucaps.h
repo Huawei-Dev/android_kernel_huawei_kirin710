@@ -44,7 +44,8 @@
 #define ARM64_HAS_CACHE_DIC			23
 #define ARM64_WORKAROUND_1188873		24
 #define ARM64_SPECTRE_BHB			25
+#define ARM64_WORKAROUND_1742098		26
 
-#define ARM64_NCAPS				26
+#define ARM64_NCAPS				27
 
 #endif /* __ASM_CPUCAPS_H */
