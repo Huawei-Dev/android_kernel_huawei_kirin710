@@ -11,7 +11,6 @@
 	.align	3
 
 	.type	hkip_hvc, %function
-	.func	hkip_hvc
 hkip_hvc:
 hkip_hvc3:
 hkip_hvc4:
@@ -21,4 +20,3 @@ alternative_else
 	hvc	#0
 alternative_endif
 	ret
-	.endfunc
