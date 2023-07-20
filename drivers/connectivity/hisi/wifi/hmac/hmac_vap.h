@@ -81,11 +81,6 @@ typedef oal_uint8 hmac_addba_mode_enum_uint8;
 /*****************************************************************************
   7 STRUCT????
 *****************************************************************************/
-/* ????hmac_vap ?????????? */
-struct hmac_vap_tag;
-typedef struct hmac_vap_tag hmac_vap_stru;
-
-
 typedef struct
 {
     oal_dlist_head_stru st_timeout_head;
@@ -172,8 +167,7 @@ typedef enum _hmac_tcp_opt_queue_
 } hmac_tcp_opt_queue;
 
 #ifdef _PRE_WLAN_TCP_OPT
-typedef oal_uint16 (* hmac_trans_cb_func)(hmac_vap_stru *pst_hmac_device, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru* data);
-/*tcp_ack????*/
+typedef oal_uint16 (* hmac_trans_cb_func)(void *pst_hmac_device, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru* data);
 typedef struct
 {
     struct wlan_perform_tcp      hmac_tcp_ack;
