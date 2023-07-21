@@ -52,11 +52,11 @@ struct hw_vcm_info {
 	int data_type;
 };
 
-typedef struct _tag_hw_vcm_intf
+struct _tag_hw_vcm_intf
 {
 	hw_vcm_vtbl_t *vtbl;
     struct v4l2_subdev *subdev;
-} hw_vcm_intf_t;
+};
 
 
 typedef struct _vcm_t {
@@ -90,4 +90,5 @@ int hw_vcm_config(hw_vcm_t *hw_vcm, void *arg);
 int hw_vcm_get_dt_data(struct platform_device *pdev, vcm_t *vcm);
 
 #endif
+
 
