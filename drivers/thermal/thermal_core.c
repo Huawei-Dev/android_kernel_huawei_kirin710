@@ -1026,13 +1026,14 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
 		goto free_mem;
 
 	dev->id = result;
-	sprintf(dev->name, "cdev%d", dev->id);/*lint !e421 */ /* unsafe_function_ignore: sprintf */
+	sprintf(dev->name, "cdev%d", dev->id);
 	result =
 	    sysfs_create_link(&tz->device.kobj, &cdev->device.kobj, dev->name);
 	if (result)
 		goto release_ida;
 
-	sprintf(dev->attr_name, "cdev%d_trip_point", dev->id);/*lint !e421 */ /* unsafe_function_ignore: sprintf */
+	snprintf(dev->attr_name, sizeof(dev->attr_name), "cdev%d_trip_point",
+		 dev->id);
 	sysfs_attr_init(&dev->attr.attr);
 	dev->attr.attr.name = dev->attr_name;
 	dev->attr.attr.mode = 0444;
@@ -1041,7 +1042,8 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
 	if (result)
 		goto remove_symbol_link;
 
-	sprintf(dev->weight_attr_name, "cdev%d_weight", dev->id);/*lint !e421 */ /* unsafe_function_ignore: sprintf */
+	snprintf(dev->weight_attr_name, sizeof(dev->weight_attr_name),
+		 "cdev%d_weight", dev->id);
 	sysfs_attr_init(&dev->weight_attr.attr);
 	dev->weight_attr.attr.name = dev->weight_attr_name;
 	dev->weight_attr.attr.mode = S_IWUSR | S_IRUGO;
@@ -1067,7 +1069,7 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
 	mutex_unlock(&tz->lock);
 
 	if (!result)
-		return 0;/*lint !e429 */
+		return 0;
 
 	device_remove_file(&tz->device, &dev->weight_attr);
 remove_trip_file:
@@ -1079,7 +1081,7 @@ release_ida:
 free_mem:
 	kfree(dev);
 	return result;
-} /*lint !e429 */
+}
 EXPORT_SYMBOL_GPL(thermal_zone_bind_cooling_device);
 
 /**
