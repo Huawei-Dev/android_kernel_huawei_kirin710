@@ -14,6 +14,7 @@
  */
 struct genl_multicast_group {
 	char			name[GENL_NAMSIZ];
+	u8			flags;
 #ifdef CONFIG_BCMDHD
 	struct genl_family	*family;	/* private */
 	struct list_head	list;		/* private */
