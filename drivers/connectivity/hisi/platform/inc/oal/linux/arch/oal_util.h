@@ -278,8 +278,11 @@ OAL_STATIC OAL_INLINE oal_file_stru* oal_file_write(oal_file_stru *file, oal_int
     oal_int i_ret;
 
     i_ret = file->f_op->write(file, pc_string, ul_length, &file->f_pos);
+    if (i_ret < 0) {
+        return OAL_PTR_NULL;
+    }
 
-    return OAL_SUCC;
+    return file;
 }
 
 
