@@ -22,17 +22,7 @@ extern "C" {
 #define MAX_NV_GUC_CHECK_ITEM_NUM           32
 #define MAX_NV_TL_CHECK_ITEM_NUM            64
 
-#ifndef __u8_defined
-#define __u8_defined
-typedef signed char          s8;
-typedef unsigned char        u8;
-typedef signed short         s16;
-typedef unsigned short       u16;
-typedef signed int           s32;
-typedef unsigned int         u32;
-typedef signed long long     s64;
-typedef unsigned long long   u64;
-#endif
+#include <asm-generic/int-ll64.h>
 
 /*????????????????*/
 typedef struct
