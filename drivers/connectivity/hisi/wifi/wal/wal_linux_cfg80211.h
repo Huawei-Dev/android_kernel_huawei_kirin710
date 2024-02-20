@@ -140,6 +140,37 @@ typedef struct cookie_arry
     .flags          = (_flags),                                 \
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+#define CHAN2G(_channel, _freq, _flags)  \
+{                       \
+    .band                   = NL80211_BAND_2GHZ,          \
+    .center_freq            = (_freq),                      \
+    .hw_value               = (_channel),                   \
+    .flags                  = (_flags),                     \
+    .max_antenna_gain       = 0,                            \
+    .max_power              = 30,                           \
+}
+
+#define CHAN5G(_channel, _flags) \
+{                                              \
+    .band                   = NL80211_BAND_5GHZ,          \
+    .center_freq            = 5000 + (5 * (_channel)),      \
+    .hw_value               = (_channel),                   \
+    .flags                  = (_flags),                     \
+    .max_antenna_gain       = 0,                            \
+    .max_power              = 30,                           \
+}
+
+#define CHAN4_9G(_channel, _flags) \
+{                                              \
+    .band                   = NL80211_BAND_5GHZ,          \
+    .center_freq            = 4000 + (5 * (_channel)),      \
+    .hw_value               = (_channel),                   \
+    .flags                  = (_flags),                     \
+    .max_antenna_gain       = 0,                            \
+    .max_power              = 30,                           \
+}
+#else
 #define CHAN2G(_channel, _freq, _flags)  \
 {                       \
     .band                   = IEEE80211_BAND_2GHZ,          \
@@ -169,6 +200,7 @@ typedef struct cookie_arry
     .max_antenna_gain       = 0,                            \
     .max_power              = 30,                           \
 }
+#endif
 
 #elif (_PRE_OS_VERSION_WIN32 == _PRE_OS_VERSION)
 
