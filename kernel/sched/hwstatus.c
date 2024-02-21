@@ -243,6 +243,7 @@ void sched_hwstatus_iodelay_caller(struct task_struct *tsk, u64 delta)
 		return;
 	}
 
+#ifdef CONFIG_HW_VIP_THREAD
 	if((tsk) && (tsk->static_vip)) {
 		if(tsk->pid != tsk->tgid) {
 			if((tsk->comm[0] != 'R') || (tsk->comm[1] != 'e')) {
@@ -262,6 +263,7 @@ void sched_hwstatus_iodelay_caller(struct task_struct *tsk, u64 delta)
 					   current->pid, current->tgid, current->comm, tsk->in_iowait, tsk->pid, tsk->tgid, tsk->comm, delta_max, __caller);
 		simple_record_stack(tsk, stack_dump.stack, STACK_DUMP_SIZE);
 	}
+#endif
 }
 
 void sched_hwstatus_updatefg(pid_t pid, pid_t tgid)
