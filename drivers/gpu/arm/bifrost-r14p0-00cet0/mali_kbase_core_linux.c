@@ -89,6 +89,7 @@
 #endif
 #include <linux/log2.h>
 
+#include <linux/pm_qos.h>
 #include <mali_kbase_config.h>
 #ifdef CONFIG_HUAWEI_DSM
 /* for runmode_is_factory() */
@@ -1166,8 +1167,8 @@ static int kbase_api_tlstream_stats(struct kbase_context *kctx,
 			return -EFAULT;                                \
 		return ret;                                            \
 	} while (0)
-/*lint -e527*/
-static long kbase_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+
+static long __kbase_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	struct kbase_context *kctx = filp->private_data;
 	struct kbase_device *kbdev = kctx->kbdev;
@@ -1404,7 +1405,20 @@ static long kbase_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	return -ENOIOCTLCMD;
 }
-/*lint +e527*/
+
+long kbase_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	struct pm_qos_request req = {
+		.type = PM_QOS_REQ_AFFINE_CORES,
+		.cpus_affine = ATOMIC_INIT(BIT(raw_smp_processor_id()))
+	};
+	long ret;
+	pm_qos_add_request(&req, PM_QOS_CPU_DMA_LATENCY, 100);
+	ret = __kbase_ioctl(filp, cmd, arg);
+	pm_qos_remove_request(&req);
+	return ret;
+}
+
 static ssize_t kbase_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
 	struct kbase_context *kctx = filp->private_data;
