@@ -10,7 +10,7 @@
 #endif
 #include <linux/power/hisi/coul/hisi_coul_event.h>
 
-#define COUL_CORE_INFO
+// #define COUL_CORE_INFO
 #ifndef COUL_CORE_INFO
 #define coul_core_debug(fmt, args...)do {} while (0)
 #define coul_core_info(fmt, args...) do {} while (0)
