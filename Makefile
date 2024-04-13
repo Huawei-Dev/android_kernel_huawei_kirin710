@@ -958,6 +958,9 @@ KBUILD_CFLAGS   += $(call cc-option,-Werror=strict-prototypes)
 # Relax correct pointer usage
 KBUILD_CFLAGS   += $(call cc-option,-Wno=incompatible-pointer-types)
 
+# Relax pragma-pack usage
+KBUILD_CFLAGS   += $(call cc-option,-Wno-pragma-pack)
+
 # use the deterministic mode of AR if available
 KBUILD_ARFLAGS := $(call ar-option,D)
 
