@@ -39,6 +39,7 @@
 /* emulate gcc's __SANITIZE_ADDRESS__ flag */
 #if __has_feature(address_sanitizer)
 #define __SANITIZE_ADDRESS__
+#endif
 
 /*
  * Not all versions of clang implement the the type-generic versions
