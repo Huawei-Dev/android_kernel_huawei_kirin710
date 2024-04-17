@@ -5,10 +5,11 @@
 #include <linux/types.h>
 
 enum {
-	XT_OWNER_UID    = 1 << 0,
-	XT_OWNER_GID    = 1 << 1,
-	XT_OWNER_SOCKET = 1 << 2,
-	XT_OWNER_PID    = 1 << 3,/*pid_min and pid_max store in xt_owner_match_info.gid_min and xt_owner_match_info.gid_max*/
+	XT_OWNER_UID          = 1 << 0,
+	XT_OWNER_GID          = 1 << 1,
+	XT_OWNER_SOCKET       = 1 << 2,
+	XT_OWNER_PID          = 1 << 3,
+	XT_OWNER_SUPPL_GROUPS = 1 << 4,
 };
 
 struct xt_owner_match_info {
