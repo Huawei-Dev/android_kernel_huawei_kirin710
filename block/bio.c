@@ -856,8 +856,10 @@ int bio_add_page(struct bio *bio, struct page *page,
 done:
 	bio->bi_iter.bi_size += len;
 
+#ifdef CONFIG_PSI
 	if (!bio_flagged(bio, BIO_WORKINGSET) && unlikely(PageWorkingset(page)))
 		bio_set_flag(bio, BIO_WORKINGSET);
+#endif
 	return len;
 }
 EXPORT_SYMBOL(bio_add_page);
