@@ -33,7 +33,9 @@
 #include <linux/ratelimit.h>
 #include <linux/pm_runtime.h>
 #include <linux/blk-cgroup.h>
+#ifdef CONFIG_PSI
 #include <linux/psi.h>
+#endif
 #include <linux/hisi/wbt.h>
 
 #define CREATE_TRACE_POINTS
@@ -2199,9 +2201,11 @@ EXPORT_SYMBOL(generic_make_request);
  */
 blk_qc_t submit_bio(struct bio *bio)
 {
+#ifdef CONFIG_PSI
 	bool workingset_read = false;
 	unsigned long pflags;
 	blk_qc_t ret;
+#endif
 
 	/*
 	 * If it's a regular read/write or a barrier with data attached,
@@ -2218,8 +2222,10 @@ blk_qc_t submit_bio(struct bio *bio)
 		if (op_is_write(bio_op(bio))) {
 			count_vm_events(PGPGOUT, count);
 		} else {
+#ifdef CONFIG_PSI
 			if (bio_flagged(bio, BIO_WORKINGSET))
 				workingset_read = true;
+#endif
 			task_io_account_read(bio->bi_iter.bi_size);
 			count_vm_events(PGPGIN, count);
 		}
@@ -2235,6 +2241,9 @@ blk_qc_t submit_bio(struct bio *bio)
         }
 	}
 
+#ifndef CONFIG_PSI
+	return generic_make_request(bio);
+#else
 	/*
 	 * If we're reading data that is part of the userspace
 	 * workingset, count submission time as memory stall. When the
@@ -2250,6 +2259,7 @@ blk_qc_t submit_bio(struct bio *bio)
 		psi_memstall_leave(&pflags);
 
 	return ret;
+#endif
 }
 EXPORT_SYMBOL(submit_bio);
 
