@@ -32,6 +32,7 @@
 #include <linux/blk-cgroup.h>
 #include <linux/workqueue.h>
 #include <linux/delay.h>
+#include <linux/futex.h>
 #include <log/log_usertype.h>
 
 #define UID_HASH_BITS	10
@@ -1155,8 +1156,8 @@ static bool pid_group_leader_alive(const struct task_struct *task)
 
 	leader = task->group_leader;
 	if ((leader == NULL)
-		|| (leader->flags & PF_EXITING)
-		|| (leader->flags & PF_EXITPIDONE)
+		|| (leader->futex_state != FUTEX_STATE_OK)
+		|| (leader->futex_state = FUTEX_STATE_DEAD)
 		|| (leader->flags & PF_SIGNALED)
 		|| (pid_get_task_state(leader) >= TASK_STATE_DEAD)) {
 		return false;
