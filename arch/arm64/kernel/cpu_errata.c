@@ -589,7 +589,7 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 #ifdef CONFIG_ARCH_HISI
 	{
 		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
-		MIDR_ALL_VERSIONS(MIDR_CORTEX_ENYO),
+		.midr_range = MIDR_ALL_VERSIONS(MIDR_CORTEX_ENYO),
 		.cpu_enable = enable_smccc_arch_workaround_1,
 	},
 #endif
