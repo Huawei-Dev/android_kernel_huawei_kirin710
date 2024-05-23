@@ -940,7 +940,8 @@ static int __generate_random_data(uint8_t *data, uint32_t size)
 		return -EFAULT;
 	}
 
-	get_random_bytes_arch((void *)data, size);
+	wait_for_random_bytes();
+	get_random_bytes((void *)data, sizeof(size));
 
 	for (i = 0; i < size; i++)
 		if (data[i] != 0)
