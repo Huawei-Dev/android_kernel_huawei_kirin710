@@ -1423,18 +1423,6 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 				cp_payload_blks + data_sum_blocks +
 				orphan_blocks);
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	if (need_append_nat_journal(CURSEG_I(sbi, CURSEG_HOT_DATA)->journal))
-		__set_ckpt_flags(ckpt, CP_APPEND_NAT_FLAG);
-	else
-		__clear_ckpt_flags(ckpt, CP_APPEND_NAT_FLAG);
-
-	if (need_append_sit_journal(CURSEG_I(sbi, CURSEG_COLD_DATA)->journal))
-		__set_ckpt_flags(ckpt, CP_APPEND_SIT_FLAG);
-	else
-		__clear_ckpt_flags(ckpt, CP_APPEND_SIT_FLAG);
-#endif
-
 	/* update ckpt flag for checkpoint */
 	update_ckpt_flags(sbi, cpc);
 
@@ -1497,10 +1485,6 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 		write_node_summaries(sbi, start_blk);
 		start_blk += NR_CURSEG_NODE_TYPE;
 	}
-
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	write_append_journal(sbi, start_blk + 1);
-#endif
 
 	/* For write statistics */
 	kbytes_written = sbi->kbytes_written;
@@ -1728,9 +1712,6 @@ void init_ino_entry_info(struct f2fs_sb_info *sbi)
 		im->ino_num = 0;
 	}
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	append = APPEND_BLOCKS;
-#endif
 	if (enabled_nat_bits(sbi, NULL))
 		append += NM_I(sbi)->nat_bits_blocks;
 

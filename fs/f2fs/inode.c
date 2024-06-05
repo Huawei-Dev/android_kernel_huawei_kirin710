@@ -604,24 +604,11 @@ void f2fs_evict_inode(struct inode *inode)
 	nid_t xnid = F2FS_I(inode)->i_xattr_nid;
 	int err = 0;
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	enum page_type type;
-#endif
 	/* some remained atomic pages should discarded */
 	if (f2fs_is_atomic_file(inode))
 		drop_inmem_pages(inode);
 
 	trace_f2fs_evict_inode(inode);
-
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	if (inode->i_ino == F2FS_NODE_INO(sbi))
-		type = NODE;
-	else if (inode->i_ino == F2FS_META_INO(sbi))
-		type = META;
-	else
-		type = DATA;
-	f2fs_submit_merged_write_cond(sbi, inode, 0, ULONG_MAX, type);
-#endif
 
 	truncate_inode_pages_final(&inode->i_data);
 

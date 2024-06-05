@@ -1700,13 +1700,6 @@ static long writeback_sb_inodes(struct super_block *sb,
 	}
 
 	task_clear_in_wb_thrd(current);
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	if (sb->s_op->flush_mbio) {
-		spin_unlock(&wb->list_lock);
-		sb->s_op->flush_mbio(sb);
-		spin_lock(&wb->list_lock);
-	}
-#endif
 	return total_wrote;
 }
 

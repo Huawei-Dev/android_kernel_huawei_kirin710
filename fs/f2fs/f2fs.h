@@ -399,22 +399,8 @@ struct fsync_inode_entry {
 #define sit_in_journal(jnl, i)		((jnl)->sit_j.entries[i].se)
 #define segno_in_journal(jnl, i)	((jnl)->sit_j.entries[i].segno)
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-extern unsigned int write_opt;
-#define APPEND_BLOCKS 2
-#define MAX_NAT_JENTRIES(jnl)	(NAT_JOURNAL_ENTRIES +\
-				(write_opt ? NAT_APPEND_JOURNAL_ENTRIES : 0) -\
-				nats_in_cursum(jnl))
-#define MAX_SIT_JENTRIES(jnl)	(SIT_JOURNAL_ENTRIES +\
-				(write_opt ? SIT_APPEND_JOURNAL_ENTRIES : 0) -\
-				sits_in_cursum(jnl))
-
-#define need_append_nat_journal(jnl)	(nats_in_cursum(jnl) > NAT_JOURNAL_ENTRIES)
-#define need_append_sit_journal(jnl)	(sits_in_cursum(jnl) > SIT_JOURNAL_ENTRIES)
-#else
 #define MAX_NAT_JENTRIES(jnl)  (NAT_JOURNAL_ENTRIES - nats_in_cursum(jnl))
 #define MAX_SIT_JENTRIES(jnl)  (SIT_JOURNAL_ENTRIES - sits_in_cursum(jnl))
-#endif
 
 static inline int update_nats_in_cursum(struct f2fs_journal *journal, int i)
 {
@@ -3284,9 +3270,6 @@ void f2fs_wait_on_block_writeback_range(struct inode *inode, block_t blkaddr,
 void init_virtual_curseg(struct f2fs_sb_info *sbi);
 void write_data_summaries(struct f2fs_sb_info *sbi, block_t start_blk);
 void write_node_summaries(struct f2fs_sb_info *sbi, block_t start_blk);
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-void write_append_journal(struct f2fs_sb_info *sbi, block_t start_blk);
-#endif
 int lookup_journal_in_cursum(struct f2fs_journal *journal, int type,
 			unsigned int val, int alloc);
 void flush_sit_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc);

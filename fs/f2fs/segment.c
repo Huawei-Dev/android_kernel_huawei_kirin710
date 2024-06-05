@@ -3636,41 +3636,6 @@ static int read_normal_summaries(struct f2fs_sb_info *sbi, int type)
 	return 0;
 }
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-static void restore_append_journal(struct f2fs_sb_info *sbi)
-{
-	struct curseg_info *seg_i;
-	unsigned char *kaddr;
-	struct page *page;
-	block_t start_blk;
-
-	start_blk = __start_cp_addr(sbi) +
-		    le32_to_cpu(F2FS_CKPT(sbi)->cp_pack_total_block_count);
-
-	seg_i = CURSEG_I(sbi, CURSEG_HOT_DATA);
-	if (is_set_ckpt_flags(sbi, CP_APPEND_NAT_FLAG)) {
-		page = get_meta_page(sbi, start_blk++);
-		kaddr = (unsigned char *)page_address(page);
-		memcpy((char *)seg_i->journal + SUM_JOURNAL_SIZE - NAT_JOURNAL_RESERVED,
-		       kaddr,
-		       NAT_APPEND_JOURNAL_ENTRIES *
-		       sizeof(struct nat_journal_entry));
-		f2fs_put_page(page, 1);
-	}
-
-	seg_i = CURSEG_I(sbi, CURSEG_COLD_DATA);
-	if (is_set_ckpt_flags(sbi, CP_APPEND_SIT_FLAG)) {
-		page = get_meta_page(sbi, start_blk);
-		kaddr = (unsigned char *)page_address(page);
-		memcpy((char *)seg_i->journal + SUM_JOURNAL_SIZE - SIT_JOURNAL_RESERVED,
-		       kaddr,
-		       SIT_APPEND_JOURNAL_ENTRIES *
-		       sizeof(struct sit_journal_entry));
-		f2fs_put_page(page, 1);
-	}
-}
-#endif
-
 static int restore_curseg_summaries(struct f2fs_sb_info *sbi)
 {
 	struct f2fs_journal *sit_j = CURSEG_I(sbi, CURSEG_COLD_DATA)->journal;
@@ -3702,20 +3667,10 @@ static int restore_curseg_summaries(struct f2fs_sb_info *sbi)
 	}
 
 	/* sanity check for summary blocks */
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	if (nats_in_cursum(nat_j) >
-		(NAT_JOURNAL_ENTRIES + NAT_APPEND_JOURNAL_ENTRIES) ||
-	    sits_in_cursum(sit_j) >
-		(SIT_JOURNAL_ENTRIES + SIT_APPEND_JOURNAL_ENTRIES))
-#else
 	if (nats_in_cursum(nat_j) > NAT_JOURNAL_ENTRIES ||
 			sits_in_cursum(sit_j) > SIT_JOURNAL_ENTRIES)
-#endif
 		return -EINVAL;
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	restore_append_journal(sbi);
-#endif
 	return 0;
 }
 
@@ -3828,39 +3783,6 @@ static void write_normal_summaries(struct f2fs_sb_info *sbi,
 	for (i = type; i < end; i++)
 		write_current_sum_page(sbi, i, blkaddr + (i - type));
 }
-
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-void write_append_journal(struct f2fs_sb_info *sbi, block_t start_blk)
-{
-	struct curseg_info *seg_i;
-	unsigned char *kaddr;
-	struct page *page;
-
-	seg_i = CURSEG_I(sbi, CURSEG_HOT_DATA);
-	if (is_set_ckpt_flags(sbi, CP_APPEND_NAT_FLAG)) {
-		page = grab_meta_page(sbi, start_blk++);
-		kaddr = (unsigned char *)page_address(page);
-		memcpy(kaddr,
-		       (char *)seg_i->journal + SUM_JOURNAL_SIZE - NAT_JOURNAL_RESERVED,
-		       NAT_APPEND_JOURNAL_ENTRIES *
-		       sizeof(struct nat_journal_entry));
-		set_page_dirty(page);
-		f2fs_put_page(page, 1);
-	}
-
-	seg_i = CURSEG_I(sbi, CURSEG_COLD_DATA);
-	if (is_set_ckpt_flags(sbi, CP_APPEND_SIT_FLAG)) {
-		page = grab_meta_page(sbi, start_blk);
-		kaddr = (unsigned char *)page_address(page);
-		memcpy(kaddr,
-		       (char *)seg_i->journal + SUM_JOURNAL_SIZE - SIT_JOURNAL_RESERVED,
-		       SIT_APPEND_JOURNAL_ENTRIES *
-		       sizeof(struct sit_journal_entry));
-		set_page_dirty(page);
-		f2fs_put_page(page, 1);
-	}
-}
-#endif
 
 void write_data_summaries(struct f2fs_sb_info *sbi, block_t start_blk)
 {
@@ -4287,16 +4209,6 @@ static int build_curseg(struct f2fs_sb_info *sbi)
 
 	for (i = 0; i < NR_INMEM_CURSEG_TYPE; i++) {
                append = 0;
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-               if (i == CURSEG_HOT_DATA)
-                       append = NAT_APPEND_JOURNAL_ENTRIES *
-                                sizeof(struct nat_journal_entry) -
-                                NAT_JOURNAL_RESERVED;
-               else if (i == CURSEG_COLD_DATA)
-                       append = SIT_APPEND_JOURNAL_ENTRIES *
-                                sizeof(struct sit_journal_entry) -
-                                SIT_JOURNAL_RESERVED;
-#endif
 		mutex_init(&array[i].curseg_mutex);
 		array[i].sum_blk = kzalloc(PAGE_SIZE, GFP_KERNEL);
 		if (!array[i].sum_blk)

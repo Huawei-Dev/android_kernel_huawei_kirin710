@@ -2602,100 +2602,6 @@ add_out:
 	list_add_tail(&nes->set_list, head);
 }
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-static void __adjust_nat_entry_set_opt(struct f2fs_sb_info *sbi,
-				       struct nat_entry_set *nes,
-				       struct list_head *head, int max)
-{
-	struct nat_entry_set *prev;
-	bool cur_nat_bit, prev_nat_bit;
-
-	nes->can_merge = false;
-
-	if (list_empty(head)) {
-		list_add_tail(&nes->set_list, head);
-		return;
-	}
-
-	list_add_tail(&nes->set_list, head);
-
-	prev = list_prev_entry(nes, set_list);
-	if ((prev->set + 1) == nes->set) {
-		cur_nat_bit = f2fs_test_bit(nes->set, NM_I(sbi)->nat_bitmap);
-		prev_nat_bit = f2fs_test_bit(prev->set, NM_I(sbi)->nat_bitmap);
-		if (cur_nat_bit == prev_nat_bit) {
-			prev->can_merge = true;
-			nes->can_merge = true;
-		}
-	}
-}
-
-static void reorder_nat_entry_set(struct f2fs_sb_info *sbi,
-				  struct list_head *sets,
-				  unsigned int over_journal)
-{
-	struct nat_entry_set *prev_head;
-	struct nat_entry_set *prev_tail;
-	struct nat_entry_set *head;
-	struct nat_entry_set *tail;
-	struct nat_entry_set *set, *tmp;
-	unsigned int prev_entry_cnt, entry_cnt;
-	bool moved;
-
-	if (over_journal == 0)
-		return;
-
-reorder:
-	moved = false;
-	entry_cnt = prev_entry_cnt = 0;
-	prev_head = prev_tail = head = tail = NULL;
-
-	/* move the most continuous entries to the end */
-	list_for_each_entry_safe(set, tmp, sets, set_list) {
-		if (!head)
-			head = set;
-		tail = set;
-		entry_cnt += set->entry_cnt;
-
-		if (set->set_list.next != sets &&
-		    list_next_entry(set, set_list)->set == (set->set + 1) &&
-		    !!f2fs_test_bit(set->set, NM_I(sbi)->nat_bitmap) ==
-		    !!f2fs_test_bit(list_next_entry(set, set_list)->set,
-					NM_I(sbi)->nat_bitmap))
-			continue;
-
-		if (prev_tail && prev_entry_cnt > entry_cnt) {
-			prev_head->set_list.prev->next =
-					&head->set_list;
-			prev_tail->set_list.next =
-					tail->set_list.next;
-			head->set_list.prev =
-					prev_head->set_list.prev;
-			tail->set_list.next->prev =
-					&prev_tail->set_list;
-			prev_head->set_list.prev =
-					&tail->set_list;
-			tail->set_list.next =
-					&prev_head->set_list;
-			moved = true;
-		} else {
-			prev_head = head;
-			prev_tail = tail;
-			prev_entry_cnt = entry_cnt;
-		}
-
-		head = tail = NULL;
-		entry_cnt = 0;
-	}
-
-	if (prev_entry_cnt >= over_journal || !moved)
-		return;
-
-	over_journal -= prev_entry_cnt;
-	goto reorder;
-}
-#endif
-
 static void __update_nat_bits(struct f2fs_sb_info *sbi, nid_t start_nid,
 						struct page *page, bool to_journal)
 {
@@ -2817,9 +2723,6 @@ void flush_nat_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	struct nat_entry_set *setvec[SETVEC_SIZE];
 	struct nat_entry_set *set, *tmp;
 	unsigned int found;
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	unsigned int over_journal = 0;
-#endif
 	nid_t set_idx = 0;
 	LIST_HEAD(sets);
 
@@ -2836,43 +2739,14 @@ void flush_nat_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	if (!__has_cursum_space(journal, nm_i->dirty_nat_cnt, NAT_JOURNAL))
 		remove_nats_in_journal(sbi);
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	if (nm_i->dirty_nat_cnt > MAX_NAT_JENTRIES(journal))
-		over_journal = nm_i->dirty_nat_cnt - MAX_NAT_JENTRIES(journal);
-#endif
 	while ((found = __gang_lookup_nat_set(nm_i,
 					set_idx, SETVEC_SIZE, setvec))) {
 		unsigned idx;
 		set_idx = setvec[found - 1]->set + 1;
 		for (idx = 0; idx < found; idx++)
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-			if (write_opt)
-				__adjust_nat_entry_set_opt(sbi, setvec[idx],
-							&sets,
-							MAX_NAT_JENTRIES(journal));
-			else
-#endif
 				__adjust_nat_entry_set(setvec[idx], &sets,
 							MAX_NAT_JENTRIES(journal));
 	}
-
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	if (write_opt && over_journal) {
-		/* first, flush the set that only one entry modified */
-		list_for_each_entry_safe(set, tmp, &sets, set_list) {
-			if (set->entry_cnt > 1 || set->can_merge)
-				continue;
-			list_del(&set->set_list);
-			__flush_nat_entry_set(sbi, set, cpc);
-		}
-
-		/*
-		 * then, reorder the list by the count of entries in those
-		 * sets can be flush by on IO.
-		 */
-		reorder_nat_entry_set(sbi, &sets, over_journal);
-	}
-#endif
 
 	/* flush dirty nats in nat entry set */
 	list_for_each_entry_safe(set, tmp, &sets, set_list)

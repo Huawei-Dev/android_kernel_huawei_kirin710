@@ -39,50 +39,6 @@
 
 static struct kmem_cache *f2fs_inode_cachep;
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-unsigned int write_opt = 0;
-static unsigned int zero = 0;
-static unsigned int one = 1;
-
-static struct ctl_table fs_pw_stats_table[] = {
-	{
-	.procname   = "write_opt",
-	.data	    = &write_opt,
-	.maxlen	    = sizeof(unsigned int),
-	.mode	    = 0644,
-	.proc_handler = proc_dointvec_minmax,
-	.extra1 = &zero,
-	.extra2 = &one,
-	},
-	{ },
-};
-
-static struct ctl_table f2fs_table[] = {
-	{
-	.procname   = "f2fs_wbopt",
-	.mode       = 0555,
-	.child      = fs_pw_stats_table,
-	},
-	{ },
-};
-
-static struct ctl_table f2fssys_table[] = {
-	{
-	.procname   = "fs",
-	.mode       = 0555,
-	.child      = f2fs_table,
-	},
-	{ },
-};
-
-static int __init pw_init(void){
-
-	if (!register_sysctl_table(f2fssys_table))
-		return -ENOMEM;
-	return 0;
-}
-#endif
-
 #ifdef CONFIG_F2FS_FAULT_INJECTION
 
 char *fault_name[FAULT_MAX] = {
@@ -2060,14 +2016,6 @@ void f2fs_quota_off_umount(struct super_block *sb)
 }
 #endif
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-void f2fs_flush_mbio (struct super_block *sb)
-{
-	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-
-	f2fs_flush_merged_writes(sbi);
-}
-#endif
 static const struct super_operations f2fs_sops = {
 	.alloc_inode	= f2fs_alloc_inode,
 	.drop_inode	= f2fs_drop_inode,
@@ -2087,9 +2035,6 @@ static const struct super_operations f2fs_sops = {
 	.unfreeze_fs	= f2fs_unfreeze,
 	.statfs		= f2fs_statfs,
 	.remount_fs	= f2fs_remount,
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	.flush_mbio     = f2fs_flush_mbio,
-#endif
 };
 
 #ifdef CONFIG_F2FS_FS_ENCRYPTION
@@ -3638,11 +3583,6 @@ static void __exit exit_f2fs_fs(void)
 module_init(init_f2fs_fs)
 module_exit(exit_f2fs_fs)
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-fs_initcall(pw_init);
-#endif
-
 MODULE_AUTHOR("Samsung Electronics's Praesto Team");
 MODULE_DESCRIPTION("Flash Friendly File System");
 MODULE_LICENSE("GPL");
-

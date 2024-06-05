@@ -2093,11 +2093,7 @@ continue_unlock:
 	if (wbc->range_cyclic || (range_whole && wbc->nr_to_write > 0))
 		mapping->writeback_index = done_index;
 
-#ifdef CONFIG_F2FS_JOURNAL_APPEND
-	if (last_idx != ULONG_MAX && (!write_opt || !task_in_wb_thrd(current)))
-#else
 	if (last_idx != ULONG_MAX)
-#endif
 		f2fs_submit_merged_write_cond(F2FS_M_SB(mapping), mapping->host,
 						0, last_idx, DATA);
 
