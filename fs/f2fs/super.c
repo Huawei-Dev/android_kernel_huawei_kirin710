@@ -50,10 +50,6 @@ struct dsm_dev dsm_f2fs = {
 struct dsm_client *f2fs_dclient = NULL;
 #endif
 
-#ifdef CONFIG_HISI_F2FS_MTIME
-#define TIME_NS_NEED_UPDATE_MTIME (10000000) /*gran is 10ms,just like hz=100*/
-#endif
-
 static struct kmem_cache *f2fs_inode_cachep;
 
 #ifdef CONFIG_F2FS_JOURNAL_APPEND
@@ -3158,11 +3154,7 @@ try_onemore:
 	sb->s_xattr = f2fs_xattr_handlers;
 	sb->s_export_op = &f2fs_export_ops;
 	sb->s_magic = F2FS_SUPER_MAGIC;
-#ifdef CONFIG_HISI_F2FS_MTIME
-	sb->s_time_gran = TIME_NS_NEED_UPDATE_MTIME;
-#else
 	sb->s_time_gran = 1;
-#endif
 	sb->s_flags = (sb->s_flags & ~MS_POSIXACL) |
 		(test_opt(sbi, POSIX_ACL) ? MS_POSIXACL : 0);
 	memcpy(&sb->s_uuid, raw_super->uuid, sizeof(raw_super->uuid));

@@ -108,11 +108,6 @@ config F2FS_FAULT_INJECTION
 	  Test F2FS to inject faults such as ENOMEM, ENOSPC, and so on.
 
 	  If unsure, say N.
-config HISI_F2FS_MTIME
-	bool "reduce freq to update mtime"
-	default n
-	help
-		reduce freq to update mtime
 
 config F2FS_JOURNAL_APPEND
 	bool "F2FS append sit and nat journal size"
