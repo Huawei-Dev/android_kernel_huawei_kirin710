@@ -114,13 +114,6 @@ repeat:
 	if (unlikely(!PageUptodate(page))) {
 		f2fs_stop_checkpoint(sbi, false);
 		f2fs_msg(sbi->sb, KERN_ERR,"f2fs readed meta page is not uptodate!");
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-			if (f2fs_dclient && !dsm_client_ocuppy(f2fs_dclient)) {
-				dsm_client_record(f2fs_dclient, "F2FS reboot: %s:%d\n",
-					__func__, __LINE__);
-				dsm_client_notify(f2fs_dclient, DSM_F2FS_NEED_FSCK);
-			}
-#endif
 		f2fs_restart(); /* force restarting */
 	}
 out:
@@ -1580,45 +1573,12 @@ static void report_bdev_access_info(struct f2fs_sb_info *sbi)
 {
 	struct access_timestamp *at, *tmp;
 	int open_cnt = atomic_read(&bdev_access_info.open_cnt);
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-	int size = 0;
-	char *buf;
-#endif
 
 	if (!open_cnt)
 		return;
 
 	print_bdev_access_info();
 	atomic_set(&bdev_access_info.open_cnt, 0);
-
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-	if(!f2fs_dclient || dsm_client_ocuppy(f2fs_dclient))
-		return;
-
-	buf = kzalloc(1024, GFP_NOFS);
-	if (!buf)
-		goto do_dmd_report;
-
-	spin_lock(&bdev_access_info.lock);
-	list_for_each_entry_safe(at, tmp, &bdev_access_info.access_list, list) {
-		list_del(&at->list);
-		size += snprintf(buf + size, 1024 - size, "%ld, ",
-				at->time.tv_sec);
-		kfree(at);
-		if (size >= 1024) {
-			buf[1023] = '\0';
-			break;
-		}
-	}
-	spin_unlock(&bdev_access_info.lock);
-
-do_dmd_report:
-        dsm_client_record(f2fs_dclient, "F2FS: open_cnt %d, %s\n",
-                                open_cnt, buf ? : "null");
-        dsm_client_notify(f2fs_dclient, DSM_F2FS_NEED_FSCK);
-        if (buf)
-		kfree(buf);
-#endif
 	spin_lock(&bdev_access_info.lock);
 	list_for_each_entry_safe(at, tmp, &bdev_access_info.access_list, list) {
 		list_del(&at->list);

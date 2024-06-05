@@ -566,13 +566,6 @@ retry:
 			f2fs_stop_checkpoint(sbi, false);
 			f2fs_msg(sbi->sb, KERN_ERR,
 				"f2fs inode page read error! erro_num = %d\n", err);
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-			if (f2fs_dclient && !dsm_client_ocuppy(f2fs_dclient)) {
-				dsm_client_record(f2fs_dclient, "F2FS reboot: %s:%d [%d]\n",
-					__func__, __LINE__, err);
-				dsm_client_notify(f2fs_dclient, DSM_F2FS_NEED_FSCK);
-			}
-#endif
 			f2fs_restart(); /* force restarting */
 		}
 		return;
