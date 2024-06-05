@@ -1550,10 +1550,6 @@ struct f2fs_sb_info {
 /* should make sure everything is ready and safe for f2fs_print_sbi_info */
 	bool print_sbi_safe;
 	/* For need ssr parameters */
-#ifdef CONFIG_F2FS_GRADING_SSR
-       struct f2fs_hot_cold_params hot_cold_params;
-#endif
-
 #ifndef CONFIG_F2FS_CHECK_FS
 	struct workqueue_struct *need_fsck_wq;
 	struct need_fsck_work_struct need_fsck_work;

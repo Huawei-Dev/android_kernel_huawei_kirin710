@@ -233,64 +233,6 @@ bool need_SSR(struct f2fs_sb_info *sbi)
 			SM_I(sbi)->min_ssr_sections + reserved_sections(sbi));
 }
 
-#ifdef CONFIG_F2FS_GRADING_SSR
-static inline bool need_SSR_by_type(struct f2fs_sb_info *sbi , int type, int contig_level)
-{
-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
-	u32 valid_blocks = sbi->total_valid_block_count;
-	u32 total_blocks = MAIN_SEGS(sbi) << sbi->log_blocks_per_seg;
-	u64 left_space = (total_blocks - valid_blocks) << 2;
-	unsigned int free_segs = free_segments(sbi);
-	unsigned int ovp_segments = overprovision_segments(sbi);
-	unsigned int lower_limit = 0;
-	unsigned int waterline = 0;
-	int dirty_sum = node_secs + 2 * dent_secs + imeta_secs;
-
-	left_space = left_space - ovp_segments*KBS_PER_SEGMENT;
-	if (test_opt(sbi, LFS))
-		return false;
-	if (&sbi->gc_thread && sbi->gc_thread.gc_urgent &&
-	    !is_gc_test_set(sbi, GC_TEST_DISABLE_GC_URGENT))
-		return true;
-	if (contig_level == SEQ_256BLKS && type == CURSEG_WARM_DATA && free_sections(sbi) > dirty_sum + 3 * reserved_sections(sbi) / 2)
-		return false;
-	if (free_sections(sbi) <= (unsigned int)(dirty_sum + 2 * reserved_sections(sbi))){
-		return true;
-	}
-	if (sbi->hot_cold_params.enable == GRADING_SSR_OFF)
-		return false;
-	if (contig_level >= SEQ_32BLKS)
-		return false;
-	switch (type) {
-		case CURSEG_HOT_DATA:
-			lower_limit = sbi->hot_cold_params.hot_data_lower_limit;
-			waterline = sbi->hot_cold_params.hot_data_waterline;
-			break;
-		case CURSEG_WARM_DATA:
-			lower_limit = sbi->hot_cold_params.warm_data_lower_limit;
-			waterline = sbi->hot_cold_params.warm_data_waterline;
-			break;
-		case CURSEG_HOT_NODE:
-			lower_limit = sbi->hot_cold_params.hot_node_lower_limit;
-			waterline = sbi->hot_cold_params.hot_node_waterline;
-			break;
-		case CURSEG_WARM_NODE:
-			lower_limit = sbi->hot_cold_params.warm_node_lower_limit;
-			waterline = sbi->hot_cold_params.warm_node_waterline;
-			break;
-		default:
-			return false;
-	}
-	if (left_space  > lower_limit)
-		return false;
-	if (unlikely(0 == left_space/KBS_PER_SEGMENT))
-		return false;
-	return (free_segs-ovp_segments)*100/(left_space/KBS_PER_SEGMENT) <= waterline;
-}
-#endif
-
 void register_inmem_page(struct inode *inode, struct page *page)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
@@ -2660,11 +2602,7 @@ static void allocate_segment_by_default(struct f2fs_sb_info *sbi,
 		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
 	else if (curseg->alloc_type == LFS && is_next_segment_free(sbi, type))
 		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
-#ifdef CONFIG_F2FS_GRADING_SSR
-	else if (need_SSR_by_type(sbi, type, contig_level) && get_ssr_segment(sbi, curseg, type, SSR, 0))
-#else
 	else if (need_SSR(sbi) && get_ssr_segment(sbi, curseg, type, SSR, 0))
-#endif
 		change_curseg(sbi, curseg, type, true);
 	else
 		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
@@ -2862,11 +2800,7 @@ static void allocate_segment_subdivision(struct f2fs_sb_info *sbi,
 		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
 	else if (curseg->alloc_type == LFS && is_next_segment_free(sbi, type))
 		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
-#ifdef CONFIG_F2FS_GRADING_SSR
-	else if (need_SSR_by_type(sbi, type, contig_level) && get_ssr_segment(sbi, curseg, type, SSR, 0))
-#else
 	else if (need_SSR(sbi) && get_ssr_segment(sbi, curseg, type, SSR, 0))
-#endif
 		change_curseg(sbi, curseg, type, true);
 	else
 		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
@@ -3128,9 +3062,6 @@ int allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
 	bool from_gc = (type == CURSEG_FRAGMENT_DATA);
 	struct seg_entry *se;
-#ifdef CONFIG_F2FS_GRADING_SSR
-	struct inode *inode = NULL;
-#endif
 	int contig = SEQ_NONE;
 
 	if (from_gc && GET_SEGNO(sbi, old_blkaddr) == NULL_SEGNO) {
@@ -3247,22 +3178,6 @@ int allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 			}
 			stat_inc_seg_type(sbi, curseg);
 		} else {
-#ifdef CONFIG_F2FS_GRADING_SSR
-			if (contig_level != SEQ_NONE) {
-				contig = contig_level;
-				goto allocate_label;
-			}
-
-			if (page && page->mapping && page->mapping != NODE_MAPPING(sbi) &&
-			    page->mapping != META_MAPPING(sbi)) {
-				inode = page->mapping->host;
-
-				contig = check_io_seq(get_dirty_pages(inode));
-			}
-allocate_label:
-			trace_f2fs_grading_ssr_allocate((sbi->raw_super->block_count - sbi->total_valid_block_count),
-							free_segments(sbi), contig);
-#endif
 			sit_i->s_ops->allocate_segment(sbi, curseg, type, false, contig);
 		}
 	}

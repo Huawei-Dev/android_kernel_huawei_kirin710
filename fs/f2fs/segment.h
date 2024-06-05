@@ -124,9 +124,6 @@
 	(((sector_t)blk_addr) << F2FS_LOG_SECTORS_PER_BLOCK)
 #define SECTOR_TO_BLOCK(sectors)					\
 	((sectors) >> F2FS_LOG_SECTORS_PER_BLOCK)
-#ifdef CONFIG_F2FS_GRADING_SSR
-#define KBS_PER_SEGMENT 2048
-#endif
 
 #define SSR_CONTIG_DIRTY_NUMS	32	/*Dirty pages for LFS alloction in grading ssr . */
 #define SSR_CONTIG_LARGE	256 	/*Larege files */
@@ -186,13 +183,6 @@ enum {
 	FG_GC,
 	FORCE_FG_GC,
 };
-
-#ifdef CONFIG_F2FS_GRADING_SSR
-enum {
-	GRADING_SSR_OFF = 0,
-	GRADING_SSR_ON
-};
-#endif
 
 /* for a function parameter to select a victim segment */
 struct victim_sel_policy {
