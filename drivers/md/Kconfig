@@ -486,14 +486,6 @@ config DM_VERITY_FEC
 
 	  If unsure, say N.
 
-config DM_VERITY_HW_RETRY
-	bool "Verity retry mechanism support"
-	depends on DM_VERITY
-	---help---
-	  Add verify retry support to dm-verity.
-
-	  If unsure, say N.
-
 config DM_SWITCH
 	tristate "Switch target support (EXPERIMENTAL)"
 	depends on BLK_DEV_DM

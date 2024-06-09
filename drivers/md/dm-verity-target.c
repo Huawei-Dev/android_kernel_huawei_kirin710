@@ -241,12 +241,6 @@ static int verity_handle_err(struct dm_verity *v, enum verity_block_type type,
 		return 0;
 
 	if (v->mode == DM_VERITY_MODE_RESTART) {
-#if defined (CONFIG_HUAWEI_DSM)
-#if defined (CONFIG_DM_VERITY_HW_RETRY)
-		ret = oem_verity_handle_err(v);
-#endif
-#endif
-
 #ifdef CONFIG_DM_VERITY_AVB
 		dm_verity_avb_error_handler();
 #endif
@@ -937,10 +931,6 @@ int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 	}
 	ti->private = v;
 	v->ti = ti;
-
-#if defined (CONFIG_DM_VERITY_HW_RETRY)
-	v->verify_failed_flag = 0;
-#endif
 
 	r = verity_fec_ctr_alloc(v);
 	if (r)

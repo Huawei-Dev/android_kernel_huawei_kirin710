@@ -68,10 +68,6 @@ struct dm_verity {
 
 	struct dm_verity_fec *fec;	/* forward error correction */
 	unsigned long *validated_blocks; /* bitset blocks validated */
-
-#if defined (CONFIG_DM_VERITY_HW_RETRY)
-	int verify_failed_flag;
-#endif
 };
 
 struct dm_verity_io {

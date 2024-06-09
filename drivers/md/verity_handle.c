@@ -1,10 +1,6 @@
 #include "dm-verity.h"
 #include "dm-verity-fec.h"
 #include "verity_handle.h"
-#if defined (CONFIG_DM_VERITY_HW_RETRY)
-#include <linux/mtd/hisi_nve_interface.h>
-#include <linux/mtd/hisi_nve_number.h>
-#endif
 #include <linux/delay.h>
 
 #define DM_MSG_PREFIX "oem_verity"
@@ -107,53 +103,11 @@ static void verity_dsm(struct dm_verity *v, enum verity_block_type type,
 		  type_str, block, devname);
 }
 
-#if defined (CONFIG_DM_VERITY_HW_RETRY)
-extern int get_dsm_notify_flag(void);
-
-#define DM_MAX_ERR_COUNT   4
-static int verity_read_write_nv(char* name, int nv_number, int opcode, char value)
-{
-	struct hisi_nve_info_user nve;
-	int ret;
-
-	if (!name || (opcode != NV_READ && opcode != NV_WRITE)) {
-		return -1;
-	}
-
-	memset(&nve, 0, sizeof(nve));
-	strncpy(nve.nv_name, name, strlen(name)+1);
-	nve.nv_number = nv_number;
-	nve.valid_size = 1;
-	nve.nv_operation = opcode;
-
-	if (opcode == NV_WRITE) {
-		nve.nv_data[0] = value;
-	}
-	ret = hisi_nve_direct_access(&nve);
-	if (ret) {
-		DMERR("nve ops fail! nv_name=%s,nv_number=%d,opcode=%d",name,nv_number,opcode);
-		return -1;
-	}
-	if (opcode == NV_READ) {
-		return (int)nve.nv_data[0];
-	}
-	return ret;
-
-}
-
-#endif
 /* just make static checker happy */
 static void hard_hash_fail_verity_dsm(struct dm_verity *v, enum verity_block_type type,
 			     unsigned long long block, int error_no, enum info_type sub_err)
 {
-#if defined (CONFIG_DM_VERITY_HW_RETRY)
-	if (get_dsm_notify_flag()) {
-		verity_dsm(v, type, block, error_no, sub_err);
-	}
-	verity_read_write_nv("HWHASH", NVE_HW_HASH_ERR_NUM, NV_WRITE, HASH_ERR_VALUE);
-#else
 	verity_dsm(v, type, block, error_no, sub_err);
-#endif
 }
 
 static void print_block_data(unsigned long long blocknr, unsigned char *data_to_dump,
@@ -204,30 +158,6 @@ static void print_block_data(unsigned long long blocknr, unsigned char *data_to_
 /*
  * OEM define Handle verification errors.
  */
-#if defined (CONFIG_DM_VERITY_HW_RETRY)
-int oem_verity_handle_err(struct dm_verity *v)
-{
-	int value = verity_read_write_nv("VMODE", NVE_VERIFY_MODE_NUM,NV_READ, (char)0);
-	if (0 > value) {
-		pr_err("read verify mode nve fail!\n");
-		/* we need pay attention on this case */
-		return 0;
-	} else if (DM_MAX_ERR_COUNT == value) {
-		return 1;
-	}
-
-	if (0 == v->verify_failed_flag) {
-		if (DM_MAX_ERR_COUNT <= (value ++)) {
-			value = DM_MAX_ERR_COUNT;
-		}
-		if (verity_read_write_nv("VMODE", NVE_VERIFY_MODE_NUM, NV_WRITE, (char)value)) {
-			pr_err("wirte verify mode nve fail!\n");
-		}
-		v->verify_failed_flag = 1;
-	}
-	return 0;
-}
-#endif
 #endif
 
 int verity_hash_sel_sha(struct dm_verity *v, struct shash_desc *desc,
