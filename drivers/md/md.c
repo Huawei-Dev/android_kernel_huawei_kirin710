@@ -6211,6 +6211,9 @@ static int hot_remove_disk(struct mddev *mddev, dev_t dev)
 {
 	char b[BDEVNAME_SIZE];
 	struct md_rdev *rdev;
+	
+	if (!mddev->pers)
+		return -ENODEV;
 
 	if (!mddev->pers)
 		return -ENODEV;
