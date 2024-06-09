@@ -578,11 +578,4 @@ config DM_BOW
 
 	  If unsure, say N.
 	  
-config DM_HUAWEI_USE_OPT_PARAMETER
-        bool "use huawei optimized parameter"
-        depends on DM_VERITY
-        default n
-        ---help---
-         use huawei optimized parameter
-
 endif # MD
