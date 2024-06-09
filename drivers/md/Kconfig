@@ -578,13 +578,6 @@ config DM_BOW
 
 	  If unsure, say N.
 	  
-config OEM_DEFINE_VERITY_FEC
-	bool "reread data after verify fail"
-	depends on DM_VERITY
-	default y
-	---help---
-	 add reread data support to dm-verity
-
 config DM_HUAWEI_USE_OPT_PARAMETER
         bool "use huawei optimized parameter"
         depends on DM_VERITY

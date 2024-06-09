@@ -16,9 +16,6 @@
 
 #include "dm-verity.h"
 #include "dm-verity-fec.h"
-#if defined (CONFIG_OEM_DEFINE_VERITY_FEC)
-#include "verity_handle.h"
-#endif
 
 #include <linux/module.h>
 #include <linux/reboot.h>
@@ -294,14 +291,9 @@ static int verity_verify_level(struct dm_verity *v, struct dm_verity_io *io,
 		if (likely(memcmp(verity_io_real_digest(v, io), want_digest,
 				  v->digest_size) == 0))
 			aux->hash_verified = 1;
-#if defined(CONFIG_OEM_DEFINE_VERITY_FEC)
-		else if (oem_verity_fec_decode(v, io, hash_block, data , NULL, NULL, NULL,
-		want_digest, DM_VERITY_BLOCK_TYPE_METADATA) == 0)
-#else
 		else if (verity_fec_decode(v, io,
 					   DM_VERITY_BLOCK_TYPE_METADATA,
 					   hash_block, data, NULL) == 0)
-#endif
 			aux->hash_verified = 1;
 		else if (verity_handle_err(v,
 					   DM_VERITY_BLOCK_TYPE_METADATA,
@@ -486,13 +478,8 @@ static int verity_verify_io(struct dm_verity_io *io)
 				set_bit(cur_block,v->validated_blocks);
 			continue;
 		}
-#if defined(CONFIG_OEM_DEFINE_VERITY_FEC)
-		else if (oem_verity_fec_decode(v, io, cur_block, NULL, &start, &start3, &start2,
-		    verity_io_want_digest(v, io), DM_VERITY_BLOCK_TYPE_DATA) == 0)
-#else
 		else if (verity_fec_decode(v, io, DM_VERITY_BLOCK_TYPE_DATA,
 					   cur_block, NULL, &start) == 0)
-#endif
 			continue;
 		else if (verity_handle_err(v, DM_VERITY_BLOCK_TYPE_DATA,
 					   cur_block))
@@ -1190,12 +1177,6 @@ static int __init dm_verity_init(void)
 	r = dm_register_target(&verity_target);
 	if (r < 0)
 		DMERR("register failed %d", r);
-
-#if defined (CONFIG_OEM_DEFINE_VERITY_FEC)
-#if defined (CONFIG_HUAWEI_DSM)
-	verity_dsm_init();
-#endif
-#endif
 
 	return r;
 }
