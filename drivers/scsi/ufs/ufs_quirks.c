@@ -21,9 +21,6 @@
 #endif
 #include <linux/of.h>
 #include <linux/string.h>
-#ifdef CONFIG_HUAWEI_STORAGE_ROFA
-#include <chipset_common/storage_rofa/storage_rofa.h>
-#endif
 
 #define SERIAL_NUM_SIZE 12
 #define BOARDID_SIZE 4
@@ -261,14 +258,6 @@ static int ufs_get_device_info(struct ufs_hba *hba,
 	}
 #endif
 
-#if defined(CONFIG_HISI_BOOTDEVICE) && defined(CONFIG_HUAWEI_STORAGE_ROFA)
-	if (get_bootdevice_type() == BOOT_DEVICE_UFS) {
-		storage_rochk_record_bootdevice_type(1); /* set ufs type */
-		storage_rochk_record_bootdevice_manfid(hba->manufacturer_id);
-		storage_rochk_record_bootdevice_model(card_data->model);
-	}
-#endif
-
 out:
 	return err;
 }
@@ -381,11 +370,6 @@ void ufs_get_device_health_info(struct ufs_hba *hba)
 	set_bootdevice_pre_eol_info(pre_eol_info);
 	set_bootdevice_life_time_est_typ_a(life_time_est_typ_a);
 	set_bootdevice_life_time_est_typ_b(life_time_est_typ_b);
-#endif
-
-#if defined(CONFIG_HISI_BOOTDEVICE) && defined(CONFIG_HUAWEI_STORAGE_ROFA)
-	if (get_bootdevice_type() == BOOT_DEVICE_UFS)
-		storage_rochk_record_bootdevice_pre_eol_info(pre_eol_info);
 #endif
 
 out:

@@ -5,9 +5,6 @@
 #include <linux/string.h>
 
 #include "oae_dm.h"
-#ifdef CONFIG_HUAWEI_STORAGE_ROFA
-#include <chipset_common/storage_rofa/storage_rofa.h>
-#endif
 
 static int log_partion_fail __initdata = -1;
 #define LOG_FILE "last_hota_fwkcold"
@@ -25,14 +22,6 @@ static int __init log_partition_prepair(void)
 	int flags = MS_NOSUID | MS_NODEV | MS_NOATIME;
 	char *cache_dev_name = "/dev/cache";
 	dev_t dev;
-
-#ifdef CONFIG_HUAWEI_STORAGE_ROFA
-	// ignore mount cache partition and output log
-	if (get_storage_rofa_bootopt() == STORAGE_ROFA_BOOTOPT_BYPASS) {
-		OAE_DM_WARRING("oae_dm: storage_rofa_bootopt bypass\n");
-		return -1;
-	}
-#endif
 
 	if (!log_partion_fail)
 		return 0;

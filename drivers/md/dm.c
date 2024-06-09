@@ -2663,16 +2663,6 @@ void dm_free_md_mempools(struct dm_md_mempools *pools)
 	kfree(pools);
 }
 
-#ifdef CONFIG_HUAWEI_STORAGE_ROFA
-const struct bio *dm_get_tio_bio(struct bio *bio)
-{
-	struct dm_target_io *tio =
-			container_of(bio, struct dm_target_io, clone);
-
-	return tio->io->bio;
-}
-#endif
-
 struct dm_pr {
 	u64	old_key;
 	u64	new_key;

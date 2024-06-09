@@ -42,7 +42,6 @@ obj-$(CONFIG_TLB_CONFLICT_WORKAROUND) += tlb_conflict/
 obj-$(CONFIG_HISI_PERF_CTRL) += perf_ctrl/
 obj-$(CONFIG_HUAWEI_WPA_DMD) += wpa_dmd/
 obj-$(CONFIG_SWITCH)		+= switch/
-obj-$(CONFIG_HUAWEI_STORAGE_ROFA) += storage_rofa/
 obj-$(CONFIG_OAE_FW_PATCH) += oae_fw_patch/
 obj-$(CONFIG_LOGGER_EXTEND) += log/
 obj-$(CONFIG_HW_ZEROHUNG) += hwzerohung/

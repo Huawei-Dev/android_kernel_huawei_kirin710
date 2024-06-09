@@ -44,13 +44,6 @@
 #include <chipset_common/bfmr/abns/abns_shutdown.h>
 #include <linux/rtc.h>
 #include <linux/cpu.h>
-#ifdef CONFIG_HUAWEI_DYNAMIC_BRD
-#include <chipset_common/storage_rofa/dynbrd_public.h>
-#endif
-#ifdef CONFIG_HUAWEI_STORAGE_ROFA
-#include <chipset_common/storage_rofa/storage_rofa.h>
-#endif
-
 
 /*----local macroes------------------------------------------------------------------*/
 
@@ -3188,66 +3181,6 @@ static long bfmr_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
             bfmr_free(pact_data);
             break;
         }
-
-#ifdef CONFIG_HUAWEI_DYNAMIC_BRD
-    case BFMR_IOC_CREATE_DYNAMIC_RAMDISK:
-        {
-            ret = create_dynamic_ramdisk(
-                (struct bfmr_dbrd_ioctl_block __user *)arg);
-            break;
-        }
-    case BFMR_IOC_DELETE_DYNAMIC_RAMDISK:
-        {
-            ret = delete_dynamic_ramdisk(
-                (struct bfmr_dbrd_ioctl_block __user *)arg);
-            break;
-        }
-#endif
-
-#ifdef CONFIG_HUAWEI_STORAGE_ROFA
-    case BFMR_IOC_CHECK_BOOTDISK_WP:
-        {
-            ret = storage_rochk_ioctl_check_bootdisk_wp(
-                (struct bfmr_bootdisk_wp_status_iocb __user *)arg);
-            break;
-        }
-    case BFMR_IOC_ENABLE_MONITOR:
-        {
-            ret = storage_rochk_ioctl_enable_monitor(
-                (struct bfmr_storage_rochk_iocb __user *)arg);
-            break;
-        }
-    case BFMR_IOC_DO_STORAGE_WRTRY:
-        {
-            ret = storage_rochk_ioctl_run_storage_wrtry_sync(
-                (struct bfmr_storage_rochk_iocb __user *)arg);
-            break;
-        }
-    case BFMR_IOC_GET_STORAGE_ROFA_INFO:
-        {
-            ret = storage_rofa_ioctl_get_rofa_info(
-                (struct bfmr_storage_rofa_info_iocb __user *)arg);
-            break;
-        }
-    case BFMR_IOC_GET_BOOTDEVICE_DISK_COUNT:
-        {
-            ret = storage_rochk_ioctl_get_bootdevice_disk_count(
-                (struct bfmr_storage_rochk_iocb __user *)arg);
-            break;
-        }
-    case BFMR_IOC_GET_BOOTDEVICE_DISK_INFO:
-        {
-            ret = storage_rochk_ioctl_get_bootdevice_disk_info(
-                (struct bfmr_bootdevice_disk_info_iocb __user *)arg);
-            break;
-        }
-    case BFMR_IOC_GET_BOOTDEVICE_PROD_INFO:
-        {
-            ret = storage_rochk_ioctl_get_bootdevice_prod_info(
-                (struct bfmr_bootdevice_prod_info_iocb __user *)arg);
-            break;
-        }
-#endif
 
     default:
         {
