@@ -1020,12 +1020,6 @@ int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 		goto bad;
 	}
 
-#if defined(CONFIG_DM_HISI_SHA_USE_SOFT)
-	if (strncmp(v->alg_name_sha2ce, "sha256", strlen("sha256")+1) == 0) {
-		strncpy(v->alg_name_sha2ce,"sha2ce", strlen("sha2ce")+1);
-	}
-#endif
-
 	v->tfm_sha2ce = crypto_alloc_shash(v->alg_name_sha2ce, 0, 0);
 	if (IS_ERR(v->tfm_sha2ce)) {
 		ti->error = "Cannot initialize hash function";

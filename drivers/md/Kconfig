@@ -577,12 +577,7 @@ config DM_BOW
 	  or committed by simply replacing the target.
 
 	  If unsure, say N.
-
-config DM_HISI_SHA_USE_SOFT
-	bool "use soft hash"
-	---help---
-	  use soft hash
-
+	  
 config OEM_DEFINE_VERITY_FEC
 	bool "reread data after verify fail"
 	depends on DM_VERITY
