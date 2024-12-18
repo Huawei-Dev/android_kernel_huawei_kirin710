@@ -492,7 +492,7 @@ static void K3_gps_bcm_shutdown(struct platform_device *pdev)
 	if(pdev == NULL )
 	{
 		pr_err("[GPS]NULL Pointer to platform device\n");
-		return -EINVAL;
+		return;
 	}
 	GPS_BCM_INFO *gps_bcm = platform_get_drvdata(pdev);
 
