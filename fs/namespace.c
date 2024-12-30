@@ -26,6 +26,9 @@
 #include <linux/task_work.h>
 #include "pnode.h"
 #include "internal.h"
+#ifdef CONFIG_HW_BFMR_HISI
+#include <chipset_common/bfmr/common/bfmr_common.h>
+#endif
 
 /* Maximum number of mounts in a mount namespace */
 unsigned int sysctl_mount_max __read_mostly = 100000;
@@ -1709,7 +1712,9 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
 	struct mount *mnt;
 	int retval;
 	int lookup_flags = 0;
-
+#ifdef CONFIG_HW_BFMR_HISI
+	char bfmr_umount_name[BFMR_MOUNT_NAME_SIZE] = {0};
+#endif
 	if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
 		return -EINVAL;
 
@@ -1735,6 +1740,14 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
 		goto dput_and_out;
 
 	retval = do_umount(mnt, flags);
+
+#ifdef CONFIG_HW_BFMR_HISI
+	if((0 == retval) && (0 == copy_from_user(bfmr_umount_name, name, BFMR_MOUNT_NAME_SIZE-1)))
+	{
+		bfmr_set_mount_state(bfmr_umount_name, false);
+	}
+#endif
+
 dput_and_out:
 	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
 	dput(path.dentry);
@@ -2563,6 +2576,7 @@ static int do_new_mount(struct path *path, const char *fstype, int flags,
 	err = do_add_mount(real_mount(mnt), path, mnt_flags);
 	if (err)
 		mntput(mnt);
+
 	return err;
 }
 
@@ -2803,6 +2817,9 @@ long do_mount(const char *dev_name, const char __user *dir_name,
 	struct path path;
 	int retval = 0;
 	int mnt_flags = 0;
+#ifdef CONFIG_HW_BFMR_HISI
+	char bfmr_mount_name[BFMR_MOUNT_NAME_SIZE] = {0};
+#endif
 
 	/* Discard magic */
 	if ((flags & MS_MGC_MSK) == MS_MGC_VAL)
@@ -2870,6 +2887,14 @@ long do_mount(const char *dev_name, const char __user *dir_name,
 	else
 		retval = do_new_mount(&path, type_page, flags, mnt_flags,
 				      dev_name, data_page);
+
+#ifdef CONFIG_HW_BFMR_HISI
+	if((0 == retval) && (0 == copy_from_user(bfmr_mount_name, dir_name, BFMR_MOUNT_NAME_SIZE-1)))
+	{
+		bfmr_set_mount_state(bfmr_mount_name, true);
+	}
+#endif
+
 dput_out:
 	path_put(&path);
 	return retval;

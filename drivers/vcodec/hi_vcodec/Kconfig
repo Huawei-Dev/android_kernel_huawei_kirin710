@@ -1,0 +1,12 @@
+menu "VCODEC DRIVER Configuration"
+
+config VCODEC_PLATFORM_HIVCODECV210
+        tristate "v210 Vcodec configs"
+        default n
+
+if VCODEC_PLATFORM_HIVCODECV210
+source "drivers/vcodec/hi_vcodec/vdec_hivna/Kconfig"
+source "drivers/vcodec/hi_vcodec/venc_hivna/drv/venc/Kconfig"
+endif
+
+endmenu

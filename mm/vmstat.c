@@ -926,6 +926,12 @@ const char * const vmstat_text[] = {
 	"nr_zone_inactive_file",
 	"nr_zone_active_file",
 	"nr_zone_unevictable",
+#ifdef CONFIG_TASK_PROTECT_LRU
+	"nr_inactive_prot_anon",
+	"nr_active_prot_anon",
+	"nr_inactive_prot_file",
+	"nr_active_prot_file",
+#endif
 	"nr_zone_write_pending",
 	"nr_mlock",
 	"nr_slab_reclaimable",
@@ -946,6 +952,13 @@ const char * const vmstat_text[] = {
 	"numa_other",
 #endif
 	"nr_free_cma",
+#ifdef CONFIG_HUAWEI_UNMOVABLE_ISOLATE
+	"nr_free_unmovable_isolate1",
+	"nr_free_unmovable_isolate2",
+#endif
+	"nr_ioncache_pages",
+	"nr_mali_pages",
+	"nr_swapcache",
 
 	/* Node-based counters */
 	"nr_inactive_anon",
@@ -1089,6 +1102,9 @@ const char * const vmstat_text[] = {
 #ifdef CONFIG_DEBUG_VM_VMACACHE
 	"vmacache_find_calls",
 	"vmacache_find_hits",
+#endif
+#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
+	"speculative_pgfault",
 #endif
 #endif /* CONFIG_VM_EVENTS_COUNTERS */
 };
@@ -1702,7 +1718,6 @@ static void vmstat_shepherd(struct work_struct *w)
 	/* Check processors whose vmstat worker threads have been disabled */
 	for_each_online_cpu(cpu) {
 		struct delayed_work *dw = &per_cpu(vmstat_work, cpu);
-
 		if (!delayed_work_pending(dw) && need_update(cpu))
 			queue_delayed_work_on(cpu, vmstat_wq, dw, 0);
 	}

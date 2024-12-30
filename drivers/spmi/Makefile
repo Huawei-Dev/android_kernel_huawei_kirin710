@@ -4,3 +4,5 @@
 obj-$(CONFIG_SPMI)	+= spmi.o
 
 obj-$(CONFIG_SPMI_MSM_PMIC_ARB)	+= spmi-pmic-arb.o
+
+obj-$(CONFIG_HISI_SPMI)	+= hisi-spmi-core.o hisi-spmi-controller.o of_hisi_spmi.o

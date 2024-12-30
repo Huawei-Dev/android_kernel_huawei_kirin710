@@ -1,0 +1,48 @@
+if PROC_FS=y
+
+menuconfig HISI_PROC
+	bool "hisilicon proc support"
+	depends on PROC_FS
+	help
+	  select hisilicon proc.
+
+config HISI_PROC_HARDWARE
+	bool "/proc/hardware support"
+	depends on HISI_PROC && OF
+	help
+	  read the /proc/hardware to get hardware info.
+
+config HISI_PROC_MEMORYINFO_FAST
+	bool "/proc/meminfo_lite support"
+	depends on HISI_PROC && OF
+	default n
+	help
+	  offer a fast way to get system memory info(free and aviliable)
+
+config PROCESS_RECLAIM
+	bool "Enable process reclaim"
+	depends on PROC_FS
+	default n
+	help
+	 It allows to reclaim pages of the process by /proc/pid/reclaim.
+
+	 (echo file > /proc/PID/reclaim) reclaims file-backed pages only.
+	 (echo anon > /proc/PID/reclaim) reclaims anonymous pages only.
+	 (echo all > /proc/PID/reclaim) reclaims all pages.
+
+	 (echo addr size-byte > /proc/PID/reclaim) reclaims pages in
+	 (addr, addr + size-bytes) of the process.
+
+	 Any other vaule is ignored.
+
+config HISI_SWAP_ZDATA
+	bool "Compressed data to swap"
+	depends on SWAP
+	depends on PROCESS_RECLAIM
+	default n
+	help
+	  Save compressed data to swap page.
+
+	  If unsure, say Y to enable swap_zdata.
+
+endif # PROC_FS

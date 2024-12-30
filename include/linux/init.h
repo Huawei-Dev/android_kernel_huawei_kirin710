@@ -137,6 +137,7 @@ int __init init_rootfs(void);
 extern bool rodata_enabled;
 #endif
 #ifdef CONFIG_DEBUG_RODATA
+extern bool rodata_enabled;
 void mark_rodata_ro(void);
 #endif
 

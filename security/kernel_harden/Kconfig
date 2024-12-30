@@ -1,0 +1,22 @@
+#
+# Huawei Kernel Harden
+#
+
+menu "Huawei Kernel Harden"
+
+config HUAWEI_HIDESYMS
+	bool "hide symbols"
+	default n
+	help
+	Hide some sensitive kernel symbols
+
+config HW_SLUB_SANITIZE
+	bool "Sanitize Slub allocations"
+	depends on SLUB
+	default n
+	help
+         Zero fill slab allocations on free, reducing the lifetime of
+         sensitive data and helping to mitigate use-after-free bugs.
+         For slabs with debug poisoning enabling, this has no impact.
+endmenu
+#a blank line must be existed

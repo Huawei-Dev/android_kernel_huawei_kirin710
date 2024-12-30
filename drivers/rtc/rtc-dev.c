@@ -16,6 +16,9 @@
 #include <linux/module.h>
 #include <linux/rtc.h>
 #include <linux/sched.h>
+#ifdef CONFIG_COMPAT
+#include <linux/compat.h>
+#endif
 #include "rtc-core.h"
 
 static dev_t rtc_devt;
@@ -445,12 +448,22 @@ static int rtc_dev_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+#ifdef CONFIG_COMPAT
+static long rtc_dev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	return rtc_dev_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
+}
+#endif
+
 static const struct file_operations rtc_dev_fops = {
 	.owner		= THIS_MODULE,
 	.llseek		= no_llseek,
 	.read		= rtc_dev_read,
 	.poll		= rtc_dev_poll,
 	.unlocked_ioctl	= rtc_dev_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl		= rtc_dev_compat_ioctl,
+#endif
 	.open		= rtc_dev_open,
 	.release	= rtc_dev_release,
 	.fasync		= rtc_dev_fasync,

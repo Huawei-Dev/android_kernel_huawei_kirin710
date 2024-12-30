@@ -1,0 +1,1 @@
+obj-$(CONFIG_CONNECTIVITY_HI1102) += hisi/

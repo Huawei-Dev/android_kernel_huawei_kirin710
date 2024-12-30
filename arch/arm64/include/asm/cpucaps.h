@@ -38,7 +38,11 @@
 #define ARM64_HARDEN_BRANCH_PREDICTOR		17
 #define ARM64_SSBD				18
 #define ARM64_MISMATCHED_CACHE_TYPE		19
+#define ARM64_HAS_HHEE				20
+#define ARM64_SSBS				21
+#define ARM64_HAS_CACHE_IDC			22
+#define ARM64_HAS_CACHE_DIC			23
 
-#define ARM64_NCAPS				20
+#define ARM64_NCAPS				24
 
 #endif /* __ASM_CPUCAPS_H */

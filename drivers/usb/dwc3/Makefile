@@ -33,9 +33,14 @@ endif
 # and allyesconfig builds.
 ##
 
-obj-$(CONFIG_USB_DWC3_OMAP)		+= dwc3-omap.o
-obj-$(CONFIG_USB_DWC3_EXYNOS)		+= dwc3-exynos.o
-obj-$(CONFIG_USB_DWC3_PCI)		+= dwc3-pci.o
-obj-$(CONFIG_USB_DWC3_KEYSTONE)		+= dwc3-keystone.o
-obj-$(CONFIG_USB_DWC3_OF_SIMPLE)	+= dwc3-of-simple.o
-obj-$(CONFIG_USB_DWC3_ST)		+= dwc3-st.o
+#obj-$(CONFIG_USB_DWC3_OMAP)		+= dwc3-omap.o
+#obj-$(CONFIG_USB_DWC3_EXYNOS)		+= dwc3-exynos.o
+#obj-$(CONFIG_USB_DWC3_PCI)		+= dwc3-pci.o
+#obj-$(CONFIG_USB_DWC3_KEYSTONE)		+= dwc3-keystone.o
+#obj-$(CONFIG_USB_DWC3_OF_SIMPLE)	+= dwc3-of-simple.o
+#obj-$(CONFIG_USB_DWC3_ST)		+= dwc3-st.o
+
+dwc3-$(CONFIG_USB_DWC3_HISI)       += dwc3-usb-interface.o
+dwc3-$(CONFIG_USB_DWC3_OTG)        += dwc3-otg_4_9.o
+
+obj-$(CONFIG_USB_DWC3_HISI) += hisi/

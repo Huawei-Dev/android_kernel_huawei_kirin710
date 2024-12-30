@@ -327,8 +327,20 @@ static int __rtc_set_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 	int err;
 
 	err = rtc_valid_tm(&alarm->time);
+#ifdef CONFIG_HISI_RTC_LOG
+	if (err) {
+		printk(KERN_ERR "\n [%s:%d] InValid time %d-%d-%d %d:%d:%d\n",
+		   __FUNCTION__, __LINE__,
+	        alarm->time.tm_year+1900, alarm->time.tm_mon+1,
+	        alarm->time.tm_mday, alarm->time.tm_hour,
+	        alarm->time.tm_min, alarm->time.tm_sec);
+#else
 	if (err)
+#endif
 		return err;
+#ifdef CONFIG_HISI_RTC_LOG
+	}
+#endif
 	scheduled = rtc_tm_to_time64(&alarm->time);
 
 	/* Make sure we're not setting alarms in the past */
@@ -768,6 +780,7 @@ EXPORT_SYMBOL_GPL(rtc_irq_set_freq);
  */
 static int rtc_timer_enqueue(struct rtc_device *rtc, struct rtc_timer *timer)
 {
+#ifndef CONFIG_RTC_DRV_HISI_PMIC_SPMI
 	struct timerqueue_node *next = timerqueue_getnext(&rtc->timerqueue);
 	struct rtc_time tm;
 	ktime_t now;
@@ -785,6 +798,12 @@ static int rtc_timer_enqueue(struct rtc_device *rtc, struct rtc_timer *timer)
 
 	timerqueue_add(&rtc->timerqueue, &timer->node);
 	if (!next || ktime_before(timer->node.expires, next->expires)) {
+#else
+	timer->enabled = 1;
+	
+	timerqueue_add(&rtc->timerqueue, &timer->node);
+	if (&timer->node == timerqueue_getnext(&rtc->timerqueue)) {
+#endif
 		struct rtc_wkalrm alarm;
 		int err;
 		alarm.time = rtc_ktime_to_tm(timer->node.expires);

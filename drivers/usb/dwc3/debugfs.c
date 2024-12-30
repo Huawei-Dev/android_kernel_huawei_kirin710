@@ -337,7 +337,7 @@ static ssize_t dwc3_mode_write(struct file *file,
 
 	if (mode) {
 		spin_lock_irqsave(&dwc->lock, flags);
-		dwc3_set_mode(dwc, mode);
+		dwc3_set_prtcap(dwc, mode);
 		spin_unlock_irqrestore(&dwc->lock, flags);
 	}
 	return count;
@@ -820,7 +820,7 @@ static void dwc3_debugfs_create_endpoint_dir(struct dwc3_ep *dep,
 static void dwc3_debugfs_create_endpoint_dirs(struct dwc3 *dwc,
 		struct dentry *parent)
 {
-	int			i;
+	unsigned int i;
 
 	for (i = 0; i < dwc->num_in_eps; i++) {
 		u8		epnum = (i << 1) | 1;

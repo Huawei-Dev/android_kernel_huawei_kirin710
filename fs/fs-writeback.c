@@ -1502,10 +1502,13 @@ static long writeback_sb_inodes(struct super_block *sb,
 		.range_cyclic		= work->range_cyclic,
 		.range_start		= 0,
 		.range_end		= LLONG_MAX,
+		.for_free_mem		= 0,
 	};
 	unsigned long start_time = jiffies;
 	long write_chunk;
 	long wrote = 0;  /* count both pages and inodes */
+
+	task_set_in_wb_thrd(current);
 
 	while (!list_empty(&wb->b_io)) {
 		struct inode *inode = wb_inode(wb->b_io.prev);
@@ -1628,6 +1631,15 @@ static long writeback_sb_inodes(struct super_block *sb,
 				break;
 		}
 	}
+
+	task_clear_in_wb_thrd(current);
+#ifdef CONFIG_F2FS_JOURNAL_APPEND
+	if (sb->s_op->flush_mbio) {
+		spin_unlock(&wb->list_lock);
+		sb->s_op->flush_mbio(sb);
+		spin_lock(&wb->list_lock);
+	}
+#endif
 	return wrote;
 }
 

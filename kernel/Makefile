@@ -115,6 +115,11 @@ obj-$(CONFIG_MEMBARRIER) += membarrier.o
 
 obj-$(CONFIG_HAS_IOMEM) += memremap.o
 
+obj-$(CONFIG_HW_CGROUP_PIDS) += cgroup_huawei/
+obj-$(CONFIG_HW_VIP_THREAD) += hwcfs/
+obj-$(CONFIG_HW_QOS_THREAD) += hwqos/
+obj-$(CONFIG_HW_CPULOAD_NOTI) += cpu_netlink/
+
 $(obj)/configs.o: $(obj)/config_data.h
 
 # config_data.h contains the same information as ikconfig.h but gzipped.

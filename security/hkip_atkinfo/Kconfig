@@ -1,0 +1,6 @@
+config HKIP_ATKINFO
+	bool "Upload HKIP attack information"
+	depends on HISI_HHEE
+	default n
+	help
+	Upload the attack information reported by HKIP to Huawei server.

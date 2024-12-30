@@ -1112,6 +1112,10 @@ static void tun_net_init(struct net_device *dev)
 
 		break;
 	}
+#ifdef CONFIG_MPTCP
+	if (dev)
+		dev->flags |= IFF_NOMULTIPATH;
+#endif
 }
 
 /* Character device part */
@@ -1285,6 +1289,10 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 		return -EINVAL;
 	}
 
+	if (!(tun->flags & IFF_NO_PI))
+		if (pi.flags & htons(CHECKSUM_UNNECESSARY))
+			skb->ip_summed = CHECKSUM_UNNECESSARY;
+	
 	switch (tun->flags & TUN_TYPE_MASK) {
 	case IFF_TUN:
 		if (tun->flags & IFF_NO_PI) {

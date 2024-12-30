@@ -1,0 +1,34 @@
+config HISI_CPUFREQ_DT
+	bool "Hisilicon cpufreq-dt enable"
+	depends on CPUFREQ_DT
+	default n
+	help
+	  Hisilicon cpufreq-dt enable.
+
+config HISI_HW_VOTE_CPU_FREQ
+	bool "Hisilicon cpufreq-hw_vote enable"
+	depends on HISI_CPUFREQ_DT && HISI_HW_VOTE
+	default n
+	help
+	  Hisilicon cpufreq-hw_vote enable.
+
+config HISI_CPUDDR_FREQ_LINK
+	bool "Hisilicon cpu ddr freq link enable"
+	depends on CPUFREQ_DT
+	default n
+	help
+	  Hisilicon cpu ddr freq link enable.
+
+config HISI_CPU_FREQ_GOV_SCHEDUTIL
+	bool "Hisilicon 'schedutil' cpufreq governor optimize"
+	depends on CPU_FREQ_GOV_SCHEDUTIL
+	default n
+	help
+	  This extends the functionality of existing schedutil governor.
+
+config HISI_CPU_FREQ_LOCK_DETECT
+	bool "Hisilicon schedutil detect freq lock&unlock"
+	depends on HISI_CPU_FREQ_GOV_SCHEDUTIL
+	default n
+	help
+	  This extends min_sample_time when boost scene finish

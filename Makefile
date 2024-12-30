@@ -23,6 +23,8 @@ export LC_COLLATE LC_NUMERIC
 
 # Avoid interference with shell env settings
 unexport GREP_OPTIONS
+TARGET_BUILD_VARIANT := user
+export TARGET_BUILD_VARIANT
 
 # We are using a recursive build, so we need to do a little thinking
 # to get the ordering right.
@@ -374,6 +376,7 @@ CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 LDFLAGS_vmlinux =
 
+export TARGET_BOARD_PLATFORM = kirin710
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
 		-I$(srctree)/arch/$(hdr-arch)/include/uapi \
@@ -390,6 +393,16 @@ LINUXINCLUDE    := \
 		-I$(objtree)/arch/$(hdr-arch)/include/generated \
 		$(if $(KBUILD_SRC), -I$(srctree)/include) \
 		-I$(objtree)/include
+
+LINUXINCLUDE += -I$(srctree)/include \
+		-I$(srctree)/include/linux/hisi \
+		-I$(srctree)/drivers \
+		-I$(objtree)/drivers/devkit/lcdkit/lcdkit1.0 \
+		-I$(srctree)/drivers/hisi/ap/platform/$(TARGET_BOARD_PLATFORM)
+
+ifneq ($(BALONG_INC),)
+LINUXINCLUDE       += $(BALONG_INC)
+endif
 
 LINUXINCLUDE	+= $(filter-out $(LINUXINCLUDE),$(USERINCLUDE))
 
@@ -410,6 +423,28 @@ GCC_PLUGINS_CFLAGS :=
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
 KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
+
+# build drv only config
+OBB_SEPARATE        ?=$(separate)
+ifeq ($(strip $(OBB_SEPARATE)),true)
+KBUILD_CFLAGS += -DDRV_BUILD_SEPARATE
+KBUILD_AFLAGS += -DDRV_BUILD_SEPARATE
+KBUILD_CPPFLAGS += -DDRV_BUILD_SEPARATE
+endif
+
+#add SLT FEATURE to ap
+ifeq ($(strip $(hitest_type)),slt)
+KBUILD_CFLAGS += -D__SLT_FEATURE__
+endif
+
+ifneq ($(BALONG_FAMA_FLAGS),)
+KBUILD_CFLAGS += $(BALONG_FAMA_FLAGS)
+endif
+
+OBB_PRODUCT_NAME = kirin710
+CFG_PLATFORM = kirin710
+TARGET_ARM_TYPE = arm64
+export OBB_PRODUCT_NAME CFG_PLATFORM TARGET_ARM_TYPE
 
 export VERSION PATCHLEVEL SUBLEVEL KERNELRELEASE KERNELVERSION
 export ARCH SRCARCH CONFIG_SHELL HOSTCC HOSTCFLAGS CROSS_COMPILE AS LD CC
@@ -899,7 +934,7 @@ KBUILD_CFLAGS   += $(call cc-option,-Werror=implicit-int)
 KBUILD_CFLAGS   += $(call cc-option,-Werror=strict-prototypes)
 
 # Prohibit date/time macros, which would make the build non-deterministic
-KBUILD_CFLAGS   += $(call cc-option,-Werror=date-time)
+#KBUILD_CFLAGS   += $(call cc-option,-Werror=date-time)
 
 # enforce correct pointer usage
 KBUILD_CFLAGS   += $(call cc-option,-Werror=incompatible-pointer-types)
@@ -925,6 +960,10 @@ LDFLAGS_vmlinux += $(LDFLAGS_BUILD_ID)
 
 ifdef CONFIG_LD_DEAD_CODE_DATA_ELIMINATION
 LDFLAGS_vmlinux	+= $(call ld-option, --gc-sections,)
+endif
+
+ifeq ($(ARCH),arm64)
+LDFLAGS_vmlinux += --fix-cortex-a53-843419
 endif
 
 ifeq ($(CONFIG_STRIP_ASM_SYMS),y)

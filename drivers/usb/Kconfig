@@ -81,6 +81,14 @@ config USB
 	  To compile this driver as a module, choose M here: the
 	  module will be called usbcore.
 
+config HISI_USB_SKIP_RESUME
+	bool "HISI USB support skip resume"
+	depends on USB
+	default n
+	---help---
+	  This option adds support for PM control of USB module
+	  in hisilicon platforms.
+
 if USB
 
 source "drivers/usb/core/Kconfig"
@@ -108,6 +116,8 @@ source "drivers/usb/musb/Kconfig"
 source "drivers/usb/dwc3/Kconfig"
 
 source "drivers/usb/dwc2/Kconfig"
+
+source "drivers/usb/proxy-hcd/Kconfig"
 
 source "drivers/usb/chipidea/Kconfig"
 

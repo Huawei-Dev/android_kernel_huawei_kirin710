@@ -108,7 +108,7 @@ int read_cache_pages(struct address_space *mapping, struct list_head *pages,
 
 EXPORT_SYMBOL(read_cache_pages);
 
-static int read_pages(struct address_space *mapping, struct file *filp,
+int read_pages(struct address_space *mapping, struct file *filp,
 		struct list_head *pages, unsigned int nr_pages, gfp_t gfp)
 {
 	struct blk_plug plug;
@@ -183,6 +183,7 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 		page = __page_cache_alloc(gfp_mask);
 		if (!page)
 			break;
+
 		page->index = page_offset;
 		list_add(&page->lru, &page_pool);
 		if (page_idx == nr_to_read - lookahead_size)
@@ -247,6 +248,8 @@ static unsigned long get_init_ra_size(unsigned long size, unsigned long max)
 		newsize = newsize * 2;
 	else
 		newsize = max;
+
+	newsize = pch_shrink_read_pages(newsize);
 
 	return newsize;
 }

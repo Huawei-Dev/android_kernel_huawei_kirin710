@@ -106,7 +106,7 @@ enum devkmsg_log_masks {
 
 static unsigned int __read_mostly devkmsg_log = DEVKMSG_LOG_MASK_DEFAULT;
 
-static int __control_devkmsg(char *str)
+static int __control_devkmsg(const char *str)
 {
 	if (!str)
 		return -EINVAL;
@@ -334,6 +334,8 @@ enum log_flags {
 	LOG_CONT	= 8,	/* text is a fragment of a continuation line */
 };
 
+#ifdef CONFIG_HISI_TIME
+#else
 struct printk_log {
 	u64 ts_nsec;		/* timestamp in nanoseconds */
 	u16 len;		/* length of entire record */
@@ -347,6 +349,7 @@ struct printk_log {
 __packed __aligned(4)
 #endif
 ;
+#endif
 
 /*
  * The logbuf_lock protects kmsg buffer, indices, counters.  This can be taken
@@ -354,6 +357,9 @@ __packed __aligned(4)
  * console_unlock() or anything else that might wake up a process.
  */
 DEFINE_RAW_SPINLOCK(logbuf_lock);
+#ifdef CONFIG_HISI_TIME
+raw_spinlock_t *g_logbuf_lock_ex = &logbuf_lock;
+#endif
 
 #ifdef CONFIG_PRINTK
 DECLARE_WAIT_QUEUE_HEAD(log_wait);
@@ -380,7 +386,11 @@ static enum log_flags console_prev;
 static u64 clear_seq;
 static u32 clear_idx;
 
+#ifdef CONFIG_HISI_TIME
+#define PREFIX_MAX		80
+#else
 #define PREFIX_MAX		32
+#endif
 #define LOG_LINE_MAX		(1024 - PREFIX_MAX)
 
 #define LOG_LEVEL(v)		((v) & 0x07)
@@ -542,6 +552,13 @@ static int log_store(int facility, int level,
 	struct printk_log *msg;
 	u32 size, pad_len;
 	u16 trunc_msg_len = 0;
+#ifdef CONFIG_HISI_TIME
+	char tmp_buf[100];
+	u16 tmp_len = 0;
+
+	hisi_log_store_add_time(tmp_buf, sizeof(tmp_buf), &tmp_len);
+	text_len += tmp_len;
+#endif
 
 	/* number of '\0' padding bytes to next message */
 	size = msg_used_size(text_len, dict_len, &pad_len);
@@ -567,7 +584,12 @@ static int log_store(int facility, int level,
 
 	/* fill message */
 	msg = (struct printk_log *)(log_buf + log_next_idx);
+#ifdef CONFIG_HISI_TIME
+	memcpy(log_text(msg), tmp_buf, tmp_len);
+	memcpy(log_text(msg)+tmp_len, text, text_len-tmp_len);
+#else
 	memcpy(log_text(msg), text, text_len);
+#endif
 	msg->text_len = text_len;
 	if (trunc_msg_len) {
 		memcpy(log_text(msg) + text_len, trunc_msg, trunc_msg_len);
@@ -581,11 +603,14 @@ static int log_store(int facility, int level,
 	if (ts_nsec > 0)
 		msg->ts_nsec = ts_nsec;
 	else
+#ifdef CONFIG_HISI_TIME
+		msg->ts_nsec = hisi_getcurtime();
+#else
 		msg->ts_nsec = local_clock();
+#endif
 	memset(log_dict(msg) + dict_len, 0, pad_len);
 	msg->len = size;
 
-	/* insert message */
 	log_next_idx += msg->len;
 	log_next_seq++;
 
@@ -606,7 +631,7 @@ static int syslog_action_restricted(int type)
 	       type != SYSLOG_ACTION_SIZE_BUFFER;
 }
 
-int check_syslog_permissions(int type, int source)
+static int check_syslog_permissions(int type, int source)
 {
 	/*
 	 * If this is from /proc/kmsg and we've already opened it, then we've
@@ -634,9 +659,8 @@ int check_syslog_permissions(int type, int source)
 ok:
 	return security_syslog(type);
 }
-EXPORT_SYMBOL_GPL(check_syslog_permissions);
 
-static void append_char(char **pp, char *e, char c)
+static void append_char(char **pp, const char *e, char c)
 {
 	if (*pp < e)
 		*(*pp)++ = c;
@@ -668,7 +692,7 @@ static ssize_t msg_print_ext_header(char *buf, size_t size,
 
 static ssize_t msg_print_ext_body(char *buf, size_t size,
 				  char *dict, size_t dict_len,
-				  char *text, size_t text_len)
+				  const char *text, size_t text_len)
 {
 	char *p = buf, *e = buf + size;
 	size_t i;
@@ -918,7 +942,10 @@ static int devkmsg_open(struct inode *inode, struct file *file)
 {
 	struct devkmsg_user *user;
 	int err;
-
+#ifdef DEVKMSG_LIMIT_CONTROL
+	int interval = 5;
+	int burst = 100;
+#endif
 	if (devkmsg_log & DEVKMSG_LOG_MASK_OFF)
 		return -EPERM;
 
@@ -934,7 +961,11 @@ static int devkmsg_open(struct inode *inode, struct file *file)
 	if (!user)
 		return -ENOMEM;
 
+#ifdef  DEVKMSG_LIMIT_CONTROL
+	ratelimit_state_init(&user->rs, interval, burst);
+#else
 	ratelimit_default_init(&user->rs);
+#endif
 	ratelimit_set_flags(&user->rs, RATELIMIT_MSG_ON_RELEASE);
 
 	mutex_init(&user->lock);
@@ -1179,7 +1210,8 @@ static inline void boot_delay_msec(int level)
 
 static bool printk_time = IS_ENABLED(CONFIG_PRINTK_TIME);
 module_param_named(time, printk_time, bool, S_IRUGO | S_IWUSR);
-
+#if defined(CONFIG_HISI_TIME)
+#else
 static size_t print_time(u64 ts, char *buf)
 {
 	unsigned long rem_nsec;
@@ -1195,6 +1227,7 @@ static size_t print_time(u64 ts, char *buf)
 	return sprintf(buf, "[%5lu.%06lu] ",
 		       (unsigned long)ts, rem_nsec / 1000);
 }
+#endif
 
 static size_t print_prefix(const struct printk_log *msg, bool syslog, char *buf)
 {
@@ -1694,7 +1727,11 @@ static bool cont_add(int facility, int level, enum log_flags flags, const char *
 		cont.facility = facility;
 		cont.level = level;
 		cont.owner = current;
+#ifdef CONFIG_HISI_TIME
+		cont.ts_nsec = hisi_getcurtime();
+#else
 		cont.ts_nsec = local_clock();
+#endif
 		cont.flags = flags;
 		cont.cons = 0;
 		cont.flushed = false;
@@ -1744,21 +1781,30 @@ static size_t cont_print_text(char *text, size_t size)
 	return textlen;
 }
 
-static size_t log_output(int facility, int level, enum log_flags lflags, const char *dict, size_t dictlen, char *text, size_t text_len)
+static size_t log_output(int facility, int level, enum log_flags lflags, const char *dict, size_t dictlen, const char *text, size_t text_len)
 {
 	/*
 	 * If an earlier line was buffered, and we're a continuation
 	 * write from the same process, try to add it to the buffer.
 	 */
+#ifdef CONFIG_HISI_TIME
 	if (cont.len) {
 		if (cont.owner == current && (lflags & LOG_CONT)) {
 			if (cont_add(facility, level, lflags, text, text_len))
 				return text_len;
 		}
-		/* Otherwise, make sure it's flushed */
-		cont_flush();
 	}
-
+	cont_flush();
+#else
+        if (cont.len) {
+                if (cont.owner == current && (lflags & LOG_CONT)) {
+                        if (cont_add(facility, level, lflags, text, text_len))
+                                return text_len;
+                }
+                /* Otherwise, make sure it's flushed */
+                cont_flush();
+        }
+#endif
 	/* Skip empty continuation lines that couldn't be added - they just flush */
 	if (!text_len && (lflags & LOG_CONT))
 		return 0;
@@ -2047,7 +2093,7 @@ asmlinkage __visible void early_printk(const char *fmt, ...)
 }
 #endif
 
-static int __add_preferred_console(char *name, int idx, char *options,
+static int __add_preferred_console(const char *name, const int idx, char *options,
 				   char *brl_options)
 {
 	struct console_cmdline *c;
@@ -2134,7 +2180,7 @@ __setup("console=", console_setup);
  * commonly to provide a default console (ie from PROM variables) when
  * the user has not supplied one.
  */
-int add_preferred_console(char *name, int idx, char *options)
+int add_preferred_console(const char *name, int idx, char *options)
 {
 	return __add_preferred_console(name, idx, options, NULL);
 }
@@ -2196,8 +2242,13 @@ static int console_cpu_notify(struct notifier_block *self,
 	case CPU_DEAD:
 	case CPU_DOWN_FAILED:
 	case CPU_UP_CANCELED:
+#ifdef CONFIG_HISI_TIME
+		if (console_trylock())
+			console_unlock();
+#else
 		console_lock();
 		console_unlock();
+#endif
 	}
 	return NOTIFY_OK;
 }
@@ -3299,11 +3350,23 @@ void __init dump_stack_set_arch_desc(const char *fmt, ...)
  */
 void dump_stack_print_info(const char *log_lvl)
 {
-	printk("%sCPU: %d PID: %d Comm: %.20s %s %s %.*s\n",
+	printk("%sCPU: %d PID: %d Comm: %.20s VIP: %d%ld %s %s %.*s\n",
 	       log_lvl, raw_smp_processor_id(), current->pid, current->comm,
+#ifdef CONFIG_HW_VIP_THREAD
+	       current->static_vip, atomic64_read(&current->dynamic_vip),
+#else
+	       0, 0L,
+#endif
 	       print_tainted(), init_utsname()->release,
 	       (int)strcspn(init_utsname()->version, " "),
 	       init_utsname()->version);
+
+	/*
+	 * Some threads'name of android is the same in different process.
+	 * So we need to get the tgid and the comm of thread's group_leader.
+	 */
+	printk("TGID: %d Comm: %.20s\n",
+	       current->tgid, current->group_leader->comm);
 
 	if (dump_stack_arch_desc_str[0] != '\0')
 		printk("%sHardware name: %s\n",
@@ -3327,4 +3390,7 @@ void show_regs_print_info(const char *log_lvl)
 	       log_lvl, current, task_stack_page(current));
 }
 
+#ifdef CONFIG_HISI_TIME
+#include "hisi_printk.c"
+#endif
 #endif

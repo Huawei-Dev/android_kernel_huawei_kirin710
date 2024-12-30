@@ -1,0 +1,28 @@
+config HW_WIFI
+	bool "Huawei wifi tcp monitor support"
+	default n
+
+config HW_WIFI_MSS
+    bool "Huawei WLAN MIMO SISO switch support"
+    default n
+
+config HW_WIFI_RSSI
+    bool "Huawei TAS RSSI report support"
+    default n
+
+config HUAWEI_MSS_AUTO_CHANGE
+        bool "Huawei MSS auto change function support"
+        default n
+
+config HW_SYN_LINEAR_RETRY
+        bool "Huawei tcp syn sent linear retry support"
+        default n
+
+config HW_WIFIPRO
+	bool "Huawei wifipro tcp monitor support"
+	default n
+
+config HW_WIFIPRO_PROC
+	bool "Huawei wifipro proc support"
+	depends on HW_WIFIPRO
+	default n

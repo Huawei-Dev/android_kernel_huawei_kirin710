@@ -1,0 +1,6 @@
+config HISI_HKADC
+	bool "HISI ADC support"
+	depends on HISI_MAILBOX
+	default n
+	help
+	  Say yes here to support the HISI ADC device

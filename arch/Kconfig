@@ -258,6 +258,10 @@ config HAVE_HW_BREAKPOINT
 	bool
 	depends on PERF_EVENTS
 
+config HAVE_HW_BREAKPOINT_ADDR_MASK
+	bool
+	depends on HAVE_HW_BREAKPOINT
+
 config HAVE_MIXED_BREAKPOINTS_REGS
 	bool
 	depends on HAVE_HW_BREAKPOINT

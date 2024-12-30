@@ -25,9 +25,10 @@
 #include <linux/sort.h>
 #include <linux/slab.h>
 
-#define MAX_RESERVED_REGIONS	16
+#define MAX_RESERVED_REGIONS	64
 static struct reserved_mem reserved_mem[MAX_RESERVED_REGIONS];
 static int reserved_mem_count;
+static unsigned long reserved_mem_size_info;
 
 #if defined(CONFIG_HAVE_MEMBLOCK)
 #include <linux/memblock.h>
@@ -76,7 +77,6 @@ void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
 				      phys_addr_t base, phys_addr_t size)
 {
 	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
-
 	if (reserved_mem_count == ARRAY_SIZE(reserved_mem)) {
 		pr_err("not enough space all defined regions.\n");
 		return;
@@ -86,7 +86,6 @@ void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
 	rmem->name = uname;
 	rmem->base = base;
 	rmem->size = size;
-
 	reserved_mem_count++;
 	return;
 }
@@ -95,6 +94,7 @@ void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
  * res_mem_alloc_size() - allocate reserved memory described by 'size', 'align'
  *			  and 'alloc-ranges' properties
  */
+
 static int __init __reserved_mem_alloc_size(unsigned long node,
 	const char *uname, phys_addr_t *res_base, phys_addr_t *res_size)
 {
@@ -281,6 +281,11 @@ void __init fdt_init_reserved_mem(void)
 						 &rmem->base, &rmem->size);
 		if (err == 0)
 			__reserved_mem_init_node(rmem);
+
+		if (of_get_flat_dt_prop(node, "visible_to_users", NULL))
+			continue;
+
+		reserved_mem_size_info += rmem->size;
 	}
 }
 
@@ -393,3 +398,8 @@ void of_reserved_mem_device_release(struct device *dev)
 	rmem->ops->device_release(rmem, dev);
 }
 EXPORT_SYMBOL_GPL(of_reserved_mem_device_release);
+
+unsigned long dt_memory_reserved_sizeinfo_get(void)
+{
+	return reserved_mem_size_info;
+}

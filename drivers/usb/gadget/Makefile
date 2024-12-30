@@ -10,3 +10,5 @@ libcomposite-y			:= usbstring.o config.o epautoconf.o
 libcomposite-y			+= composite.o functions.o configfs.o u_f.o
 
 obj-$(CONFIG_USB_GADGET)	+= udc/ function/ legacy/
+
+obj-$(CONFIG_HW_GADGET)	+= hw_usb_rwswitch.o hw_usb_sync_host_time.o

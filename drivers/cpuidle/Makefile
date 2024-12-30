@@ -27,3 +27,7 @@ obj-$(CONFIG_MIPS_CPS_CPUIDLE)		+= cpuidle-cps.o
 # POWERPC drivers
 obj-$(CONFIG_PSERIES_CPUIDLE)		+= cpuidle-pseries.o
 obj-$(CONFIG_POWERNV_CPUIDLE)		+= cpuidle-powernv.o
+###############################################################################
+# ARM64 drivers
+obj-$(CONFIG_HISI_MULTIDRV_CPUIDLE)	+= hisi-multidrv-cpuidle.o
+obj-$(CONFIG_HISI_IDLE_SLEEP)	+= hisi-idle-sleep.o

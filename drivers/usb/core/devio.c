@@ -839,7 +839,7 @@ static int check_ctrlrecip(struct usb_dev_state *ps, unsigned int requesttype,
 	 * class specification, which we always want to allow as it is used
 	 * to query things like ink level, etc.
 	 */
-	if (requesttype == 0xa1 && request == 0) {
+	if (requesttype == 0xa1 && request == 0 && ps->dev->actconfig) {
 		alt_setting = usb_find_alt_setting(ps->dev->actconfig,
 						   index >> 8, index & 0xff);
 		if (alt_setting
@@ -1810,8 +1810,6 @@ static int proc_do_submiturb(struct usb_dev_state *ps, struct usbdevfs_urb *uurb
 	return 0;
 
  error:
-	if (as && as->usbm)
-		dec_usb_memory_use_count(as->usbm, &as->usbm->urb_use_count);
 	kfree(isopkt);
 	kfree(dr);
 	if (as)

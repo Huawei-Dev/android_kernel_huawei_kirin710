@@ -28,7 +28,6 @@
 #include <linux/blk-cgroup.h>
 #include "blk.h"
 
-#define MAX_KEY_LEN 100
 
 /*
  * blkcg_pol_mutex protects blkcg_policy[] and policy [de]activation.
@@ -40,7 +39,7 @@
 static DEFINE_MUTEX(blkcg_pol_register_mutex);
 static DEFINE_MUTEX(blkcg_pol_mutex);
 
-struct blkcg blkcg_root;
+struct blkcg blkcg_root = {.weight = 2 * BLKIO_WEIGHT_DEFAULT, };
 EXPORT_SYMBOL_GPL(blkcg_root);
 
 struct cgroup_subsys_state * const blkcg_root_css = &blkcg_root.css;
@@ -72,6 +71,8 @@ static void blkg_free(struct blkcg_gq *blkg)
 		if (blkg->pd[i])
 			blkcg_policy[i]->pd_free_fn(blkg->pd[i]);
 
+	percpu_counter_destroy(&blkg->nr_dirtied);
+
 	if (blkg->blkcg != &blkcg_root)
 		blk_exit_rl(&blkg->rl);
 
@@ -93,6 +94,7 @@ static struct blkcg_gq *blkg_alloc(struct blkcg *blkcg, struct request_queue *q,
 {
 	struct blkcg_gq *blkg;
 	int i;
+	int ret;
 
 	/* alloc and init base part */
 	blkg = kzalloc_node(sizeof(*blkg), gfp_mask, q->node);
@@ -107,6 +109,7 @@ static struct blkcg_gq *blkg_alloc(struct blkcg *blkcg, struct request_queue *q,
 	INIT_LIST_HEAD(&blkg->q_node);
 	blkg->blkcg = blkcg;
 	atomic_set(&blkg->refcnt, 1);
+	atomic_set(&blkg->writers, 0);
 
 	/* root blkg uses @q->root_rl, init rl only for !root blkgs */
 	if (blkcg != &blkcg_root) {
@@ -132,6 +135,11 @@ static struct blkcg_gq *blkg_alloc(struct blkcg *blkcg, struct request_queue *q,
 		pd->plid = i;
 	}
 
+	ret = percpu_counter_init(&blkg->nr_dirtied, (s64)0, gfp_mask);
+	if (ret)
+		goto err_free;
+
+	blkg->weight = blkcg->weight;
 	return blkg;
 
 err_free:
@@ -178,13 +186,12 @@ static struct blkcg_gq *blkg_create(struct blkcg *blkcg,
 	WARN_ON_ONCE(!rcu_read_lock_held());
 	lockdep_assert_held(q->queue_lock);
 
-	/* blkg holds a reference to blkcg */
 	if (!css_tryget_online(&blkcg->css)) {
 		ret = -ENODEV;
 		goto err_free_blkg;
 	}
 
-	wb_congested = wb_congested_get_create(&q->backing_dev_info,
+	wb_congested = wb_congested_get_create(q->backing_dev_info,
 					       blkcg->css.id,
 					       GFP_NOWAIT | __GFP_NOWARN);
 	if (!wb_congested) {
@@ -469,8 +476,8 @@ static int blkcg_reset_stats(struct cgroup_subsys_state *css,
 const char *blkg_dev_name(struct blkcg_gq *blkg)
 {
 	/* some drivers (floppy) instantiate a queue w/o disk registered */
-	if (blkg->q->backing_dev_info.dev)
-		return dev_name(blkg->q->backing_dev_info.dev);
+	if (blkg->q->backing_dev_info->dev)
+		return dev_name(blkg->q->backing_dev_info->dev);
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(blkg_dev_name);
@@ -704,7 +711,6 @@ u64 blkg_stat_recursive_sum(struct blkcg_gq *blkg,
 	u64 sum = 0;
 
 	lockdep_assert_held(blkg->q->queue_lock);
-
 	rcu_read_lock();
 	blkg_for_each_descendant_pre(pos_blkg, pos_css, blkg) {
 		struct blkg_stat *stat;
@@ -747,7 +753,6 @@ struct blkg_rwstat blkg_rwstat_recursive_sum(struct blkcg_gq *blkg,
 	int i;
 
 	lockdep_assert_held(blkg->q->queue_lock);
-
 	rcu_read_lock();
 	blkg_for_each_descendant_pre(pos_blkg, pos_css, blkg) {
 		struct blkg_rwstat *rwstat;
@@ -944,7 +949,6 @@ static void blkcg_css_offline(struct cgroup_subsys_state *css)
 		struct blkcg_gq *blkg = hlist_entry(blkcg->blkg_list.first,
 						struct blkcg_gq, blkcg_node);
 		struct request_queue *q = blkg->q;
-
 		if (spin_trylock(q->queue_lock)) {
 			blkg_destroy(blkg);
 			spin_unlock(q->queue_lock);
@@ -996,6 +1000,8 @@ blkcg_css_alloc(struct cgroup_subsys_state *parent_css)
 			goto free_blkcg;
 		}
 	}
+
+	blkcg->weight = BLKIO_WEIGHT_DEFAULT;
 
 	for (i = 0; i < BLKCG_MAX_POLS ; i++) {
 		struct blkcg_policy *pol = blkcg_policy[i];
@@ -1079,8 +1085,9 @@ int blkcg_init_queue(struct request_queue *q)
 	if (preloaded)
 		radix_tree_preload_end();
 
-	if (IS_ERR(blkg))
+	if (IS_ERR(blkg)) {
 		return PTR_ERR(blkg);
+	}
 
 	q->root_blkg = blkg;
 	q->root_rl.blkg = blkg;
@@ -1128,6 +1135,125 @@ void blkcg_exit_queue(struct request_queue *q)
 
 	blk_throtl_exit(q);
 }
+
+#ifdef CONFIG_BLK_DEV_THROTTLING
+static RAW_NOTIFIER_HEAD(blkcg_attach_tgid_notifier);
+static  RAW_NOTIFIER_HEAD(blkcg_attach_pid_notifier);
+int blkcg_attach_notify_register(enum blkcg_attach_notify type, struct notifier_block *n)
+{
+	int err = -EINVAL;
+	if (type >= BLKG_ATTACH_NOTIFY_NR || n == NULL) {
+		pr_err("%s: invalide parameters, type=%d, n = %pK\n",__func__, type, n);
+		return err;
+	}
+	switch (type) {
+	case BLKG_ATTACH_NOTIFY_BY_TGID:
+		err = raw_notifier_chain_register(
+				&blkcg_attach_tgid_notifier, n);
+		break;
+	case BLKG_ATTACH_NOTIFY_BY_PID:
+		err = raw_notifier_chain_register(
+				&blkcg_attach_pid_notifier, n);
+		break;
+	default:
+		break;
+	}
+	return err;
+}
+EXPORT_SYMBOL_GPL(blkcg_attach_notify_register);
+int blkcg_attach_notify_unregister(enum blkcg_attach_notify type, struct notifier_block *n)
+{
+	int err = -EINVAL;
+	if (type >= BLKG_ATTACH_NOTIFY_NR || n == NULL) {
+		pr_err("%s: invalide parameters, type=%d, n = %p\n",__func__, type, n);
+		return err;
+	}
+	switch (type) {
+	case BLKG_ATTACH_NOTIFY_BY_TGID:
+		err = raw_notifier_chain_unregister(
+				&blkcg_attach_tgid_notifier, n);
+		break;
+	case BLKG_ATTACH_NOTIFY_BY_PID:
+		err = raw_notifier_chain_unregister(
+				&blkcg_attach_pid_notifier, n);
+		break;
+        default:
+                break;
+	}
+	return err;
+}
+EXPORT_SYMBOL_GPL(blkcg_attach_notify_unregister);
+static void blkcg_attach_tgid_notify(void* task, unsigned long val)
+{
+	raw_notifier_call_chain(&blkcg_attach_tgid_notifier, val, (void *)task);
+}
+static void blkcg_attach_pid_notify(void* task, unsigned long val)
+{
+	raw_notifier_call_chain(&blkcg_attach_pid_notifier, val, (void *)task);
+}
+static void blkcg_attach(struct cgroup_taskset *tset)
+{
+	struct task_struct *task;
+	struct cgroup_subsys_state *css;
+	struct blkcg *blkcg;
+
+	cgroup_taskset_first(tset, &css);
+	blkcg = css_to_blkcg(css);
+	spin_lock_irq(&blkcg->lock);
+	rcu_read_lock();
+
+	cgroup_taskset_for_each(task, css, tset) {
+		wake_up_process(task);
+
+		if (thread_group_leader(task)) {
+			blkcg_attach_tgid_notify(task, blkcg->type);
+		} else {
+			blkcg_attach_pid_notify(task, blkcg->type);
+		}
+		if (!task->mm)
+			continue;
+
+		if (!task->mm->io_limit)
+			continue;
+
+		if (task->mm->io_limit->max_inflights == blkcg->max_inflights)
+			continue;
+
+		blk_throtl_update_limit(task->mm->io_limit,
+			blkcg->max_inflights);
+	}
+
+	rcu_read_unlock();
+	spin_unlock_irq(&blkcg->lock);
+}
+
+static void blkcg_fork(struct task_struct *task)
+{
+	struct blkcg *blkcg;
+
+	if (task_css_is_root(task, io_cgrp_id))
+		return;
+
+	if (!task->mm)
+		return;
+
+	if (!task->mm->io_limit)
+		return;
+
+	rcu_read_lock();
+	blkcg = task_blkcg(task);
+	if (task->mm->io_limit->max_inflights == blkcg->max_inflights){
+		rcu_read_unlock();
+		return;
+	}
+
+	spin_lock_irq(&blkcg->lock);
+	blk_throtl_update_limit(task->mm->io_limit,
+		    blkcg->max_inflights);
+	spin_unlock_irq(&blkcg->lock);
+	rcu_read_unlock();
+}
+#endif
 
 /*
  * We cannot support shared io contexts, as we have no mean to support
@@ -1180,6 +1306,10 @@ struct cgroup_subsys io_cgrp_subsys = {
 	.css_offline = blkcg_css_offline,
 	.css_free = blkcg_css_free,
 	.can_attach = blkcg_can_attach,
+#ifdef CONFIG_BLK_DEV_THROTTLING
+	.attach = blkcg_attach,
+	.fork = blkcg_fork,
+#endif
 	.bind = blkcg_bind,
 	.dfl_cftypes = blkcg_files,
 	.legacy_cftypes = blkcg_legacy_files,

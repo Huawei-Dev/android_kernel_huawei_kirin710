@@ -1,0 +1,9 @@
+config HISILICON_PLATFORM_DDRC
+	bool "Hisilicon platform ddr controller support"
+	default n
+	help
+	  Say yes here to support the hisilicon platform ddr controller
+
+config HISI_DDRC_SEC
+	bool "hisi ddr secprotect"
+	default n

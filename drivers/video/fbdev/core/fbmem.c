@@ -435,6 +435,9 @@ static void fb_do_show_logo(struct fb_info *info, struct fb_image *image,
 	} else if (rotate == FB_ROTATE_UD) {
 		for (x = 0; x < num; x++) {
 			info->fbops->fb_imageblit(info, image);
+			if ((image->width + 8 < 0) || (image->dx < image->width + 8)) {
+				break;
+			}
 			image->dx -= image->width + 8;
 		}
 	} else if (rotate == FB_ROTATE_CW) {
@@ -447,6 +450,9 @@ static void fb_do_show_logo(struct fb_info *info, struct fb_image *image,
 	} else if (rotate == FB_ROTATE_CCW) {
 		for (x = 0; x < num; x++) {
 			info->fbops->fb_imageblit(info, image);
+			if ((image->height + 8 < 0) || (image->dy < image->height + 8)) {
+				break;
+			}
 			image->dy -= image->height + 8;
 		}
 	}

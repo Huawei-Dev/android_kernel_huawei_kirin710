@@ -246,6 +246,13 @@ static struct {
 #define cpuhp_lock_acquire()      lock_map_acquire(&cpu_hotplug.dep_map)
 #define cpuhp_lock_release()      lock_map_release(&cpu_hotplug.dep_map)
 
+#ifdef CONFIG_ARCH_HISI
+void cpu_hotplug_lock_held(void)
+{
+	lockdep_assert_held(&cpu_hotplug.lock);
+}
+EXPORT_SYMBOL(cpu_hotplug_lock_held);
+#endif
 
 void get_online_cpus(void)
 {
@@ -1193,6 +1200,7 @@ static int do_cpu_up(unsigned int cpu, enum cpuhp_state target)
 	}
 
 	err = _cpu_up(cpu, 0, target);
+
 out:
 	cpu_maps_update_done();
 	return err;

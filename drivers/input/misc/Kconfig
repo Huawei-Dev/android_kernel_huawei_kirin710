@@ -107,6 +107,15 @@ config INPUT_BMA150
 	  To compile this driver as a module, choose M here: the
 	  module will be called bma150.
 
+config HISI_POWERKEY_SPMI
+	tristate "Hisilicon PMIC SPMI ONKEY support"
+	depends on HISI_SPMI && HISI_PMIC_PMU_SPMI
+	help
+	  Say Y to enable support for PMIC ONKEY.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called hisi_powerkey.
+
 config INPUT_E3X0_BUTTON
 	tristate "NI Ettus Research USRP E3xx Button support."
 	default n
@@ -837,6 +846,16 @@ config INPUT_DRV2667_HAPTICS
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called drv2667-haptics.
+
+config HISI_VIBRATOR
+	bool "Led classdev vibrator hisi driver"
+	depends on LEDS_TRIGGERS && LEDS_TRIGGER_TRANSIENT
+	default n
+	help
+	  Say Y to enable support for the Hisilicon  vibrator driver.
+
+	  To compile this driver as a module, choose M here: the module will be
+	  called hisi vibrator driver.
 
 config INPUT_HISI_POWERKEY
 	tristate "Hisilicon PMIC ONKEY support"

@@ -274,6 +274,9 @@ enum
 	NET_CORE_AEVENT_ETIME=20,
 	NET_CORE_AEVENT_RSEQTH=21,
 	NET_CORE_WARNINGS=22,
+#ifdef CONFIG_HUAWEI_BASTET
+	NET_CORE_FG_DSCP=31,
+#endif
 };
 
 /* /proc/sys/net/ethernet */

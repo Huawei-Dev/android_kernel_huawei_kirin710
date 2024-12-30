@@ -136,6 +136,10 @@ static unsigned int pcpu_high_unit_cpu __read_mostly;
 /* the address of the first chunk which starts with the kernel static area */
 void *pcpu_base_addr __read_mostly;
 EXPORT_SYMBOL_GPL(pcpu_base_addr);
+#ifdef CONFIG_HISI_KERNELDUMP
+int pcpu_base_size __read_mostly;
+EXPORT_SYMBOL_GPL(pcpu_base_size);
+#endif
 
 static const int *pcpu_unit_map __read_mostly;		/* cpu -> unit */
 const unsigned long *pcpu_unit_offsets __read_mostly;	/* cpu -> unit offset */
@@ -1715,6 +1719,9 @@ int __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 
 	/* we're done */
 	pcpu_base_addr = base_addr;
+#ifdef CONFIG_HISI_KERNELDUMP
+	pcpu_base_size = size_sum;
+#endif
 	return 0;
 }
 
@@ -2048,8 +2055,8 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 		ai->groups[group].base_offset = areas[group] - base;
 	}
 
-	pr_info("Embedded %zu pages/cpu @%p s%zu r%zu d%zu u%zu\n",
-		PFN_DOWN(size_sum), base, ai->static_size, ai->reserved_size,
+	pr_info("Embedded %zu pages/cpu s%zu r%zu d%zu u%zu\n",
+		PFN_DOWN(size_sum), ai->static_size, ai->reserved_size,
 		ai->dyn_size, ai->unit_size);
 
 	rc = pcpu_setup_first_chunk(ai, base);
@@ -2162,8 +2169,8 @@ int __init pcpu_page_first_chunk(size_t reserved_size,
 	}
 
 	/* we're ready, commit */
-	pr_info("%d %s pages/cpu @%p s%zu r%zu d%zu\n",
-		unit_pages, psize_str, vm.addr, ai->static_size,
+	pr_info("%d %s pages/cpu s%zu r%zu d%zu\n",
+		unit_pages, psize_str, ai->static_size,
 		ai->reserved_size, ai->dyn_size);
 
 	rc = pcpu_setup_first_chunk(ai, vm.addr);

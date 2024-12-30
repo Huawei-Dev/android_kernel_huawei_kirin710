@@ -67,6 +67,21 @@ static inline void fscrypt_restore_control_page(struct page *page)
 	return;
 }
 
+static inline struct page *fscrypt_encrypt_dio_page(struct inode *inode,
+				      struct page *plaintext_page,
+				      unsigned int len,
+				      unsigned int offs,
+				      u64 lblk_num, gfp_t gfp_flags)
+{
+	return ERR_PTR(-EOPNOTSUPP);
+}
+
+static inline int fscrypt_decrypt_dio_page(struct inode *inode, struct page *page,
+			unsigned int len, unsigned int offs, u64 lblk_num)
+{
+	return -EOPNOTSUPP;
+}
+
 /* policy.c */
 static inline int fscrypt_ioctl_set_policy(struct file *filp,
 					   const void __user *arg)
@@ -103,7 +118,7 @@ static inline void fscrypt_put_encryption_info(struct inode *inode)
 	return;
 }
 
- /* fname.c */
+/* fname.c */
 static inline int fscrypt_setup_filename(struct inode *dir,
 					 const struct qstr *iname,
 					 int lookup, struct fscrypt_name *fname)
@@ -160,6 +175,12 @@ static inline void fscrypt_decrypt_bio(struct bio *bio)
 static inline void fscrypt_enqueue_decrypt_bio(struct fscrypt_ctx *ctx,
 					       struct bio *bio)
 {
+}
+
+static inline void fscrypt_decrypt_dio_bio_pages(struct fscrypt_ctx *ctx, struct bio *bio,
+				   work_func_t func)
+{
+	return;
 }
 
 static inline void fscrypt_pullback_bio_page(struct page **page, bool restore)

@@ -27,6 +27,9 @@
 #include <linux/sysctl.h>
 #include <linux/workqueue.h>
 #include <net/rtnetlink.h>
+#ifdef CONFIG_HUAWEI_XENGINE
+#include <huawei_platform/emcom/emcom_xengine.h>
+#endif
 
 /*
  * NUD stands for "neighbor unreachability detection"
@@ -483,6 +486,9 @@ static inline int neigh_hh_output(const struct hh_cache *hh, struct sk_buff *skb
 	}
 
 	__skb_push(skb, hh_len);
+#ifdef CONFIG_HUAWEI_XENGINE
+	Emcom_Xengine_UdpEnqueue(skb);
+#endif
 	return dev_queue_xmit(skb);
 }
 

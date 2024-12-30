@@ -100,7 +100,7 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
 	size = vring_size(len, rvring->align);
 	memset(addr, 0, size);
 
-	dev_dbg(dev, "vring%d: va %p qsz %d notifyid %d\n",
+	dev_dbg(dev, "vring%d: va %pK qsz %d notifyid %d\n",
 		id, addr, len, rvring->notifyid);
 
 	/*
@@ -137,6 +137,9 @@ static void __rproc_virtio_del_vqs(struct virtio_device *vdev)
 static void rproc_virtio_del_vqs(struct virtio_device *vdev)
 {
 	__rproc_virtio_del_vqs(vdev);
+#ifdef CONFIG_HISI_REMOTEPROC
+	vdev->config->reset(vdev);
+#endif
 }
 
 static int rproc_virtio_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
@@ -188,8 +191,9 @@ static void rproc_virtio_reset(struct virtio_device *vdev)
 	struct fw_rsc_vdev *rsc;
 
 	rsc = (void *)rvdev->rproc->table_ptr + rvdev->rsc_offset;
-
+#ifndef CONFIG_HISI_REMOTEPROC
 	rsc->status = 0;
+#endif
 	dev_dbg(&vdev->dev, "reset !\n");
 }
 

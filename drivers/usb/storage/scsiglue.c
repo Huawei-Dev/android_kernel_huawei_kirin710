@@ -81,6 +81,7 @@ static const char* host_info(struct Scsi_Host *host)
 static int slave_alloc (struct scsi_device *sdev)
 {
 	struct us_data *us = host_to_us(sdev->host);
+	int maxp;
 
 	/*
 	 * Set the INQUIRY transfer length to 36.  We don't use any of
@@ -105,6 +106,9 @@ static int slave_alloc (struct scsi_device *sdev)
 	 * values can be as large as 2048.  To make that work properly
 	 * will require changes to the block layer.
 	 */
+	maxp = usb_maxpacket(us->pusb_dev, us->recv_bulk_pipe, 0);
+	blk_queue_virt_boundary(sdev->request_queue, maxp - 1);
+	
 	blk_queue_update_dma_alignment(sdev->request_queue, (512 - 1));
 
 	/* Tell the SCSI layer if we know there is more than one LUN */

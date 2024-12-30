@@ -22,6 +22,7 @@
 #include <linux/slab.h>
 
 #include "cpufreq_governor.h"
+#include <linux/hisi/hifreq_hotplug.h>
 
 static DEFINE_PER_CPU(struct cpu_dbs_info, cpu_dbs);
 

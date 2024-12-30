@@ -25,3 +25,8 @@ config SPMI_MSM_PMIC_ARB
 	  other devices that have the SPMI interface.
 
 endif
+
+config HISI_SPMI
+	tristate "HISI SPMI Controller"
+	help
+	  enabel hisi spmi

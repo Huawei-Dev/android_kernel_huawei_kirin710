@@ -67,6 +67,9 @@ static const struct usb_device_id usb_quirk_list[] = {
 	/* Cherry Stream G230 2.0 (G85-231) and 3.0 (G85-232) */
 	{ USB_DEVICE(0x046a, 0x0023), .driver_info = USB_QUIRK_RESET_RESUME },
 
+	/* Logitech HD Webcam C270 */
+	{ USB_DEVICE(0x046d, 0x0825), .driver_info = USB_QUIRK_RESET_RESUME },
+
 	/* Logitech HD Pro Webcams C920, C920-C, C925e and C930e */
 	{ USB_DEVICE(0x046d, 0x082d), .driver_info = USB_QUIRK_DELAY_INIT },
 	{ USB_DEVICE(0x046d, 0x0841), .driver_info = USB_QUIRK_DELAY_INIT },
@@ -283,6 +286,23 @@ static const struct usb_device_id usb_quirk_list[] = {
 
 	/* INTEL VALUE SSD */
 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
+
+	/* */
+	{ USB_DEVICE(0x067b, 0x2731), .driver_info = USB_QUIRK_DELAY_INIT | USB_QUIRK_NO_LPM},
+
+	/* Delay Init */
+	{ USB_DEVICE(0x0781, 0x5596), .driver_info = USB_QUIRK_DELAY_INIT},
+	{ USB_DEVICE(0x1d6b, 0x0002), .driver_info = USB_QUIRK_DELAY_INIT},
+	{ USB_DEVICE(0x1d6b, 0x0003), .driver_info = USB_QUIRK_DELAY_INIT},
+	{ USB_DEVICE(0x2109, 0x2817), .driver_info = USB_QUIRK_DELAY_INIT},
+	{ USB_DEVICE(0x2109, 0x0817), .driver_info = USB_QUIRK_DELAY_INIT},
+	{ USB_DEVICE(0x090c, 0x1000), .driver_info = USB_QUIRK_DELAY_INIT},
+
+	/* Huawei TypeC Headset */
+	{ USB_DEVICE(0x12d1, 0x3a07), .driver_info = USB_QUIRK_PM_NO_RESET_RESUME},
+
+	/* TOSHIBA - TransMemory-Mx */
+	{ USB_DEVICE(0x0930, 0x1408), .driver_info = USB_QUIRK_NO_LPM },
 
 	{ }  /* terminating entry must be last */
 };

@@ -1,0 +1,1 @@
+obj-y += $(TARGET_BOARD_PLATFORM)/

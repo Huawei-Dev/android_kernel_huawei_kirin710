@@ -70,6 +70,7 @@ static inline void arm64_apply_bp_hardening(void)
 	if (d->fn)
 		d->fn();
 }
+
 #else
 static inline struct bp_hardening_data *arm64_get_bp_hardening_data(void)
 {
@@ -77,6 +78,8 @@ static inline struct bp_hardening_data *arm64_get_bp_hardening_data(void)
 }
 
 static inline void arm64_apply_bp_hardening(void)	{ }
+static inline void arm64_apply_bp_hardening_check(void)	{}
+
 #endif	/* CONFIG_HARDEN_BRANCH_PREDICTOR */
 
 extern void paging_init(void);

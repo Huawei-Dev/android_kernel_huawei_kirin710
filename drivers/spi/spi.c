@@ -1148,6 +1148,16 @@ static void __spi_pump_messages(struct spi_master *master, bool in_kthread)
 		master->dummy_rx = NULL;
 		kfree(master->dummy_tx);
 		master->dummy_tx = NULL;
+#if defined CONFIG_HISI_SPI
+		mutex_lock(&master->msg_mutex);
+		disable_spi(master);
+		pl022_runtime_suspend(master->dev.parent);
+		mutex_unlock(&master->msg_mutex);
+		if (master->unprepare_transfer_hardware &&
+		    master->unprepare_transfer_hardware(master))
+			dev_err(&master->dev,
+				"failed to unprepare transfer hardware\n");
+#else
 		if (master->unprepare_transfer_hardware &&
 		    master->unprepare_transfer_hardware(master))
 			dev_err(&master->dev,
@@ -1156,6 +1166,7 @@ static void __spi_pump_messages(struct spi_master *master, bool in_kthread)
 			pm_runtime_mark_last_busy(master->dev.parent);
 			pm_runtime_put_autosuspend(master->dev.parent);
 		}
+#endif
 		trace_spi_master_idle(master);
 
 		spin_lock_irqsave(&master->queue_lock, flags);
@@ -1177,6 +1188,35 @@ static void __spi_pump_messages(struct spi_master *master, bool in_kthread)
 
 	mutex_lock(&master->io_mutex);
 
+#if defined CONFIG_HISI_SPI
+	if (!was_busy)
+		trace_spi_master_busy(master);
+
+	if (!was_busy && master->prepare_transfer_hardware) {
+		ret = master->prepare_transfer_hardware(master);
+		if (ret) {
+			dev_err(&master->dev,
+				"failed to prepare transfer hardware\n");
+
+			mutex_unlock(&master->io_mutex);
+			return;
+		}
+	}
+
+	if (!was_busy){
+		ret = pl022_runtime_resume(master->dev.parent);
+		if (ret < 0) {
+			dev_err(&master->dev, "Failed to power device: %d\n", ret);
+
+			if (master->unprepare_transfer_hardware)
+				master->unprepare_transfer_hardware(master);
+
+			mutex_unlock(&master->io_mutex);
+			return;
+		}
+	}
+
+#else
 	if (!was_busy && master->auto_runtime_pm) {
 		ret = pm_runtime_get_sync(master->dev.parent);
 		if (ret < 0) {
@@ -1202,6 +1242,7 @@ static void __spi_pump_messages(struct spi_master *master, bool in_kthread)
 			return;
 		}
 	}
+#endif
 
 	trace_spi_message_start(master->cur_msg);
 
@@ -1228,6 +1269,10 @@ static void __spi_pump_messages(struct spi_master *master, bool in_kthread)
 	if (ret) {
 		dev_err(&master->dev,
 			"failed to transfer one message from queue\n");
+#if defined CONFIG_HISI_SPI
+		master->cur_msg->status = ret;
+		spi_finalize_current_message(master);
+#endif
 		goto out;
 	}
 
@@ -1926,6 +1971,9 @@ int spi_register_master(struct spi_master *master)
 	spin_lock_init(&master->bus_lock_spinlock);
 	mutex_init(&master->bus_lock_mutex);
 	mutex_init(&master->io_mutex);
+#if defined CONFIG_HISI_SPI
+	mutex_init(&master->msg_mutex);
+#endif
 	master->bus_lock_flag = 0;
 	init_completion(&master->xfer_completion);
 	if (!master->max_dma_len)

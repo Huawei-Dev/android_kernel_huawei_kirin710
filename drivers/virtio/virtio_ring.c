@@ -26,6 +26,7 @@
 #include <linux/kmemleak.h>
 #include <linux/dma-mapping.h>
 #include <xen/xen.h>
+#include <linux/platform_data/remoteproc-hisi.h>
 
 #ifdef DEBUG
 /* For development, we want to crash whenever the ring is screwed. */
@@ -340,7 +341,11 @@ static inline int virtqueue_add(struct virtqueue *_vq,
 				goto unmap_release;
 
 			desc[i].flags = cpu_to_virtio16(_vq->vdev, VRING_DESC_F_NEXT);
+#ifdef CONFIG_HISI_REMOTEPROC
+			desc[i].addr = hisp_sg2virtio(_vq, sg);
+#else
 			desc[i].addr = cpu_to_virtio64(_vq->vdev, addr);
+#endif
 			desc[i].len = cpu_to_virtio32(_vq->vdev, sg->length);
 			prev = i;
 			i = virtio16_to_cpu(_vq->vdev, desc[i].next);
@@ -353,7 +358,11 @@ static inline int virtqueue_add(struct virtqueue *_vq,
 				goto unmap_release;
 
 			desc[i].flags = cpu_to_virtio16(_vq->vdev, VRING_DESC_F_NEXT | VRING_DESC_F_WRITE);
+#ifdef CONFIG_HISI_REMOTEPROC
+			desc[i].addr = hisp_sg2virtio(_vq, sg);
+#else
 			desc[i].addr = cpu_to_virtio64(_vq->vdev, addr);
+#endif
 			desc[i].len = cpu_to_virtio32(_vq->vdev, sg->length);
 			prev = i;
 			i = virtio16_to_cpu(_vq->vdev, desc[i].next);
@@ -402,7 +411,7 @@ static inline int virtqueue_add(struct virtqueue *_vq,
 	vq->vring.avail->idx = cpu_to_virtio16(_vq->vdev, vq->avail_idx_shadow);
 	vq->num_added++;
 
-	pr_debug("Added buffer head %i to %p\n", head, vq);
+	pr_debug("Added buffer head %i to %pK\n", head, vq);
 	END_USE(vq);
 
 	/* This is very unlikely, but theoretically possible.  Kick
@@ -895,14 +904,14 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
 	struct vring_virtqueue *vq = to_vvq(_vq);
 
 	if (!more_used(vq)) {
-		pr_debug("virtqueue interrupt with no work for %p\n", vq);
+		pr_debug("virtqueue interrupt with no work for %pK\n", vq);
 		return IRQ_NONE;
 	}
 
 	if (unlikely(vq->broken))
 		return IRQ_HANDLED;
 
-	pr_debug("virtqueue callback for %p (%p)\n", vq, vq->vq.callback);
+	pr_debug("virtqueue callback for %pK (%pK)\n", vq, vq->vq.callback);
 	if (vq->vq.callback)
 		vq->vq.callback(&vq->vq);
 

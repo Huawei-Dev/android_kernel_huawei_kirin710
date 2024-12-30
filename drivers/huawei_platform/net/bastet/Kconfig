@@ -1,0 +1,9 @@
+menu "Huawei Bastet Support"
+	depends on INET && NETFILTER
+
+config HUAWEI_BASTET
+	tristate "Huawei Bastet support"
+	default n
+	---help---
+	  This driver provides TCP sequence sync, traffic flow correction, etc. for Huawei Bastet.
+endmenu

@@ -48,7 +48,7 @@ config BROKEN_ON_SMP
 
 config INIT_ENV_ARG_LIMIT
 	int
-	default 32 if !UML
+	default 128 if !UML
 	default 128 if UML
 	help
 	  Maximum of each of the number of arguments and environment
@@ -403,6 +403,7 @@ config IRQ_TIME_ACCOUNTING
 config SCHED_WALT
         bool "Support window based load tracking"
         depends on SMP
+        select IRQ_TIME_ACCOUNTING
         help
         This feature will allow the scheduler to maintain a tunable window
 	based set of metrics for tasks and runqueues. These metrics can be
@@ -964,6 +965,13 @@ config NUMA_BALANCING_DEFAULT_ENABLED
 	  If set, automatic NUMA balancing will be enabled if running on a NUMA
 	  machine.
 
+config BOOST_KILL
+	bool "boost kill"
+	default n
+	help
+	  if set, the process to be killed will be move to fast cpu and its nice
+	  value will also set to -20.
+
 menuconfig CGROUPS
 	bool "Control Group support"
 	select KERNFS
@@ -995,6 +1003,7 @@ config CGROUP_FREEZER
 	help
 	  Provides a way to freeze and unfreeze all tasks in a
 	  cgroup.
+source "kernel/cgroup_huawei/Kconfig"
 
 config CGROUP_PIDS
 	bool "PIDs cgroup subsystem"
@@ -1011,6 +1020,12 @@ config CGROUP_PIDS
 	  to a cgroup hierarchy will *not* be blocked by the PIDs subsystem),
 	  since the PIDs limit only affects a process's ability to fork, not to
 	  attach to a cgroup.
+
+config CGROUP_IOLIMIT
+	bool "IO bandwidth limit cgroup subsystem"
+	help
+	  Provides a cgroup implementing for io bandwidth while a process
+	  in the cgroup read or write.
 
 config CGROUP_DEVICE
 	bool "Device controller for cgroups"
@@ -1055,6 +1070,15 @@ config CGROUP_SCHEDTUNE
 	     configured with a different boost value
 
 	  Say N if unsure.
+
+config HW_CGROUP_WORKINGSET
+	bool "workingset cgroup subsystem"
+	depends on CRYPTO_CRC32C
+	depends on TASK_DELAY_ACCT
+	help
+	  Provides a cgroup implementing filepage collector and prereader of workingset.
+	  This cgroup workingset for application, collect it touched filepages and
+	  preread those filepages.
 
 config PAGE_COUNTER
        bool
@@ -1337,6 +1361,45 @@ config NET_NS
 	  of the network stack.
 
 endif # NAMESPACES
+
+config HISI_EAS_SCHED
+	bool "Hisilicon EAS scheduler optimization"
+	default n
+	help
+	  Hisilicon EAS scheduler
+
+config HISI_RT_OPT
+	bool "hisilicon rt-threads optimization"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  Limit rt-threads to slow cpus for power saving.
+
+config HISI_ED_TASK
+	bool "Hisilicon early detection tasks for freq guidance"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  early detection tasks for frequency guidance.
+
+config HISI_ED_TASK_RESET_AT_UPMIGRATION
+	bool "Reset ed task's run/wait time when migrate to faster cpu"
+	depends on HISI_ED_TASK
+	default n
+	help
+	  This feature reset an ed task's last_wake_ts/last_wake_wait_sum if
+	  task migrate to faster cpu. This prevents little core's ed task
+	  boost big core's freq when it upmigrate.
+	  However, it might be confusing if a task become ed task on big core
+	  by its earlier running time on little core. Disable this feature
+	  and do not reset ed task on migration is a better choice.
+
+config HISI_MIGRATION_NOTIFY
+	bool "Hisilicon task migration notify freq change"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  tasks migration notify frequency change.
 
 config SCHED_AUTOGROUP
 	bool "Automatic process group scheduling"
@@ -1864,6 +1927,16 @@ config PERF_EVENTS
 
 	  Say Y if unsure.
 
+config PERF_USER_SHARE
+	bool "Perf event sharing with user-space"
+	help
+	  Say yes here to enable the user-space sharing of events. The events
+	  can be shared among other user-space events or with kernel created
+	  events that has the same config and type event attributes.
+
+	  Say N if unsure.
+
+
 config DEBUG_PERF_USE_VMALLOC
 	default n
 	bool "Debug: use vmalloc to back perf mmap() buffers"
@@ -1967,6 +2040,15 @@ config SLAB_FREELIST_RANDOM
 	  Randomizes the freelist order used on creating new pages. This
 	  security feature reduces the predictability of the kernel slab
 	  allocator against heap overflows.
+
+
+config HW_SLUB_DF
+	bool "HUAWEI SLUB canaries"
+	default n
+	help
+	  Place canaries at first 8bit magic word of user data when free memory,
+	  check this magic when free to avoid double free.
+	  place canary_malloc before return to user.
 
 config SLUB_CPU_PARTIAL
 	default y
@@ -2288,3 +2370,8 @@ config ASN1
 	  functions to call on what tags.
 
 source "kernel/Kconfig.locks"
+source "kernel/hwcfs/Kconfig"
+source "net/network_aware/Kconfig"
+source "kernel/cpu_netlink/Kconfig"
+source "kernel/sched/Kconfig"
+source "kernel/hwqos/Kconfig"

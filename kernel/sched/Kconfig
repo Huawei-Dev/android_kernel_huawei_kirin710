@@ -1,0 +1,28 @@
+config SCHED_HISI_TOP_TASK
+	bool "Maintain the top task load of each cpu"
+	depends on SCHED_WALT
+	default n
+	help
+	  Hisi schedutil governor may use the top task load as a guide to
+	  frequency evaluation.
+
+config SCHED_HISI_MIGRATE_SPREAD_LOAD
+	bool "Spread task's load when inter-cluster migration"
+	depends on SCHED_WALT
+	default n
+	help
+	  In inter-cluster migration, this option will spread task's
+	  prev_window/curr_window to all cpus that the task has been
+	  running on before in a window. If disabled, task's whole load
+	  will move to dest cpu and that will make dest cpu's cpu load
+	  very high in same cases.
+
+config SCHED_HISI_FORCE_CMP_BACKUP
+	bool "Always consider backup cpu in non-preferidle case"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  This option compares backup_cpu if target_cpu == prev_cpu.
+	  In other words, for non-prefer idle tasks it may chose an idle
+	  cpu even if prev_cpu is the best active cpu.
+	  Not recommended because it will make all tasks spread.

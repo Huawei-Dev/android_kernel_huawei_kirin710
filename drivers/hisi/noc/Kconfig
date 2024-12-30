@@ -1,0 +1,8 @@
+config HISI_NOC
+	depends on HISI_BB
+	bool "Support HiSilicon NOC"
+	default n
+	help
+	  This driver supports HiSilicon HiXXX NOC,
+	  including hisilicon noc driver
+

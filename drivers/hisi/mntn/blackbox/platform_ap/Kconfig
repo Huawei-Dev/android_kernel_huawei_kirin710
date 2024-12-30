@@ -1,0 +1,6 @@
+config HISI_REENTRANT_EXCEPTION
+	bool "reentrant exception"
+	depends on HISI_BB
+	default n
+	help
+	  this module deal with reentrant exception.

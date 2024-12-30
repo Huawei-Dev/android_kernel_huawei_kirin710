@@ -114,4 +114,8 @@ obj-$(CONFIG_REGULATOR_WM8400) += wm8400-regulator.o
 obj-$(CONFIG_REGULATOR_WM8994) += wm8994-regulator.o
 
 
+obj-$(CONFIG_HISI_REGULATOR_SPMI) += hisi_regulator_spmi.o
+obj-$(CONFIG_DRV_HISI_IP_REGULATOR) += hisi_ip_regulator.o
+obj-$(CONFIG_HISI_CHARGER_REGULATOR) += hisi_charger_regulator.o
+obj-$(CONFIG_HISI_REGULATOR_DEBUG) +=hisi_regulator_debug.o
 ccflags-$(CONFIG_REGULATOR_DEBUG) += -DDEBUG

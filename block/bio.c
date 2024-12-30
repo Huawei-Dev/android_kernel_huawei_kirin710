@@ -31,6 +31,7 @@
 
 #include <trace/events/block.h>
 
+#include "blk.h"
 /*
  * Test patch to inline a certain number of bi_io_vec's inside the bio
  * itself, to shrink a bio data allocation from two mempool calls to one
@@ -155,7 +156,7 @@ out:
 
 unsigned int bvec_nr_vecs(unsigned short idx)
 {
-	return bvec_slabs[--idx].nr_vecs;
+	return bvec_slabs[--idx].nr_vecs;/*[false alarm]:fortify*/
 }
 
 void bvec_free(mempool_t *pool, struct bio_vec *bv, unsigned int idx)
@@ -252,6 +253,9 @@ static void bio_free(struct bio *bio)
 	struct bio_set *bs = bio->bi_pool;
 	void *p;
 
+#ifdef CONFIG_HISI_BLK
+	hisi_blk_bio_free(bio);
+#endif
 	__bio_free(bio);
 
 	if (bs) {
@@ -330,6 +334,7 @@ void bio_chain(struct bio *bio, struct bio *parent)
 {
 	BUG_ON(bio->bi_private || bio->bi_end_io);
 
+	bio->bi_opf |= REQ_CHAINED;
 	bio->bi_private = parent;
 	bio->bi_end_io	= bio_chain_endio;
 	bio_inc_remaining(parent);
@@ -423,11 +428,12 @@ static void punt_bios_to_rescuer(struct bio_set *bs)
  *   RETURNS:
  *   Pointer to new bio on success, NULL on failure.
  */
+
 struct bio *bio_alloc_bioset(gfp_t gfp_mask, int nr_iovecs, struct bio_set *bs)
 {
 	gfp_t saved_gfp = gfp_mask;
 	unsigned front_pad;
-	unsigned inline_vecs;
+	int inline_vecs;
 	struct bio_vec *bvl = NULL;
 	struct bio *bio;
 	void *p;
@@ -1133,7 +1139,8 @@ struct bio *bio_copy_user_iov(struct request_queue *q,
 	struct bio_map_data *bmd;
 	struct page *page;
 	struct bio *bio;
-	int i, ret;
+	int ret;
+	unsigned long i = 0;
 	int nr_pages = 0;
 	unsigned int len = iter->count;
 	unsigned int offset = map_data ? offset_in_page(map_data->offset) : 0;
@@ -1214,7 +1221,7 @@ struct bio *bio_copy_user_iov(struct request_queue *q,
 			}
 		}
 
-		if (bio_add_pc_page(q, bio, page, bytes, offset) < bytes)
+		if (((unsigned int)bio_add_pc_page(q, bio, page, bytes, offset)) < bytes)
 			break;
 
 		len -= bytes;
@@ -1335,7 +1342,7 @@ struct bio *bio_map_user_iov(struct request_queue *q,
 			/*
 			 * sorry...
 			 */
-			if (bio_add_pc_page(q, bio, pages[j], bytes, offset) <
+			if (((unsigned int)bio_add_pc_page(q, bio, pages[j], bytes, offset)) <
 					    bytes)
 				break;
 
@@ -1459,8 +1466,8 @@ struct bio *bio_map_kern(struct request_queue *q, void *data, unsigned int len,
 		if (bytes > len)
 			bytes = len;
 
-		if (bio_add_pc_page(q, bio, virt_to_page(data), bytes,
-				    offset) < bytes) {
+		if (((unsigned int)bio_add_pc_page(q, bio, virt_to_page(data), bytes,
+				    (unsigned int)offset)) < bytes) {
 			/* we don't support partial mappings */
 			bio_put(bio);
 			return ERR_PTR(-EINVAL);
@@ -1760,6 +1767,9 @@ static inline bool bio_remaining_done(struct bio *bio)
  **/
 void bio_endio(struct bio *bio)
 {
+#ifdef CONFIG_HISI_BLK
+	hisi_blk_bio_endio(bio);
+#endif
 again:
 	if (!bio_remaining_done(bio))
 		return;
@@ -1776,6 +1786,14 @@ again:
 		bio = __bio_chain_endio(bio);
 		goto again;
 	}
+
+#ifdef CONFIG_BLK_DEV_THROTTLING
+	if (bio->bi_throtl_end_io2)
+		bio->bi_throtl_end_io2(bio);
+
+	if (bio->bi_throtl_end_io1)
+		bio->bi_throtl_end_io1(bio);
+#endif
 
 	if (bio->bi_end_io)
 		bio->bi_end_io(bio);
@@ -1816,13 +1834,20 @@ struct bio *bio_split(struct bio *bio, int sectors,
 	if (!split)
 		return NULL;
 
-	split->bi_iter.bi_size = sectors << 9;
+	split->bi_iter.bi_size = (unsigned int)sectors << 9;
+
+#ifdef CONFIG_HISI_BLK
+	hisi_blk_bio_split_pre(bio, split);
+#endif
 
 	if (bio_integrity(split))
 		bio_integrity_trim(split, 0, sectors);
 
 	bio_advance(bio, split->bi_iter.bi_size);
 
+#ifdef CONFIG_HISI_BLK
+	hisi_blk_bio_split_post(bio,split);
+#endif
 	return split;
 }
 EXPORT_SYMBOL(bio_split);
@@ -1839,13 +1864,13 @@ void bio_trim(struct bio *bio, int offset, int size)
 	 * the given offset and size.
 	 */
 
-	size <<= 9;
+	size = (unsigned int)size << 9;
 	if (offset == 0 && size == bio->bi_iter.bi_size)
 		return;
 
 	bio_clear_flag(bio, BIO_SEG_VALID);
 
-	bio_advance(bio, offset << 9);
+	bio_advance(bio, (unsigned)offset << 9);
 
 	bio->bi_iter.bi_size = size;
 }

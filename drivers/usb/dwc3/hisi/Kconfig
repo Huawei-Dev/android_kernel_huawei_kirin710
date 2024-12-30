@@ -1,0 +1,78 @@
+config USB_DWC3_HISI
+	tristate "Hisilicon Platforms"
+	default USB_DWC3
+	help
+	  Support of USB2/3 functionality in hisilicon platforms,
+	  Say 'Y' or 'M' here if you have one such device.
+
+if USB_DWC3_HISI
+
+config USB_DWC3_NOV
+       tristate "Hisilicon Platforms NOV USB"
+       default n
+       help
+         Support of USB2 functionality in hisilicon platforms,
+         Say 'Y' or 'M' here if you have one such device.
+
+config USB_DWC3_OCT
+       tristate "Hisilicon Platforms OCT USB"
+       default n
+       help
+         Support of USB2 functionality in hisilicon platforms,
+         Say 'Y' or 'M' here if you have one such device.
+
+config USB_DWC3_APR
+	tristate "Hisilicon Platforms APR USB"
+	default n
+	help
+	  Support of USB2/3/3.1 functionality in hisilicon platforms,
+	  Say 'Y' or 'M' here if you have one such device.
+
+config USB_DWC3_MAR
+	tristate "Hisilicon Platforms MAR USB"
+	default n
+	help
+	  Support of USB2/3/3.1 functionality in hisilicon platforms,
+	  Say 'Y' or 'M' here if you have one such device.
+
+config USB_DWC3_FEB
+	tristate "Hisilicon Platforms FEB USB"
+	default n
+	help
+	  Support of USB2/3 functionality in hisilicon platforms,
+	  Say 'Y' or 'M' here if you have one such device.
+
+config USB_DWC3_JAN
+	tristate "Hisilicon Platforms JAN USB"
+	default n
+	help
+	  Support of USB2/3 functionality in hisilicon platforms,
+	  Say 'Y' or 'M' here if you have one such device.
+
+config USB_DWC3_VBUS_PLT
+	tristate "Hisilicon Platforms USB VBUS usb platform drv intf"
+	depends on HISI_PMIC
+	default n
+	help
+	  Use platform bus register usb insert/pull-out interrupt.
+
+config USB_DWC3_VBUS_SPMI
+	tristate "Hisilicon Platforms USB VBUS usb spmi drv intf"
+	depends on HISI_SPMI
+	default n
+	help
+	  Use spmi bus register usb insert/pull-out interrupt.
+
+endif # USB_DWC3_HISI
+
+config USB_DWC3_OTG
+	bool "Enable DWC3 OTG"
+	default n
+	help
+	  Say Y here to enable DWC3 OTG feature.
+
+config CONTEXTHUB_PD
+	bool "Sensor CONTEXTHUB PD driver"
+	default n
+	help
+	  Say yes here if you want to use contexthub pd function

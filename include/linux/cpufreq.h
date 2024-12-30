@@ -18,6 +18,11 @@
 #include <linux/notifier.h>
 #include <linux/spinlock.h>
 #include <linux/sysfs.h>
+#ifdef CONFIG_HISI_CPUFREQ
+#include <linux/uidgid.h>
+#include <linux/slab.h>
+#include <linux/syscalls.h>
+#endif
 
 /*********************************************************************
  *                        CPUFREQ INTERFACE                          *
@@ -570,6 +575,73 @@ struct governor_attr {
 	ssize_t (*store)(struct gov_attr_set *attr_set, const char *buf,
 			 size_t count);
 };
+
+#ifdef CONFIG_HISI_CPUFREQ
+#define SYSTEM_UID (uid_t)1000
+#define SYSTEM_GID (uid_t)1000
+
+struct governor_user_attr {
+	const char *name;
+	uid_t uid;
+	gid_t gid;
+	mode_t mode;
+};
+
+#define INVALID_ATTR \
+	{.name = NULL, .uid = (uid_t)(-1), .gid = (uid_t)(-1), .mode = 0000}
+
+static inline void gov_sysfs_set_attr(unsigned int cpu, char *gov_name,
+					struct governor_user_attr *attrs)
+{
+	char *buf = NULL;
+	int i = 0, gov_dir_len, gov_attr_len;
+	long ret;
+	mm_segment_t fs = 0;
+
+	buf = kzalloc(PATH_MAX, GFP_KERNEL);
+	if (!buf)
+		return;
+
+	gov_dir_len = scnprintf(buf, PATH_MAX,
+				"/sys/devices/system/cpu/cpu%u/cpufreq/%s/",
+				cpu, gov_name);
+
+	fs = get_fs();
+	set_fs(KERNEL_DS);
+
+	while (attrs[i].name) {
+		gov_attr_len = scnprintf(buf + gov_dir_len,
+					 PATH_MAX - gov_dir_len, attrs[i].name);
+
+
+		if (gov_dir_len + gov_attr_len >= PATH_MAX) {
+			i++;
+			continue;
+		}
+		buf[gov_dir_len + gov_attr_len] = '\0';
+
+		ret = sys_chown(buf, attrs[i].uid, attrs[i].gid);
+		if (ret)
+			pr_debug("chown fail:%s ret=%ld\n", buf, ret);
+
+		ret = sys_chmod(buf, attrs[i].mode);
+		if (ret)
+			pr_debug("chmod fail:%s ret=%ld\n", buf, ret);
+		i++;
+	}
+
+	set_fs(fs);
+	kfree(buf);
+
+	return;
+}
+#else
+static inline void gov_sysfs_set_attr(unsigned int cpu, char *gov_name,
+					struct governor_user_attr *attrs)
+{
+}
+#endif
+
 /* CPUFREQ DEFAULT GOVERNOR */
 /*
  * Performance governor is fallback governor if any other gov failed to auto

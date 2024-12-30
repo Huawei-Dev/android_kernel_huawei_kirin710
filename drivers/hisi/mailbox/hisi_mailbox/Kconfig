@@ -1,0 +1,13 @@
+comment "hisi ipc MailBox driver"
+config HISI_MAILBOX
+	bool "hisi ipc MailBox driver"
+	default n
+	help
+	  hisi ipc MailBox driver
+	  
+comment "hisi kernel API about remote processor communication"
+config HISI_RPROC
+	bool "hisi ipc kernel API"
+	default n
+	help
+	  hisi kernel API about remote processor communication

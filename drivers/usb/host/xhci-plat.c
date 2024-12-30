@@ -174,6 +174,10 @@ static int xhci_plat_probe(struct platform_device *pdev)
 	if (!hcd)
 		return -ENOMEM;
 
+#ifdef CONFIG_HISI_USB_SKIP_RESUME
+	hcd_to_bus(hcd)->skip_resume = true;
+#endif
+
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
@@ -220,8 +224,21 @@ static int xhci_plat_probe(struct platform_device *pdev)
 		goto disable_clk;
 	}
 
+#ifdef CONFIG_HISI_USB_SKIP_RESUME
+	hcd_to_bus(xhci->shared_hcd)->skip_resume = true;
+#endif
+
 	if (device_property_read_bool(&pdev->dev, "usb3-lpm-capable"))
 		xhci->quirks |= XHCI_LPM_SUPPORT;
+
+	if (device_property_read_bool(&pdev->dev, "ctrl-nyet-abnormal"))
+		xhci->quirks |= XHCI_CTRL_NYET_ABNORMAL;
+
+	if (device_property_read_bool(&pdev->dev, "warm-reset-after-init"))
+		xhci->quirks |= XHCI_WARM_RESET_AFTER_INIT;
+
+	if (device_property_read_bool(&pdev->dev, "xhci-delay-ctrl-data-stage"))
+		xhci->quirks |= XHCI_DELAY_CTRL_DATA_STAGE;
 
 	if (device_property_read_bool(&pdev->dev, "quirk-broken-port-ped"))
 		xhci->quirks |= XHCI_BROKEN_PORT_PED;
@@ -250,7 +267,6 @@ static int xhci_plat_probe(struct platform_device *pdev)
 		goto dealloc_usb2_hcd;
 
 	return 0;
-
 
 dealloc_usb2_hcd:
 	usb_remove_hcd(hcd);
@@ -283,6 +299,7 @@ static int xhci_plat_remove(struct platform_device *dev)
 	usb_phy_shutdown(hcd->usb_phy);
 
 	usb_remove_hcd(hcd);
+
 	usb_put_hcd(xhci->shared_hcd);
 
 	if (!IS_ERR(clk))
@@ -349,7 +366,7 @@ static int __init xhci_plat_init(void)
 	xhci_init_driver(&xhci_plat_hc_driver, &xhci_plat_overrides);
 	return platform_driver_register(&usb_xhci_driver);
 }
-module_init(xhci_plat_init);
+late_initcall(xhci_plat_init);
 
 static void __exit xhci_plat_exit(void)
 {

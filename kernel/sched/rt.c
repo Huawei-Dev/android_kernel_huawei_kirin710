@@ -4,17 +4,24 @@
  */
 
 #include "sched.h"
+#include "walt.h"
 
+#include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/irq_work.h>
-
-#include "walt.h"
 
 int sched_rr_timeslice = RR_TIMESLICE;
 
 static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
 
 struct rt_bandwidth def_rt_bandwidth;
+
+/*
+ * The margin used when comparing utilization with CPU capacity:
+ * util * margin < capacity * 1024
+ */
+unsigned int rt_capacity_margin = 1138; /* ~10% */
+unsigned int sysctl_sched_enable_rt_cas = 0;
 
 static enum hrtimer_restart sched_rt_period_timer(struct hrtimer *timer)
 {
@@ -263,7 +270,10 @@ static void pull_rt_task(struct rq *this_rq);
 
 static inline bool need_pull_rt_task(struct rq *rq, struct task_struct *prev)
 {
-	/* Try to pull RT tasks here if we lower this rq's prio */
+	/*
+	 * Try to pull RT tasks here if we lower this rq's prio and cpu is not
+	 * isolated
+	 */
 	return rq->rt.highest_prio.curr > prev->prio;
 }
 
@@ -1457,9 +1467,11 @@ select_task_rq_rt(struct task_struct *p, int cpu, int sd_flag, int flags)
 	 * This test is optimistic, if we get it wrong the load-balancer
 	 * will have to sort it out.
 	 */
-	if (curr && unlikely(rt_task(curr)) &&
-	    (tsk_nr_cpus_allowed(curr) < 2 ||
-	     curr->prio <= p->prio)) {
+	if (sysctl_sched_enable_rt_cas ||
+		(curr && unlikely(rt_task(curr)) &&
+		(tsk_nr_cpus_allowed(curr) < 2 ||
+		curr->prio <= p->prio))) {
+
 		int target = find_lowest_rq(p);
 
 		/*
@@ -1661,14 +1673,14 @@ static struct task_struct *pick_highest_pushable_task(struct rq *rq, int cpu)
 	return NULL;
 }
 
+void hisi_get_slow_cpus(struct cpumask *cpumask);
 static DEFINE_PER_CPU(cpumask_var_t, local_cpu_mask);
 
 static int find_lowest_rq(struct task_struct *task)
 {
 	struct sched_domain *sd;
 	struct cpumask *lowest_mask = this_cpu_cpumask_var_ptr(local_cpu_mask);
-	int this_cpu = smp_processor_id();
-	int cpu      = task_cpu(task);
+	int this_cpu = smp_processor_id(), cpu = -1;
 
 	/* Make sure the mask is initialized first */
 	if (unlikely(!lowest_mask))
@@ -1680,6 +1692,7 @@ static int find_lowest_rq(struct task_struct *task)
 	if (!cpupri_find(&task_rq(task)->rd->cpupri, task, lowest_mask))
 		return -1; /* No targets found */
 
+	cpu = task_cpu(task);
 	/*
 	 * At this point we have built a mask of cpus representing the
 	 * lowest priority tasks in the system.  Now we want to elect
@@ -2233,7 +2246,6 @@ static void switched_from_rt(struct rq *rq, struct task_struct *p)
 	 */
 	if (!task_on_rq_queued(p) || rq->rt.rt_nr_running)
 		return;
-
 	queue_pull_task(rq);
 }
 

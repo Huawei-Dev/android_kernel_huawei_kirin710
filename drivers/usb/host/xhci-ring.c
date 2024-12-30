@@ -678,6 +678,7 @@ void xhci_unmap_td_bounce_buffer(struct xhci_hcd *xhci, struct xhci_ring *ring,
 	struct device *dev = xhci_to_hcd(xhci)->self.controller;
 	struct xhci_segment *seg = td->bounce_seg;
 	struct urb *urb = td->urb;
+	size_t len;
 
 	if (!seg || !urb)
 		return;
@@ -688,11 +689,14 @@ void xhci_unmap_td_bounce_buffer(struct xhci_hcd *xhci, struct xhci_ring *ring,
 		return;
 	}
 
-	/* for in tranfers we need to copy the data from bounce to sg */
-	sg_pcopy_from_buffer(urb->sg, urb->num_mapped_sgs, seg->bounce_buf,
-			     seg->bounce_len, seg->bounce_offs);
 	dma_unmap_single(dev, seg->bounce_dma, ring->bounce_buf_len,
 			 DMA_FROM_DEVICE);
+	/* for in tranfers we need to copy the data from bounce to sg */
+	len = sg_pcopy_from_buffer(urb->sg, urb->num_sgs, seg->bounce_buf,
+			     seg->bounce_len, seg->bounce_offs);
+	if (len != seg->bounce_len)
+		xhci_warn(xhci, "WARN Wrong bounce buffer read length: %zu != %d\n",
+				len, seg->bounce_len);
 	seg->bounce_len = 0;
 	seg->bounce_offs = 0;
 }
@@ -1298,14 +1302,14 @@ void xhci_handle_command_timeout(struct work_struct *work)
 	    (hw_ring_state & CMD_RING_RUNNING))  {
 		/* Prevent new doorbell, and start command abort */
 		xhci->cmd_ring_state = CMD_RING_STATE_ABORTED;
-		xhci_dbg(xhci, "Command timeout\n");
+		xhci_info(xhci, "Command timeout\n");
 		ret = xhci_abort_cmd_ring(xhci, flags);
 		if (unlikely(ret == -ESHUTDOWN)) {
 			xhci_err(xhci, "Abort command ring failed\n");
 			xhci_cleanup_command_queue(xhci);
 			spin_unlock_irqrestore(&xhci->lock, flags);
 			usb_hc_died(xhci_to_hcd(xhci)->primary_hcd);
-			xhci_dbg(xhci, "xHCI host controller is dead.\n");
+			xhci_info(xhci, "xHCI host controller is dead.\n");
 
 			return;
 		}
@@ -1314,7 +1318,8 @@ void xhci_handle_command_timeout(struct work_struct *work)
 	}
 
 	/* host removed. Bail out */
-	if (xhci->xhc_state & XHCI_STATE_REMOVING) {
+	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
+		!(hw_ring_state & CMD_RING_RUNNING)) {
 		xhci_dbg(xhci, "host removed, ring start fail?\n");
 		xhci_cleanup_command_queue(xhci);
 
@@ -1322,7 +1327,7 @@ void xhci_handle_command_timeout(struct work_struct *work)
 	}
 
 	/* command timeout on stopped ring, ring can't be aborted */
-	xhci_dbg(xhci, "Command timeout on stopped ring\n");
+	xhci_info(xhci, "Command timeout on stopped ring\n");
 	xhci_handle_stopped_cmd_ring(xhci, xhci->current_cmd);
 
 time_out_completed:
@@ -1568,6 +1573,12 @@ static void handle_port_status(struct xhci_hcd *xhci,
 	if ((major_revision == 0x03) != (hcd->speed >= HCD_USB3))
 		hcd = xhci->shared_hcd;
 
+	if (!hcd) {
+		xhci_warn(xhci, "hcd had been remove, ignore this event!\n");
+		bogus_port_status = true;
+		goto cleanup;
+	}
+
 	if (major_revision == 0) {
 		xhci_warn(xhci, "Event for port %u not in "
 				"Extended Capabilities, ignoring.\n",
@@ -1645,10 +1656,13 @@ static void handle_port_status(struct xhci_hcd *xhci,
 		}
 	}
 
-	if ((temp & PORT_PLC) && (temp & PORT_PLS_MASK) == XDEV_U0 &&
-			DEV_SUPERSPEED_ANY(temp)) {
+	if ((temp & PORT_PLC) &&
+	    DEV_SUPERSPEED_ANY(temp) &&
+	    ((temp & PORT_PLS_MASK) == XDEV_U0 ||
+	     (temp & PORT_PLS_MASK) == XDEV_U1 ||
+	     (temp & PORT_PLS_MASK) == XDEV_U2)) {
 		xhci_dbg(xhci, "resume SS port %d finished\n", port_id);
-		/* We've just brought the device into U0 through either the
+		/* We've just brought the device into U0/1/2 through either the
 		 * Resume state after a device remote wakeup, or through the
 		 * U3Exit state after a host-initiated resume.  If it's a device
 		 * initiated remote wake, don't pass up the link state change,
@@ -3160,6 +3174,7 @@ static int xhci_align_td(struct xhci_hcd *xhci, struct urb *urb, u32 enqd_len,
 	unsigned int unalign;
 	unsigned int max_pkt;
 	u32 new_buff_len;
+	size_t len;
 
 	max_pkt = GET_MAX_PACKET(usb_endpoint_maxp(&urb->ep->desc));
 	unalign = (enqd_len + *trb_buff_len) % max_pkt;
@@ -3190,8 +3205,12 @@ static int xhci_align_td(struct xhci_hcd *xhci, struct urb *urb, u32 enqd_len,
 
 	/* create a max max_pkt sized bounce buffer pointed to by last trb */
 	if (usb_urb_dir_out(urb)) {
-		sg_pcopy_to_buffer(urb->sg, urb->num_mapped_sgs,
+		len = sg_pcopy_to_buffer(urb->sg, urb->num_sgs,
 				   seg->bounce_buf, new_buff_len, enqd_len);
+		if (len != seg->bounce_len)
+			xhci_warn(xhci,
+				"WARN Wrong bounce buffer write length: %zu != %d\n",
+				len, seg->bounce_len);
 		seg->bounce_dma = dma_map_single(dev, seg->bounce_buf,
 						 max_pkt, DMA_TO_DEVICE);
 	} else {
@@ -3378,6 +3397,7 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 	u32 field, length_field, remainder;
 	struct urb_priv *urb_priv;
 	struct xhci_td *td;
+	int first_trb_giveback = 0;
 
 	ep_ring = xhci_urb_to_transfer_ring(xhci, urb);
 	if (!ep_ring)
@@ -3441,6 +3461,17 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 		  /* Immediate data in pointer */
 		  field);
 
+	if ((xhci->quirks & XHCI_DELAY_CTRL_DATA_STAGE) &&
+			urb->transfer_buffer_length > 0) {
+		xhci_dbg(xhci, "delay data stage\n");
+		first_trb_giveback = 1;
+		giveback_first_trb(xhci, slot_id, ep_index, 0,
+				start_cycle, start_trb);
+		wmb();
+
+		mdelay(2);
+	}
+
 	/* If there's data, queue data TRBs */
 	/* Only set interrupt on short packet for IN endpoints */
 	if (usb_urb_dir_in(urb))
@@ -3470,6 +3501,21 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 	/* Save the DMA address of the last TRB in the TD */
 	td->last_trb = ep_ring->enqueue;
 
+	if ((xhci->quirks & XHCI_CTRL_NYET_ABNORMAL) &&
+			(setup->bRequestType & USB_DIR_IN)) {
+		xhci_dbg(xhci, "delay status stage\n");
+		if (first_trb_giveback)
+			xhci_ring_ep_doorbell(xhci, slot_id, ep_index, 0);
+		else
+			giveback_first_trb(xhci, slot_id, ep_index, 0,
+					start_cycle, start_trb);
+		wmb();
+
+		mdelay(2);
+
+		first_trb_giveback = 1;
+	}
+
 	/* Queue status TRB - see Table 7 and sections 4.11.2.2 and 6.4.1.2.3 */
 	/* If the device sent data, the status stage is an OUT transfer */
 	if (urb->transfer_buffer_length > 0 && setup->bRequestType & USB_DIR_IN)
@@ -3483,8 +3529,12 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 			/* Event on completion */
 			field | TRB_IOC | TRB_TYPE(TRB_STATUS) | ep_ring->cycle_state);
 
-	giveback_first_trb(xhci, slot_id, ep_index, 0,
-			start_cycle, start_trb);
+	if (first_trb_giveback)
+		xhci_ring_ep_doorbell(xhci, slot_id, ep_index, 0);
+	else
+		giveback_first_trb(xhci, slot_id, ep_index, 0,
+				start_cycle, start_trb);
+
 	return 0;
 }
 
@@ -3843,6 +3893,12 @@ int xhci_queue_isoc_tx_prepare(struct xhci_hcd *xhci, gfp_t mem_flags,
 	xdev = xhci->devs[slot_id];
 	xep = &xhci->devs[slot_id]->eps[ep_index];
 	ep_ring = xdev->eps[ep_index].ring;
+	if (!ep_ring) {
+		xhci_info(xhci, "%s: ep%d's ring is NULL\n",
+				__func__, ep_index);
+		return -EINVAL;
+	}
+
 	ep_ctx = xhci_get_ep_ctx(xhci, xdev->out_ctx, ep_index);
 
 	num_trbs = 0;

@@ -12,6 +12,7 @@
 
 #include <linux/mm.h>
 #include <linux/slab.h>
+#include <crypto/aead.h>
 
 /*
  * fscrypt superblock flags
@@ -19,16 +20,24 @@
 #define FS_CFLG_OWN_PAGES (1U << 1)
 
 /*
- * crypto operations for filesystems
+ * crypto opertions for filesystems
  */
 struct fscrypt_operations {
 	unsigned int flags;
 	const char *key_prefix;
-	int (*get_context)(struct inode *, void *, size_t);
+	int (*get_context)(struct inode *, void *, size_t, int *);
+	int (*get_verify_context)(struct inode *, void *, size_t);
 	int (*set_context)(struct inode *, const void *, size_t, void *);
-	bool (*dummy_context)(struct inode *);
+	int (*set_verify_context)(struct inode *, const void *, size_t,
+				  void *, int);
+	int (*dummy_context)(struct inode *);
+	bool (*is_inline_encrypted)(struct inode *);
+	void (*set_encrypted_corrupt)(struct inode *);
+	bool (*is_encrypted_fixed)(struct inode *);
 	bool (*empty_dir)(struct inode *);
 	unsigned int max_namelen;
+	int (*get_keyinfo)(struct inode *, void *, int *);
+	int (*is_permitted_context)(struct inode *, struct inode *);
 };
 
 struct fscrypt_ctx {
@@ -64,6 +73,9 @@ extern void fscrypt_release_ctx(struct fscrypt_ctx *);
 extern struct page *fscrypt_encrypt_page(const struct inode *, struct page *,
 						unsigned int, unsigned int,
 						u64, gfp_t);
+extern struct page *fscrypt_encrypt_dio_page(struct inode *, struct page *,
+						unsigned int, unsigned int,
+		                                u64, gfp_t);
 extern int fscrypt_decrypt_page(const struct inode *, struct page *, unsigned int,
 				unsigned int, u64);
 
@@ -71,6 +83,12 @@ static inline struct page *fscrypt_control_page(struct page *page)
 {
 	return ((struct fscrypt_ctx *)page_private(page))->w.control_page;
 }
+
+extern int fscrypt_decrypt_dio_page(struct inode *, struct page *,
+					unsigned int, unsigned int, u64);
+extern void fscrypt_decrypt_bio_pages(struct fscrypt_ctx *, struct bio *);
+extern void fscrypt_decrypt_dio_bio_pages(struct fscrypt_ctx *, struct bio *,
+					  work_func_t func);
 
 extern void fscrypt_restore_control_page(struct page *);
 
@@ -81,6 +99,13 @@ extern int fscrypt_has_permitted_context(struct inode *, struct inode *);
 extern int fscrypt_inherit_context(struct inode *, struct inode *,
 					void *, bool);
 /* keyinfo.c */
+extern int fscrypt_get_verify_context(struct inode *, void *, size_t);
+extern int fscrypt_set_verify_context(struct inode *, const void *,
+			size_t, void *, int);
+extern int fscrypt_set_gcm_key(struct crypto_aead *, u8 *);
+extern int fscrypt_derive_gcm_key(struct crypto_aead *,
+				u8 *, u8 *, u8 *, int);
+extern struct key *fscrypt_request_key(u8 *, const u8 *, int);
 extern int fscrypt_get_encryption_info(struct inode *);
 extern void fscrypt_put_encryption_info(struct inode *);
 

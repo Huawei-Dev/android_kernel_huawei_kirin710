@@ -311,7 +311,7 @@ static int sdcardfs_read_super(struct vfsmount *mnt, struct super_block *sb,
 
 	sb->s_stack_depth = lower_sb->s_stack_depth + 1;
 	if (sb->s_stack_depth > FILESYSTEM_MAX_STACK_DEPTH) {
-		pr_err("sdcardfs: maximum fs stacking depth exceeded\n");
+		printk(KERN_ERR "sdcardfs: maximum fs stacking depth exceeded\n");
 		err = -EINVAL;
 		goto out_sput;
 	}
@@ -327,6 +327,7 @@ static int sdcardfs_read_super(struct vfsmount *mnt, struct super_block *sb,
 
 	sb->s_magic = SDCARDFS_SUPER_MAGIC;
 	sb->s_op = &sdcardfs_sops;
+	sb->s_xattr = sdcardfs_xattr_handlers;
 
 	/* get a new inode and allocate our root dentry */
 	inode = sdcardfs_iget(sb, d_inode(lower_path.dentry), 0);
@@ -369,6 +370,17 @@ static int sdcardfs_read_super(struct vfsmount *mnt, struct super_block *sb,
 				sb_info->options.fs_user_id, AID_ROOT);
 		snprintf(sb_info->obbpath_s, PATH_MAX, "%s/Android/obb", dev_name);
 	}
+#ifdef SDCARDFS_PLUGIN_PRIVACY_SPACE
+	sb_info->blocked_userid = sb_info->appid_excluded = -1;
+#endif
+
+#ifdef SDCARDFS_SYSFS_FEATURE
+/* use kobject_unregister instread of kfree to free sb after succeed */
+	err = sdcardfs_sysfs_register_sb(sb);
+	if (err)
+		goto out_freeroot;
+#endif
+
 	fixup_tmp_permissions(d_inode(sb->s_root));
 	sb_info->sb = sb;
 	list_add(&sb_info->list, &sdcardfs_super_list);
@@ -387,6 +399,11 @@ out_sput:
 	/* drop refs we took earlier */
 	atomic_dec(&lower_sb->s_active);
 out_freesbi:
+#ifdef SDCARDFS_SYSFS_FEATURE
+	if (sb_info->kobj.state_initialized)
+		kobject_put(&sb_info->kobj);
+	else
+#endif
 	kfree(SDCARDFS_SB(sb));
 	sb->s_fs_info = NULL;
 out_free:
@@ -477,12 +494,20 @@ static int __init init_sdcardfs_fs(void)
 	err = packagelist_init();
 	if (err)
 		goto out;
+#ifdef SDCARDFS_SYSFS_FEATURE
+	err = sdcardfs_sysfs_init();
+	if (err)
+		goto out;
+#endif
 	err = register_filesystem(&sdcardfs_fs_type);
 out:
 	if (err) {
 		sdcardfs_destroy_inode_cache();
 		sdcardfs_destroy_dentry_cache();
 		packagelist_exit();
+#ifdef SDCARDFS_SYSFS_FEATURE
+		sdcardfs_sysfs_exit();
+#endif
 	}
 	return err;
 }
@@ -492,6 +517,9 @@ static void __exit exit_sdcardfs_fs(void)
 	sdcardfs_destroy_inode_cache();
 	sdcardfs_destroy_dentry_cache();
 	packagelist_exit();
+#ifdef SDCARDFS_SYSFS_FEATURE
+	sdcardfs_sysfs_exit();
+#endif
 	unregister_filesystem(&sdcardfs_fs_type);
 	pr_info("Completed sdcardfs module unload\n");
 }

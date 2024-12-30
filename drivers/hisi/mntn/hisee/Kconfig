@@ -1,0 +1,5 @@
+config HISI_HISEE_MNTN
+    bool "hisee mntn module support"
+    default n
+    help
+      Say yes here to support the hisee mntn module.

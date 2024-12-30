@@ -306,7 +306,11 @@ static int __bprm_mm_init(struct linux_binprm *bprm)
 	vma->vm_start = vma->vm_end - PAGE_SIZE;
 	vma->vm_flags = VM_SOFTDIRTY | VM_STACK_FLAGS | VM_STACK_INCOMPLETE_SETUP;
 	vma->vm_page_prot = vm_get_page_prot(vma->vm_flags);
+#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
+	INIT_VMA(vma);
+#else
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
+#endif
 
 	err = insert_vm_struct(mm, vma);
 	if (err)
@@ -1353,7 +1357,7 @@ void setup_new_exec(struct linux_binprm * bprm)
 
 	/* An exec changes our domain. We are no longer part of the thread
 	   group */
-	WRITE_ONCE(current->self_exec_id, current->self_exec_id + 1);
+	current->self_exec_id++;
 	flush_signal_handlers(current, 0);
 }
 EXPORT_SYMBOL(setup_new_exec);
@@ -1826,6 +1830,7 @@ int do_execve(struct filename *filename,
 {
 	struct user_arg_ptr argv = { .ptr.native = __argv };
 	struct user_arg_ptr envp = { .ptr.native = __envp };
+
 	return do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
 }
 

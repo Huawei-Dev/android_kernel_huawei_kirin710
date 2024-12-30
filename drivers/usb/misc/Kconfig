@@ -292,3 +292,8 @@ config UCSI
 
 	  To compile the driver as a module, choose M here: the module will be
 	  called ucsi.
+
+config USB_DFU
+	tristate "Common driver for DFU(device firmware update)"
+	help
+	  Say Y here if you want to update device firmware via DFU procotol.

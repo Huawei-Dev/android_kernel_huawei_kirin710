@@ -121,6 +121,65 @@ static struct pm_qos_object memory_bandwidth_pm_qos = {
 	.name = "memory_bandwidth",
 };
 
+#ifdef CONFIG_DEVFREQ_GOV_PM_QOS
+static BLOCKING_NOTIFIER_HEAD(memory_latency_notifier);
+static struct pm_qos_constraints memory_latency_constraints = {
+	.list = PLIST_HEAD_INIT(memory_latency_constraints.list),
+	.target_value = PM_QOS_MEMORY_LATENCY_DEFAULT_VALUE,
+	.default_value = PM_QOS_MEMORY_LATENCY_DEFAULT_VALUE,
+	.no_constraint_value = PM_QOS_MEMORY_LATENCY_DEFAULT_VALUE,
+	.type = PM_QOS_MAX,
+	.notifiers = &memory_latency_notifier,
+};
+static struct pm_qos_object memory_latency_pm_qos = {
+	.constraints = &memory_latency_constraints,
+	.name = "memory_latency",
+};
+
+static BLOCKING_NOTIFIER_HEAD(memory_throughput_notifier);
+static struct pm_qos_constraints memory_tput_constraints = {
+	.list = PLIST_HEAD_INIT(memory_tput_constraints.list),
+	.target_value = PM_QOS_MEMORY_THROUGHPUT_DEFAULT_VALUE,
+	.default_value = PM_QOS_MEMORY_THROUGHPUT_DEFAULT_VALUE,
+	.no_constraint_value = PM_QOS_MEMORY_THROUGHPUT_DEFAULT_VALUE,
+	.type = PM_QOS_SUM,
+	.notifiers = &memory_throughput_notifier,
+};
+static struct pm_qos_object memory_throughput_pm_qos = {
+	.constraints = &memory_tput_constraints,
+	.name = "memory_throughput",
+};
+
+static BLOCKING_NOTIFIER_HEAD(memory_throughput_up_threshold_notifier);
+static struct pm_qos_constraints memory_tput_up_th_constraints = {
+	.list = PLIST_HEAD_INIT(memory_tput_up_th_constraints.list),
+	.target_value = PM_QOS_MEMORY_THROUGHPUT_UP_THRESHOLD_DEFAULT_VALUE,
+	.default_value = PM_QOS_MEMORY_THROUGHPUT_UP_THRESHOLD_DEFAULT_VALUE,
+	.no_constraint_value = PM_QOS_MEMORY_THROUGHPUT_UP_THRESHOLD_DEFAULT_VALUE,
+	.type = PM_QOS_MIN,
+	.notifiers = &memory_throughput_up_threshold_notifier,
+};
+static struct pm_qos_object memory_throughput_up_th_pm_qos = {
+	.constraints = &memory_tput_up_th_constraints,
+	.name = "memory_throughput_up_threshold",
+};
+#endif
+
+#ifdef CONFIG_HISI_CPUDDR_FREQ_LINK
+static BLOCKING_NOTIFIER_HEAD(acpuddr_link_governor_level_notifier);
+static struct pm_qos_constraints acpuddr_link_gov_lvl_constraints = {
+	.list = PLIST_HEAD_INIT(acpuddr_link_gov_lvl_constraints.list),
+	.target_value = PM_QOS_ACPUDDR_LINK_GOVERNOR_LEVEL_DEFAULT_VALUE,
+	.default_value = PM_QOS_ACPUDDR_LINK_GOVERNOR_LEVEL_DEFAULT_VALUE,
+	.no_constraint_value = PM_QOS_ACPUDDR_LINK_GOVERNOR_LEVEL_DEFAULT_VALUE,
+	.type = PM_QOS_MIN,
+	.notifiers = &acpuddr_link_governor_level_notifier,
+};
+static struct pm_qos_object acpuddr_link_gov_lvl_pm_qos = {
+	.constraints = &acpuddr_link_gov_lvl_constraints,
+	.name = "acpuddr_link_governor_level",
+};
+#endif
 
 static struct pm_qos_object *pm_qos_array[] = {
 	&null_pm_qos,
@@ -128,6 +187,14 @@ static struct pm_qos_object *pm_qos_array[] = {
 	&network_lat_pm_qos,
 	&network_throughput_pm_qos,
 	&memory_bandwidth_pm_qos,
+#ifdef CONFIG_DEVFREQ_GOV_PM_QOS
+	&memory_latency_pm_qos,
+	&memory_throughput_pm_qos,
+	&memory_throughput_up_th_pm_qos,
+#endif
+#ifdef CONFIG_HISI_CPUDDR_FREQ_LINK
+	&acpuddr_link_gov_lvl_pm_qos,
+#endif
 };
 
 static ssize_t pm_qos_power_write(struct file *filp, const char __user *buf,

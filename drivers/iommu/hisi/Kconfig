@@ -1,0 +1,25 @@
+# Hisilicon IOMMU support
+
+config HISI_IODOMAIN_API
+	bool
+
+config HISI_IOMMU
+	bool "Hisilicon IOMMU Support"
+	select IOMMU_API
+	select HISI_IODOMAIN_API
+	help
+	  Hisilicon IOMMU Support.
+
+config HISI_IOMMU_LPAE
+	bool "Hisilicon IOMMU LPAE Support"
+	select IOMMU_API
+	depends on HISI_IOMMU
+	help
+	  Hisilicon IOMMU Support.
+
+config HISI_IOMMU_IOVA_DEBUG
+        bool "Hisilicon IOMMU IOVA DEBUG Support"
+	depends on HISI_IOMMU
+	default n
+	help
+	  Hisilicon IOMMU IOVA DEBUG Support
