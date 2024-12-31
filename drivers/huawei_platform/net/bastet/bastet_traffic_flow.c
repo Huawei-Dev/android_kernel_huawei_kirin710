@@ -16,32 +16,22 @@
  */
 #include <net/sock.h>
 #include <linux/file.h>
-#include <linux/netfilter/xt_qtaguid.h>
+#include <linux/netfilter/xt_owner.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
 #include <huawei_platform/net/bastet/bastet.h>
 #include <huawei_platform/net/bastet/bastet_utils.h>
-
-#include "xt_qtaguid_internal.h"
 
 /* traffic flow update interval */
 #define BST_FLOW_UPDATE_INTERVAL		(120 * HZ)
 /* traffic flow wait timeout */
 #define BST_FLOW_WAIT_TIMEOUT			(50)
 
-#ifdef CONFIG_NETFILTER_XT_MATCH_QTAGUID
-/* declare these functions to call the system update flow function */
-extern void bastet_update_if_tag_stat(const char *ifname,
-			uid_t uid, const struct sock *sk,
-			enum ifs_tx_rx direction, int proto, int bytes);
-extern int bastet_update_total_bytes(const char *dev_name,
-			int proto, unsigned long tx_bytes,
-			unsigned long rx_bytes);
-#else
-void bastet_update_if_tag_stat(const char *ifname,
-			uid_t uid, const struct sock *sk,
-			enum ifs_tx_rx direction, int proto, int bytes)
-{
-}
+enum ifs_proto {
+	IFS_TCP,
+	IFS_UDP,
+	IFS_PROTO_OTHER,
+	IFS_MAX_PROTOS
+};
 
 int bastet_update_total_bytes(const char *dev_name,
 			int proto, unsigned long tx_bytes,
@@ -49,7 +39,6 @@ int bastet_update_total_bytes(const char *dev_name,
 {
 	return 0;
 }
-#endif
 
 /* declare and define traffic flow parameter */
 static wait_queue_head_t bastet_flow_queue;
@@ -131,9 +120,6 @@ static void handle_traffic_flow_update(char *name,
 		BASTET_LOGE("app flow name error");
 		return;
 	}
-
-	bastet_update_if_tag_stat(name, uid, sk, IFS_TX, proto, tx_bytes);
-	bastet_update_if_tag_stat(name, uid, sk, IFS_RX, proto, rx_bytes);
 }
 
 /*
@@ -255,7 +241,7 @@ static void bastet_pack_uid_info(struct bst_uid_filter_buf *buf)
 static void bastet_search_match(struct ipt_entry *ipt_e)
 {
 	struct xt_entry_match *ematch = NULL;
-	struct xt_qtaguid_match_info *info = NULL;
+	struct xt_owner_match_info *info = NULL;
 	struct bst_uid_list_node *node = NULL;
 
 	if (IS_ERR_OR_NULL(ipt_e))
@@ -267,7 +253,7 @@ static void bastet_search_match(struct ipt_entry *ipt_e)
 		 */
 		if ((strcmp(ematch->u.kernel.match->name, "owner") == 0)
 			&& (ematch->u.kernel.match->revision == 1)) {
-			info = (struct xt_qtaguid_match_info *)ematch->data;
+			info = (struct xt_owner_match_info *)ematch->data;
 			if (is_uid_valid(info->uid_min)
 				&& is_uid_valid(info->uid_max)) {
 				node = (struct bst_uid_list_node *)kmalloc(
