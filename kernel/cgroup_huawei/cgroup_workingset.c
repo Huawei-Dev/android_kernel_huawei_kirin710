@@ -41,11 +41,10 @@
 #include <linux/blkdev.h>
 #include <linux/syscalls.h>
 #include <linux/version.h>
-#if KERNEL_VERSION(4, 14, 0) <= LINUX_VERSION_CODE
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(4, 14, 0)
 #include <linux/delayacct.h>
-#else
-#include <log/log_usertype.h>
 #endif
+#include <log/log_usertype.h>
 #include "../drivers/hisi/tzdriver/libhwsecurec/securec.h"
 
 #define CGROUP_WORKINGSET_VERSION	(11)
