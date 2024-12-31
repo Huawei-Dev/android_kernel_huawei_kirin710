@@ -154,10 +154,6 @@
 #include <huawei_platform/emcom/emcom_xengine.h>
 #endif
 
-#ifdef CONFIG_HW_QTAGUID_PID
-#include <huawei_platform/net/qtaguid_pid/qtaguid_pid.h>
-#endif
-
 static DEFINE_MUTEX(proto_list_mutex);
 static LIST_HEAD(proto_list);
 
@@ -2828,10 +2824,6 @@ EXPORT_SYMBOL(compat_sock_common_setsockopt);
 
 void sk_common_release(struct sock *sk)
 {
-#ifdef CONFIG_HW_QTAGUID_PID
-	qtaguid_pid_remove(sk);
-#endif
-
 	if (sk->sk_prot->destroy)
 		sk->sk_prot->destroy(sk);
 

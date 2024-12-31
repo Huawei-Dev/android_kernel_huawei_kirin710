@@ -81,10 +81,6 @@ static inline int current_has_network(void)
 
 #include "ip6_offload.h"
 
-#ifdef CONFIG_HW_QTAGUID_PID
-#include <huawei_platform/net/qtaguid_pid/qtaguid_pid.h>
-#endif
-
 #ifdef CONFIG_HW_DPIMARK_MODULE
 #include <huawei_platform/net/hw_dpi_mark/dpi_hw_hook.h>
 #endif
@@ -288,10 +284,6 @@ lookup_protocol:
 		}
 	}
 out:
-#ifdef CONFIG_HW_QTAGUID_PID
-	if(!err)
-		qtaguid_pid_put(sk);
-#endif
 #ifdef CONFIG_HW_DPIMARK_MODULE
 	if (!err)
 		mplk_try_nw_bind_for_udp(sk);

@@ -29,10 +29,6 @@
 #include <net/tcp.h>
 #include <net/sock_reuseport.h>
 
-#ifdef CONFIG_HW_QTAGUID_PID
-#include <huawei_platform/net/qtaguid_pid/qtaguid_pid.h>
-#endif
-
 #ifdef CONFIG_HW_NETWORK_MEASUREMENT
 #include <huawei_platform/emcom/smartcare/network_measurement/nm.h>
 #endif /* CONFIG_HW_NETWORK_MEASUREMENT */
@@ -729,10 +725,6 @@ void inet_csk_destroy_sock(struct sock *sk)
 
 	/* If it has not 0 inet_sk(sk)->inet_num, it must be bound */
 	WARN_ON(inet_sk(sk)->inet_num && !inet_csk(sk)->icsk_bind_hash);
-
-#ifdef CONFIG_HW_QTAGUID_PID
-        qtaguid_pid_remove(sk);
-#endif
 
 #ifdef CONFIG_TCP_ARGO
 	argo_deinit(sk);
