@@ -2028,8 +2028,6 @@ module_param_named(current_allocated_bytes, dm_bufio_current_allocated, ulong, S
 MODULE_PARM_DESC(current_allocated_bytes, "Memory currently used by the cache");
 
 #ifdef CONFIG_DM_HUAWEI_USE_OPT_PARAMETER
-module_param_named(cache_size_per_client, dm_bufio_cache_size_per_client, ulong, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(cache_size_per_client, "dm_bufio cache size per client");
 module_param_named(retain_ajust_ratio, dm_bufio_retain_ratio, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(retain_ajust_ratio, "Ajust retain ratio, 0 is disable");
 #endif
