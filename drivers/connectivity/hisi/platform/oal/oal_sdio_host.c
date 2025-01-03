@@ -199,7 +199,7 @@ oal_void oal_sdio_exception_submit(struct oal_sdio *hi_sdio, oal_int32 excep_typ
         return;
     }
 
-    /*先获取claim host锁，自选锁内必须确保已经获取到锁。*/
+    /*??????claim host??????????????????????????????????*/
     oal_sdio_claim_host(hi_sdio);
     oal_spin_lock_irq_save(&hi_sdio->sdio_excp_lock, &flags);
     if(work_busy(&hi_sdio->sdio_excp_worker))
@@ -557,7 +557,7 @@ OAL_STATIC OAL_INLINE oal_int32 oal_sdio_msg_stat(struct oal_sdio *hi_sdio, oal_
     }
 #ifdef CONFIG_SDIO_D2H_MSG_ACK
     /*read from old register*/
-    /*当使用0x30寄存器时需要下发CMD52读0x2B 才会产生HOST2ARM ACK中断*/
+    /*??????0x30????????????????CMD52??0x2B ????????HOST2ARM ACK????*/
     (void)oal_sdio_readb(hi_sdio->func, HISDIO_REG_FUNC1_MSG_HIGH_FROM_DEV, &ret);
     if (ret)
     {
@@ -615,7 +615,7 @@ oal_int32 oal_sdio_msg_irq(struct oal_sdio *hi_sdio)
     oal_sdio_release_host(hi_sdio);
     oal_sdio_rx_transfer_unlock(hi_sdio);
 
-    /*优先处理Panic消息*/
+    /*????????Panic????*/
     if(test_and_clear_bit(D2H_MSG_DEVICE_PANIC, &msg64))
     {
         bit = D2H_MSG_DEVICE_PANIC;
@@ -704,7 +704,7 @@ OAL_STATIC OAL_INLINE oal_int32 oal_sdio_extend_buf_get(struct oal_sdio *hi_sdio
 			                    HISDIO_COMM_REG_SEQ_GET(hi_sdio->sdio_extend->credit_info));
             oal_print_hex_dump((oal_void*)hi_sdio->sdio_extend,sizeof(struct hisdio_extend_func),32,"extend :");
 
-            /* 此credit更新只在调试时使用 */
+            /* ??credit?????????????????? */
             if(oal_sdio_credit_info_update(hi_sdio))
             {
                 if(OAL_LIKELY(hi_sdio->credit_update_cb))
@@ -1221,7 +1221,7 @@ OAL_STATIC irqreturn_t wlan_gpio_irq(oal_int32 irq, oal_void *dev_id)
     //OAL_IO_PRINT(KERN_ERR"[SDIO][DBG]wlan_gpio_irq get pm state=%d\r\n",(oal_uint32)ul_state);
     if(0 == ul_state)
     {
-        /*0==HOST_DISALLOW_TO_SLEEP表示不允许休眠*/
+        /*0==HOST_DISALLOW_TO_SLEEP??????????????*/
         hi_sdio->data_int_count++;
 
         //OAL_IO_PRINT("[SDIO][DBG]Sdio Rx Data Interrupt.\n");
@@ -1231,7 +1231,7 @@ OAL_STATIC irqreturn_t wlan_gpio_irq(oal_int32 irq, oal_void *dev_id)
     }
     else
     {
-        /*1==HOST_ALLOW_TO_SLEEP表示当前是休眠，唤醒host*/
+        /*1==HOST_ALLOW_TO_SLEEP????????????????????host*/
         OAL_BUG_ON(!hi_sdio->pst_pm_callback->wlan_pm_wakeup_host);
         hi_sdio->wakeup_int_count++;
         g_ul_pm_wakeup_event = OAL_TRUE;
@@ -2444,7 +2444,7 @@ oal_int32 oal_sdio_func_probe(struct oal_sdio* hi_sdio)
     oal_sdio_claim_host(hi_sdio);
     oal_disable_sdio_state(hi_sdio, OAL_SDIO_ALL);
 #ifndef HAVE_HISI_NFC
-    /*等到读取完nfc低电的log数据再拉低GPIO*/
+    /*??????????nfc??????log??????????GPIO*/
     hi_wlan_power_set(0);
 #endif
     oal_sdio_release_host(hi_sdio);
@@ -2480,7 +2480,7 @@ oal_int32 oal_sdio_device_panic_callback(void *data)
 	return OAL_SUCC;
 }
 
-/*检查DEVICE WAKEUP HOST gpio 是否拉高。*/
+/*????DEVICE WAKEUP HOST gpio ??????????*/
 oal_int32 oal_dev2host_gpio_hold_time_check(oal_uint32 switch_timeout, oal_uint32 hold_time)
 {
     oal_ulong timeout;

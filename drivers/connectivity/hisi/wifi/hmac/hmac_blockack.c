@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "wlan_spec.h"
 #include "mac_vap.h"
@@ -23,10 +23,10 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_HMAC_BLOCKACK_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 OAL_STATIC hmac_rx_buf_stru* hmac_ba_buffer_frame_in_reorder(hmac_ba_rx_stru* pst_ba_rx_hdl, oal_uint16 us_seq_num)
@@ -162,7 +162,7 @@ OAL_STATIC OAL_INLINE oal_void  hmac_ba_buffer_rx_frame(hmac_ba_rx_stru *pst_ba_
 
     /* Update the buffered receive packet details */
     pst_rx_netbuf->us_seq_num   = us_seq_num;
-    pst_rx_netbuf->uc_num_buf   = pst_cb_ctrl->st_rx_info.bit_buff_nums;  //标识该MPDU占用的netbuff个数，一般用于AMSDU
+    pst_rx_netbuf->uc_num_buf   = pst_cb_ctrl->st_rx_info.bit_buff_nums;  //??????MPDU??????netbuff??????????????AMSDU
     pst_rx_netbuf->ul_rx_time   = (oal_uint32)OAL_TIME_GET_STAMP_MS();
 
 #ifdef _PRE_DEBUG_MODE
@@ -259,14 +259,14 @@ OAL_STATIC oal_void  hmac_ba_flush_reorder_q(hmac_ba_rx_stru *pst_rx_ba)
 OAL_STATIC OAL_INLINE oal_uint32  hmac_ba_check_rx_aggr(mac_vap_stru               *pst_vap,
                                              mac_ieee80211_frame_stru   *pst_frame_hdr)
 {
-    /* 该vap是否是ht */
+    /* ??vap??????ht */
     if (OAL_FALSE == pst_vap->pst_mib_info->st_wlan_mib_sta_config.en_dot11HighThroughputOptionImplemented)
     {
         OAM_INFO_LOG0(pst_vap->uc_vap_id, OAM_SF_BA, "{hmac_ba_check_rx_aggr::ht not supported by this vap.}");
         return OAL_FAIL;
     }
 
-    /* 判断该帧是不是qos帧 */
+    /* ??????????????qos?? */
     if ((WLAN_FC0_SUBTYPE_QOS | WLAN_FC0_TYPE_DATA) != ((oal_uint8 *)pst_frame_hdr)[0])
     {
         OAM_INFO_LOG0(pst_vap->uc_vap_id, OAM_SF_BA, "{hmac_ba_check_rx_aggr::not qos data.}");
@@ -324,7 +324,7 @@ oal_uint32  hmac_ba_filter_serv(
         return OAL_SUCC;
     }
 
-    /* 考虑四地址情况获取报文的tid */
+    /* ????????????????????????tid */
     uc_is_tods    = mac_hdr_get_to_ds((oal_uint8 *)pst_frame_hdr);
     uc_is_from_ds = mac_hdr_get_from_ds((oal_uint8 *)pst_frame_hdr);
     en_is_4addr   = uc_is_tods && uc_is_from_ds;
@@ -343,7 +343,7 @@ oal_uint32  hmac_ba_filter_serv(
         return OAL_SUCC;
     }
 
-    /* 暂时保存BA窗口的序列号，用于鉴别是否有帧上报 */
+    /* ????????BA?????????????????????????????????? */
     us_baw_start_temp = pst_ba_rx_hdl->us_baw_start;
 
     us_seq_num = mac_get_seq_num((oal_uint8 *)pst_frame_hdr);
@@ -354,13 +354,13 @@ oal_uint32  hmac_ba_filter_serv(
         return OAL_SUCC;
     }
 
-    /* duplicate frame判断 */
+    /* duplicate frame???? */
     if (OAL_TRUE == hmac_ba_rx_seqno_lt(us_seq_num, pst_ba_rx_hdl->us_baw_start))
     {
-        /* 上次非定时器上报，直接删除duplicate frame帧，否则，直接上报 */
+        /* ??????????????????????????duplicate frame?????????????????? */
         if (OAL_FALSE == pst_ba_rx_hdl->en_timer_triggered)
         {
-            /* 确实已经收到该帧 */
+            /* ???????????????? */
             if (hmac_ba_isset(pst_ba_rx_hdl, us_seq_num))
             {
                 //OAM_WARNING_LOG2(pst_vap->uc_vap_id, OAM_SF_BA, "{hmac_ba_filter_serv::duplicate frame,us_seq_num=%d baw_start=%d.",
@@ -380,7 +380,7 @@ oal_uint32  hmac_ba_filter_serv(
         pst_ba_rx_hdl->us_baw_tail = us_seq_num;
     }
 
-    /* 接收到的帧的序列号等于BAW_START，并且缓存队列帧个数为0，则直接上报给HMAC */
+    /* ??????????????????????BAW_START??????????????????????0??????????????HMAC */
     if ((us_seq_num == pst_ba_rx_hdl->us_baw_start) && (0 == pst_ba_rx_hdl->uc_mpdu_cnt))
     {
         //OAM_TID_AMPDU_STATS_INCR(pst_tid_queue->pst_tid_ampdu_stat->ul_ba_recipient_direct_up_count, 1);
@@ -416,7 +416,7 @@ oal_uint32  hmac_ba_filter_serv(
         }
     }
 
-#if 0 /* 函数hmac_ba_need_update_hw_baw逻辑有误，且并未根据它的返回做任何实质性的操作，应是上移到hmac后的残留代码 */
+#if 0 /* ????hmac_ba_need_update_hw_baw??????????????????????????????????????????????????????????hmac???????????? */
     if (OAL_TRUE == hmac_ba_need_update_hw_baw(pst_ba_rx_hdl, us_seq_num))
     {
         OAM_WARNING_LOG0(pst_vap->uc_vap_id, OAM_SF_BA, "{hmac_ba_filter_serv::need to check mac ba ssn.}");
@@ -442,7 +442,7 @@ oal_void hmac_reorder_ba_rx_buffer_bar(hmac_ba_rx_stru *pst_rx_ba, oal_uint16 us
         return;
     }
 
-    /* 针对 BAR 的SSN和窗口的start_num相等时，不需要移窗 */
+    /* ???? BAR ??SSN????????start_num?????????????????? */
     if(pst_rx_ba->us_baw_start == us_start_seq_num)
     {
         OAM_INFO_LOG0(0, OAM_SF_BA, "{hmac_reorder_ba_rx_buffer_bar::seq is equal to start num.}");
@@ -452,7 +452,7 @@ oal_void hmac_reorder_ba_rx_buffer_bar(hmac_ba_rx_stru *pst_rx_ba, oal_uint16 us
     oal_netbuf_list_head_init(&st_netbuf_head);
 
     uc_seqnum_pos = hmac_ba_seqno_bound_chk(pst_rx_ba->us_baw_start, pst_rx_ba->us_baw_end, us_start_seq_num);
-    /* 针对BAR的的SSN在窗口内才移窗 */
+    /* ????BAR????SSN?????????????? */
     if (DMAC_BA_BETWEEN_SEQLO_SEQHI == uc_seqnum_pos)
     {
         hmac_ba_send_frames_with_gap(pst_rx_ba, &st_netbuf_head, us_start_seq_num, pst_vap);
@@ -467,7 +467,7 @@ oal_void hmac_reorder_ba_rx_buffer_bar(hmac_ba_rx_stru *pst_rx_ba, oal_uint16 us
     }
     else if (DMAC_BA_GREATER_THAN_SEQHI == uc_seqnum_pos)
     {
-        /* 异常 */
+        /* ???? */
         OAM_WARNING_LOG3(pst_vap->uc_vap_id, OAM_SF_BA, "{hmac_reorder_ba_rx_buffer_bar::receive a bar and ssn is out of winsize, us_baw_start=%d us_baw_end=%d, us_seq_num=%d.}",
           pst_rx_ba->us_baw_start, pst_rx_ba->us_baw_end, us_start_seq_num);
     }
@@ -511,7 +511,7 @@ OAL_STATIC oal_uint32  hmac_ba_send_reorder_timeout(hmac_ba_rx_stru *pst_rx_ba, 
     oal_uint32                  ul_rx_timeout;
     oal_netbuf_head_stru        st_netbuf_head;
     oal_uint16                  us_baw_head;
-    oal_uint16                  us_baw_start;   /* 保存最初的窗口起始序列号 */
+    oal_uint16                  us_baw_start;   /* ???????????????????????? */
     hmac_rx_buf_stru           *pst_rx_buf;
     oal_uint8                   uc_buff_count = 0;
     oal_uint32                  ul_ret;
@@ -571,7 +571,7 @@ OAL_STATIC oal_uint32  hmac_ba_send_reorder_timeout(hmac_ba_rx_stru *pst_rx_ba, 
     oal_spin_unlock(&pst_rx_ba->st_ba_lock);
 #endif
 
-    /* 判断本次定时器超时是否有帧上报 */
+    /* ?????????????????????????????? */
     if (us_baw_start != pst_rx_ba->us_baw_start)
     {
         //hmac_ba_update_rx_baw(pst_rx_ba, us_baw_start);
@@ -676,7 +676,7 @@ oal_uint32  hmac_ba_timeout_fn(oal_void *p_arg)
                                OAL_FALSE,
                                OAM_MODULE_ID_HMAC,
                                pst_mac_device->ul_core_id);
-#if 0  /*变量us_timeout_times没有使用，不再需要赋值*/
+#if 0  /*????us_timeout_times??????????????????????*/
         if (pst_alarm_data->us_timeout_times == pst_vap->us_del_timeout && pst_vap->us_del_timeout != 0)
         {
             //pst_dmac_user = (dmac_user_stru *)mac_res_get_dmac_user(pst_alarm_data->us_mac_user_idx);
@@ -688,7 +688,7 @@ oal_uint32  hmac_ba_timeout_fn(oal_void *p_arg)
     }
     else
     {
-        /* tx ba不删除 */
+        /* tx ba?????? */
         FRW_TIMER_CREATE_TIMER(&(pst_hmac_user->ast_tid_info[uc_tid].st_ba_timer),
                                hmac_ba_timeout_fn,
                                pst_vap->us_rx_timeout[WLAN_WME_TID_TO_AC(uc_tid)],
@@ -787,12 +787,12 @@ oal_uint8  hmac_mgmt_check_set_rx_ba_ok(
 {
     pst_ba_rx_info->uc_lut_index = DMAC_INVALID_BA_LUT_INDEX;
 
-    /* 立即块确认判断 */
+    /* ?????????????? */
     if (MAC_BA_POLICY_IMMEDIATE == pst_ba_rx_info->uc_ba_policy)
     {
         if (OAL_FALSE == pst_hmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.en_dot11ImmediateBlockAckOptionImplemented)
         {
-            /* 不支持立即块确认 */
+            /* ???????????????? */
             OAM_WARNING_LOG0(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_BA, "{hmac_mgmt_check_set_rx_ba_ok::not support immediate Block Ack.}");
             return MAC_INVALID_REQ_PARAMS;
         }
@@ -800,7 +800,7 @@ oal_uint8  hmac_mgmt_check_set_rx_ba_ok(
         {
             if (pst_ba_rx_info->en_back_var != MAC_BACK_COMPRESSED)
             {
-                /* 不支持非压缩块确认 */
+                /* ?????????????????? */
                 OAM_WARNING_LOG0(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_BA, "{hmac_mgmt_check_set_rx_ba_ok::not support non-Compressed Block Ack.}");
                 return MAC_REQ_DECLINED;
             }
@@ -808,7 +808,7 @@ oal_uint8  hmac_mgmt_check_set_rx_ba_ok(
     }
     else if (MAC_BA_POLICY_DELAYED == pst_ba_rx_info->uc_ba_policy)
     {
-        /* 延迟块确认不支持 */
+        /* ???????????????? */
         OAM_WARNING_LOG0(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_BA, "{hmac_mgmt_check_set_rx_ba_ok::not support delayed Block Ack.}");
         return MAC_INVALID_REQ_PARAMS;
     }
@@ -828,10 +828,10 @@ oal_uint8  hmac_mgmt_check_set_rx_ba_ok(
     }
 #endif
 
-    /* 获取BA LUT INDEX */
+    /* ????BA LUT INDEX */
     pst_ba_rx_info->uc_lut_index = hmac_ba_get_lut_index(pst_device->auc_rx_ba_lut_idx_table, 0, HAL_MAX_BA_LUT_SIZE);
 
-        /* LUT index表已满 */
+        /* LUT index?????? */
     if (DMAC_INVALID_BA_LUT_INDEX == pst_ba_rx_info->uc_lut_index)
     {
         OAM_ERROR_LOG0(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_BA, "{hmac_mgmt_check_set_rx_ba_ok::ba lut index table full.");
@@ -855,7 +855,7 @@ oal_void  hmac_up_rx_bar(hmac_vap_stru *pst_hmac_vap, dmac_rx_ctl_stru *pst_rx_c
     pst_frame_hdr = (mac_ieee80211_frame_stru  *)mac_get_rx_cb_mac_hdr(&(pst_rx_ctl->st_rx_info));
     puc_sa_addr = pst_frame_hdr->auc_address2;
 
-    /*  获取用户指针 */
+    /*  ???????????? */
     pst_ta_user = mac_vap_get_hmac_user_by_addr(&(pst_hmac_vap->st_vap_base_info), puc_sa_addr);
     if (OAL_PTR_NULL == pst_ta_user)
     {
@@ -863,7 +863,7 @@ oal_void  hmac_up_rx_bar(hmac_vap_stru *pst_hmac_vap, dmac_rx_ctl_stru *pst_rx_c
         return;
     }
 
-    /* 获取帧头和payload指针*/
+    /* ??????????payload????*/
     puc_payload = MAC_GET_RX_PAYLOAD_ADDR(&(pst_rx_ctl->st_rx_info), pst_netbuf);
 
     /*************************************************************************/

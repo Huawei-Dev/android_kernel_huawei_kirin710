@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_profiling.h"
 #include "oam_ext_if.h"
@@ -22,7 +22,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_PROFLING_SOC
 #if (_PRE_OS_VERSION_RAW == _PRE_OS_VERSION)
@@ -41,10 +41,10 @@ OAL_STATIC PACKETMEM oal_uint32 g_ul_pkt_ram[1024];
 #endif
 
 #ifdef _PRE_WLAN_PROFLING_MIPS
-/* 保存tx profiling测试的所有数据 */
+/* ????tx profiling?????????????? */
 oal_profiling_tx_statistic_stru g_mips_tx_statistic;
 EXPORT_SYMBOL(g_mips_tx_statistic);
-/* 保存rx profiling测试的所有数据 */
+/* ????rx profiling?????????????? */
 oal_profiling_rx_statistic_stru g_mips_rx_statistic;
 EXPORT_SYMBOL(g_mips_rx_statistic);
 
@@ -53,7 +53,7 @@ EXPORT_SYMBOL(g_mips_rx_statistic);
 oal_thruput_bypass_enum_uint8 g_auc_thruput_bypass_enable[OAL_THRUPUT_BYPASS_BUTT] = {0};
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_PROFLING_SOC
 #if (_PRE_OS_VERSION_RAW == _PRE_OS_VERSION)
@@ -689,10 +689,10 @@ oal_void oal_profiling_rx_mips_show(oal_void)
     {
         OAM_WARNING_LOG1(0, OAM_SF_ANY, "\r\nRx Time Show: packet number(%d)\r\n", ul_packet_idx);
 
-        /* 接收中断 */
+        /* ???????? */
         OAM_WARNING_LOG0(0, OAM_SF_ANY, "      Current Time        Offset\r\n");
 
-        /* 接收 */
+        /* ???? */
         for (ul_loop = HMAC_PROFILING_FUNC_RX_DATA_ADAPT; ul_loop <= HMAC_PROFILING_FUNC_RX_HMAC_END; ul_loop++)
         {
             if (HMAC_PROFILING_FUNC_RX_DATA_ADAPT == ul_loop)
@@ -763,7 +763,7 @@ oal_void oal_set_thruput_bypass_enable(oal_thruput_bypass_enum_uint8 uc_bypass_t
     if(OAL_THRUPUT_BYPASS_BUTT <= uc_bypass_type)
     {
         //OAM_WARNING_LOG1(0, OAM_SF_ANY, "oal_get_thruput_bypass_enable::wrong thruput bypass type:%d.", uc_bypass_type);
-        /* 打印临时修改成PRINTK形式，后续51的oal和oam整合成一个ko后，放开OAL调用OAM的限制 */
+        /* ??????????????PRINTK??????????51??oal??oam??????????ko????????OAL????OAM?????? */
         OAL_IO_PRINT("oal_get_thruput_bypass_enable::wrong thruput bypass type:%d.\n", uc_bypass_type);
         return;
     }

@@ -50,7 +50,7 @@
 #define __AT_RNIC_INTERFACE_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 #include "vos.h"
@@ -70,68 +70,68 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 #if (VOS_OS_VER == VOS_WIN32)
-/* 测试ST用例定义的IP数据包长度，单位字节 */
+/* ????ST??????????IP???????????????????? */
 #define RNIC_IP_DATA_LEN                (12)
 #endif
 
-/* APP拨号后默认空闲时间 */
+/* APP?????????????????? */
 #define AT_APP_IDLE_TIME                (600)
 
-/* 最大IPV6地址长度，不包括":" */
+/* ????IPV6????????????????":" */
 #define RNICITF_MAX_IPV6_ADDR_LEN       (16)
 
 #define RNIC_RMNET_NAME_MAX_LEN         (16)
 
 
 /*******************************************************************************
-  3 枚举定义
+  3 ????????
 *******************************************************************************/
 
 /*****************************************************************************
- 枚举名称: AT_RNIC_USB_TETHER_CONN_ENUM
- 结构说明: USB Tethering连接状态
+ ????????: AT_RNIC_USB_TETHER_CONN_ENUM
+ ????????: USB Tethering????????
 *****************************************************************************/
 enum AT_RNIC_USB_TETHER_CONN_ENUM
 {
-    AT_RNIC_USB_TETHER_DISCONNECT       = 0x00,                                 /* USB tethering未连接 */
-    AT_RNIC_USB_TETHER_CONNECTED        = 0x01,                                 /* USB tethering已连接 */
+    AT_RNIC_USB_TETHER_DISCONNECT       = 0x00,                                 /* USB tethering?????? */
+    AT_RNIC_USB_TETHER_CONNECTED        = 0x01,                                 /* USB tethering?????? */
     AT_RNIC_USB_TETHER_CONN_BUTT
 };
 typedef VOS_UINT8 AT_RNIC_USB_TETHER_CONN_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名称: AT_RNIC_MSG_ID_ENUM
- 枚举说明: AT与RNIC的消息定义
+ ????????: AT_RNIC_MSG_ID_ENUM
+ ????????: AT??RNIC??????????
 *****************************************************************************/
 enum AT_RNIC_MSG_ID_ENUM
 {
-    /* AT发给RNIC的消息枚举 */
-    /* 0x0001, 0x0003 ~ 0x0006, 0x0008 删除 */
-    ID_AT_RNIC_DIAL_MODE_REQ            = 0x0002,   /* 拨号模式查询 */
-    ID_AT_RNIC_DSFLOW_IND               = 0x0007,   /* 流量上报指示 */
+    /* AT????RNIC?????????? */
+    /* 0x0001, 0x0003 ~ 0x0006, 0x0008 ???? */
+    ID_AT_RNIC_DIAL_MODE_REQ            = 0x0002,   /* ???????????? */
+    ID_AT_RNIC_DSFLOW_IND               = 0x0007,   /* ???????????? */
     ID_AT_RNIC_PDN_INFO_CFG_IND         = 0x0009,
     ID_AT_RNIC_PDN_INFO_REL_IND         = 0x000A,
-    ID_AT_RNIC_USB_TETHER_INFO_IND      = 0x000B,   /* USB Tethering信息指示 */
+    ID_AT_RNIC_USB_TETHER_INFO_IND      = 0x000B,   /* USB Tethering???????? */
 
-    /* RNIC发给AT的消息枚举 */
-    /* 0x1001 删除 */
-    ID_RNIC_AT_DSFLOW_RSP               = 0x1002,   /* 流量回复 */
-    ID_RNIC_AT_DIAL_MODE_CNF            = 0x1003,   /* 拨号模式查询回复 */
+    /* RNIC????AT?????????? */
+    /* 0x1001 ???? */
+    ID_RNIC_AT_DSFLOW_RSP               = 0x1002,   /* ???????? */
+    ID_RNIC_AT_DIAL_MODE_CNF            = 0x1003,   /* ???????????????? */
     ID_RNIC_AT_MSG_ID_ENUM_BUTT
 };
 typedef VOS_UINT32 AT_RNIC_MSG_ID_ENUM_UINT32;
 
 /*****************************************************************************
-  4 STRUCT&UNION定义
+  4 STRUCT&UNION????
 *****************************************************************************/
 
 /*****************************************************************************
- 结构名称: AT_RNIC_DSFLOW_IND_STRU
- 结构说明: AT给RNIC发送流量查询请求
+ ????????: AT_RNIC_DSFLOW_IND_STRU
+ ????????: AT??RNIC????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -139,12 +139,12 @@ typedef struct
     VOS_UINT32                          ulMsgId;
 
     VOS_UINT16                          usClientId;                   /* Client ID */
-    VOS_UINT8                           aucRsv[2];                  /* 保留 */
+    VOS_UINT8                           aucRsv[2];                  /* ???? */
 } AT_RNIC_DIAL_MODE_REQ_STRU;
 
 /*****************************************************************************
- 结构名称: RNIC_AT_DIAL_MODE_CNF_STRU
- 结构说明: RNIC给AT拨号模式查询回复
+ ????????: RNIC_AT_DIAL_MODE_CNF_STRU
+ ????????: RNIC??AT????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -152,15 +152,15 @@ typedef struct
     VOS_UINT32                          ulMsgId;
 
     VOS_UINT16                          usClientId;                   /* Client ID */
-    VOS_UINT8                           aucRsv[2];                  /* 保留 */
-    VOS_UINT32                          ulDialMode;                 /* Dial模式 */
-    VOS_UINT32                          ulIdleTime;                 /* 定时器长度 */
-    VOS_UINT32                          ulEventReportFlag;          /* 是否给应用上报标识 */
+    VOS_UINT8                           aucRsv[2];                  /* ???? */
+    VOS_UINT32                          ulDialMode;                 /* Dial???? */
+    VOS_UINT32                          ulIdleTime;                 /* ?????????? */
+    VOS_UINT32                          ulEventReportFlag;          /* ?????????????????? */
 } RNIC_AT_DIAL_MODE_CNF_STRU;
 
 /*****************************************************************************
- 结构名称: AT_RNIC_DSFLOW_IND_STRU
- 结构说明: AT给RNIC发送流量上报指示
+ ????????: AT_RNIC_DSFLOW_IND_STRU
+ ????????: AT??RNIC????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -168,23 +168,23 @@ typedef struct
     VOS_UINT32                          ulMsgId;
 
     VOS_UINT16                          usClientId;                   /* Client ID */
-    RNIC_DEV_ID_ENUM_UINT8              enRnicRmNetId;              /* RNIC网卡ID */
-    VOS_UINT8                           aucRsv[1];                  /* 保留 */
+    RNIC_DEV_ID_ENUM_UINT8              enRnicRmNetId;              /* RNIC????ID */
+    VOS_UINT8                           aucRsv[1];                  /* ???? */
 } AT_RNIC_DSFLOW_IND_STRU;
 
 /*****************************************************************************
- 结构名称: RNIC_DATA_RATE_STRU
- 结构说明: RNIC统计的流量速率
+ ????????: RNIC_DATA_RATE_STRU
+ ????????: RNIC??????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulDLDataRate;                           /* 当前下行速率 */
-    VOS_UINT32                          ulULDataRate;                           /* 当前上行速率 */
+    VOS_UINT32                          ulDLDataRate;                           /* ???????????? */
+    VOS_UINT32                          ulULDataRate;                           /* ???????????? */
 } RNIC_DATA_RATE_STRU;
 
 /*****************************************************************************
- 结构名称: RNIC_AT_DSFLOW_RSP_STRU
- 结构说明: RNIC给AT发送流量数据结构
+ ????????: RNIC_AT_DSFLOW_RSP_STRU
+ ????????: RNIC??AT????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -192,13 +192,13 @@ typedef struct
     VOS_UINT32                          ulMsgId;
 
     VOS_UINT16                          usClientId;                   /* Client ID */
-    VOS_UINT8                           aucRsv[2];                  /* 保留 */
-    RNIC_DATA_RATE_STRU                 stRnicDataRate;             /* 当前流量速率 */
+    VOS_UINT8                           aucRsv[2];                  /* ???? */
+    RNIC_DATA_RATE_STRU                 stRnicDataRate;             /* ???????????? */
 } RNIC_AT_DSFLOW_RSP_STRU;
 
 /*****************************************************************************
- 结构名称: AT_RNIC_PDN_INFO_CFG_IND_STRU
- 结构说明: PDN配置请求消息
+ ????????: AT_RNIC_PDN_INFO_CFG_IND_STRU
+ ????????: PDN????????????
 *****************************************************************************/
 typedef struct
 {
@@ -209,23 +209,23 @@ typedef struct
     VOS_UINT32                          bitOpIpv6PdnInfo    : 1;
     VOS_UINT32                          bitOpSpare          : 30;
 
-    VOS_UINT8                           ucRmNetId;                              /* 网卡ID */
-    VOS_UINT8                           ucIfaceId;                              /* 全局网卡ID */
+    VOS_UINT8                           ucRmNetId;                              /* ????ID */
+    VOS_UINT8                           ucIfaceId;                              /* ????????ID */
     VOS_UINT8                           aucRsv[3];
     union
     {
-        VOS_UINT8                       ucRabId;                                /* 承载号, 范围[5, 15] */
+        VOS_UINT8                       ucRabId;                                /* ??????, ????[5, 15] */
         VOS_UINT8                       ucPduSessionId;                         /* PduSession ID */
     };
     MODEM_ID_ENUM_UINT16                enModemId;                              /* Modem ID */
 
-    VOS_UINT32                          ulIpv4Addr;                             /* IPV4的IP地址，主机序 */
-    VOS_UINT8                           aucIpv6Addr[RNICITF_MAX_IPV6_ADDR_LEN]; /* 从 PDP上下文带来的IPV6地址长度，不包括":" */
+    VOS_UINT32                          ulIpv4Addr;                             /* IPV4??IP???????????? */
+    VOS_UINT8                           aucIpv6Addr[RNICITF_MAX_IPV6_ADDR_LEN]; /* ?? PDP????????????IPV6????????????????":" */
 } AT_RNIC_PDN_INFO_CFG_IND_STRU;
 
 /*****************************************************************************
- 结构名称: AT_RNIC_PDN_INFO_REL_IND_STRU
- 结构说明: PDN释放请求消息
+ ????????: AT_RNIC_PDN_INFO_REL_IND_STRU
+ ????????: PDN????????????
 *****************************************************************************/
 typedef struct
 {
@@ -236,34 +236,34 @@ typedef struct
     VOS_UINT32                          bitOpIpv6PdnInfo    : 1;
     VOS_UINT32                          bitOpSpare          : 30;
 
-    VOS_UINT8                           ucRmNetId;                              /* 网卡ID */
-    VOS_UINT8                           ucIfaceId;                              /* 全局网卡ID */
+    VOS_UINT8                           ucRmNetId;                              /* ????ID */
+    VOS_UINT8                           ucIfaceId;                              /* ????????ID */
     VOS_UINT8                           aucRsv[2];
 
 } AT_RNIC_PDN_INFO_REL_IND_STRU;
 
 /*****************************************************************************
- 结构名称: AT_RNIC_USB_TETHER_INFO_IND_STRU
- 结构说明: USB共享信息指示消息
+ ????????: AT_RNIC_USB_TETHER_INFO_IND_STRU
+ ????????: USB????????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_MSG_HEADER
     VOS_UINT32                          ulMsgId;
 
-    VOS_UINT8                           aucRmnetName[RNIC_RMNET_NAME_MAX_LEN];  /* Rmnet网卡名 */
-    AT_RNIC_USB_TETHER_CONN_ENUM_UINT8  enTetherConnStat;                       /* USB Tethering连接状态 */
+    VOS_UINT8                           aucRmnetName[RNIC_RMNET_NAME_MAX_LEN];  /* Rmnet?????? */
+    AT_RNIC_USB_TETHER_CONN_ENUM_UINT8  enTetherConnStat;                       /* USB Tethering???????? */
     VOS_UINT8                           aucRsv[3];
 
 } AT_RNIC_USB_TETHER_INFO_IND_STRU;
 
 
 /*****************************************************************************
-  5 OTHERS定义
+  5 OTHERS????
 *****************************************************************************/
 
 /*****************************************************************************
-  6 函数声明
+  6 ????????
 *****************************************************************************/
 
 extern VOS_UINT32 RNIC_StartFlowCtrl(RNIC_DEV_ID_ENUM_UINT8 enRmNetId);

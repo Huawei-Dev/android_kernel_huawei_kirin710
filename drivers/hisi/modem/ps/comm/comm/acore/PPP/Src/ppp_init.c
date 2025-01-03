@@ -33,11 +33,11 @@
 
 
 /******************************************************************************
-   2 外部函数变量声明
+   2 ????????????????
 ******************************************************************************/
 #include "product_config.h"
 /******************************************************************************
-   1 头文件包含
+   1 ??????????
 ******************************************************************************/
 #include "PPP/Inc/ppp_public.h"
 #include "PPP/Inc/pppid.h"
@@ -65,15 +65,15 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
-/*lint -e767  原因简述: 打点日志文件宏ID定义 */
+/*lint -e767  ????????: ??????????????ID???? */
 #define    THIS_FILE_ID        PS_FILE_ID_PPP_INIT_C
 /*lint +e767  */
 
 
 /******************************************************************************
-   PPP任务优先级高于modem_send高，比modem_recv任务低
+   PPP??????????????modem_send??????modem_recv??????
 ******************************************************************************/
 #define PPP_TASK_PRI                                  143
 
@@ -84,34 +84,34 @@ extern VOS_VOID PPP_ProcAsFrmDataInd(struct MsgCB * pMsg);
 
 
 /******************************************************************************
-   3 私有定义
+   3 ????????
 ******************************************************************************/
 
 
 /******************************************************************************
-   4 全局变量定义
+   4 ????????????
 ******************************************************************************/
-/* 保存从NV项中读取的WINS特性开关值*/
+/* ??????NV??????????WINS??????????*/
 VOS_UINT8  g_ucPppConfigWins = WINS_CONFIG_ENABLE;
 
 PPP_ENTITY_INFO_STRU                g_stPppEntInfo;
 
-/* 队列自旋锁 */
+/* ?????????? */
 extern      VOS_SPINLOCK            g_stPppASpinLock;
 
 /******************************************************************************
-   5 函数实现
+   5 ????????
 ******************************************************************************/
 
 VOS_VOID PPP_UpdateWinsConfig(VOS_UINT8 ucWins)
 {
     if ((WINS_CONFIG_DISABLE != ucWins) && (WINS_CONFIG_ENABLE != ucWins))
     {
-        /* ucWins值无效 */
+        /* ucWins?????? */
         return;
     }
 
-    /* 更新g_ucPppConfigWins */
+    /* ????g_ucPppConfigWins */
     g_ucPppConfigWins = ucWins;
 
     return;
@@ -167,8 +167,8 @@ VOS_UINT16 PPP_GetMruConfig(VOS_VOID)
 
     PSACORE_MEM_SET(&stPppConfigMruType, sizeof(PPP_CONFIG_MRU_TYPE_NV_STRU), 0x00, sizeof(PPP_CONFIG_MRU_TYPE_NV_STRU));
 
-    /* 为客户定制PPP Default MRU而使用NV_Item，由于此NV结构为16bit，考虑到字节对齐因素，
-       长度固定写sizeof(VOS_UINT16) */
+    /* ??????????PPP Default MRU??????NV_Item????????NV??????16bit??????????????????????
+       ??????????sizeof(VOS_UINT16) */
     ulRslt = GUCTTF_NV_Read(MODEM_ID_0, en_NV_Item_PPP_CONFIG_MRU_Type, &stPppConfigMruType, sizeof(PPP_CONFIG_MRU_TYPE_NV_STRU));
     usPppConfigMru  = stPppConfigMruType.usPppConfigType;
 
@@ -200,25 +200,25 @@ VOS_UINT8 PPP_GetWinsConfig(VOS_VOID)
 {
     WINS_CONFIG_STRU    stWins;
 
-    /* 初始化 */
+    /* ?????? */
     PSACORE_MEM_SET(&stWins, sizeof(stWins), 0x0, sizeof(stWins));
 
-    /* 定制需求,读取WINS特性控制开关NV项 */
+    /* ????????,????WINS????????????NV?? */
 
-    /* 若读取en_NV_Item_WINS失败,则默认WINS设置为使能 */
+    /* ??????en_NV_Item_WINS????,??????WINS?????????? */
     if(NV_OK != GUCTTF_NV_Read(MODEM_ID_0, en_NV_Item_WINS_Config, &stWins, sizeof(WINS_CONFIG_STRU)))
     {
         PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_WARNING, "Warning: Read en_NV_Item_WINS_Config Error!");
         return WINS_CONFIG_ENABLE;
     }
 
-    /* 若en_NV_Item_WINS未设置，则默认WINS设置为使能 */
+    /* ??en_NV_Item_WINS??????????????WINS?????????? */
     if (0 == stWins.ucStatus)
     {
         return WINS_CONFIG_ENABLE;
     }
 
-    /* 若en_NV_Item_WINS设置值无效，则默认WINS设置为使能 */
+    /* ??en_NV_Item_WINS??????????????????WINS?????????? */
     if ((WINS_CONFIG_ENABLE != stWins.ucWins) && (WINS_CONFIG_DISABLE != stWins.ucWins))
     {
         return WINS_CONFIG_ENABLE;
@@ -253,7 +253,7 @@ VOS_VOID PPP_StatusPrint(VOS_VOID)
     {
         lcp = &((pgPppLink + ulIndex)->lcp);
 
-        /* 输出到Shell */
+        /* ??????Shell */
         PS_PRINTF(" %d: %s [%s]\n", ulIndex, lcp->fsm.name, State2Nam(lcp->fsm.state));
         PS_PRINTF(" his side: MRU %d, ACCMAP %x, PROTOCOMP %s, ACFCOMP %s,\n"
                     "           MAGIC %x, MRRU %u, SHORTSEQ %s, REJECT %04x\n",
@@ -319,8 +319,8 @@ VOS_VOID PPP_StatusPrint(VOS_VOID)
 
 /*****************************************************************************
  Prototype      : PppStop
- Description    : TAF PPP模块中的结束函数,该函数负责在系统重新启动时释放PPP模
-                  块向系统申请的资源
+ Description    : TAF PPP????????????????,??????????????????????????????PPP??
+                  ??????????????????
  Input          : ---
  Output         : ---
  Return Value   : ---VOS_UINT32
@@ -335,7 +335,7 @@ VOS_VOID PPP_StatusPrint(VOS_VOID)
 #define PPP_FREE(point)\
     if(point!=VOS_NULL_PTR)         \
     {                                   \
-        /*释放申请的全局所用的空间*/    \
+        /*????????????????????????*/    \
         VOS_MemFree(PS_PID_APP_PPP, point);   \
         point = VOS_NULL_PTR;  \
     }\
@@ -344,7 +344,7 @@ VOS_VOID PppStop(VOS_VOID)
 {
     VOS_INT32 i;
 
-    /*对于系统所用到的throughout结构都释放掉它申请的内存*/
+    /*????????????????throughout????????????????????????*/
     for(i = 0;i < PPP_MAX_ID_NUM; i++)
     {
         throughput_destroy(&((pgPppLink + i)->stats.total));
@@ -387,11 +387,11 @@ VOS_VOID PPP_EntInit(VOS_VOID)
 
 /******************************************************************************
  Prototype       : PPP_BindToCpu
- Description     : 绑定Task到指定CPU上面
+ Description     : ????Task??????CPU????
  Input           :
  Output          : NONE
- Return Value    : PS_SUCC   --- 成功
-                   PS_FAIL   --- 失败
+ Return Value    : PS_SUCC   --- ????
+                   PS_FAIL   --- ????
  History         :
    1.Date        : 2016-06-16
      Author      :
@@ -403,10 +403,10 @@ VOS_VOID PPP_BindToCpu(VOS_VOID)
     pid_t                   target_pid;
     VOS_INT                 cpu;
 
-    /* 获取当前线程的Pid */
+    /* ??????????????Pid */
     target_pid = current->pid;
 
-    /* 获取当前线程的affinity */
+    /* ??????????????affinity */
     ret = sched_getaffinity(target_pid, &(g_stPppEntInfo.orig_mask));
     if (ret < 0)
     {
@@ -416,11 +416,11 @@ VOS_VOID PPP_BindToCpu(VOS_VOID)
 
     PSACORE_MEM_SET(&(g_stPppEntInfo.curr_mask), cpumask_size(), 0, cpumask_size());
 
-    /* 设置当前线程的affinity */
+    /* ??????????????affinity */
     /*lint -e{713,732} */
     for_each_cpu(cpu, &(g_stPppEntInfo.orig_mask))
     {
-        /* 去绑定CPU0 */
+        /* ??????CPU0 */
         if ((0 < cpu) && (cpumask_test_cpu(cpu, &(g_stPppEntInfo.orig_mask))))
         {
             cpumask_set_cpu((unsigned int)cpu, &(g_stPppEntInfo.curr_mask));
@@ -455,25 +455,25 @@ VOS_VOID PppMsgTimerProc( struct MsgCB * pMsg )
     }
     else if (TIMER_PPP_PHASE_MSG == pPsMsg->ulName)
     {
-        /*判断是那个阶段启动的定时器*/
+        /*??????????????????????????*/
         switch(PPP_LINK(usPppId)->phase)
         {
-            /*如果是LCP阶段启动的定时器*/
+            /*??????LCP????????????????*/
             case PHASE_ESTABLISH:
                 FsmTimeout(&(PPP_LINK(usPppId)->lcp.fsm));
                 break;
 
-            /*如果是终止阶段启动的定时器*/
+            /*??????????????????????????*/
             case PHASE_TERMINATE:
                 FsmTimeout(&(PPP_LINK(usPppId)->lcp.fsm));
                 break;
 
-            /*如果是认证阶段启动的定时器*/
+            /*??????????????????????????*/
             case PHASE_AUTHENTICATE:
                 AuthTimeout(PPP_LINK(usPppId));
                 break;
 
-            /*如果是IPCP阶段启动的定时器*/
+            /*??????IPCP????????????????*/
             case PHASE_NETWORK:
                 FsmTimeout(&(PPP_LINK(usPppId)->ipcp.fsm));
                 break;
@@ -485,7 +485,7 @@ VOS_VOID PppMsgTimerProc( struct MsgCB * pMsg )
     }
     else if (TIMER_PDP_ACT_PENDING == pPsMsg->ulName)
     {
-        /*如果是IPCP阶段待PDP激活的定时器,则处理待处理的IPCP帧*/
+        /*??????IPCP??????PDP????????????,??????????????IPCP??*/
         if (VOS_NULL_PTR != PPP_LINK(usPppId)->ipcp.pstIpcpPendFrame)
         {
             fsm_Input(&(PPP_LINK(usPppId)->ipcp.fsm), PPP_LINK(usPppId)->ipcp.pstIpcpPendFrame);
@@ -515,39 +515,39 @@ VOS_UINT32    APP_PPP_PidInit(enum VOS_INIT_PHASE_DEFINE InitPhase )
     switch( InitPhase )
     {
     case   VOS_IP_LOAD_CONFIG:
-            /*定制需求,通过NV项,获取用户配置MRU以及WINS协商开关*/
-            /*读取NV项,获取用户配置MRU*/
+            /*????????,????NV??,????????????MRU????WINS????????*/
+            /*????NV??,????????????MRU*/
             g_usPppConfigMru = PPP_GetMruConfig();
 
-            /*读取NV项,获取用户配置WINS使能开关*/
+            /*????NV??,????????????WINS????????*/
             g_ucPppConfigWins = PPP_GetWinsConfig();
 
-            /*向系统申请分配一块全局所用的link数组的空间*/
+            /*????????????????????????????link??????????*/
             /*lint -e433*/
             pgPppLink = (struct link *)VOS_MemAlloc(PS_PID_APP_PPP, STATIC_MEM_PT, sizeof(struct link)*PPP_MAX_ID_NUM);
             /*lint +e433*/
             if (VOS_NULL_PTR == pgPppLink)
             {
-                /*输出错误信息*/
+                /*????????????*/
                 PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_ERROR,"APP_PPP_PidInit, malloc of  memory fail\r\n");
                 return VOS_ERR;
             }
 
-            /*向系统申请分配一块全局所用的TAF_PPP_PUBLIC_STRU的空间*/
+            /*????????????????????????????TAF_PPP_PUBLIC_STRU??????*/
             pgPppId = (PPP_ID *)VOS_MemAlloc(PS_PID_APP_PPP, STATIC_MEM_PT, sizeof(PPP_ID)*PPP_MAX_ID_NUM_ALLOC);
             if (VOS_NULL_PTR == pgPppId)
             {
-                /*释放申请的全局所用的TAF_PPP_PUBLIC_STRU的空间*/
+                /*????????????????????TAF_PPP_PUBLIC_STRU??????*/
                 VOS_MemFree(PS_PID_APP_PPP, pgPppLink);
                 pgPppLink = VOS_NULL_PTR;
 
 
-                /*输出错误信息*/
+                /*????????????*/
                 PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_ERROR,"APP_PPP_PidInit, malloc of  memory fail\r\n");
                 return VOS_ERR;
             }
 
-            /*对于系统所用到的所有数据结构都初始化*/
+            /*????????????????????????????????????*/
             for(i = 0;i < PPP_MAX_ID_NUM; i++)
             {
                 link_Init((pgPppLink + i));
@@ -555,10 +555,10 @@ VOS_UINT32    APP_PPP_PidInit(enum VOS_INIT_PHASE_DEFINE InitPhase )
 
             PppIdInit();
 
-            /*初始化PPP的数据队列*/
+            /*??????PPP??????????*/
             PPP_DataQInit();
 
-            /* 初始化自旋锁 */
+            /* ???????????? */
             PPP_InitSpinLock();
 
             PPP_EntInit();
@@ -609,7 +609,7 @@ VOS_VOID APP_PPP_MsgProc( struct MsgCB * pMsg )
     }
 
 
-    /*如果是定时器发来的消息*/
+    /*??????????????????????*/
     if (VOS_PID_TIMER == pMsg->ulSenderPid)
     {
         PppMsgTimerProc(pMsg);
@@ -618,7 +618,7 @@ VOS_VOID APP_PPP_MsgProc( struct MsgCB * pMsg )
         return ;
     }
 
-    /*如果是接收到从TE发送来的数据帧*/
+    /*??????????????TE??????????????*/
     switch(pPsMsg->ulMsgType)
     {
         case PPP_DATA_PROC_NOTIFY:
@@ -685,7 +685,7 @@ VOS_VOID APP_PPP_FidTask(VOS_UINT32 para1, VOS_UINT32 para2, VOS_UINT32 para3, V
             continue;
         }
 
-        /* 事件处理 */
+        /* ???????? */
         if (VOS_MSG_SYNC_EVENT != ulEvent)
         {
             APP_PPP_EventProc(ulEvent);
@@ -715,7 +715,7 @@ VOS_UINT32 APP_PPP_FidInit(enum VOS_INIT_PHASE_DEFINE ip)
     switch (ip)
     {
         case VOS_IP_LOAD_CONFIG:
-            /* 上行PID初始化 */
+            /* ????PID?????? */
             ulRslt = VOS_RegisterPIDInfo(PS_PID_APP_PPP,
                                 (Init_Fun_Type)APP_PPP_PidInit,
                                 (Msg_Fun_Type)APP_PPP_MsgProc);
@@ -732,7 +732,7 @@ VOS_UINT32 APP_PPP_FidInit(enum VOS_INIT_PHASE_DEFINE ip)
                 return VOS_ERR;
             }
 
-            /* 任务优先级 */
+            /* ?????????? */
             ulRslt = VOS_RegisterTaskPrio(ACPU_FID_PPP, VOS_PRIORITY_P4);
             if( VOS_OK != ulRslt )
             {

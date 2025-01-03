@@ -85,19 +85,19 @@ extern "C" {
 *****************************************************************************/
 enum DIAG_SOCP_STATE_ENUM
 {
-    SOCP_DISABLE,       /* SOCP不可用 */
-    SOCP_ENABLE,        /* SOCP可用 */
+    SOCP_DISABLE,       /* SOCP?????? */
+    SOCP_ENABLE,        /* SOCP???? */
     SOCP_STATE_BUTT
 };
 typedef unsigned int DIAG_SOCP_STATE_ENUM_U32;
 
 enum DIAG_LDSP_STATE_ENUM
 {
-    LDSP_NOT_INIT,      /* 未初始化 */
-    LDSP_INITING,       /* 正在初始化 */
-    LDSP_INITED,        /* 初始化完成 */
-    LDSP_SOCP_ENABLE,   /* DIAG已通知LDSP SOCP可用 */
-    LDSP_SOCP_DISABLE,  /* DIAG已通知LDSP SOCP不可用 */
+    LDSP_NOT_INIT,      /* ???????? */
+    LDSP_INITING,       /* ?????????? */
+    LDSP_INITED,        /* ?????????? */
+    LDSP_SOCP_ENABLE,   /* DIAG??????LDSP SOCP???? */
+    LDSP_SOCP_DISABLE,  /* DIAG??????LDSP SOCP?????? */
     LDSP_STATE_BUTT
 };
 typedef unsigned int DIAG_LDSP_STATE_ENUM_U32;
@@ -105,10 +105,10 @@ typedef unsigned int DIAG_LDSP_STATE_ENUM_U32;
 /*****************************************************************************
    5 STRUCT
 *****************************************************************************/
-/* 核间透传通信结构体 */
+/* ?????????????????? */
 typedef struct
 {
-     VOS_MSG_HEADER                     /*VOS头 */
+     VOS_MSG_HEADER                     /*VOS?? */
      VOS_UINT32                         ulMsgId;
      DIAG_FRAME_INFO_STRU               stInfo;
 }DIAG_PHY_MSG_A_TRANS_C_STRU;

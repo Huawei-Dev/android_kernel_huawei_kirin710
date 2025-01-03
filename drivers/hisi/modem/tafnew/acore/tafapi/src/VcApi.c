@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-   1 头文件包含
+   1 ??????????
 *****************************************************************************/
 #include "AppVcApi.h"
 #include "vos.h"
@@ -60,7 +60,7 @@
 #define    THIS_FILE_ID        PS_FILE_ID_VC_API_C
 
 /*****************************************************************************
-   2 函数实现
+   2 ????????
 *****************************************************************************/
 
 
@@ -70,11 +70,11 @@ VOS_UINT32  APP_VC_SetVoiceVolume(
     VOS_UINT8                           ucVoiceVolume
 )
 {
-    /*构造消息发送消息给VC模块*/
+    /*??????????????????VC????*/
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                   sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH);
     if (VOS_NULL_PTR == pstMsg)
@@ -83,7 +83,7 @@ VOS_UINT32  APP_VC_SetVoiceVolume(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
@@ -117,11 +117,11 @@ VOS_UINT32  APP_VC_SetVoiceMode(
     VOS_UINT32                          ulRcvPid
 )
 {
-    /*构造消息发送消息给VC模块*/
+    /*??????????????????VC????*/
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                   sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH);
     if (VOS_NULL_PTR == pstMsg)
@@ -130,7 +130,7 @@ VOS_UINT32  APP_VC_SetVoiceMode(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
@@ -163,12 +163,12 @@ VOS_UINT32 APP_VC_SetVoicePort(
     APP_VC_VOICE_PORT_ENUM_U8           ucVoicePort
 )
 {
-    /*构造消息发送消息给VC模块*/
+    /*??????????????????VC????*/
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                   sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH);
     if (VOS_NULL_PTR == pstMsg)
@@ -177,7 +177,7 @@ VOS_UINT32 APP_VC_SetVoicePort(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
@@ -209,11 +209,11 @@ VOS_UINT32 APP_VC_GetVoiceMode(
     MN_OPERATION_ID_T                   OpId
 )
 {
-    /*构造消息发送消息给VC模块*/
+    /*??????????????????VC????*/
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                   sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH);
     if (VOS_NULL_PTR == pstMsg)
@@ -222,7 +222,7 @@ VOS_UINT32 APP_VC_GetVoiceMode(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
@@ -254,11 +254,11 @@ VOS_UINT32 APP_VC_GetVoicePort(
     MN_OPERATION_ID_T                   OpId
 )
 {
-    /*构造消息发送消息给VC模块*/
+    /*??????????????????VC????*/
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                   sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH);
     if (VOS_NULL_PTR == pstMsg)
@@ -267,13 +267,13 @@ VOS_UINT32 APP_VC_GetVoicePort(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 组装消息 */
+    /* ???????? */
     pstMsg->clientId                    = ClientId;
     pstMsg->opId                        = OpId;
     pstMsg->enMsgName                   = APP_VC_MSG_REQ_QRY_PORT;
@@ -352,11 +352,11 @@ VOS_UINT32  APP_VC_GetVoiceVolume(
     MN_OPERATION_ID_T                   OpId
 )
 {
-    /*构造消息发送消息给VC模块*/
+    /*??????????????????VC????*/
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                   sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH);
     if (VOS_NULL_PTR == pstMsg)
@@ -365,7 +365,7 @@ VOS_UINT32  APP_VC_GetVoiceVolume(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
@@ -401,7 +401,7 @@ VOS_UINT32 APP_VC_SetMuteStatus(
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 构造消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU*)PS_ALLOC_MSG_WITH_HEADER_LEN(
                                         WUEPS_PID_AT,
                                         sizeof(APP_VC_REQ_MSG_STRU));
@@ -411,23 +411,23 @@ VOS_UINT32 APP_VC_SetMuteStatus(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息头 */
+    /* ?????????? */
     pstMsg->ulReceiverCpuId = VOS_LOCAL_CPUID;
     pstMsg->ulReceiverPid   = AT_GetDestPid(usClientId, I0_WUEPS_PID_VC);
     pstMsg->enMsgName       = APP_VC_MSG_SET_MUTE_STATUS_REQ;
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->clientId        = usClientId;
     pstMsg->opId            = ucOpId;
     pstMsg->aucContent[0]   = enMuteStatus;
 
-    /* 发送消息 */
+    /* ???????? */
     ulRslt = PS_SEND_MSG(WUEPS_PID_AT, pstMsg);
     if (VOS_OK != ulRslt)
     {
@@ -447,7 +447,7 @@ VOS_UINT32 APP_VC_GetMuteStatus(
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 构造消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU*)PS_ALLOC_MSG_WITH_HEADER_LEN(
                                         WUEPS_PID_AT,
                                         sizeof(APP_VC_REQ_MSG_STRU));
@@ -457,22 +457,22 @@ VOS_UINT32 APP_VC_GetMuteStatus(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息头 */
+    /* ?????????? */
     pstMsg->ulReceiverCpuId = VOS_LOCAL_CPUID;
     pstMsg->ulReceiverPid   = AT_GetDestPid(usClientId, I0_WUEPS_PID_VC);
     pstMsg->enMsgName       = APP_VC_MSG_GET_MUTE_STATUS_REQ;
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->clientId        = usClientId;
     pstMsg->opId            = ucOpId;
 
-    /* 发送消息 */
+    /* ???????? */
     ulRslt = PS_SEND_MSG(WUEPS_PID_AT, pstMsg);
     if (VOS_OK != ulRslt)
     {
@@ -493,7 +493,7 @@ VOS_UINT32 APP_VC_SetModemLoop(
     VOS_UINT32                          ulRslt;
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 构造消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU*)PS_ALLOC_MSG_WITH_HEADER_LEN(
                                         WUEPS_PID_AT,
                                         sizeof(APP_VC_REQ_MSG_STRU));
@@ -503,23 +503,23 @@ VOS_UINT32 APP_VC_SetModemLoop(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息头 */
+    /* ?????????? */
     pstMsg->ulReceiverCpuId = VOS_LOCAL_CPUID;
     pstMsg->ulReceiverPid   = AT_GetDestPid(usClientId, I0_WUEPS_PID_VC);
     pstMsg->enMsgName       = APP_VC_MSG_SET_MODEMLOOP_REQ;
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->clientId        = usClientId;
     pstMsg->opId            = ucOpId;
     pstMsg->aucContent[0]   = ucModemLoop;
 
-    /* 发送消息 */
+    /* ???????? */
     ulRslt = PS_SEND_MSG(WUEPS_PID_AT, pstMsg);
     if (VOS_OK != ulRslt)
     {
@@ -537,7 +537,7 @@ VOS_UINT32 APP_VC_SendVcHifiResetNtf(
 {
     APP_VC_REQ_MSG_STRU                *pstMsg;
 
-    /* 构造消息 */
+    /* ???????? */
     pstMsg = (APP_VC_REQ_MSG_STRU*)PS_ALLOC_MSG_WITH_HEADER_LEN(
                                         WUEPS_PID_AT,
                                         sizeof(APP_VC_REQ_MSG_STRU));
@@ -547,22 +547,22 @@ VOS_UINT32 APP_VC_SendVcHifiResetNtf(
         return VOS_ERR;
     }
 
-    /* 初始化消息 */
+    /* ?????????? */
     TAF_MEM_SET_S((VOS_CHAR *)pstMsg + VOS_MSG_HEAD_LENGTH,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH),
                0x00,
                (VOS_SIZE_T)(sizeof(APP_VC_REQ_MSG_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息头 */
+    /* ?????????? */
     pstMsg->ulReceiverCpuId = VOS_LOCAL_CPUID;
     pstMsg->ulReceiverPid   = ulRcvPid;
     pstMsg->enMsgName       = APP_VC_MSG_HIFI_RESET_NTF;
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->clientId        = 0;
     pstMsg->opId            = 0;
 
-    /* 发送消息 */
+    /* ???????? */
     PS_SEND_MSG(WUEPS_PID_AT, pstMsg);
 
     return VOS_OK;

@@ -46,11 +46,11 @@
 *
 */
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AtInit.h"
 
-/* 保护此头文件是因为包含了PS域相关的定义，但是本项目未修改PS域相关的，后续需要调整 */
+/* ????????????????????????PS??????????????????????????????PS?????????????????????? */
 #include "AtDataProc.h"
 #include "AcpuReset.h"
 #include "msp_nvim.h"
@@ -72,18 +72,18 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_AT_INIT_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -100,7 +100,7 @@ VOS_VOID AT_ReadPlatformNV(VOS_VOID)
     {
         pstAtSptRatList = AT_GetSptRatFromModemId(enModemID);
 
-        /* 读取平台NV成功 */
+        /* ????????NV???? */
         if(NV_OK == TAF_ACORE_NV_READ(enModemID,
                                       en_NV_Item_Platform_RAT_CAP,
                                       &stPlatFormRat,
@@ -114,23 +114,23 @@ VOS_VOID AT_ReadPlatformNV(VOS_VOID)
 
             for (ucRatIndex = 0; ucRatIndex < stPlatFormRat.usRatNum; ucRatIndex++)
             {
-                /* 平台支持LTE */
+                /* ????????LTE */
                 if (PLATFORM_RAT_LTE == stPlatFormRat.aenRatList[ucRatIndex])
                 {
                     pstAtSptRatList->ucPlatformSptLte = VOS_TRUE;
                 }
-                /* 平台支持WCDMA */
+                /* ????????WCDMA */
                 if (PLATFORM_RAT_WCDMA == stPlatFormRat.aenRatList[ucRatIndex])
                 {
                     pstAtSptRatList->ucPlatformSptWcdma = VOS_TRUE;
                 }
 
-                /* 平台支持TDS*/
+                /* ????????TDS*/
                 if (PLATFORM_RAT_TDS == stPlatFormRat.aenRatList[ucRatIndex])
                 {
                     pstAtSptRatList->ucPlatformSptUtralTDD = VOS_TRUE;
                 }
-                /* 平台支持GSM */
+                /* ????????GSM */
                 if (PLATFORM_RAT_GSM == stPlatFormRat.aenRatList[ucRatIndex])
                 {
                     pstAtSptRatList->ucPlatformSptGsm = VOS_TRUE;
@@ -154,15 +154,15 @@ VOS_VOID AT_ReadClientConfigNV(VOS_VOID)
 
     TAF_MEM_SET_S(&stAtClientCfg, sizeof(stAtClientCfg), 0x00, sizeof(TAF_AT_NVIM_AT_CLIENT_CFG_STRU));
 
-    /* NV项en_NV_Item_AT_CLIENT_CONFIG的
+    /* NV??en_NV_Item_AT_CLIENT_CONFIG??
        aucAtClientConfig[Index]
        Index = 0 -- AT_CLIENT_TAB_PCUI_INDEX
        Index = 1 -- AT_CLIENT_TAB_CTRL_INDEX
        ......
-       按index顺序递增
+       ??index????????
        aucAtClientConfig[Index]
-       BIT0-BIT1对应一个client归属于哪个ModemId:00:表示modem0 01:表示modem1
-       BIT2对应一个client是否允许广播:0:表示不允许 1:表示允许
+       BIT0-BIT1????????client??????????ModemId:00:????modem0 01:????modem1
+       BIT2????????client????????????:0:?????????? 1:????????
     */
     if (VOS_OK != TAF_ACORE_NV_READ(MODEM_ID_0,
                                     en_NV_Item_AT_CLIENT_CFG,
@@ -194,9 +194,9 @@ VOS_VOID AT_GetCpmsMtMem(
 {
     VOS_UINT32                          ulRet;
     TAF_NVIM_SMS_SERVICE_PARA_STRU      stSmsServicePara;
-    /* 短信接收存储介质保存在NV配置文件的使能标志
-       VOS_TRUE        短信接收存储介质保存在NV配置文件
-       VOS_FALSE       短信接收存储介质不保存在NV配置文件，每次上电后恢复为SM存储 */
+    /* ??????????????????????NV??????????????????
+       VOS_TRUE        ??????????????????????NV????????
+       VOS_FALSE       ????????????????????????NV??????????????????????????SM???? */
     VOS_BOOL                            bSmMemEnable;
     AT_MODEM_SMS_CTX_STRU              *pstSmsCtx = VOS_NULL_PTR;
 
@@ -242,14 +242,14 @@ VOS_VOID AT_ReadSmsMeStorageInfoNV(VOS_VOID)
         stMeStorageParm.enMeStorageStatus   = MN_MSG_ME_STORAGE_DISABLE;
         stMeStorageParm.usMeStorageNum      = 0;
 
-        /* 获取ME短信存储介质的支持状态 */
+        /* ????ME?????????????????????? */
         ulRet = TAF_ACORE_NV_READ(enModemId, en_NV_Item_Sms_Me_Storage_Info, &stMeStorageParm, sizeof(stMeStorageParm));
         if (NV_OK == ulRet)
         {
             pstSmsCtx->enMsgMeStorageStatus = stMeStorageParm.enMeStorageStatus;
         }
 
-        /* 获取短信及状态报告接收存储介质*/
+        /* ??????????????????????????????*/
         AT_GetCpmsMtMem(enModemId, &(pstSmsCtx->stCpmsInfo.stRcvPath.enSmMemStore));
         pstSmsCtx->stCpmsInfo.stRcvPath.enStaRptMemStore = pstSmsCtx->stCpmsInfo.stRcvPath.enSmMemStore;
     }
@@ -266,7 +266,7 @@ VOS_VOID AT_ReadSmsClass0TailorNV(VOS_VOID)
     stClass0Tailor.ucActFlg             = MN_MSG_NVIM_ITEM_INACTIVE;
     stClass0Tailor.enClass0Tailor       = MN_MSG_CLASS0_DEF;
 
-    /* 获取CLASS0类短信接收上报方式 */
+    /* ????CLASS0?????????????????? */
     ulRet = TAF_ACORE_NV_READ(MODEM_ID_0, en_NV_Item_SMS_CLASS0_TAILOR, &stClass0Tailor, sizeof(MN_MSG_NVIM_CLASS0_TAILOR_STRU));
     if ( (NV_OK == ulRet)
       && (MN_MSG_NVIM_ITEM_ACTIVE == stClass0Tailor.ucActFlg))
@@ -295,7 +295,7 @@ VOS_VOID AT_ReadSmsClosePathNV(VOS_VOID)
     {
         pstSmsCtx = AT_GetModemSmsCtxAddrFromModemId(enModemId);
 
-        /* 获取ME短信存储介质的支持状态 */
+        /* ????ME?????????????????????? */
         ulRet = TAF_ACORE_NV_READ(enModemId, en_NV_Item_SMS_Close_Path, &stClosePath, sizeof(stClosePath));
         if ( (NV_OK == ulRet)
            && (VOS_TRUE == stClosePath.ucNvimValid))
@@ -426,12 +426,12 @@ VOS_VOID AT_ReadPrivacyFilterCfgNv(VOS_VOID)
     NAS_NV_PRIVACY_FILTER_CFG_STRU      stPrivacyFilterCfg;
     MODEM_ID_ENUM_UINT16                enModemId;
 
-    /* 初始化 */
+    /* ?????? */
     TAF_MEM_SET_S(&stPrivacyFilterCfg, sizeof(stPrivacyFilterCfg), 0x00, sizeof(NAS_NV_PRIVACY_FILTER_CFG_STRU));
 
     for (enModemId = 0; enModemId < MODEM_ID_BUTT; enModemId++)
     {
-        /* 读取NV项 */
+        /* ????NV?? */
         if (NV_OK != TAF_ACORE_NV_READ(enModemId,
                                        en_NV_Item_Privacy_Log_Filter_Cfg,
                                        &stPrivacyFilterCfg,
@@ -440,7 +440,7 @@ VOS_VOID AT_ReadPrivacyFilterCfgNv(VOS_VOID)
             stPrivacyFilterCfg.ucFilterEnableFlg = VOS_FALSE;
         }
 
-        /* NV读取值保护 */
+        /* NV?????????? */
         if (VOS_TRUE == stPrivacyFilterCfg.ucFilterEnableFlg)
         {
             stPrivacyFilterCfg.ucFilterEnableFlg = VOS_TRUE;
@@ -462,10 +462,10 @@ VOS_VOID  AT_ReadSystemAppConfigNV(VOS_VOID)
 
     stSysAppConfig.usSysAppConfigType = SYSTEM_APP_BUTT;
 
-    /* 获取控制特性的NV上下文地址 */
+    /* ??????????????NV?????????? */
     pucSystemAppConfig                  = AT_GetSystemAppConfigAddr();
 
-    /*读取失败按默认值处理 */
+    /*???????????????????? */
     if (VOS_OK != TAF_ACORE_NV_READ(MODEM_ID_0, en_NV_Item_System_APP_Config,&stSysAppConfig,sizeof(NAS_NVIM_SYSTEM_APP_CONFIG_STRU)))
     {
         *pucSystemAppConfig  = SYSTEM_APP_MP;
@@ -491,14 +491,14 @@ VOS_VOID AT_ReadAtDislogPwdNV(VOS_VOID)
     VOS_UINT8                          *pucSystemAppConfig;
     TAF_AT_NVIM_DISLOG_PWD_NEW_STRU     stDislogPwdNew;
 
-    /* 按D25的做法  不保存权限标志, 则不用从NV中读取权限, 默认无权限 */
+    /* ??D25??????  ??????????????, ????????NV??????????, ?????????? */
     g_enATE5RightFlag = AT_E5_RIGHT_FLAG_NO;
     TAF_MEM_SET_S(&stDislogPwdNew, sizeof(stDislogPwdNew), 0x00, sizeof(stDislogPwdNew));
 
-    /* 读取NV项中当前产品形态 */
+    /* ????NV???????????????? */
     pucSystemAppConfig = AT_GetSystemAppConfigAddr();
 
-    /* 新加NV项保存DISLOG密码(OPWORD使用) */
+    /* ????NV??????DISLOG????(OPWORD????) */
     if (NV_OK == TAF_ACORE_NV_READ(MODEM_ID_0,
                                    en_NV_Item_AT_DISLOG_PWD_NEW,
                                    &stDislogPwdNew,
@@ -509,14 +509,14 @@ VOS_VOID AT_ReadAtDislogPwdNV(VOS_VOID)
                    (VOS_INT8*)(&stDislogPwdNew),
                    AT_OPWORD_PWD_LEN);
 
-        /* 跟上字符串结尾符 */
+        /* ???????????????? */
         g_acATOpwordPwd[AT_OPWORD_PWD_LEN] = 0;
 
-        /* 如果密码为空，且非AP-Modem形态，则取消密码保护 */
+        /* ??????????????????AP-Modem???????????????????? */
         if ((0 == VOS_StrLen((VOS_CHAR *)g_acATOpwordPwd))
          && (SYSTEM_APP_ANDROID != *pucSystemAppConfig))
         {
-            /* NV中密码为空则输入任何密码都能获取权限 */
+            /* NV???????????????????????????????????? */
             g_enATE5RightFlag = AT_E5_RIGHT_FLAG_YES;
         }
     }
@@ -535,13 +535,13 @@ VOS_VOID AT_ReadAtRightPasswordNV(VOS_VOID)
 
     TAF_MEM_SET_S(&stNvimRightOpenFlg, sizeof(stNvimRightOpenFlg), 0x00, sizeof(stNvimRightOpenFlg));
 
-    /* 从NV中获取当前操作AT命令的权限 */
+    /* ??NV??????????????AT?????????? */
     if (NV_OK != TAF_ACORE_NV_READ(MODEM_ID_0,
                                    en_NV_Item_AT_RIGHT_PASSWORD,
                                    &stNvimRightOpenFlg,
                                    sizeof(stNvimRightOpenFlg)))
     {
-        /* 读取NV失败,采用默认密码 */
+        /* ????NV????,???????????? */
         TAF_MEM_SET_S(&g_stAtRightOpenFlg, sizeof(g_stAtRightOpenFlg), 0x00, sizeof(g_stAtRightOpenFlg));
         AT_WARN_LOG("AT_ReadAtRightPasswordNV:read en_NV_Item_AT_RIGHT_PASSWORD failed");
     }
@@ -566,7 +566,7 @@ VOS_VOID AT_ReadAtDissdPwdNV(VOS_VOID)
                    AT_DISSD_PWD_LEN + 1,
                    (VOS_INT8*)(&stDissdPwd),
                    AT_DISSD_PWD_LEN);
-        /* 跟上字符串结尾符 */
+        /* ???????????????? */
         g_acATE5DissdPwd[AT_DISSD_PWD_LEN] = 0;
     }
     else
@@ -586,8 +586,8 @@ VOS_VOID AT_ReadNotSupportRetValueNV(VOS_VOID)
 
     TAF_MEM_SET_S(&stErrorText,  sizeof(stErrorText), 0x00, AT_NOTSUPPORT_STR_LEN);
 
-     /* 从NV中获取不支持命令的返回值，当为E5、LCARD、DONGLE时，
-        该NV设置为"ERROR",其他平台设置为"COMMAND NOT SUPPORT" */
+     /* ??NV??????????????????????????????E5??LCARD??DONGLE????
+        ??NV??????"ERROR",??????????????"COMMAND NOT SUPPORT" */
     if (NV_OK == TAF_ACORE_NV_READ(MODEM_ID_0,
                                    en_NV_Item_NOT_SUPPORT_RET_VALUE,
                                    stErrorText.acErrorText,
@@ -598,7 +598,7 @@ VOS_VOID AT_ReadNotSupportRetValueNV(VOS_VOID)
                     stErrorText.acErrorText,
                     AT_NOTSUPPORT_STR_LEN);
 
-         /* 跟上字符串结尾符 */
+         /* ???????????????? */
          acRetVal[AT_NOTSUPPORT_STR_LEN] = 0;
          ulRetLen                        = VOS_StrLen(acRetVal);
          if (ulRetLen > 0)
@@ -636,24 +636,24 @@ VOS_UINT32 AT_IsAbortCmdCharValid(
 {
     VOS_UINT32                          i;
 
-    /* 由于在AT命令的处理的流程中, 会对输入的字符进行格式化处理, 大致会过滤掉不可见字符
-       (<0x20的ASCII字符,空格, S3, S5)等.
-       如果NV中设置的ABORT命令字符串中包含这些字符会导致打断命令匹配失败, 故做容错处理,
-       如果NV中设置的ABORT命令字符串中包含这些字符则认为设置无效, 使用默认值 */
+    /* ??????AT??????????????????, ????????????????????????????, ??????????????????????
+       (<0x20??ASCII????,????, S3, S5)??.
+       ????NV????????ABORT??????????????????????????????????????????????, ????????????,
+       ????NV????????ABORT??????????????????????????????????????, ?????????? */
 
-    /* 如果打断命令或打断回复为空指针，无效 */
+    /* ???????????????????????????????????? */
     if ( VOS_NULL_PTR == pucAbortCmdChar )
     {
         return VOS_FALSE;
     }
 
-    /* 如果打断命令或打断回复长度为0，无效 */
+    /* ????????????????????????????0?????? */
     if ( 0 == ulLen )
     {
         return VOS_FALSE;
     }
 
-    /* 如果打断命令或打断回复有不可见字符(<0x20的ASCII字符,空格, S3, S5)等，无效 */
+    /* ??????????????????????????????????(<0x20??ASCII????,????, S3, S5)???????? */
     for ( i = 0 ; i < ulLen; i++ )
     {
         if ( (pucAbortCmdChar[i] == ucAtS3)
@@ -672,7 +672,7 @@ VOS_VOID AT_ReadAbortCmdParaNV(VOS_VOID)
 {
     AT_ABORT_CMD_PARA_STRU             *pstAbortCmdPara   = VOS_NULL_PTR;
     VOS_UINT8                           aucDfltAbortCmd[] = "AT";
-    VOS_UINT8                           aucDfltAbortRsp[] = "OK";            /* 命令比较时不区分大小写, 此处默认值定义为大小写均可 */
+    VOS_UINT8                           aucDfltAbortRsp[] = "OK";            /* ??????????????????????, ?????????????????????????? */
     AT_NVIM_ABORT_CMD_PARA_STRU         stNvAbortCmdPara;
     VOS_UINT32                          ulIsAbortCmdValid;
     VOS_UINT32                          ulIsAbortRspValid;
@@ -680,33 +680,33 @@ VOS_VOID AT_ReadAbortCmdParaNV(VOS_VOID)
     VOS_UINT8                           aucAnyCharAbortCmd[] = "ANY";
     VOS_UINT32                          ulLen;
 
-    /* 初始化 避免TQE告警 */
+    /* ?????? ????TQE???? */
     TAF_MEM_SET_S(&stNvAbortCmdPara,  sizeof(stNvAbortCmdPara), 0x00, sizeof(stNvAbortCmdPara));
 
-    /* 打断命令初始化 */
+    /* ?????????????? */
     pstAbortCmdPara = AT_GetAbortCmdPara();
     TAF_MEM_SET_S(pstAbortCmdPara, sizeof(AT_ABORT_CMD_PARA_STRU), 0x00, sizeof(AT_ABORT_CMD_PARA_STRU));
 
-    /* 读取NV项中配置的打断命令和打断回复 */
+    /* ????NV???????????????????????????? */
     ulRlst = TAF_ACORE_NV_READ(MODEM_ID_0,
                                en_NV_Item_AT_ABORT_CMD_PARA,
                                &stNvAbortCmdPara,
                                sizeof(AT_NVIM_ABORT_CMD_PARA_STRU));
 
-    /* NV读取失败则使用默认值 */
+    /* NV???????????????????? */
     if ( NV_OK != ulRlst )
     {
-        /* 打断使能标志默认值为TRUE */
+        /* ????????????????????TRUE */
         pstAbortCmdPara->ucAbortEnableFlg = VOS_TRUE;
 
-        /* 打断命令默认值 */
+        /* ?????????????? */
         VOS_StrNCpy_s((VOS_CHAR *)(pstAbortCmdPara->aucAbortAtCmdStr),
                     sizeof(pstAbortCmdPara->aucAbortAtCmdStr),
                     (VOS_CHAR*)aucDfltAbortCmd,
                     AT_MAX_ABORT_CMD_STR_LEN);
         pstAbortCmdPara->aucAbortAtCmdStr[AT_MAX_ABORT_CMD_STR_LEN] = '\0';
 
-        /* 打断回复默认值 */
+        /* ?????????????? */
         VOS_StrNCpy_s((VOS_CHAR *)(pstAbortCmdPara->aucAbortAtRspStr),
                     sizeof(pstAbortCmdPara->aucAbortAtRspStr),
                     (VOS_CHAR *)aucDfltAbortRsp,
@@ -718,25 +718,25 @@ VOS_VOID AT_ReadAbortCmdParaNV(VOS_VOID)
         return;
     }
 
-    /* 如果打断功能未使能, 则可以不用关注其它内容 */
+    /* ??????????????????, ?????????????????????? */
     pstAbortCmdPara->ucAbortEnableFlg = stNvAbortCmdPara.ucAbortEnableFlg;
     if ( VOS_TRUE != pstAbortCmdPara->ucAbortEnableFlg )
     {
         return;
     }
 
-    /* 将NV中打断命令的内容赋值到全局变量，赋值长度为AT_MAX_ABORT_CMD_STR_LEN，
-       然后将数组第AT_MAX_ABORT_CMD_STR_LEN+1个字符赋值为结束符，
-       对应数组下标为AT_MAX_ABORT_CMD_STR_LEN */
+    /* ??NV??????????????????????????????????????????AT_MAX_ABORT_CMD_STR_LEN??
+       ????????????AT_MAX_ABORT_CMD_STR_LEN+1????????????????????
+       ??????????????AT_MAX_ABORT_CMD_STR_LEN */
     VOS_StrNCpy_s((VOS_CHAR *)(pstAbortCmdPara->aucAbortAtCmdStr),
                 sizeof(pstAbortCmdPara->aucAbortAtCmdStr),
                 (VOS_CHAR *)(stNvAbortCmdPara.aucAbortAtCmdStr),
                 AT_MAX_ABORT_CMD_STR_LEN);
     pstAbortCmdPara->aucAbortAtCmdStr[AT_MAX_ABORT_CMD_STR_LEN] = '\0';
 
-    /* 将NV中打断回复的内容赋值到全局变量，赋值长度为AT_MAX_ABORT_CMD_STR_LEN，
-       然后将数组第AT_MAX_ABORT_RSP_STR_LEN+1个字符赋值为结束符，
-       对应数组下标为AT_MAX_ABORT_RSP_STR_LEN */
+    /* ??NV??????????????????????????????????????????AT_MAX_ABORT_CMD_STR_LEN??
+       ????????????AT_MAX_ABORT_RSP_STR_LEN+1????????????????????
+       ??????????????AT_MAX_ABORT_RSP_STR_LEN */
     VOS_StrNCpy_s((VOS_CHAR *)(pstAbortCmdPara->aucAbortAtRspStr),
                 sizeof(pstAbortCmdPara->aucAbortAtRspStr),
                 (VOS_CHAR *)(stNvAbortCmdPara.aucAbortAtRspStr),
@@ -744,14 +744,14 @@ VOS_VOID AT_ReadAbortCmdParaNV(VOS_VOID)
     pstAbortCmdPara->aucAbortAtRspStr[AT_MAX_ABORT_RSP_STR_LEN] = '\0';
 
 
-    /* 判断打断命令的NV设置中是否有无效字符 */
+    /* ??????????????NV???????????????????? */
     ulIsAbortCmdValid = AT_IsAbortCmdCharValid(pstAbortCmdPara->aucAbortAtCmdStr,
                                      VOS_StrLen((VOS_CHAR *)(pstAbortCmdPara->aucAbortAtCmdStr)));
 
     ulIsAbortRspValid = AT_IsAbortCmdCharValid(pstAbortCmdPara->aucAbortAtRspStr,
                                      VOS_StrLen((VOS_CHAR *)(pstAbortCmdPara->aucAbortAtRspStr)));
 
-    /* 如果NV设置中含有不可见字符(空格, S3, S5, 小于x020的字符), 则使用默认值 */
+    /* ????NV????????????????????(????, S3, S5, ????x020??????), ???????????? */
     if ( VOS_TRUE != ulIsAbortCmdValid )
     {
         VOS_StrNCpy_s((VOS_CHAR *)(pstAbortCmdPara->aucAbortAtCmdStr),
@@ -780,7 +780,7 @@ VOS_VOID AT_ReadAbortCmdParaNV(VOS_VOID)
 
     if ( (0 == VOS_StrNiCmp((VOS_CHAR *)aucAnyCharAbortCmd, (VOS_CHAR *)pstAbortCmdPara->aucAbortAtCmdStr, ulLen)) )
     {
-        /* PS_MEM_SET的时候已经将其置成0，即为默认不支持任意字符打断 */
+        /* PS_MEM_SET??????????????????0???????????????????????????? */
         pstAbortCmdPara->ucAnyAbortFlg = VOS_TRUE;
     }
 
@@ -999,7 +999,7 @@ VOS_VOID AT_ReadWasCapabilityNV(VOS_VOID)
                                  sizeof(AT_NV_UE_CAPABILITY_STRU));
     if (VOS_OK != ulResult)
     {
-        /* NV读取失败, 协议版本默认为R99 */
+        /* NV????????, ??????????????R99 */
         g_stAtDlRateCategory.cWasRelIndicator = PS_PTL_VER_R99;
         g_stAtDlRateCategory.ucWasCategory    = AT_RATE_WCDMA_R99;
     }
@@ -1018,7 +1018,7 @@ VOS_VOID AT_CalcGasCategory(
     VOS_UINT16                                  usEgprsFlag
 )
 {
-    /* 默认为VOS_FALSE */
+    /* ??????VOS_FALSE */
     g_stAtDlRateCategory.ucGasMultislotClass33Flg = VOS_FALSE;
 
     if((VOS_TRUE == pstHighMultislotclass->usHighMultislotClassFlg)
@@ -1064,13 +1064,13 @@ VOS_VOID AT_ReadGasCapabilityNV(VOS_VOID)
 
     ulResult = TAF_ACORE_NV_READ(MODEM_ID_0, en_Nv_Item_Gprs_Multi_Slot_Class, &usGprsMultiSlotClass, sizeof(VOS_UINT16));
 
-    /* 读取失败，默认多时隙能力等级为12 */
+    /* ??????????????????????????????12 */
     if ( NV_OK != ulResult )
     {
         usGprsMultiSlotClass = AT_GAS_GRR_MULTISLOT_CLASS_MAX;
     }
 
-    /* 多时隙能力等级取值为1-12 */
+    /* ????????????????????1-12 */
     if (( 0 == usGprsMultiSlotClass )
       ||( AT_GAS_GRR_MULTISLOT_CLASS_MAX < usGprsMultiSlotClass ))
     {
@@ -1083,7 +1083,7 @@ VOS_VOID AT_ReadGasCapabilityNV(VOS_VOID)
         usEgprsMultiSlotClass = AT_GAS_GRR_MULTISLOT_CLASS_MAX;
     }
 
-    /* 多时隙能力等级取值为1-12 */
+    /* ????????????????????1-12 */
     if (( 0 == usEgprsMultiSlotClass )
       ||( AT_GAS_GRR_MULTISLOT_CLASS_MAX < usEgprsMultiSlotClass ))
     {
@@ -1092,7 +1092,7 @@ VOS_VOID AT_ReadGasCapabilityNV(VOS_VOID)
 
     ulResult = TAF_ACORE_NV_READ(MODEM_ID_0, en_NV_Item_GAS_High_Multislot_Class,&stHighMultislotclass, sizeof(NVIM_GAS_HIGH_MULTISLOT_CLASS_STRU));
 
-    /* 读取失败，默认High Multislot Class 无效  */
+    /* ??????????????High Multislot Class ????  */
     if ( NV_OK != ulResult )
     {
         return  ;
@@ -1250,7 +1250,7 @@ VOS_VOID AT_ReadIpv6BackProcExtCauseNV(VOS_VOID)
     {
         for (ulCnt = 0 ; ulCnt < TAF_NV_IPV6_FALLBACK_EXT_CAUSE_MAX_NUM; ulCnt++)
         {
-            /* 检查(E)SM Cause是否有效 */
+            /* ????(E)SM Cause???????? */
             if (!TAF_PS_IS_SM_CAUSE_VALID(stNvBackProcExtCause.aucSmCause[ulCnt]))
             {
                 continue;
@@ -1358,37 +1358,37 @@ VOS_VOID AT_ReadDialConnectDisplayRateNV(VOS_VOID)
 
 VOS_VOID  AT_ReadPsNV(VOS_VOID)
 {
-    /* 读取拨号错误码上报NV */
+    /* ??????????????????NV */
     AT_ReadPppDialErrCodeNV();
 
-    /* 读取是否上报CREG/CGREG的ACT参数控制NV */
+    /* ????????????CREG/CGREG??ACT????????NV */
     AT_ReadReportRegActFlgNV();
 
-    /* 读取CREG/CGREG的CI参数是否以4字节上报的控制NV(Vodafone需求) */
+    /* ????CREG/CGREG??CI??????????4??????????????NV(Vodafone????) */
     AT_ReadCregAndCgregCiFourByteRptNV();
 
-    /* 读取IPV6能力的NV, 目前IPV6能力只能支持到IPV4V6_OVER_ONE_PDP */
+    /* ????IPV6??????NV, ????IPV6??????????????IPV4V6_OVER_ONE_PDP */
     AT_ReadIpv6CapabilityNV();
 
-    /* 读取IPv6回退处理扩展原因值 */
+    /* ????IPv6?????????????????? */
     AT_ReadIpv6BackProcExtCauseNV();
 
     AT_ReadIpv6AddrTestModeCfgNV();
 
-    /* 读取拨号系统托盘显示速率定制NV */
+    /* ????????????????????????????NV */
     AT_ReadDialConnectDisplayRateNV();
 
-    /* 读取WCDMA接入等级NV, 用于PS域拨号速率上报 */
+    /* ????WCDMA????????NV, ????PS?????????????? */
     AT_ReadWasCapabilityNV();
 
-    /* 读取GAS是否支持CLASS33 NV项目 */
+    /* ????GAS????????CLASS33 NV???? */
     AT_ReadGasCapabilityNV();
 
     AT_ReadCellSignReportCfgNV();
 
     AT_ReadSharePdpInfoNV();
 
-    /* 读取网侧无原因值重拨功能开关 */
+    /* ???????????????????????????? */
     AT_ReadRedialNwCauseFlagNV();
 
     return;
@@ -1412,7 +1412,7 @@ VOS_VOID  AT_ReadCsNV(VOS_VOID)
 
         TAF_MEM_SET_S(&stTimeInfo, sizeof(stTimeInfo), 0x00, sizeof(stTimeInfo));
 
-        /*读取语音自动应答 */
+        /*???????????????? */
         if(NV_OK == TAF_ACORE_NV_READ(enModemId,
                                       en_NV_Item_CCA_TelePara,
                                       &stTimeInfo,
@@ -1423,7 +1423,7 @@ VOS_VOID  AT_ReadCsNV(VOS_VOID)
 
         TAF_MEM_SET_S(&stUssdTranMode, sizeof(stUssdTranMode), 0x00, sizeof(stUssdTranMode));
 
-        /*读取USSD是否透传设置 */
+        /*????USSD???????????? */
         if (NV_OK == TAF_ACORE_NV_READ(MODEM_ID_0,
                                        en_NV_Item_CUST_USSD_MODE,
                                        &stUssdTranMode,
@@ -1435,7 +1435,7 @@ VOS_VOID  AT_ReadCsNV(VOS_VOID)
             }
         }
 
-        /* 读取语音功能定制 */
+        /* ???????????????? */
         TAF_MEM_SET_S(&stCallCfgInfo, sizeof(stCallCfgInfo), 0x00, sizeof(stCallCfgInfo));
 
         if (NV_OK == TAF_ACORE_NV_READ(enModemId,
@@ -1443,7 +1443,7 @@ VOS_VOID  AT_ReadCsNV(VOS_VOID)
                                        &stCallCfgInfo,
                                        sizeof(NAS_NVIM_CUSTOM_CALL_CFG_STRU)))
         {
-            /* 如果NV取值超过范围，使用默认值CVHU_MODE_0 */
+            /* ????NV????????????????????????CVHU_MODE_0 */
             if (CVHU_MODE_BUTT <= stCallCfgInfo.enCvhuMode)
             {
                 pstCcCtx->enCvhuMode = CVHU_MODE_0;
@@ -1469,7 +1469,7 @@ VOS_VOID AT_ReadLTENV(VOS_VOID)
     TAF_MEM_SET_S(&g_stRscpCfg, sizeof(g_stRscpCfg), 0x00, sizeof(g_stRscpCfg));
     TAF_MEM_SET_S(&g_stEcioCfg, sizeof(g_stEcioCfg), 0x00, sizeof(g_stEcioCfg));
 
-    /* 从NV中获取门限值 */
+    /* ??NV???????????? */
     ulResult = TAF_ACORE_NV_READ(MODEM_ID_0, EN_NV_ID_RSRP_CFG, &g_stRsrpCfg, sizeof(NVIM_RSRP_CFG_STRU));
 
     if(NV_OK != ulResult)
@@ -1478,7 +1478,7 @@ VOS_VOID AT_ReadLTENV(VOS_VOID)
         return ;
     }
 
-    /* 从NV中获取门限值 */
+    /* ??NV???????????? */
     ulResult = TAF_ACORE_NV_READ(MODEM_ID_0, EN_NV_ID_RSCP_CFG, &g_stRscpCfg, sizeof(NVIM_RSCP_CFG_STRU));
 
     if(NV_OK != ulResult)
@@ -1487,7 +1487,7 @@ VOS_VOID AT_ReadLTENV(VOS_VOID)
         return ;
     }
 
-    /* 从NV中获取门限值 */
+    /* ??NV???????????? */
     ulResult = TAF_ACORE_NV_READ(MODEM_ID_0, EN_NV_ID_ECIO_CFG, &g_stEcioCfg, sizeof(NVIM_ECIO_CFG_STRU));
 
     if(NV_OK != ulResult)
@@ -1509,7 +1509,7 @@ VOS_VOID AT_ReadAgpsNv(VOS_VOID)
 
     TAF_MEM_SET_S(&stXcposrRptCfg, (VOS_SIZE_T)sizeof(stXcposrRptCfg), 0x00, (VOS_SIZE_T)sizeof(stXcposrRptCfg));
 
-    /* 读取NV项 */
+    /* ????NV?? */
     if (NV_OK == TAF_ACORE_NV_READ(MODEM_ID_0, en_NV_Item_XCPOSRRPT_CFG, &stXcposrRptCfg, sizeof(stXcposrRptCfg)))
     {
         for (enModemId = MODEM_ID_0; enModemId < MODEM_ID_BUTT; enModemId++)
@@ -1567,26 +1567,26 @@ LOCAL VOS_VOID AT_ReadCustomUsimmCfg( VOS_VOID )
 
 VOS_VOID  AT_ReadNV(VOS_VOID)
 {
-    /* 平台接入技术NV读取 */
+    /* ????????????NV???? */
     AT_ReadPlatformNV();
 
-    /* client NV读取 */
+    /* client NV???? */
     AT_ReadClientConfigNV();
 
 
-    /* 读取系统相关的NV项 */
+    /* ??????????????NV?? */
     AT_ReadSysNV();
 
-    /* 读取PS域相关的NV项 */
+    /* ????PS????????NV?? */
     AT_ReadPsNV();
 
-    /* 读取cs域（CC和SS相关的NV) */
+    /* ????cs????CC??SS??????NV) */
     AT_ReadCsNV();
 
-    /* 读取SMS相关的NV */
+    /* ????SMS??????NV */
     AT_ReadSmsNV();
 
-    /* 读取LTE NV项 */
+    /* ????LTE NV?? */
     AT_ReadLTENV();
 
 
@@ -1637,7 +1637,7 @@ VOS_VOID AT_InitDeviceCmd(VOS_VOID)
         return;
     }
 
-    /* IMEI为全零时，认为DATALOCK解锁状态 */
+    /* IMEI??????????????DATALOCK???????? */
     g_bAtDataLocked = VOS_FALSE;
 
     return;
@@ -1675,7 +1675,7 @@ VOS_VOID AT_InitPara(VOS_VOID)
 
     pucSystemAppConfig                  = AT_GetSystemAppConfigAddr();
 
-    /* 根据产品类型分别进行处理 */
+    /* ???????????????????????? */
     switch(*pucSystemAppConfig)
     {
         /* E5 */
@@ -1683,16 +1683,16 @@ VOS_VOID AT_InitPara(VOS_VOID)
 
             pstNetCtx = AT_GetModemNetCtxAddrFromModemId(MODEM_ID_0);
 
-            /*E5版本对不支持命令返回ERROR*/
+            /*E5????????????????????ERROR*/
             TAF_MEM_CPY_S((VOS_CHAR*)gaucAtCmdNotSupportStr,
                        AT_NOTSUPPORT_STR_LEN + 4,
                        (VOS_CHAR*)ucAtCmdNotSupportStr1,
                        sizeof(ucAtCmdNotSupportStr1));
 
-            /* E5的默认格式改为数字格式 */
+            /* E5?????????????????????? */
             pstNetCtx->ucCopsFormatType = AT_COPS_NUMERIC_TYPE;
 
-            /* E5错误码默认错误编号 */
+            /* E5?????????????????? */
             gucAtCmeeType   = AT_CMEE_ERROR_CODE;
 
             break;
@@ -1702,7 +1702,7 @@ VOS_VOID AT_InitPara(VOS_VOID)
 
             pstNetCtx = AT_GetModemNetCtxAddrFromModemId(MODEM_ID_0);
 
-            /*命令不支持提示字串*/
+            /*??????????????????*/
             TAF_MEM_CPY_S((VOS_CHAR*)gaucAtCmdNotSupportStr,
                        AT_NOTSUPPORT_STR_LEN + 4,
                        (VOS_CHAR*)ucAtCmdNotSupportStr2,
@@ -1710,16 +1710,16 @@ VOS_VOID AT_InitPara(VOS_VOID)
 
             pstNetCtx->ucCopsFormatType = AT_COPS_LONG_ALPH_TYPE;
 
-            /* 指示错误命令返回码类型 */
+            /* ?????????????????????? */
             gucAtCmeeType   = AT_CMEE_ERROR_CONTENT;
 
 
             break;
 
-        /* PAD,目前没有，为保持与原代码一致性，暂按stick处理*/
+        /* PAD,????????????????????????????????????stick????*/
         case SYSTEM_APP_ANDROID:
 
-            /*命令不支持提示字串*/
+            /*??????????????????*/
             TAF_MEM_CPY_S((VOS_CHAR*)gaucAtCmdNotSupportStr,
                        AT_NOTSUPPORT_STR_LEN + 4,
                        (VOS_CHAR*)ucAtCmdNotSupportStr2,
@@ -1731,7 +1731,7 @@ VOS_VOID AT_InitPara(VOS_VOID)
                 pstNetCtx->ucCopsFormatType = AT_COPS_LONG_ALPH_TYPE;
             }
 
-            /* 指示错误命令返回码类型 */
+            /* ?????????????????????? */
             gucAtCmeeType   = AT_CMEE_ERROR_CODE;
 
             break;
@@ -1754,10 +1754,10 @@ VOS_VOID AT_UsbSwitchGwMode(VOS_VOID)
 
     g_enHiLinkMode                      = AT_HILINK_GATEWAY_MODE;
 
-    /* 初始化CID列表 */
+    /* ??????CID???? */
     TAF_MEM_SET_S(aucCid, sizeof(aucCid), 0x00, sizeof(aucCid));
 
-    /* 如果所有的PDP都处于IDLE, 返回; 如果有一个处于DEACTING, 返回 */
+    /* ??????????PDP??????IDLE, ????; ??????????????DEACTING, ???? */
     ulResult = AT_AppCheckPdpIdleState();
     if (VOS_TRUE == ulResult)
     {
@@ -1815,10 +1815,10 @@ VOS_VOID AT_UsbSwitchGwMode(VOS_VOID)
 
 VOS_VOID AT_UsbEnableCB(VOS_VOID)
 {
-    /* USB MODEM口链路的建立 */
+    /* USB MODEM???????????? */
     AT_UsbModemInit();
 
-    /* 注册打开NCM的接口,NCM端口打开和关闭由DRV调用协议栈接口负责打开或关闭 */
+    /* ????????NCM??????,NCM????????????????DRV???????????????????????????? */
     AT_OpenUsbNdis();
 }
 
@@ -1826,13 +1826,13 @@ VOS_VOID AT_UsbEnableCB(VOS_VOID)
 VOS_VOID AT_UsbDisableCB(VOS_VOID)
 {
     PS_PRINTF("AT_UsbDisableCB\r\n");
-    /* USB MODEM口链路的建立 */
+    /* USB MODEM???????????? */
     AT_UsbModemClose();
 
-    /* 注册关闭NCM的接口,NCM端口打开和关闭由DRV调用协议栈接口负责打开或关闭 */
+    /* ????????NCM??????,NCM????????????????DRV???????????????????????????? */
     AT_CloseUsbNdis();
 
-    /* 从记录表中删除USB相关的client ID */
+    /* ??????????????USB??????client ID */
     AT_RmUsedClientIdFromTab(AT_CLIENT_ID_PCUI);
     AT_RmUsedClientIdFromTab(AT_CLIENT_ID_CTRL);
     AT_RmUsedClientIdFromTab(AT_CLIENT_ID_NDIS);
@@ -1851,31 +1851,31 @@ VOS_VOID AT_InitPort(VOS_VOID)
         g_alAtUdiHandle[i] = UDI_INVALID_HANDLE;
     }
 
-    /* 为了保证PC回放工程和 NAS GTR PC工程中SDT USBCOM AT端口的注册client ID
-       相同，必须让USB COM口第一个注册 */
-    /* USB PCUI口链路的建立 */
+    /* ????????PC?????????? NAS GTR PC??????SDT USBCOM AT??????????client ID
+       ????????????USB COM???????????? */
+    /* USB PCUI???????????? */
     At_UsbPcuiEst(AT_USB_COM_PORT_NO);
 
-    /* USB Control口链路的建立 */
+    /* USB Control???????????? */
     At_UsbCtrEst(AT_CTR_PORT_NO);
 
-    /* USB PCUI2口链路的建立 */
+    /* USB PCUI2???????????? */
     At_UsbPcui2Est(AT_PCUI2_PORT_NO);
 
-    /* UART口链路的建立 */
+    /* UART???????????? */
     AT_UART_InitPort();
 
 
-    /* NDIS MODEM口链路的建立 */
+    /* NDIS MODEM???????????? */
     AT_UsbNdisEst();
 
     mdrv_usb_reg_enablecb((USB_UDI_ENABLE_CB_T)AT_UsbEnableCB);
     mdrv_usb_reg_disablecb((USB_UDI_ENABLE_CB_T)AT_UsbDisableCB);
 
-    /* APP 建立通道 */
+    /* APP ???????? */
     AT_AppComEst();
 
-    /* 注册DRV回调函数指针 */
+    /* ????DRV???????????? */
     if (VOS_ERROR == DRV_USB_NAS_SWITCH_GATEWAY_REGFUNC((USB_NET_DEV_SWITCH_GATEWAY)AT_UsbSwitchGwMode))
     {
         AT_ERR_LOG( "AT_InitPort: DRV_USB_NAS_SWITCH_GATEWAY_REGFUNC Failed!" );
@@ -1898,7 +1898,7 @@ VOS_UINT32  At_PidInit(enum VOS_INIT_PHASE_DEFINE enPhase)
     {
         case VOS_IP_INITIAL:
 
-            /* 初始化AT的上下文 */
+            /* ??????AT???????? */
             AT_InitCtx();
 
 
@@ -1906,47 +1906,47 @@ VOS_UINT32  At_PidInit(enum VOS_INIT_PHASE_DEFINE enPhase)
 
             AT_InitTraceMsgTab();
 
-            /* 初始化复位相关的上下文 */
+            /* ?????????????????????? */
             AT_InitResetCtx();
 
-            /*读取NV项*/
+            /*????NV??*/
             AT_ReadNV();
 
-            /*AT 解析器初始化*/
+            /*AT ????????????*/
             At_ParseInit();
 
-            /*注册AT命令表*/
+            /*????AT??????*/
             At_RegisterBasicCmdTable();
             At_RegisterExCmdTable();
             At_RegisterExPrivateCmdTable();
             At_RegisterDeviceCmdTable();
             At_RegisterDeviceCmdTLTable();
             At_RegisterTLCmdTable();
-            /* 装备初始化 */
+            /* ?????????? */
             AT_InitDeviceCmd();
 
-            /* STK在AT模块的初始化 */
+            /* STK??AT???????????? */
             AT_InitStk();
 
-            /* AT模块参数的初始化 */
+            /* AT???????????????? */
             AT_InitPara();
 
-            /* AT消息数量控制上下文初始化 */
+            /* AT???????????????????????? */
             AT_InitMsgNumCtrlCtx();
 
-            /* 端口初始化 */
+            /* ?????????? */
             AT_InitPort();
 
-            /* 初始化g_stFcIdMaptoFcPri */
+            /* ??????g_stFcIdMaptoFcPri */
             AT_InitFcMap();
 
-            /* 给低软注册回调函数，用于C核单独复位的处理 */
+            /* ????????????????????????C???????????????? */
             mdrv_sysboot_register_reset_notify(NAS_AT_FUNC_PROC_NAME,
                                                AT_CCpuResetCallback,
                                                0,
                                                ACPU_RESET_PRIORITY_AT);
 
-            /* 给低软注册回调函数，用于HIFI单独复位的处理 */
+            /* ????????????????????????HIFI?????????????? */
             hifireset_regcbfunc(NAS_AT_FUNC_PROC_NAME,
                                     AT_HifiResetCallback,
                                     0,
@@ -1954,7 +1954,7 @@ VOS_UINT32  At_PidInit(enum VOS_INIT_PHASE_DEFINE enPhase)
 
             AT_InitMntnCtx();
 
-            /* 注册层间消息过滤函数 */
+            /* ???????????????????? */
             GUNAS_OM_LayerMsgReplaceCBRegACore();
             TAF_OM_LayerMsgLogPrivacyMatchRegAcore();
             break;
@@ -1971,7 +1971,7 @@ VOS_VOID AT_ReadSsNV( VOS_VOID )
 {
     TAF_MEM_SET_S(&g_stAtSsCustomizePara, sizeof(g_stAtSsCustomizePara), 0x00, sizeof(g_stAtSsCustomizePara));
 
-    /* 读取SS定制的NV项到全局变量 */
+    /* ????SS??????NV???????????? */
     if(NV_OK != TAF_ACORE_NV_READ(MODEM_ID_0,
                                   en_NV_Item_SS_CUSTOMIZE_PARA,
                                   &g_stAtSsCustomizePara,
@@ -2040,10 +2040,10 @@ VOS_VOID AT_ReadCdmaModemSwitchNotResetCfgNv(VOS_VOID)
     TAF_NVIM_CDMAMODEMSWITCH_NOT_RESET_CFG_STRU             stCdmaModemSwitchNvCfg;
     MODEM_ID_ENUM_UINT16                                    enModemId;
 
-    /* 初始化 */
+    /* ?????? */
     TAF_MEM_SET_S(&stCdmaModemSwitchNvCfg, (VOS_UINT32)sizeof(TAF_NVIM_CDMAMODEMSWITCH_NOT_RESET_CFG_STRU), 0x00, (VOS_UINT32)sizeof(TAF_NVIM_CDMAMODEMSWITCH_NOT_RESET_CFG_STRU));
 
-    /* 读取NV项 */
+    /* ????NV?? */
     if (NV_OK != TAF_ACORE_NV_READ(MODEM_ID_0,
                                    en_NV_Item_CDMAMODEMSWITCH_NOT_RESET_CFG,
                                    &stCdmaModemSwitchNvCfg,

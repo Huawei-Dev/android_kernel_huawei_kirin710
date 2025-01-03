@@ -5,13 +5,13 @@
 #include "mdrv_sysboot.h"
 #include "mdrv.h"
 
-/*优先级包数开始结束*/
+/*??????????????????*/
 #define   PRIORITY_PACKET_START            (0)
 #define   PRIORITY_PACKET_END              (0x7F)
 
 
 
-/*周期配置包数开始结束*/
+/*????????????????????*/
 #define   PERIOD_PACKET_START            (0)
 #define   PERIOD_PACKET_END              (0x7F)
 
@@ -20,7 +20,7 @@
 #define   PERIOD_CHK_CONTINUE        (1)
 #define   PERIOD_CHK_RESTART         (2)
 
-/*a核CHR 任务收到的消息ID名*/
+/*a??CHR ??????????????ID??*/
 enum CHR_ID_REQ_MSG_ENUM
 { 
     CHR_ID_RESET_CCORE        = 0x1001,
@@ -36,7 +36,7 @@ enum CHR_ID_REQ_MSG_ENUM
 //#define chr_print(fmt, ...)    (printk(KERN_ERR "[chr]:<%s> line = %d, "fmt, __FUNCTION__, __LINE__ ,##__VA_ARGS__))
 #define chr_print(fmt, ...)    (mdrv_err("<%s>"fmt, __FUNCTION__, ##__VA_ARGS__))
 
-/*保存黑名单的结构体*/
+/*??????????????????*/
 typedef struct
 {
     VOS_UINT32          ulBlackListPacketLen;
@@ -45,7 +45,7 @@ typedef struct
 }CHR_ACPU_BLACK_SAVE_STRU;
 
 
-/*OM a核发给c的黑名单结构体*/
+/*OM a??????c??????????????*/
 typedef struct
 {   
     VOS_MSG_HEADER 
@@ -55,7 +55,7 @@ typedef struct
 }OM_ACPU_BLACK_LIST_STRU;
 
 
-/*保存优先级0的结构体*/
+/*??????????0????????*/
 typedef struct
 {
     VOS_UINT32                  ulPiorityLen;
@@ -63,7 +63,7 @@ typedef struct
 }CHR_ACPU_PRIORITY_SAVE_STRU;
 
 
-/*OM a核发给c的优先级0的列表的结构体*/
+/*OM a??????c????????0??????????????*/
 typedef struct
 {   
     VOS_MSG_HEADER 
@@ -73,17 +73,17 @@ typedef struct
 }OM_ACPU_PRIORITY_CFG_STRU;
 
 
-/*保存上报周期的结构体*/
+/*????????????????????*/
 typedef struct
 {
-    VOS_UINT32                      ulperiod; /*ap下发的period是8bit*/
+    VOS_UINT32                      ulperiod; /*ap??????period??8bit*/
     VOS_UINT32                      ulPacketLen;
     CHR_PERIOD_CFG_STRU             PeriodCfg[0];
 }CHR_ACPU_PERIOD_SAVE_STRU;
 
 
 
-/*优先级链表结构体*/
+/*????????????????*/
 typedef struct
 {
     LIST_S                     PriorityList;
@@ -98,7 +98,7 @@ typedef struct
     OM_PRIORITY_NODE_STRU   List;
 }OM_PRIORITY_LIST_STRU;
 
-/*上报周期链表结构体*/
+/*??????????????????*/
 
 typedef struct
 {  
@@ -116,7 +116,7 @@ typedef struct
 }OM_PERIOD_LIST_STRU;
 
 
-/*OM a核发给c的周期配置列表*/
+/*OM a??????c??????????????*/
 typedef struct
 {   
     VOS_MSG_HEADER

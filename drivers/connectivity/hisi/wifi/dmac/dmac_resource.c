@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "dmac_resource.h"
 
@@ -19,7 +19,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #if (_PRE_OS_VERSION_RAW == _PRE_OS_VERSION)
 #pragma arm section rwdata = "BTCM", code ="ATCM", zidata = "BTCM", rodata = "ATCM"
@@ -30,7 +30,7 @@ dmac_res_stru    g_st_dmac_res;
 #pragma arm section rodata, code, rwdata, zidata  // return to default placement
 #endif
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -66,7 +66,7 @@ oal_uint32  dmac_res_free_mac_dev(oal_uint32 ul_dev_idx)
         return OAL_SUCC;
     }
 
-    /* 入队索引值需要加1操作 */
+    /* ????????????????1???? */
     oal_queue_enqueue(&(g_st_dmac_res.st_dmac_dev_res.st_queue), (oal_void *)((oal_uint)ul_dev_idx + 1));
 
     return OAL_SUCC;
@@ -93,7 +93,7 @@ oal_uint32  dmac_res_init(oal_void)
     OAL_MEMZERO(&g_st_dmac_res, OAL_SIZEOF(g_st_dmac_res));
 
     /***************************************************************************
-            初始化DMAC DEV的资源管理内容
+            ??????DMAC DEV??????????????
     ***************************************************************************/
     oal_queue_set(&(g_st_dmac_res.st_dmac_dev_res.st_queue),
                   g_st_dmac_res.st_dmac_dev_res.aul_idx,
@@ -101,10 +101,10 @@ oal_uint32  dmac_res_init(oal_void)
 
     for (ul_loop = 0; ul_loop < MAC_RES_MAX_DEV_NUM; ul_loop++)
     {
-        /* 初始值保存的是对应数组下标值加1 */
+        /* ??????????????????????????????1 */
         oal_queue_enqueue(&(g_st_dmac_res.st_dmac_dev_res.st_queue), (oal_void *)((oal_uint)ul_loop + 1));
 
-        /* 初始化对应的引用计数值为0 */
+        /* ????????????????????????0 */
         g_st_dmac_res.st_dmac_dev_res.auc_user_cnt[ul_loop] = 0;
     }
 

@@ -48,7 +48,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 **************************************************************************** */
 #include <product_config.h>
 #include <osl_sem.h>
@@ -65,7 +65,7 @@
 #define SOCP_CODER_SRC_PS_IND    SOCP_CODER_SRC_LOM_IND1
 
 /* ****************************************************************************
-  2 全局变量定义
+  2 ????????????
 **************************************************************************** */
 SCM_CODER_SRC_CFG_STRU      g_astSCMIndCoderSrcCfg =
 {
@@ -109,24 +109,24 @@ u32 scm_init_ind_src_buff(void)
 
 
 /* ****************************************************************************
- 函 数 名  : scm_create_cnf_src_buff
- 功能描述  : 申请编码源buffer空间
- 修改历史  :
+ ?? ?? ??  : scm_create_cnf_src_buff
+ ????????  : ??????????buffer????
+ ????????  :
 **************************************************************************** */
 u32 scm_create_ind_src_buff(u8 **pBufVir, u8 **pBufPhy, u32 ulLen)
 {
     unsigned long ulRealAddr;
 
-    /*申请uncache的动态内存区*/
+    /*????uncache????????????*/
     *pBufVir = (u8*)scm_UnCacheMemAlloc(ulLen, &ulRealAddr);
 
-    /* 分配内存失败 */
+    /* ???????????? */
     if (NULL == *pBufVir)
     {
         return (u32)BSP_ERROR;
     }
 
-    /* 保存buf实地址 */
+    /* ????buf?????? */
     *pBufPhy = (u8*)ulRealAddr;
 
     return BSP_OK;
@@ -139,22 +139,22 @@ u32 scm_ind_src_chan_init(void)
     if (BSP_OK != scm_ind_src_chan_cfg(&g_astSCMIndCoderSrcCfg))
     {
         diag_error("cfg ind src fail\n");
-        g_astSCMIndCoderSrcCfg.enInitState = SCM_CHANNEL_CFG_FAIL;  /* 记录通道初始化配置错误 */
+        g_astSCMIndCoderSrcCfg.enInitState = SCM_CHANNEL_CFG_FAIL;  /* ?????????????????????? */
 
-        return (u32)BSP_ERROR;/* 返回失败 */
+        return (u32)BSP_ERROR;/* ???????? */
     }
 
     if(BSP_OK != bsp_socp_start(g_astSCMIndCoderSrcCfg.enChannelID))
     {
         diag_error("start ind src fail\n");
-        g_astSCMIndCoderSrcCfg.enInitState = SCM_CHANNEL_START_FAIL;  /* 记录通道开启配置错误 */
+        g_astSCMIndCoderSrcCfg.enInitState = SCM_CHANNEL_START_FAIL;  /* ???????????????????? */
 
-        return ERR_MSP_SCM_START_SOCP_FAIL;/* 返回失败 */
+        return ERR_MSP_SCM_START_SOCP_FAIL;/* ???????? */
     }
 
-    g_astSCMIndCoderSrcCfg.enInitState = SCM_CHANNEL_INIT_SUCC;     /* 记录通道初始化配置错误 */
+    g_astSCMIndCoderSrcCfg.enInitState = SCM_CHANNEL_INIT_SUCC;     /* ?????????????????????? */
 
-    return BSP_OK;/* 返回成功 */
+    return BSP_OK;/* ???????? */
 }
 
 
@@ -172,27 +172,27 @@ unsigned long scm_ind_src_phy_to_virt(u8 * phyAddr)
 
 u32 scm_ind_src_chan_cfg(SCM_CODER_SRC_CFG_STRU *pstCfg)
 {
-    SOCP_CODER_SRC_CHAN_S               stChannel;          /* 当前通道的属性信息 */
+    SOCP_CODER_SRC_CHAN_S               stChannel;          /* ?????????????????? */
 
-    stChannel.u32DestChanID = pstCfg->enDstCHID;            /*  目标通道ID */
-    stChannel.eDataType     = pstCfg->enDataType;           /*  数据类型，指明数据封装协议，用于复用多平台 */
-    stChannel.eMode         = pstCfg->enCHMode;             /*  通道数据模式 */
-    stChannel.ePriority     = pstCfg->enCHLevel;            /*  通道优先级 */
-	stChannel.eTransIdEn    = pstCfg->enTransIdEn;          /*  SOCP Trans Id使能位 */
-	stChannel.ePtrImgEn     = pstCfg->enPtrImgEn;           /*  SOCP 指针镜像使能位 */
-    stChannel.u32BypassEn   = SOCP_HDLC_ENABLE;             /*  通道bypass使能 */
-    stChannel.eDataTypeEn   = SOCP_DATA_TYPE_EN;            /*  数据类型使能位 */
-    stChannel.eDebugEn      = SOCP_ENC_DEBUG_DIS;           /*  调试位使能 */
+    stChannel.u32DestChanID = pstCfg->enDstCHID;            /*  ????????ID */
+    stChannel.eDataType     = pstCfg->enDataType;           /*  ?????????????????????????????????????????? */
+    stChannel.eMode         = pstCfg->enCHMode;             /*  ???????????? */
+    stChannel.ePriority     = pstCfg->enCHLevel;            /*  ?????????? */
+	stChannel.eTransIdEn    = pstCfg->enTransIdEn;          /*  SOCP Trans Id?????? */
+	stChannel.ePtrImgEn     = pstCfg->enPtrImgEn;           /*  SOCP ?????????????? */
+    stChannel.u32BypassEn   = SOCP_HDLC_ENABLE;             /*  ????bypass???? */
+    stChannel.eDataTypeEn   = SOCP_DATA_TYPE_EN;            /*  ?????????????? */
+    stChannel.eDebugEn      = SOCP_ENC_DEBUG_DIS;           /*  ?????????? */
 
-    stChannel.sCoderSetSrcBuf.pucInputStart  = pstCfg->pucSrcPHY;                             /*  输入通道起始地址 */
-    stChannel.sCoderSetSrcBuf.pucInputEnd    = (pstCfg->pucSrcPHY + pstCfg->ulSrcBufLen)-1;   /*  输入通道结束地址 */
-    stChannel.sCoderSetSrcBuf.pucRDStart     = pstCfg->pucRDPHY;                              /* RD buffer起始地址 */
-    stChannel.sCoderSetSrcBuf.pucRDEnd       = (pstCfg->pucRDPHY + pstCfg->ulRDBufLen)-1;     /*  RD buffer结束地址 */
-    stChannel.sCoderSetSrcBuf.u32RDThreshold = SCM_CODER_SRC_RD_THRESHOLD;                    /* RD buffer数据上报阈值 */
+    stChannel.sCoderSetSrcBuf.pucInputStart  = pstCfg->pucSrcPHY;                             /*  ???????????????? */
+    stChannel.sCoderSetSrcBuf.pucInputEnd    = (pstCfg->pucSrcPHY + pstCfg->ulSrcBufLen)-1;   /*  ???????????????? */
+    stChannel.sCoderSetSrcBuf.pucRDStart     = pstCfg->pucRDPHY;                              /* RD buffer???????? */
+    stChannel.sCoderSetSrcBuf.pucRDEnd       = (pstCfg->pucRDPHY + pstCfg->ulRDBufLen)-1;     /*  RD buffer???????? */
+    stChannel.sCoderSetSrcBuf.u32RDThreshold = SCM_CODER_SRC_RD_THRESHOLD;                    /* RD buffer???????????? */
 
     if(pstCfg->enPtrImgEn)
     {
-        /* 由于芯片只能做8Bytes的写，所以读指针镜像地址需要预留8Bytes的空间*/
+        /* ??????????????8Bytes????????????????????????????????8Bytes??????*/
         pstCfg->pRptrImgVirtAddr = (unsigned long)scm_UnCacheMemAlloc(sizeof(u64), &(pstCfg->pRptrImgPhyAddr));
         if(0 == pstCfg->pRptrImgVirtAddr)
         {
@@ -207,14 +207,14 @@ u32 scm_ind_src_chan_cfg(SCM_CODER_SRC_CFG_STRU *pstCfg)
     {
         diag_error("Channel ID(0x%x) Error\n", pstCfg->enChannelID);
 
-        return (u32)BSP_ERROR;/* 返回错误 */
+        return (u32)BSP_ERROR;/* ???????? */
     }
 
 
 
-    pstCfg->enInitState = SCM_CHANNEL_INIT_SUCC; /* 记录通道初始化配置错误 */
+    pstCfg->enInitState = SCM_CHANNEL_INIT_SUCC; /* ?????????????????????? */
 
-    return BSP_OK;/* 返回成功 */
+    return BSP_OK;/* ???????? */
 }
 
 

@@ -58,13 +58,13 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID PS_FILE_ID_PAM_APP_OM_C
 
 #define ARRAYSIZE(array)                        (sizeof(array)/sizeof(array[0]))
 
-/* 记录收到消息信息的buffer及当前长度 */
+/* ??????????????????buffer?????????? */
 OM_RECORD_BUF_STRU                      g_astAcpuRecordInfo[VOS_EXC_DUMP_MEM_NUM_BUTT];
 
 VOS_UINT32                              g_ulAcpuOmFilterFlag;
@@ -103,7 +103,7 @@ VOS_VOID OM_RecordInfoEnd(VOS_EXC_DUMP_MEM_NUM_ENUM_UINT32 enNumber)
         return;
     }
 
-    /* 在start中已经变更了记录endslice的长度，因此此处回退四个字节填写endslice的值 */
+    /* ??start????????????????endslice????????????????????????????????endslice???? */
     pulBuf = (VOS_UINT32*)(g_astAcpuRecordInfo[enNumber].pucBuf + g_astAcpuRecordInfo[enNumber].ulLen - sizeof(VOS_UINT32));
 
     *pulBuf = VOS_GetSlice();
@@ -154,7 +154,7 @@ VOS_VOID OM_RecordMemInit(VOS_VOID)
                  0,
                  sizeof(g_astAcpuRecordInfo));
 
-   /* 分配每个模块记录可谓可测信息的空间 */
+   /* ?????????????????????????????????? */
    for(i = 0; i < VOS_EXC_DUMP_MEM_NUM_BUTT; i++)
    {
       g_astAcpuRecordInfo[i].pucBuf = (VOS_UINT8*)VOS_ExcDumpMemAlloc(i);
@@ -180,7 +180,7 @@ VOS_VOID PAMOM_QuereyPidInfo(VOS_VOID)
     pstMsg = (PAM_VOS_QUEREY_PID_INFO_REQ_STRU *)VOS_AllocMsg(ACPU_PID_PAM_OM,
                             sizeof(PAM_VOS_QUEREY_PID_INFO_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
 
-    /* 分配消息失败 */
+    /* ???????????? */
     if (VOS_NULL_PTR == pstMsg)
     {
         return;
@@ -210,7 +210,7 @@ VOS_VOID PAMOM_QuereyPidInfoMsgProc(MsgBlock* pMsg)
         pstCnfMsg = (PAM_VOS_QUEREY_PID_INFO_CNF_STRU *)VOS_AllocMsg(ACPU_PID_PAM_OM,
                             sizeof(PAM_VOS_QUEREY_PID_INFO_CNF_STRU) - VOS_MSG_HEAD_LENGTH + ulLen);
 
-        /* 分配消息失败 */
+        /* ???????????? */
         if (VOS_NULL_PTR == pstCnfMsg)
         {
             return;
@@ -412,7 +412,7 @@ VOS_UINT32 PAM_OM_AcpuLayerMsgFilterOptProc(
     ulSendI0Pid  = PAM_OM_GetI0UsimPid(pstMsgHead->ulSenderPid);
     ulRecvI0Pid  = PAM_OM_GetI0UsimPid(pstMsgHead->ulReceiverPid);
 
-    /* PB相关的消息全部过滤 */
+    /* PB?????????????????? */
     if ((I0_MAPS_PB_PID == ulSendI0Pid)
      || (I0_MAPS_PB_PID == ulRecvI0Pid)
      || (ACPU_PID_PB    == pstMsgHead->ulReceiverPid))
@@ -420,7 +420,7 @@ VOS_UINT32 PAM_OM_AcpuLayerMsgFilterOptProc(
         return VOS_TRUE;
     }
 
-     /* PIH 消息过滤 */
+     /* PIH ???????? */
     if (I0_MAPS_PIH_PID == ulSendI0Pid)
     {
         return PAM_OM_AcpuPihMsgFilter(pMsg);
@@ -568,7 +568,7 @@ VOS_UINT32 PAMOM_APP_FID_Init(enum VOS_INIT_PHASE_DEFINE ip)
                 return VOS_ERR;
             }
 
-            /* 如目录不存在则创建 */
+            /* ?????????????????? */
             if (VOS_OK != mdrv_file_access(PAM_LOG_PATH, PAM_FILE_EXIST))
             {
                 (VOS_VOID)mdrv_file_mkdir(PAM_LOG_PATH);
@@ -600,6 +600,6 @@ VOS_VOID OM_OSAEvent(VOS_VOID *pData, VOS_UINT32 ulLength)
 }
 
 
-/* AT<->AT的屏蔽处理，移到GuNasLogFilter.c */
+/* AT<->AT????????????????GuNasLogFilter.c */
 
 

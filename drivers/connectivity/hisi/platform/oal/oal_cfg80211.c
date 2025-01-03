@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_net.h"
 #include "oal_cfg80211.h"
@@ -19,7 +19,7 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_OAL_CFG80211_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST)
@@ -29,7 +29,7 @@ static oal_kobj_uevent_env_stru env;
 #endif
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void oal_cfg80211_ready_on_channel(oal_wireless_dev_stru       *pst_wdev,
@@ -47,7 +47,7 @@ oal_void oal_cfg80211_vowifi_report(oal_net_device_stru       *pst_netdev,
                                             oal_gfp_enum_uint8         en_gfp)
 {
 #ifdef CONFIG_HW_VOWIFI
-    /* 此接口为终端实现的内核接口，定义处用内核宏CONFIG_HW_VOWIFI包裹 */
+    /* ??????????????????????????????????????????CONFIG_HW_VOWIFI???? */
      cfg80211_drv_vowifi(pst_netdev, en_gfp);
 #endif /* CONFIG_HW_VOWIFI */
 }
@@ -143,7 +143,7 @@ OAL_STATIC oal_uint32  oal_nl80211_send_station(
 	OAL_NLA_PUT(pst_buf, PRIV_NL80211_ATTR_MAC, OAL_ETH_ALEN_SIZE, puc_mac_addr);
 
     /*
-        linux-2.6.30内核station_info没有generation成员
+        linux-2.6.30????station_info????generation????
     	NLA_PUT_U32(pst_buf, PRIV_NL80211_ATTR_GENERATION, pst_station_info->generation);
     */
 
@@ -250,7 +250,7 @@ OAL_STATIC oal_int32  oal_nl80211_send_find_station_msg(
     OAL_NLA_PUT(pst_buf, PRIV_NL80211_ATTR_MAC, OAL_ETH_ALEN_SIZE, puc_mac_addr);
 
     /*
-        linux-2.6.30内核station_info没有generation成员
+        linux-2.6.30????station_info????generation????
         NLA_PUT_U32(pst_buf, PRIV_NL80211_ATTR_GENERATION, pst_station_info->generation);
     */
     pst_sinfoattr = oal_nla_nest_start(pst_buf, PRIV_NL80211_ATTR_STA_INFO);
@@ -345,7 +345,7 @@ oal_uint32  oal_cfg80211_fbt_notify_find_sta(
     oal_netbuf_stru   *pst_msg = OAL_PTR_NULL;
 	oal_int32          l_let;
 
-    /* 分配一个新的netlink消息 */
+    /* ????????????netlink???? */
     pst_msg = oal_nlmsg_new(OAL_NLMSG_GOODSIZE, en_gfp);
     if(OAL_PTR_NULL == pst_msg)
     {
@@ -359,7 +359,7 @@ oal_uint32  oal_cfg80211_fbt_notify_find_sta(
         return l_let;
     }
 
-    /* 调用封装的内核netlink广播发送函数，发送成功返回0，失败为负值 */
+    /* ??????????????netlink??????????????????????????0???????????? */
     l_let = oal_genlmsg_multicast(pst_msg, 0, nl80211_mlme_mcgrp.id, en_gfp);
     if(l_let < 0)
     {
@@ -394,7 +394,7 @@ OAL_STATIC oal_uint32 oal_nl80211_send_connect_result(
 	}
 
     /*
-        这个属性上层没有解析，可以不上报
+        ????????????????????????????????
         OAL_NLA_PUT_U32(pst_buf, PRIV_NL80211_ATTR_WIPHY, pst_net_device->wiphy_idx);
     */
 	OAL_NLA_PUT_U32(pst_buf, PRIV_NL80211_ATTR_IFINDEX, pst_net_device->ifindex);
@@ -421,7 +421,7 @@ OAL_STATIC oal_uint32 oal_nl80211_send_connect_result(
     ul_let = oal_genlmsg_multicast(pst_buf, 0, nl80211_mlme_mcgrp.id, en_gfp);
     if(ul_let < 0)
     {
-        /* 如果不加载hostapd和wpa_supplicant的话，这个也会失败，这里报fail，影响使用，去掉报错 */
+        /* ??????????hostapd??wpa_supplicant??????????????????????????fail???????????????????? */
         return OAL_FAIL;
     }
 
@@ -460,7 +460,7 @@ OAL_STATIC oal_uint32 oal_nl80211_send_disconnected(
 	}
 
 /*
-    这个属性上层没有解析，可以不上报
+    ????????????????????????????????
     OAL_NLA_PUT_U32(pst_msg, PRIV_NL80211_ATTR_WIPHY, pst_net_device->wiphy_idx);
 */
 
@@ -481,7 +481,7 @@ OAL_STATIC oal_uint32 oal_nl80211_send_disconnected(
     ul_let = oal_genlmsg_multicast(pst_msg, 0, nl80211_mlme_mcgrp.id, en_gfp);
     if(ul_let < 0)
     {
-        /* oal_genlmsg_multicast接口内部会释放skb，返回失败不需要手动释放 */
+        /* oal_genlmsg_multicast??????????????skb???????????????????????? */
         return OAL_FAIL;
     }
 
@@ -553,7 +553,7 @@ oal_void  oal_cfg80211_sched_scan_result(oal_wiphy_stru *pst_wiphy)
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
     return cfg80211_sched_scan_results(pst_wiphy);
 #else
-    /* 51不支持，do nothing */
+    /* 51????????do nothing */
     return;
 #endif
 }
@@ -562,7 +562,7 @@ oal_void  oal_cfg80211_sched_scan_result(oal_wiphy_stru *pst_wiphy)
 oal_void oal_kobject_uevent_env_sta_join(oal_net_device_stru *pst_net_device, const oal_uint8 *puc_mac_addr)
 {
     oal_memset(&env, 0, sizeof(env));
-	/* Android上层需要STA_JOIN和mac地址，中间参数无效，但是必须是4个参数 */
+	/* Android????????STA_JOIN??mac??????????????????????????????4?????? */
 	add_uevent_var(&env, "SOFTAP=STA_JOIN wlan0 wlan0 %02x:%02x:%02x:%02x:%02x:%02x",
 				puc_mac_addr[0], puc_mac_addr[1], puc_mac_addr[2], puc_mac_addr[3], puc_mac_addr[4], puc_mac_addr[5]);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0))
@@ -575,7 +575,7 @@ oal_void oal_kobject_uevent_env_sta_join(oal_net_device_stru *pst_net_device, co
 oal_void oal_kobject_uevent_env_sta_leave(oal_net_device_stru *pst_net_device, const oal_uint8 *puc_mac_addr)
 {
     oal_memset(&env, 0, sizeof(env));
-	/* Android上层需要STA_LEAVE和mac地址，中间参数无效，但是必须是4个参数 */
+	/* Android????????STA_LEAVE??mac??????????????????????????????4?????? */
 	add_uevent_var(&env, "SOFTAP=STA_LEAVE wlan0 wlan0 %02x:%02x:%02x:%02x:%02x:%02x",
 				puc_mac_addr[0], puc_mac_addr[1], puc_mac_addr[2], puc_mac_addr[3], puc_mac_addr[4], puc_mac_addr[5]);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0))
@@ -657,7 +657,7 @@ oal_uint32  oal_cfg80211_connect_result(
     oal_netbuf_stru         *pst_msg  = OAL_PTR_NULL;
     oal_wireless_dev_stru   *pst_wdev = OAL_PTR_NULL;
 
-    /* 分配一个新的netlink消息 */
+    /* ????????????netlink???? */
     pst_msg = oal_nlmsg_new(OAL_NLMSG_GOODSIZE, en_gfp);
     if(OAL_PTR_NULL == pst_msg)
     {
@@ -677,8 +677,8 @@ oal_uint32  oal_cfg80211_connect_result(
 		return OAL_ERR_CODE_CONFIG_UNSUPPORT;
 	}
 
-    /* 如果不加载hostapd和wpa_supplicant的话，这个也会失败，这里报fail，影响使用，去掉报错
-        成功的话，打印SUCC, 不成功的话，不打印 */
+    /* ??????????hostapd??wpa_supplicant??????????????????????????fail????????????????????
+        ??????????????SUCC, ?????????????????? */
     return oal_nl80211_send_connect_result(pst_msg, pst_net_device, puc_bssid, puc_req_ie, ul_req_ie_len,
                                     puc_resp_ie, ul_resp_ie_len, us_status, en_gfp);
 #endif
@@ -781,7 +781,7 @@ oal_uint32  oal_cfg80211_new_sta(
     oal_netbuf_stru   *pst_msg = OAL_PTR_NULL;
 	oal_uint32          l_let;
 
-    /* 分配一个新的netlink消息 */
+    /* ????????????netlink???? */
     pst_msg = oal_nlmsg_new(OAL_NLMSG_GOODSIZE, en_gfp);
     if(OAL_PTR_NULL == pst_msg)
     {
@@ -795,7 +795,7 @@ oal_uint32  oal_cfg80211_new_sta(
         return l_let;
     }
 
-    /* 调用封装的内核netlink广播发送函数，发送成功返回0，失败为负值 */
+    /* ??????????????netlink??????????????????????????0???????????? */
     l_let = oal_genlmsg_multicast(pst_msg, 0, nl80211_mlme_mcgrp.id, en_gfp);
     if(l_let < 0)
     {
@@ -849,7 +849,7 @@ oal_void  oal_cfg80211_mic_failure(
 	    return;
 	}
 
-    /* rdev对应内核core.h中的cfg80211_registered_device结构体，这个属性在上层没有处理 */
+    /* rdev????????core.h????cfg80211_registered_device?????????????????????????????? */
     OAL_NLA_PUT_U32(pst_msg, PRIV_NL80211_ATTR_WIPHY, pst_rdev->wiphy_idx);
     OAL_NLA_PUT_U32(pst_msg, PRIV_NL80211_ATTR_IFINDEX, pst_net_device->ifindex);
 
@@ -899,8 +899,8 @@ oal_uint32  oal_cfg80211_del_sta(oal_net_device_stru *pst_net_device,
 #else
 
     /*
-        TBD yaorui  内核2.6.34中没有内核3.x版本中 cfg80211_del_sta这个函数
-        linux-2.6.30和linux-2.6.34实现方式可以统一，目前34内核仍打桩，不然需要修改5115内核代码
+        TBD yaorui  ????2.6.34??????????3.x?????? cfg80211_del_sta????????
+        linux-2.6.30??linux-2.6.34??????????????????????34????????????????????????5115????????
     */
     oal_netbuf_stru  *pst_msg = OAL_PTR_NULL;
     oal_void         *p_hdr   = OAL_PTR_NULL;
@@ -934,9 +934,9 @@ oal_uint32  oal_cfg80211_del_sta(oal_net_device_stru *pst_net_device,
     }
 
 /*
-    liuux-2.6.30和liuux-2.6.34内核都是从这个函数上,都能达到要求
-    linux-2.6.34内核接着调用genlmsg_multicast_netns(&init_net......)
-    linux-2.6.30内核接着调用nlmsg_multicast(genl_sock......)
+    liuux-2.6.30??liuux-2.6.34????????????????????,????????????
+    linux-2.6.34????????????genlmsg_multicast_netns(&init_net......)
+    linux-2.6.30????????????nlmsg_multicast(genl_sock......)
 */
     l_let = oal_genlmsg_multicast(pst_msg, 0, nl80211_mlme_mcgrp.id, en_gfp);
     if(l_let < 0)
@@ -957,7 +957,7 @@ oal_uint32 oal_cfg80211_rx_mgmt(oal_net_device_stru *pst_dev,
                                                     oal_gfp_enum_uint8      en_gfp)
 {
 #if (_PRE_CONFIG_TARGET_PRODUCT == _PRE_TARGET_PRODUCT_TYPE_E5)
-    /* E5 hostapd 适配后统一修改 */
+    /* E5 hostapd ?????????????? */
     return OAL_SUCC;
 #endif
 

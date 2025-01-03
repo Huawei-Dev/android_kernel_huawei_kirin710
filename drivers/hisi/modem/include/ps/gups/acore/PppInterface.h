@@ -57,7 +57,7 @@ extern "C" {
 
 
 /******************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 ******************************************************************************/
 #include "vos.h"
 #include "product_config.h"
@@ -71,12 +71,12 @@ extern "C" {
 #endif
 #endif
 /******************************************************************************
-  2 宏定义
+  2 ??????
 ******************************************************************************/
-/*系统最多需要的PPP ID的数目 */
+/*??????????????PPP ID?????? */
 #define PPP_MAX_ID_NUM                      (1)
 
-/*RABID相关*/
+/*RABID????*/
 #define PPP_INVALID_RABID                   (0xFF)
 
 /*PPPID*/
@@ -98,54 +98,54 @@ extern "C" {
 #define PPP_AUTH_FRAME_BUF_MAX_LEN          (256)
 #define PPP_IPCP_FRAME_BUF_MAX_LEN          (256)
 
-/*字符形式的IP地址长度，加上"."共16个字符*/
+/*??????????IP??????????????"."??16??????*/
 #define PPP_IPV4_ADDR_STR_MAX_LEN           (16)
 
 #ifndef IPV4_ADDR_LEN
-#define   IPV4_ADDR_LEN                     (4)       /*IPV4地址长度*/
+#define   IPV4_ADDR_LEN                     (4)       /*IPV4????????*/
 #endif
 
 #ifndef IPV6_ADDR_LEN
-#define   IPV6_ADDR_LEN                     (16)      /*IPV6地址长度*/
+#define   IPV6_ADDR_LEN                     (16)      /*IPV6????????*/
 #endif
 
 /******************************************************************************
-  3 枚举定义
+  3 ????????
 ******************************************************************************/
 enum PPP_AT_CTRL_OPER_TYPE_ENUM
 {
-    PPP_AT_CTRL_REL_PPP_REQ = 0,              /* 释放IP类型PPP链路操作 */
-    PPP_AT_CTRL_REL_PPP_RAW_REQ = 1,          /* 释放PPP类型PPP链路操作 */
-    PPP_AT_CTRL_HDLC_DISABLE = 2,             /* HDLC硬化模块去使能操作 */
-    PPP_AT_CTRL_CONFIG_INFO_IND = 3,          /* PDP激活消息 */
+    PPP_AT_CTRL_REL_PPP_REQ = 0,              /* ????IP????PPP???????? */
+    PPP_AT_CTRL_REL_PPP_RAW_REQ = 1,          /* ????PPP????PPP???????? */
+    PPP_AT_CTRL_HDLC_DISABLE = 2,             /* HDLC?????????????????? */
+    PPP_AT_CTRL_CONFIG_INFO_IND = 3,          /* PDP???????? */
 
     PPP_AT_CTRL_BUTT
 };
 typedef VOS_UINT32  PPP_AT_CTRL_OPER_TYPE_ENUM_UINT32;
 
 /******************************************************************************
-  4 全局变量声明
+  4 ????????????
 ******************************************************************************/
 
 
 /******************************************************************************
-  5 消息头定义
+  5 ??????????
 ******************************************************************************/
 
 
 /******************************************************************************
-  6 消息定义
+  6 ????????
 ******************************************************************************/
 
 
 /******************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 ******************************************************************************/
 #pragma pack(4)
 
 typedef VOS_UINT16 PPP_ID;
 
-/* 鉴权类型 */
+/* ???????? */
 enum PPP_AUTH_TYPE_ENUM
 {
     PPP_NO_AUTH_TYPE                     = 0,
@@ -158,15 +158,15 @@ typedef VOS_UINT8 PPP_AUTH_TYPE_ENUM_UINT8;
 
 typedef struct
 {
-    VOS_UINT16  usPapReqLen;                    /*request长度: 24.008要求在[3,253]字节*/
-    VOS_UINT8   aucReserve[2];                  /* 对齐保留 */
+    VOS_UINT16  usPapReqLen;                    /*request????: 24.008??????[3,253]????*/
+    VOS_UINT8   aucReserve[2];                  /* ???????? */
     VOS_UINT8  *pPapReq;                        /*request*/
 } PPP_AUTH_PAP_CONTENT_STRU;
 
 typedef struct
 {
-    VOS_UINT16  usChapChallengeLen;             /*challenge长度: 24.008要求在[3,253]字节*/
-    VOS_UINT16  usChapResponseLen;              /*response长度: 24.008要求在[3,253]字节*/
+    VOS_UINT16  usChapChallengeLen;             /*challenge????: 24.008??????[3,253]????*/
+    VOS_UINT16  usChapResponseLen;              /*response????: 24.008??????[3,253]????*/
     VOS_UINT8  *pChapChallenge;                 /*challenge*/
     VOS_UINT8  *pChapResponse;                  /*response*/
 } PPP_AUTH_CHAP_CONTENT_STRU;
@@ -185,9 +185,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16  usIpcpLen;                      /*Ipcp帧长度*/
-    VOS_UINT8   aucReserve[2];                  /* 对齐保留 */
-    VOS_UINT8  *pIpcp;                          /*Ipcp帧*/
+    VOS_UINT16  usIpcpLen;                      /*Ipcp??????*/
+    VOS_UINT8   aucReserve[2];                  /* ???????? */
+    VOS_UINT8  *pIpcp;                          /*Ipcp??*/
 } PPP_REQ_IPCP_CONFIG_INFO_STRU;
 
 typedef struct
@@ -198,19 +198,19 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16  usAuthLen;                      /*鉴权帧长度*/
-    VOS_UINT16  usIpcpLen;                      /*Ipcp帧长度*/
-    VOS_UINT8  *pAuth;                          /*鉴权帧*/
-    VOS_UINT8  *pIpcp;                          /*Ipcp帧*/
-    VOS_UINT8   aucIpAddr[PPP_IPV4_ADDR_STR_MAX_LEN]; /*Ip地址*/
+    VOS_UINT16  usAuthLen;                      /*??????????*/
+    VOS_UINT16  usIpcpLen;                      /*Ipcp??????*/
+    VOS_UINT8  *pAuth;                          /*??????*/
+    VOS_UINT8  *pIpcp;                          /*Ipcp??*/
+    VOS_UINT8   aucIpAddr[PPP_IPV4_ADDR_STR_MAX_LEN]; /*Ip????*/
 } PPP_IND_CONFIG_INFO_STRU;
 
 
-/* PPP向AT发送的消息定义如下 */
-#define AT_PPP_RELEASE_IND_MSG          0x00    /* 释放PDP连接的请求 */
-#define AT_PPP_MODEM_MSC_IND_MSG        0x01    /* 向AT发送管脚信号指示(底软透传管脚信号，
-                                                         由于无法模拟AT给自己发消息,故模拟PPP给AT发送该消息.) */
-#define AT_PPP_PROTOCOL_REL_IND_MSG     0x02    /* PPP链路完成释放的指示 */
+/* PPP??AT?????????????????? */
+#define AT_PPP_RELEASE_IND_MSG          0x00    /* ????PDP?????????? */
+#define AT_PPP_MODEM_MSC_IND_MSG        0x01    /* ??AT????????????????(??????????????????
+                                                         ????????????AT????????????,??????PPP??AT??????????.) */
+#define AT_PPP_PROTOCOL_REL_IND_MSG     0x02    /* PPP?????????????????? */
 
 typedef struct
 {
@@ -227,7 +227,7 @@ typedef struct
     VOS_UINT8                           ucDlci;
     VOS_UINT8                           ucReserve1;
     VOS_UINT8                           ucReserve2;
-    VOS_UINT8                           aucMscInd[4];  /* 管脚信号数据 */
+    VOS_UINT8                           aucMscInd[4];  /* ???????????? */
 }AT_PPP_MODEM_MSC_IND_MSG_STRU;
 
 
@@ -244,19 +244,19 @@ typedef VOS_VOID (*PPP_PULL_MSG_EVENT_CALLBACK)(VOS_UINT32 ulMsgCnt);
 #pragma pack()
 
 /******************************************************************************
-  8 UNION定义
+  8 UNION????
 ******************************************************************************/
 
 
 /******************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 ******************************************************************************/
 
 
 /******************************************************************************
-  10 函数声明
+  10 ????????
 ******************************************************************************/
-/* PPP提供给AT的接口 */
+/* PPP??????AT?????? */
 extern VOS_UINT32 Ppp_CreatePppReq ( PPP_ID *pusPppId);
 extern VOS_UINT32 Ppp_CreateRawDataPppReq ( PPP_ID *pusPppId);
 extern VOS_UINT32 Ppp_ReleasePppReq ( PPP_ID usPppId);
@@ -266,22 +266,22 @@ extern VOS_VOID   PPP_UpdateWinsConfig(VOS_UINT8 ucWins);
 extern VOS_VOID   PPP_SetRawDataByPassMode(VOS_UINT32 ulRawDataByPassMode);
 
 #if (OSA_CPU_ACPU == VOS_OSA_CPU) || (VOS_WIN32 == VOS_OS_VER)
-/* IP方式下提供的上行数据接收接口 */
+/* IP???????????????????????????? */
 extern VOS_UINT32 PPP_PullPacketEvent(VOS_UINT16 usPppId, IMM_ZC_STRU *pstImmZc);
 
-/* PPP方式下提供的上行数据接收接口 */
+/* PPP???????????????????????????? */
 extern VOS_UINT32 PPP_PullRawDataEvent(VOS_UINT16 usPppId, IMM_ZC_STRU *pstImmZc);
 #if (FEATURE_ON == FEATURE_DATA_SERVICE_NEW_PLATFORM)
-/* IP方式下提供的下行数据接收接口 */
+/* IP???????????????????????????? */
 extern VOS_INT PPP_PushPacketEvent(VOS_ULONG ulUserData, IMM_ZC_STRU *pstImmZc);
 
-/* PPP方式下提供的下行数据接收接口 */
+/* PPP???????????????????????????? */
 extern VOS_INT PPP_PushRawDataEvent(VOS_ULONG ulUserData, IMM_ZC_STRU *pstImmZc);
 #else
-/* IP方式下提供的下行数据接收接口 */
+/* IP???????????????????????????? */
 extern VOS_INT PPP_PushPacketEvent(VOS_UINT8 ucRabId, IMM_ZC_STRU *pstImmZc, ADS_PKT_TYPE_ENUM_UINT8 enPktType, VOS_UINT32 ulExParam);
 
-/* PPP方式下提供的下行数据接收接口 */
+/* PPP???????????????????????????? */
 extern VOS_INT PPP_PushRawDataEvent(VOS_UINT8 ucRabId, IMM_ZC_STRU *pstImmZc, ADS_PKT_TYPE_ENUM_UINT8 enPktType, VOS_UINT32 ulExParam);
 #endif
 #endif

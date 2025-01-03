@@ -284,7 +284,7 @@ static int hifi_misc_async_write(unsigned char *arg, unsigned int len)
 		goto END;
 	}
 
-	/*\B5\F7\D3ú˼\E4ͨ\D0Žӿڷ\A2\CB\CD\CA\FD\BE\DD*/
+	/*\B5\F7\D3????\E4??\D0??????\A2\CB\CD\CA\FD\BE\DD*/
 	ret = SEND_MSG_TO_HIFI(MAILBOX_MAILCODE_ACPU_TO_HIFI_MISC, arg, len);
 	if (OK != ret) {
 		loge("msg send to hifi fail,ret is %d.\n", ret);
@@ -318,7 +318,7 @@ static int hifi_misc_sync_write(unsigned char  *buff, unsigned int len)
 	INIT_COMPLETION(s_misc_data.completion);
 #endif
 
-	/*\B5\F7\D3ú˼\E4ͨ\D0Žӿڷ\A2\CB\CD\CA\FD\BEݣ\AC\B5õ\BD\B7\B5\BB\D8ֵret*/
+	/*\B5\F7\D3????\E4??\D0??????\A2\CB\CD\CA\FD\BE??\AC\B5??\BD\B7\B5\BB\D8??ret*/
 	ret = SEND_MSG_TO_HIFI(MAILBOX_MAILCODE_ACPU_TO_HIFI_MISC, buff, len);
 	if (OK != ret) {
 		loge("msg send to hifi fail,ret is %d.\n", ret);
@@ -450,9 +450,9 @@ static void hifi_misc_handle_mail(void *usr_para, void *mail_handle, unsigned in
 	}
 	memset(recv, 0, sizeof(struct recv_request));/* unsafe_function_ignore: memset */
 
-	/* \C9趨SIZE */
+	/* \C9???SIZE */
 	recv->rev_msg.mail_buff_len = mail_len;
-	/* \B7\D6\C5\E4\D7ܵĿռ\E4 */
+	/* \B7\D6\C5\E4\D7??????\E4 */
 	recv->rev_msg.mail_buff = (unsigned char *)kmalloc(mail_len, GFP_ATOMIC);
 	if (NULL == recv->rev_msg.mail_buff)
 	{
@@ -461,7 +461,7 @@ static void hifi_misc_handle_mail(void *usr_para, void *mail_handle, unsigned in
 	}
 	memset(recv->rev_msg.mail_buff, 0, mail_len);/* unsafe_function_ignore: memset */
 
-	/* \BD\ABʣ\D3\E0\C4\DA\C8\DDcopy͸\B4\AB\B5\BDbuff\D6\D0 */
+	/* \BD\AB??\D3\E0\C4\DA\C8\DDcopy??\B4\AB\B5\BDbuff\D6\D0 */
 	ret_mail = mailbox_read_msg_data(mail_handle, (char*)(recv->rev_msg.mail_buff), (unsigned int *)(&(recv->rev_msg.mail_buff_len)));
 
 	if ((ret_mail != MAILBOX_OK) || (recv->rev_msg.mail_buff_len == 0)) {
@@ -472,10 +472,10 @@ static void hifi_misc_handle_mail(void *usr_para, void *mail_handle, unsigned in
 	logd("ret_mail=%d, mail_buff_len=%d, msgID=0x%x.\n", ret_mail, recv->rev_msg.mail_buff_len,
 		 *((unsigned int *)(recv->rev_msg.mail_buff + mail_len - SIZE_CMD_ID)));
 
-	/* Լ\B6\A8\A3\ACǰ4\B8\F6\D7ֽ\DA\CA\C7cmd_id */
+	/* ??\B6\A8\A3\AC??4\B8\F6\D7??\DA\CA\C7cmd_id */
 	cmd_para   = (HIFI_CHN_CMD *)(recv->rev_msg.mail_buff + mail_len - SIZE_CMD_ID);
 	recmsg = (void*)recv->rev_msg.mail_buff;
-	/* \B8\B3\D3費ͬ\B5Ľ\D3\CA\D5ָ\D5룬\D3ɽ\D3\CA\D5\D5\DF\CAͷŷ\D6\C5\E4\BFռ\E4 */
+	/* \B8\B3\D3?????\B5??\D3\CA\D5??\D5???\D3??\D3\CA\D5\D5\DF\CA????\D6\C5\E4\BF??\E4 */
 	if (HIFI_CHN_SYNC_CMD == cmd_para->cmd_type) {
 		if (s_misc_data.sn == cmd_para->sn) {
 			spin_lock_bh(&s_misc_data.recv_sync_lock);
@@ -538,13 +538,13 @@ static int hifi_dsp_get_input_param(unsigned int usr_para_size, const void *usr_
 
 	IN_FUNCTION;
 
-	/* \CF\DE\D6Ʒ\D6\C5\E4\BFռ\E4 */
+	/* \CF\DE\D6??\D6\C5\E4\BF??\E4 */
 	if ((usr_para_size == 0) || (usr_para_size > SIZE_LIMIT_PARAM - SIZE_CMD_ID)) {
 		loge("usr_para_size(%u) exceed LIMIT(0/%u).\n", usr_para_size, SIZE_LIMIT_PARAM - SIZE_CMD_ID);
 		goto ERR;
 	}
 
-	/*\BB\F1ȡarg\C8\EB\B2\CE*/
+	/*\BB\F1??arg\C8\EB\B2\CE*/
 	para_size_in = usr_para_size + SIZE_CMD_ID;
 	para_in = kzalloc(para_size_in, GFP_KERNEL);
 	if (NULL == para_in) {
@@ -562,7 +562,7 @@ static int hifi_dsp_get_input_param(unsigned int usr_para_size, const void *usr_
 		goto ERR;
 	}
 
-	/* \C9\E8\D6ó\F6\B2\CE */
+	/* \C9\E8\D6??\F6\B2\CE */
 	*krn_para_size = para_size_in;
 	*krn_para_addr = para_in;
 
@@ -607,14 +607,14 @@ static int hifi_dsp_get_output_param(unsigned int krn_para_size, const void *krn
 
 	IN_FUNCTION;
 
-	/* \C8\EB\B2\CE\C5ж\A8 */
+	/* \C8\EB\B2\CE\C5??\A8 */
 	if (NULL == krn_para_addr) {
 		loge("krn_para_addr is NULL.\n");
 		ret = -EINVAL;
 		goto END;
 	}
 
-	/* \C8\EB\B2\CE\C5ж\A8 */
+	/* \C8\EB\B2\CE\C5??\A8 */
 	if ((NULL == usr_para_addr) || (NULL == usr_para_size)) {
 		loge("usr_size_p=0x%pK, usr_addr=0x%pK.\n", usr_para_size, usr_para_addr);
 		ret = -EINVAL;
@@ -670,7 +670,7 @@ static int hifi_dsp_async_cmd(unsigned long arg)
 	}
 
 	para_addr_in = INT_TO_ADDR(param.para_in_l,param.para_in_h);
-	/*\BB\F1ȡarg\C8\EB\B2\CE*/
+	/*\BB\F1??arg\C8\EB\B2\CE*/
 	ret = hifi_dsp_get_input_param(param.para_size_in, para_addr_in,
 								   &para_krn_size_in, &para_krn_in);
 	if (OK != ret) {
@@ -682,7 +682,7 @@ static int hifi_dsp_async_cmd(unsigned long arg)
 	cmd_para->cmd_type = HIFI_CHN_SYNC_CMD;
 	cmd_para->sn = ACPU_TO_HIFI_ASYNC_CMD;
 
-	/*\D3\CA\CF䷢\CB\CD\D6\C1HIFI, \D2첽*/
+	/*\D3\CA\CF???\CB\CD\D6\C1HIFI, \D2???*/
 	ret = hifi_misc_async_write(para_krn_in, para_krn_size_in);
 	if (OK != ret) {
 		loge("async_write ret=%d.\n", ret);
@@ -725,7 +725,7 @@ static int hifi_dsp_sync_cmd(unsigned long arg)
 
 	para_addr_in   = INT_TO_ADDR(param.para_in_l ,param.para_in_h);
 	para_addr_out  = INT_TO_ADDR(param.para_out_l,param.para_out_h);
-	/*\BB\F1ȡarg\C8\EB\B2\CE*/
+	/*\BB\F1??arg\C8\EB\B2\CE*/
 	ret = hifi_dsp_get_input_param(param.para_size_in, para_addr_in,
 						&para_krn_size_in, &para_krn_in);
 	if (OK != ret) {
@@ -739,7 +739,7 @@ static int hifi_dsp_sync_cmd(unsigned long arg)
 
 	cmd_para->sn = s_misc_data.sn;
 
-	/*\D3\CA\CF䷢\CB\CD\D6\C1HIFI, ͬ\B2\BD*/
+	/*\D3\CA\CF???\CB\CD\D6\C1HIFI, ??\B2\BD*/
 	ret = hifi_misc_sync_write(para_krn_in, para_krn_size_in);
 	if (OK != ret) {
 		loge("hifi_misc_sync_write ret=%d.\n", ret);
@@ -753,7 +753,7 @@ static int hifi_dsp_sync_cmd(unsigned long arg)
 		goto END;
 	}
 
-	/*\BD\AB\BB\F1\B5õ\C4rev_msg\D0\C5Ϣ\CC\EE\B3䵽\B3\F6\B2\CEarg*/
+	/*\BD\AB\BB\F1\B5??\C4rev_msg\D0\C5??\CC\EE\B3???\B3\F6\B2\CEarg*/
 	spin_lock_bh(&s_misc_data.recv_sync_lock);
 
 	if (!list_empty(&recv_sync_work_queue_head)) {
@@ -793,7 +793,7 @@ END:
 	if (mail_buf)
 		kfree(mail_buf);
 
-	/*\CAͷ\C5krn\C8\EB\B2\CE*/
+	/*\CA??\C5krn\C8\EB\B2\CE*/
 	hifi_dsp_get_input_param_free(&para_krn_in);
 
 	OUT_FUNCTION;
@@ -870,10 +870,10 @@ static int hifi_dsp_wakeup_read_thread(unsigned long arg)
 
 	wake_lock_timeout(&s_misc_data.hifi_misc_wakelock, HZ);
 
-	/* \C9趨SIZE */
+	/* \C9???SIZE */
 	recv->rev_msg.mail_buff_len = sizeof(struct misc_recmsg_param) + SIZE_CMD_ID;
 
-	/* \B7\D6\C5\E4\D7ܵĿռ\E4 */
+	/* \B7\D6\C5\E4\D7??????\E4 */
 	recv->rev_msg.mail_buff = (unsigned char *)kmalloc(recv->rev_msg.mail_buff_len, GFP_ATOMIC);
 	if (NULL == recv->rev_msg.mail_buff)
 	{
@@ -1254,16 +1254,16 @@ static long hifi_misc_ioctl(struct file *fd,
 		return (long)-EINVAL;
 	}
 
-	/*cmd\C3\FC\C1\C0\ED*/
+	/*cmd\C3\FC\C1???\C0\ED*/
 	switch(cmd) {
-		case HIFI_MISC_IOCTL_ASYNCMSG/*\D2첽\C3\FC\C1\EE*/:
+		case HIFI_MISC_IOCTL_ASYNCMSG/*\D2???\C3\FC\C1\EE*/:
 			logd("ioctl: HIFI_MISC_IOCTL_ASYNCMSG\n");
 			mutex_lock(&s_misc_data.ioctl_mutex);
 			ret = hifi_dsp_async_cmd((unsigned long)data32);
 			mutex_unlock(&s_misc_data.ioctl_mutex);
 			break;
 
-		case HIFI_MISC_IOCTL_SYNCMSG/*ͬ\B2\BD\C3\FC\C1\EE*/:
+		case HIFI_MISC_IOCTL_SYNCMSG/*??\B2\BD\C3\FC\C1\EE*/:
 			logd("ioctl: HIFI_MISC_IOCTL_SYNCMSG\n");
 			ret = down_interruptible(&s_misc_sem);
 			if (ret != 0)
@@ -1275,7 +1275,7 @@ static long hifi_misc_ioctl(struct file *fd,
 			up(&s_misc_sem);
 			break;
 
-		case HIFI_MISC_IOCTL_GET_PHYS/*\BB\F1ȡ*/:
+		case HIFI_MISC_IOCTL_GET_PHYS/*\BB\F1??*/:
 			logd("ioctl: HIFI_MISC_IOCTL_GET_PHYS\n");
 			mutex_lock(&s_misc_data.ioctl_mutex);
 			ret = hifi_dsp_get_phys_cmd((unsigned long)data32);
@@ -1349,7 +1349,7 @@ static long hifi_misc_ioctl(struct file *fd,
 			break;
 
 		default:
-			/*\B4\F2ӡ\CE޸\C3CMD\C0\E0\D0\CD*/
+			/*\B4\F2??\CE??\C3CMD\C0\E0\D0\CD*/
 			ret = (long)ERROR;
 			loge("ioctl: Invalid CMD 0x%x\n", (unsigned int)cmd);
 			break;
@@ -1780,7 +1780,7 @@ static int hifi_misc_probe (struct platform_device *pdev)
 
 	hifi_misc_proc_init();
 
-	/*\B3\F5ʼ\BB\AF\BD\D3\CA\DC\D0ź\C5\C1\BF*/
+	/*\B3\F5??\BB\AF\BD\D3\CA\DC\D0??\C5\C1\BF*/
 	spin_lock_init(&s_misc_data.recv_sync_lock);
 	spin_lock_init(&s_misc_data.recv_proc_lock);
 	spin_lock_init(&s_misc_data.pcm_read_lock);
@@ -1788,10 +1788,10 @@ static int hifi_misc_probe (struct platform_device *pdev)
 	mutex_init(&s_misc_data.ioctl_mutex);
 	mutex_init(&s_misc_data.proc_read_mutex);
 
-	/*\B3\F5ʼ\BB\AFͬ\B2\BD\D0ź\C5\C1\BF*/
+	/*\B3\F5??\BB\AF??\B2\BD\D0??\C5\C1\BF*/
 	init_completion(&s_misc_data.completion);
 
-	/*\B3\F5ʼ\BB\AF\B6\C1\CEļ\FE\D0ź\C5\C1\BF*/
+	/*\B3\F5??\BB\AF\B6\C1\CE??\FE\D0??\C5\C1\BF*/
 	init_waitqueue_head(&s_misc_data.proc_waitq);
 	s_misc_data.wait_flag = 0;
 
@@ -1814,7 +1814,7 @@ static int hifi_misc_probe (struct platform_device *pdev)
 		goto err2;
 	}
 
-	/*ע\B2\E1˫\BA\CBͨ\D0Ŵ\A6\C0\ED\BA\AF\CA\FD*/
+	/*??\B2\E1??\BA\CB??\D0??\A6\C0\ED\BA\AF\CA\FD*/
 	ret = mailbox_reg_msg_cb(MAILBOX_MAILCODE_HIFI_TO_ACPU_MISC, (mb_msg_cb)hifi_misc_handle_mail, NULL);
 
 	if (OK != ret) {

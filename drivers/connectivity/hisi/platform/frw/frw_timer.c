@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "frw_timer.h"
 #include "frw_main.h"
@@ -19,18 +19,18 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_FRW_TIMER_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 oal_dlist_head_stru         g_ast_timer_list[WLAN_FRW_MAX_NUM_CORES];
 oal_spin_lock_stru          g_ast_timer_list_spinlock[WLAN_FRW_MAX_NUM_CORES];
 oal_timer_list_stru         g_st_timer;
-oal_spin_lock_stru          g_st_sys_timer_spinlock;    //系统timer的启动和删除的互斥锁
+oal_spin_lock_stru          g_st_sys_timer_spinlock;    //????timer????????????????????
 oal_uint32                  g_ul_stop_timestamp = 0;
 oal_uint32                  g_ul_restart_timestamp = 0;
-oal_uint32                  g_ul_max_deep_sleep_time = 0;        //记录平台最大睡眠时间
+oal_uint32                  g_ul_max_deep_sleep_time = 0;        //????????????????????
 oal_uint32                  g_ul_need_restart = OAL_FALSE;
-oal_uint32                  g_ul_frw_open = OAL_FALSE;  //系统timer是否已启动的标记
-oal_uint32                  g_ul_frw_timer_running = 0; //timer运行次数
+oal_uint32                  g_ul_frw_open = OAL_FALSE;  //????timer????????????????
+oal_uint32                  g_ul_frw_timer_running = 0; //timer????????
 
 
 #ifdef _PRE_DEBUG_MODE
@@ -40,7 +40,7 @@ frw_timeout_track_stru      g_st_timeout_track[FRW_TIMEOUT_TRACK_NUM];
 oal_uint8                   g_uc_timeout_track_idx = 0;
 #endif
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void __frw_timer_immediate_destroy_timer(oal_uint32 ul_file_id,
                                                                                oal_uint32 ul_line_num,
@@ -142,7 +142,7 @@ oal_void  frw_timer_exit(oal_void)
 
 oal_void  frw_timer_restart(oal_void)
 {
-    /* 重启定时器*/
+    /* ??????????*/
     if(OAL_FALSE == g_ul_need_restart)
     {
         return;
@@ -264,7 +264,7 @@ oal_uint32  frw_timer_timeout_proc(frw_event_mem_stru *pst_timeout_event)
 
     ul_core_id = OAL_GET_CORE_ID();
 
-    /* 执行超时定时器 */
+    /* ?????????????? */
     oal_spin_lock_bh(&g_ast_timer_list_spinlock[ul_core_id]);
     pst_timeout_entry = g_ast_timer_list[ul_core_id].pst_next;
 
@@ -281,7 +281,7 @@ oal_uint32  frw_timer_timeout_proc(frw_event_mem_stru *pst_timeout_event)
 
         pst_timeout_element = OAL_DLIST_GET_ENTRY(pst_timeout_entry, frw_timeout_stru, st_entry);
 
-        /* 如果该定时器没有使能或者待删除，则直接看下一个 */
+        /* ?????????????????????????????????????????????? */
         if ((OAL_TRUE == pst_timeout_element->en_is_deleting)
          || (OAL_FALSE == pst_timeout_element->en_is_enabled))
         {
@@ -292,8 +292,8 @@ oal_uint32  frw_timer_timeout_proc(frw_event_mem_stru *pst_timeout_event)
         pst_timeout_element->ul_curr_time_stamp = ul_present_time;
         ul_runtime = (oal_uint32)OAL_TIME_GET_RUNTIME(pst_timeout_element->ul_time_stamp, ul_present_time);
 
-        /* 一个定时器超时处理函数中创建新的定时器，新定时器的pst_timeout_element->ul_time_stamp可能大于ul_present_time
-           导致ul_runtime异常大，增加ul_runtime最大值保护判断 */
+        /* ??????????????????????????????????????????????????pst_timeout_element->ul_time_stamp????????ul_present_time
+           ????ul_runtime????????????ul_runtime?????????????? */
         if (ul_runtime >= pst_timeout_element->ul_timeout && ul_runtime < FRW_TIMER_MAX_TIMEOUT)
         {
             if (OAL_TRUE != pst_timeout_element->en_is_periodic)
@@ -373,7 +373,7 @@ oal_uint32  frw_timer_timeout_proc(frw_event_mem_stru *pst_timeout_event)
     }
 #endif
 
-    /* 删除所有待删除定时器 */
+    /* ???????????????????? */
     oal_spin_lock_bh(&g_ast_timer_list_spinlock[ul_core_id]);
     pst_timeout_entry = g_ast_timer_list[ul_core_id].pst_next;
 
@@ -404,7 +404,7 @@ oal_uint32  frw_timer_timeout_proc(frw_event_mem_stru *pst_timeout_event)
 
     ul_end_time = (oal_uint32)OAL_TIME_GET_STAMP_MS();
     ul_runtime = (oal_uint32)OAL_TIME_GET_RUNTIME(ul_present_time, ul_end_time);
-    /* 同device侧检测日志时限一致 */
+    /* ??device?????????????????? */
     if (ul_runtime > (oal_uint32)OAL_JIFFIES_TO_MSECS(2))
     {
         OAM_WARNING_LOG1(0, OAM_SF_FRW, "{frw_timer_timeout_proc:: timeout process exucte time too long time[%d]}", ul_runtime);
@@ -461,14 +461,14 @@ oal_void  frw_timer_create_timer(
     pst_timeout->en_module_id   = en_module_id;
     pst_timeout->ul_file_id     = ul_file_id;
     pst_timeout->ul_line_num    = ul_line_num;
-    pst_timeout->en_is_enabled  = OAL_TRUE;       /* 默认使能 */
+    pst_timeout->en_is_enabled  = OAL_TRUE;       /* ???????? */
     pst_timeout->en_is_deleting = OAL_FALSE;
 
 
     if (OAL_TRUE != pst_timeout->en_is_registerd)
     {
         pst_timeout->en_is_running  = OAL_FALSE;
-        pst_timeout->en_is_registerd= OAL_TRUE;       /* 默认使能 */
+        pst_timeout->en_is_registerd= OAL_TRUE;       /* ???????? */
         frw_timer_add_timer(pst_timeout);
     }
 
@@ -605,7 +605,7 @@ oal_void  frw_timer_timeout_proc_event(oal_uint ui_arg)
 
     g_ul_frw_timer_running++;
 
-    /*每2048*10ms,约20s输出一次*/
+    /*??2048*10ms,??20s????????*/
     if(0==(g_ul_frw_timer_running&0x7FF))
     {
         OAL_IO_PRINT("frw_timer_timeout_proc_event %d\r\n",g_ul_frw_timer_running);
@@ -634,19 +634,19 @@ oal_void  frw_timer_timeout_proc_event(oal_uint ui_arg)
         if(frw_task_get_state(ul_core_id))
         {
 #endif
-            /* 如果定时器事件队列中，有未处理完的事件，不再抛；深度为2 */
+            /* ??????????????????????????????????????????????????????2 */
             if(OAL_FALSE == frw_is_vap_event_queue_empty(ul_core_id, uc_vap_id, FRW_EVENT_TYPE_TIMEOUT))
             {
-                /* 重启定时器 */
+                /* ?????????? */
                 frw_timer_sys_restart();
                 return ;
             }
 
             pst_event_mem = FRW_EVENT_ALLOC(OAL_SIZEOF(frw_event_stru));
-            /* 返回值检查 */
+            /* ?????????? */
             if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
             {
-                /* 重启定时器 */
+                /* ?????????? */
                 frw_timer_sys_restart();
                 OAM_ERROR_LOG0(0, OAM_SF_FRW, "{frw_timer_timeout_proc_event:: FRW_EVENT_ALLOC failed!}");
                 return;
@@ -654,7 +654,7 @@ oal_void  frw_timer_timeout_proc_event(oal_uint ui_arg)
 
             pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-            /* 填充事件头 */
+            /* ?????????? */
             FRW_FIELD_SETUP((&pst_event->st_event_hdr), en_type, (FRW_EVENT_TYPE_TIMEOUT));
             FRW_FIELD_SETUP((&pst_event->st_event_hdr), uc_sub_type, (FRW_TIMEOUT_TIMER_EVENT));
             FRW_FIELD_SETUP((&pst_event->st_event_hdr), us_length, (WLAN_MEM_EVENT_SIZE1));
@@ -663,7 +663,7 @@ oal_void  frw_timer_timeout_proc_event(oal_uint ui_arg)
             FRW_FIELD_SETUP((&pst_event->st_event_hdr), uc_device_id, (0));
             FRW_FIELD_SETUP((&pst_event->st_event_hdr), uc_vap_id, (0));
 
-            /* 抛事件 */
+            /* ?????? */
 #ifdef _PRE_WLAN_FEATURE_SMP_SUPPORT
             frw_event_post_event(pst_event_mem, ul_core_id);
 #else
@@ -675,7 +675,7 @@ oal_void  frw_timer_timeout_proc_event(oal_uint ui_arg)
     }
 #endif
 /*lint +e539*//*lint +e830*/
-    /* 重启定时器 */
+    /* ?????????? */
     frw_timer_sys_restart();
 
 }
@@ -694,7 +694,7 @@ oal_void  frw_timer_delete_all_timer(oal_void)
     for(ul_core_id = 0; ul_core_id < WLAN_FRW_MAX_NUM_CORES; ul_core_id++)
     {
         oal_spin_lock_bh(&g_ast_timer_list_spinlock[ul_core_id]);
-        /* 删除所有待删除定时器 */
+        /* ???????????????????? */
         pst_timeout_entry = g_ast_timer_list[ul_core_id].pst_next;
 
         while (pst_timeout_entry != &g_ast_timer_list[ul_core_id])
@@ -703,7 +703,7 @@ oal_void  frw_timer_delete_all_timer(oal_void)
 
             pst_timeout_entry = pst_timeout_entry->pst_next;
 
-            /* 删除定时器 */
+            /* ?????????? */
             oal_dlist_delete_entry(&pst_timeout_element->st_entry);
 #if 0
 	        if (oal_dlist_is_empty(&g_st_timer_list))

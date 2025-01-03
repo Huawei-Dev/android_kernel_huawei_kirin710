@@ -49,16 +49,16 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "PcscProc.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID PS_FILE_ID_PCSC_APP_PROC_C
 
-/* ACPU上维护卡状态的全局变量*/
+/* ACPU??????????????????????*/
 USIMM_CARDAPP_SERVIC_ENUM_UINT32 g_enAcpuCardStatus = USIMM_CARDAPP_SERVIC_BUTT;
 
 extern VOS_VOID OM_RecordInfoStart(VOS_EXC_DUMP_MEM_NUM_ENUM_UINT32 enNumber, VOS_UINT32 ulSendPid, VOS_UINT32 ulRcvPid, VOS_UINT32 ulMsgName);
@@ -79,11 +79,11 @@ VOS_UINT32 PCSC_AcpuCmdReq(VOS_UINT32 ulCmdType, VOS_UINT8 *pucAPDU, VOS_UINT32 
                         (sizeof(SI_PIH_PCSC_REQ_STRU) - VOS_MSG_HEAD_LENGTH) + ulAPDULen);
     if (VOS_NULL_PTR == pstMsg)
     {
-        /* 打印错误 */
+        /* ???????? */
         PS_LOG(ACPU_PID_PCSC, 0, PS_PRINT_WARNING, "PCSC_AcpuCmdReq: VOS_AllocMsg is Failed");
         (VOS_VOID)vos_printf("[PAM][PCSC] %s: VOS_AllocMsg is Failed.\r\n", __FUNCTION__);
 
-        return VOS_ERR; /* 返回函数错误信息 */
+        return VOS_ERR; /* ???????????????? */
     }
 
     pstMsg->stMsgHeader.ulReceiverPid = MAPS_PIH_PID;
@@ -103,7 +103,7 @@ VOS_UINT32 PCSC_AcpuCmdReq(VOS_UINT32 ulCmdType, VOS_UINT8 *pucAPDU, VOS_UINT32 
 
     if (VOS_OK != VOS_SendMsg(ACPU_PID_PCSC, pstMsg))
     {
-        /*打印错误*/
+        /*????????*/
         PS_LOG(ACPU_PID_PCSC, 0, PS_PRINT_WARNING, "PCSC_AcpuCmdReq: VOS_SendMsg is Failed.");
         (VOS_VOID)vos_printf("[PAM][PCSC] %s: VOS_SendMsg is Failed.", __FUNCTION__);
         return VOS_ERR;
@@ -117,10 +117,10 @@ VOS_INT PCSC_AcpuGetCardStatus(VOS_VOID)
 {
     if (USIMM_CARDAPP_SERVIC_ABSENT == g_enAcpuCardStatus)
     {
-        /*上报无卡状态*/
+        /*????????????*/
         return VOS_ERROR;
     }
-    /*上报有卡状态*/
+    /*????????????*/
     return VOS_OK;
 }
 
@@ -133,7 +133,7 @@ VOS_VOID PCSC_UpdateCardStatus(USIMM_CARDSTATUS_IND_STRU *pstMsg)
         (VOS_VOID)vos_printf("[PAM][PCSC] %s: Reg PCSC Func.\r\n", __FUNCTION__);
     }
 
-    /*更新本地卡状态的全局变量*/
+    /*????????????????????????*/
     g_enAcpuCardStatus = pstMsg->stUsimSimInfo.enCardAppService;
 
     (VOS_VOID)vos_printf("[PAM][PCSC] %s: g_enAcpuCardStatus =: %d .\r\n", __FUNCTION__, g_enAcpuCardStatus);

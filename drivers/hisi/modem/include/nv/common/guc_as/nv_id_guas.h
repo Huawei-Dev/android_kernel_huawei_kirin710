@@ -10,10 +10,10 @@ extern "C" {
 #endif
 
 /****************************************************************************
-  1 宏定义
+  1 ??????
 *****************************************************************************/
 
-/* C核NV_ID定义 */
+/* C??NV_ID???? */
 enum COMMON_GUAS_NV_ID_ENUM
 {
 
@@ -23,10 +23,10 @@ enum COMMON_GUAS_NV_ID_ENUM
 /* 8277  */     en_NV_Item_Egprs_Flag                                   = 8277,
 /* 8284  */     en_NV_Item_WCDMA_PLMN_FREQ_PAIR_List                    = 8284,
 /* 8326  */     en_Nv_Item_Gprs_Multi_Slot_Class                        = 8326,
-/* 9008  */     en_NV_Item_WAS_RadioAccess_Capa_New                     = 9008,/* WAS新增NV项 */
+/* 9008  */     en_NV_Item_WAS_RadioAccess_Capa_New                     = 9008,/* WAS????NV?? */
 /* 9009  */     en_NV_Item_GAS_High_Multislot_Class                     = 9009,
 
-/* 9091 */      en_NV_Item_UTRAN_TDD_FREQ_BAND                          = 9091, /* 指示TDS Band信息 */
+/* 9091 */      en_NV_Item_UTRAN_TDD_FREQ_BAND                          = 9091, /* ????TDS Band???? */
 
                 en_NV_Item_COMMON_GUC_GUAS_NVID_BUTT
 };

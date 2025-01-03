@@ -50,7 +50,7 @@
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 
@@ -62,22 +62,22 @@ extern "C" {
 
 
 /*******************************************************************************
-  2 枚举定义
+  2 ????????
 *******************************************************************************/
 
 /*********************************************
- 枚举名称 : PS_IFACE_ID_ENUM
- 枚举说明 : 全局网卡ID
+ ???????? : PS_IFACE_ID_ENUM
+ ???????? : ????????ID
 *********************************************/
 enum PS_IFACE_ID_ENUM
 {
-    /* 数据业务PPP */
+    /* ????????PPP */
     PS_IFACE_ID_PPP0                    = 0,
 
-    /* 数据业务NDIS */
+    /* ????????NDIS */
     PS_IFACE_ID_NDIS0,
 
-    /* 数据业务RNIC */
+    /* ????????RNIC */
     PS_IFACE_ID_RMNET0,
     PS_IFACE_ID_RMNET1,
     PS_IFACE_ID_RMNET2,
@@ -86,34 +86,34 @@ enum PS_IFACE_ID_ENUM
     PS_IFACE_ID_RMNET5,
     PS_IFACE_ID_RMNET6,
 
-    /* 3GPP IMS MODEM0 视频 */
+    /* 3GPP IMS MODEM0 ???? */
     PS_IFACE_ID_RMNET_IMS00,
-    /* 3GPP IMS MODEM1 视频 */
+    /* 3GPP IMS MODEM1 ???? */
     PS_IFACE_ID_RMNET_IMS10,
-    /* 3GPP IMS MODEM0 紧急 */
+    /* 3GPP IMS MODEM0 ???? */
     PS_IFACE_ID_RMNET_EMC0,
-    /* 3GPP IMS MODEM1 紧急 */
+    /* 3GPP IMS MODEM1 ???? */
     PS_IFACE_ID_RMNET_EMC1,
 
-    /* IWLAN IMS MODEM0 普通 */
+    /* IWLAN IMS MODEM0 ???? */
     PS_IFACE_ID_RMNET_R_IMS00,
-    /* IWLAN IMS MODEM1 紧急 */
+    /* IWLAN IMS MODEM1 ???? */
     PS_IFACE_ID_RMNET_R_IMS01,
-    /* IWLAN IMS MODEM0 信令 */
+    /* IWLAN IMS MODEM0 ???? */
     PS_IFACE_ID_RMNET_R_IMS10,
-    /* IWLAN IMS MODEM1 紧急 */
+    /* IWLAN IMS MODEM1 ???? */
     PS_IFACE_ID_RMNET_R_IMS11,
 
-    /* IMS MODEM0 普通 */
+    /* IMS MODEM0 ???? */
     PS_IFACE_ID_NIC_IMS00,
-    /* IMS MODEM1 普通 */
+    /* IMS MODEM1 ???? */
     PS_IFACE_ID_NIC_IMS10,
-    /* IMS MODEM0 紧急 */
+    /* IMS MODEM0 ???? */
     PS_IFACE_ID_NIC_EMC0,
-    /* IMS MODEM1 紧急 */
+    /* IMS MODEM1 ???? */
     PS_IFACE_ID_NIC_EMC1,
 
-    /* 保留 */
+    /* ???? */
 
     PS_IFACE_ID_BUTT
 };
@@ -121,7 +121,7 @@ typedef unsigned char PS_IFACE_ID_ENUM_UINT8;
 
 
 /*****************************************************************************
-  3 宏定义
+  3 ??????
 *****************************************************************************/
 
 

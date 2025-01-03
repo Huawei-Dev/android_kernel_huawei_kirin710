@@ -50,7 +50,7 @@
 #define  AT_IMSA_INTERFACE_H
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "vos.h"
 #include "TafTypeDef.h"
@@ -89,7 +89,7 @@ extern "C" {
 
 #define IMSA_AT_PDN_FAIL_CAUSE_SM_NW_SECTION_BEGIN      (0x0100)
 
-/* 当前ims注册失败网侧上报最大字符串长度为255 */
+/* ????ims????????????????????????????????255 */
 #define IMSA_AT_REG_FAIL_CAUSE_STR_MAX_LEN              (256)
 #define IMSA_AT_PDN_FAIL_CAUSE_WIFI_NW_CAUSE_SECTION_BEGIN      (0x10000)
 #define AT_IMSA_MAX_EMERGENCY_AID_LEN                   (256)
@@ -100,7 +100,7 @@ extern "C" {
 #define IMSA_AT_RTT_REASON_TEXT_MAX_LEN                     (64)
 
 /*****************************************************************************
-  2 枚举定义
+  2 ????????
 *****************************************************************************/
 
 enum AT_IMSA_MSG_TYPE_ENUM
@@ -310,9 +310,9 @@ typedef  VOS_UINT32  AT_IMSA_SRVCC_HANDVOER_ENUM_UINT32;
 
 enum AT_IMSA_BATTERY_STATUS_ENUM
 {
-    AT_IMSA_BATTERY_STATUS_NORMAL                 = 0,                          /* 正常 */
-    AT_IMSA_BATTERY_STATUS_LOW,                                                 /* 低电 */
-    AT_IMSA_BATTERY_STATUS_EXHAUST,                                             /* 电池耗尽 */
+    AT_IMSA_BATTERY_STATUS_NORMAL                 = 0,                          /* ???? */
+    AT_IMSA_BATTERY_STATUS_LOW,                                                 /* ???? */
+    AT_IMSA_BATTERY_STATUS_EXHAUST,                                             /* ???????? */
 
     AT_IMSA_BATTERY_STATUS_BUTT
 };
@@ -385,19 +385,19 @@ typedef VOS_UINT8 IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8;
 
 enum IMSA_AT_HO_CAUSE_ENUM
 {
-    IMSA_AT_HO_CAUSE_SUCCESS                    = 0,       /**< HO命令执行成功 */
-    IMSA_AT_HO_CAUSE_FAIL_PARA_ERR              = 1,       /**< HO命令执行失败，由于参数错误 */
-    IMSA_AT_HO_CAUSE_FAIL_CN_REJ                = 2,       /**< HO命令执行失败，由于被网侧拒绝 */
-    IMSA_AT_HO_CAUSE_FAIL_TIMER_EXP             = 3,       /**< HO命令执行失败，由于定时器超时 */
-    IMSA_AT_HO_CAUSE_FAIL_CONN_RELEASING        = 4,       /**< HO命令执行失败，由于正在释放连接 */
-    IMSA_AT_HO_CAUSE_FAIL_PDP_ACTIVATE_LIMIT    = 5,       /**< HO命令执行失败，由于激活的承载数限制 */
-    IMSA_AT_HO_CAUSE_FAIL_SAME_APN_OPERATING    = 6,       /**< HO命令执行失败，由于APS正在执行操作 */
-    IMSA_AT_HO_CAUSE_FAIL_TEMP_FORBIDDEN        = 7,       /**< HO命令执行失败，收到临时被拒原因值或者网侧不响应 */
-    IMSA_AT_HO_CAUSE_FAIL_PERM_FORBIDDEN        = 8,       /**< HO命令执行失败，收到永久被拒原因值 */
-    IMSA_AT_HO_CAUSE_FAIL_WIFI_READY_IND_TIMEOUT    = 9,   /**< HO命令执行失败，由于WIFI下发送READY IND超时 */
+    IMSA_AT_HO_CAUSE_SUCCESS                    = 0,       /**< HO???????????? */
+    IMSA_AT_HO_CAUSE_FAIL_PARA_ERR              = 1,       /**< HO?????????????????????????? */
+    IMSA_AT_HO_CAUSE_FAIL_CN_REJ                = 2,       /**< HO???????????????????????????? */
+    IMSA_AT_HO_CAUSE_FAIL_TIMER_EXP             = 3,       /**< HO???????????????????????????? */
+    IMSA_AT_HO_CAUSE_FAIL_CONN_RELEASING        = 4,       /**< HO?????????????????????????????? */
+    IMSA_AT_HO_CAUSE_FAIL_PDP_ACTIVATE_LIMIT    = 5,       /**< HO?????????????????????????????????? */
+    IMSA_AT_HO_CAUSE_FAIL_SAME_APN_OPERATING    = 6,       /**< HO??????????????????APS???????????? */
+    IMSA_AT_HO_CAUSE_FAIL_TEMP_FORBIDDEN        = 7,       /**< HO?????????????????????????????????????????????? */
+    IMSA_AT_HO_CAUSE_FAIL_PERM_FORBIDDEN        = 8,       /**< HO???????????????????????????????? */
+    IMSA_AT_HO_CAUSE_FAIL_WIFI_READY_IND_TIMEOUT    = 9,   /**< HO??????????????????WIFI??????READY IND???? */
 
-    IMSA_AT_HO_CAUSE_FAIL_OHTERS                    = 11,    /**< HO命令执行失败，由于其他原因 */
-	IMSA_AT_HO_CAUSE_FAIL_NO_DSDS_RESOURCE			= 12,    /**< HO命令执行失败，由于DSDS下申请无线资源失败 */
+    IMSA_AT_HO_CAUSE_FAIL_OHTERS                    = 11,    /**< HO?????????????????????????? */
+	IMSA_AT_HO_CAUSE_FAIL_NO_DSDS_RESOURCE			= 12,    /**< HO??????????????????DSDS?????????????????? */
 
     IMSA_AT_HO_CAUSE_BUTT
 };
@@ -409,9 +409,9 @@ typedef VOS_UINT32 IMSA_AT_HO_CAUSE_ENUM_UINT32;
 
 enum IMSA_AT_PCSCF_SRC_ENUM
 {
-    IMSA_AT_PCSCF_SRC_DM_DEFAULT    = 0,    /* P-CSCF地址来源是DM默认配置 */
-    IMSA_AT_PCSCF_SRC_DM            = 1,    /* P-CSCF地址来源是DM服务器 */
-    IMSA_AT_PCSCF_SRC_PCO           = 2,    /* P-CSCF地址来源是PCO */
+    IMSA_AT_PCSCF_SRC_DM_DEFAULT    = 0,    /* P-CSCF??????????DM???????? */
+    IMSA_AT_PCSCF_SRC_DM            = 1,    /* P-CSCF??????????DM?????? */
+    IMSA_AT_PCSCF_SRC_PCO           = 2,    /* P-CSCF??????????PCO */
 
     IMSA_AT_PCSCF_SRC_BUTT
 };
@@ -519,7 +519,7 @@ enum IMSA_AT_REG_FAIL_CAUSE_ENUM
     IMSA_AT_REG_FAIL_CAUSE_FAIL_FORBIDDEN      = 9,
     IMSA_AT_REG_FAIL_CAUSE_FAIL_REREG_FAIL     = 10,
 
-    /* IMS网侧拒绝原因值 300~699,直接填数字，不再一一列举  */
+    /* IMS?????????????? 300~699,????????????????????????  */
 
     IMSA_AT_REG_FAIL_CAUSE_BUTT                = 700,
 };
@@ -587,7 +587,7 @@ enum IMSA_AT_RTT_OPERATION_ENUM
 typedef VOS_UINT8 IMSA_AT_RTT_OPERATION_ENUM_UINT8;
 
 /*****************************************************************************
-  3 类型定义
+  3 ????????
 *****************************************************************************/
 
 typedef struct
@@ -606,7 +606,7 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                              ulMsgId;                            /* _H2ASN_Skip */
     AT_APPCTRL_STRU                         stAppCtrl;
-    VOS_UINT32                              ulResult;                           /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                              ulResult;                           /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_CNF_MSG_STRU;
 
 
@@ -659,7 +659,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved1[1];
-    VOS_UINT8                           ucEncrypt;                              /* 0:不加密，1:加密 */
+    VOS_UINT8                           ucEncrypt;                              /* 0:????????1:???? */
     VOS_UINT8                           aucReserved2[3];
 } AT_IMSA_CALL_ENCRYPT_SET_REQ_STRU;
 
@@ -671,7 +671,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           ucReserved;
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_CALL_ENCRYPT_SET_CNF_STRU;
 
 
@@ -694,7 +694,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved[1];
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_CIREG_SET_CNF_STRU;
 
 
@@ -707,13 +707,13 @@ typedef struct
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved[1];
 
-    VOS_UINT32                          bitOpExtInfo    : 1 ;                   /* +CIREG=2时,标志位置1 */
+    VOS_UINT32                          bitOpExtInfo    : 1 ;                   /* +CIREG=2??,????????1 */
     VOS_UINT32                          bitOpSpare      : 31;
 
     AT_IMSA_IMS_REG_STATE_REPORT_ENUM_UINT32    enCireg;
     VOS_UINT32                          ulRegInfo;
-    VOS_UINT32                          ulExtInfo;                              /* +CIREG=2时 ，扩展信息暂时回复0 */
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulExtInfo;                              /* +CIREG=2?? ??????????????????0 */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_CIREG_QRY_CNF_STRU;
 
 
@@ -721,8 +721,8 @@ typedef struct
 {
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
-    VOS_UINT16                          usClientId;                             /* 主动上报时填0X3FFF */
-    VOS_UINT8                           ucOpId;                                 /* 填0 */
+    VOS_UINT16                          usClientId;                             /* ????????????0X3FFF */
+    VOS_UINT8                           ucOpId;                                 /* ??0 */
     VOS_UINT8                           aucReserved[1];
 
     VOS_UINT32                          bitOpExtInfo    : 1 ;
@@ -753,7 +753,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved[1];
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_CIREP_SET_CNF_STRU;
 
 
@@ -767,7 +767,7 @@ typedef struct
     VOS_UINT8                           aucReserved[1];
     AT_IMSA_CIREP_REPORT_ENUM_UINT32            enReport;
     AT_IMSA_IMSVOPS_CAPABILITY_ENUM_UINT32      enImsvops;
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_CIREP_QRY_CNF_STRU;
 
 
@@ -778,7 +778,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved[1];
-    VOS_UINT32                          ulResult;              /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;              /* ????????VOS_OK??????????VOS_ERR */
     VOS_UINT32                          ulImpuLen;
     VOS_CHAR                            aucImpu[AT_IMSA_IMPU_MAX_LENGTH];
     VOS_UINT32                          ulImpuLenVirtual;
@@ -793,7 +793,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved[1];
-    VOS_UINT32                          ulResult;              /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;              /* ????????VOS_OK??????????VOS_ERR */
     VOS_UINT32                          ulImpiLen;
     VOS_CHAR                            aucImpi[AT_IMSA_IMPI_MAX_LENGTH];
 } IMSA_AT_VOLTEIMPI_QRY_CNF_STRU;
@@ -805,7 +805,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved[1];
-    VOS_UINT32                          ulResult;              /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;              /* ????????VOS_OK??????????VOS_ERR */
     VOS_UINT32                          ulDomainLen;
     VOS_CHAR                            aucDomain[AT_IMSA_DOMAIN_MAX_LENGTH];
 } IMSA_AT_VOLTEDOMAIN_QRY_CNF_STRU;
@@ -832,8 +832,8 @@ typedef struct
 {
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
-    VOS_UINT16                          usClientId;                             /* 主动上报时填0X3FFF */
-    VOS_UINT8                           ucOpId;                                 /* 填0 */
+    VOS_UINT16                          usClientId;                             /* ????????????0X3FFF */
+    VOS_UINT8                           ucOpId;                                 /* ??0 */
     VOS_UINT8                           aucReserved[1];
     AT_IMSA_SRVCC_HANDVOER_ENUM_UINT32  enHandover;
 } IMSA_AT_CIREPH_IND_STRU;
@@ -843,8 +843,8 @@ typedef struct
 {
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
-    VOS_UINT16                          usClientId;                             /* 主动上报时填0X3FFF */
-    VOS_UINT8                           ucOpId;                                 /* 填0 */
+    VOS_UINT16                          usClientId;                             /* ????????????0X3FFF */
+    VOS_UINT8                           ucOpId;                                 /* ??0 */
     VOS_UINT8                           aucReserved[1];
     AT_IMSA_IMSVOPS_CAPABILITY_ENUM_UINT32      enImsvops;
 } IMSA_AT_CIREPI_IND_STRU;
@@ -857,7 +857,7 @@ typedef struct
     VOS_UINT32                          ulMsgId;               /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8     enRatType;                  /* 注册域 */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8     enRatType;                  /* ?????? */
     TAF_PDP_ADDR_STRU                   stPdpAddr;
     TAF_PDP_DNS_STRU                    stIpv4Dns;
     TAF_PDP_IPV6_DNS_STRU               stIpv6Dns;
@@ -872,13 +872,13 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     TAF_PDP_TYPE_ENUM_UINT8             enPdpType;
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8     enRatType;             /* 注册域 */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8     enRatType;             /* ?????? */
     VOS_UINT8                           aucReserved[3];
 } IMSA_AT_VT_PDP_DEACTIVATE_IND_STRU;
 
 /*****************************************************************************
- 结构名称  : IMSA_AT_EMC_PDN_ACTIVATE_IND_STRU
- 结构说明  : ID_IMSA_AT_EMC_PDN_ACTIVATE_IND 消息结构
+ ????????  : IMSA_AT_EMC_PDN_ACTIVATE_IND_STRU
+ ????????  : ID_IMSA_AT_EMC_PDN_ACTIVATE_IND ????????
 *****************************************************************************/
 typedef struct
 {
@@ -895,8 +895,8 @@ typedef struct
 } IMSA_AT_EMC_PDN_ACTIVATE_IND_STRU;
 
 /*****************************************************************************
- 结构名称  : IMSA_AT_EMC_PDN_ACTIVATE_IND_STRU
- 结构说明  : ID_IMSA_AT_EMC_PDN_DEACTIVATE_IND 消息结构
+ ????????  : IMSA_AT_EMC_PDN_ACTIVATE_IND_STRU
+ ????????  : ID_IMSA_AT_EMC_PDN_DEACTIVATE_IND ????????
 *****************************************************************************/
 typedef struct
 {
@@ -964,26 +964,26 @@ typedef struct
 {
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                              ulMsgId;                            /* _H2ASN_Skip */
-    VOS_UINT16                              usClientId;                         /* 主动上报时填0X3FFF */
-    VOS_UINT8                               ucOpId;                             /* 填0 */
-    IMSA_AT_IMS_RAT_HO_STATUS_ENUM_UINT8    enHoStatus;                         /* 切换状态 */
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enSrcRat;                           /* 原有IMS注册域 */
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enDstRat;                           /* 目标IMS注册域 */
+    VOS_UINT16                              usClientId;                         /* ????????????0X3FFF */
+    VOS_UINT8                               ucOpId;                             /* ??0 */
+    IMSA_AT_IMS_RAT_HO_STATUS_ENUM_UINT8    enHoStatus;                         /* ???????? */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enSrcRat;                           /* ????IMS?????? */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enDstRat;                           /* ????IMS?????? */
     VOS_UINT8                               aucReserved[2];
-    IMSA_AT_HO_CAUSE_ENUM_UINT32            enCause;                            /* 切换失败原因值 */
+    IMSA_AT_HO_CAUSE_ENUM_UINT32            enCause;                            /* ?????????????? */
 } IMSA_AT_IMS_RAT_HANDOVER_IND_STRU;
 
 
 typedef struct
 {
-    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enSmsSrvStatus;                     /* 短信的IMS服务状态 */
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enSmsSrvRat;                        /* 短信的IMS服务域 */
-    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enVoIpSrvStatus;                    /* VoIP的IMS服务状态 */
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enVoIpSrvRat;                       /* VoIP的IMS服务域 */
-    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enVtSrvStatus;                      /* VT的IMS服务状态 */
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enVtSrvRat;                         /* VT的IMS服务域 */
-    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enVsSrvStatus;                      /* VS的IMS服务状态 */
-    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enVsSrvRat;                         /* VS的IMS服务域 */
+    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enSmsSrvStatus;                     /* ??????IMS???????? */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enSmsSrvRat;                        /* ??????IMS?????? */
+    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enVoIpSrvStatus;                    /* VoIP??IMS???????? */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enVoIpSrvRat;                       /* VoIP??IMS?????? */
+    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enVtSrvStatus;                      /* VT??IMS???????? */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enVtSrvRat;                         /* VT??IMS?????? */
+    IMSA_AT_IMS_SERVICE_STATUS_ENUM_UINT8   enVsSrvStatus;                      /* VS??IMS???????? */
+    IMSA_AT_IMS_RAT_TYPE_ENUM_UINT8         enVsSrvRat;                         /* VS??IMS?????? */
 } IMSA_AT_IMS_SRV_STATUS_INFO_STRU;
 
 
@@ -991,8 +991,8 @@ typedef struct
 {
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                              ulMsgId;                            /* _H2ASN_Skip */
-    VOS_UINT16                              usClientId;                         /* 主动上报时填0X3FFF */
-    VOS_UINT8                               ucOpId;                             /* 填0 */
+    VOS_UINT16                              usClientId;                         /* ????????????0X3FFF */
+    VOS_UINT8                               ucOpId;                             /* ??0 */
     VOS_UINT8                               aucReserved[1];
     IMSA_AT_IMS_SRV_STATUS_INFO_STRU        stImsSrvStatInfo;
 } IMSA_AT_IMS_SRV_STATUS_UPDATE_IND_STRU;
@@ -1025,12 +1025,12 @@ typedef struct
     VOS_UINT32                          bitOpSpare                   : 17;
 
     VOS_UINT32                          ulAmrWbOctetAcigned;
-    VOS_UINT32                          ulAmrWbBandWidthEfficient;              /* 接口预留，IMSA不处理 */
+    VOS_UINT32                          ulAmrWbBandWidthEfficient;              /* ??????????IMSA?????? */
     VOS_UINT32                          ulAmrOctetAcigned;
-    VOS_UINT32                          ulAmrBandWidthEfficient;                /* 接口预留，IMSA不处理 */
+    VOS_UINT32                          ulAmrBandWidthEfficient;                /* ??????????IMSA?????? */
     VOS_UINT32                          ulAmrWbMode;
-    VOS_UINT32                          ulDtmfWb;                               /* 接口预留，IMSA不处理 */
-    VOS_UINT32                          ulDtmfNb;                               /* 接口预留，IMSA不处理 */
+    VOS_UINT32                          ulDtmfWb;                               /* ??????????IMSA?????? */
+    VOS_UINT32                          ulDtmfNb;                               /* ??????????IMSA?????? */
     VOS_UINT32                          ulSpeechStart;
     VOS_UINT32                          ulSpeechEnd;
     VOS_UINT32                          ulVideoStart;
@@ -1059,7 +1059,7 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_DMDYN_SET_CNF_STRU;
 
 
@@ -1076,8 +1076,8 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名称: IMSA_PDP_IPV4_PCSCF_STRU
- 结构说明: IPv4 P-CSCF地址结构体
+ ????????: IMSA_PDP_IPV4_PCSCF_STRU
+ ????????: IPv4 P-CSCF??????????
 *****************************************************************************/
 typedef struct
 {
@@ -1098,8 +1098,8 @@ typedef struct
 } IMSA_AT_IPV4_PCSCF_STRU;
 
 /*****************************************************************************
- 结构名称: IMSA_PDP_IPV6_PCSCF_STRU
- 结构说明: IPv6 P-CSCF地址结构体
+ ????????: IMSA_PDP_IPV6_PCSCF_STRU
+ ????????: IPv6 P-CSCF??????????
 *****************************************************************************/
 typedef struct
 {
@@ -1121,7 +1121,7 @@ typedef struct
 
 typedef struct
 {
-    IMSA_AT_PCSCF_SRC_ENUM_UINT32         enSrc;                                /* 区分P-CSCF地址来源， */
+    IMSA_AT_PCSCF_SRC_ENUM_UINT32         enSrc;                                /* ????P-CSCF?????????? */
     IMSA_AT_IPV6_PCSCF_STRU               stIpv6Pcscf;
     IMSA_AT_IPV4_PCSCF_STRU               stIpv4Pcscf;
 }IMSA_AT_PCSCF_STRU;
@@ -1139,7 +1139,7 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 } IMSA_AT_PCSCF_SET_CNF_STRU;
 
 typedef AT_IMSA_MSG_STRU AT_IMSA_PCSCF_QRY_REQ_STRU;
@@ -1204,7 +1204,7 @@ typedef struct
     VOS_MSG_HEADER
     VOS_UINT32                              ulMsgId;
     AT_APPCTRL_STRU                         stAppCtrl;
-    VOS_UINT32                              ulResult;                   /* 成功返回 VOS_OK,失败返回 VOS_ERR*/
+    VOS_UINT32                              ulResult;                   /* ???????? VOS_OK,???????? VOS_ERR*/
 }IMSA_AT_IMSTIMER_SET_CNF_STRU;
 
 
@@ -1313,7 +1313,7 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                              ulMsgId;                            /* _H2ASN_Skip */
     AT_APPCTRL_STRU                         stAppCtrl;
-    VOS_UINT32                              ulResult;                           /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                              ulResult;                           /* ????????VOS_OK??????????VOS_ERR */
     IMSA_AT_NICKNAME_INFO_STRU              stNickName;
 } IMSA_AT_NICKNAME_QRY_CNF_STRU;
 
@@ -1373,7 +1373,7 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                            /* _H2ASN_Skip */
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT8                           ucReportFlag;   /* VOS_TRUE:允许主动上报；VOS_FALSE:不允许上报 */
+    VOS_UINT8                           ucReportFlag;   /* VOS_TRUE:??????????????VOS_FALSE:?????????? */
     VOS_UINT8                           aucReserv[3];
 } AT_IMSA_REGERR_REPORT_SET_REQ_STRU;
 
@@ -1390,7 +1390,7 @@ typedef struct
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
 
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT32                          ulResult;                               /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                          ulResult;                               /* ????????VOS_OK??????????VOS_ERR */
 
     VOS_UINT8                           ucReportFlag;
     VOS_UINT8                           aucReserved[7];
@@ -1407,7 +1407,7 @@ typedef struct
     VOS_UINT8                               aucRsv[2];
     IMSA_AT_PDN_FAIL_CAUSE_ENUM_UINT32      enImsaPdnFailCause;
     IMSA_AT_REG_FAIL_CAUSE_ENUM_UINT32      enImsaRegFailCause;
-    VOS_CHAR                                acImsRegFailReasonCtx[IMSA_AT_REG_FAIL_CAUSE_STR_MAX_LEN];         /* 无字符串时全0 */
+    VOS_CHAR                                acImsRegFailReasonCtx[IMSA_AT_REG_FAIL_CAUSE_STR_MAX_LEN];         /* ????????????0 */
 } IMSA_AT_REGERR_REPORT_IND_STRU;
 
 
@@ -1417,8 +1417,8 @@ typedef struct
     VOS_UINT32                              bitOpIpsecFlag       : 1;
     VOS_UINT32                              bitOpKeepAliveFlag   : 1;
     VOS_UINT32                              bitOpRev             : 30;
-    VOS_UINT32                              ulIpsecFlag;                        /* VOS_TRUE:支持IPSEC；VOS_FALSE:不支持IPSEC */
-    VOS_UINT32                              ulKeepAliveFlag;                    /* VOS_TRUE:支持KEEP ALIVE；VOS_FALSE:不支持KEEP ALIVE */
+    VOS_UINT32                              ulIpsecFlag;                        /* VOS_TRUE:????IPSEC??VOS_FALSE:??????IPSEC */
+    VOS_UINT32                              ulKeepAliveFlag;                    /* VOS_TRUE:????KEEP ALIVE??VOS_FALSE:??????KEEP ALIVE */
 } AT_IMSA_IMS_IP_CAP_SET_INFO_STRU;
 
 
@@ -1467,7 +1467,7 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                              ulMsgId;                            /* _H2ASN_Skip */
     AT_APPCTRL_STRU                         stAppCtrl;
-    VOS_UINT32                              ulResult;                           /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                              ulResult;                           /* ????????VOS_OK??????????VOS_ERR */
     AT_IMSA_IMS_SRV_STAT_REPORT_ENUM_UINT32 enImsSrvStatRpt;
 } IMSA_AT_IMS_SRV_STAT_REPORT_QRY_CNF_STRU;
 
@@ -1480,14 +1480,14 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                              ulMsgId;                            /* _H2ASN_Skip */
     AT_APPCTRL_STRU                         stAppCtrl;
-    VOS_UINT32                              ulResult;                           /* 成功返回VOS_OK，失败返回VOS_ERR */
+    VOS_UINT32                              ulResult;                           /* ????????VOS_OK??????????VOS_ERR */
     IMSA_AT_IMS_SRV_STATUS_INFO_STRU        stImsSrvStatInfo;
 } IMSA_AT_IMS_SERVICE_STATUS_QRY_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                              ulAddressIdLen;                     /* Address Id 有效长度，允许为0 */
+    VOS_UINT32                              ulAddressIdLen;                     /* Address Id ????????????????0 */
     VOS_CHAR                                acAddressId[AT_IMSA_MAX_EMERGENCY_AID_LEN];
 } AT_IMSA_EMERGENCY_AID_INFO_STRU;
 
@@ -1573,7 +1573,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           ucReserved;
-    VOS_UINT8                           ucViceCfg;      /*0-1，VICE功能开关，0:功能关闭  */
+    VOS_UINT8                           ucViceCfg;      /*0-1??VICE??????????0:????????  */
     VOS_UINT8                           aucReserved[3];
 } AT_IMSA_VICECFG_SET_REQ_STRU;
 
@@ -1589,8 +1589,8 @@ typedef struct
     VOS_MSG_HEADER
     VOS_UINT32                          ulMsgId;
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT32                          ulResult;        /* 成功返回VOS_OK, 失败返回 VOS_ERR  */
-    VOS_UINT8                           ucViceCfg;       /* VICE特性开关，0:功能关闭 */
+    VOS_UINT32                          ulResult;        /* ????????VOS_OK, ???????? VOS_ERR  */
+    VOS_UINT8                           ucViceCfg;       /* VICE??????????0:???????? */
     VOS_UINT8                           aucReserved[3];
 } IMSA_AT_VICECFG_QRY_CNF_STRU;
 
@@ -1614,7 +1614,7 @@ typedef struct
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           ucReserved;
-    VOS_UINT8                           ucRttCfg;                               /* RTT功能开关，0:功能关闭 1:功能开启  */
+    VOS_UINT8                           ucRttCfg;                               /* RTT??????????0:???????? 1:????????  */
     VOS_UINT8                           aucReserved[3];
 } AT_IMSA_RTTCFG_SET_REQ_STRU;
 
@@ -1624,8 +1624,8 @@ typedef IMSA_AT_CNF_MSG_STRU IMSA_AT_RTTCFG_SET_CNF_STRU;
 
 typedef struct
 {
-    VOS_UINT8                           ucCallId;        /*1-7，呼叫ID */
-    AT_IMSA_RTT_MODIFY_OPT_ENUM_UINT8   enOperation;     /*RTT特性Modify操作类型 */
+    VOS_UINT8                           ucCallId;        /*1-7??????ID */
+    AT_IMSA_RTT_MODIFY_OPT_ENUM_UINT8   enOperation;     /*RTT????Modify???????? */
     VOS_UINT8                           aucReserved[2];
 }AT_IMSA_RTT_MODIFY_STRU;
 
@@ -1663,7 +1663,7 @@ typedef struct
     VOS_MSG_HEADER
     VOS_UINT32                              ulMsgId;
     AT_APPCTRL_STRU                         stAppCtrl;
-    VOS_UINT32                              ulResult;        /* 成功返回VOS_OK, 失败返回 VOS_ERR  */
+    VOS_UINT32                              ulResult;        /* ????????VOS_OK, ???????? VOS_ERR  */
     VOS_UINT32                              ulTcpThreshold;
 } IMSA_AT_TRANSPORT_TYPE_QRY_CNF_STRU;
 
@@ -1671,9 +1671,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucCallId;        /*呼叫ID指示，1-7  */
-    IMSA_AT_RTT_EVENT_ENUM_UINT8        enEvent;         /*RTT事件类型，0-3 */
-    IMSA_AT_RTT_EVT_REASON_ENUM_UINT8   enEvtReason;     /*RTT事件触发原因,0-1 */
+    VOS_UINT8                           ucCallId;        /*????ID??????1-7  */
+    IMSA_AT_RTT_EVENT_ENUM_UINT8        enEvent;         /*RTT??????????0-3 */
+    IMSA_AT_RTT_EVT_REASON_ENUM_UINT8   enEvtReason;     /*RTT????????????,0-1 */
     VOS_UINT8                           ucReserved;
 } IMSA_AT_RTT_EVENT_STRU;
 
@@ -1689,10 +1689,10 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucCallId;           /* 呼叫ID指示，1-7  */
-    IMSA_AT_RTT_OPERATION_ENUM_UINT8    enOperation;        /* RTT异常操作类型，0-1 */
-    VOS_INT16                           sCauseCode;         /* RTT异常原因，缺省-1，1-127:Q850，400-699:Sip响应码  */
-    VOS_CHAR                            acReasonText[IMSA_AT_RTT_REASON_TEXT_MAX_LEN];  /*字符串类型，RTT异常原因，缺省为"unknown" */
+    VOS_UINT8                           ucCallId;           /* ????ID??????1-7  */
+    IMSA_AT_RTT_OPERATION_ENUM_UINT8    enOperation;        /* RTT??????????????0-1 */
+    VOS_INT16                           sCauseCode;         /* RTT??????????????-1??1-127:Q850??400-699:Sip??????  */
+    VOS_CHAR                            acReasonText[IMSA_AT_RTT_REASON_TEXT_MAX_LEN];  /*????????????RTT????????????????"unknown" */
 } IMSA_AT_RTT_ERROR_STRU;
 
 typedef struct
@@ -1705,24 +1705,24 @@ typedef struct
 
 
 /*****************************************************************************
-  4 宏定义
+  4 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 接口函数声明
+  6 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  7 OTHERS定义
+  7 OTHERS????
 *****************************************************************************/
 
-/* ASN解析结构 */
+/* ASN???????? */
 typedef struct
 {
     VOS_UINT32                          ulMsgId;                                /*_H2ASN_MsgChoice_Export AT_IMSA_MSG_TYPE_ENUM_UINT32 */

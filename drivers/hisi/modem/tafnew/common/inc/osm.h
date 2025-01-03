@@ -61,15 +61,15 @@ extern "C" {
 typedef struct
 {
     VOS_UINT32 ulMsgId;
-    VOS_UINT32 ulParam2;            /* 记录ulLen信息 */
-    VOS_UINT32 ulParam3;            /* 记录RcvPid信息 */
+    VOS_UINT32 ulParam2;            /* ????ulLen???? */
+    VOS_UINT32 ulParam3;            /* ????RcvPid???? */
     VOS_UINT8 *ulParam1;
 } OS_MSG_STRU;
 
 typedef struct
 {
     VOS_UINT32 ulTimeId;
-    VOS_UINT32 ulPara;    /* 对应原来的ulParam2*/
+    VOS_UINT32 ulPara;    /* ??????????ulParam2*/
 } OSM_MSG_TIMER_STRU;
 
 

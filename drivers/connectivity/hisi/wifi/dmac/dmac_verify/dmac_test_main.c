@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "frw_ext_if.h"
@@ -27,14 +27,14 @@ extern "C" {
 
 #ifdef _PRE_WLAN_CHIP_TEST
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #define DMAC_TEST_OFFSET(type, member) ((long) &((type *) 0)->member)
 
 dmac_test_mng_stru  g_st_dmac_test_mng;
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void  dmac_test_init(oal_void)
@@ -109,17 +109,17 @@ oal_void dmac_test_set_addr4(hal_tx_dscr_stru * pst_tx_dscr)
     ul_len = DMAC_TEST_OFFSET(mac_ieee80211_qos_frame_addr4_stru, auc_address4);
     /*lint +e413*/
     ul_left_len = OAL_SIZEOF(mac_ieee80211_qos_frame_stru) - ul_len;
-    /* 复制addr4前的字段 */
+    /* ????addr4???????? */
     oal_memcopy(&st_qos_addr4, pst_qos, ul_len);
-    /* 设置addr4字段 */
+    /* ????addr4???? */
     oal_memcopy(st_qos_addr4.auc_address4, pst_qos->auc_address3, OAL_MAC_ADDR_LEN);
-    /* 复制addr4后的字段 */
+    /* ????addr4???????? */
     oal_memcopy((oal_uint8 *)&st_qos_addr4 + WLAN_MAC_ADDR_LEN + ul_len, (oal_uint8 *)pst_qos + ul_len, ul_left_len);
 
-    /* 设置TO DS和FROM DS */
+    /* ????TO DS??FROM DS */
     st_qos_addr4.st_frame_control.bit_from_ds = 1;
     st_qos_addr4.st_frame_control.bit_to_ds = 1;
-    /* 设置描述符，帧头长度为4地址长度  */
+    /* ??????????????????????4????????  */
     oal_memcopy(mac_get_cb_frame_hdr(pst_tx_ctrl), &st_qos_addr4, OAL_SIZEOF(mac_ieee80211_qos_frame_addr4_stru));
     MAC_GET_CB_FRAME_HEADER_LENGTH(pst_tx_ctrl) = MAC_80211_QOS_4ADDR_FRAME_LEN;
     return;

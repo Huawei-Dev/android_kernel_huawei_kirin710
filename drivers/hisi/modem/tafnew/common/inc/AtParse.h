@@ -69,9 +69,9 @@ extern "C" {
 
 #define AT_CMD_MAX_LEN                          5000
 
-#define AT_CMD_OUTPUT_MAX_LEN                   (1500)                          /* 所有支持AT命令的通道MODEM限制最小为1500BYTE
-                                                                                   VCOM通道限制为4K，其他通道由DMS模块限制为5120字节，
-                                                                                   此处按最小的MODEM限制
+#define AT_CMD_OUTPUT_MAX_LEN                   (1500)                          /* ????????AT??????????MODEM??????????1500BYTE
+                                                                                   VCOM??????????4K????????????DMS??????????5120??????
+                                                                                   ????????????MODEM????
                                                                                 */
 
 #define AT_CMD_ECONF_DIAL_MAX_PARA_NUM          (11)
@@ -81,7 +81,7 @@ extern "C" {
 #define AT_CMD_ECKMC_MAX_VERSION                (255)
 #define AT_CMD_ECCALL_MAX_NUM_LENGTH            (11)
 
-#define AT_CMD_MAX_ANT_BIT_MASK                 (0x3)                           /* 目前是双天线，bitMask为0x3(0011) */
+#define AT_CMD_MAX_ANT_BIT_MASK                 (0x3)                           /* ??????????????bitMask??0x3(0011) */
 
 #define AT_CMD_MCCFREQ_BS_MAX_LENGTH             (500)
 #define AT_CMD_BLACK_CELL_BS_MAX_LENGTH          (500)
@@ -101,12 +101,12 @@ extern "C" {
         *pusLength += (TAF_UINT16)ulTmp;\
     }
 /*******************************************************************************
- 结构名    : AT_DATE_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 十进制数字记录日期的所有成员，
-             包括完整的年份，月份，日期，小时，分钟，秒钟
-             单位分别为年，月，日，小时，分钟，秒
+ ??????    : AT_DATE_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ??????????????????????????????
+             ????????????????????????????????????????????
+             ????????????????????????????????????
 *******************************************************************************/
 typedef struct
 {
@@ -126,7 +126,7 @@ enum AT_RRETURN_CODE_ENUM
     AT_WAIT_XML_INPUT,
     AT_WAIT_ASYNC_RETURN,
 
-    AT_BASIC_CODE_ENUM_BEGAIN,               /* BASIC CODE 开始 */
+    AT_BASIC_CODE_ENUM_BEGAIN,               /* BASIC CODE ???? */
     AT_OK,
     AT_CONNECT,
     AT_RING,
@@ -135,9 +135,9 @@ enum AT_RRETURN_CODE_ENUM
     AT_NO_DIALTONE,
     AT_BUSY,
     AT_NO_ANSWER,
-    AT_BASIC_CODE_ENUM_END,                  /* BASIC CODE 结束 */
+    AT_BASIC_CODE_ENUM_END,                  /* BASIC CODE ???? */
 
-    AT_CME_ERROR_ENUM_BEGAIN,                /* CME ERROR 开始 */
+    AT_CME_ERROR_ENUM_BEGAIN,                /* CME ERROR ???? */
 
     AT_CME_PHONE_FAILURE,
     AT_CME_NO_CONNECTION_TO_PHONE,
@@ -273,10 +273,10 @@ enum AT_RRETURN_CODE_ENUM
     AT_CME_FUNC_DISABLE,
     AT_CME_SCI_ERROR,
 
-    AT_CME_ERROR_ENUM_END,                   /* CME ERROR 结束 */
+    AT_CME_ERROR_ENUM_END,                   /* CME ERROR ???? */
 
     AT_DEVICE_ERROR_BEGIN,
-    AT_DEVICE_MODE_ERROR,                 /* 装备AT命令错误值 模式错误*/
+    AT_DEVICE_MODE_ERROR,                 /* ????AT?????????? ????????*/
     AT_FCHAN_BAND_NOT_MATCH,
     AT_FCHAN_SET_CHANNEL_FAIL,
     AT_FCHAN_BAND_CHANNEL_NOT_MATCH,
@@ -310,11 +310,11 @@ enum AT_RRETURN_CODE_ENUM
     AT_DEVICE_NOT_SUPPORT,
     AT_DEVICE_ERR_UNKNOWN,
     AT_DEVICE_INVALID_PARAMETERS,
-    AT_DEVICE_NV_NOT_SUPPORT_ID,                       /* 520  NV不存在 */
-    AT_DEVICE_NV_READ_FAILURE,                         /* 521  NV读取失败 */
-    AT_DEVICE_NV_WRITE_FAIL_OVERLEN,                   /* 522  NV写失败，长度过长 */
-    AT_DEVICE_NV_WRITE_FAIL_BADFLASH,                  /* 523  NV写失败，Flash坏块 */
-    AT_DEVICE_NV_WRITE_FAIL_UNKNOWN,                   /* 524  NV写失败，其它错误 */
+    AT_DEVICE_NV_NOT_SUPPORT_ID,                       /* 520  NV?????? */
+    AT_DEVICE_NV_READ_FAILURE,                         /* 521  NV???????? */
+    AT_DEVICE_NV_WRITE_FAIL_OVERLEN,                   /* 522  NV???????????????? */
+    AT_DEVICE_NV_WRITE_FAIL_BADFLASH,                  /* 523  NV????????Flash???? */
+    AT_DEVICE_NV_WRITE_FAIL_UNKNOWN,                   /* 524  NV???????????????? */
     AT_DEVICE_VCTCXO_OVER_HIGH,
     AT_DEVICE_UE_MODE_ERR,
     AT_DEVICE_NOT_SET_CHAN,
@@ -329,7 +329,7 @@ enum AT_RRETURN_CODE_ENUM
     AT_DEVICE_CHAN_BAND_CHAN_NOT_MAP,
     AT_DEVICE_SET_TX_POWER_FAILURE,
     AT_DEVICE_SET_PA_LEVEL_FAILURE,
-    AT_DEVICE_NOT_SET_CURRENT_CHAN,                    /* 与AT_CMD_NOT_SET_CHAN重复，考虑去除 */
+    AT_DEVICE_NOT_SET_CURRENT_CHAN,                    /* ??AT_CMD_NOT_SET_CHAN?????????????? */
     AT_DEVICE_CUR_APC_UNAVAILABLE,
     AT_DEVICE_SET_APC_ERR,
     AT_DEVICE_RD_APC_ERR,
@@ -371,7 +371,7 @@ enum AT_RRETURN_CODE_ENUM
 
     AT_DEVICE_ERROR_END,
 
-    AT_CMS_ERROR_ENUM_BEGAIN,                /* CMS ERROR 开始 */
+    AT_CMS_ERROR_ENUM_BEGAIN,                /* CMS ERROR ???? */
 
     AT_CMS_UNASSIGNED_UNALLOCATED_NUMBER,
     AT_CMS_OPERATOR_DETERMINED_BARRING,
@@ -451,9 +451,9 @@ enum AT_RRETURN_CODE_ENUM
     AT_CMS_MO_SMS_CONTROL_FAILED,
     AT_CMS_UNKNOWN_ERROR,
 
-    AT_CMS_ERROR_ENUM_END,                  /* CME ERROR 结束 */
+    AT_CMS_ERROR_ENUM_END,                  /* CME ERROR ???? */
 
-    AT_CMOLRE_ERR_ENUM_BEGIN,               /* CMOLRE ERROR 开始 */
+    AT_CMOLRE_ERR_ENUM_BEGIN,               /* CMOLRE ERROR ???? */
     AT_CMOLRE_METHOD_NOT_SUPPORTED,
     AT_CMOLRE_ADDITIONAL_ASSIS_DATA_REQIRED,
     AT_CMOLRE_NOT_ENOUGH_SATELLITES,
@@ -465,9 +465,9 @@ enum AT_RRETURN_CODE_ENUM
     AT_CMOLRE_INTERNET_CONN_FAILURE,
     AT_CMOLRE_MEMORY_ERROR,
     AT_CMOLRE_UNKNOWN_ERROR,
-    AT_CMOLRE_ERR_ENUM_END,                 /* CMOLRE ERROR 结束 */
+    AT_CMOLRE_ERR_ENUM_END,                 /* CMOLRE ERROR ???? */
     
-    AT_DIAG_ENUM_BEGIN,               /* DIAG ERROR 开始 */
+    AT_DIAG_ENUM_BEGIN,               /* DIAG ERROR ???? */
     AT_DIAG_USB_NOT_SUPPORT_CPS,
     AT_DIAG_USB_NOT_SUPPORT_CFG,
     AT_DIAG_CPS_SET_ERROR,
@@ -477,13 +477,13 @@ enum AT_RRETURN_CODE_ENUM
     AT_DIAG_VCOM_SET_NOCPS_ERROR,
     AT_DIAG_CFG_SET_ERROR,
     AT_DIAG_GET_PORT_NOT_USB_OR_VCOM,
-    AT_DIAG_ENUM_END,               /* DIAG ERROR 结束 */
+    AT_DIAG_ENUM_END,               /* DIAG ERROR ???? */
     
     AT_CMD_NOT_SUPPORT,
     AT_TOO_MANY_PARA,
    
     AT_ABORT,
-    AT_RRETURN_CODE_BUTT                    /* RETURN CODE 结束 */
+    AT_RRETURN_CODE_BUTT                    /* RETURN CODE ???? */
 };
 
 typedef VOS_UINT32 AT_RRETURN_CODE_ENUM_UINT32;
@@ -506,7 +506,7 @@ enum AT_ENCRYPT_VOICE_ERROR_ENUM
     AT_ENCRYPT_VOICE_INTERNAL_ERROR,
     AT_ENCRYPT_VOICE_MT_CALL_NOTIFICATION,
 
-    /* XSMS的起始原因值 */
+    /* XSMS???????????? */
     AT_ENCRYPT_VOICE_XSMS_SEND_RESULT_FAIL     = 0x1000,
     AT_ENCRYPT_VOICE_XSMS_SEND_RESULT_POOL_FULL,
     AT_ENCRYPT_VOICE_XSMS_SEND_RESULT_LINK_ERR,
@@ -514,7 +514,7 @@ enum AT_ENCRYPT_VOICE_ERROR_ENUM
     AT_ENCRYPT_VOICE_XSMS_SEND_RESULT_ENCODE_ERR,
     AT_ENCRYPT_VOICE_XSMS_SEND_RESULT_UNKNOWN,
 
-    /* 其他XCALL内部原因值 */
+    /* ????XCALL?????????? */
     AT_ENCRYPT_VOICE_SO_NEGO_FAILURE           = 0x2000,
     AT_ENCRYPT_VOICE_TWO_CALL_ENTITY_EXIST,
     AT_ENCRYPT_VOICE_NO_MO_CALL,
@@ -560,24 +560,24 @@ typedef VOS_UINT8 AT_CMD_OPT_TYPE;
 #define AT_CMD_NAME_LEN                         (50)
 
 #if (VOS_WIN32 == VOS_OS_VER)
-#define AT_PARA_MAX_LEN                         (1020)  /* +CGLA命令中字符串长度最大为532 */
+#define AT_PARA_MAX_LEN                         (1020)  /* +CGLA??????????????????????532 */
 #else
-#define AT_PARA_MAX_LEN                         (560)  /* +CGLA命令中字符串长度最大为532 */
+#define AT_PARA_MAX_LEN                         (560)  /* +CGLA??????????????????????532 */
 #endif
 
 #define AT_FW_PARAM_MAX_LEN                     (40)
 
 #define AT_FW_LEN_AT                            (2)
 
-/* 设置当前模式为短信编辑模式或命令处理模式 */
+/* ???????????????????????????????????????? */
 #define AT_PARSE_SMS_CMD_MODE_SET(ucIndex, mode)     (g_stParseContext[ucIndex].ucMode = mode)
 
 typedef struct
 {
     VOS_UINT32 ulParaValue;
-    VOS_UINT8  aucPara[AT_PARA_MAX_LEN + 1];     /* 用来放置解析出的参数字符串 */
+    VOS_UINT8  aucPara[AT_PARA_MAX_LEN + 1];     /* ?????????????????????????? */
     VOS_UINT8  aucReserved[1];
-    VOS_UINT16 usParaLen;                        /* 用来标识参数字符串长度 */
+    VOS_UINT16 usParaLen;                        /* ?????????????????????? */
 }AT_PARSE_PARA_TYPE_STRU;
 
 typedef VOS_UINT32 (*pAtChkFuncType)(AT_PARSE_PARA_TYPE_STRU *pPara);
@@ -586,11 +586,11 @@ typedef VOS_UINT32 (*pAtChkFuncType)(AT_PARSE_PARA_TYPE_STRU *pPara);
 #define AT_STRLEN(Str)          VOS_StrLen(Str)
 #define AT_STRSTR(Str1, Str2 )  VOS_StrStr(Str1, Str2 )
 
-/* 组合命令 */
-#define AT_MAX_NUM_COMBINE_CMD      40   /* 一个AT码流最多可分解为40个组合命令(refer to Q) */
-#define AT_MAX_LEN_COMBINE_CMD      545  /* 一条组合命令最多包含545个字符(refer to Q) */
+/* ???????? */
+#define AT_MAX_NUM_COMBINE_CMD      40   /* ????AT????????????????40??????????(refer to Q) */
+#define AT_MAX_LEN_COMBINE_CMD      545  /* ????????????????????545??????(refer to Q) */
 
-#define AT_DIE_SN_LEN                  (20) /* DIE SN 16进制 20字节长度 */
+#define AT_DIE_SN_LEN                  (20) /* DIE SN 16???? 20???????? */
 
 typedef struct
 {
@@ -619,9 +619,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           aucCmdName[AT_CMD_NAME_LEN + 1];        /* 用来放置解析出的命令名原字符串 */
+    VOS_UINT8                           aucCmdName[AT_CMD_NAME_LEN + 1];        /* ?????????????????????????????? */
     VOS_UINT8                           aucReserved[3];
-    VOS_UINT16                          usCmdNameLen;                           /* 用来标识参数字符串长度 */
+    VOS_UINT16                          usCmdNameLen;                           /* ?????????????????????? */
 }AT_PARSE_CMD_NAME_TYPE_STRU;
 
 typedef struct
@@ -645,44 +645,44 @@ typedef VOS_UINT32 AT_STATUS;
 #define AT_FW_CLIENT_STATUS_READY           (0)
 #define AT_FW_CLIENT_STATUS_PEND            (1)
 
-/* 命令处理函数类型 */
+/* ???????????????? */
 typedef VOS_UINT32 (*PFN_AT_FW_CMD_PROC)(VOS_UINT8 ucClientId);
 
-/* 命令异步处理函数类型 */
+/* ???????????????????? */
 typedef VOS_UINT32 (*PFN_AT_FW_MSG_PROC)(VOS_UINT8 ucClientId, VOS_VOID *pMsgBlock);
 
-/* 主动上报 */
+/* ???????? */
 typedef VOS_UINT32 (*PFN_AT_FW_IND_PROC)(VOS_VOID *pMsgBlock);
 
 
-#define CMD_TBL_E5_IS_LOCKED        (0x00000001)    /* 不受E5锁定控制的命令 */
-#define CMD_TBL_PIN_IS_LOCKED       (0x00000002)    /* 不受PIN码锁定控制的命令 */
-#define CMD_TBL_IS_E5_DOCK          (0x00000004)    /* E5 DOCK命令 */
-#define CMD_TBL_CLAC_IS_INVISIBLE   (0x00000008)    /* +CLAC命令中不输出显示的命令 */
+#define CMD_TBL_E5_IS_LOCKED        (0x00000001)    /* ????E5?????????????? */
+#define CMD_TBL_PIN_IS_LOCKED       (0x00000002)    /* ????PIN???????????????? */
+#define CMD_TBL_IS_E5_DOCK          (0x00000004)    /* E5 DOCK???? */
+#define CMD_TBL_CLAC_IS_INVISIBLE   (0x00000008)    /* +CLAC?????????????????????? */
 
-#define CMD_TBL_LIMITED_NULL        (0x00000000)    /* 最常用的,受E5 PIN码限制的命令 */
+#define CMD_TBL_LIMITED_NULL        (0x00000000)    /* ????????,??E5 PIN???????????? */
 
-#define CMD_TBL_NO_LIMITED          (CMD_TBL_E5_IS_LOCKED|CMD_TBL_PIN_IS_LOCKED)    /* 无任何限制的命令 */
+#define CMD_TBL_NO_LIMITED          (CMD_TBL_E5_IS_LOCKED|CMD_TBL_PIN_IS_LOCKED)    /* ???????????????? */
 
-/* E5形态下与Stick形态下CLAC不显示的命令不相同的有:
+/* E5????????Stick??????CLAC??????????????????????:
    E5:
    +CSIM ^CPDW ^CMLCK ^IMSICHG ^PDPSTUB ^CCC ^COMM ^CAATT ^CELLSRCH ^VMSET ^CDTMFS ^CDTMFE ^DOCK
    S6, S7, T, P, X, Q, &C, &D
    Stick:
    +CBC ^DIALMODE ^PORTSEL ^U2DIAG ^GETPORTMODE ^AT2OM
 
-   相同的有:
+   ????????:
    +CEER +CTFR ^CMSTUB ^CMGSSEG ^CMMI ^FLOWRPTCTRL ^CCIN ^STPD   ^STMN  ^STTR ^STEN  ^CARD  ^CSND ^CMST ^TEST
    ^CMM  ^BOOT $QCDMG  ^CIMEI   ^DWINS ^USSDMODE   ^RSSI ^CVOICE ^DDSETEX ^YJCX ^ADCTEMP ^SETPID ^CGAUTH
 */
-/* 不显示的命令中相同的依然使用 CMD_TBL_CLAC_IS_INVISIBLE来标识
-   不显示的命令中E5特有的使用下面定义的宏 CMD_TBL_CLAC_IS_INVISIBLE_E5
-   不显示的命令中STICK特有的使用下面定义的宏 CMD_TBL_CLAC_IS_INVISIBLE_STICK
+/* ???????????????????????????? CMD_TBL_CLAC_IS_INVISIBLE??????
+   ??????????????E5?????????????????????? CMD_TBL_CLAC_IS_INVISIBLE_E5
+   ??????????????STICK?????????????????????? CMD_TBL_CLAC_IS_INVISIBLE_STICK
 */
 
-/*遗留问题，CLAC在不同形态下如何实现 */
-#define CMD_TBL_CLAC_IS_INVISIBLE_E5         CMD_TBL_LIMITED_NULL         /* E5形态下+CLAC命令中不输出显示的命令 */
-#define CMD_TBL_CLAC_IS_INVISIBLE_STICK      CMD_TBL_LIMITED_NULL          /* STICK形态下+CLAC命令中不输出显示的命令 */
+/*??????????CLAC???????????????????? */
+#define CMD_TBL_CLAC_IS_INVISIBLE_E5         CMD_TBL_LIMITED_NULL         /* E5??????+CLAC?????????????????????? */
+#define CMD_TBL_CLAC_IS_INVISIBLE_STICK      CMD_TBL_LIMITED_NULL          /* STICK??????+CLAC?????????????????????? */
 
 
 #if (FEATURE_ON == FEATURE_LTE)
@@ -879,10 +879,10 @@ typedef VOS_UINT32 (*PFN_AT_FW_IND_PROC)(VOS_VOID *pMsgBlock);
 #define SCICHG_CMD_PARA_STRING          "(0-2),(0-2)"
 #endif
 
-/* 命令表元素定义
+/* ??????????????
    --------------------ulChkFlag------------------------------------------
   | bit31......bit4 |    bit3    |    bit2    |    bit1    |    bit0    |
-  |       保留      |CLAC是否显示|E5 DOCK命令 |SIM锁定限制 | E5密码保护 |
+  |       ????      |CLAC????????|E5 DOCK???? |SIM???????? | E5???????? |
    -----------------------------------------------------------------------
  */
  typedef struct
@@ -898,10 +898,10 @@ typedef VOS_UINT32 (*PFN_AT_FW_IND_PROC)(VOS_VOID *pMsgBlock);
     PFN_AT_FW_CMD_PROC   pfnTestProc;
     VOS_UINT32 ulTestTimeOut;
 
-    PFN_AT_FW_CMD_PROC   pfnAbortProc;  /* 打断函数 */
-    VOS_UINT32 ulAbortTimeOut;          /* 打断定时器 */
+    PFN_AT_FW_CMD_PROC   pfnAbortProc;  /* ???????? */
+    VOS_UINT32 ulAbortTimeOut;          /* ?????????? */
 
-    VOS_UINT32 ulParamErrCode;  /* 解析参数失败时的错误码 */
+    VOS_UINT32 ulParamErrCode;  /* ?????????????????????? */
     VOS_UINT32 ulChkFlag;
 
     const VOS_UINT8* pszCmdName;
@@ -909,7 +909,7 @@ typedef VOS_UINT32 (*PFN_AT_FW_IND_PROC)(VOS_VOID *pMsgBlock);
 } AT_PAR_CMD_ELEMENT_STRU;
 
 
-/* SMS命令脚本类型 */
+/* SMS???????????? */
 typedef struct
 {
     VOS_UINT32 ulCmdIndex;
@@ -923,12 +923,12 @@ typedef struct
     PFN_AT_FW_CMD_PROC      pfnAbortProc;
     VOS_UINT32              ulAbortTimeOut;
 
-    VOS_UINT32 ulParamErrCode;      /* 解析参数失败时的错误码 */
+    VOS_UINT32 ulParamErrCode;      /* ?????????????????????? */
     VOS_UINT32 ulChkFlag;
 
     const VOS_UINT8* pszCmdName;
-    const VOS_UINT8* ParaText;           /* 文本参数脚本 */
-    const VOS_UINT8* ParaPDU;            /* PDU参数脚本 */
+    const VOS_UINT8* ParaText;           /* ???????????? */
+    const VOS_UINT8* ParaPDU;            /* PDU???????? */
 }AT_SMS_CMD_TAB_STRU;
 
 
@@ -949,17 +949,17 @@ typedef struct
 
     VOS_UINT16 usReserved1;
 
-    VOS_UINT16 usDataLen;                        /* 指示当前AT命令缓存长度 */
-    VOS_UINT16 usCmdLineLen;                     /* CMD line缓存buffer长度 */
+    VOS_UINT16 usDataLen;                        /* ????????AT???????????? */
+    VOS_UINT16 usCmdLineLen;                     /* CMD line????buffer???? */
 
-    VOS_UINT8 aucDataBuff[AT_CMD_MAX_LEN];       /* 指示当前AT命令缓存区 */
+    VOS_UINT8 aucDataBuff[AT_CMD_MAX_LEN];       /* ????????AT?????????? */
 
-    VOS_UINT8* pucCmdLine;                       /* CMD line缓存buffer，用于"A/"重复执行上一条命令 */
+    VOS_UINT8* pucCmdLine;                       /* CMD line????buffer??????"A/"?????????????????? */
 
-    AT_FW_COMBINE_CMD_INFO_STRU stCombineCmdInfo;   /* 组合命令信息记录 */
+    AT_FW_COMBINE_CMD_INFO_STRU stCombineCmdInfo;   /* ???????????????? */
 
-    VOS_UINT8* pBlockCmd;                        /* 被阻塞的命令的缓存区 */
-    VOS_UINT16 usBlockCmdLen;                    /* 被阻塞的命令的缓存长度 */
+    VOS_UINT8* pBlockCmd;                        /* ???????????????????? */
+    VOS_UINT16 usBlockCmdLen;                    /* ?????????????????????? */
 
     VOS_UINT16 usReserved2;
 
@@ -970,7 +970,7 @@ typedef struct
 
 #define AT_PARA_MAX_NUM                         AT_MAX_PARA_NUMBER
 
-#define AT_SIMLOCKDATA_PER_WRITE_MAX_LEN        (1400)                        /* AT^SIMLOCKWRITEEX命令一次写入<simlockdata>的最大长度 */
+#define AT_SIMLOCKDATA_PER_WRITE_MAX_LEN        (1400)                        /* AT^SIMLOCKWRITEEX????????????<simlockdata>?????????? */
 
 /*extern HI_LIST_S g_stCmdTblList; */
 
@@ -983,7 +983,7 @@ extern AT_PARSE_PARA_TYPE_STRU              gastAtParaList[AT_MAX_PARA_NUMBER];
 extern TAF_UINT8                            gucAtParaIndex;
 
 
-/* 框架核心接口 */
+/* ???????????? */
 extern VOS_UINT32 AT_RegisterCmdTable(const AT_PAR_CMD_ELEMENT_STRU* pstCmdTblEntry, VOS_UINT16 usCmdNum);
 
 /* sprintf */

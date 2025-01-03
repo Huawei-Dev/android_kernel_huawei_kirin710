@@ -76,7 +76,7 @@ OAL_STATIC oal_uint32 wal_cfgvendor_copy_channel_list(mac_vendor_cmd_channel_lis
         return OAL_FAIL;
     }
 
-    /* 获取2G,信道列表 */
+    /* ????2G,???????? */
     if ((band & VENDOR_BG_BAND_MASK) && (0 != pst_channel_list->uc_channel_num_2g))
     {
         puc_chanel_list = pst_channel_list->auc_channel_list_2g;
@@ -86,7 +86,7 @@ OAL_STATIC oal_uint32 wal_cfgvendor_copy_channel_list(mac_vendor_cmd_channel_lis
         }
     }
 
-    /* 获取5G,信道列表 */
+    /* ????5G,???????? */
     if ((band & VENDOR_A_BAND_MASK) && (0 != pst_channel_list->uc_channel_num_5g))
     {
         puc_chanel_list = pst_channel_list->auc_channel_list_5g;
@@ -128,20 +128,20 @@ OAL_STATIC oal_uint32 wal_cfgvendor_get_current_channel_list(oal_net_device_stru
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 上层在任何时候都可能下发此命令，需要先判断当前netdev的状态并及时返回 */
+    /* ??????????????????????????????????????????????netdev???????????????? */
     if (OAL_UNLIKELY(OAL_PTR_NULL == OAL_NET_DEV_PRIV(pst_netdev)))
     {
         OAM_ERROR_LOG0(0, OAM_SF_ANY, "{wal_cfgvendor_get_current_channel_list::NET_DEV_PRIV is NULL.}");
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 消息参数准备 */
+    /* ???????????? */
     st_query_msg.en_wid = WLAN_CFGID_VENDOR_CMD_GET_CHANNEL_LIST;
 
     /***************************************************************************
-        抛事件到wal层处理
+        ????????wal??????
     ***************************************************************************/
-    /* 发送消息 */
+    /* ???????? */
     l_ret = wal_send_cfg_event(pst_netdev,
                                WAL_MSG_TYPE_QUERY,
                                WAL_MSG_WID_LENGTH,
@@ -162,7 +162,7 @@ OAL_STATIC oal_uint32 wal_cfgvendor_get_current_channel_list(oal_net_device_stru
     pst_query_rsp_msg = (wal_msg_rsp_stru *)(pst_rsp_msg->auc_msg_data);
     pst_channel_list  = (mac_vendor_cmd_channel_list_stru *)(pst_query_rsp_msg->auc_value);
 
-    /* 从信道列表中删除DFS 信道不上报 */
+    /* ????????????????DFS ?????????? */
     wal_cfgvendor_del_radar_channel(pst_channel_list);
 
     if (wal_cfgvendor_copy_channel_list(pst_channel_list, band, pl_channel_list, pul_num_channels) != OAL_SUCC)
@@ -182,7 +182,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_get_channel_list(oal_wiphy_stru *wiphy,
     oal_int32  err = 0;
     oal_int32  type;
     oal_int32  al_channel_list[VENDOR_CHANNEL_LIST_ALL + 1] = {0};
-    oal_uint32 band = 0; /* 上层下发的band值 */
+    oal_uint32 band = 0; /* ??????????band?? */
     oal_uint32 mem_needed;
     oal_uint32 num_channels = 0;
     oal_uint32 reply_len = 0;
@@ -198,7 +198,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_get_channel_list(oal_wiphy_stru *wiphy,
     type = oal_nla_type(data);
     if (type == GSCAN_ATTRIBUTE_BAND)
     {
-        /* 获取band值 bit0:2G信道列表 bit1:5G信道列表 */
+        /* ????band?? bit0:2G???????? bit1:5G???????? */
         band = oal_nla_get_u32(data);
     }
     else
@@ -218,7 +218,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_get_channel_list(oal_wiphy_stru *wiphy,
     reply_len = OAL_SIZEOF(al_channel_list[0])*(num_channels);
     mem_needed = reply_len + VENDOR_REPLY_OVERHEAD + (ATTRIBUTE_U32_LEN * 2);
 
-    /* 申请SKB 上报信道列表 */
+    /* ????SKB ???????????? */
     skb = oal_cfg80211_vendor_cmd_alloc_reply_skb(wiphy, mem_needed);
     if (OAL_UNLIKELY(!skb))
     {
@@ -263,7 +263,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_set_country(oal_wiphy_stru *wiphy,
                             OAL_MIN(oal_nla_len(iter), OAL_SIZEOF(auc_country_code)));
                 OAM_WARNING_LOG4(0, OAM_SF_ANY, "{wal_cfgvendor_set_country::country code:0x%X 0x%X 0x%X, len = %d!}\r\n",
                                  auc_country_code[0], auc_country_code[1], auc_country_code[2], oal_nla_len(iter));
-                /* 设置国家码到wifi 驱动 */
+                /* ????????????wifi ???? */
                 l_ret = wal_regdomain_update_country_code(wdev->netdev, auc_country_code);
 #else
                 OAM_WARNING_LOG0(0, OAM_SF_ANY, "{wal_cfgvendor_set_country::_PRE_WLAN_FEATURE_11D is not define!}\r\n");
@@ -342,12 +342,12 @@ OAL_STATIC oal_int32 wal_send_random_mac_oui(oal_net_device_stru *pst_net_dev,
     }
 
     /***************************************************************************
-        抛事件到wal层处理
+        ????????wal??????
     ***************************************************************************/
     WAL_WRITE_MSG_HDR_INIT(&st_write_msg, WLAN_CFGID_SET_RANDOM_MAC_OUI, WLAN_RANDOM_MAC_OUI_LEN);
     oal_memcopy(st_write_msg.auc_value, auc_random_mac_oui, WLAN_RANDOM_MAC_OUI_LEN);
 
-    /* 发送消息 */
+    /* ???????? */
     l_ret = wal_send_cfg_event(pst_net_dev,
                                WAL_MSG_TYPE_WRITE,
                                WAL_MSG_WRITE_MSG_HDR_LENGTH + WLAN_RANDOM_MAC_OUI_LEN,
@@ -380,7 +380,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_set_random_mac_oui(oal_wiphy_stru *pst_wiphy,
 
     if (ANDR_WIFI_ATTRIBUTE_RANDOM_MAC_OUI == l_type)
     {
-        /* 随机mac地址前3字节(mac oui)由Android下发,wps pbc场景和hilink关联场景会将此3字节清0 */
+        /* ????mac??????3????(mac oui)??Android????,wps pbc??????hilink??????????????3??????0 */
         oal_memcopy(auc_random_mac_oui, oal_nla_data(p_data), WLAN_RANDOM_MAC_OUI_LEN);
         OAM_WARNING_LOG3(0, OAM_SF_ANY, "{wal_cfgvendor_set_random_mac_oui::mac_ou:0x%.2x:%.2x:%.2x}\r\n",
                          auc_random_mac_oui[0], auc_random_mac_oui[1], auc_random_mac_oui[2]);
@@ -538,19 +538,19 @@ OAL_STATIC oal_int32 wal_cfgvendor_lstats_get_info(oal_wiphy_stru *pst_wiphy,
     }
     OAL_MEMZERO(p_out_data, ul_reply_len);
 
-    /* 获取radio 统计 */
+    /* ????radio ???? */
     pst_radio_stat = (wal_wifi_radio_stat_stru *)p_out_data;
     pst_radio_stat->ul_num_channels = VENDOR_NUM_CHAN;
     pst_radio_stat->ul_on_time      = OAL_JIFFIES_TO_MSECS(OAL_TIME_JIFFY - g_st_wifi_radio_stat.ull_wifi_on_time_stamp);
     pst_radio_stat->ul_tx_time      = 0;
     pst_radio_stat->ul_rx_time      = 0;
 
-    /* 获取interfac 统计 */
+    /* ????interfac ???? */
     pst_iface_stat = (wal_wifi_iface_stat_stru *)(p_out_data + OAL_SIZEOF(*pst_radio_stat));
     pst_iface_stat->ul_num_peers           = VENDOR_NUM_PEER;
     pst_iface_stat->peer_info->ul_num_rate = VENDOR_NUM_RATE;
 
-    /* 上报link 统计 */
+    /* ????link ???? */
     pst_skb = oal_cfg80211_vendor_cmd_alloc_reply_skb(pst_wiphy, ul_reply_len);
     if (OAL_UNLIKELY(!pst_skb))
     {

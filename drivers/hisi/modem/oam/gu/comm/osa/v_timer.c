@@ -97,13 +97,13 @@
 #include "v_private.h"
 
 
-/* LINUX 不支持 */
+/* LINUX ?????? */
 
 
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_V_TIMER_C
 
@@ -195,13 +195,13 @@ VOS_VOID VOS_ShowUsed26MTimerInfo( VOS_VOID );
 
 VOS_VOID VOS_TimerDump(VOS_INT lModId, VOS_UINT32 ulFileID, VOS_UINT32 ulLineNo);
 
-/* 自旋锁，用来作Timer的临界资源保护 */
+/* ??????????????Timer?????????????? */
 VOS_SPINLOCK                  g_stVosTimerSpinLock;
 
 #define VOS_26M_TIMER_ID     (TIMER_ACPU_OM_TCXO_ID)
 
 
-/* 记录 VOS 26 timer 可维可测信息 */
+/* ???? VOS 26 timer ???????????? */
 VOS_TIMER_SOC_TIMER_INFO_STRU g_st26MSocTimerInfo;
 
 /* the queue will be given when 26M's interrupt occures */
@@ -218,7 +218,7 @@ extern VOS_VOID OM_OSAEvent(VOS_VOID *pData, VOS_UINT32 ulLength);
 VOS_VOID VOS_Start26MHardTimer( VOS_UINT32 value);
 VOS_UINT32 VOS_Get26MHardTimerElapsedTime(VOS_VOID);
 
-/* 记录上报RTC信息的时间点 */
+/* ????????RTC???????????? */
 VOS_UINT32                    g_ulRTCTimeReportSlice = 0;
 
 #define                       VOS_RTC_REPORT_TIME_INTERVAL (327680)
@@ -281,7 +281,7 @@ VOS_VOID VOS_26MDualTimerIsrEntry(VOS_UINT32 ulElapsedCycles)
         else
         {
             /*lint -e613*/
-            vos_Timer_expire_tail_Ptr->next = vos_TimerCtrlBlkCurrent;/* [false alarm]: 屏蔽Fortify 错误 */
+            vos_Timer_expire_tail_Ptr->next = vos_TimerCtrlBlkCurrent;/* [false alarm]: ????Fortify ???? */
             /*lint +e613*/
             vos_Timer_expire_tail_Ptr = vos_TimerCtrlBlkCurrent;
         }
@@ -293,7 +293,7 @@ VOS_VOID VOS_26MDualTimerIsrEntry(VOS_UINT32 ulElapsedCycles)
     {
         vos_Timer_head_Ptr->previous = VOS_NULL_PTR;
 
-        /* 上面已经把为0的都过滤了，这里不会再有为0的 */
+        /* ????????????0??????????????????????????0?? */
         if (0 == vos_Timer_head_Ptr->TimeOutValueInTicks)
         {
             vos_Timer_head_Ptr->TimeOutValueInTicks += 1;
@@ -645,7 +645,7 @@ VOS_VOID VOS_TimerTaskFunc( VOS_UINT32 Para0, VOS_UINT32 Para1,
 
             TempValue = (VOS_UINT_PTR)(vos_Timer_expire_head_Ptr->CallBackFunc);
 
-            /* CallBackFunc需要用32位传入，所以和name互换位置保证数据不丢失 */
+            /* CallBackFunc??????32??????????????name?????????????????????? */
             OM_RecordInfoStart(VOS_EXC_DUMP_MEM_NUM_4, (VOS_UINT32)(vos_Timer_expire_head_Ptr->Pid), vos_Timer_expire_head_Ptr->Name, (VOS_UINT32)TempValue);
 
             if ( VOS_NULL_PTR == vos_Timer_expire_head_Ptr->CallBackFunc )
@@ -697,16 +697,16 @@ VOS_VOID VOS_TimerTaskFunc( VOS_UINT32 Para0, VOS_UINT32 Para1,
             VOS_SpinUnlockIntUnlock(&g_stVosTimerSpinLock, ulLockLevel);
         }
 
-        /* 获取当前的slice */
+        /* ??????????slice */
         ulCurrentSlice = VOS_GetSlice();
 
-        /* 超过10s或出现反转时上报一次RTC可维可测信息 */
+        /* ????10s????????????????????RTC???????????? */
         if ((ulCurrentSlice - g_ulRTCTimeReportSlice) > VOS_RTC_REPORT_TIME_INTERVAL)
         {
-            /* 更新RTC信息上报的时间 */
+            /* ????RTC?????????????? */
             g_ulRTCTimeReportSlice = ulCurrentSlice;
 
-            /* 上报RTC可维可测信息 */
+            /* ????RTC???????????? */
             RTC_ReportOmInfo();
         }
     }
@@ -950,7 +950,7 @@ MODULE_EXPORTED VOS_UINT32 V_StartRelTimer( HTIMER *phTm, VOS_PID Pid, VOS_UINT3
     stTimerEvent.ulParam     = ulParam;
     stTimerEvent.enPrecision = enPrecision;
 
-    /* 获取RTC的可维可测信息(Action和Slice) */
+    /* ????RTC??????????????(Action??Slice) */
     RTC_GetDebugSocInfo(&(stTimerEvent.ulRTCAction), &(stTimerEvent.ulRTCSlice), &(stTimerEvent.ulCoreId));
 
 
@@ -1220,7 +1220,7 @@ MODULE_EXPORTED VOS_UINT32 V_StopRelTimer( HTIMER *phTm, VOS_UINT32 ulFileID, VO
     stTimerEvent.ucAction = VOS_TIMER_OM_STOP;
     stTimerEvent.ucResult = (VOS_UINT8)ulReturn;
 
-    /* 获取RTC的可维可测信息(Action和Slice) */
+    /* ????RTC??????????????(Action??Slice) */
     RTC_GetDebugSocInfo(&(stTimerEvent.ulRTCAction), &(stTimerEvent.ulRTCSlice), &(stTimerEvent.ulCoreId));
 
     OM_OSAEvent( (VOS_VOID *)&stTimerEvent, sizeof(VOS_TIMER_OM_EVENT_STRU));
@@ -1314,7 +1314,7 @@ VOS_UINT32 V_RestartRelTimer( HTIMER *phTm, VOS_UINT32 ulFileID,
     stTimerEvent.ucResult        = (VOS_UINT8)VOS_OK;
     stTimerEvent.ulHTimerAddress = *phTm;
 
-    /* 获取RTC的可维可测信息(Action和Slice) */
+    /* ????RTC??????????????(Action??Slice) */
     RTC_GetDebugSocInfo(&(stTimerEvent.ulRTCAction), &(stTimerEvent.ulRTCSlice), &(stTimerEvent.ulCoreId));
 
     OM_OSAEvent( (VOS_VOID *)&stTimerEvent, sizeof(VOS_TIMER_OM_EVENT_STRU));
@@ -1818,23 +1818,23 @@ VOS_UINT32 VOS_CalRelativeSec(  SYS_T *pFirstTm,
 
 
 /*****************************************************************************
- 函 数 名  : V_StartCallBackRelTimer
- 功能描述  : 申请一个带有回调的RTC定时器
- 输入参数  : VOS_PID Pid    申请组件PID
-             VOS_UINT32 ulLength    定时器时长,最大VOS_TIMER_MAX_LENGTH(18小时)，超过最大长度OSA发起主动复位
-             VOS_UINT32 ulName      定时器名称
-             VOS_UINT32 ulParam     定时器参数
-             VOS_UINT8 ucMode       定时器循环模式
+ ?? ?? ??  : V_StartCallBackRelTimer
+ ????????  : ??????????????????RTC??????
+ ????????  : VOS_PID Pid    ????????PID
+             VOS_UINT32 ulLength    ??????????,????VOS_TIMER_MAX_LENGTH(18????)??????????????OSA????????????
+             VOS_UINT32 ulName      ??????????
+             VOS_UINT32 ulParam     ??????????
+             VOS_UINT8 ucMode       ??????????????
                        VOS_RELTIMER_LOOP  -- start periodically
                        VOS_RELTIMER_NOLOO -- start once time
-             REL_TIMER_FUNC TimeOutRoutine 回调接口
-             VOS_TIMER_PRECISION_ENUM_UINT32 enPrecision    定时器精度要求，单位0 - 100->0%- 100%
-             VOS_UINT32 ulFileID    调用文件号
-             VOS_INT32 lLineNo      调用行号
- 输出参数  : HTIMER *phTm timer句柄
- 返 回 值  : VOS_OK 定时器创建成功或者ERRNO表示创建失败
- 调用函数  :
- 被调函数  :
+             REL_TIMER_FUNC TimeOutRoutine ????????
+             VOS_TIMER_PRECISION_ENUM_UINT32 enPrecision    ????????????????????0 - 100->0%- 100%
+             VOS_UINT32 ulFileID    ??????????
+             VOS_INT32 lLineNo      ????????
+ ????????  : HTIMER *phTm timer????
+ ?? ?? ??  : VOS_OK ??????????????????ERRNO????????????
+ ????????  :
+ ????????  :
 
 *****************************************************************************/
 MODULE_EXPORTED VOS_UINT32 V_StartCallBackRelTimer( HTIMER *phTm, VOS_PID Pid,
@@ -1912,7 +1912,7 @@ MODULE_EXPORTED VOS_UINT32 V_StartCallBackRelTimer( HTIMER *phTm, VOS_PID Pid,
     stTimerEvent.ulParam     = ulParam;
     stTimerEvent.enPrecision = enPrecision;
 
-    /* 获取RTC的可维可测信息(Action和Slice) */
+    /* ????RTC??????????????(Action??Slice) */
     RTC_GetDebugSocInfo(&(stTimerEvent.ulRTCAction), &(stTimerEvent.ulRTCSlice), &(stTimerEvent.ulCoreId));
 
 

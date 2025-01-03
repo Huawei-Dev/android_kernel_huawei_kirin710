@@ -113,17 +113,17 @@ extern "C" {
 #endif
 
 
-/*外部组件读取双卡双待数据sim卡数据使用一下宏定义*/
+/*????????????????????????sim????????????????????*/
 #ifndef MODEM_ID_0
-#define MODEM_ID_0          0   /*卡1参数*/
+#define MODEM_ID_0          0   /*??1????*/
 #endif
 
 #ifndef MODEM_ID_1
-#define MODEM_ID_1          1   /*卡2参数*/
+#define MODEM_ID_1          1   /*??2????*/
 #endif
 
 #ifndef MODEM_ID_2
-#define MODEM_ID_2          2   /*卡2参数*/
+#define MODEM_ID_2          2   /*??2????*/
 #endif
 
 #ifndef MODEM_ID_BUTT
@@ -131,13 +131,13 @@ extern "C" {
 #endif
 
 
-/*底软读取双卡双待nv项请使用下面的枚举定义*/
+/*????????????????nv??????????????????????*/
 /*sim card type*/
 typedef enum
 {
-    NV_USIMM_CARD_1 = 1,       /*卡1参数*/
-    NV_USIMM_CARD_2 = 2,       /*卡2参数*/
-    NV_USIMM_CARD_3 = 3,       /*卡3参数*/
+    NV_USIMM_CARD_1 = 1,       /*??1????*/
+    NV_USIMM_CARD_2 = 2,       /*??2????*/
+    NV_USIMM_CARD_3 = 3,       /*??3????*/
 }NV_DOUBLE_CARD_TYPE_ENUM;
 
 /*init state*/
@@ -223,7 +223,7 @@ enum
 #define NV_IS_RESUME                1
 #define NV_NOT_RESUME                0
 
-/*内存数据类型*/
+/*????????????*/
 #define  NV_MEM_DLOAD                   0x12345678
 #ifdef FEATURE_NV_SEC_ON
 #define  NV_MEM_DEFAULT                 0xabcde123
@@ -233,9 +233,9 @@ enum
 #define  NV_MEM_BACKUP                  0xdce582e1
 #define  NV_MEM_COLDPATCH               0x1234abcd
 
-#define NV_CTRL_FILE_MAGIC_NUM          0x224e4944   /*文件头标志位*/
-#define NV_BOOT_UPGRADE_SUCC_STATE      0x5687dcfe   /*fastboot 阶段升级是否成功标志*/
-#define NV_FILE_TAIL_MAGIC_NUM          0xabcd8765   /*文件尾标志*/
+#define NV_CTRL_FILE_MAGIC_NUM          0x224e4944   /*????????????*/
+#define NV_BOOT_UPGRADE_SUCC_STATE      0x5687dcfe   /*fastboot ????????????????????*/
+#define NV_FILE_TAIL_MAGIC_NUM          0xabcd8765   /*??????????*/
 
 #define NV_IMEI_LEN              15
 
@@ -350,19 +350,19 @@ enum
 #define BSP_ERR_NV_DELOAD_CHECK_ERR             (BSP_ERR_NV_BASE + 0x29)
 #define BSP_ERR_NV_MEMCPY_ERR                   (BSP_ERR_NV_BASE + 0x30)
 #define BSP_ERR_NV_MEMSET_ERR                   (BSP_ERR_NV_BASE + 0x31)
-#define BSP_ERR_NV_OVER_MEM_ERR                 (BSP_ERR_NV_BASE + 0x32)/*大小越界*/
-#define BSP_ERR_NV_MEM_SIZE_ERR                 (BSP_ERR_NV_BASE + 0x33)/*大小不正确*/
-#define BSP_ERR_NV_XML_CFG_ERR                  (BSP_ERR_NV_BASE + 0x34)/*NV的xml配置不正确*/
-#define BSP_ERR_NV_TIME_OUT_ERR                 (BSP_ERR_NV_BASE + 0x35)/*超时错误*/
-#define BSP_ERR_NV_GIVE_IPC_ERR                 (BSP_ERR_NV_BASE + 0x36)/*give ipc错误*/
-#define BSP_ERR_NV_NOT_SUPPORT_ERR              (BSP_ERR_NV_BASE + 0x37)/*不支持错误*/
-#define BSP_ERR_NV_REG_DUMP_ERR                 (BSP_ERR_NV_BASE + 0x38)/*注册可维可测异常*/
-#define BSP_ERR_NV_INVALID_MDMID_ERR            (BSP_ERR_NV_BASE + 0x39)/*MODEMID参数错误*/
-#define BSP_ERR_NV_BACUP_INVALID_ERR            (BSP_ERR_NV_BASE + 0x40)/*备份分区无效参数错误*/
+#define BSP_ERR_NV_OVER_MEM_ERR                 (BSP_ERR_NV_BASE + 0x32)/*????????*/
+#define BSP_ERR_NV_MEM_SIZE_ERR                 (BSP_ERR_NV_BASE + 0x33)/*??????????*/
+#define BSP_ERR_NV_XML_CFG_ERR                  (BSP_ERR_NV_BASE + 0x34)/*NV??xml??????????*/
+#define BSP_ERR_NV_TIME_OUT_ERR                 (BSP_ERR_NV_BASE + 0x35)/*????????*/
+#define BSP_ERR_NV_GIVE_IPC_ERR                 (BSP_ERR_NV_BASE + 0x36)/*give ipc????*/
+#define BSP_ERR_NV_NOT_SUPPORT_ERR              (BSP_ERR_NV_BASE + 0x37)/*??????????*/
+#define BSP_ERR_NV_REG_DUMP_ERR                 (BSP_ERR_NV_BASE + 0x38)/*????????????????*/
+#define BSP_ERR_NV_INVALID_MDMID_ERR            (BSP_ERR_NV_BASE + 0x39)/*MODEMID????????*/
+#define BSP_ERR_NV_BACUP_INVALID_ERR            (BSP_ERR_NV_BASE + 0x40)/*????????????????????*/
 #define BSP_ERR_NV_CRC_CTRL_ERR                 (BSP_ERR_NV_BASE + 0x41)
 #define BSP_ERR_NV_CRC_RESUME_SUCC              (BSP_ERR_NV_BASE + 0x42)
-#define BSP_ERR_NV_SEM_CREATE_ERR               (BSP_ERR_NV_BASE + 0x43)/*信号量创建错误*/
-#define BSP_ERR_NV_RELEASE_SEM_ERR              (BSP_ERR_NV_BASE + 0x44)/*信号量释放错误*/
+#define BSP_ERR_NV_SEM_CREATE_ERR               (BSP_ERR_NV_BASE + 0x43)/*??????????????*/
+#define BSP_ERR_NV_RELEASE_SEM_ERR              (BSP_ERR_NV_BASE + 0x44)/*??????????????*/
 #define BSP_ERR_NV_CUST_PINFO_ERR               (BSP_ERR_NV_BASE + 0x45)
 #define BSP_ERR_NV_CUST_PMAP_ERR                (BSP_ERR_NV_BASE + 0x46)
 #define BSP_ERR_NV_CUST_SECINFO_ERR             (BSP_ERR_NV_BASE + 0x47)
@@ -381,11 +381,11 @@ enum
 
 #define NV_MID_PRI_LEVEL_NUM   7
 
-#define NV_CTRL_DATA_CRC        (1<<0)  /*data段CRC校验标志         bit0*/
-#define NV_CTRL_CTRL_CRC        (1<<1)  /*ctrl段CRC校验标志         bit1*/
-#define NV_CTRL_ITEM_CRC        (1<<2)  /*单nvid做CRC校验标志       bit2*/
-#define NV_CTRL_MODEM_CRC       (1<<3)  /*单nv modem做CRC校验标志   bit3*/
-#define NV_CTRL_COMPRESS        (1<<4)  /*NV定制数据是否进行压缩    bit4*/
+#define NV_CTRL_DATA_CRC        (1<<0)  /*data??CRC????????         bit0*/
+#define NV_CTRL_CTRL_CRC        (1<<1)  /*ctrl??CRC????????         bit1*/
+#define NV_CTRL_ITEM_CRC        (1<<2)  /*??nvid??CRC????????       bit2*/
+#define NV_CTRL_MODEM_CRC       (1<<3)  /*??nv modem??CRC????????   bit3*/
+#define NV_CTRL_COMPRESS        (1<<4)  /*NV????????????????????    bit4*/
 
 enum
 {
@@ -410,8 +410,8 @@ enum
 
 enum
 {
-    NV_FLAG_NO_CRC = 0,                 /*不进行CRC校验*/
-    NV_FLAG_NEED_CRC = 1,               /*需要进行CRC校验*/
+    NV_FLAG_NO_CRC = 0,                 /*??????CRC????*/
+    NV_FLAG_NEED_CRC = 1,               /*????????CRC????*/
     NV_MARK_CRC_BUTTON,
 };
 
@@ -503,7 +503,7 @@ typedef struct nv_flush_info_stru
     u16  modemid;    /* modem id */
 }nv_flush_item_s;
 
-/*用于存储需要flush到flash中的nv的id列表*/
+/*????????????flush??flash????nv??id????*/
 #define NV_FLUSH_LIST_SIZE      (100)
 #define NV_FLUSH_LIST_OVER_SIZE (NV_FLUSH_LIST_SIZE - 50)
 
@@ -518,7 +518,7 @@ typedef union debug_ctrl_union
     u32 value;
     struct ctrl_bits_stru
     {
-        u32 write_print_ctrl    :1;     /*写NV过程是否打印,1 打印 0 不打印*/
+        u32 write_print_ctrl    :1;     /*??NV????????????,1 ???? 0 ??????*/
         u32 reserved            :31;
     }ctrl_bits;
 }debug_ctrl_union_t;
@@ -526,20 +526,20 @@ typedef union debug_ctrl_union
 struct nv_crc_flush_info_stru
 {
     u32 count;
-    u32 offsetArray[3*NV_FLUSH_LIST_SIZE];/*存储4K块数据的偏移的数组*/
+    u32 offsetArray[3*NV_FLUSH_LIST_SIZE];/*????4K??????????????????*/
 };
 
 #pragma pack(push)
 #pragma pack(4)
 /*nv global ddr info, size < 1k*/
-/* 此结构体的为A核C核公用的结构体
-请不要轻易添加或者删除结构体成员*/
+/* ????????????A??C??????????????
+????????????????????????????????*/
 #ifdef FEATURE_NV_SEC_ON
 #define FLUSH_NVM_BACK    0x5A
 
 enum _file_type
 {
-    NV_FILE_HEAH = 0x0,             // 不属于文件属性，只表示文件头
+    NV_FILE_HEAH = 0x0,             // ????????????????????????????
     NV_FILE_ATTRIBUTE_RESUM,
     NV_FILE_ATTRIBUTE_RDONLY,
     NV_FILE_ATTRIBUTE_RDWR,
@@ -561,7 +561,7 @@ typedef struct nv_global_ddr_info_stru
     u32 file_num;                       /*file list file num*/
     u32 file_len;                       /*file toatl len,include ctrl file*/
     u32 file_sign;                      /*file sign status*/
-    debug_ctrl_union_t      debug_ctrl; /*debug控制*/
+    debug_ctrl_union_t      debug_ctrl; /*debug????*/
     nv_global_file_handle_s file_info[NV_FILE_MAX_NUM];  /*reg every file size&offset*/
     nv_fastboot_debug_s     fb_debug;
 }nv_global_info_s;
@@ -580,7 +580,7 @@ typedef struct nv_global_ddr_info_stru
     u32 file_num;                       /*file list file num*/
     u32 file_len;                       /*file toatl len,include ctrl file*/
     u32 mem_file_len;                   /*currently file len in ddr*/
-    debug_ctrl_union_t      debug_ctrl; /*debug控制*/
+    debug_ctrl_union_t      debug_ctrl; /*debug????*/
     nv_global_file_handle_s file_info[NV_FILE_MAX_NUM];  /*reg every file size&offset*/
     nv_fastboot_debug_s     fb_debug;
     nv_flush_list           flush_info;
@@ -593,9 +593,9 @@ typedef struct nv_global_ddr_info_stru
 enum _icc_msg_e_
 {
     NV_ICC_REQ_FLUSH = 0x40,
-    NV_ICC_REQ_LOAD_BACKUP,                         /*请求加载备份区的NV镜像*/
-    NV_ICC_REQ_LOAD_CARRIER_CUST,                   /*请求加载mbn.bin镜像 */
-    NV_ICC_REQ_LOAD_CARRIER_RESUM,                  /*请求加载mbn_comm.bin镜像 */
+    NV_ICC_REQ_LOAD_BACKUP,                         /*????????????????NV????*/
+    NV_ICC_REQ_LOAD_CARRIER_CUST,                   /*????????mbn.bin???? */
+    NV_ICC_REQ_LOAD_CARRIER_RESUM,                  /*????????mbn_comm.bin???? */
     NV_ICC_REQ_UPDATE_DEFAULT,
     NV_ICC_REQ_UPDATE_BACKUP,
     NV_ICC_REQ_FACTORY_RESET,
@@ -609,16 +609,16 @@ enum _icc_msg_e_
 enum
 {
     NV_ICC_REQ_SYS  = 64,
-    NV_ICC_REQ_INSTANT_FLUSH = 65,   	/*立即写入请求,需要等待回复*/
-    NV_ICC_REQ_CCORE_DELAY_FLUSH = 66,  /*ccore 延迟写入请求，不需要等待回复*/
-    NV_REQ_ACORE_DELAY_FLUSH = 67,    	/*acore 延迟写入请求，不需要等待回复*/
+    NV_ICC_REQ_INSTANT_FLUSH = 65,   	/*????????????,????????????*/
+    NV_ICC_REQ_CCORE_DELAY_FLUSH = 66,  /*ccore ????????????????????????????*/
+    NV_REQ_ACORE_DELAY_FLUSH = 67,    	/*acore ????????????????????????????*/
     NV_ICC_RESUME_ITEM       = 68,
-    NV_ICC_RESUME   = 0xFF  			/*请求恢复DDR中的nv数据*/
+    NV_ICC_RESUME   = 0xFF  			/*????????DDR????nv????*/
 
 };
 
 
-/*DDR中NV文件的长度*/
+/*DDR??NV??????????*/
 #define NV_FILE_LEN               (((nv_global_info_s*)NV_GLOBAL_INFO_ADDR)->file_len)
 #define NV_FILE_CTRL_SIZE         (((nv_ctrl_info_s*)NV_GLOBAL_CTRL_INFO_ADDR)->ctrl_size)
 #define NV_FILE_CTRL_CRC_MARK     ((((nv_ctrl_info_s*)NV_GLOBAL_CTRL_INFO_ADDR)->crc_mark)&NV_CTRL_CTRL_CRC)
@@ -687,10 +687,10 @@ u32 bsp_nvm_mreset_load(void);
 static inline u32 bsp_nvm_mreset_load(void) {return 0;}
 #endif
 
-/*将所有数据刷到文件系统中*/
+/*????????????????????????*/
 u32 bsp_nvm_flush(void);
 
-/*将内存中的数据刷到sys nv中*/
+/*??????????????????sys nv??*/
 u32 bsp_nvm_flushSys(void);
 
 u32 bsp_nvm_get_len(u32 itemid, u32 * length);

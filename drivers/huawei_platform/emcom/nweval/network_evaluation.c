@@ -1,12 +1,12 @@
 /******************************************************************************
-   说明：本文件是basten项目的network evaluation模块在kernel的源文件
-		  目前该模块嵌入在Xengine中，简称为nweval.
-		  Ne模块在kernel层主要需要收集RTT信息，并计算出网络
-		  拥塞程度指标,然后上传给daemon层
+   ??????????????basten??????network evaluation??????kernel????????
+		  ????????????????Xengine??????????nweval.
+		  Ne??????kernel??????????????RTT??????????????????
+		  ????????????,??????????daemon??
 ******************************************************************************/
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include <linux/string.h>
 #include "../emcom_netlink.h"
@@ -19,7 +19,7 @@
 HWLOG_REGIST();
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 /**** calculate related ****/
 int8_t g_network_type = NETWORK_TYPE_UNKNOWN;
@@ -34,12 +34,12 @@ static volatile bool g_running_flag = false;     // a little instruction: curren
 	kernel will introduce too much trouble */
 
 /*****************************************************************************
-  3 宏定义
+  3 ??????
 *****************************************************************************/
 #define RTT_ILLEGAL_THRESHOLD                  1000000   // through test, sometimes very large rtt values occur (very likely it is introduced by the new mechanism)
 #define MIU_SECOND_TO_MILLI_SECOND             1000
 /*****************************************************************************
-  4 函数声明
+  4 ????????
 *****************************************************************************/
 static void cal_rtt_indices(int32_t signal_strength, int8_t* traffic_index, int8_t* stability_index);
 static void nweval_report_indices(SUB_INDICES_REPORT* pReport);

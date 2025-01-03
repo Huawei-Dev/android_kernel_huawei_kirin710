@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_kernel_file.h"
 
@@ -18,17 +18,17 @@ extern "C" {
 #define THIS_FILE_ID  OAM_FILE_ID_OAL_KERNEL_FILE_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 /*
- * 内核文件打开函数
- * 参数为文件路径
- * 操作file类型结构变量
+ * ????????????????
+ * ??????????????
+ * ????file????????????
  *
  */
 
@@ -87,7 +87,7 @@ oal_int oal_kernel_file_write(oal_file *pst_file,oal_uint8 *pst_buf,loff_t fsize
 oal_int oal_kernel_file_print(oal_file *pst_file,const oal_int8 *pc_fmt,...)
 {
 
-    oal_int8                    auc_str_buf[OAL_PRINT_FORMAT_LENGTH];   /* 保存要打印的字符串 buffer used during I/O */
+    oal_int8                    auc_str_buf[OAL_PRINT_FORMAT_LENGTH];   /* ?????????????????? buffer used during I/O */
     OAL_VA_LIST                 pc_args;
 
 

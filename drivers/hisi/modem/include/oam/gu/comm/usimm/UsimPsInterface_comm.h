@@ -60,7 +60,7 @@ extern "C" {
 
 
 /*****************************************************************************
-1 其他头文件包含
+1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "product_config.h"
@@ -73,7 +73,7 @@ extern "C" {
 #pragma pack(4)
 
 /*******************************************************************************
-2 宏定义
+2 ??????
 *******************************************************************************/
 #define PS_USIM_SERVICE_NOT_AVAILIABLE          (0)
 #define PS_USIM_SERVICE_AVAILIABLE              (1)
@@ -82,22 +82,22 @@ extern "C" {
 
 #define USIMM_NULL_ID                           0xFFFF
 
-/* 定义卡密码长度 */
+/* ?????????????? */
 #define USIMM_PINNUMBER_LEN                     (8)
 
 #define USIMM_T0_APDU_MAX_LEN                   (256)
 
-/* USIMM模块支持的最大路径长度,UINT16为单位 */
+/* USIMM??????????????????????,UINT16?????? */
 #define USIMM_MAX_PATH_LEN                      (6)
 
 #define USIMM_REFRESH_FILE_MAX_PATH_LEN         ((USIMM_MAX_PATH_LEN+2)*4)
 
 #define USIMM_REFRESH_FILE_MAX_PATH_LEN_SUB_ONE (USIMM_REFRESH_FILE_MAX_PATH_LEN-1)
 
-/* USIMM模块支持的一次REFRESH命令更新文件个数，根据STK数据长度最大256，计算最多的文件路径为65个 */
+/* USIMM??????????????REFRESH??????????????????????STK????????????256??????????????????????65?? */
 #define USIMM_MAX_REFRESH_FILE_NUM              (65)
 
-/* APDU回复数据的最大长度 */
+/* APDU?????????????????? */
 #define USIMM_APDU_RSP_MAX_LEN                  (260)
 
 #define USIMM_APDU_HEADLEN                      (5)
@@ -107,7 +107,7 @@ extern "C" {
 #define USIMM_EF_IMSI_COMM_LEN                  (10)
 #define USIMM_EF_AD_MIN_LEN                     (3)
 
-#define USIMM_EF_GID_LEN                        (1)      /* 目前锁网锁卡校验场景只会用到第一个字节 */
+#define USIMM_EF_GID_LEN                        (1)      /* ?????????????????????????????????????? */
 #define USIMM_EF_GID1_LEN                       (16)
 #define USIMM_EF_GID2_LEN                       (16)
 
@@ -124,7 +124,7 @@ extern "C" {
 #define EFBDN                                   (0x6F4D)
 #define EFFDN                                   (0x6F3B)
 #define EFMSISDN                                (0x6F40)
-/* AID长度最小值和最大值 */
+/* AID?????????????????? */
 #define USIMM_AID_LEN_MIN                       (5)
 #define USIMM_AID_LEN_MAX                       (16)
 
@@ -156,14 +156,14 @@ extern "C" {
 #define USIMM_CDMA_AUTHBS_LEN                   (3)
 #define USIMM_AUTH_RUNCAVE_LEN                  (17)
 
-/*定义鉴权数据的长度*/
+/*??????????????????*/
 #define USIMM_AUTH_IKSPACELEN                   (17)    /*Len+Data*/
 #define USIMM_AUTH_CKSPACELEN                   (17)    /*Len+Data*/
 #define USIMM_AUTH_KCSPACELEN                   (9)     /*Len+Data*/
 #define USIMM_AUTH_AUTHSPACELEN                 (15)    /*Len+Data*/
 #define USIMM_AUTH_RESSPACELEN                  (17)    /*Len+Data*/
 #define USIMM_AUTH_ATUHRSPACELEN                (3)     /*Data*/
-#define USIMM_AUTH_MSG_PADDING_LEN              (20)    /* 消息结构体中预留字节，为PCLint修改 */
+#define USIMM_AUTH_MSG_PADDING_LEN              (20)    /* ????????????????????????PCLint???? */
 #define USIMM_AUTH_BSCSPACELEN                  (4)
 
 
@@ -710,7 +710,7 @@ extern "C" {
 
 
 /*******************************************************************************
-3 枚举定义
+3 ????????
 *******************************************************************************/
 enum USIMM_CMDTYPE_REQ_ENUM
 {
@@ -816,41 +816,41 @@ enum USIMM_CMDTYPE_CNF_ENUM
 
     USIMM_SCICHG_CARDSTATUS_IND = 117,
 
-    ID_USIMM_MTA_NV_REFRESH_RSP = 0x2002, /* 防止USIMM->MTA新增消息和ID_MTA_NV_REFRESH_RSP取值重复*/
+    ID_USIMM_MTA_NV_REFRESH_RSP = 0x2002, /* ????USIMM->MTA??????????ID_MTA_NV_REFRESH_RSP????????*/
     USIMM_CMDTYPE_BUTT
 };
 typedef VOS_UINT32 USIMM_CMDTYPE_CNF_ENUM_UINT32;
 
 enum USIMM_SWCHECK_ENUM
 {
-    USIMM_SW_OK                 = VOS_OK,   /*命令执行正常*/
-    USIMM_SW_ERR                ,   /*= 1,   命令执行错误*/
-    USIMM_SW_OK_WITH_RESOPNSE   ,   /*= 2,   命令执行正常，有数据返回*/
-    USIMM_SW_OK_WITH_SAT        ,   /*= 3,   命令执行正常，有SAT数据返回*/
-    USIMM_SW_CMD_REMAINTIME     ,   /*= 4,   当前命令的剩余次数*/
-    USIMM_SW_CARD_BUSY          ,   /*= 5,   当前卡忙*/
-    USIMM_SW_AUTN_ERROR         ,   /*= 6,   鉴权错误*/
-    USIMM_SW_MEMORY_ERROR       ,   /*= 7,   卡内存错误*/
-    USIMM_SW_NOFILE_SELECT      ,   /*= 8,   当前无任何文件选中*/
-    USIMM_SW_OUTOF_RANGE        ,   /*= 9,   超出范围*/
-    USIMM_SW_NOFILE_FOUND       ,   /*= 10,  文件找不到*/
-    USIMM_SW_FILETYPE_ERROR     ,   /*= 11,  文件类型矛盾*/
-    USIMM_SW_SECURITY_ERROR     ,   /*= 12,  安全状态不满足*/
-    USIMM_SW_PIN_BLOCK          ,   /*= 13,  密码被锁*/
-    USIMM_SW_PINSTATUS_ERROR    ,   /*= 14,  密码状态矛盾*/
-    USIMM_SW_PINNUMBER_ERROR    ,   /*= 15,  密码索引错误*/
-    USIMM_SW_FILESTATUS_ERROR   ,   /*= 16,  文件状态矛盾*/
-    USIMM_SW_INCREACE_ERROR     ,   /*= 17,  INCREACE操作错误*/
-    USIMM_SW_CLA_ERROR          ,   /*= 18,  CLA错误*/
-    USIMM_SW_CMD_ERROR          ,   /*= 19,  参数1、2、3、命令数据错误*/
-    USIMM_SW_P3_ERROR           ,   /*= 20,  推荐P3长度*/
-    USIMM_SW_NORECORD_FOUND     ,   /*= 21,  无记录*/
-    USIMM_SW_DOWNLOAD_ERROR     ,   /*= 22,  下载数据错误*/
-    USIMM_SW_CHANNEL_NOSUPPORT  ,   /*= 23,  不支持逻辑通道*/
-    USIMM_SW_WARNING            ,   /*= 24,  命令执行告警,需要获取信息*/
-    USIMM_SW_OTHER_WARNING      ,   /*= 25,  命令执行告警*/
-    USIMM_SW_OTHER_ERROR        ,   /*= 26,  命令执行错误*/
-    USIMM_SW_SENDCMD_ERROR      ,   /*= 27,  发送命令错误*/
+    USIMM_SW_OK                 = VOS_OK,   /*????????????*/
+    USIMM_SW_ERR                ,   /*= 1,   ????????????*/
+    USIMM_SW_OK_WITH_RESOPNSE   ,   /*= 2,   ????????????????????????*/
+    USIMM_SW_OK_WITH_SAT        ,   /*= 3,   ????????????????SAT????????*/
+    USIMM_SW_CMD_REMAINTIME     ,   /*= 4,   ??????????????????*/
+    USIMM_SW_CARD_BUSY          ,   /*= 5,   ????????*/
+    USIMM_SW_AUTN_ERROR         ,   /*= 6,   ????????*/
+    USIMM_SW_MEMORY_ERROR       ,   /*= 7,   ??????????*/
+    USIMM_SW_NOFILE_SELECT      ,   /*= 8,   ??????????????????*/
+    USIMM_SW_OUTOF_RANGE        ,   /*= 9,   ????????*/
+    USIMM_SW_NOFILE_FOUND       ,   /*= 10,  ??????????*/
+    USIMM_SW_FILETYPE_ERROR     ,   /*= 11,  ????????????*/
+    USIMM_SW_SECURITY_ERROR     ,   /*= 12,  ??????????????*/
+    USIMM_SW_PIN_BLOCK          ,   /*= 13,  ????????*/
+    USIMM_SW_PINSTATUS_ERROR    ,   /*= 14,  ????????????*/
+    USIMM_SW_PINNUMBER_ERROR    ,   /*= 15,  ????????????*/
+    USIMM_SW_FILESTATUS_ERROR   ,   /*= 16,  ????????????*/
+    USIMM_SW_INCREACE_ERROR     ,   /*= 17,  INCREACE????????*/
+    USIMM_SW_CLA_ERROR          ,   /*= 18,  CLA????*/
+    USIMM_SW_CMD_ERROR          ,   /*= 19,  ????1??2??3??????????????*/
+    USIMM_SW_P3_ERROR           ,   /*= 20,  ????P3????*/
+    USIMM_SW_NORECORD_FOUND     ,   /*= 21,  ??????*/
+    USIMM_SW_DOWNLOAD_ERROR     ,   /*= 22,  ????????????*/
+    USIMM_SW_CHANNEL_NOSUPPORT  ,   /*= 23,  ??????????????*/
+    USIMM_SW_WARNING            ,   /*= 24,  ????????????,????????????*/
+    USIMM_SW_OTHER_WARNING      ,   /*= 25,  ????????????*/
+    USIMM_SW_OTHER_ERROR        ,   /*= 26,  ????????????*/
+    USIMM_SW_SENDCMD_ERROR      ,   /*= 27,  ????????????*/
     USIMM_SW_NO_INFO            ,   /*= 28,   No information given, state of non volatile memory unchanged */
     USIMM_SW_DATA_CORRUPTED     ,   /*= 29,   Part of returned data may be corrupted */
     USIMM_SW_END_OF_FILE        ,   /*= 30,   End of file/record reached before reading Le bytes */
@@ -864,13 +864,13 @@ enum USIMM_SWCHECK_ENUM
     USIMM_SW_TECH_ERROR         ,   /*= 38,   Technical problem, no precise diagnosis */
     USIMM_SW_COMMAND_ERROR      ,   /*= 39,   Command not allowed - secure channel - security not satisfied */
     USIMM_SW_EXPIRED_ERROR      ,   /*= 40,   Security session or association expired */
-    USIMM_SW_UNHANDLE_ERROR     ,   /*= 41,   状态字与协议定义的INS字段不符 */
-    USIMM_SW_CDMA_AUTN_ERROR    ,   /*= 42,   CDMA鉴权过程错误 */
-    USIMM_SW_MSGCHECK_ERROR     ,   /*= 43,   参数检查错误 */
-    USIMM_SW_INVALID_BAKID      ,   /*= 44,   BCMCS特殊错误 */
-    USIMM_SW_INVALID_BCMCSFID   ,   /*= 45,   BCMCS特殊错误 */
-    USIMM_SW_DFPATH_ERROR       ,   /*= 46, Status路径不匹配 */
-    USIMM_SW_CLA_NOT_SUPPORT    ,   /*= 47,  CLA错误,需往ICC切*/
+    USIMM_SW_UNHANDLE_ERROR     ,   /*= 41,   ??????????????????INS???????? */
+    USIMM_SW_CDMA_AUTN_ERROR    ,   /*= 42,   CDMA???????????? */
+    USIMM_SW_MSGCHECK_ERROR     ,   /*= 43,   ???????????? */
+    USIMM_SW_INVALID_BAKID      ,   /*= 44,   BCMCS???????? */
+    USIMM_SW_INVALID_BCMCSFID   ,   /*= 45,   BCMCS???????? */
+    USIMM_SW_DFPATH_ERROR       ,   /*= 46, Status?????????? */
+    USIMM_SW_CLA_NOT_SUPPORT    ,   /*= 47,  CLA????,????ICC??*/
 
     USIMM_SW_BUTT
 };
@@ -916,23 +916,23 @@ enum USIMM_PHYCARD_TYPE_ENUM
 
 typedef VOS_UINT32 USIMM_PHYCARD_TYPE_ENUM_UINT32;
 
-enum USIMM_API_RESULT_ENUM              /* 对外接口返回的错误码 */
+enum USIMM_API_RESULT_ENUM              /* ???????????????????? */
 {
-    USIMM_API_SUCCESS           = VOS_OK,   /* 函数执行成功 */
-    USIMM_API_FAILED,                       /* 函数执行失败，原因不明 */
-    USIMM_API_WRONG_PARA,                   /* 因为参数错误，函数执行失败 */
-    USIMM_API_NOTAVAILABLE,                 /* 因为没有可用应用，函数执行失败 */
+    USIMM_API_SUCCESS           = VOS_OK,   /* ???????????? */
+    USIMM_API_FAILED,                       /* ?????????????????????? */
+    USIMM_API_WRONG_PARA,                   /* ?????????????????????????? */
+    USIMM_API_NOTAVAILABLE,                 /* ?????????????????????????????? */
     USIMM_API_RESULT_BUTT
 };
 
 enum USIMM_PIN_CMD_TYPE_ENUM
 {
     USIMM_PINCMD_NULL           = 0x00000000,
-    USIMM_PINCMD_VERIFY         = 0x00000020,   /*校验PIN码*/
-    USIMM_PINCMD_CHANGE         = 0x00000024,   /*更换PIN码的密码*/
-    USIMM_PINCMD_DISABLE        = 0x00000026,   /*禁止使用PIN码*/
-    USIMM_PINCMD_ENABLE         = 0x00000028,   /*使用PIN码*/
-    USIMM_PINCMD_UNBLOCK        = 0x0000002C,   /*解除阻止PIN码*/
+    USIMM_PINCMD_VERIFY         = 0x00000020,   /*????PIN??*/
+    USIMM_PINCMD_CHANGE         = 0x00000024,   /*????PIN????????*/
+    USIMM_PINCMD_DISABLE        = 0x00000026,   /*????????PIN??*/
+    USIMM_PINCMD_ENABLE         = 0x00000028,   /*????PIN??*/
+    USIMM_PINCMD_UNBLOCK        = 0x0000002C,   /*????????PIN??*/
     USIMM_PINCMD_BUTT
 };
 typedef VOS_UINT32      USIMM_PIN_CMD_TYPE_ENUM_UINT32;
@@ -945,25 +945,25 @@ enum USIMM_PIN_TYPE_ENUM
     USIMM_PUK2                  = 0x00000007,      /* PUK2 */
     USIMM_PHSIM_PIN             = 0x00000008,      /* PH-SIM PIN*/
     USIMM_PHNET_PIN             = 0x00000009,      /* PH-NET PIN*/
-    USIMM_SIM_NON               = 0x000000FF,      /* 不确定操作PIN的类型时填入此值*/
+    USIMM_SIM_NON               = 0x000000FF,      /* ??????????PIN????????????????*/
     USIMM_PIN_TYPE_BUTT
 };
 typedef VOS_UINT32      USIMM_PIN_TYPE_ENUM_UINT32;
 
 enum  USIMM_PIN_ENABLE_STATUS_ENUM
 {
-    USIMM_PIN_DISABLED      = 0,      /*未使能*/
-    USIMM_PIN_ENABLED       = 1,       /*已经使能*/
+    USIMM_PIN_DISABLED      = 0,      /*??????*/
+    USIMM_PIN_ENABLED       = 1,       /*????????*/
     USIMM_PIN_ENABLE_BUTT
 };
 typedef VOS_UINT32      USIMM_PIN_ENABLE_STATUS_ENUM_UINT32;
 
 enum USIMM_PIN_VERIY_STATUS_ENUM
 {
-    USIMM_PIN_NONEED        = 0, /*不需要验证*/
-    USIMM_PIN_NEED          = 1, /*需要验证*/
-    USIMM_PUK_NEED          = 2, /*需要验证puk*/
-    USIMM_PUK_BLOCK         = 3, /*需要验证ADM*/
+    USIMM_PIN_NONEED        = 0, /*??????????*/
+    USIMM_PIN_NEED          = 1, /*????????*/
+    USIMM_PUK_NEED          = 2, /*????????puk*/
+    USIMM_PUK_BLOCK         = 3, /*????????ADM*/
     USIMM_PIN_VERIY_BUTT
 };
 typedef VOS_UINT32      USIMM_PIN_VERIY_STATUS_ENUM_UINT32;
@@ -1490,7 +1490,7 @@ enum USIMM_DEF_FILEID_ENUM
 typedef VOS_UINT32      USIMM_DEF_FILEID_ENUM_UINT32;
 typedef VOS_UINT16      USIMM_DEF_FILEID_ENUM_UINT16;
 
-#define EFPLMNsel                               (0x6F30) /*暂时为NAS保留*/
+#define EFPLMNsel                               (0x6F30) /*??????NAS????*/
 #define EF_CUIM_PRL                             (0x6F30)   /*T*/
 
 #define EF_CUIM_SSCI                            (0x6F2E)   /*T*/
@@ -1841,7 +1841,7 @@ enum USIMM_BDNSTATUS_ENUM
 };
 typedef VOS_UINT32      USIMM_BDNSTATUS_ENUM_UINT32;
 
-/*PIN码操作失败结果*/
+/*PIN??????????????*/
 enum USIMM_PIN_ERROR_ENUM
 {
     USIMM_SIM_PIN_REQUIRED              = 151,
@@ -1872,18 +1872,18 @@ enum USIMM_AUTH_TYPE_ENUM
 };
 typedef VOS_UINT32 USIMM_AUTH_TYPE_ENUM_UINT32;
 
-/* Api_UsimAuthCnf ucResult宏定义 */
+/* Api_UsimAuthCnf ucResult?????? */
 enum USIMM_AUTH_RESULT_ENUM
 {
     USIMM_AUTH_UMTS_SUCCESS         = 0x00000000,
     USIMM_AUTH_GSM_SUCCESS          = 0x00000001,
-    USIMM_AUTH_IMS_SUCCESS          = 0x00000002,        /*鉴权成功*/
+    USIMM_AUTH_IMS_SUCCESS          = 0x00000002,        /*????????*/
     USIMM_AUTH_CDMA_SUCCESS         = 0x00000003,
-    USIMM_AUTH_MAC_FAILURE          = 0x00000004,        /*MAC失败*/
-    USIMM_AUTH_SYNC_FAILURE         = 0x00000005,        /*重同步失败*/
+    USIMM_AUTH_MAC_FAILURE          = 0x00000004,        /*MAC????*/
+    USIMM_AUTH_SYNC_FAILURE         = 0x00000005,        /*??????????*/
     USIMM_AUTH_UMTS_OTHER_FAILURE   = 0x00000006,
     USIMM_AUTH_GSM_OTHER_FAILURE    = 0x00000007,
-    USIMM_AUTH_IMS_OTHER_FAILURE    = 0x00000008,        /*其他失败*/
+    USIMM_AUTH_IMS_OTHER_FAILURE    = 0x00000008,        /*????????*/
     USIMM_AUTH_CDMA_OTHER_FAILURE   = 0x00000009,
     USIMM_AUTH_RESULT_BUTT
 };
@@ -1917,9 +1917,9 @@ typedef VOS_UINT8      USIMM_EFSTATUS_ENUM_UINT8;
 
 enum USIMM_AID_TYPE_ENUM
 {
-    USIMM_AID_TYPE_USIM                 = USIMM_GUTL_APP,    /* USIM的AID */
-    USIMM_AID_TYPE_ISIM                 = USIMM_IMS_APP,     /* ISIM的AID */
-    USIMM_AID_TYPE_CSIM                 = USIMM_CDMA_APP,    /* CSIM的AID */
+    USIMM_AID_TYPE_USIM                 = USIMM_GUTL_APP,    /* USIM??AID */
+    USIMM_AID_TYPE_ISIM                 = USIMM_IMS_APP,     /* ISIM??AID */
+    USIMM_AID_TYPE_CSIM                 = USIMM_CDMA_APP,    /* CSIM??AID */
     USIMM_AID_TYPE_BUTT
 };
 typedef VOS_UINT32  USIMM_AID_TYPE_ENUM_UINT32;
@@ -1951,8 +1951,8 @@ enum USIMM_MANAGESSD_TYPE_ENUM
 typedef VOS_UINT32 USIMM_MANAGESSD_TYPE_ENUM_UINT32;
 
 /*****************************************************************************
- 结构名    : USIMM_SENDPARA_ENUM
- 结构说明  : 临时定义区分不同的TPDU执行来源
+ ??????    : USIMM_SENDPARA_ENUM
+ ????????  : ??????????????????TPDU????????
 *****************************************************************************/
 enum USIMM_SENDPARA_ENUM
 {
@@ -2065,23 +2065,23 @@ typedef VOS_UINT32 USIMM_CDMASPEC_AUTHTYPE_ENUM_UINT32;
 
 enum USIMM_VSIM_STATE_ENUM
 {
-    USIMM_VSIM_STATE_OFF        = 0x0,          /*VSIM关闭*/
-    USIMM_VSIM_STATE_ON         = 0x0000A5A5,   /*VSIM打开*/
+    USIMM_VSIM_STATE_OFF        = 0x0,          /*VSIM????*/
+    USIMM_VSIM_STATE_ON         = 0x0000A5A5,   /*VSIM????*/
     USIMM_VSIM_STATE_BUTT
 };
 typedef VOS_UINT32 USIMM_VSIM_STATE_ENUM_UINT32;
 
 enum USIMM_REALISIM_STATE_ENUM
 {
-    USIMM_REALISIM_STATE_OFF     = 0x0,         /*USIM模拟ISIM*/
-    USIMM_REALISIM_STATE_ON      = 0x00005A5A,  /*真实ISIM*/
+    USIMM_REALISIM_STATE_OFF     = 0x0,         /*USIM????ISIM*/
+    USIMM_REALISIM_STATE_ON      = 0x00005A5A,  /*????ISIM*/
     USIMM_REALISIM_STATE_BUTT
 };
 typedef VOS_UINT32 USIMM_REALISIM_STATE_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : USIMM_STATUS_IND_ENUM
- 枚举说明  : 卡状态通知类型枚举
+ ??????    : USIMM_STATUS_IND_ENUM
+ ????????  : ??????????????????
  *****************************************************************************/
 enum USIMM_CARD_STATUS_IND_ENUM
 {
@@ -2107,8 +2107,8 @@ enum USIMM_CARD_TYPE_ENUM
 typedef VOS_UINT32 USIMM_CARD_TYPE_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : USIMM_CARDAPP_SERVIC_ENUM
- 枚举说明  : 服务类型枚举
+ ??????    : USIMM_CARDAPP_SERVIC_ENUM
+ ????????  : ????????????
 *****************************************************************************/
 enum USIMM_CARDAPP_SERVIC_ENUM
 {
@@ -2127,21 +2127,21 @@ enum USIMM_CARDAPP_SERVIC_ENUM
 typedef VOS_UINT32 USIMM_CARDAPP_SERVIC_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : USIMM_CARD_MEDIUM_TYPE_ENUM_UINT32
- 枚举说明  : 卡类型枚举
+ ??????    : USIMM_CARD_MEDIUM_TYPE_ENUM_UINT32
+ ????????  : ??????????
 *****************************************************************************/
 enum USIMM_CARD_MEDIUM_TYPE_ENUM
 {
-    USIMM_CARD_MEDIUM_REAL              = 0x0,     /* 实卡 */
-    USIMM_CARD_MEDIUM_VSIM,                        /* 虚拟卡 */
-    USIMM_CARD_MEDIUM_ROM,                         /* 快速开机模式 */
+    USIMM_CARD_MEDIUM_REAL              = 0x0,     /* ???? */
+    USIMM_CARD_MEDIUM_VSIM,                        /* ?????? */
+    USIMM_CARD_MEDIUM_ROM,                         /* ???????????? */
     USIMM_CARD_MEDIUM_BUTT,
 };
 typedef VOS_UINT32 USIMM_CARD_MEDIUM_TYPE_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : USIMM_CARD_FETCH_TYPE_ENUM_UINT32
- 枚举说明  : 卡Fetch Type枚举
+ ??????    : USIMM_CARD_FETCH_TYPE_ENUM_UINT32
+ ????????  : ??Fetch Type????
 *****************************************************************************/
 enum USIMM_CARD_FETCH_TYPE
 {
@@ -2162,8 +2162,8 @@ enum SI_PIH_CARD_SLOT_ENUM
 typedef VOS_UINT32  SI_PIH_CARD_SLOT_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : USIMM_SIMSQ_STATE_ENUM
- 枚举说明  : SIMSQ状态枚举变量
+ ??????    : USIMM_SIMSQ_STATE_ENUM
+ ????????  : SIMSQ????????????
 *****************************************************************************/
 enum USIMM_SIMSQ_STATE_ENUM
 {
@@ -2174,16 +2174,16 @@ enum USIMM_SIMSQ_STATE_ENUM
 typedef VOS_UINT32 USIMM_SIMSQ_STATE_ENUM_UINT32;
 
 /*******************************************************************************
-4 struct定义
+4 struct????
 *******************************************************************************/
 typedef struct
 {
-    VOS_UINT8                           ucPin1RemainTime;       /* PIN1码剩余次数      */
-    VOS_UINT8                           ucPin2RemainTime;       /* PIN2码剩余次数      */
-    VOS_UINT8                           ucPuk1RemainTime;       /* PUK1码剩余次数     */
-    VOS_UINT8                           ucPuk2RemainTime;       /* PUK2码剩余次数     */
-    USIMM_PIN_ENABLE_STATUS_ENUM_UINT32 enPin1Enable;           /* PIN1激活状态        */
-    USIMM_PIN_ENABLE_STATUS_ENUM_UINT32 enPin2Enable;           /* PIN2激活状态        */
+    VOS_UINT8                           ucPin1RemainTime;       /* PIN1??????????      */
+    VOS_UINT8                           ucPin2RemainTime;       /* PIN2??????????      */
+    VOS_UINT8                           ucPuk1RemainTime;       /* PUK1??????????     */
+    VOS_UINT8                           ucPuk2RemainTime;       /* PUK2??????????     */
+    USIMM_PIN_ENABLE_STATUS_ENUM_UINT32 enPin1Enable;           /* PIN1????????        */
+    USIMM_PIN_ENABLE_STATUS_ENUM_UINT32 enPin2Enable;           /* PIN2????????        */
 }USIMM_PIN_INFO_STRU;
 
 typedef struct
@@ -2196,10 +2196,10 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucPin1RemainTime;    /* PIN1码剩余次数 */
-    VOS_UINT8                           ucPin2RemainTime;    /* PIN2码剩余次数 */
-    VOS_UINT8                           ucPuk1RemainTime;    /* PUK1码剩余次数 */
-    VOS_UINT8                           ucPuk2RemainTime;    /* PUK2码剩余次数 */
+    VOS_UINT8                           ucPin1RemainTime;    /* PIN1?????????? */
+    VOS_UINT8                           ucPin2RemainTime;    /* PIN2?????????? */
+    VOS_UINT8                           ucPuk1RemainTime;    /* PUK1?????????? */
+    VOS_UINT8                           ucPuk2RemainTime;    /* PUK2?????????? */
 }USIMM_PIN_REMAIN_STRU;
 
 typedef struct
@@ -2226,7 +2226,7 @@ typedef struct
     VOS_CHAR                        acPath[USIMM_PATHSTR_MAX_LEN];
 }USIMM_FILEPATH_INFO_STRU;
 
-/*存储符合电话本的相关信息*/
+/*????????????????????????*/
 typedef struct
 {
     USIMM_FILEPATH_INFO_STRU        stFilePath;
@@ -2237,20 +2237,20 @@ typedef struct
 }USIMM_MUTILFILE_DATA_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_RESET_INFO_STRU
- 结构说明  : STK发给USIMM模块的RESET消息中RESET信息字段结构
+ ??????    : USIMM_RESET_INFO_STRU
+ ????????  : STK????USIMM??????RESET??????RESET????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT16                      usFileListLen;              /* FILE列表长度 */
-    VOS_UINT8                       aucFileList[256];           /* FILE列表内容 */
-    VOS_UINT16                      usAidLen;                   /* AID长度 */
-    VOS_UINT8                       aucAid[USIMM_AID_LEN_MAX];  /* AID内容 */
+    VOS_UINT16                      usFileListLen;              /* FILE???????? */
+    VOS_UINT8                       aucFileList[256];           /* FILE???????? */
+    VOS_UINT16                      usAidLen;                   /* AID???? */
+    VOS_UINT8                       aucAid[USIMM_AID_LEN_MAX];  /* AID???? */
 }USIMM_RESET_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_2G_AUTH_STRU
- 结构说明  : 2G鉴权数据
+ ??????    : USIMM_2G_AUTH_STRU
+ ????????  : 2G????????
 *****************************************************************************/
 typedef struct
 {
@@ -2258,8 +2258,8 @@ typedef struct
 }USIMM_2G_AUTH_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_3G_AUTH_STRU
- 结构说明  : 3G鉴权数据
+ ??????    : USIMM_3G_AUTH_STRU
+ ????????  : 3G????????
 *****************************************************************************/
 typedef struct
 {
@@ -2268,8 +2268,8 @@ typedef struct
 }USIMM_3G_AUTH_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_GBA_AUTH_STRU
- 结构说明  : GBA鉴权数据
+ ??????    : USIMM_GBA_AUTH_STRU
+ ????????  : GBA????????
 *****************************************************************************/
 typedef struct
 {
@@ -2278,8 +2278,8 @@ typedef struct
 }USIMM_GBA_AUTH_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_NAF_AUTH_STRU
- 结构说明  : NAF鉴权数据
+ ??????    : USIMM_NAF_AUTH_STRU
+ ????????  : NAF????????
 *****************************************************************************/
 typedef struct
 {
@@ -2288,8 +2288,8 @@ typedef struct
 }USIMM_NAF_AUTH_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_HTTP_AUTH_STRU
- 结构说明  : HTTP鉴权数据
+ ??????    : USIMM_HTTP_AUTH_STRU
+ ????????  : HTTP????????
 *****************************************************************************/
 typedef struct
 {
@@ -2299,8 +2299,8 @@ typedef struct
 }USIMM_HTTP_AUTH_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_IMS_AUTH_STRU
- 结构说明  : IMS鉴权数据
+ ??????    : USIMM_IMS_AUTH_STRU
+ ????????  : IMS????????
 *****************************************************************************/
 typedef struct
 {
@@ -2309,8 +2309,8 @@ typedef struct
 }USIMM_IMS_AUTH_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_RUNCAVE_AUTH_STRU
- 结构说明  : RUN CAVE鉴权数据
+ ??????    : USIMM_RUNCAVE_AUTH_STRU
+ ????????  : RUN CAVE????????
 *****************************************************************************/
 typedef struct
 {
@@ -2376,15 +2376,15 @@ typedef struct
 }USIMM_MANAGESSD_DATA_STRU;
 #endif
 /*****************************************************************************
- 结构名    : USIM_REFRESH_FILE_STRU
- 结构说明  : USIMM REFRESH主动上报的文件信息
+ ??????    : USIM_REFRESH_FILE_STRU
+ ????????  : USIMM REFRESH??????????????????
 *****************************************************************************/
 typedef struct
 {
-    USIMM_DEF_FILEID_ENUM_UINT16        usFileId;                               /* 转换后的文件ID */
-    VOS_UINT16                          usPathLen;                              /* 文件路径长度 */
-    VOS_UINT8                           aucPath[USIMM_REFRESH_FILE_MAX_PATH_LEN];     /* 文件全路径，字符串类型 */
-    USIMM_CARDAPP_ENUM_UINT32           enAppType;                              /* APP类型 */
+    USIMM_DEF_FILEID_ENUM_UINT16        usFileId;                               /* ????????????ID */
+    VOS_UINT16                          usPathLen;                              /* ???????????? */
+    VOS_UINT8                           aucPath[USIMM_REFRESH_FILE_MAX_PATH_LEN];     /* ?????????????????????? */
+    USIMM_CARDAPP_ENUM_UINT32           enAppType;                              /* APP???? */
 }USIM_REFRESH_FILE_STRU;
 
 typedef struct
@@ -2451,7 +2451,7 @@ typedef struct
 }USIMM_CGLARSP_DATA_STRU;
 
 /*****************************************************************************
-6 消息定义
+6 ????????
 *****************************************************************************/
 
 typedef struct
@@ -2473,8 +2473,8 @@ typedef struct
 } USIMM_INITCONTINUE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_QUERYESNMEIDRSLT_REQ_STRU
- 结构说明  : Store MEID/PESN消息处理结构
+ ??????    : USIMM_QUERYESNMEIDRSLT_REQ_STRU
+ ????????  : Store MEID/PESN????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2803,8 +2803,8 @@ typedef union
 
 
 /*****************************************************************************
- 结构名    : USIMM_PROTECTRESET_REQ_STRU
- 结构说明  : SIM卡保护性复位请求消息结构
+ ??????    : USIMM_PROTECTRESET_REQ_STRU
+ ????????  : SIM????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2812,8 +2812,8 @@ typedef struct
 } USIMM_PROTECTRESET_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_DEACTIVECARD_REQ_STRU
- 结构说明  : SIM卡去激活请求消息结构
+ ??????    : USIMM_DEACTIVECARD_REQ_STRU
+ ????????  : SIM????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2821,8 +2821,8 @@ typedef struct
 }USIMM_DEACTIVECARD_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_AUTHENTICATION_REQ_STRU
- 结构说明  : SIM卡鉴权请求消息结构
+ ??????    : USIMM_AUTHENTICATION_REQ_STRU
+ ????????  : SIM??????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2832,8 +2832,8 @@ typedef struct
 } USIMM_AUTHENTICATION_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_PINHANDLE_REQ_STRU
- 结构说明  : SIM卡PIN码请求消息结构
+ ??????    : USIMM_PINHANDLE_REQ_STRU
+ ????????  : SIM??PIN??????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2855,8 +2855,8 @@ typedef struct
 }USIMM_UPDATEFILE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_UPDATEFILE_WITHIMSI_REQ_STRU
- 结构说明  : 带imsi检查的卡文件更新请求消息结构
+ ??????    : USIMM_UPDATEFILE_WITHIMSI_REQ_STRU
+ ????????  : ??imsi????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2887,8 +2887,8 @@ typedef struct
 } USIMM_QUERYFILE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STATUSCMD_REQ_STRU
- 结构说明  : SIM卡周期性轮询请求消息结构
+ ??????    : USIMM_STATUSCMD_REQ_STRU
+ ????????  : SIM????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2906,8 +2906,8 @@ typedef struct
 } USIMM_SEARCHFILE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_FDNPROCESS_REQ_STRU
- 结构说明  : FDN激活去激活请求消息结构
+ ??????    : USIMM_FDNPROCESS_REQ_STRU
+ ????????  : FDN??????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2917,22 +2917,22 @@ typedef struct
 } USIMM_FDNPROCESS_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CHANNEL_INFO_STRU
- 结构说明  : USIM模块CHANNEL INFO的数据结构
+ ??????    : USIMM_CHANNEL_INFO_STRU
+ ????????  : USIM????CHANNEL INFO??????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulSessionId;                            /* 会话id */
-    VOS_UINT32                          ulChanNum;                              /* 通道号 */
-    VOS_UINT32                          ulAIDLen;                               /* AID长度 */
-    VOS_UINT8                           aucADFName[2*USIMM_AID_LEN_MAX];        /* AID的内容 */
+    VOS_UINT32                          ulSessionId;                            /* ????id */
+    VOS_UINT32                          ulChanNum;                              /* ?????? */
+    VOS_UINT32                          ulAIDLen;                               /* AID???? */
+    VOS_UINT8                           aucADFName[2*USIMM_AID_LEN_MAX];        /* AID?????? */
     VOS_UINT8                           ucAPDUP2;
     VOS_UINT8                           ucRsv[3];
 }USIMM_CHANNEL_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_OPENCHANNEL_REQ_STRU
- 结构说明  : 逻辑通道打开请求消息结构
+ ??????    : USIMM_OPENCHANNEL_REQ_STRU
+ ????????  : ????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2941,13 +2941,13 @@ typedef struct
 } USIMM_OPENCHANNEL_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CLOSECHANNEL_REQ_STRU
- 结构说明  : 逻辑通道关闭请求消息结构
+ ??????    : USIMM_CLOSECHANNEL_REQ_STRU
+ ????????  : ????????????????????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_REQ_STRU            stMsgHeader;
-    VOS_UINT32                          ulSessionID;                            /* 会话ID */
+    VOS_UINT32                          ulSessionID;                            /* ????ID */
 } USIMM_CLOSECHANNEL_REQ_STRU;
 
 typedef struct
@@ -2959,8 +2959,8 @@ typedef struct
 
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
 /*****************************************************************************
- 结构名    : USIMM_BSCHALLENGE_REQ_STRU
- 结构说明  : BASE STATION CHALLENGE请求消息结构
+ ??????    : USIMM_BSCHALLENGE_REQ_STRU
+ ????????  : BASE STATION CHALLENGE????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2969,8 +2969,8 @@ typedef struct
 } USIMM_BSCHALLENGE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_GENERATE_KEYVPM_REQ_STRU
- 结构说明  : Generate KEY VMP请求消息结构
+ ??????    : USIMM_GENERATE_KEYVPM_REQ_STRU
+ ????????  : Generate KEY VMP????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2981,8 +2981,8 @@ typedef struct
 } USIMM_GENERATE_KEYVPM_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_MAMAGESSD_REQ_STRU
- 结构说明  : Manage SSD请求消息结构
+ ??????    : USIMM_MAMAGESSD_REQ_STRU
+ ????????  : Manage SSD????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2992,8 +2992,8 @@ typedef struct
 #endif
 
 /*****************************************************************************
- 结构名    : USIMM_TERMINALRESPONSE_REQ_STRU
- 结构说明  : TERMINAL RESPONSE请求消息结构
+ ??????    : USIMM_TERMINALRESPONSE_REQ_STRU
+ ????????  : TERMINAL RESPONSE????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3003,8 +3003,8 @@ typedef struct
 }USIMM_TERMINALRESPONSE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_PB_INIT_STATUS_IND_STRU
- 结构说明  : 电话本初始化状态指示消息结构
+ ??????    : USIMM_PB_INIT_STATUS_IND_STRU
+ ????????  : ????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3014,8 +3014,8 @@ typedef struct
 }USIMM_PBINIT_STATUS_IND_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STKREFRESH_REQ_STRU
- 结构说明  : REFRESH请求消息结构
+ ??????    : USIMM_STKREFRESH_REQ_STRU
+ ????????  : REFRESH????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3030,8 +3030,8 @@ typedef struct
 }USIMM_STKREFRESH_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STKENVELOPE_REQ_STRU
- 结构说明  : ENVELOPE请求消息结构
+ ??????    : USIMM_STKENVELOPE_REQ_STRU
+ ????????  : ENVELOPE????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3041,8 +3041,8 @@ typedef struct
 }USIMM_STKENVELOPE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_RACCESS_REQ_STRU
- 结构说明  : 受限制SIM卡访问请求消息结构
+ ??????    : USIMM_RACCESS_REQ_STRU
+ ????????  : ??????SIM??????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3063,7 +3063,7 @@ typedef struct
 {
     USIMM_CMDHEADER_REQ_STRU            stMsgHeader;
     VOS_UINT32                          ulFileCount;
-    USIMM_MUTILFILE_DATA_STRU           stFileData[USIMM_SETMUTILFILE_MAX];/*最多14个文件*/
+    USIMM_MUTILFILE_DATA_STRU           stFileData[USIMM_SETMUTILFILE_MAX];/*????14??????*/
 }USIMM_SETMUTILFILE_REQ_STRU;
 
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
@@ -3083,15 +3083,15 @@ typedef struct
     VOS_UINT32                          ulAuthType;
     VOS_UINT32                          ulAesKeylen;
     VOS_UINT8                           aucAeskey[32];
-    VOS_UINT32                          ulDataLen;              /* FILE DATA 长度 */
-    VOS_UINT8                           aucContent[4];          /* FILE DATA 内容 */
+    VOS_UINT32                          ulDataLen;              /* FILE DATA ???? */
+    VOS_UINT8                           aucContent[4];          /* FILE DATA ???? */
 }USIMM_VSIMFILEDATAWRITE_REQ_STRU;
 #endif
 
 
 typedef struct
 {
-    USIMM_CMDHEADER_REQ_STRU            stMsgHeader;        /* PIH消息头 */
+    USIMM_CMDHEADER_REQ_STRU            stMsgHeader;        /* PIH?????? */
     SI_PIH_CARD_SLOT_ENUM_UINT32        enCard0Slot;
     SI_PIH_CARD_SLOT_ENUM_UINT32        enCard1Slot;
     SI_PIH_CARD_SLOT_ENUM_UINT32        enCard2Slot;
@@ -3099,33 +3099,33 @@ typedef struct
 
 
 /*****************************************************************************
-8 消息声明
+8 ????????
 *****************************************************************************/
 
 /*****************************************************************************
- 结构名    : USIMM_CARDAPP_STATUS_STRU
- 结构说明  : 卡应用状态信息
+ ??????    : USIMM_CARDAPP_STATUS_STRU
+ ????????  : ??????????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CARDAPP_SERVIC_ENUM_UINT32    enCardAppService;
-    VOS_UINT32                          ulIsTestCard;                    /* VOS_TRUE为测试卡，VOS_FALSE为非测试卡 */
-    VOS_UINT16                          usIsIMSIValid;                   /* VOS_TRUE为有效，VOS_FALSE为无效 */
-    VOS_UINT8                           aucIMSI[USIMM_EF_IMSI_COMM_LEN]; /* UsimSim应用为IMSI，CsimUim为IMSI_M*/
-    VOS_UINT8                           ucGID1Len;                       /* 长度为0无效(服务状态位无效，读取失败填0)，其它值有效，最长16个字节 */
-    VOS_UINT8                           aucGID1[USIMM_EF_GID1_LEN];      /* UsimSim应用为6F3E，CsimUim为6F6D*/
-    VOS_UINT8                           ucGID2Len;                       /* 长度为0无效(服务状态位无效，读取失败填0)，其它值有效，最长16个字节 */
-    VOS_UINT8                           aucGID2[USIMM_EF_GID2_LEN];      /* UsimSim应用为6F3F，CsimUim为6F6E*/
+    VOS_UINT32                          ulIsTestCard;                    /* VOS_TRUE??????????VOS_FALSE?????????? */
+    VOS_UINT16                          usIsIMSIValid;                   /* VOS_TRUE????????VOS_FALSE?????? */
+    VOS_UINT8                           aucIMSI[USIMM_EF_IMSI_COMM_LEN]; /* UsimSim??????IMSI??CsimUim??IMSI_M*/
+    VOS_UINT8                           ucGID1Len;                       /* ??????0????(??????????????????????????0)??????????????????16?????? */
+    VOS_UINT8                           aucGID1[USIMM_EF_GID1_LEN];      /* UsimSim??????6F3E??CsimUim??6F6D*/
+    VOS_UINT8                           ucGID2Len;                       /* ??????0????(??????????????????????????0)??????????????????16?????? */
+    VOS_UINT8                           aucGID2[USIMM_EF_GID2_LEN];      /* UsimSim??????6F3F??CsimUim??6F6E*/
     VOS_UINT8                           aucRsv[2];
 }USIMM_CARDAPP_STATUS_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CARDSTATUS_ADDINFO_STRU
- 结构说明  : USIMM 主动上报的卡状态附加信息，卡状态有效的时候才有意义
+ ??????    : USIMM_CARDSTATUS_ADDINFO_STRU
+ ????????  : USIMM ??????????????????????????????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    USIMM_CARD_MEDIUM_TYPE_ENUM_UINT32  enMediumType;      /* 卡物理存储介质 */
+    USIMM_CARD_MEDIUM_TYPE_ENUM_UINT32  enMediumType;      /* ?????????????? */
     USIMM_REALISIM_STATE_ENUM_UINT32    enISIMState;
     VOS_UINT8                           ucHasCModule;
     VOS_UINT8                           ucHasWGModule;
@@ -3139,16 +3139,16 @@ typedef struct
 {
     VOS_MSG_HEADER
     USIMM_CMDTYPE_CNF_ENUM_UINT32       ulMsgName;
-    USIMM_PHYCARD_TYPE_ENUM_UINT32      enPhyCardType;  /*物理卡状态*/
-    USIMM_CARDAPP_STATUS_STRU           stUsimSimInfo;  /*GUL SIM状态*/
-    USIMM_CARDAPP_STATUS_STRU           stCsimUimInfo;  /*CDMA SIM状态*/
-    USIMM_CARDAPP_STATUS_STRU           stIsimInfo;     /*ISIM状态*/
-    USIMM_CARDSTATUS_ADDINFO_STRU       stAddInfo;      /*卡状态有效时候才能使用里面的信息*/
+    USIMM_PHYCARD_TYPE_ENUM_UINT32      enPhyCardType;  /*??????????*/
+    USIMM_CARDAPP_STATUS_STRU           stUsimSimInfo;  /*GUL SIM????*/
+    USIMM_CARDAPP_STATUS_STRU           stCsimUimInfo;  /*CDMA SIM????*/
+    USIMM_CARDAPP_STATUS_STRU           stIsimInfo;     /*ISIM????*/
+    USIMM_CARDSTATUS_ADDINFO_STRU       stAddInfo;      /*????????????????????????????????*/
 }USIMM_CARDSTATUS_IND_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CMDHEADER_CNF_STRU
- 结构说明  : USIMM 回复消息头结构
+ ??????    : USIMM_CMDHEADER_CNF_STRU
+ ????????  : USIMM ??????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3161,8 +3161,8 @@ typedef struct
 }USIMM_CMDHEADER_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CMDHEADER_IND_STRU
- 结构说明  : USIMM 主动上报消息头结构
+ ??????    : USIMM_CMDHEADER_IND_STRU
+ ????????  : USIMM ??????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3172,8 +3172,8 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名    : USIMM_AUTHENTICATION_CNF_STRU
- 结构说明  : USIMM 鉴权回复消息结构
+ ??????    : USIMM_AUTHENTICATION_CNF_STRU
+ ????????  : USIMM ????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3231,8 +3231,8 @@ typedef struct
     USIMM_FILEPATH_INFO_STRU            stFilePath;
     VOS_UINT16                          usRsv;
     VOS_UINT16                          usFileLen;
-    USIMM_EFSTATUS_ENUM_UINT8           enFileStatus; /*文件的激活状态*/
-    USIMM_EFRWFLAG_ENUM_UINT8           enFileRWFlag; /*文件可读和可更新标志*/
+    USIMM_EFSTATUS_ENUM_UINT8           enFileStatus; /*??????????????*/
+    USIMM_EFRWFLAG_ENUM_UINT8           enFileRWFlag; /*????????????????????*/
     VOS_UINT8                           ucRecordNum;
     VOS_UINT8                           ucRecordLen;
     VOS_UINT8                           aucFileInfo[4];
@@ -3252,7 +3252,7 @@ typedef struct
 {
     USIMM_CMDHEADER_CNF_STRU            stCmdResult;
     USIMM_FILEPATH_INFO_STRU            stFilePath;
-    VOS_UINT16                          usTotalRecNum;      /* 文件中记录数 */
+    VOS_UINT16                          usTotalRecNum;      /* ???????????? */
     VOS_UINT8                           ucSW1;
     VOS_UINT8                           ucSW2;
     VOS_UINT16                          usDataLen;
@@ -3260,8 +3260,8 @@ typedef struct
 } USIMM_SEARCHFILE_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_QUERYESNMEIDRSLT_CNF_STRU
- 结构说明  : Store MEID/PESN处理回复消息结构
+ ??????    : USIMM_QUERYESNMEIDRSLT_CNF_STRU
+ ????????  : Store MEID/PESN????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3272,8 +3272,8 @@ typedef struct
 }USIMM_QUERYESNMEIDRSLT_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_FDNPROCESS_CNF_STRU
- 结构说明  : FDN处理回复消息结构
+ ??????    : USIMM_FDNPROCESS_CNF_STRU
+ ????????  : FDN????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3282,8 +3282,8 @@ typedef struct
 } USIMM_FDNPROCESS_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_OPENCHANNEL_CNF_STRU
- 结构说明  : 逻辑通道打开处理回复消息结构
+ ??????    : USIMM_OPENCHANNEL_CNF_STRU
+ ????????  : ????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3294,8 +3294,8 @@ typedef struct
 } USIMM_OPENCHANNEL_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CLOSECHANNEL_CNF_STRU
- 结构说明  : 逻辑通道关闭处理回复消息结构
+ ??????    : USIMM_CLOSECHANNEL_CNF_STRU
+ ????????  : ????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3316,8 +3316,8 @@ typedef struct
 } USIMM_PRIVATECGLAHANDLE_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_BSCHALLENGE_CNF_STRU
- 结构说明  : CDMA Base Station Challenge处理回复消息结构
+ ??????    : USIMM_BSCHALLENGE_CNF_STRU
+ ????????  : CDMA Base Station Challenge????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3327,8 +3327,8 @@ typedef struct
 } USIMM_BSCHALLENGE_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_GENERATE_KEYVPM_CNF_STRU
- 结构说明  : USIMM GENERATE KEY & VMP 处理回复消息结构
+ ??????    : USIMM_GENERATE_KEYVPM_CNF_STRU
+ ????????  : USIMM GENERATE KEY & VMP ????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3339,8 +3339,8 @@ typedef struct
 } USIMM_GENERATE_KEYVPM_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIM_STKTERMINALRSP_CNF_STRU
- 结构说明  : USIMM TERMINAL RESPONSE处理回复消息结构
+ ??????    : USIM_STKTERMINALRSP_CNF_STRU
+ ????????  : USIMM TERMINAL RESPONSE????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3351,8 +3351,8 @@ typedef struct
 }USIMM_STKTERMINALRSP_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_SINGLECMD_CNF_STRU
- 结构说明  : USIMM简单命令处理回复消息结构
+ ??????    : USIMM_SINGLECMD_CNF_STRU
+ ????????  : USIMM????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3360,19 +3360,19 @@ typedef struct
 }USIMM_SINGLECMD_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STKREFRESH_CNF_STRU
- 结构说明  : USIMM REFRESH处理回复消息结构
+ ??????    : USIMM_STKREFRESH_CNF_STRU
+ ????????  : USIMM REFRESH????????????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_CNF_STRU            stCmdResult;
     USIMM_REFRESH_TYPE_ENUM_UINT32      enRefreshType;
-    VOS_UINT32                          ulSatLen;           /* 后续主动命令的长度 */
+    VOS_UINT32                          ulSatLen;           /* ?????????????????? */
 }USIMM_STKREFRESH_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STKENVELOPE_CNF_STRU
- 结构说明  : USIMM ENVELOPE CNF消息结构
+ ??????    : USIMM_STKENVELOPE_CNF_STRU
+ ????????  : USIMM ENVELOPE CNF????????
 *****************************************************************************/
 typedef struct
 {
@@ -3385,8 +3385,8 @@ typedef struct
 }USIMM_STKENVELOPE_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STKENVELOPE_RETRY_STRU
- 结构说明  : USIMM发送给的重试STKENVELOPE的消息结构
+ ??????    : USIMM_STKENVELOPE_RETRY_STRU
+ ????????  : USIMM????????????STKENVELOPE??????????
 *****************************************************************************/
 typedef struct
 {
@@ -3396,95 +3396,95 @@ typedef struct
 }USIMM_STKENVELOPE_RETRY_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_SETMUTILFILE_CNF_STRU
- 结构说明  : 电话本多文件更新 CNF消息结构
+ ??????    : USIMM_SETMUTILFILE_CNF_STRU
+ ????????  : ???????????????? CNF????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_CNF_STRU            stCmdResult;
-    VOS_UINT16                          ausEfId[USIMM_SETMUTILFILE_MAX];    /* 要更新的文件的ID*/
-    VOS_UINT16                          ausEfLen[USIMM_SETMUTILFILE_MAX];   /* EF长度 */
-    VOS_UINT8                           aucRecordNum[USIMM_SETMUTILFILE_MAX];/* linear fixed或cycle fixed类型EF记录号*/
+    VOS_UINT16                          ausEfId[USIMM_SETMUTILFILE_MAX];    /* ??????????????ID*/
+    VOS_UINT16                          ausEfLen[USIMM_SETMUTILFILE_MAX];   /* EF???? */
+    VOS_UINT8                           aucRecordNum[USIMM_SETMUTILFILE_MAX];/* linear fixed??cycle fixed????EF??????*/
     VOS_UINT8                           ucFileNum;
     VOS_UINT8                           ucRsv;
 }USIMM_SETMUTILFILE_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_OMTRANS_MSG_STRU
- 结构说明  : 发给OM的透明消息
+ ??????    : USIMM_OMTRANS_MSG_STRU
+ ????????  : ????OM??????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_MSG_HEADER                                      /* 该消息头填充TOOL_ID和PS的PID,保证消息能转发给相应的PS模块 */
-    VOS_UINT16                      usTransPrimId;       /* 固定填写0x5001*/
+    VOS_MSG_HEADER                                      /* ????????????TOOL_ID??PS??PID,??????????????????????PS???? */
+    VOS_UINT16                      usTransPrimId;       /* ????????0x5001*/
     VOS_UINT16                      usReserve;
-    VOS_UINT8                       ucFuncType;          /*数据查询04,空口消息上报:02*/
+    VOS_UINT8                       ucFuncType;          /*????????04,????????????:02*/
     VOS_UINT8                       ucReserve;
-    VOS_UINT16                      usAppLength;         /*下一个字节到包尾的长度*/
-    VOS_UINT32                      ulSn;                /* 上报消息的序列号 */
-    VOS_UINT32                      ulTimeStamp;         /*消息的时间戳，填当前的SOC Tick值*/
-    VOS_UINT16                      usPrimId;            /* 原语ID*/
-    VOS_UINT16                      usToolsId;           /* 工具ID */
-    VOS_UINT8                       ucResult;            /*传输消息的内容*/
-    VOS_UINT8                       ucEFLen;             /*前两个字节填写读取的长度*/
+    VOS_UINT16                      usAppLength;         /*??????????????????????*/
+    VOS_UINT32                      ulSn;                /* ???????????????? */
+    VOS_UINT32                      ulTimeStamp;         /*??????????????????????SOC Tick??*/
+    VOS_UINT16                      usPrimId;            /* ????ID*/
+    VOS_UINT16                      usToolsId;           /* ????ID */
+    VOS_UINT8                       ucResult;            /*??????????????*/
+    VOS_UINT8                       ucEFLen;             /*????????????????????????*/
     VOS_UINT8                       aucData[2];
 }USIMM_OMTRANS_MSG_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STKDATA_IND_STRU
- 结构说明  : USIMM STK主动上报消息结构
+ ??????    : USIMM_STKDATA_IND_STRU
+ ????????  : USIMM STK????????????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_IND_STRU            stIndHdr;
-    VOS_UINT16                          usLen;          /* 主动命令长度 */
-    VOS_UINT8                           ucCmdType;      /* 主动命令类型 */
+    VOS_UINT16                          usLen;          /* ???????????? */
+    VOS_UINT8                           ucCmdType;      /* ???????????? */
     VOS_UINT8                           ucRsv;
     VOS_UINT8                           aucContent[USIMM_T0_APDU_MAX_LEN];
 }USIMM_STKDATA_IND_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_STKREFRESH_IND_STRU
- 结构说明  : USIMM REFRESH主动上报消息结构
+ ??????    : USIMM_STKREFRESH_IND_STRU
+ ????????  : USIMM REFRESH????????????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_IND_STRU            stIndHdr;
-    USIMM_REFRESH_TYPE_ENUM_UINT32      enUsimRefreshType;  /* 卡刷新类型 */
-    USIMM_REFRESH_FILE_TYPE_UINT16      enRefreshType;      /* 文件更新类型 */
-    VOS_UINT16                          usEfNum;            /* 更新的文件的个数 */
-    USIM_REFRESH_FILE_STRU              astEfId[1];         /* 更新的文件ID 信息，可变长数组*/
+    USIMM_REFRESH_TYPE_ENUM_UINT32      enUsimRefreshType;  /* ?????????? */
+    USIMM_REFRESH_FILE_TYPE_UINT16      enRefreshType;      /* ???????????? */
+    VOS_UINT16                          usEfNum;            /* ???????????????? */
+    USIM_REFRESH_FILE_STRU              astEfId[1];         /* ??????????ID ????????????????*/
 }USIMM_STKREFRESH_IND_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_RACCESS_CNF_STRU
- 结构说明  : USIMM 受限制访问CNF消息结构
+ ??????    : USIMM_RACCESS_CNF_STRU
+ ????????  : USIMM ??????????CNF????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_CNF_STRU            stCmdResult;
     VOS_UINT8                           ucSW1;                                      /* Status Word 1*/
     VOS_UINT8                           ucSW2;                                      /* Status Word 2 */
-    VOS_UINT16                          usLen;                                      /* 返回数据长度,不包含SW1和SW2       */
-    VOS_UINT8                           aucContent[USIMM_APDU_RSP_MAX_LEN];         /* 返回Data*/
+    VOS_UINT16                          usLen;                                      /* ????????????,??????SW1??SW2       */
+    VOS_UINT8                           aucContent[USIMM_APDU_RSP_MAX_LEN];         /* ????Data*/
 }USIMM_RACCESS_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_ECCNUMBER_IND_STRU
- 结构说明  : ECC号码上报消息结构
+ ??????    : USIMM_ECCNUMBER_IND_STRU
+ ????????  : ECC????????????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_IND_STRU            stIndHdr;
-    VOS_UINT16                          usFileSize;     /*ucContent中数据长度*/
-    VOS_UINT8                           ucEccType;      /*紧急呼叫号码是SIM卡还是USIM卡*/
-    VOS_UINT8                           ucRecordNum;    /*USIM卡紧急呼叫号码记录数，SIM卡填0*/
-    VOS_UINT8                           ucContent[4];   /*紧急呼叫号码记录信息*/
+    VOS_UINT16                          usFileSize;     /*ucContent??????????*/
+    VOS_UINT8                           ucEccType;      /*??????????????SIM??????USIM??*/
+    VOS_UINT8                           ucRecordNum;    /*USIM??????????????????????SIM????0*/
+    VOS_UINT8                           ucContent[4];   /*????????????????????*/
 }USIMM_ECCNUMBER_IND_STRU;
 
 /*****************************************************************************
-结构名    : USIMM_VSIM_RDH_IND_STRU
-结构说明  : 虚拟卡DH重协议上报指示消息结构
+??????    : USIMM_VSIM_RDH_IND_STRU
+????????  : ??????DH??????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3492,8 +3492,8 @@ typedef struct
 }USIMM_VSIM_RDH_IND_STRU;
 
 /*****************************************************************************
-结构名    : USIMM_HOTINOUT_IND_STRU
-结构说明  : MBB产品上卡拔插上报指示消息结构
+??????    : USIMM_HOTINOUT_IND_STRU
+????????  : MBB????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3502,8 +3502,8 @@ typedef struct
 }USIMM_HOTINOUT_IND_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_APP_SESSION_INFO_STRU
- 结构说明  : 应用SESSION信息
+ ??????    : USIMM_APP_SESSION_INFO_STRU
+ ????????  : ????SESSION????
 *****************************************************************************/
 typedef struct
 {
@@ -3512,8 +3512,8 @@ typedef struct
 }USIMM_APP_SESSION_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CARDSESSION_CNF_STRU
- 结构说明  : 查询应用SESSION处理回复消息结构
+ ??????    : USIMM_CARDSESSION_CNF_STRU
+ ????????  : ????????SESSION????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3523,14 +3523,14 @@ typedef struct
 
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
 /*****************************************************************************
- 结构名    : USIMM_XECCNUMBER_IND_STRU
- 结构说明  : XECC号码上报消息结构
+ ??????    : USIMM_XECCNUMBER_IND_STRU
+ ????????  : XECC????????????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_IND_STRU            stIndHdr;
-    VOS_UINT16                          usFileSize;     /*ucContent中数据长度*/
-    VOS_UINT8                           ucContent[2];   /*紧急呼叫号码记录信息*/
+    VOS_UINT16                          usFileSize;     /*ucContent??????????*/
+    VOS_UINT8                           ucContent[2];   /*????????????????????*/
 }USIMM_XECCNUMBER_IND_STRU;
 
 /*******************************************************************************
@@ -3608,14 +3608,14 @@ typedef union
 }USIMM_CDMASPECAUTH_DATA_UNION;
 
 /*****************************************************************************
- 结构名    : USIMM_RACCESS_CNF_STRU
- 结构说明  : USIMM 受限制访问CNF消息结构
+ ??????    : USIMM_RACCESS_CNF_STRU
+ ????????  : USIMM ??????????CNF????????
 *****************************************************************************/
 typedef struct
 {
     USIMM_CMDHEADER_CNF_STRU            stCmdResult;
     USIMM_CDMASPEC_AUTHTYPE_ENUM_UINT32 enAuthType;
-    USIMM_CDMASPECAUTH_DATA_UNION       uAuthCnf;         /* 返回Data*/
+    USIMM_CDMASPECAUTH_DATA_UNION       uAuthCnf;         /* ????Data*/
 }USIMM_CDMASPECAUTH_CNF_STRU;
 #endif
 
@@ -3644,8 +3644,8 @@ typedef struct
 }USIMM_CARDFETCH_IND_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_ICCIDCONTENT_IND_STRU
- 结构说明  : ICCID上报消息
+ ??????    : USIMM_ICCIDCONTENT_IND_STRU
+ ????????  : ICCID????????
 *****************************************************************************/
 typedef struct
 {
@@ -3655,8 +3655,8 @@ typedef struct
 }USIMM_ICCIDCONTENT_IND_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CHANGE_CARDMODE_REQ_STRU
- 结构说明  : 请求ICC切模消息结构
+ ??????    : USIMM_CHANGE_CARDMODE_REQ_STRU
+ ????????  : ????ICC????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3666,27 +3666,27 @@ typedef struct
 }USIMM_CHANGE_CARDMODE_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_CHANGE_MODE_ERROR_ENUM_UINT32
- 结构说明  : ICC切模错误码枚举
+ ??????    : USIMM_CHANGE_MODE_ERROR_ENUM_UINT32
+ ????????  : ICC??????????????
 *****************************************************************************/
 enum USIMM_CHANGE_MODE_ERROR_ENUM
 {
     USIMM_CHANGE_MODE_SUCC                  = 0,
-    USIMM_CHANGE_MODE_APP_TYPE_ERROR        = 1, /* 期望切换APP类型错误 */
-    USIMM_CHANGE_MODE_NOT_ICC               = 2, /* CCT国漫切换需只有ICC卡才需要USIM模块重启卡 */
-    USIMM_CHANGE_MODE_NO_CWG                = 3, /* 非双模卡 */
-    USIMM_CHANGE_MODE_UNAVAILABLE           = 4, /* 当前卡复位不可用 */
-    USIMM_CHANGE_MODE_SET_PRF_APP_FAIL      = 5, /* 设置应用优先级顺序失败 */
-    USIMM_CHANGE_MODE_SAME_APP              = 6, /* 需要切换的就是当前应用 */
-    USIMM_CHANGE_MODE_FEATURE_NOT_SUPPORT   = 7, /* 特性不支持:切卡只有CDMA特性宏打开才支持 */
+    USIMM_CHANGE_MODE_APP_TYPE_ERROR        = 1, /* ????????APP???????? */
+    USIMM_CHANGE_MODE_NOT_ICC               = 2, /* CCT??????????????ICC????????USIM?????????? */
+    USIMM_CHANGE_MODE_NO_CWG                = 3, /* ???????? */
+    USIMM_CHANGE_MODE_UNAVAILABLE           = 4, /* ???????????????? */
+    USIMM_CHANGE_MODE_SET_PRF_APP_FAIL      = 5, /* ?????????????????????? */
+    USIMM_CHANGE_MODE_SAME_APP              = 6, /* ?????????????????????? */
+    USIMM_CHANGE_MODE_FEATURE_NOT_SUPPORT   = 7, /* ??????????:????????CDMA???????????????? */
 
     USIMM_CHANGE_MODE_BUTT
 };
 typedef VOS_UINT32 USIMM_CHANGE_MODE_ERROR_ENUM_UINT32;
 
 /*****************************************************************************
- 结构名    : USIMM_CHANGE_CARDMODE_CNF_STRU
- 结构说明  : ICC切模回复消息结构
+ ??????    : USIMM_CHANGE_CARDMODE_CNF_STRU
+ ????????  : ICC????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3697,8 +3697,8 @@ typedef struct
 }USIMM_CHANGE_CARDMODE_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_FDNQUERY_REQ_STRU
- 结构说明  : FDN状态查询消息
+ ??????    : USIMM_FDNQUERY_REQ_STRU
+ ????????  : FDN????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3706,8 +3706,8 @@ typedef struct
 } USIMM_FDNQUERY_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_FDNQUERY_CNF_STRU
- 结构说明  : FDN状态回复消息
+ ??????    : USIMM_FDNQUERY_CNF_STRU
+ ????????  : FDN????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3716,8 +3716,8 @@ typedef struct
 } USIMM_FDNQUERY_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_QUERY_CARDTYPE_CNF_STRU
- 结构说明  : CardtypeEx状态回复消息
+ ??????    : USIMM_QUERY_CARDTYPE_CNF_STRU
+ ????????  : CardtypeEx????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3728,8 +3728,8 @@ typedef struct
 } USIMM_QUERY_CARDTYPE_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_FDNSTATUS_IND_STRU
- 结构说明  : FDN状态主动上报消息
+ ??????    : USIMM_FDNSTATUS_IND_STRU
+ ????????  : FDN????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3749,28 +3749,28 @@ typedef struct
 typedef struct
 {
     VOS_UINT32                          bitModemNum      : 3;
-    VOS_UINT32                          bitReserved0     : 5;  /* bit[3-7]    : 保留。 */
-    VOS_UINT32                          bitModem0Slot    : 3;  /* bit[8-10]   : modem 0使用的SCI接口。
-                                                                                   0：使用SCI0；
-                                                                                   1：使用SCI1；
-                                                                                   2：使用SCI2；
-                                                                                 其余值:多卡，暂不支持 */
-    VOS_UINT32                          bitModem1Slot   : 3;  /* bit[11-13]  : modem 1使用的SCI接口。
-                                                                                   0：使用SCI0；
-                                                                                   1：使用SCI1；
-                                                                                   2：使用SCI2；
-                                                                                 其余值:多卡，暂不支持 */
-    VOS_UINT32                          bitModem2Slot   : 3;  /* bit[14-16]  : modem 2使用的SCI接口。
-                                                                                   0：使用SCI0；
-                                                                                   1：使用SCI1；
-                                                                                   2：使用SCI2；
-                                                                                 其余值:多卡，暂不支持*/
-    VOS_UINT32                          bitReserved1     : 15;  /* bit[17-31]  : 保留 */
+    VOS_UINT32                          bitReserved0     : 5;  /* bit[3-7]    : ?????? */
+    VOS_UINT32                          bitModem0Slot    : 3;  /* bit[8-10]   : modem 0??????SCI??????
+                                                                                   0??????SCI0??
+                                                                                   1??????SCI1??
+                                                                                   2??????SCI2??
+                                                                                 ??????:?????????????? */
+    VOS_UINT32                          bitModem1Slot   : 3;  /* bit[11-13]  : modem 1??????SCI??????
+                                                                                   0??????SCI0??
+                                                                                   1??????SCI1??
+                                                                                   2??????SCI2??
+                                                                                 ??????:?????????????? */
+    VOS_UINT32                          bitModem2Slot   : 3;  /* bit[14-16]  : modem 2??????SCI??????
+                                                                                   0??????SCI0??
+                                                                                   1??????SCI1??
+                                                                                   2??????SCI2??
+                                                                                 ??????:??????????????*/
+    VOS_UINT32                          bitReserved1     : 15;  /* bit[17-31]  : ???? */
 }USIMM_SCI_CFG_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_PB_STATUS_CNF_STRU
- 结构说明  : USIMM 回复Pb功能状态 消息头结构
+ ??????    : USIMM_PB_STATUS_CNF_STRU
+ ????????  : USIMM ????Pb???????? ??????????
 *****************************************************************************/
 typedef struct
 {
@@ -3780,8 +3780,8 @@ typedef struct
 }USIMM_PB_STATUS_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : USIMM_SIMSQSTATUS_IND_STRU
- 结构说明  : USIMM 回复Simsq状态 消息头结构
+ ??????    : USIMM_SIMSQSTATUS_IND_STRU
+ ????????  : USIMM ????Simsq???? ??????????
 *****************************************************************************/
 typedef struct
 {
@@ -3791,12 +3791,12 @@ typedef struct
 }USIMM_SIMSQSTATUS_IND_STRU;
 
 /*****************************************************************************
-7 api声明
+7 api????
 *****************************************************************************/
 
 
 /**************************************************************************
-8 OTHERS定义
+8 OTHERS????
 *****************************************************************************/
 
 #if ((VOS_OS_VER == VOS_WIN32) || (VOS_OS_VER == VOS_NUCLEUS))

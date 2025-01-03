@@ -57,41 +57,41 @@ extern "C" {
 #endif
 
 /****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 /*****************************************************************************
- 枚举名    : GUCNAS_ACORE_NV_ID_ENUM
- 枚举说明  : GUCNAS组件ACORE的NV项ID枚举
+ ??????    : GUCNAS_ACORE_NV_ID_ENUM
+ ????????  : GUCNAS????ACORE??NV??ID????
 *****************************************************************************/
 enum GUCNAS_ACORE_NV_ID_ENUM
 {
 /*    36 */     en_NV_Item_SW_VERSION_FLAG                  = 36,       /* OM_SW_VER_FLAG_STRU */
 /*    90 */     en_NV_Item_BATTERY_ADC                      = 90,       /* VBAT_CALIBART_TYPE */
 
-/*  2102 */     en_NV_Item_CDMAMODEMSWITCH_NOT_RESET_CFG    = 2102,     /* TAF_NVIM_CDMAMODEMSWITCH_NOT_RESET_CFG_STRU  用来配置CDMAMODEMSWITCH不重启特性是否开启，若不开启，设置后需RESET MODEM */
+/*  2102 */     en_NV_Item_CDMAMODEMSWITCH_NOT_RESET_CFG    = 2102,     /* TAF_NVIM_CDMAMODEMSWITCH_NOT_RESET_CFG_STRU  ????????CDMAMODEMSWITCH??????????????????????????????????????RESET MODEM */
 
-/*  2336 */     en_NV_Item_Ipv6_Address_Test_Mode_Cfg       = 2336,     /* TAF_NVIM_IPV6_ADDR_TEST_MODE_CFG_STRU        IPV6地址测试模式配置，0x55AA55AA为测试模式，其他值为正常模式 */
-/*  2337 */     en_NV_Item_ADS_IPF_MODE_CFG                 = 2337,     /* TAF_NV_ADS_IPF_MODE_CFG_STRU                 IPF处理ADS下行数据的模式配置 */
+/*  2336 */     en_NV_Item_Ipv6_Address_Test_Mode_Cfg       = 2336,     /* TAF_NVIM_IPV6_ADDR_TEST_MODE_CFG_STRU        IPV6??????????????????0x55AA55AA???????????????????????????? */
+/*  2337 */     en_NV_Item_ADS_IPF_MODE_CFG                 = 2337,     /* TAF_NV_ADS_IPF_MODE_CFG_STRU                 IPF????ADS?????????????????? */
 
-/*  2354 */     en_NV_Item_ADS_WAKE_LOCK_CFG                = 2354,     /* TAF_NV_ADS_WAKE_LOCK_CFG_STRU ADS WAKELOCK 配置 */
+/*  2354 */     en_NV_Item_ADS_WAKE_LOCK_CFG                = 2354,     /* TAF_NV_ADS_WAKE_LOCK_CFG_STRU ADS WAKELOCK ???? */
 
-/*  2361 */     en_NV_Item_Print_Modem_Log_Type             = 2361,     /* TAF_NV_PRINT_MODEM_LOG_TYPE_STRU             控制是否输出modem log的类型 */
+/*  2361 */     en_NV_Item_Print_Modem_Log_Type             = 2361,     /* TAF_NV_PRINT_MODEM_LOG_TYPE_STRU             ????????????modem log?????? */
 
 /*  2369 */     en_NV_Item_ADS_MEM_POOL_CFG                 = 2369,     /* TAF_NV_ADS_MEM_POOL_CFG_STRU */
 
-/*  2391 */     en_NV_Item_User_Reboot_Support_Flg          = 2391,     /* TAF_NVIM_USER_REBOOT_SUPPORT_STRU            用户是否可以发起整机复位 */
+/*  2391 */     en_NV_Item_User_Reboot_Support_Flg          = 2391,     /* TAF_NVIM_USER_REBOOT_SUPPORT_STRU            ???????????????????????? */
 
-/*  2413 */     en_NV_Item_PDP_REDIAL_FOR_NO_CAUSE_CFG      = 2413,     /* TAF_NV_PDP_REDIAL_FOR_NO_CAUSE_CFG_STRU      PDP双栈激活，网侧无原因值重拨功能开关配置 */
+/*  2413 */     en_NV_Item_PDP_REDIAL_FOR_NO_CAUSE_CFG      = 2413,     /* TAF_NV_PDP_REDIAL_FOR_NO_CAUSE_CFG_STRU      PDP?????????????????????????????????????? */
 
-/*  2421 */     en_NV_Item_Rnic_Napi_Cfg                    = 2421,     /* TAF_NV_RNIC_NAPI_CFG_STRU                    RNIC NAPI GRO配置 */
+/*  2421 */     en_NV_Item_Rnic_Napi_Cfg                    = 2421,     /* TAF_NV_RNIC_NAPI_CFG_STRU                    RNIC NAPI GRO???? */
 
-/*  2437 */     en_NV_Item_AT_CLIENT_CFG                    = 2437,     /* TAF_AT_NVIM_AT_CLIENT_CFG_STRU               双卡双通控制AT通道归属哪个Modem信息 */
+/*  2437 */     en_NV_Item_AT_CLIENT_CFG                    = 2437,     /* TAF_AT_NVIM_AT_CLIENT_CFG_STRU               ????????????AT????????????Modem???? */
 
-/*  2461 */     en_NV_Item_ADS_PACKET_ERROR_FEEDBACK_CFG    = 2461,     /* TAF_NV_ADS_ERROR_FEEDBACK_CFG_STRU           下行错包反馈配置*/
+/*  2461 */     en_NV_Item_ADS_PACKET_ERROR_FEEDBACK_CFG    = 2461,     /* TAF_NV_ADS_ERROR_FEEDBACK_CFG_STRU           ????????????????*/
 
-/*  2470 */     en_NV_Item_Pdp_Redial_For_No_Pdp_Type_CAUSE_CFG = 2470, /* TAF_NV_PDP_REDIAL_FOR_NO_PDP_TYPE_CAUSE_CFG_STRU PDP双栈激活，网侧拒绝28号原因值重拨功能开关配置 */
+/*  2470 */     en_NV_Item_Pdp_Redial_For_No_Pdp_Type_CAUSE_CFG = 2470, /* TAF_NV_PDP_REDIAL_FOR_NO_PDP_TYPE_CAUSE_CFG_STRU PDP??????????????????28???????????????????????? */
 
-/*  2478 */     en_NV_Item_IMS_SWITCH_RAT_RELATION_CFG      = 2478,     /* TAF_NV_IMS_SWITCH_RAT_RELATION_CFG_STRU      ^IMSSWITCH命令2/3G开关与4G开关关联配置 */
+/*  2478 */     en_NV_Item_IMS_SWITCH_RAT_RELATION_CFG      = 2478,     /* TAF_NV_IMS_SWITCH_RAT_RELATION_CFG_STRU      ^IMSSWITCH????2/3G??????4G???????????? */
 
 /*  2600 */     en_NV_Item_COMMDEGBUG_CFG                   = 2600,     /* TAF_AT_NVIM_COMMDEGBUG_CFG_STRU */
 /*  2601 */     en_NV_Item_PID_Enable_Type                  = 2601,     /* nv_pid_enable_type */
@@ -116,14 +116,14 @@ enum GUCNAS_ACORE_NV_ID_ENUM
 /*  2650 */     en_NV_Item_DIAL_CONNECT_DISPLAY_RATE        = 2650,     /* AT_NVIM_DIAL_CONNECT_DISPLAY_RATE_STRU */
 
 /*  2655 */     en_NV_Item_ADS_Queue_Scheduler_Pri          = 2655,     /* ADS_UL_QUEUE_SCHEDULER_PRI_NV_STRU */
-/*  2656 */     en_NV_Item_WIFI_INFO                        = 2656,     /* AT_WIFI_INFO_STRU， XML文件中的结构体名为nv_wifi_info */
+/*  2656 */     en_NV_Item_WIFI_INFO                        = 2656,     /* AT_WIFI_INFO_STRU?? XML??????????????????nv_wifi_info */
 
 /*  2675 */     en_NV_Item_Mux_Support_Flg                  = 2675,     /* TAF_AT_NVIM_MUX_SUPPORT_FLG_STRU */
 
 /*  2677 */     en_NV_Item_MUX_REPORT_CFG                   = 2677,     /* TAF_AT_NVIM_MUX_REPORT_CFG_STRU */
 
 /*  2679 */     en_NV_Item_SS_CUSTOMIZE_PARA                = 2679,     /* AT_SS_CUSTOMIZE_PARA_STRU */
-/*  2680 */     en_NV_Item_SHARE_PDP_INFO                   = 2680,     /* TAF_NVIM_SHARE_PDP_INFO_STRU Share PDP特性控制NV */
+/*  2680 */     en_NV_Item_SHARE_PDP_INFO                   = 2680,     /* TAF_NVIM_SHARE_PDP_INFO_STRU Share PDP????????NV */
 
 /*  2696 */     en_NV_Item_ADS_DYNAMIC_THRESHOLD_CFG        = 2696,     /* ADS_NV_DYNAMIC_THRESHOLD_STRU */
 
@@ -141,8 +141,8 @@ enum GUCNAS_ACORE_NV_ID_ENUM
 /*  9041 */     en_NV_Item_SubPlatFormInfo                  = 9041,     /* NAS_NVIM_PLATFORM_STRU */
 /*  9070 */     en_NV_Item_Eqver                            = 9070,     /* TAF_AT_EQ_VER_STRU */
 /*  9071 */     en_NV_Item_Csver                            = 9071,     /* TAF_NVIM_CS_VER_STRU */
-/*  9110 */     en_NV_Item_MULTI_WIFI_KEY                   = 9110,     /* TAF_AT_MULTI_WIFI_SEC_STRU 支持多组SSID扩展新增WIKEY NV项 */
-/*  9111 */     en_NV_Item_MULTI_WIFI_STATUS_SSID           = 9111,     /* TAF_AT_MULTI_WIFI_SSID_STRU 支持多组SSID扩展新增SSID NV项 */
+/*  9110 */     en_NV_Item_MULTI_WIFI_KEY                   = 9110,     /* TAF_AT_MULTI_WIFI_SEC_STRU ????????SSID????????WIKEY NV?? */
+/*  9111 */     en_NV_Item_MULTI_WIFI_STATUS_SSID           = 9111,     /* TAF_AT_MULTI_WIFI_SSID_STRU ????????SSID????????SSID NV?? */
 /*  9113 */     en_NV_Item_AT_ABORT_CMD_PARA                = 9113,     /* AT_NVIM_ABORT_CMD_PARA_STRU */
 /*  9128 */     en_NV_Item_CIMI_PORT_CFG                    = 9128,     /* TAF_AT_NVIM_CIMI_PORT_CFG_STRU */
 /*  9269 */     en_NV_Item_DMS_DEBUG_CFG                    = 9269,     /* TAF_NV_PORT_DEBUG_CFG_STRU */

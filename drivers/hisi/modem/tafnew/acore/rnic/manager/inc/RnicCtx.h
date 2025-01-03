@@ -49,7 +49,7 @@
 #define _RNIC_CTX_H_
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "PsLogdef.h"
@@ -84,38 +84,38 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 #define RNIC_NET_ID_MAX_NUM             (RNIC_DEV_ID_BUTT)
 #define RNIC_3GPP_NET_ID_MAX_NUM        (RNIC_DEV_ID_RMNET6)
 #define RNIC_MODEM_ID_MAX_NUM           (MODEM_ID_BUTT)
 
-#define RNIC_IPV4_VERSION               (4)                                     /* IP头部中IP V4版本号 */
-#define RNIC_IPV6_VERSION               (6)                                     /* IP头部中IP V6版本号 */
-#define RNIC_MAX_IPV6_ADDR_LEN          (16)                                    /* IPV6地址长度 */
+#define RNIC_IPV4_VERSION               (4)                                     /* IP??????IP V4?????? */
+#define RNIC_IPV6_VERSION               (6)                                     /* IP??????IP V6?????? */
+#define RNIC_MAX_IPV6_ADDR_LEN          (16)                                    /* IPV6???????? */
 
-#define RNIC_MAX_DSFLOW_BYTE            (0xFFFFFFFF)                            /* RNIC最大流量值 */
+#define RNIC_MAX_DSFLOW_BYTE            (0xFFFFFFFF)                            /* RNIC?????????? */
 
 #define RNIC_DIAL_DEMA_IDLE_TIME        (600)
 
-/* RabId的高两位表示ModemId, 00表示Modem0, 01表示Modem1, 10表示Modem1 */
-#define RNIC_RABID_TAKE_MODEM_1_MASK    (0x40)                                  /* Rabid携带Modem1的掩码 */
-#define RNIC_RABID_TAKE_MODEM_2_MASK    (0x80)                                  /* Rabid携带Modem2的掩码 */
-#define RNIC_RABID_UNTAKE_MODEM_MASK    (0x3F)                                  /* Rabid去除Modem的掩码 */
+/* RabId????????????ModemId, 00????Modem0, 01????Modem1, 10????Modem1 */
+#define RNIC_RABID_TAKE_MODEM_1_MASK    (0x40)                                  /* Rabid????Modem1?????? */
+#define RNIC_RABID_TAKE_MODEM_2_MASK    (0x80)                                  /* Rabid????Modem2?????? */
+#define RNIC_RABID_UNTAKE_MODEM_MASK    (0x3F)                                  /* Rabid????Modem?????? */
 
-/* 最大RABID值 */
+/* ????RABID?? */
 #define RNIC_RAB_ID_MAX_NUM             (11)
 #define RNIC_RAB_ID_OFFSET              (5)
-/* Rab Id的最小值 */
+/* Rab Id???????? */
 #define RNIC_RAB_ID_MIN                 (5)
-/* Rab Id的最大值 */
+/* Rab Id???????? */
 #define RNIC_RAB_ID_MAX                 (15)
 #define RNIC_RAB_ID_INVALID             (0xFF)
 
-#define RNIC_NAPI_POLL_DEFAULT_WEIGHT   (16)                                    /* NAPI 一次Poll轮询的默认最大包个数 */
-#define RNIC_NAPI_POLL_MAX_WEIGHT       (64)                                    /* NAPI 一次Poll轮询的协议栈支持的最大包个数 */
-#define RNIC_POLL_QUEUE_DEFAULT_MAX_LEN (15000)                                 /* NAPI Poll队列的最大长度 */
+#define RNIC_NAPI_POLL_DEFAULT_WEIGHT   (16)                                    /* NAPI ????Poll???????????????????? */
+#define RNIC_NAPI_POLL_MAX_WEIGHT       (64)                                    /* NAPI ????Poll???????????????????????????? */
+#define RNIC_POLL_QUEUE_DEFAULT_MAX_LEN (15000)                                 /* NAPI Poll?????????????? */
 
 #define RNIC_INVALID_IFACE_ID           (0xFF)
 #define RNIC_INVALID_PDU_SESSION_ID     (0xFF)
@@ -147,109 +147,109 @@ extern "C" {
             (RNIC_DEV_ID_RMNET_R_IMS01 == (RmNetId))
 #endif
 
-/* 获取RNIC上下文地址 */
+/* ????RNIC?????????? */
 #define RNIC_GET_RNIC_CTX_ADR()                     (&g_stRnicCtx)
-/* 获取指定网卡的上下文地址 */
+/* ???????????????????????? */
 #define RNIC_GET_IFACE_CTX_ADR(index)               (&(g_stRnicCtx.astIfaceCtx[index]))
-/* 获取指定网卡的PDP上下文地址 */
+/* ??????????????PDP?????????? */
 #define RNIC_GET_IFACE_PDN_INFO_ADR(index)          (&(g_stRnicCtx.astIfaceCtx[index].stPsIfaceInfo))
-/* 获取IPV4类型PDN激活状态 */
+/* ????IPV4????PDN???????? */
 #define RNIC_GET_IFACE_PDN_IPV4_ACT_STATE(index)    (g_stRnicCtx.astIfaceCtx[index].stPsIfaceInfo.bitOpIpv4Act)
-/* 获取IPV6类型PDN激活状态 */
+/* ????IPV6????PDN???????? */
 #define RNIC_GET_IFACE_PDN_IPV6_ACT_STATE(index)    (g_stRnicCtx.astIfaceCtx[index].stPsIfaceInfo.bitOpIpv6Act)
 
-/* 获取当前接收速率 */
+/* ???????????????? */
 #define RNIC_GET_IFACE_CUR_RECV_RATE(index)         (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulCurrentRecvRate)
-/* 获取当前发送速率 */
+/* ???????????????? */
 #define RNIC_GET_IFACE_CUR_SEND_RATE(index)         (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulCurrentSendRate)
-/* 设置当前接收速率 */
+/* ???????????????? */
 #define RNIC_SET_IFACE_CUR_RECV_RATE(index, val)    (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulCurrentRecvRate = (val))
-/* 设置当前发送速率 */
+/* ???????????????? */
 #define RNIC_SET_IFACE_CUR_SEND_RATE(index, val)    (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulCurrentSendRate = (val))
-/* 获取当前接收报文数 */
+/* ?????????????????? */
 #define RNIC_GET_IFACE_PERIOD_RECV_PKT(index)       (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulPeriodRecvPktNum)
-/* 获取当前发送报文数 */
+/* ?????????????????? */
 #define RNIC_GET_IFACE_PERIOD_SEND_PKT(index)       (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulPeriodSendPktNum)
-/* 设置当前接收报文数 */
+/* ?????????????????? */
 #define RNIC_SET_IFACE_PERIOD_RECV_PKT(index, val)  (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulPeriodRecvPktNum = (val))
-/* 设置当前发送报文数 */
+/* ?????????????????? */
 #define RNIC_SET_IFACE_PERIOD_SEND_PKT(index, val)  (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulPeriodSendPktNum = (val))
-/* 设置当前发送报文数 */
+/* ?????????????????? */
 #define RNIC_ADD_IFACE_PERIOD_SEND_PKT(index, val)  (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulPeriodSendPktNum += (val))
-/* 清除当前接收报文数 */
+/* ?????????????????? */
 #define RNIC_CLEAN_IFACE_PERIOD_RECV_PKT(index)     (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulPeriodRecvPktNum = 0)
-/* 清除当前发送报文数 */
+/* ?????????????????? */
 #define RNIC_CLEAN_IFACE_PERIOD_SEND_PKT(index)     (g_stRnicCtx.astIfaceCtx[index].stDsFlowStats.ulPeriodSendPktNum = 0)
 
 
-/* 获取指定网卡NAPI特性开关 */
+/* ????????????NAPI???????? */
 #define RNIC_GET_NAPI_FEATURE(index)                   (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.ucNapiEnable)
-/* 获取指定网卡NAPI特性开关 */
+/* ????????????NAPI???????? */
 #define RNIC_GET_GRO_FEATURE(index)                    (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.ucGroEnable)
-/* 获取网卡NAPI weight值调整模式 */
+/* ????????NAPI weight?????????? */
 #define RNIC_GET_NAPI_WEIGHT_ADJ_MODE(index)           (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.enNapiWeightAdjMode)
-/* 获取网卡NAPI weight值 */
+/* ????????NAPI weight?? */
 #define RNIC_GET_NAPI_WEIGHT(index)                    (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.ucNapiPollWeight)
-/* 获取网卡NAPI Poll队列长度最大值 */
+/* ????????NAPI Poll?????????????? */
 #define RNIC_GET_NAPI_POLL_QUE_MAX_LEN(index)          (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.usNapiPollQueMaxLen)
-/* 获取指定网卡的NAPI Weight动态调整配置地址 */
+/* ??????????????NAPI Weight???????????????? */
 #define RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)           (&(g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.stNapiWeightDynamicAdjCfg))
-/* 获取网卡NAPI下行每秒收包个数档位值1 */
+/* ????????NAPI??????????????????????1 */
 #define RNIC_GET_DL_PKT_NUM_PER_SEC_LEVEL1(index)      (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel1)
-/* 获取网卡NAPI下行每秒收包个数档位值2 */
+/* ????????NAPI??????????????????????2 */
 #define RNIC_GET_DL_PKT_NUM_PER_SEC_LEVEL2(index)      (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel2)
-/* 获取网卡NAPI下行每秒收包个数档位值3 */
+/* ????????NAPI??????????????????????3 */
 #define RNIC_GET_DL_PKT_NUM_PER_SEC_LEVEL3(index)      (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel3)
-/* 获取网卡NAPI下行每秒收包个数档位值4 */
+/* ????????NAPI??????????????????????4 */
 #define RNIC_GET_DL_PKT_NUM_PER_SEC_LEVEL4(index)      (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel4)
 
-/* 获取网卡NAPI weight档位值1 */
+/* ????????NAPI weight??????1 */
 #define RNIC_GET_NAPI_WEIGHT_LEVEL1(index)             (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel1)
-/* 获取网卡NAPI weight档位值2 */
+/* ????????NAPI weight??????2 */
 #define RNIC_GET_NAPI_WEIGHT_LEVEL2(index)             (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel2)
-/* 获取网卡NAPI weight档位值3 */
+/* ????????NAPI weight??????3 */
 #define RNIC_GET_NAPI_WEIGHT_LEVEL3(index)             (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel3)
-/* 获取网卡NAPI weight档位值4 */
+/* ????????NAPI weight??????4 */
 #define RNIC_GET_NAPI_WEIGHT_LEVEL4(index)             (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel4)
 
-/* 设置网卡NAPI特性开关 */
+/* ????????NAPI???????? */
 #define RNIC_SET_NAPI_FEATURE(index, val)              (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.ucNapiEnable = (val))
-/* 设置网卡NAPI特性开关 */
+/* ????????NAPI???????? */
 #define RNIC_SET_GRO_FEATURE(index, val)               (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.ucGroEnable = (val))
-/* 设置网卡NAPI weight值调整模式 */
+/* ????????NAPI weight?????????? */
 #define RNIC_SET_NAPI_WEIGHT_ADJ_MODE(index, val)      (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.enNapiWeightAdjMode = (val))
-/* 设置网卡NAPI weight值 */
+/* ????????NAPI weight?? */
 #define RNIC_SET_NAPI_WEIGHT(index, val)               (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.ucNapiPollWeight = (val))
-/* 设置网卡NAPI Poll队列长度最大值 */
+/* ????????NAPI Poll?????????????? */
 #define RNIC_SET_NAPI_POLL_QUE_MAX_LEN(index, val)     (g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stNapiCfg.usNapiPollQueMaxLen = (val))
 
-/* 设置网卡NAPI下行每秒收包个数档位值1 */
+/* ????????NAPI??????????????????????1 */
 #define RNIC_SET_DL_PKT_NUM_PER_SEC_LEVEL1(index, val) (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel1 = (val))
-/* 设置网卡NAPI下行每秒收包个数档位值2 */
+/* ????????NAPI??????????????????????2 */
 #define RNIC_SET_DL_PKT_NUM_PER_SEC_LEVEL2(index, val) (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel2 = (val))
-/* 设置网卡NAPI下行每秒收包个数档位值3 */
+/* ????????NAPI??????????????????????3 */
 #define RNIC_SET_DL_PKT_NUM_PER_SEC_LEVEL3(index, val) (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel3 = (val))
-/* 设置网卡NAPI下行每秒收包个数档位值4 */
+/* ????????NAPI??????????????????????4 */
 #define RNIC_SET_DL_PKT_NUM_PER_SEC_LEVEL4(index, val) (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stDlPktNumPerSecLevel.ulDlPktNumPerSecLevel4 = (val))
 
-/* 设置网卡NAPI weight档位值1 */
+/* ????????NAPI weight??????1 */
 #define RNIC_SET_NAPI_WEIGHT_LEVEL1(index, val)        (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel1 = (val))
-/* 设置网卡NAPI weight档位值2 */
+/* ????????NAPI weight??????2 */
 #define RNIC_SET_NAPI_WEIGHT_LEVEL2(index, val)        (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel2 = (val))
-/* 设置网卡NAPI weight档位值3 */
+/* ????????NAPI weight??????3 */
 #define RNIC_SET_NAPI_WEIGHT_LEVEL3(index, val)        (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel3 = (val))
-/* 设置网卡NAPI weight档位值4 */
+/* ????????NAPI weight??????4 */
 #define RNIC_SET_NAPI_WEIGHT_LEVEL4(index, val)        (RNIC_GET_NAPI_DYNAMIC_CFG_ADR(index)->stNapiWeightLevel.ucNapiWeightLevel4 = (val))
 
-/* 获取RNIC上下文地址 */
+/* ????RNIC?????????? */
 #define RNIC_GET_RNIC_TIMER_ADR()                      (g_stRnicCtx.astTimerCtx)
 
 #if (defined(CONFIG_BALONG_SPE))
-/* 获取指定网卡的SPE配置地址 */
+/* ??????????????SPE???????? */
 #define RNIC_GET_SPE_CFG_ADR(index)                    (&(g_stRnicCtx.astIfaceCtx[index].stFeatureCfg.stSpeCfg))
 #endif
 
-/* 按需拨号节点操作 */
+/* ???????????????? */
 #define RNIC_GET_DIAL_MODE_ADR()                       (&(g_stRnicCtx.stDialMode))
 #define RNIC_GET_PROC_DIAL_MODE()                      (g_stRnicCtx.stDialMode.enDialMode)
 #define RNIC_SET_PROC_DIAL_MODE(val)                   (g_stRnicCtx.stDialMode.enDialMode = (val))
@@ -258,30 +258,30 @@ extern "C" {
 #define RNIC_GET_PROC_EVENT_REPORT()                   (g_stRnicCtx.stDialMode.enEventReportFlag)
 #define RNIC_SET_PROC_EVENT_REPORT(val)                (g_stRnicCtx.stDialMode.enEventReportFlag = (val))
 
-/* 获取当前的IPF模式 */
+/* ??????????IPF???? */
 #define RNIC_GET_IPF_MODE()                            (g_stRnicCtx.ucIpfMode)
-/* 获取复位信号 */
+/* ???????????? */
 #define RNIC_GET_RESET_SEM()                           (g_stRnicCtx.hResetSem)
 
-/* 按需断开计数操作 */
+/* ???????????????? */
 #define RNIC_GET_TI_DIALDOWN_EXP_CONT()                (g_stRnicCtx.ulTiDialDownExpCount)
 #define RNIC_CLEAR_TI_DIALDOWN_EXP_CONT()              (g_stRnicCtx.ulTiDialDownExpCount = 0)
 #define RNIC_ADD_TI_DIALDOWN_EXP_CONT()                (g_stRnicCtx.ulTiDialDownExpCount++)
 
-/* Tethering操作 */
+/* Tethering???? */
 #define RNIC_GET_TETHER_ORIG_GRO_FEATURE()             (g_stRnicCtx.stTetherInfo.ucOrigGroEnable)
 #define RNIC_SET_TETHER_ORIG_GRO_FEATURE(val)          (g_stRnicCtx.stTetherInfo.ucOrigGroEnable = (val))
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 enum RNIC_NETCARD_STATUS_TYPE_ENUM
 {
-    RNIC_NETCARD_STATUS_CLOSED,                                                 /* RNIC为关闭状态 */
-    RNIC_NETCARD_STATUS_OPENED,                                                 /* RNIC为打开状态 */
+    RNIC_NETCARD_STATUS_CLOSED,                                                 /* RNIC?????????? */
+    RNIC_NETCARD_STATUS_OPENED,                                                 /* RNIC?????????? */
     RNIC_NETCARD_STATUS_BUTT
 };
 typedef VOS_UINT8 RNIC_NETCARD_STATUS_ENUM_UINT8;
@@ -289,8 +289,8 @@ typedef VOS_UINT8 RNIC_NETCARD_STATUS_ENUM_UINT8;
 
 enum RNIC_FLOW_CTRL_STATUS_ENUM
 {
-    RNIC_FLOW_CTRL_STATUS_STOP          = 0x00,                                 /* 流控停止 */
-    RNIC_FLOW_CTRL_STATUS_START         = 0x01,                                 /* 流控启动 */
+    RNIC_FLOW_CTRL_STATUS_STOP          = 0x00,                                 /* ???????? */
+    RNIC_FLOW_CTRL_STATUS_START         = 0x01,                                 /* ???????? */
     RNIC_FLOW_CTRL_STATUS_BUTT          = 0xFF
 };
 typedef VOS_UINT32 RNIC_FLOW_CTRL_STATUS_ENUM_UINT32;
@@ -298,8 +298,8 @@ typedef VOS_UINT32 RNIC_FLOW_CTRL_STATUS_ENUM_UINT32;
 
 enum RNIC_IPF_MODE_ENUM
 {
-    RNIC_IPF_MODE_INT  = 0x00,                                                   /* 中断上下文 */
-    RNIC_IPF_MODE_THRD = 0x01,                                                   /* 线程上下文 */
+    RNIC_IPF_MODE_INT  = 0x00,                                                   /* ?????????? */
+    RNIC_IPF_MODE_THRD = 0x01,                                                   /* ?????????? */
     RNIC_IPF_MODE_BUTT
 };
 typedef VOS_UINT8 RNIC_IPF_MODE_ENUM_UINT8;
@@ -325,8 +325,8 @@ typedef VOS_UINT32 RNIC_DIAL_MODE_ENUM_UINT32;
 
 enum RNIC_DIAL_EVENT_REPORT_FLAG_ENUM
 {
-    RNIC_FORBID_EVENT_REPORT            = 0x0000,                               /*不给应用上报*/
-    RNIC_ALLOW_EVENT_REPORT             = 0X0001,                               /*允许给应用上报*/
+    RNIC_FORBID_EVENT_REPORT            = 0x0000,                               /*????????????*/
+    RNIC_ALLOW_EVENT_REPORT             = 0X0001,                               /*??????????????*/
 
     RNIC_DIAL_EVENT_REPORT_FLAG_BUTT
 };
@@ -342,22 +342,22 @@ enum RNIC_PS_RAT_TYPE_ENUM
 typedef VOS_UINT8 RNIC_PS_RAT_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 typedef VOS_VOID (*RNIC_SPE_RX_PUSH_CB)(VOS_VOID);
@@ -365,46 +365,46 @@ typedef VOS_INT (*RNIC_SPE_MEM_RECYCLE_CB)(IMM_ZC_STRU *pstImmZc);
 
 
 /*****************************************************************************
- 结构名称  : RNIC_DSFLOW_STATS_STRU
- 结构说明  : 流量统计结构
+ ????????  : RNIC_DSFLOW_STATS_STRU
+ ????????  : ????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulCurrentRecvRate;                      /* 当前下行速率，保存PDP激活后1秒的速率，去激活后清空 */
-    VOS_UINT32                          ulCurrentSendRate;                      /* 当前上行速率，保存PDP激活后1秒的速率，去激活后清空 */
+    VOS_UINT32                          ulCurrentRecvRate;                      /* ??????????????????PDP??????1?????????????????????? */
+    VOS_UINT32                          ulCurrentSendRate;                      /* ??????????????????PDP??????1?????????????????????? */
 
-    VOS_UINT32                          ulPeriodRecvPktNum;                     /* 下行收到数据包个数,统计一个拨号断开定时器周期内收到的个数，超时后清空 */
-    VOS_UINT32                          ulPeriodSendPktNum;                     /* 上行发送有效个数,统计一个拨号断开定时器周期内收到的个数，超时后清空 */
+    VOS_UINT32                          ulPeriodRecvPktNum;                     /* ??????????????????,?????????????????????????????????????????????????? */
+    VOS_UINT32                          ulPeriodSendPktNum;                     /* ????????????????,?????????????????????????????????????????????????? */
 } RNIC_DSFLOW_STATS_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           aucRmnetName[RNIC_RMNET_NAME_MAX_LEN];  /* Rmnet网卡名 */
-    AT_RNIC_USB_TETHER_CONN_ENUM_UINT8  enTetherConnStat;                       /* Tethering连接状态 */
-    VOS_UINT8                           ucOrigGroEnable;                        /* Tethering连接状态 */
-    VOS_UINT8                           aucRsv[6];                              /* 保留位 */
+    VOS_UINT8                           aucRmnetName[RNIC_RMNET_NAME_MAX_LEN];  /* Rmnet?????? */
+    AT_RNIC_USB_TETHER_CONN_ENUM_UINT8  enTetherConnStat;                       /* Tethering???????? */
+    VOS_UINT8                           ucOrigGroEnable;                        /* Tethering???????? */
+    VOS_UINT8                           aucRsv[6];                              /* ?????? */
 } RNIC_TETHER_INFO_STRU;
 
 
 typedef struct
 {
-    RNIC_DIAL_MODE_ENUM_UINT32                              enDialMode;         /* Dial模式 */
-    VOS_UINT32                                              ulIdleTime;         /* 定时器长度，单位为秒 */
-    RNIC_DIAL_EVENT_REPORT_FLAG_ENUM_UINT32                 enEventReportFlag;  /*是否给应用上报标识*/
+    RNIC_DIAL_MODE_ENUM_UINT32                              enDialMode;         /* Dial???? */
+    VOS_UINT32                                              ulIdleTime;         /* ???????????????????? */
+    RNIC_DIAL_EVENT_REPORT_FLAG_ENUM_UINT32                 enEventReportFlag;  /*??????????????????*/
     VOS_UINT32                                              ulReserved;
 }RNIC_DIAL_MODE_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                                     ucNapiEnable;                 /* NAPI开启 */
-    NAPI_WEIGHT_ADJ_MODE_ENUM_UINT8               enNapiWeightAdjMode;          /* NAPI Weight调整模式, 0: 静态模式，1：动态调整模式 */
-    VOS_UINT8                                     ucNapiPollWeight;             /* RNIC网卡NAPI方式一次poll的最大报文数 */
-    VOS_UINT8                                     ucGroEnable;                  /* GRO开启 */
-    VOS_UINT16                                    usNapiPollQueMaxLen;          /* Napi poll队列最大支持长度 */
-    VOS_UINT8                                     aucReserved[2];               /* 保留位 */
-    RNIC_NAPI_WEIGHT_DYNAMIC_ADJ_CFG_STRU         stNapiWeightDynamicAdjCfg;    /* Napi Weight动态调整配置 */
+    VOS_UINT8                                     ucNapiEnable;                 /* NAPI???? */
+    NAPI_WEIGHT_ADJ_MODE_ENUM_UINT8               enNapiWeightAdjMode;          /* NAPI Weight????????, 0: ??????????1?????????????? */
+    VOS_UINT8                                     ucNapiPollWeight;             /* RNIC????NAPI????????poll???????????? */
+    VOS_UINT8                                     ucGroEnable;                  /* GRO???? */
+    VOS_UINT16                                    usNapiPollQueMaxLen;          /* Napi poll???????????????? */
+    VOS_UINT8                                     aucReserved[2];               /* ?????? */
+    RNIC_NAPI_WEIGHT_DYNAMIC_ADJ_CFG_STRU         stNapiWeightDynamicAdjCfg;    /* Napi Weight???????????? */
 
 } RNIC_NAPI_CFG_STRU;
 
@@ -412,10 +412,10 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulTdDepth;                              /* TD深度 */
-    VOS_UINT32                          ulRdDepth;                              /* RD深度 */
-    RNIC_SPE_RX_PUSH_CB                 pSpeRxPushFunc;                         /* SPE上行中断完成回调 */
-    RNIC_SPE_MEM_RECYCLE_CB             pSpeMemRecylceFunc;                     /* SPE内存回收回调 */
+    VOS_UINT32                          ulTdDepth;                              /* TD???? */
+    VOS_UINT32                          ulRdDepth;                              /* RD???? */
+    RNIC_SPE_RX_PUSH_CB                 pSpeRxPushFunc;                         /* SPE???????????????? */
+    RNIC_SPE_MEM_RECYCLE_CB             pSpeMemRecylceFunc;                     /* SPE???????????? */
 
 } RNIC_SPE_CFG_STRU;
 #endif
@@ -423,9 +423,9 @@ typedef struct
 
 typedef struct
 {
-    RNIC_NAPI_CFG_STRU                  stNapiCfg;                              /* NAPI,GRO特性配置 */
+    RNIC_NAPI_CFG_STRU                  stNapiCfg;                              /* NAPI,GRO???????? */
 #if (defined(CONFIG_BALONG_SPE))
-    RNIC_SPE_CFG_STRU                   stSpeCfg;                               /* SPE配置 */
+    RNIC_SPE_CFG_STRU                   stSpeCfg;                               /* SPE???? */
 #endif
 }RNIC_FEATURE_CFG_STRU;
 
@@ -437,68 +437,68 @@ typedef struct
     VOS_UINT32                          bitOpSpare   : 30;
 
     VOS_UINT8                           ucIpv4RabId;
-    VOS_UINT8                           ucIpv4ExRabId;                          /* 扩展承载:Modem ID + Rab ID */
+    VOS_UINT8                           ucIpv4ExRabId;                          /* ????????:Modem ID + Rab ID */
     VOS_UINT8                           aucReserved1[2];
-    VOS_UINT32                          ulIpv4Addr;                             /* IPv4地址 */
+    VOS_UINT32                          ulIpv4Addr;                             /* IPv4???? */
 
     VOS_UINT8                           ucIpv6RabId;
-    VOS_UINT8                           ucIpv6ExRabId;                          /* 扩展承载:Modem ID + Rab ID */
+    VOS_UINT8                           ucIpv6ExRabId;                          /* ????????:Modem ID + Rab ID */
 
     VOS_UINT8                           aucReserved2[2];
-    VOS_UINT8                           aucIpv6Addr[RNIC_MAX_IPV6_ADDR_LEN];    /* 从AT带来的IPV6地址长度，不包括":" */
+    VOS_UINT8                           aucIpv6Addr[RNIC_MAX_IPV6_ADDR_LEN];    /* ??AT??????IPV6????????????????":" */
 
-    MODEM_ID_ENUM_UINT16                enModemId;                              /* 网卡归属哪个modem */
-    RNIC_PS_RAT_TYPE_ENUM_UINT8         enRatType;                              /* ps注册域 */
+    MODEM_ID_ENUM_UINT16                enModemId;                              /* ????????????modem */
+    RNIC_PS_RAT_TYPE_ENUM_UINT8         enRatType;                              /* ps?????? */
     VOS_UINT8                           aucReserved3[5];
 
-    IMM_ZC_HEAD_STRU                    stImsQue;                               /* IMS上行数据发送缓存队列 */
+    IMM_ZC_HEAD_STRU                    stImsQue;                               /* IMS???????????????????? */
 
 }RNIC_PS_IFACE_INFO_STRU;
 
 
 typedef struct
 {
-    RNIC_DEV_ID_ENUM_UINT8              enRmNetId;                              /* 网卡设备对应的网卡ID */
+    RNIC_DEV_ID_ENUM_UINT8              enRmNetId;                              /* ??????????????????ID */
     PS_IFACE_ID_ENUM_UINT8              enIfaceId;
     VOS_UINT8                           aucReserved[6];
-    RNIC_PS_IFACE_INFO_STRU             stPsIfaceInfo;                          /* 网卡设备对应的PDN信息 */
-    RNIC_FEATURE_CFG_STRU               stFeatureCfg;                           /* RNIC特性配置 */
-    RNIC_DSFLOW_STATS_STRU              stDsFlowStats;                          /* 流量信息 */
+    RNIC_PS_IFACE_INFO_STRU             stPsIfaceInfo;                          /* ??????????????PDN???? */
+    RNIC_FEATURE_CFG_STRU               stFeatureCfg;                           /* RNIC???????? */
+    RNIC_DSFLOW_STATS_STRU              stDsFlowStats;                          /* ???????? */
 
 }RNIC_IFACE_CTX_STRU;
 
 
 typedef struct
 {
-    /* RNIC网卡设备上下文 */
-    RNIC_IFACE_CTX_STRU                 astIfaceCtx[RNIC_NET_ID_MAX_NUM];        /* 网卡设备上下文信息 */
+    /* RNIC?????????????? */
+    RNIC_IFACE_CTX_STRU                 astIfaceCtx[RNIC_NET_ID_MAX_NUM];        /* ?????????????????? */
 
-    /* RNIC定时器上下文 */
+    /* RNIC???????????? */
     RNIC_TIMER_CTX_STRU                 astTimerCtx[RNIC_MAX_TIMER_NUM];
 
-    /* RNIC公共上下文 */
-    RNIC_DIAL_MODE_STRU                 stDialMode;                             /* 拨号模式 */
-    VOS_UINT32                          ulTiDialDownExpCount;                   /* 拨号断开定时器超时次数参数统计 */
-    VOS_UINT8                           ucIpfMode;                              /* IPF处理ADS下行数据的模式, 0: 中断上下文(默认)，1：线程上下文 */
+    /* RNIC?????????? */
+    RNIC_DIAL_MODE_STRU                 stDialMode;                             /* ???????? */
+    VOS_UINT32                          ulTiDialDownExpCount;                   /* ?????????????????????????????? */
+    VOS_UINT8                           ucIpfMode;                              /* IPF????ADS??????????????, 0: ??????????(????)??1???????????? */
     VOS_UINT8                           aucRsv[3];
-    VOS_SEM                             hResetSem;                              /* 二进制信号量，用于复位处理 */
-    RNIC_TETHER_INFO_STRU               stTetherInfo;                           /* Tethering信息 */
+    VOS_SEM                             hResetSem;                              /* ?????????????????????????? */
+    RNIC_TETHER_INFO_STRU               stTetherInfo;                           /* Tethering???? */
     struct wakeup_source                stOnDemandDisconnWakeLock;
 }RNIC_CTX_STRU;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 extern RNIC_CTX_STRU                    g_stRnicCtx;
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 VOS_VOID RNIC_InitCtx(VOS_VOID);
 VOS_VOID RNIC_InitPdnInfo(RNIC_PS_IFACE_INFO_STRU *pstPdnInfo);

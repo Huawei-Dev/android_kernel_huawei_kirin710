@@ -46,7 +46,7 @@ spinlock_t g_ipc_int_lock = __SPIN_LOCK_UNLOCKED("ipc");
 #define K3_IPC_MODE_IDLE                        (4)
 #define K3_IPC_MODE_AUTOACK                 (0)
 
-/*************************************hifi系统ipc******************************************/
+/*************************************hifi????ipc******************************************/
 #define K3_SYS_IPC_BASE_ADDR_S      (unsigned long)(SOC_ACPU_IPC_BASE_ADDR)
 #define K3_SYS_IPC_BASE_ADDR_NS     (unsigned long)(SOC_ACPU_IPC_NS_BASE_ADDR)
 #define K3_SYS_IPC_REG_SIZE     (0xA00)
@@ -70,7 +70,7 @@ spinlock_t g_ipc_int_lock = __SPIN_LOCK_UNLOCKED("ipc");
 #define K3_SYS_IPC_CORE_LPM3                      (3)
 #define K3_SYS_IPC_CORE_HIFI                        (4)
 
-	/*************************************hifi内部ipc******************************************/
+	/*************************************hifi????ipc******************************************/
 #define K3_HIFI_IPC_BASE_ADDR      (unsigned long)(0xE804C000)
 #define K3_HIFI_IPC_REG_SIZE        (0x1000)
 
@@ -78,7 +78,7 @@ spinlock_t g_ipc_int_lock = __SPIN_LOCK_UNLOCKED("ipc");
 #define K3_ASP_CFG_GATE_EN(base)                       WORD_REF(base + 0x0c)
 
 enum {
-    /*hifi内部的ipc目的核ap、lpm3、iom3都是对应的第0比特*/
+    /*hifi??????ipc??????ap??lpm3??iom3????????????0????*/
     K3_HIFI_IPC_CORE_AP_LPM3_IOM3 = 0,
     K3_HIFI_IPC_CORE_MODEM_A9 = 1,
     K3_HIFI_IPC_CORE_MODEM_BBE = 2,
@@ -95,17 +95,17 @@ typedef enum {
 } K3_IPC;
 
 typedef struct {
-	/*使用系统ipc还是audio ipc*/
+	/*????????ipc????audio ipc*/
 	K3_IPC ipcMode;
-	/*映射后的ipc基址*/
+	/*????????ipc????*/
 	void __iomem *ipcBase;
-	/*邮箱号*/
+	/*??????*/
 	int mailBoxNum;
-	/*中断号*/
+	/*??????*/
 	int intNum;
-	/*源核编号*/
+	/*????????*/
 	int sourceCore;
-	/*目标核编号*/
+	/*??????????*/
 	int destCore;
 } K3_IPC_CONFIG;
 
@@ -115,9 +115,9 @@ enum {
     K3_IPC_CORE_IS_UNKNOEN,
 };
 
-/*每个核应该有两个结构体，收发各一个*/
+/*??????????????????????????????????*/
 static K3_IPC_CONFIG k3IpcConfig[K3_IPC_CORE_IS_UNKNOEN] = {
-	/*本核作为send ipc方*/
+	/*????????send ipc??*/
 	{
 		K3_UNSEC_SYS_IPC,
 		NULL,
@@ -127,8 +127,8 @@ static K3_IPC_CONFIG k3IpcConfig[K3_IPC_CORE_IS_UNKNOEN] = {
 		K3_SYS_IPC_CORE_HIFI
 	},
 
-/*本核作为rec ipc方*/
-	/*本核作为rec ipc方*/
+/*????????rec ipc??*/
+	/*????????rec ipc??*/
 	{
 		K3_UNSEC_SYS_IPC,
 		NULL,
@@ -182,18 +182,18 @@ static irqreturn_t DRV_k3IpcIntHandler_ack(int irq, void *dev_id)
 	BSP_U32 source = k3IpcConfig[myRole].sourceCore;
 	void __iomem *ipcBase = k3IpcConfig[myRole].ipcBase;
 
-	/*读取A15的中断状态*/
+	/*????A15??????????*/
 	u32IntStat = K3_IPC_CPUIMST(ipcBase, source);
 
-	/*应答中断只关心A15发给hifi通信的18号邮箱*/
+	/*??????????????A15????hifi??????18??????*/
 	if (u32IntStat & BIT_ENABLE(mailBoxNum)) {
-		/*如果此邮箱收到应答中断，释放邮箱*/
+		/*????????????????????????????????*/
 		if (K3_IPC_MODE(ipcBase, mailBoxNum) & BIT_ENABLE(K3_IPC_MODE_ACK)) {
 			printk("func:%s: Receive ack int\n", __func__);
 
 			K3_IPC_SOURCE(ipcBase, mailBoxNum) = BIT_ENABLE(source);
 		}
-		/*清中断*/
+		/*??????*/
 		K3_IPC_DCLR(ipcBase, mailBoxNum) = BIT_ENABLE(mailBoxNum);
 	}
 
@@ -215,16 +215,16 @@ static void drv_ipc_int_deinit(void)
 }
 
 /*****************************************************************************
-* 函 数 名  : DRV_IPCIntInit
+* ?? ?? ??  : DRV_IPCIntInit
 *
-* 功能描述  : IPC模块初始化
+* ????????  : IPC??????????
 *
-* 输入参数  : 无
-* 输出参数  : 无
+* ????????  : ??
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *
-* 修改记录  : 2009年3月5日   wangjing  creat
+* ????????  : 2009??3??5??   wangjing  creat
 *****************************************************************************/
 BSP_S32 DRV_IPCIntInit(void)
 {
@@ -243,7 +243,7 @@ BSP_S32 DRV_IPCIntInit(void)
 
 	memset((void*)stIpcIntTable, 0x0, (INTSRC_NUM * sizeof(BSP_IPC_ENTRY) ));
 
-	/************************************发送方****************************************/
+	/************************************??????****************************************/
 	myRole = K3_IPC_CORE_IS_SEND;
 	if (K3_UNSEC_SYS_IPC == k3IpcConfig[myRole].ipcMode) {
 		k3IpcConfig[myRole].ipcBase = ioremap(K3_SYS_IPC_BASE_ADDR_NS, K3_SYS_IPC_REG_SIZE);
@@ -265,11 +265,11 @@ BSP_S32 DRV_IPCIntInit(void)
 		}
 	}
 
-	/*寄存器解锁*/
+	/*??????????*/
 	K3_IPC_LOCK(k3IpcConfig[myRole].ipcBase) = 0x1ACCE551;
 	/************************************end****************************************/
 
-	/************************************接收方****************************************/
+	/************************************??????****************************************/
 	myRole = K3_IPC_CORE_IS_RECEIVE;
 	if (K3_UNSEC_SYS_IPC == k3IpcConfig[myRole].ipcMode) {
 		k3IpcConfig[myRole].ipcBase = ioremap(K3_SYS_IPC_BASE_ADDR_NS, K3_SYS_IPC_REG_SIZE);
@@ -290,7 +290,7 @@ BSP_S32 DRV_IPCIntInit(void)
 			goto err1;
 		}
 	}
-	/*寄存器解锁*/
+	/*??????????*/
 	K3_IPC_LOCK(k3IpcConfig[myRole].ipcBase) = 0x1ACCE551;
 	/************************************end****************************************/
 #ifdef USE_HISI_MAILBOX
@@ -305,7 +305,7 @@ BSP_S32 DRV_IPCIntInit(void)
 	printk(KERN_ERR "BSP_DRV_IPCIntInit line = %d\n", __LINE__);
 #endif
 
-	/*挂接非安全模式中断处理程序*/
+	/*??????????????????????????*/
 	g_stIpcDev.bInit = BSP_TRUE;
 
 	printk(KERN_ERR "BSP_DRV_IPCIntInit end.\n");
@@ -323,21 +323,21 @@ err1:
 }
 
 /*****************************************************************************
-* 函 数 名  : IPC_IntEnable
+* ?? ?? ??  : IPC_IntEnable
 *
-* 功能描述  : 使能某个中断
+* ????????  : ????????????
 *
-* 输入参数  :   IPC_INT_CORE_E enCoreNum 要使能中断的core
-                BSP_U32 ulLvl 要使能的中断号，取值范围0～31
-* 输出参数  : 无
+* ????????  :   IPC_INT_CORE_E enCoreNum ????????????core
+                BSP_U32 ulLvl ????????????????????????0??31
+* ????????  : ??
 *
-* 返 回 值  : OK&ERROR
+* ?? ?? ??  : OK&ERROR
 *
-* 修改记录  : 2011年4月11日 wangjing creat
+* ????????  : 2011??4??11?? wangjing creat
 *****************************************************************************/
 BSP_S32 IPC_IntEnable (IPC_INT_LEV_E ulLvl)
 {
-	/*参数检查*/
+	/*????????*/
 	IPC_CHECK_PARA(ulLvl);
 
 	return BSP_OK;
@@ -345,47 +345,47 @@ BSP_S32 IPC_IntEnable (IPC_INT_LEV_E ulLvl)
 
 
 /*****************************************************************************
- * 函 数 名  : BSP_INT_Disable
+ * ?? ?? ??  : BSP_INT_Disable
  *
- * 功能描述  : 去使能某个中断
+ * ????????  : ??????????????
  *
- * 输入参数  : IPC_INT_CORE_E enCoreNum 要使能中断的core
-                BSP_U32 ulLvl 要使能的中断号，取值范围0～31
- * 输出参数  : 无
+ * ????????  : IPC_INT_CORE_E enCoreNum ????????????core
+                BSP_U32 ulLvl ????????????????????????0??31
+ * ????????  : ??
  *
- * 返 回 值  : OK&ERROR
+ * ?? ?? ??  : OK&ERROR
  *
- * 修改记录  : 2011年4月11日 wangjing creat
+ * ????????  : 2011??4??11?? wangjing creat
  *****************************************************************************/
 BSP_S32 IPC_IntDisable (IPC_INT_LEV_E ulLvl)
 {
-	/*参数检查*/
+	/*????????*/
 	IPC_CHECK_PARA(ulLvl);
 
 	return BSP_OK;
 }
 
 /*****************************************************************************
- * 函 数 名  : IPC_IntConnect
+ * ?? ?? ??  : IPC_IntConnect
  *
- * 功能描述  : 注册某个中断
+ * ????????  : ????????????
  *
- * 输入参数  : IPC_INT_CORE_E enCoreNum 要使能中断的core
-               BSP_U32 ulLvl 要使能的中断号，取值范围0～31
-               VOIDFUNCPTR routine 中断服务程序
- *             BSP_U32 parameter      中断服务程序参数
- * 输出参数  : 无
+ * ????????  : IPC_INT_CORE_E enCoreNum ????????????core
+               BSP_U32 ulLvl ????????????????????????0??31
+               VOIDFUNCPTR routine ????????????
+ *             BSP_U32 parameter      ????????????????
+ * ????????  : ??
  *
- * 返 回 值  : OK&ERROR
+ * ?? ?? ??  : OK&ERROR
  *
- * 修改记录  : 2011年4月11日 wangjing creat
+ * ????????  : 2011??4??11?? wangjing creat
  *****************************************************************************/
 BSP_S32 IPC_IntConnect  (IPC_INT_LEV_E ulLvl, VOIDFUNCPTR routine, BSP_U32 parameter)
 {
 
 	unsigned long flag = 0;
 
-	/*参数检查*/
+	/*????????*/
 	IPC_CHECK_PARA(ulLvl);
 
 	spin_lock_irqsave(&g_ipc_int_lock, flag);
@@ -397,25 +397,25 @@ BSP_S32 IPC_IntConnect  (IPC_INT_LEV_E ulLvl, VOIDFUNCPTR routine, BSP_U32 param
 }
 
 /*****************************************************************************
- * 函 数 名  : IPC_IntDisonnect
+ * ?? ?? ??  : IPC_IntDisonnect
  *
- * 功能描述  : 取消注册某个中断
+ * ????????  : ????????????????
  *
- * 输入参数  :
- *              BSP_U32 ulLvl 要使能的中断号，取值范围0～31
- *              VOIDFUNCPTR routine 中断服务程序
- *             BSP_U32 parameter      中断服务程序参数
- * 输出参数  : 无
+ * ????????  :
+ *              BSP_U32 ulLvl ????????????????????????0??31
+ *              VOIDFUNCPTR routine ????????????
+ *             BSP_U32 parameter      ????????????????
+ * ????????  : ??
  *
- * 返 回 值  : OK&ERROR
+ * ?? ?? ??  : OK&ERROR
  *
- * 修改记录  : 2011年4月11日 wangjing creat
+ * ????????  : 2011??4??11?? wangjing creat
  *****************************************************************************/
  BSP_S32 IPC_IntDisonnect  (IPC_INT_LEV_E ulLvl,VOIDFUNCPTR routine, BSP_U32 parameter)
  {
 	unsigned long flag = 0;
 
-	/*参数检查*/
+	/*????????*/
 	IPC_CHECK_PARA(ulLvl);
 
 	spin_lock_irqsave(&g_ipc_int_lock, flag);
@@ -427,16 +427,16 @@ BSP_S32 IPC_IntConnect  (IPC_INT_LEV_E ulLvl, VOIDFUNCPTR routine, BSP_U32 param
 }
 
 /*****************************************************************************
-* 函 数 名  : BSP_DRV_k3IpcIntHandler_S
+* ?? ?? ??  : BSP_DRV_k3IpcIntHandler_S
 *
-* 功能描述  : k3的IPC安全模式下中断处理函数
+* ????????  : k3??IPC??????????????????????
 *
-* 输入参数  : 无
-* 输出参数  : 无
+* ????????  : ??
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *
-* 修改记录  : 2011年4月11日 wangjing creat
+* ????????  : 2011??4??11?? wangjing creat
 *****************************************************************************/
 static int DRV_k3IpcIntHandler_ipc(struct notifier_block *nb, unsigned long len, void *msg)
 {
@@ -445,7 +445,7 @@ static int DRV_k3IpcIntHandler_ipc(struct notifier_block *nb, unsigned long len,
 
 	newLevel = _msg[0];
 
-	/*调用注册的中断处理函数*/
+	/*??????????????????????*/
 	if (newLevel < INTSRC_NUM) {
 		g_stIpc_debug.u32IntHandleTimes[newLevel]++;
 
@@ -458,18 +458,18 @@ static int DRV_k3IpcIntHandler_ipc(struct notifier_block *nb, unsigned long len,
 }
 
 /*****************************************************************************
-* 函 数 名  : IPC_IntSend
+* ?? ?? ??  : IPC_IntSend
 *
-* 功能描述  : 发送中断
+* ????????  : ????????
 *
-* 输入参数  :
-                IPC_INT_CORE_E enDstore 要接收中断的core
-                BSP_U32 ulLvl 要发送的中断号，取值范围0～31
-* 输出参数  : 无
+* ????????  :
+                IPC_INT_CORE_E enDstore ????????????core
+                BSP_U32 ulLvl ????????????????????????0??31
+* ????????  : ??
 *
-* 返 回 值  : OK&ERROR
+* ?? ?? ??  : OK&ERROR
 *
-* 修改记录  : 2011年4月11日 wangjing creat
+* ????????  : 2011??4??11?? wangjing creat
 *****************************************************************************/
 BSP_S32 IPC_IntSend(IPC_INT_CORE_E enDstCore, IPC_INT_LEV_E ulLvl)
 {
@@ -486,10 +486,10 @@ BSP_S32 IPC_IntSend(IPC_INT_CORE_E enDstCore, IPC_INT_LEV_E ulLvl)
 	void __iomem *ipcBase = k3IpcConfig[myRole].ipcBase;
 #endif
 
-	/*参数检查*/
+	/*????????*/
 	IPC_CHECK_PARA(ulLvl);
 
-	/*如果是跟hifi通信，使用k3自己的sys ipc，ulLvl使用数据寄存器实现*/
+	/*????????hifi??????????k3??????sys ipc??ulLvl??????????????????*/
 	if (IPC_CORE_HiFi == enDstCore) {
 #ifdef USE_HISI_MAILBOX
 		ipcMsg[0] = (source << 24) | (ulLvl << 8);
@@ -501,7 +501,7 @@ BSP_S32 IPC_IntSend(IPC_INT_CORE_E enDstCore, IPC_INT_LEV_E ulLvl)
 		        printk(" %s , line %d, send error\n", __func__, __LINE__);
 		  }
 #else
-		/*判断邮箱是否空闲*/
+		/*????????????????*/
 		while(0 == (K3_IPC_MODE(ipcBase, mailBoxNum) & BIT_ENABLE(K3_IPC_MODE_IDLE))) {
 			printk("func:%s: mailbox is busy mode = 0x%x\n", __func__, K3_IPC_MODE(ipcBase, mailBoxNum));
 		}
@@ -509,24 +509,24 @@ BSP_S32 IPC_IntSend(IPC_INT_CORE_E enDstCore, IPC_INT_LEV_E ulLvl)
 		K3_IPC_SOURCE(ipcBase, mailBoxNum) = BIT_ENABLE(source);
 		K3_IPC_DEST(ipcBase, mailBoxNum) = BIT_ENABLE(dest);
 
-		/*快速邮箱目的为hifi，无需配置*/
+		/*??????????????hifi??????????*/
 
-		/*屏蔽其他*/
+		/*????????*/
 		K3_IPC_IMASK(ipcBase, mailBoxNum) = ~(BIT_ENABLE(source)|BIT_ENABLE(dest));
 
-		/*自动应答*/
+		/*????????*/
 		K3_IPC_MODE(ipcBase, mailBoxNum) = BIT_ENABLE(K3_IPC_MODE_AUTOACK);
 
-		/*设置数据寄存器*/
+		/*??????????????*/
 		K3_IPC_DATA(ipcBase, mailBoxNum, 0) = source;
 		K3_IPC_DATA(ipcBase, mailBoxNum, 1) = ulLvl;
 
-		/*配置发送寄存器*/
+		/*??????????????*/
 		K3_IPC_SEND(ipcBase, mailBoxNum) = BIT_ENABLE(source);
 
 #endif
 	} else {
-		/*写原始中断寄存器,产生中断*/
+		/*????????????????,????????*/
 		BSP_RegWr(BSP_IPC_CPU_RAW_INT(enDstCore), 1 << ulLvl);
 	}
 
@@ -538,16 +538,16 @@ BSP_S32 IPC_IntSend(IPC_INT_CORE_E enDstCore, IPC_INT_LEV_E ulLvl)
 
 
 /*****************************************************************************
-* 函 数 名  : BSP_IPC_SpinLock
+* ?? ?? ??  : BSP_IPC_SpinLock
 *
-* 功能描述  : 查询等待获取信号量
+* ????????  : ??????????????????
 *
-* 输入参数  : 无
-* 输出参数  : 无
+* ????????  : ??
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *
-* 修改记录  : 2011年4月11日 wangjing creat
+* ????????  : 2011??4??11?? wangjing creat
 *****************************************************************************/
 void BSP_IPC_SpinLock (unsigned int u32SignalNum)
 {
@@ -569,16 +569,16 @@ void BSP_IPC_SpinLock (unsigned int u32SignalNum)
 }
 
 /*****************************************************************************
-* 函 数 名  : BSP_IPC_SpinUnLock
+* ?? ?? ??  : BSP_IPC_SpinUnLock
 *
-* 功能描述  : 释放信号量
+* ????????  : ??????????
 *
-* 输入参数  : 无
-* 输出参数  : 无
+* ????????  : ??
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *
-* 修改记录  : 2011年4月11日 wangjing creat
+* ????????  : 2011??4??11?? wangjing creat
 *****************************************************************************/
 void BSP_IPC_SpinUnLock (unsigned int u32SignalNum)
 {
@@ -587,7 +587,7 @@ void BSP_IPC_SpinUnLock (unsigned int u32SignalNum)
 		printk("BSP_IPC_SpinUnLock  Parameter error, line:%d\n", __LINE__);
 		return;
 	}
-	/*将信号量请求寄存器清0*/
+	/*????????????????????0*/
 	BSP_RegWr(BSP_IPC_HS_CTRL(g_CoreNum, u32SignalNum), 0);
 }
 

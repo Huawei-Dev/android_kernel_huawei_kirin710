@@ -50,7 +50,7 @@
 #define __ATCMDMISCPROC_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "AtCtx.h"
 #include "AtParse.h"
@@ -69,100 +69,100 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-#define AT_SECURE_STATE_NOT_SET                     (0)                         /* Secure State状态未设置 */
-#define AT_SECURE_STATE_SECURE                      (1)                         /* 当前Secure State为Secure */
-#define AT_SECURE_STATE_RMA                         (2)                         /* 当前Secure State为RMA */
+#define AT_SECURE_STATE_NOT_SET                     (0)                         /* Secure State?????????? */
+#define AT_SECURE_STATE_SECURE                      (1)                         /* ????Secure State??Secure */
+#define AT_SECURE_STATE_RMA                         (2)                         /* ????Secure State??RMA */
 
-#define AT_EFUSE_OK                                 (0)                         /* efuse返回成功 */
-#define AT_EFUSE_REPEAT                             (1)                         /* efuse返回重复设置 */
+#define AT_EFUSE_OK                                 (0)                         /* efuse???????? */
+#define AT_EFUSE_REPEAT                             (1)                         /* efuse???????????? */
 
-#define AT_DRV_KCE_LEN                              (16)                        /* 128Bits的KCE码流长度 */
-#define AT_KCE_PARA_LEN                             (32)                        /* KCE加解密key值ASKii格式长度 */
+#define AT_DRV_KCE_LEN                              (16)                        /* 128Bits??KCE???????? */
+#define AT_KCE_PARA_LEN                             (32)                        /* KCE??????key??ASKii???????? */
 
-#define AT_DRV_SOCID_LEN                            (32)                        /* 256Bits的SOCID码流长度 */
+#define AT_DRV_SOCID_LEN                            (32)                        /* 256Bits??SOCID???????? */
 
-#define AT_MODEM_YTD_LEN                            (10)                        /* 字符串年月日的总长度 */
-#define AT_MODEM_TIME_LEN                           (8)                         /* 字符串小时、分钟、秒的总长度 */
-#define AT_MODEM_YEAR_LEN                           (4)                         /* 字符串年份的长度 */
-#define AT_MODEM_MONTH_LEN                          (2)                         /* 字符串月份的长度 */
-#define AT_MODEM_DATE_LEN                           (2)                         /* 字符串日期的长度 */
-#define AT_MODEM_HOUR_LEN                           (2)                         /* 字符串小时的长度 */
-#define AT_MODEM_MIN_LEN                            (2)                         /* 字符串分钟的长度 */
-#define AT_MODEM_SEC_LEN                            (2)                         /* 字符串秒的长度 */
-#define AT_MODEM_ZONE_LEN                           (3)                         /* 字符串时区的长度 */
+#define AT_MODEM_YTD_LEN                            (10)                        /* ???????????????????? */
+#define AT_MODEM_TIME_LEN                           (8)                         /* ???????????????????????????? */
+#define AT_MODEM_YEAR_LEN                           (4)                         /* ???????????????? */
+#define AT_MODEM_MONTH_LEN                          (2)                         /* ???????????????? */
+#define AT_MODEM_DATE_LEN                           (2)                         /* ???????????????? */
+#define AT_MODEM_HOUR_LEN                           (2)                         /* ???????????????? */
+#define AT_MODEM_MIN_LEN                            (2)                         /* ???????????????? */
+#define AT_MODEM_SEC_LEN                            (2)                         /* ?????????????? */
+#define AT_MODEM_ZONE_LEN                           (3)                         /* ???????????????? */
 #define AT_GET_MODEM_TIME_BUFF_LEN                  (5)
 
-#define AT_MODEM_DEFALUT_AUX_MODE_YEAR_LEN          (2)                         /* "yy"总长度 */
-#define AT_MODEM_OTHER_AUX_MODE_YEAR_LEN            (4)                         /* "yyyy"总长度 */
-#define AT_MODEM_AUX_MODE_EXCEPT_YEAR_TIME_LEN      (18)                        /* "/mm/dd,hh:mm:ss(+/-)zz"总长度 */
+#define AT_MODEM_DEFALUT_AUX_MODE_YEAR_LEN          (2)                         /* "yy"?????? */
+#define AT_MODEM_OTHER_AUX_MODE_YEAR_LEN            (4)                         /* "yyyy"?????? */
+#define AT_MODEM_AUX_MODE_EXCEPT_YEAR_TIME_LEN      (18)                        /* "/mm/dd,hh:mm:ss(+/-)zz"?????? */
 
-#define AT_MODEM_DEFALUT_AUX_MODE_YEAR_MAX          (99)                        /* "yy"可设置年最大值 */
-#define AT_MODEM_DEFALUT_AUX_MODE_YEAR_MIN          (0)                         /* "yy"可设置年最小值 */
+#define AT_MODEM_DEFALUT_AUX_MODE_YEAR_MAX          (99)                        /* "yy"?????????????? */
+#define AT_MODEM_DEFALUT_AUX_MODE_YEAR_MIN          (0)                         /* "yy"?????????????? */
 
-#define AT_MODEM_TIME_ZONE_MAX                      (48)                        /* 可设置时区最大值 */
-#define AT_MODEM_TIME_ZONE_MIN                      (-48)                       /* 可设置时区最大值 */
+#define AT_MODEM_TIME_ZONE_MAX                      (48)                        /* ???????????????? */
+#define AT_MODEM_TIME_ZONE_MIN                      (-48)                       /* ???????????????? */
 
-#define AT_MODEM_YEAR_MAX                           (2050)                      /* 可设置年最大值 */
-#define AT_MODEM_YEAR_MIN                           (1970)                      /* 可设置年最小值 */
-#define AT_MODEM_MONTH_MAX                          (12)                        /* 可设置月最大值 */
-#define AT_MODEM_MONTH_MIN                          (1)                         /* 可设置月最小值 */
-#define AT_MODEM_DAY_MAX                            (31)                        /* 可设置天最大值 */
-#define AT_MODEM_DAY_MIN                            (1)                         /* 可设置天最小值 */
+#define AT_MODEM_YEAR_MAX                           (2050)                      /* ?????????????? */
+#define AT_MODEM_YEAR_MIN                           (1970)                      /* ?????????????? */
+#define AT_MODEM_MONTH_MAX                          (12)                        /* ?????????????? */
+#define AT_MODEM_MONTH_MIN                          (1)                         /* ?????????????? */
+#define AT_MODEM_DAY_MAX                            (31)                        /* ?????????????? */
+#define AT_MODEM_DAY_MIN                            (1)                         /* ?????????????? */
 
-#define AT_MODEM_HOUR_MAX                           (23)                        /* 可设置小时最大值 */
-#define AT_MODEM_HOUR_MIN                           (0)                         /* 可设置小时最小值 */
-#define AT_MODEM_MIN_MAX                            (59)                        /* 可设置分钟最大值 */
-#define AT_MODEM_MIN_MIN                            (0)                         /* 可设置分钟最小值 */
-#define AT_MODEM_SEC_MAX                            (59)                        /* 可设置秒钟最大值 */
-#define AT_MODEM_SEC_MIN                            (0)                         /* 可设置秒钟最小值 */
+#define AT_MODEM_HOUR_MAX                           (23)                        /* ???????????????? */
+#define AT_MODEM_HOUR_MIN                           (0)                         /* ???????????????? */
+#define AT_MODEM_MIN_MAX                            (59)                        /* ???????????????? */
+#define AT_MODEM_MIN_MIN                            (0)                         /* ???????????????? */
+#define AT_MODEM_SEC_MAX                            (59)                        /* ???????????????? */
+#define AT_MODEM_SEC_MIN                            (0)                         /* ???????????????? */
 
-#define AT_MODEM_ZONE_MAX                           (12)                        /* 可设置时区最大值 */
-#define AT_MODEM_ZONE_MIN                           (-12)                       /* 可设置时区最小值 */
+#define AT_MODEM_ZONE_MAX                           (12)                        /* ???????????????? */
+#define AT_MODEM_ZONE_MIN                           (-12)                       /* ???????????????? */
 
-#define AT_TEMP_ZONE_DEFAULT                        (31)                        /* 温区默认值 二进制11111 */
+#define AT_TEMP_ZONE_DEFAULT                        (31)                        /* ?????????? ??????11111 */
 
-#define AT_GMT_TIME_DEFAULT                         (70)                        /* 判断标准时间是1900还是1970 */
+#define AT_GMT_TIME_DEFAULT                         (70)                        /* ??????????????1900????1970 */
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 VOS_UINT32 AT_SetActiveModem(VOS_UINT8 ucIndex);

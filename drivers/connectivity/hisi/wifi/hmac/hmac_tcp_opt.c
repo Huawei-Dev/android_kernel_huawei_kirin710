@@ -10,7 +10,7 @@ extern "C" {
 #ifdef _PRE_WLAN_TCP_OPT
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
 /*lint -e322*/
@@ -33,11 +33,11 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_HMAC_TCP_OPT_C
 
 /*****************************************************************************
-  2 结构体定义
+  2 ??????????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 宏定义
+  3 ??????
 *****************************************************************************/
 
 /*defined for ut test*/
@@ -51,18 +51,18 @@ oal_bool_enum_uint8 time_before_eq(oal_uint32 a,oal_uint32 b)
 #endif
 
 /*****************************************************************************
-  4 全局变量定义
+  4 ????????????
 *****************************************************************************/
 hmac_tcp_ack_opt_th_params g_st_tcp_ack_opt_th_params = {0, 0, 0, 0};
 
 
 /*****************************************************************************
-  5 内部静态函数声明
+  5 ????????????????
 *****************************************************************************/
 oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(hmac_vap_stru    *pst_hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head);
 
 /*****************************************************************************
-  4 函数实现
+  4 ????????
 *****************************************************************************/
 
 void hmac_tcp_opt_ack_count_reset(hmac_vap_stru    *pst_hmac_vap,hcc_chan_type dir, oal_uint16 stream)
@@ -367,7 +367,7 @@ oal_tcp_ack_type_enum_uint8 hmac_tcp_opt_get_tcp_ack_type(hmac_vap_stru    *pst_
     pst_tcp_hdr     = (oal_tcp_header_stru *)(pst_ip_hdr + 1);
     tcp_ack_no = pst_tcp_hdr->ul_acknum;
 
-    /*检测duplicat ack是否存在，如果存在则累计ack流最大成员数*/
+    /*????duplicat ack????????????????????????ack????????????*/
     tmp_tcp_ack_no = pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.aul_hcc_tcp_ack_no;
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
     OAL_IO_PRINT("\r\n====stream:%d ack no:%u  tcp ack no:%u ====\r\n", us_index, tcp_ack_no, tmp_tcp_ack_no[us_index]);
@@ -383,7 +383,7 @@ oal_tcp_ack_type_enum_uint8 hmac_tcp_opt_get_tcp_ack_type(hmac_vap_stru    *pst_
 
     tmp_tcp_ack_no[us_index] = pst_tcp_hdr->ul_acknum;
 
-    /*赋值tcp_cb*/
+    /*????tcp_cb*/
     return TCP_ACK_FILTER_TYPE;
 
 }
@@ -402,10 +402,10 @@ oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap)
     }
     switch (pst_snap->us_ether_type)
     {
-        /*lint -e778*//* 屏蔽Info -- Constant expression evaluates to 0 in operation '&' */
+        /*lint -e778*//* ????Info -- Constant expression evaluates to 0 in operation '&' */
         case OAL_HOST2NET_SHORT(ETHER_TYPE_IP):
 
-            pst_ip_hdr = (oal_ip_header_stru *)(pst_snap + 1);      /* 偏移一个snap，取ip头 */
+            pst_ip_hdr = (oal_ip_header_stru *)(pst_snap + 1);      /* ????????snap????ip?? */
 
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
             OAM_WARNING_LOG1(0, OAM_SF_RX, "{oal_judge_rx_netbuf_is_tcp_ack:  pst_ip_hdr->uc_protocol = %d**!}",pst_ip_hdr->uc_protocol);
@@ -415,7 +415,7 @@ oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap)
                 if (OAL_TRUE == oal_netbuf_is_tcp_ack(pst_ip_hdr))
                 {
                     pst_tcp_hdr = (oal_tcp_header_stru *)(pst_ip_hdr + 1);
-                    /*option3:SYN FIN RST URG有为1的时候不过滤*/
+                    /*option3:SYN FIN RST URG????1????????????*/
                     if ((pst_tcp_hdr->uc_flags) & FILTER_FLAG_MASK)
                     {
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
@@ -474,10 +474,10 @@ oal_bool_enum_uint8 hmac_judge_tx_netbuf_is_tcp_ack(oal_ether_header_stru *ps_et
     }
     switch (ps_ethmac_hdr->us_ether_type)
     {
-        /*lint -e778*//* 屏蔽Info -- Constant expression evaluates to 0 in operation '&' */
+        /*lint -e778*//* ????Info -- Constant expression evaluates to 0 in operation '&' */
         case OAL_HOST2NET_SHORT(ETHER_TYPE_IP):
 
-            pst_ip = (oal_ip_header_stru *)(ps_ethmac_hdr + 1);      /* 偏移一个snap，取ip头 */
+            pst_ip = (oal_ip_header_stru *)(ps_ethmac_hdr + 1);      /* ????????snap????ip?? */
 
             if (MAC_TCP_PROTOCAL == pst_ip->uc_protocol)
             {
@@ -485,7 +485,7 @@ oal_bool_enum_uint8 hmac_judge_tx_netbuf_is_tcp_ack(oal_ether_header_stru *ps_et
                 if (OAL_TRUE == oal_netbuf_is_tcp_ack(pst_ip))
                 {
                     pst_tcp_hdr = (oal_tcp_header_stru *)(pst_ip + 1);
-                    /*option3:SYN FIN RST URG有为1的时候不过滤*/
+                    /*option3:SYN FIN RST URG????1????????????*/
                     if ((pst_tcp_hdr->uc_flags) & FILTER_FLAG_MASK)
                     {
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
@@ -517,7 +517,7 @@ oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_rx_get_tcp_ack(oal_netbuf_stru *skb, h
     oal_ip_header_stru  *pst_ip_hdr;
     oal_tcp_header_stru *pst_tcp_hdr;
     mac_llc_snap_stru             *pst_snap;
-    hmac_rx_ctl_stru                   *pst_rx_ctrl;                        /* 指向MPDU控制块信息的指针 */
+    hmac_rx_ctl_stru                   *pst_rx_ctrl;                        /* ????MPDU???????????????? */
 
     pst_rx_ctrl = (hmac_rx_ctl_stru *)oal_netbuf_cb(skb);
     pst_snap = (mac_llc_snap_stru*)(skb->data + pst_rx_ctrl->st_rx_info.uc_mac_header_len);
@@ -530,10 +530,10 @@ oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_rx_get_tcp_ack(oal_netbuf_stru *skb, h
 #endif
         return TCP_TYPE_ERROR;
     }
-    pst_ip_hdr = (oal_ip_header_stru *)(pst_snap + 1);      /* 偏移一个snap，取ip头 */
+    pst_ip_hdr = (oal_ip_header_stru *)(pst_snap + 1);      /* ????????snap????ip?? */
     pst_tcp_hdr     = (oal_tcp_header_stru *)(pst_ip_hdr + 1);
 
-    /*option4:flow index取不到时不过滤*/
+    /*option4:flow index??????????????*/
     *p_us_index = (oal_uint16)hmac_tcp_opt_get_flow_index(pst_hmac_vap, pst_ip_hdr, pst_tcp_hdr, (hcc_chan_type)dir);
     if(0xFFFF == *p_us_index)
     {
@@ -560,9 +560,9 @@ oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_tx_get_tcp_ack(oal_netbuf_stru *skb, h
 #endif
         return TCP_TYPE_ERROR;
     }
-    pst_ip_hdr = (oal_ip_header_stru *)(eth_hdr + 1);      /* 偏移一个snap，取ip头 */
+    pst_ip_hdr = (oal_ip_header_stru *)(eth_hdr + 1);      /* ????????snap????ip?? */
     pst_tcp_hdr     = (oal_tcp_header_stru *)(pst_ip_hdr + 1);
-    /*option4:flow index取不到时不过滤*/
+    /*option4:flow index??????????????*/
     *p_us_index = (oal_uint16)hmac_tcp_opt_get_flow_index(pst_hmac_vap, pst_ip_hdr, pst_tcp_hdr, (hcc_chan_type)dir);
     if(0xFFFF == *p_us_index)
     {
@@ -643,8 +643,8 @@ oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(hmac_vap_stru    *pst_hmac_vap, hmac_t
 
         oal_netbuf_queue_splice_tail_init(hcc_ack_queue, head);
 
-        /* 发送所有帧后，流队列链表不删除 */
-        /* 因为前两个dup ack已经被发送，以保证识别第三个duplicate ack，需要记录duplicate ack seqnum */
+        /* ?????????????????????????????? */
+        /* ??????????dup ack????????????????????????????duplicate ack??????????duplicate ack seqnum */
 #if 0
         oal_dlist_delete_entry(&node->list);
         oal_dlist_init_head(&node->list);
@@ -677,14 +677,14 @@ oal_uint32 hmac_tcp_opt_tcp_ack_filter(oal_netbuf_stru *skb, hmac_vap_stru    *p
 
     if (uc_ret == TCP_ACK_DUP_TYPE)
     {
-        /* 处理发送dup ack */
+        /* ????????dup ack */
         oal_spin_lock_bh(&pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.hmac_tcp_ack_lock);
         hcc_ack_queue = &pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.hcc_ack_queue[us_tcp_stream_index];
-        /* 将dup ack帧流队列中的帧全部发送 */
+        /* ??dup ack?????????????????????? */
         while (!!(ack = oal_netbuf_delist(hcc_ack_queue)))
         {
             ul_ret = hmac_tx_lan_to_wlan_no_tcp_opt(&(pst_hmac_vap->st_vap_base_info), ack);
-            /* 调用失败，要释放内核申请的netbuff内存池 */
+            /* ??????????????????????????netbuff?????? */
             if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
             {
                 oal_netbuf_free(ack);
@@ -696,7 +696,7 @@ oal_uint32 hmac_tcp_opt_tcp_ack_filter(oal_netbuf_stru *skb, hmac_vap_stru    *p
 
             pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.aul_hcc_ack_count[us_tcp_stream_index]--;
         }
-        /* 当前dup ack帧发送 */
+        /* ????dup ack?????? */
         ul_ret = hmac_tx_lan_to_wlan_no_tcp_opt(&(pst_hmac_vap->st_vap_base_info), skb);
         if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
         {
@@ -713,11 +713,11 @@ oal_uint32 hmac_tcp_opt_tcp_ack_filter(oal_netbuf_stru *skb, hmac_vap_stru    *p
     }
     else if(uc_ret == TCP_TYPE_ERROR)
     {
-        /* 异常逻辑，将帧放入vap queue发送 */
+        /* ??????????????????vap queue???? */
         return OAL_FAIL;
     }
 
-    /* 正常ack帧处理逻辑 */
+    /* ????ack?????????? */
     oal_spin_lock_bh(&pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.hmac_tcp_ack_lock);
     ul_ack_limit = pst_hmac_vap->st_hamc_tcp_ack[dir].filter_info.ul_ack_limit;
     hcc_ack_queue = &pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.hcc_ack_queue[us_tcp_stream_index];
@@ -740,7 +740,7 @@ oal_uint32 hmac_tcp_opt_tcp_ack_filter(oal_netbuf_stru *skb, hmac_vap_stru    *p
         OAM_WARNING_LOG1(0,OAM_SF_ANY,"{dir:%d ------drop packet------.}", dir);
 #endif
         pst_hmac_vap->st_hamc_tcp_ack[dir].filter_info.st_tcp_info[us_tcp_stream_index].ull_drop_count++;
-        /*hcc_trans_pkt_count_dec(hcc,dir);*/   /*如果TCP ACK被丢弃，则计数器做自减*/
+        /*hcc_trans_pkt_count_dec(hcc,dir);*/   /*????TCP ACK??????????????????????*/
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
         OAM_WARNING_LOG4(0,OAM_SF_ANY,"{dir:%d: ack count:%d , dupcount:%d ull_drop_count:%d.}", dir,
                         pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.aul_hcc_ack_count[us_tcp_stream_index],
@@ -824,7 +824,7 @@ void hmac_tcp_ack_process_hcc_queue(hmac_vap_stru    *pst_hmac_vap,
         while(!!(pst_netbuf = oal_netbuf_delist(&st_head_t)))
         {
             ul_ret = hmac_tx_lan_to_wlan_no_tcp_opt(&(pst_hmac_vap->st_vap_base_info),pst_netbuf);
-            /* 调用失败，要释放内核申请的netbuff内存池 */
+            /* ??????????????????????????netbuff?????? */
             if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
             {
                 //hmac_free_netbuf_list(pst_buf);
@@ -847,7 +847,7 @@ oal_int32 hmac_tcp_ack_process(void)
     if(!oal_in_interrupt())
         frw_event_task_lock();
 
-    pst_hmac_device = hmac_res_get_mac_dev(0);//当前只支持一个device，后续有需求再添加
+    pst_hmac_device = hmac_res_get_mac_dev(0);//??????????????device??????????????????
     if (OAL_PTR_NULL == pst_hmac_device)
     {
         OAM_ERROR_LOG0(0, OAM_SF_TX, "{hmac_tcp_ack_process::pst_hmac_device[0] null.}");
@@ -893,7 +893,7 @@ oal_bool_enum_uint8 hmac_tcp_ack_need_schedule(void)
         return OAL_FALSE;
     }
 
-    /* 如果队列中有帧，则可以调度 */
+    /* ?????????????????????????? */
     for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
     {
         pst_hmac_vap = (hmac_vap_stru *)mac_res_get_hmac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -911,7 +911,7 @@ oal_bool_enum_uint8 hmac_tcp_ack_need_schedule(void)
 
         oal_spin_lock_bh(&pst_hmac_vap->st_hamc_tcp_ack[HCC_TX].data_queue_lock[HMAC_TCP_ACK_QUEUE]);
         head = &pst_hmac_vap->st_hamc_tcp_ack[HCC_TX].data_queue[HMAC_TCP_ACK_QUEUE];
-        /* 队列中有ack帧，则需要调度线程 */
+        /* ????????ack?????????????????? */
         if(0 < oal_netbuf_list_len(head))
         {
             oal_spin_unlock_bh(&pst_hmac_vap->st_hamc_tcp_ack[HCC_TX].data_queue_lock[HMAC_TCP_ACK_QUEUE]);
@@ -919,7 +919,7 @@ oal_bool_enum_uint8 hmac_tcp_ack_need_schedule(void)
         }
         oal_spin_unlock_bh(&pst_hmac_vap->st_hamc_tcp_ack[HCC_TX].data_queue_lock[HMAC_TCP_ACK_QUEUE]);
 
-        /* 接收方向未使能，无需判断 */
+        /* ???????????????????????? */
 
     }
 
@@ -983,14 +983,14 @@ oal_void hmac_tcp_ack_opt_switch_ctrol(oal_uint32 ul_count)
 
     if (g_st_tcp_ack_opt_th_params.l_on_threshold <= 0)
     {
-        /* l_on_threshold = 0定制化未开启TCP ACK 优化门限设置功能，直接返回 */
-        /* l_on_threshold < 0不使能TCP ACK 优化，直接返回 */
+        /* l_on_threshold = 0????????????TCP ACK ?????????????????????????? */
+        /* l_on_threshold < 0??????TCP ACK ?????????????? */
         return;
     }
 
     g_st_tcp_ack_opt_th_params.ul_total_count += ul_count;
 
-    /* 每1s 周期统计一次pps */
+    /* ??1s ????????????pps */
     ul_cur_time    = (oal_uint32)OAL_TIME_GET_STAMP_MS();
     ul_duration    = ((oal_int32)ul_cur_time - (oal_int32)g_st_tcp_ack_opt_th_params.ul_pre_time);
     if (ul_duration < 1000)
@@ -1014,7 +1014,7 @@ oal_void hmac_tcp_ack_opt_switch_ctrol(oal_uint32 ul_count)
     }
     else
     {
-        /* 不做处理 */
+        /* ???????? */
     }
 }
 

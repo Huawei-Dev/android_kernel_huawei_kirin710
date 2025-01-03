@@ -56,10 +56,10 @@ extern "C" {
 #include "drv_comm.h"
 
 /*****************************************************************************
-  2 枚举定义
+  2 ????????
 *****************************************************************************/
 
-/* 模块定义 */
+/* ???????? */
 typedef enum _bsp_module_e
 {
     BSP_MODU_ICC = 1,
@@ -185,8 +185,8 @@ typedef enum _bsp_module_e
 	BSP_MODU_NRDSP,
     BSP_MODU_ECIPHER,
     BSP_MODU_NRCPM,
-    BSP_MODU_ALL,   /* 代表所有的模块 */
-    BSP_MODU_MAX = 128    /* 边界值 */
+    BSP_MODU_ALL,   /* ?????????????? */
+    BSP_MODU_MAX = 128    /* ?????? */
 } bsp_module_e;
 
 
@@ -200,12 +200,12 @@ typedef enum _bsp_log_level_e
     BSP_LOG_LEVEL_CRIT,       /* 0x5:critical conditions                          */
     BSP_LOG_LEVEL_ALERT,      /* 0x6:action must be taken immediately             */
     BSP_LOG_LEVEL_FATAL,      /* 0x7:just for compatibility with previous version */
-    BSP_LOG_LEVEL_MAX         /* 边界值 */
+    BSP_LOG_LEVEL_MAX         /* ?????? */
 } bsp_log_level_e;
 
 
 /*****************************************************************************
-  2 函数声明
+  2 ????????
 *****************************************************************************/
 #ifdef ENABLE_BUILD_OM
 void bsp_trace(bsp_log_level_e log_level, bsp_module_e mod_id, char *fmt,...);

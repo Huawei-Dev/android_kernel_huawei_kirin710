@@ -49,7 +49,7 @@
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #ifndef _VOS_PID_DEF_H
 #define _VOS_PID_DEF_H
@@ -63,12 +63,12 @@ extern "C" {
 #endif /* __cpluscplus */
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
-/* 24到31bit保留，16到23bit是CPU ID，0到15bit是PID */
+/* 24??31bit??????16??23bit??CPU ID??0??15bit??PID */
 
-/* CPU0 系统PID定义结束标志 */
+/* CPU0 ????PID???????????? */
 #define VOS_PID_CPU_ID_0_DOPRAEND   (5)
 
 /* macro defined for PID management */
@@ -81,7 +81,7 @@ extern "C" {
         VOS_CPU_ID_0_PID_BUTT \
     };
 
-/* CPU1 系统PID定义结束标志 */
+/* CPU1 ????PID???????????? */
 #define VOS_PID_CPU_ID_1_DOPRAEND   (65536)
 
 /* macro defined for PID management */
@@ -94,7 +94,7 @@ extern "C" {
         VOS_CPU_ID_1_PID_BUTT \
     };
 
-/* CPU2 系统PID定义结束标志 */
+/* CPU2 ????PID???????????? */
 #define VOS_PID_CPU_ID_2_DOPRAEND   (131072)
 
 
@@ -108,7 +108,7 @@ extern "C" {
         VOS_CPU_ID_2_PID_BUTT \
     };
 
-/* CPU3 系统PID定义结束标志 */
+/* CPU3 ????PID???????????? */
 #define VOS_PID_CPU_ID_3_DOPRAEND   (196608)
 
 
@@ -122,7 +122,7 @@ extern "C" {
         VOS_CPU_ID_3_PID_BUTT \
     };
 
-/* CPU4 系统PID定义结束标志 */
+/* CPU4 ????PID???????????? */
 #define VOS_PID_CPU_ID_4_DOPRAEND   (262144)
 
 
@@ -136,7 +136,7 @@ extern "C" {
         VOS_CPU_ID_4_PID_BUTT \
     };
 
-/* CPU5 系统PID定义结束标志 */
+/* CPU5 ????PID???????????? */
 #define VOS_PID_CPU_ID_5_DOPRAEND   (327680)
 
 /* macro defined for PID management */
@@ -149,7 +149,7 @@ extern "C" {
         VOS_CPU_ID_5_PID_BUTT \
     };
 
-/* CPU6 系统PID定义结束标志 */
+/* CPU6 ????PID???????????? */
 #define VOS_PID_CPU_ID_6_DOPRAEND   (393216)
 
 /* macro defined for PID management */
@@ -163,7 +163,7 @@ extern "C" {
     };
 
 
-/* CPU7 系统PID定义结束标志 */
+/* CPU7 ????PID???????????? */
 #define VOS_PID_CPU_ID_7_DOPRAEND   (458752)
 
 /* macro defined for PID management */
@@ -176,7 +176,7 @@ extern "C" {
         VOS_CPU_ID_7_PID_BUTT \
     };
 
-/* CPU8 系统PID定义结束标志 */
+/* CPU8 ????PID???????????? */
 #define VOS_PID_CPU_ID_8_DOPRAEND   (524288)
 
 /* macro defined for PID management */
@@ -189,7 +189,7 @@ extern "C" {
         VOS_CPU_ID_8_PID_BUTT \
     };
 
-/* CPU9 系统PID定义结束标志 */
+/* CPU9 ????PID???????????? */
 #define VOS_PID_CPU_ID_9_DOPRAEND   (589824)
 
 /* macro defined for PID management */
@@ -203,7 +203,7 @@ extern "C" {
     };
 
 
-/* CPU10 系统PID定义结束标志 */
+/* CPU10 ????PID???????????? */
 #define VOS_PID_CPU_ID_10_DOPRAEND   (655360)
 
 /* macro defined for PID management */
@@ -216,7 +216,7 @@ extern "C" {
         VOS_CPU_ID_10_PID_BUTT \
     };
 
-/* CPU11 系统PID定义结束标志 */
+/* CPU11 ????PID???????????? */
 #define VOS_PID_CPU_ID_11_DOPRAEND   (720896)
 
 /* macro defined for PID management */
@@ -229,7 +229,7 @@ extern "C" {
         VOS_CPU_ID_11_PID_BUTT \
     };
 
-/* CPU12 系统PID定义结束标志 */
+/* CPU12 ????PID???????????? */
 #define VOS_PID_CPU_ID_12_DOPRAEND   (786432)
 
 /* macro defined for PID management */
@@ -242,7 +242,7 @@ extern "C" {
         VOS_CPU_ID_12_PID_BUTT \
     };
 
-/* CPU13 系统PID定义结束标志 */
+/* CPU13 ????PID???????????? */
 #define VOS_PID_CPU_ID_13_DOPRAEND   (851968)
 
 /* macro defined for PID management */
@@ -255,7 +255,7 @@ extern "C" {
         VOS_CPU_ID_13_PID_BUTT \
     };
 
-/* CPU14 系统PID定义结束标志 */
+/* CPU14 ????PID???????????? */
 #define VOS_PID_CPU_ID_14_DOPRAEND   (917504)
 
 /* macro defined for PID management */
@@ -268,7 +268,7 @@ extern "C" {
         VOS_CPU_ID_14_PID_BUTT \
     };
 
-/* CPU15 系统PID定义结束标志 */
+/* CPU15 ????PID???????????? */
 #define VOS_PID_CPU_ID_15_DOPRAEND   (983040)
 
 /* macro defined for PID management */
@@ -281,7 +281,7 @@ extern "C" {
         VOS_CPU_ID_15_PID_BUTT \
     };
 
-/* CPU16 系统PID定义结束标志 */
+/* CPU16 ????PID???????????? */
 #define VOS_PID_CPU_ID_16_DOPRAEND   (1048576)
 
 /* macro defined for PID management */
@@ -295,17 +295,17 @@ extern "C" {
     };
 
 
-/* 注意: 从0x8000开始的PID号已经归外部模块使用 */
+/* ????: ??0x8000??????PID???????????????????? */
 
-/* 具体申明一个PID */
+/* ????????????PID */
 #define DEFINE_PID(pid) pid,
 
-/* 根据PID 得到 CPU ID */
+/* ????PID ???? CPU ID */
 #define VOS_GetCpuId(pid)      (((pid)>>16)&0x0FF)
 #define VOS_GET_CPU_ID(pid)    (((pid)>>16)&0x0FF)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 #if  ( FEATURE_MULTI_MODEM == FEATURE_ON )
@@ -347,12 +347,12 @@ enum MODEM_ID_ENUM
 typedef VOS_UINT16 MODEM_ID_ENUM_UINT16;
 
 /*****************************************************************************
- 枚举名    :VOS_RATMODE_ENUM_UINT32
- 协议表格  :
- ASN.1描述 :
- 枚举说明  :接入模式定义
-            注意；双卡双待的枚举值定义与协议栈和DRV协商为GULT;
-            需要和DrvInterface.h中的PWC_COMM_MODE_E保持一致
+ ??????    :VOS_RATMODE_ENUM_UINT32
+ ????????  :
+ ASN.1???? :
+ ????????  :????????????
+            ????????????????????????????????????DRV??????GULT;
+            ??????DrvInterface.h????PWC_COMM_MODE_E????????
 
 *****************************************************************************/
 enum VOS_RATMODE_ENUM
@@ -371,7 +371,7 @@ enum VOS_RATMODE_ENUM
 typedef VOS_UINT32 VOS_RATMODE_ENUM_UINT32;
 
 
-/* CPU ID 的定义 0 是CCPU 1 是ACPU 2 是NRCPU 3 是Hifi,Med */
+/* CPU ID ?????? 0 ??CCPU 1 ??ACPU 2 ??NRCPU 3 ??Hifi,Med */
 enum VOS_CPU_ID_ENUM
 {
     VOS_CPU_ID_CCPU = 0,
@@ -397,8 +397,8 @@ enum VOS_CPU_ID_ENUM
 
 BEGIN_CPU_ID_0_PID_DEFINITION()
 
-/*卡1的PID定义*/
-    DEFINE_PID(I1_UEPS_PID_XSMS)            /* = 5 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+/*??1??PID????*/
+    DEFINE_PID(I1_UEPS_PID_XSMS)            /* = 5 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I1_UEPS_PID_MSCC)            /* = 6 */
     DEFINE_PID(I1_WUEPS_PID_CSIMA)          /* = 7 */
     DEFINE_PID(I1_WUEPS_PID_AWAKE)          /* = 8 */
@@ -412,7 +412,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I1_WUEPS_PID_MAC)            /* = 16 */
     DEFINE_PID(I1_WUEPS_PID_RLCDL)          /* = 17 */
     DEFINE_PID(I1_WUEPS_PID_MACDL)          /* = 18 */
-    DEFINE_PID(I1_WUEPS_PID_USIM = 20)      /* = 20 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I1_WUEPS_PID_USIM = 20)      /* = 20 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I1_MAPS_STK_PID)             /* = 21 */
     DEFINE_PID(I1_MAPS_PIH_PID)             /* = 22 */
     DEFINE_PID(I1_MAPS_PB_PID)              /* = 23 */
@@ -422,7 +422,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I1_UEPS_PID_SN)              /* = 27 */
     DEFINE_PID(I1_UEPS_PID_GAS)             /* = 28 */
     DEFINE_PID(I1_WUEPS_PID_MM)             /* = 29 */
-    DEFINE_PID(I1_WUEPS_PID_MMC)            /* = 30 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I1_WUEPS_PID_MMC)            /* = 30 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I1_WUEPS_PID_GMM)            /* = 31 */
     DEFINE_PID(I1_WUEPS_PID_MMA)            /* = 32 */
     DEFINE_PID(I1_WUEPS_PID_CC)             /* = 33 */
@@ -432,7 +432,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I1_WUEPS_PID_RABM)           /* = 37 */
     DEFINE_PID(I1_WUEPS_PID_SM)             /* = 38 */
     DEFINE_PID(I1_WUEPS_PID_ADMIN)          /* = 39 */
-    DEFINE_PID(I1_WUEPS_PID_TAF)            /* = 40 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I1_WUEPS_PID_TAF)            /* = 40 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I1_WUEPS_PID_VC)             /* = 41 */
     DEFINE_PID(I1_WUEPS_PID_DRV_AGENT)      /* = 42 */
     DEFINE_PID(I1_UEPS_PID_MTA)             /* = 43 */
@@ -444,7 +444,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
     DEFINE_PID(CPROC_PID_RM = 49)           /* = 49 */
 #endif
-    DEFINE_PID(MSPS_PID_1X_RLAC = 50)       /* = 50 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(MSPS_PID_1X_RLAC = 50)       /* = 50 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(MSPS_PID_1X_RMAC)            /* = 51 */
     DEFINE_PID(MSPS_PID_1X_RRLP)            /* = 52 */
     DEFINE_PID(MSPS_PID_1X_RTESTSO)         /* = 53 */
@@ -454,7 +454,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(MSPS_PID_1X_FRLP)            /* = 57 */
     DEFINE_PID(CTTF_PID_HRPD_RSLP)          /* = 58 */
     DEFINE_PID(CTTF_PID_HRPD_RPA)           /* = 59 */
-    DEFINE_PID(CTTF_PID_HRPD_RSPS)          /* = 60 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(CTTF_PID_HRPD_RSPS)          /* = 60 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(CTTF_PID_HRPD_RMAC)          /* = 61 */
     DEFINE_PID(CTTF_PID_HRPD_FSLP)          /* = 62 */
     DEFINE_PID(CTTF_PID_HRPD_FPA)           /* = 63 */
@@ -466,7 +466,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(CPROC_PID_HRPD_CM = 68)      /* = 68 */
     DEFINE_PID(CPROC_PID_HRPD_SM = 69)      /* = 69 */
 #endif
-    DEFINE_PID(DSP_PID_PROCSTUB = 70)       /* = 70 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(DSP_PID_PROCSTUB = 70)       /* = 70 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
     DEFINE_PID(CPROC_PID_1X_CM  = 71)       /* = 71 */
     DEFINE_PID(CPROC_PID_1X_SM  = 72)       /* = 72 */
@@ -477,7 +477,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(UEPS_PID_1XCSRCH = 77)       /* = 77 */
     DEFINE_PID(UEPS_PID_HALMP   = 78)       /* = 78 */
     DEFINE_PID(UEPS_PID_HRUP    = 79)       /* = 79 */
-    DEFINE_PID(UEPS_PID_HSCP    = 80)       /* = 80 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(UEPS_PID_HSCP    = 80)       /* = 80 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(UEPS_PID_HSP     = 81)       /* = 81 */
 #endif
     DEFINE_PID(UEPS_PID_XREG    = 82)       /* = 82 */
@@ -488,17 +488,17 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(UEPS_PID_HSM)                /* = 87 */
     DEFINE_PID(UEPS_PID_EHSM)               /* = 88 */
     DEFINE_PID(I0_UEPS_PID_XSMS)            /* = 89 */
-    DEFINE_PID(I0_UEPS_PID_XPDS)            /* = 90 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I0_UEPS_PID_XPDS)            /* = 90 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(UEPS_PID_HRM)                /* = 91 */
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
-    DEFINE_PID(CDMA_PID_ED     = 92)        /* = 92  CDMA 编解码使用 */
+    DEFINE_PID(CDMA_PID_ED     = 92)        /* = 92  CDMA ?????????? */
 #endif
     DEFINE_PID(MSPS_PID_MIP    = 93)        /* = 93 */
 
-    DEFINE_PID(PC_PID_TOOLRFU = 99)         /* = 99  工具已使用*/
-    DEFINE_PID(PC_PID_TOOL = 100)           /* = 100 工具已使用*/
-/* 新增PID 添加到reserved位置，并将reserved删除 */
-    DEFINE_PID(I0_WUEPS_PID_USIM)           /* = 101 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(PC_PID_TOOLRFU = 99)         /* = 99  ??????????*/
+    DEFINE_PID(PC_PID_TOOL = 100)           /* = 100 ??????????*/
+/* ????PID ??????reserved??????????reserved???? */
+    DEFINE_PID(I0_WUEPS_PID_USIM)           /* = 101 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_MAPS_STK_PID)             /* = 102 */
     DEFINE_PID(I0_MAPS_PIH_PID)             /* = 103 */
     DEFINE_PID(I0_MAPS_PB_PID)              /* = 104 */
@@ -507,7 +507,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(WUEPS_PID_AGING)             /* = 107 */
     DEFINE_PID(I1_PS_PID_HPA)               /* = 108 */
     DEFINE_PID(I1_PS_PID_ERRC)              /* = 109 */
-    DEFINE_PID(WUEPS_PID_REG)               /* = 110 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(WUEPS_PID_REG)               /* = 110 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(UEPS_PID_BASTET)             /* = 111 */
     DEFINE_PID(TLPHY_PID_RTTAGENT)          /* = 112 */
     DEFINE_PID(MSP_PID_DIAG_AGENT)          /* = 113 */
@@ -517,7 +517,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I0_MSP_SYS_FTM_PID)          /* = 117 */
     DEFINE_PID(I0_UEPS_PID_MSCC)            /* = 118 */
     DEFINE_PID(I0_MSP_LDSP_PID)             /* = 119 */
-    DEFINE_PID(I1_MSP_LDSP_PID)             /* = 120 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I1_MSP_LDSP_PID)             /* = 120 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I1_MSP_SYS_FTM_PID)          /* = 121 */
     DEFINE_PID(I1_PS_PID_ERMM)              /* = 122 */
     DEFINE_PID(I1_PS_PID_MM)                /* = 123 */
@@ -527,7 +527,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I1_PS_PID_TC)                /* = 127 */
     DEFINE_PID(I0_UEPS_PID_GAS)             /* = 128 */
     DEFINE_PID(I0_UEPS_PID_DL)              /* = 129 */
-    DEFINE_PID(I0_UEPS_PID_GRM)             /* = 130 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I0_UEPS_PID_GRM)             /* = 130 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_UEPS_PID_LL)              /* = 131 */
     DEFINE_PID(I0_UEPS_PID_SN)              /* = 132 */
     DEFINE_PID(I0_WUEPS_PID_WRR)            /* = 133 */
@@ -537,7 +537,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I0_WUEPS_PID_PDCP)           /* = 137 */
     DEFINE_PID(I0_WUEPS_PID_RLC)            /* = 138 */
     DEFINE_PID(I0_WUEPS_PID_MAC)            /* = 139 */
-    DEFINE_PID(I0_WUEPS_PID_RABM)           /* = 140 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I0_WUEPS_PID_RABM)           /* = 140 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_WUEPS_PID_MMC)            /* = 141 */
     DEFINE_PID(I0_WUEPS_PID_MM )            /* = 142 */
     DEFINE_PID(I0_WUEPS_PID_GMM)            /* = 143 */
@@ -547,7 +547,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I0_WUEPS_PID_SS)             /* = 147 */
     DEFINE_PID(I0_WUEPS_PID_TC)             /* = 148 */
     DEFINE_PID(WUEPS_PID_SMT)               /* = 149 */
-    DEFINE_PID(I0_WUEPS_PID_ADMIN)          /* = 150 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I0_WUEPS_PID_ADMIN)          /* = 150 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(WUEPS_PID_MUX)               /* = 151 */
     DEFINE_PID(I0_WUEPS_PID_TAF)            /* = 152 */
     DEFINE_PID(WUEPS_PID_PPP)               /* = 153 */
@@ -557,7 +557,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I0_WUEPS_PID_MMA)            /* = 157 */
     DEFINE_PID(I0_WUEPS_PID_SLEEP)          /* = 158 */
     DEFINE_PID(WUEPS_PID_CBS)               /* = 159 */
-    DEFINE_PID(WUEPS_PID_MONITOR)           /* = 160 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(WUEPS_PID_MONITOR)           /* = 160 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I1_WUEPS_PID_LCS)            /* = 161 */
     DEFINE_PID(I2_WUEPS_PID_LCS)            /* = 162 */
     DEFINE_PID(WUEPS_PID_APCID1)            /* = 163 */
@@ -567,7 +567,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(WUEPS_PID_APCID2)            /* = 167 */
     DEFINE_PID(WUEPS_PID_APCID3)            /* = 168 */
     DEFINE_PID(I0_PS_PID_LPP)               /* = 169 */
-    DEFINE_PID(PS_PID_CSS)                  /* = 170 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(PS_PID_CSS)                  /* = 170 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_PS_PID_ERRC)              /* = 171 */
     DEFINE_PID(I0_PS_PID_ERMM)              /* = 172 */
     DEFINE_PID(I0_PS_PID_MM)                /* = 173 */
@@ -577,7 +577,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I0_PS_PID_IP)                /* = 177 */
     DEFINE_PID(I0_PS_PID_OM)                /* = 178 */
     DEFINE_PID(I0_PS_PID_MAC_UL)            /* = 179 */
-    DEFINE_PID(I0_PS_PID_RLC_UL)            /* = 180 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I0_PS_PID_RLC_UL)            /* = 180 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_PS_PID_MAC_DL)            /* = 181 */
     DEFINE_PID(I0_PS_PID_RLC_DL)            /* = 182 */
     DEFINE_PID(I0_PS_PID_PDCP_UL)           /* = 183 */
@@ -587,7 +587,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(PS_PID_MUXOM)                /* = 187 */
     DEFINE_PID(I1_PS_PID_IP)                /* = 188 */
     DEFINE_PID(UEPS_PID_FLOWCTRL_C)         /* = 189 */
-    DEFINE_PID(I0_WUEPS_PID_MACDL)          /* = 190 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I0_WUEPS_PID_MACDL)          /* = 190 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_WUEPS_PID_RLCDL)          /* = 191 */
     DEFINE_PID(WUEPS_PID_NOSIG)             /* = 192 */
     DEFINE_PID(UEPS_PID_DICC_C)             /* = 193 */
@@ -597,7 +597,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(UEPS_PID_CDS)                /* = 197 */
     DEFINE_PID(UEPS_PID_NDCLIENT)           /* = 198 */
     DEFINE_PID(WUEPS_PID_SAR)               /* = 199 */
-    DEFINE_PID(UEPS_PID_DHCP)               /* = 200 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(UEPS_PID_DHCP)               /* = 200 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_DSP_PID_APM)              /* = 201 */
     DEFINE_PID(DSP_PID_UPA)                 /* = 202 */
     DEFINE_PID(I0_DSP_PID_WPHY)             /* = 203 */
@@ -607,7 +607,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I0_DSP_PID_SLEEP)            /* = 207 */
     DEFINE_PID(I0_DSP_PID_IDLE)             /* = 208 */
     DEFINE_PID(I0_UEPS_PID_MTA)             /* = 209 */
-    DEFINE_PID(WUEPS_PID_NVIM_FLUSH)        /* = 210 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(WUEPS_PID_NVIM_FLUSH)        /* = 210 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(HL1_PID_SNDCMD)              /* = 211 */
     DEFINE_PID(MSPS_PID_1X_FRESERVE)        /* = 212 */
     DEFINE_PID(MSPS_PID_1X_RRESERVE)        /* = 213 */
@@ -617,7 +617,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(TPS_PID_RRC)                 /* = 217 */
     DEFINE_PID(MSP_PID_BBP_AGENT)           /* = 218 */
     DEFINE_PID(UEPS_PID_MTC)                /* = 219 */
-    DEFINE_PID(WUEPS_PID_CBPCA)             /* = 220 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(WUEPS_PID_CBPCA)             /* = 220 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I0_WUEPS_PID_CSIMA)          /* = 221 */
     DEFINE_PID(I0_PS_PID_IMSA)              /* = 222 */
     DEFINE_PID(I0_PS_PID_IMSVA)             /* = 223 */
@@ -627,7 +627,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(WUEPS_PID_OM_BBP_MASTER)     /* = 227 */
     DEFINE_PID(DSP_PID_RCM)                 /* = 228 */
     DEFINE_PID(DSP_PID_STARTUP)             /* = 229 */
-    DEFINE_PID(MSP_PID_DRX)                 /* = 230 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(MSP_PID_DRX)                 /* = 230 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(VOLTE_PID_DIAG)              /* = 231 */
     DEFINE_PID(I2_WUEPS_PID_MM)             /* = 232 */
     DEFINE_PID(I2_WUEPS_PID_MMC)            /* = 233 */
@@ -637,7 +637,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I2_WUEPS_PID_SS)             /* = 237 */
     DEFINE_PID(I2_WUEPS_PID_TC)             /* = 238 */
     DEFINE_PID(I2_WUEPS_PID_SMS)            /* = 239 */
-    DEFINE_PID(I2_WUEPS_PID_RABM)           /* = 240 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I2_WUEPS_PID_RABM)           /* = 240 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I2_WUEPS_PID_SM)             /* = 241 */
     DEFINE_PID(I2_WUEPS_PID_ADMIN)          /* = 242 */
     DEFINE_PID(I2_WUEPS_PID_TAF)            /* = 243 */
@@ -649,7 +649,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
     DEFINE_PID(CPROC_PID_1X_CTAS  = 249)    /* = 249 */
 #endif
-    DEFINE_PID(I2_PS_PID_NAS_COMM = 250)    /* = 250 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I2_PS_PID_NAS_COMM = 250)    /* = 250 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(CCPU_PID_CBT)                /* = 251 */
     DEFINE_PID(CCPU_PID_PAM_OM)             /* = 252 */
     DEFINE_PID(DSP_PID_TLPHY)               /* = 253 */
@@ -659,7 +659,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I2_MAPS_PB_PID)              /* = 257 */
     DEFINE_PID(I2_UEPS_PID_GRM)             /* = 258 */
     DEFINE_PID(I2_UEPS_PID_DL)              /* = 259 */
-    DEFINE_PID(I2_UEPS_PID_LL)              /* = 260 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I2_UEPS_PID_LL)              /* = 260 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I2_UEPS_PID_SN)              /* = 261 */
     DEFINE_PID(I2_UEPS_PID_GAS)             /* = 262 */
     DEFINE_PID(I2_DSP_PID_GPHY)             /* = 263 */
@@ -669,7 +669,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I2_WUEPS_PID_SLEEP)          /* = 267 */
     DEFINE_PID(I2_WUEPS_PID_CSIMA)          /* = 268 */
     DEFINE_PID(I2_WUEPS_PID_AWAKE)          /* = 269 */
-    DEFINE_PID(I2_DSP_PID_WAKE)             /* = 270 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I2_DSP_PID_WAKE)             /* = 270 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I2_UEPS_PID_XPDS)            /* = 271 */
     DEFINE_PID(I1_DSP_PID_WPHY)             /* = 272 */
     DEFINE_PID(PID_UPHY_CHR_AGENT)          /* = 273 */
@@ -679,7 +679,7 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(WUEPS_PID_EDA)               /* = 277 */
     DEFINE_PID(I1_PS_PID_RLC_UL)            /* = 278 */
     DEFINE_PID(I1_PS_PID_MAC_DL)            /* = 279 */
-    DEFINE_PID(I1_PS_PID_RLC_DL)            /* = 280 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I1_PS_PID_RLC_DL)            /* = 280 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(I1_PS_PID_PDCP_UL)           /* = 281 */
     DEFINE_PID(I1_PS_PID_PDCP_DL)           /* = 282 */
     DEFINE_PID(I1_PS_PID_PTT)               /* = 283 */
@@ -690,12 +690,12 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(DSP_PID_CSDR_1X_CM_AGENT = 287)    /* = 287 */
     DEFINE_PID(DSP_PID_CSDR_1X_SM_AGENT = 288)    /* = 288 */
     DEFINE_PID(DSP_PID_CSDR_HRPD_CM_AGENT = 289)  /* = 289 */
-    DEFINE_PID(DSP_PID_CSDR_HRPD_SM_AGENT = 290)  /* = 290 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(DSP_PID_CSDR_HRPD_SM_AGENT = 290)  /* = 290 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     #endif
     DEFINE_PID(DSP_PID_GSDR_HIGHPRI_AGENT = 291)  /* = 291 */
     DEFINE_PID(LINKH_PID_LINKH_ARM)         /* = 292 */
     DEFINE_PID(MSP_PID_CHR_MDM)             /* = 293 */
-    DEFINE_PID(I1_DSP_PID_TLPHY)            /* = 294 */ /* 提醒! 新增多实例PID请加到g_aPsPidModemIdMapTbl, 新增CDMA的PID请加到g_aPidForCdmaTbl */
+    DEFINE_PID(I1_DSP_PID_TLPHY)            /* = 294 */ /* ????! ??????????PID??????g_aPsPidModemIdMapTbl, ????CDMA??PID??????g_aPidForCdmaTbl */
     DEFINE_PID(DSP_PID_RFM)                 /* = 295 */
     DEFINE_PID(I0_UEPS_PID_REGM)            /* = 296 */
     DEFINE_PID(I1_UEPS_PID_REGM)            /* = 297 */
@@ -706,9 +706,9 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(DSP_PID_UPHY_MNTN)           /* = 302 */
     DEFINE_PID(DSP_PID_BBA_CAL)             /* = 303 */
     DEFINE_PID(PHY_PID_PROCESS)             /* = 304 */
-    DEFINE_PID(PHY_PID_STARTUP1)            /* = 305,时域版本. */
+    DEFINE_PID(PHY_PID_STARTUP1)            /* = 305,????????. */
     DEFINE_PID(UEPS_PID_NRRC_0)             /* = 306 */
-    DEFINE_PID(UEPS_PID_NRRM_0)             /* = 307,时域版本. */
+    DEFINE_PID(UEPS_PID_NRRM_0)             /* = 307,????????. */
     DEFINE_PID(I0_UEPS_PID_DSM)             /* = 308 */
     DEFINE_PID(I1_UEPS_PID_DSM)             /* = 309 */
     DEFINE_PID(I2_UEPS_PID_DSM)             /* = 310 */
@@ -718,10 +718,10 @@ BEGIN_CPU_ID_0_PID_DEFINITION()
     DEFINE_PID(I1_DSP_PID_RTTMATCH)         /* = 314 */
     DEFINE_PID(I1_DSP_PID_RTTPREEMPT)       /* = 315 */
     DEFINE_PID(I1_DSP_PID_RTTONLINE)        /* = 316 */
-    /* CCPU PID最大不能超过65535,使用65536以及65536以上的PID会造成单板异常复位 */
+    /* CCPU PID????????????65535,????65536????65536??????PID?????????????????? */
 /******************************************************************************
-    上面是单板侧的PID
-    下面是PC侧的PID
+    ??????????????PID
+    ??????PC????PID
 *******************************************************************************/
 
 #if (VOS_WIN32 == VOS_OS_VER)
@@ -780,7 +780,7 @@ END_CPU_ID_1_PID_DEFINITION()
 /* ACPU PID end */
 
 
-/* NR CPU 的PID 定义 */
+/* NR CPU ??PID ???? */
 BEGIN_CPU_ID_2_PID_DEFINITION()
     DEFINE_PID(UEPS_PID_NRRC_2)              /* = 131072 */
     DEFINE_PID(UEPS_PID_NRRM_2)              /* = 131073 */
@@ -815,27 +815,27 @@ BEGIN_CPU_ID_3_PID_DEFINITION()
 END_CPU_ID_3_PID_DEFINITION()
 
 #if (FEATURE_VOICE_UP == FEATURE_ON)
-/* 语音软件上移时, 使用ACPU的PID */
+/* ??????????????, ????ACPU??PID */
 #define DSP_PID_VOICE_RT    DSP_PID_VOICE_RT_ACPU
 #define DSP_PID_VOICE       DSP_PID_VOICE_ACPU
 #else
-/* 语音软件不上移时, 使用HIFI的PID */
+/* ????????????????, ????HIFI??PID */
 #define DSP_PID_VOICE_RT    DSP_PID_VOICE_RT_HIFI
 #define DSP_PID_VOICE       DSP_PID_VOICE_HIFI
 #endif
 
-/* MED HiFi的PID 定义，为保证其它组件编译通过，暂时保留MED_RT等PID */
+/* MED HiFi??PID ??????????????????????????????????????MED_RT??PID */
 #define DSP_PID_MED_RT  DSP_PID_VOICE_RT
 #define DSP_PID_MED     DSP_PID_VOICE
 #define DSP_PID_MED_OM  DSP_PID_HIFI_OM
 
 
-/* MCU的PID 定义 */
+/* MCU??PID ???? */
 BEGIN_CPU_ID_4_PID_DEFINITION()
     DEFINE_PID(ACPU_PID_MCU_OM)
 END_CPU_ID_4_PID_DEFINITION()
 
-/* BBE16的PID */
+/* BBE16??PID */
 BEGIN_CPU_ID_5_PID_DEFINITION()
     DEFINE_PID(DSP_PID_TDPHY_RESERVED)
     DEFINE_PID(DSP_PID_TDPHY)
@@ -852,7 +852,7 @@ BEGIN_CPU_ID_5_PID_DEFINITION()
     DEFINE_PID(DSP_PID_GSDR_THIRDPRI)
     DEFINE_PID(DSP_PID_GSDR_FOURTHPRI)
     DEFINE_PID(DSP_PID_CSDR_COMM_LPC)
-    DEFINE_PID(DSP_PID_LPHY_VIRTUAL_PID)                                        /* 提醒! 新增LPHY虚拟的PID，主要用于EASYRF公共平台区分邮箱分发对象 */
+    DEFINE_PID(DSP_PID_LPHY_VIRTUAL_PID)                                        /* ????! ????LPHY??????PID??????????EASYRF???????????????????????? */
 END_CPU_ID_5_PID_DEFINITION()
 
 
@@ -874,7 +874,7 @@ BEGIN_CPU_ID_7_PID_DEFINITION()
     DEFINE_PID(RFDSP_PID_PUB_1)
 END_CPU_ID_7_PID_DEFINITION()
 
-/* NPHY新增 */
+/* NPHY???? */
 BEGIN_CPU_ID_8_PID_DEFINITION()
     DEFINE_PID(UPHY_PID_HL1C_OM)
     DEFINE_PID(UPHY_PID_HL1C_L1C_H)
@@ -1002,27 +1002,27 @@ BEGIN_CPU_ID_16_PID_DEFINITION()
 END_CPU_ID_16_PID_DEFINITION()
 
 /*****************************************************************************
-  4 消息头定义
+  4 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息定义
+  5 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 STRUCT定义
+  6 STRUCT????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 UNION定义
+  7 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  8 OTHERS定义
+  8 OTHERS????
 *****************************************************************************/
 #if defined (INSTANCE_1)
 #define WUEPS_PID_USIM  I1_WUEPS_PID_USIM
@@ -1288,12 +1288,12 @@ END_CPU_ID_16_PID_DEFINITION()
 #endif
 
 /*****************************************************************************
-  9 全局变量声明
+  9 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 

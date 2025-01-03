@@ -496,7 +496,7 @@ int bbox_chown(const char *path, uid_t user, gid_t group, bool recursion)
 		return -1;
 	}
 
-	for (count = 0; count < 1000; count++) {	/*防止死循环 */
+	for (count = 0; count < 1000; count++) {	/*?????????? */
 		bufsize = sys_getdents(fd, (struct linux_dirent *)buf, 1024);
 		if (bufsize == -1) {
 			BB_PRINT_ERR("[%s], sys_getdents failed, ret [%d]\n",
@@ -505,7 +505,7 @@ int bbox_chown(const char *path, uid_t user, gid_t group, bool recursion)
 		}
 
 		if (bufsize == 0) {
-			/*处理结束 */
+			/*???????? */
 			goto out;
 		}
 
@@ -517,8 +517,8 @@ int bbox_chown(const char *path, uid_t user, gid_t group, bool recursion)
 
 			if (d_type == DT_DIR
 			    && strncmp(d->d_name, ".", sizeof("."))
-			    && strncmp(d->d_name, "..", sizeof(".."))) {	/*处理目录，过滤"."和".."目录，否则会无限递归 */
-				/*递归修改目录及子目录的属主及属组 */
+			    && strncmp(d->d_name, "..", sizeof(".."))) {	/*??????????????"."??".."???????????????????? */
+				/*???????????????????????????????? */
 				/* cppcheck-suppress * */
 				ret = (int)bbox_chown((const char __user *)
 						      fullname, user, group,
@@ -528,7 +528,7 @@ int bbox_chown(const char *path, uid_t user, gid_t group, bool recursion)
 					     __func__, fullname, user, group,
 					     ret);
 				}
-			} else if (d_type == DT_REG) {	/*处理文件 */
+			} else if (d_type == DT_REG) {	/*???????? */
 				ret = (int)sys_chown((const char __user *)
 						     fullname, user, group);
 				if (ret) {
@@ -599,7 +599,7 @@ int rdr_dump_init(void *arg)
 	while (rdr_wait_partition("/data/lost+found", 1000) != 0)
 		;
 
-	/* 提前检查并设置版本信息 */
+	/* ?????????????????????? */
 	(void)bbox_check_edition();
 
 	ret = rdr_create_dir(PATH_ROOT);
@@ -607,7 +607,7 @@ int rdr_dump_init(void *arg)
 		return ret;
 	}
 
-	/*根据权限要求，hisi_logs目录及子目录群组调整为root-system */
+	/*??????????????hisi_logs??????????????????????root-system */
 	ret = (int)bbox_chown((const char __user *)PATH_ROOT, ROOT_UID,
 			    SYSTEM_GID, true);
 	if (ret) {
@@ -876,7 +876,7 @@ void rdr_count_size(void)
 			continue;
 		}
 
-		/* 递归检查目录大小，超过指定大小则删除之后的日志目录，同上if (oversize)。 */
+		/* ????????????????????????????????????????????????????????if (oversize)?? */
 		tmpsize = rdr_dir_size(fullname, true);
 		if ((tmpsize + size > rdr_get_logsize()) || (++rdr_log_nums > rdr_max_logs)) {
 			oversize = true;
@@ -894,7 +894,7 @@ void rdr_count_size(void)
 	}
 	mutex_unlock(&__rdr_logpath_info_list_mutex);
 
-	/*根据权限要求，hisi_logs目录及子目录群组调整为root-system */
+	/*??????????????hisi_logs??????????????????????root-system */
 	ret = (int)bbox_chown((const char __user *)PATH_ROOT, ROOT_UID,
 			    SYSTEM_GID, true);
 	if (ret) {

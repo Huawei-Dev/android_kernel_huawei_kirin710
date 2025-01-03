@@ -50,7 +50,7 @@
 #define __AT_PPP_INTERFACE_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 #include "vos.h"
@@ -74,40 +74,40 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  4 STRUCT定义
+  4 STRUCT????
 *****************************************************************************/
 
-/*对应PPP_AUTH_PAP_CONTENT_STRU，用于消息方式交互*/
+/*????PPP_AUTH_PAP_CONTENT_STRU??????????????????*/
 typedef struct
 {
-    VOS_UINT16  usPapReqLen;                            /*request长度: 24.008要求在[3,253]字节*/
-    VOS_UINT8   aucReserve[2];                          /* 对齐保留 */
+    VOS_UINT16  usPapReqLen;                            /*request????: 24.008??????[3,253]????*/
+    VOS_UINT8   aucReserve[2];                          /* ???????? */
     VOS_UINT8   aucPapReqBuf[PPP_PAP_REQ_BUF_MAX_LEN];  /*request*/
 } AT_PPP_AUTH_PAP_CONTENT_STRU;
 
-/*对应PPP_AUTH_CHAP_CONTENT_STRU，用于消息方式交互*/
+/*????PPP_AUTH_CHAP_CONTENT_STRU??????????????????*/
 typedef struct
 {
-    VOS_UINT16  usChapChallengeLen;                     /*challenge长度: 24.008要求在[3,253]字节*/
-    VOS_UINT16  usChapResponseLen;                      /*response长度: 24.008要求在[3,253]字节*/
+    VOS_UINT16  usChapChallengeLen;                     /*challenge????: 24.008??????[3,253]????*/
+    VOS_UINT16  usChapResponseLen;                      /*response????: 24.008??????[3,253]????*/
     VOS_UINT8   aucChapChallengeBuf[PPP_CHAP_CHALLENGE_BUF_MAX_LEN];  /*challenge,153B*/
     VOS_UINT8   aucChapResponseBuf[PPP_CHAP_RESPONSE_BUF_MAX_LEN];    /*response,205B*/
     VOS_UINT8   aucReserve[2];
 } AT_PPP_AUTH_CHAP_CONTENT_STRU;
 
-/*对应PPP_REQ_AUTH_CONFIG_INFO_STRU，用于消息方式交互*/
+/*????PPP_REQ_AUTH_CONFIG_INFO_STRU??????????????????*/
 typedef struct
 {
     PPP_AUTH_TYPE_ENUM_UINT8  ucAuthType;
-    VOS_UINT8                 aucReserve[3];              /* 对齐保留 */
+    VOS_UINT8                 aucReserve[3];              /* ???????? */
 
     union
     {
@@ -116,22 +116,22 @@ typedef struct
     } AuthContent;
 } AT_PPP_REQ_AUTH_CONFIG_INFO_STRU;
 
-/*对应PPP_REQ_IPCP_CONFIG_INFO_STRU，用于消息方式交互*/
+/*????PPP_REQ_IPCP_CONFIG_INFO_STRU??????????????????*/
 typedef struct
 {
-    VOS_UINT16  usIpcpLen;                              /*Ipcp帧长度*/
-    VOS_UINT8   aucReserve[2];                          /* 对齐保留 */
-    VOS_UINT8   aucIpcp[PPP_IPCP_FRAME_BUF_MAX_LEN];    /*Ipcp帧*/
+    VOS_UINT16  usIpcpLen;                              /*Ipcp??????*/
+    VOS_UINT8   aucReserve[2];                          /* ???????? */
+    VOS_UINT8   aucIpcp[PPP_IPCP_FRAME_BUF_MAX_LEN];    /*Ipcp??*/
 } AT_PPP_REQ_IPCP_CONFIG_INFO_STRU;
 
-/*对应PPP_REQ_CONFIG_INFO_STRU，用于消息方式交互*/
+/*????PPP_REQ_CONFIG_INFO_STRU??????????????????*/
 typedef struct
 {
     AT_PPP_REQ_AUTH_CONFIG_INFO_STRU stAuth;
     AT_PPP_REQ_IPCP_CONFIG_INFO_STRU stIPCP;
 } AT_PPP_REQ_CONFIG_INFO_STRU;
 
-/*PCO中携带的IPCP信息*/
+/*PCO????????IPCP????*/
 typedef struct
 {
     VOS_UINT32                          bitOpPriDns    : 1;             /*Primary DNS server Address*/
@@ -148,23 +148,23 @@ typedef struct
     VOS_UINT8                           aucSecNbns[IPV4_ADDR_LEN];
 } AT_PPP_PCO_IPV4_ITEM_STRU;
 
-/*对应PPP_IND_CONFIG_INFO_STRU，用于消息方式交互*/
+/*????PPP_IND_CONFIG_INFO_STRU??????????????????*/
 typedef struct
 {
-    VOS_UINT8                           aucIpAddr[IPV4_ADDR_LEN];       /*主机IP地址*/
-    AT_PPP_PCO_IPV4_ITEM_STRU           stPcoIpv4Item;                  /*PCO信息*/
+    VOS_UINT8                           aucIpAddr[IPV4_ADDR_LEN];       /*????IP????*/
+    AT_PPP_PCO_IPV4_ITEM_STRU           stPcoIpv4Item;                  /*PCO????*/
 } AT_PPP_IND_CONFIG_INFO_STRU;
 
 
 /*****************************************************************************
-  5 UNION定义
+  5 UNION????
 *****************************************************************************/
 
 /*****************************************************************************
-  6 函数声明
+  6 ????????
 *****************************************************************************/
 
-/* 这两个接口使用到新的结构体，因此不放在PppInterface.h */
+/* ??????????????????????????????????????PppInterface.h */
 extern VOS_UINT32 At_RcvTeConfigInfoReq(VOS_UINT16 usPppId, AT_PPP_REQ_CONFIG_INFO_STRU *pstPppReqConfigInfo);
 extern VOS_UINT32 Ppp_RcvConfigInfoInd(PPP_ID usPppId, AT_PPP_IND_CONFIG_INFO_STRU *pPppIndConfigInfo);
 extern VOS_UINT32 At_RcvPppReleaseInd(VOS_UINT16 usPppId);

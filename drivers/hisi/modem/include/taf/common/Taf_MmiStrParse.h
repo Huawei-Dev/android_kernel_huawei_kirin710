@@ -51,7 +51,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include  "TafTypeDef.h"
 #include  "MnCallApi.h"
@@ -69,11 +69,11 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 常量定义
+  2 ????????
 *****************************************************************************/
-/* 因为新增的TafMmiEncode.c也要使用下面宏，从Taf_MmiStrParse.c移动到Taf_MmiStrParse.c */
+/* ??????????TafMmiEncode.c??????????????????Taf_MmiStrParse.c??????Taf_MmiStrParse.c */
 /*****************************************************************************
-  3 宏定义
+  3 ??????
 *****************************************************************************/
 #define  MMI_MAX_DTMF_STR_LEN           40
 #define MN_MMI_MIN_USSD_LEN             2
@@ -88,10 +88,10 @@ extern "C" {
 
 #define MN_MMI_MAX(a, b)                (((a) > (b)) ? (a) : (b))
 
-#define MN_MMI_MAX_SC_LEN               3                                       /* 目前来说，最大长度为3*/
-#define MN_MMI_MAX_SIA_LEN              30                                      /* 来自于号码长度的最大限制 */
-#define MN_MMI_MAX_SIB_LEN              8                                       /* PWD和PIN的长度 */
-#define MN_MMI_MAX_SIC_LEN              8                                       /* PWD和PIN的长度 */
+#define MN_MMI_MAX_SC_LEN               3                                       /* ????????????????????3*/
+#define MN_MMI_MAX_SIA_LEN              30                                      /* ???????????????????????? */
+#define MN_MMI_MAX_SIB_LEN              8                                       /* PWD??PIN?????? */
+#define MN_MMI_MAX_SIC_LEN              8                                       /* PWD??PIN?????? */
 
 #define MN_MMI_MAX_BUF_SIZE             64
 #define MN_MMI_MAX_PARA_NUM             4
@@ -105,7 +105,7 @@ extern "C" {
 #define     TAF_MMI_IMEI_MAX_LEN                                       6
 #define     TAF_MMI_BS_MAX_LEN                                         3
 /*****************************************************************************
-  3类型定义
+  3????????
 *****************************************************************************/
 enum TAF_MMI_OPERATION_TYPE_ENUM
 {
@@ -140,7 +140,7 @@ enum TAF_MMI_OPERATION_TYPE_ENUM
 };
 typedef TAF_UINT8 MN_MMI_OPERATION_TYPE_ENUM_U8;
 
-/* 因为新增的TafMmiEncode.c也要使用下面结构，从Taf_MmiStrParse.c移动到Taf_MmiStrParse.c */
+/* ??????????TafMmiEncode.c????????????????????Taf_MmiStrParse.c??????Taf_MmiStrParse.c */
 typedef struct
 {
     VOS_CHAR                            *pString;
@@ -189,7 +189,7 @@ typedef struct
 
 typedef struct
 {
-    MN_MMI_OPERATION_TYPE_ENUM_U8       MmiOperationType;                       /*当前的操作类型*/
+    MN_MMI_OPERATION_TYPE_ENUM_U8       MmiOperationType;                       /*??????????????*/
 
     TAF_UINT8                           aReserved[2];
 
@@ -211,11 +211,11 @@ typedef struct
 }MN_MMI_OPERATION_PARAM_STRU;
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  6 接口函数声明
+  6 ????????????
 *****************************************************************************/
 
 TAF_UINT32 MN_MmiStringParse(

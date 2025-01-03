@@ -1,7 +1,7 @@
 
 
 /*******************************************************************************
-  1 头文件包含
+  1 ??????????
  *******************************************************************************/
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -76,7 +76,7 @@ static u64 g_mi_notify_lpm3_addr;
 static unsigned long long g_pmu_reset_reg;
 static unsigned long long g_pmu_subtype_reg;
 int g_bbox_fpga_flag = -1;
-/* -1 未初始化；0 非fpga板；1 fpga板 */
+/* -1 ??????????0 ??fpga????1 fpga?? */
 
 static unsigned int g_dump_buffer_size_tbl[HK_MAX] = {0};
 static unsigned int last_task_struct_size = 0;
@@ -179,7 +179,7 @@ struct rdr_exception_info_s einfo[] = {
 	 "audio codec error", "audio codec error", 0, 0, 0},
 };
 
-/* 以下是给AP的其他维测模块、IP使用的dump内存 */
+/* ????????AP????????????????IP??????dump???? */
 static unsigned int g_dump_modu_mem_size_tbl[MODU_MAX] = {0};
 static char g_dump_modu_compatible[MODU_MAX][AMNTN_MODULE_COMP_LEN] = {
 	[MODU_NOC] = {"ap_dump_mem_modu_noc_size"},
@@ -241,10 +241,10 @@ static unsigned long exception_buf_len __attribute__((__section__(".data")));
 
 /*******************************************************************************
 Function:         get_ap_trace_mem_size_from_dts
-Description:      从dts中读取ap侧各轨迹的内存大小
+Description:      ??dts??????ap??????????????????
 Input:            NA
 Output:           NA
-Return:           0:读取成功, 非0:失败
+Return:           0:????????, ??0:????
 ********************************************************************************/
 static int get_ap_trace_mem_size_from_dts(void)
 {
@@ -357,10 +357,10 @@ static int get_ap_trace_mem_size_from_dts(void)
 
 /*******************************************************************************
 Function:         get_ap_dump_mem_modu_size_from_dts
-Description:      从dts中读取ap侧各模块的dump内存大小
+Description:      ??dts??????ap??????????dump????????
 Input:            NA
 Output:           NA
-Return:           0:读取成功, 非0:失败
+Return:           0:????????, ??0:????
 ********************************************************************************/
 static int get_ap_dump_mem_modu_size_from_dts(void)
 {
@@ -396,10 +396,10 @@ static int get_ap_dump_mem_modu_size_from_dts(void)
 
 /*******************************************************************************
 Function:         ap_last_task_switch
-Description:      从dts中读取ap_last_task内存分配的开关
+Description:      ??dts??????ap_last_task??????????????
 Input:            NA
 Output:           NA
-Return:           0:读取失败或开关关闭, 非0:开关打开
+Return:           0:??????????????????, ??0:????????
 ********************************************************************************/
 static unsigned int get_ap_last_task_switch_from_dts(void)
 {
@@ -429,8 +429,8 @@ static unsigned int get_ap_last_task_switch_from_dts(void)
 
 /*******************************************************************************
 Function:       set_exception_info
-Description:    设置调用__show_regs的异常的pc
-Input:          buf:调用__show_regs的异常的pc的地址
+Description:    ????????__show_regs????????pc
+Input:          buf:????__show_regs????????pc??????
 Output:         NA
 Return:         NA
 ********************************************************************************/
@@ -442,9 +442,9 @@ void set_exception_info(unsigned long address)
 
 /*******************************************************************************
 Function:       get_exception_info
-Description:    获取调用__show_regs的异常的pc
+Description:    ????????__show_regs????????pc
 Input:          NA
-Output:         buf:调用__show_regs的异常的pc的地址；buf_len:获取的buf的长度
+Output:         buf:????__show_regs????????pc????????buf_len:??????buf??????
 Return:         NA
 ********************************************************************************/
 void get_exception_info(unsigned long *buf, unsigned long *buf_len)
@@ -473,8 +473,8 @@ void get_product_version(char *version, size_t count)
 	}
 	memset(version, 0, count);
 
-	/* 等待文件系统ok，读取/system/build.prop的ro.confg.hw_systemversion=BalongV100R001C50B310属性 */
-	/* 不能在module_init调用 */
+	/* ????????????ok??????/system/build.prop??ro.confg.hw_systemversion=BalongV100R001C50B310???? */
+	/* ??????module_init???? */
 	while (rdr_wait_partition("/data/lost+found", 1000) != 0)
 		;
 
@@ -490,11 +490,11 @@ void get_product_version(char *version, size_t count)
 		vfs_read(fp, buf, BUFFER_SIZE, &fp->f_pos)) > 0) { /*lint !e613 */
 		for (i = 0; i < BUFFER_SIZE; i++) {
 			if ('\n' == buf[i])
-				break;	/* 找到完整1行 */
+				break;	/* ????????1?? */
 		}
 		memset(buf, '\0', BUFFER_SIZE);
 		vfs_llseek(fp, -length, SEEK_CUR);
-		if (BUFFER_SIZE == i) {	/* 1行超过128byte */
+		if (BUFFER_SIZE == i) {	/* 1??????128byte */
 			i--;
 		}
 		if (0 != i) {
@@ -511,7 +511,7 @@ void get_product_version(char *version, size_t count)
 			}
 			memset(buf, '\0', BUFFER_SIZE);
 		} else {
-			vfs_llseek(fp, 1, SEEK_CUR);	/* 去掉空行 */
+			vfs_llseek(fp, 1, SEEK_CUR);	/* ???????? */
 		}
 	}
 
@@ -567,7 +567,7 @@ static int check_addr_overflow(unsigned char *addr)
 	return 0;
 }
 
-/* 不包括AP_EH_ROOT所占1K空间 */
+/* ??????AP_EH_ROOT????1K???? */
 static unsigned char *get_rdr_hisiap_dump_start_addr(void)
 {
 	unsigned char *addr;
@@ -725,7 +725,7 @@ static unsigned int get_total_regdump_region_size(regs_info *regs_info)
 	return total;
 }
 
-/*中断、任务、cpuidle根据cpu频繁度划分区域，以及其他不区分cpu的轨迹区域初始化*/
+/*????????????cpuidle????cpu??????????????????????????????cpu????????????????*/
 int __init hook_buffer_alloc(void)
 {
 	int ret;
@@ -956,7 +956,7 @@ void module_dump_mem_init(void)
 		       g_rdr_ap_root->module_dump_info[i].dump_addr,
 		       g_rdr_ap_root->module_dump_info[i].dump_size);
 	}
-	/*ap_last_task_switch关闭时，将last_task struct和stack的dump内存起始地址赋0*/
+	/*ap_last_task_switch??????????last_task struct??stack??dump??????????????0*/
 	if (!get_ap_last_task_switch_from_dts()) {
 		for (i = 0; i < NR_CPUS; i++) {
 			g_rdr_ap_root->last_task_struct_dump_addr[i] = 0;
@@ -969,7 +969,7 @@ static int __init ap_dump_buffer_init(void)
 {
 	int i;
 
-	/* 轨迹记录区 */
+	/* ?????????? */
 	g_rdr_ap_root->hook_buffer_addr[0] =
 	    get_rdr_hisiap_dump_start_addr()
 	    + get_total_regdump_region_size(g_rdr_ap_root->dump_regs_info);
@@ -979,7 +979,7 @@ static int __init ap_dump_buffer_init(void)
 		    g_dump_buffer_size_tbl[i - 1];
 	}
 
-	/* 任务记录区 */
+	/* ?????????? */
 	if (get_ap_last_task_switch_from_dts()) {
 		last_task_struct_size = sizeof(struct task_struct);
 		last_task_stack_size = THREAD_SIZE;
@@ -995,7 +995,7 @@ static int __init ap_dump_buffer_init(void)
 	}
 
 	g_rdr_ap_root->last_task_stack_dump_addr[0] = (unsigned char *)(uintptr_t)
-	    ALIGN(((uintptr_t)g_rdr_ap_root->last_task_struct_dump_addr[NR_CPUS - 1] + last_task_struct_size), SIZE_1K);	/* 按1K对齐 */
+	    ALIGN(((uintptr_t)g_rdr_ap_root->last_task_struct_dump_addr[NR_CPUS - 1] + last_task_struct_size), SIZE_1K);	/* ??1K???? */
 	for (i = 1; i < NR_CPUS; i++) {
 		g_rdr_ap_root->last_task_stack_dump_addr[i] =
 		    g_rdr_ap_root->last_task_stack_dump_addr[i - 1] +
@@ -1091,7 +1091,7 @@ void regs_dump(void)
 
 	regs_info = g_rdr_ap_root->dump_regs_info;
 
-	/* NOTE:sctrl在上电区, pctrl, pericrg在外设区,A核访问不要做domain域判断 */
+	/* NOTE:sctrl????????, pctrl, pericrg????????,A????????????domain?????? */
 	for (i = 0; (unsigned int)i < g_rdr_ap_root->num_reg_regions; i++) {
 		if (IS_ERR_OR_NULL(regs_info[i].reg_map_addr)
 		    || IS_ERR_OR_NULL(regs_info[i].reg_dump_addr)) {
@@ -1155,10 +1155,10 @@ static void get_product_version_work_fn(struct work_struct *work)
 
 /*******************************************************************************
 Function:       register_module_dump_mem_func
-Description:    向AP维测模块及IP提供的内存dump注册接口；
-Input:          func:注册的dump函数, module_name:模块名, modu:模块ID，此为统一分配;
+Description:    ??AP??????????IP??????????dump??????????
+Input:          func:??????dump????, module_name:??????, modu:????ID??????????????;
 Output:         NA
-Return:         0:注册成功，<0:失败
+Return:         0:??????????<0:????
 ********************************************************************************/
 int register_module_dump_mem_func(rdr_hisiap_dump_func_ptr func,
 				  char *module_name,
@@ -1214,10 +1214,10 @@ int register_module_dump_mem_func(rdr_hisiap_dump_func_ptr func,
 
 /*******************************************************************************
 Function:       get_module_dump_mem_addr
-Description:    获取dump模块的dump起始地址；
-Input:          modu:模块ID，此为统一分配;
-Output:         dump_addr:已分配给模块modu的dump内存起始地址
-Return:         0:获取成功，小于0:获取失败
+Description:    ????dump??????dump??????????
+Input:          modu:????ID??????????????;
+Output:         dump_addr:????????????modu??dump????????????
+Return:         0:??????????????0:????????
 ********************************************************************************/
 int get_module_dump_mem_addr(dump_mem_module modu, unsigned char **dump_addr)
 {
@@ -1250,7 +1250,7 @@ int get_module_dump_mem_addr(dump_mem_module modu, unsigned char **dump_addr)
 
 /*******************************************************************************
 Function:       save_module_dump_mem
-Description:    异常复位前，调用AP维测模块及IP提供的内存dump注册函数；
+Description:    ????????????????AP??????????IP??????????dump??????????
 Input:          NA
 Output:         NA
 Return:         NA
@@ -1308,7 +1308,7 @@ int __init rdr_hisiap_dump_init(struct rdr_register_module_result *retinfo)
 	strncpy(g_log_path, g_rdr_ap_root->log_path, LOG_PATH_LEN - 1);
 	g_log_path[LOG_PATH_LEN - 1] = '\0';
 
-	/* 由于pmu扣板还没有，暂时用ap异常区的后8个字节替代 */
+	/* ????pmu??????????????????ap??????????8?????????? */
 	memset((void *)(uintptr_t)g_hisiap_addr, 0,
 	       retinfo->log_len - PMU_RESET_RECORD_DDR_AREA_SIZE);
 	g_rdr_ap_root = (AP_EH_ROOT *)(uintptr_t) g_hisiap_addr;
@@ -1363,7 +1363,7 @@ int __init rdr_hisiap_dump_init(struct rdr_register_module_result *retinfo)
 		return ret;
 	}
 
-	if (check_himntn(HIMNTN_KERNEL_DUMP_ENABLE)) {	/* 轨迹是否生成保持和kernel dump一致 */
+	if (check_himntn(HIMNTN_KERNEL_DUMP_ENABLE)) {	/* ??????????????????kernel dump???? */
 		BB_PRINT_PN(
 			"[%s], hisi_trace_hook_install start.\n",
 			__func__);
@@ -1502,13 +1502,13 @@ static void save_kernel_dump(void *arg)
 
 	BB_PRINT_PN("exce_dir is [%s]\n", exce_dir);
 
-	/* 如果arg为真，表示是起线程保存kerneldump，此时要从内存中获取异常时间戳 */
+	/* ????arg??????????????????????kerneldump?????????????????????????????? */
 	if (arg && (LOG_PATH_LEN - 1 >= strlen(g_log_path))) {
 		len = strlen(g_log_path);
 		memcpy(date, &g_log_path[len - DATATIME_MAXLEN],
 		       DATATIME_MAXLEN - 1);
 	} else {
-		/* 如果arg为空，则认为是ap侧的异常，是复位之后保存的log，则获取当前时间即可 */
+		/* ????arg??????????????ap??????????????????????????log???????????????????? */
 		snprintf(date, DATATIME_MAXLEN, "%s-%08lld",
 			 rdr_get_timestamp(), rdr_get_tick());
 	}
@@ -1744,7 +1744,7 @@ void rdr_hisiap_dump(u32 modid, u32 etype,
 
 	console_loglevel = 7;
 
-	/* 如果是panic，则需要将pc指针记录下来，并传递到fastboot  */
+	/* ??????panic??????????pc??????????????????????fastboot  */
 	if ((etype == AP_S_PANIC || etype == AP_S_VENDOR_PANIC) && g_bbox_ap_record_pc) {
 		get_exception_info(&exception_info,
 				   &exception_info_len);
@@ -2004,8 +2004,8 @@ static void rdr_hisiap_register_exception(void)
 		BB_PRINT_DBG("register exception:%d", einfo[i].e_exce_type);
 		einfo[i].e_callback = hisiap_callback;
 		if (0 == i) {
-			/* 注册AP core公共callback函数，其他core有通知ap core dump，则调用此callback函数，
-			   RDR_COMMON_CALLBACK为公共callback标记，没有标记的为ap core私有callback函数 */
+			/* ????AP core????callback??????????core??????ap core dump??????????callback??????
+			   RDR_COMMON_CALLBACK??????callback??????????????????ap core????callback???? */
 			einfo[i].e_callback = (rdr_e_callback)(uintptr_t)(
 				(uintptr_t)(einfo[i].e_callback) | BBOX_COMMON_CALLBACK);
 		}
@@ -2177,7 +2177,7 @@ static void save_pstore_info(const char *dst_dir_str)
 	tmp_cnt =
 	    MNTN_FILESYS_MAX_CYCLE * MNTN_FILESYS_PURE_DIR_NAME_LEN;
 
-	/* 申请一块内存用于存储遍历/sys/fs/pstore/目录下所有文件的名字 */
+	/* ????????????????????????/sys/fs/pstore/???????????????????? */
 	pbuff = kmalloc(tmp_cnt, GFP_KERNEL);
 	if (NULL == pbuff) {
 		BB_PRINT_ERR(
@@ -2186,16 +2186,16 @@ static void save_pstore_info(const char *dst_dir_str)
 		return;
 	}
 
-	/* 清空申请的buff */
+	/* ??????????buff */
 	memset((void *)pbuff, 0, tmp_cnt);
 
-	/* 调用接口将/sys/fs/pstore/目录下的所有文件名字存入pbuff中 */
+	/* ??????????/sys/fs/pstore/????????????????????????pbuff?? */
 	tmp_cnt =
 	    mntn_filesys_dir_list(PSTORE_PATH, pbuff, tmp_cnt, DT_REG);
 
-	/* 生成last_kmsg文件及dmesg-ramoops-x文件 */
+	/* ????last_kmsg??????dmesg-ramoops-x???? */
 	for (i = 0; i < tmp_cnt; i++) {
-		/* 生成源文件绝对路径 */
+		/* ?????????????????? */
 		memset((void *)fullpath_arr, 0, sizeof(fullpath_arr));
 		strncat(fullpath_arr, PSTORE_PATH, ((LOG_PATH_LEN - 1) - strlen(fullpath_arr)));
 		len =
@@ -2206,7 +2206,7 @@ static void save_pstore_info(const char *dst_dir_str)
 			(const char *)(pbuff + ((unsigned long)i * MNTN_FILESYS_PURE_DIR_NAME_LEN)),/*lint !e571*/
 			((LOG_PATH_LEN - 1) - strlen(fullpath_arr)));
 
-		/* 如果不是console则目的文件非last_kmsg，为dmesg-ramoops-x */
+		/* ????????console????????????last_kmsg????dmesg-ramoops-x */
 		if (0 != strncmp((const char *)(pbuff + ((unsigned long)i * MNTN_FILESYS_PURE_DIR_NAME_LEN)),/*lint !e571*/
 				"console-ramoops",
 				strlen("console-ramoops"))) {
@@ -2227,7 +2227,7 @@ static void save_pstore_info(const char *dst_dir_str)
 				((NEXT_LOG_PATH_LEN - 1) - strlen(dst_str)));
 		}
 
-		/* 将源文件的内容拷贝到目的文件中 */
+		/* ?????????????????????????????? */
 		ret = rdr_copy_file_apend(dst_str, fullpath_arr);
 		if (ret) {
 			BB_PRINT_ERR(
@@ -2254,7 +2254,7 @@ static void save_fastboot_log(const char *dst_dir_str)
 	char fastbootlog_path[NEXT_LOG_PATH_LEN];
 	char last_fastbootlog_path[NEXT_LOG_PATH_LEN];
 
-	/* 组合fastbootlog的文件的绝对路径 */
+	/* ????fastbootlog???????????????? */
 	memset(last_fastbootlog_path, 0, NEXT_LOG_PATH_LEN);
 	memset(fastbootlog_path, 0, NEXT_LOG_PATH_LEN);
 	len = strlen(dst_dir_str);
@@ -2265,7 +2265,7 @@ static void save_fastboot_log(const char *dst_dir_str)
 	memcpy(&fastbootlog_path[len], "/fastboot_log",
 	       strlen("/fastboot_log") + 1);
 
-	/* 生成last_fastbootlog文件 */
+	/* ????last_fastbootlog???? */
 	ret = rdr_copy_file_apend(last_fastbootlog_path,
 				  LAST_FASTBOOT_LOG_FILE);
 	if (ret) {
@@ -2273,7 +2273,7 @@ static void save_fastboot_log(const char *dst_dir_str)
 		       LAST_FASTBOOT_LOG_FILE, ret);
 	}
 
-	/* 生成curr_fastbootlog文件 */
+	/* ????curr_fastbootlog???? */
 	ret = rdr_copy_file_apend(fastbootlog_path, FASTBOOT_LOG_FILE);
 	if (ret) {
 		BB_PRINT_ERR("rdr_copy_file_apend [%s] fail, ret = [%d]\n",
@@ -2285,8 +2285,8 @@ static void save_fastboot_log(const char *dst_dir_str)
 
 /*******************************************************************************
 Function:       save_exception_info
-Description:    保存异常信息
-Input:          void *arg暂不使用
+Description:    ????????????
+Input:          void *arg????????
 Output:         NA
 Return:         -1 : error, 0 : ok
 ********************************************************************************/
@@ -2301,7 +2301,7 @@ int save_exception_info(void *arg)
 	BB_PRINT_PN("[%s], start\n", __func__);
 	ret = 0;
 
-	/* 从全局变量中获取此次异常的log目录路径 */
+	/* ??????????????????????????log???????? */
 	memset(exce_dir, 0, LOG_PATH_LEN);
 	if (LOG_PATH_LEN - 1 < strlen(g_log_path)) {
 		BB_PRINT_ERR("g_log_path's len too large\n");
@@ -2310,7 +2310,7 @@ int save_exception_info(void *arg)
 	memcpy(exce_dir, g_log_path, strlen(g_log_path) + 1);
 	BB_PRINT_PN("exce_dir is [%s]\n", exce_dir);
 
-	/* 打开异常目录，如果不存在则以当前时间为目录创建 */
+	/* ?????????????????????????????????????????????? */
 	fd = sys_open(exce_dir, O_DIRECTORY, 0);
 	if (fd < 0) {
 		BB_PRINT_ERR(
@@ -2345,7 +2345,7 @@ int save_exception_info(void *arg)
 		       strlen("/ap_log") + 1);
 	}
 
-	/* 打开异常目录下的ap_log目录，如果不存在则创建 */
+	/* ????????????????ap_log?????????????????????? */
 	fd = sys_open(dst_dir_str, O_DIRECTORY, 0);
 	if (fd < 0) {
 		fd = sys_mkdir(dst_dir_str, DIR_LIMIT);
@@ -2363,20 +2363,20 @@ int save_exception_info(void *arg)
 	save_fastboot_log(dst_dir_str);
 	save_pstore_info(dst_dir_str);
 
-	/* 如果函数入参是null，则表示是在rdr_hisiap_dump中调用的，后面操作不需要 */
+	/* ??????????????null????????????rdr_hisiap_dump???????????????????????? */
 	if (!arg) {
 		goto out;
 	}
 
-	/* 在异常目录下面新建DONE文件，标志此次异常log保存完毕 */
+	/* ??????????????????DONE??????????????????log???????? */
 	bbox_save_done(g_log_path, BBOX_SAVE_STEP_DONE);
 
-	/* 文件系统sync，保证读写任务完成 */
+	/* ????????sync?????????????????? */
 	if (!in_atomic() && !irqs_disabled() && !in_irq()) {
 		sys_sync();
 	}
 
-	/* 根据权限要求，hisi_logs目录及子目录群组调整为root-system */
+	/* ??????????????hisi_logs??????????????????????root-system */
 	ret = (int)bbox_chown((const char __user *)g_log_path, ROOT_UID,
 			      SYSTEM_GID, true);
 	if (ret) {

@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "dmac_alg.h"
 #include "dmac_config.h"
@@ -19,12 +19,12 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_ALG_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
-/* 算法框架主结构体 */
+/* ???????????????? */
 dmac_alg_stru  gst_alg_main;
 
-/* 算法配置命令 */
+/* ???????????? */
 dmac_alg_config_table_stru g_ast_dmac_alg_config_table[] =
 {
 #ifdef _PRE_WLAN_FEATURE_DBAC
@@ -64,7 +64,7 @@ oal_uint8 guc_dmac_alg_pktno = 0;
 #endif
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 OAL_STATIC oal_void dmac_alg_free_tid_priv_stru(dmac_user_stru *pst_user)
@@ -501,8 +501,8 @@ oal_uint32  dmac_alg_unregister_flowctl_backp_notify_func()
 
 oal_uint32  dmac_alg_flowctl_backp(mac_vap_stru *pst_mac_vap, oal_uint16 us_assoc_id, oal_uint8 uc_tidno, oal_uint8 uc_is_stop)
 {
-    frw_event_mem_stru          *pst_event_mem;          /* 申请事件返回的内存指针 */
-    frw_event_stru              *pst_dmac_to_hmac_event;  /* 指向申请事件的payload指针 */
+    frw_event_mem_stru          *pst_event_mem;          /* ?????????????????????? */
+    frw_event_stru              *pst_dmac_to_hmac_event;  /* ??????????????payload???? */
     mac_ioctl_queue_backp_stru  *pst_flowctl_backp_event;
     oal_uint32                   ul_ret;
 
@@ -513,10 +513,10 @@ oal_uint32  dmac_alg_flowctl_backp(mac_vap_stru *pst_mac_vap, oal_uint16 us_asso
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 获得事件指针 */
+    /* ???????????? */
     pst_dmac_to_hmac_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_dmac_to_hmac_event->st_event_hdr),
                        FRW_EVENT_TYPE_WLAN_CRX,
                        DMAC_WLAN_CRX_EVENT_SUB_TYPE_FLOWCTL_BACKP,
@@ -533,7 +533,7 @@ oal_uint32  dmac_alg_flowctl_backp(mac_vap_stru *pst_mac_vap, oal_uint16 us_asso
     pst_flowctl_backp_event->uc_tidno       = uc_tidno;
     pst_flowctl_backp_event->uc_is_stop     = uc_is_stop;
 
-    /* 分发 */
+    /* ???? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
@@ -542,7 +542,7 @@ oal_uint32  dmac_alg_flowctl_backp(mac_vap_stru *pst_mac_vap, oal_uint16 us_asso
         return ul_ret;
     }
 
-    /* 释放事件内存 */
+    /* ???????????? */
     FRW_EVENT_FREE(pst_event_mem);
 
     return OAL_SUCC;
@@ -832,7 +832,7 @@ oal_uint32  dmac_alg_unregister_timer(dmac_alg_timer_stru *pst_timer)
         return OAL_FAIL;
     }
 
-    /* 判断定时器是否停止 */
+    /* ?????????????????? */
     if (pst_timer->en_is_enabled == OAL_TRUE)
     {
         OAM_WARNING_LOG0(0, OAM_SF_ANY, "{dmac_alg_unregister_timer::pst_timer->en_is_enabled == OAL_TRUE}\r\n");
@@ -1349,7 +1349,7 @@ oal_uint32  dmac_alg_cfg_channel_notify(mac_vap_stru *pst_vap, dmac_alg_channel_
     dmac_alg_stru  *pst_alg_stru;
     oal_uint8       uc_index;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_CHANNEL_NOTIFY_BUTT; uc_index++)
@@ -1371,7 +1371,7 @@ oal_uint32  dmac_alg_cfg_start_connect_notify(mac_vap_stru *pst_vap, oal_int8 c_
     oal_uint8       uc_index;
     oal_uint32      ul_ret;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_START_CONNECT_NOTIFY_BUTT; uc_index++)
@@ -1395,7 +1395,7 @@ oal_uint32  dmac_alg_cfg_btcoex_state_notify(mac_device_stru *pst_device, dmac_a
 {
     dmac_alg_stru  *pst_alg_stru;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     if (OAL_PTR_NULL != pst_alg_stru->pa_cfg_btcoex_state_notify_func[DMAC_ALG_CFG_START_CONNECT_NOTIFY_TPC])
@@ -1453,7 +1453,7 @@ oal_uint32  dmac_alg_cfg_cca_intf_mode_notify(mac_device_stru *pst_device, oal_u
 
     pst_alg_stru = &gst_alg_main;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_CCA_INTF_MODE_NOTIFY_BUTT; uc_index++)
     {
         if (OAL_PTR_NULL != pst_alg_stru->pa_cfg_cca_intf_mode_notify_func[uc_index])
@@ -1475,7 +1475,7 @@ oal_uint32  dmac_alg_cfg_user_bandwidth_notify(mac_vap_stru *pst_vap, mac_user_s
 
     pst_alg_stru = &gst_alg_main;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_USER_BANDWIDTH_NOTIFY_BUTT; uc_index++)
     {
         if (OAL_PTR_NULL != pst_alg_stru->pa_cfg_user_bandwidth_notify_func[uc_index])
@@ -1496,7 +1496,7 @@ oal_uint32  dmac_alg_cfg_user_ant_changed_notify(mac_vap_stru *pst_vap, mac_user
 
     pst_alg_stru = &gst_alg_main;
 
-    /* 调用相关回调函数 目前只需要通知txbf，后续可能需要通知其他模块，预留接口*/
+    /* ???????????????? ??????????????txbf????????????????????????????????????*/
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_USER_ANT_CHANGED_NOTIFY_BUTT; uc_index++)
     {
         if (OAL_PTR_NULL != pst_alg_stru->pa_cfg_user_ant_changed_notify_func[uc_index])
@@ -1544,7 +1544,7 @@ oal_uint32  dmac_alg_cfg_user_protocol_notify(mac_vap_stru *pst_vap, mac_user_st
 
     pst_alg_stru = &gst_alg_main;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_USER_PROTOCOL_NOTIFY_BUTT; uc_index++)
     {
         if (OAL_PTR_NULL != pst_alg_stru->pa_cfg_user_protocol_notify_func[uc_index])
@@ -1571,7 +1571,7 @@ oal_uint32  dmac_alg_cfg_bandwidth_notify(mac_vap_stru *pst_vap, dmac_alg_channe
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_BANDWIDTH_NOTIFY_BUTT; uc_index++)
@@ -1586,15 +1586,15 @@ oal_uint32  dmac_alg_cfg_bandwidth_notify(mac_vap_stru *pst_vap, dmac_alg_channe
     {
         return OAL_SUCC;
     }
-    /* 获取VAP带宽能力 */
+    /* ????VAP???????? */
     mac_vap_get_bandwidth_cap(pst_vap, &en_bwcap_ap);
 
-    /* 遍历VAP下所有USER */
+    /* ????VAP??????USER */
     OAL_DLIST_SEARCH_FOR_EACH(pst_entry, &(pst_vap->st_mac_user_list_head))
     {
         pst_mac_user = OAL_DLIST_GET_ENTRY(pst_entry, mac_user_stru, st_user_dlist);
 
-        /* 通知算法 */
+        /* ???????? */
         dmac_alg_cfg_user_bandwidth_notify(pst_vap, pst_mac_user);
     }
 
@@ -1609,7 +1609,7 @@ oal_uint32  dmac_alg_cfg_user_spatial_stream_notify(mac_user_stru *pst_mac_user)
 
     pst_alg_stru = &gst_alg_main;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_USER_SPATIAL_STREAM_NOTIFY_BUTT; uc_index++)
     {
         if (OAL_PTR_NULL != pst_alg_stru->pa_cfg_user_spatial_stream_notify_func[uc_index])
@@ -1641,7 +1641,7 @@ oal_uint32 dmac_alg_add_assoc_user_notify(dmac_vap_stru *pst_vap, dmac_user_stru
         dmac_alg_del_assoc_user_notify(pst_vap, pst_user);
     }
 
-    /* 挂接用户级别的数据结构 */
+    /* ?????????????????????? */
     pst_user_info = (dmac_alg_user_stru *)OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, OAL_SIZEOF(dmac_alg_user_stru), OAL_TRUE);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_user_info))
     {
@@ -1656,7 +1656,7 @@ oal_uint32 dmac_alg_add_assoc_user_notify(dmac_vap_stru *pst_vap, dmac_user_stru
 
     pst_user->p_alg_priv = pst_user_info;
 
-    /* 挂接TID级别的数据结构 */
+    /* ????TID?????????????? */
     for (uc_index = 0; uc_index < WLAN_TID_MAX_NUM; uc_index++)
     {
         pst_tid_info = (dmac_alg_tid_stru *)OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, OAL_SIZEOF(dmac_alg_tid_stru), OAL_TRUE);
@@ -1679,7 +1679,7 @@ oal_uint32 dmac_alg_add_assoc_user_notify(dmac_vap_stru *pst_vap, dmac_user_stru
         pst_user->ast_tx_tid_queue[uc_index].p_alg_priv = pst_tid_info;
     }
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_ADD_USER_NOTIFY_BUTT; uc_index++)
@@ -1711,7 +1711,7 @@ oal_uint32 dmac_alg_del_assoc_user_notify(dmac_vap_stru *pst_vap, dmac_user_stru
         return OAL_SUCC;
     }
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_DEL_USER_NOTIFY_BUTT; uc_index++)
@@ -1722,10 +1722,10 @@ oal_uint32 dmac_alg_del_assoc_user_notify(dmac_vap_stru *pst_vap, dmac_user_stru
         }
     }
 
-    /* 释放TID级别的数据结构 */
+    /* ????TID?????????????? */
     dmac_alg_free_tid_priv_stru(pst_user);
 
-    /* 释放用户级别的数据结构 */
+    /* ?????????????????????? */
     pst_user_info = pst_user->p_alg_priv;
 
     if (OAL_PTR_NULL != pst_user_info)
@@ -1752,7 +1752,7 @@ oal_uint32  dmac_alg_rx_mgmt_notify(mac_vap_stru *pst_vap,  mac_user_stru *pst_u
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_RX_MGMT_NOTIFY_BUTT; uc_index++)
@@ -1781,7 +1781,7 @@ oal_uint32  dmac_alg_txbf_rx_cntl_notify(mac_vap_stru *pst_vap,  mac_user_stru *
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     if (OAL_PTR_NULL != pst_alg_stru->p_txbf_rx_cntl_func)
@@ -1818,10 +1818,10 @@ oal_uint32 dmac_alg_create_vap_notify(dmac_vap_stru *pst_vap)
     }
 
 
-    /* 挂接VAP级别的数据结构 */
+    /* ????VAP?????????????? */
     pst_vap->p_alg_priv = pst_alg_info;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_ADD_VAP_NOTIFY_BUTT; uc_index++)
@@ -1846,7 +1846,7 @@ oal_uint32 dmac_alg_delete_vap_notify(dmac_vap_stru *pst_vap)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_DEL_VAP_NOTIFY_BUTT; uc_index++)
@@ -1857,7 +1857,7 @@ oal_uint32 dmac_alg_delete_vap_notify(dmac_vap_stru *pst_vap)
         }
     }
 
-    /* 删除VAP级别的数据结构 */
+    /* ????VAP?????????????? */
     if (OAL_PTR_NULL != pst_vap->p_alg_priv)
     {
         OAL_MEM_FREE(pst_vap->p_alg_priv, OAL_TRUE);
@@ -1870,8 +1870,8 @@ oal_uint32 dmac_alg_delete_vap_notify(dmac_vap_stru *pst_vap)
 
 oal_uint32  dmac_alg_create_ba(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user, oal_uint8 uc_tid)
 {
-    frw_event_mem_stru          *pst_event_mem;          /* 申请事件返回的内存指针 */
-    frw_event_stru              *pst_dmac_to_hmac_event;  /* 指向申请事件的payload指针 */
+    frw_event_mem_stru          *pst_event_mem;          /* ?????????????????????? */
+    frw_event_stru              *pst_dmac_to_hmac_event;  /* ??????????????payload???? */
     dmac_to_hmac_ctx_event_stru *pst_create_ba_event;
     oal_uint32                   ul_ret;
     dmac_tid_stru               *pst_tid;
@@ -1898,10 +1898,10 @@ oal_uint32  dmac_alg_create_ba(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 获得事件指针 */
+    /* ???????????? */
     pst_dmac_to_hmac_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_dmac_to_hmac_event->st_event_hdr),
                        FRW_EVENT_TYPE_HOST_SDT_REG,
                        DMAC_TO_HMAC_CREATE_BA,
@@ -1917,7 +1917,7 @@ oal_uint32  dmac_alg_create_ba(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac
     pst_create_ba_event->uc_tid         = uc_tid;
     pst_create_ba_event->uc_vap_id      = pst_mac_vap->uc_vap_id;
 
-    /* 分发 */
+    /* ???? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
@@ -1926,7 +1926,7 @@ oal_uint32  dmac_alg_create_ba(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac
         return ul_ret;
     }
 
-    /* 释放事件内存 */
+    /* ???????????? */
     FRW_EVENT_FREE(pst_event_mem);
 
     return OAL_SUCC;
@@ -1957,8 +1957,8 @@ oal_uint32  dmac_alg_del_ba(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_us
 
 oal_uint32  dmac_alg_syn_info(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user)
 {
-    frw_event_mem_stru                      *pst_event_mem;          /* 申请事件返回的内存指针 */
-    frw_event_stru                          *pst_dmac_to_hmac_event;  /* 指向申请事件的payload指针 */
+    frw_event_mem_stru                      *pst_event_mem;          /* ?????????????????????? */
+    frw_event_stru                          *pst_dmac_to_hmac_event;  /* ??????????????payload???? */
     dmac_to_hmac_syn_info_event_stru        *pst_syn_info_event;
     oal_uint32                               ul_ret;
 
@@ -1970,10 +1970,10 @@ oal_uint32  dmac_alg_syn_info(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 获得事件指针 */
+    /* ???????????? */
     pst_dmac_to_hmac_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_dmac_to_hmac_event->st_event_hdr),
                        FRW_EVENT_TYPE_HOST_SDT_REG,
                        DMAC_TO_HMAC_ALG_INFO_SYN,
@@ -1989,14 +1989,14 @@ oal_uint32  dmac_alg_syn_info(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_
     pst_syn_info_event->uc_cur_protocol = pst_mac_user->en_cur_protocol_mode;
     pst_syn_info_event->uc_cur_bandwidth = pst_mac_user->en_cur_bandwidth;
 
-    /* 分发 */
+    /* ???? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
         OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_alg_syn_info::frw_event_dispatch_event fail, ul_ret=%d}", ul_ret);
     }
 
-    /* 释放事件内存 */
+    /* ???????????? */
     FRW_EVENT_FREE(pst_event_mem);
 
     return ul_ret;
@@ -2005,8 +2005,8 @@ oal_uint32  dmac_alg_syn_info(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_
 
 oal_uint32  dmac_alg_voice_aggr(mac_vap_stru *pst_mac_vap)
 {
-    frw_event_mem_stru                      *pst_event_mem;          /* 申请事件返回的内存指针 */
-    frw_event_stru                          *pst_dmac_to_hmac_event;  /* 指向申请事件的payload指针 */
+    frw_event_mem_stru                      *pst_event_mem;          /* ?????????????????????? */
+    frw_event_stru                          *pst_dmac_to_hmac_event;  /* ??????????????payload???? */
     dmac_to_hmac_voice_aggr_event_stru      *pst_voice_aggr_event;
     oal_uint32                               ul_ret;
 
@@ -2018,10 +2018,10 @@ oal_uint32  dmac_alg_voice_aggr(mac_vap_stru *pst_mac_vap)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 获得事件指针 */
+    /* ???????????? */
     pst_dmac_to_hmac_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_dmac_to_hmac_event->st_event_hdr),
                        FRW_EVENT_TYPE_HOST_SDT_REG,
                        DMAC_TO_HMAC_VOICE_AGGR,
@@ -2035,14 +2035,14 @@ oal_uint32  dmac_alg_voice_aggr(mac_vap_stru *pst_mac_vap)
     pst_voice_aggr_event->uc_vap_id     = pst_mac_vap->uc_vap_id;
     pst_voice_aggr_event->en_voice_aggr = pst_mac_vap->bit_voice_aggr;
 
-    /* 分发 */
+    /* ???? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
         OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_alg_voice_aggr: frw_event_dispatch_event fail, ul_ret=%d}", ul_ret);
     }
 
-    /* 释放事件内存 */
+    /* ???????????? */
     FRW_EVENT_FREE(pst_event_mem);
 
     return ul_ret;
@@ -2061,7 +2061,7 @@ oal_uint32  dmac_alg_get_qap_wme_info(
         return OAL_FAIL;
     }
 
-    /* config vap没有mib库，不能查询wme参数 */
+    /* config vap????mib????????????wme???? */
     if (WLAN_VAP_MODE_CONFIG == pst_vap->en_vap_mode)
     {
         OAM_WARNING_LOG0(0, OAM_SF_ANY, "{dmac_alg_get_qap_wme_info::config vap has no mib}\r\n");
@@ -2104,7 +2104,7 @@ oal_uint32  dmac_alg_set_qap_wme_info(
         return OAL_FAIL;
     }
 
-    /* 调用配置接口 */
+    /* ???????????? */
     aul_param[0] = WLAN_CFGID_EDCA_TABLE_CWMIN;
     aul_param[1] = en_wme_type;
     aul_param[2] = pst_wme_info->ul_logcwmin;
@@ -2150,7 +2150,7 @@ oal_uint32  dmac_alg_set_qap_msdu_lifetime(
         return OAL_FAIL;
     }
 
-    /* 调用配置接口 */
+    /* ???????????? */
     aul_param[1] = (oal_uint32)en_wme_type;
     aul_param[2] = ul_msdu_lifetime;
 
@@ -2202,7 +2202,7 @@ oal_uint32  dmac_alg_is_registered(dmac_alg_id_enum_uint32 en_alg_id, oal_bool_e
 
 oal_uint32  dmac_alg_init(mac_device_stru  *pst_device)
 {
-    dmac_alg_device_stru *p_alg_dev_stru;     /* device级别算法的私有数据结构 */
+    dmac_alg_device_stru *p_alg_dev_stru;     /* device?????????????????????? */
     oal_uint32  uc_idx;
 
     if (OAL_PTR_NULL == pst_device)
@@ -2224,11 +2224,11 @@ oal_uint32  dmac_alg_init(mac_device_stru  *pst_device)
         p_alg_dev_stru->p_alg_info[uc_idx] = OAL_PTR_NULL;
     }
 
-    /* 挂接算法主结构体 */
+    /* ???????????????? */
     MAC_DEV_ALG_PRIV(pst_device) = p_alg_dev_stru;
 
-    /* 主结构体初始化 */
-    oal_dlist_init_head(&gst_alg_main.st_timer_list);     /* 定时器双向链表初始化 */
+    /* ?????????????? */
+    oal_dlist_init_head(&gst_alg_main.st_timer_list);     /* ???????????????????? */
 
     return OAL_SUCC;
 }
@@ -2236,7 +2236,7 @@ oal_uint32  dmac_alg_init(mac_device_stru  *pst_device)
 
 oal_uint32  dmac_alg_exit(mac_device_stru  *pst_device)
 {
-    dmac_alg_device_stru *p_alg_dev_stru;     /* device级别算法的私有数据结构 */
+    dmac_alg_device_stru *p_alg_dev_stru;     /* device?????????????????????? */
 
     if (OAL_PTR_NULL == pst_device)
     {
@@ -2340,7 +2340,7 @@ oal_uint32  dmac_alg_cfg_smps_notify(mac_vap_stru *pst_vap, mac_user_stru *pst_u
     dmac_alg_stru  *pst_alg_stru;
     oal_uint8       uc_index;
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
     for (uc_index = 0; uc_index < DMAC_ALG_CFG_SMPS_NOTIFY_BUTT; uc_index++)
@@ -2356,7 +2356,7 @@ oal_uint32  dmac_alg_cfg_smps_notify(mac_vap_stru *pst_vap, mac_user_stru *pst_u
 
 #endif
 
-/* 单用户跟踪获取参数相关接口 */
+/* ?????????????????????????? */
 #ifdef _PRE_DEBUG_MODE_USER_TRACK
 
 oal_uint32  dmac_alg_register_start_stat_rssi_notify(
@@ -2836,7 +2836,7 @@ oal_uint32 dmac_edca_opt_stat_event_process(frw_event_mem_stru *pst_event_mem)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 获取事件、事件头以及事件payload结构体 */
+    /* ????????????????????????payload?????? */
     pst_event       = (frw_event_stru *)pst_event_mem->puc_data;
     pst_event_hdr   = &(pst_event->st_event_hdr);
     uc_vap_id       = pst_event_hdr->uc_vap_id;
@@ -2844,10 +2844,10 @@ oal_uint32 dmac_edca_opt_stat_event_process(frw_event_mem_stru *pst_event_mem)
 
     oal_memcopy(aast_uc_traffic_num, pst_event->auc_event_data, OAL_SIZEOF(aast_uc_traffic_num));
 
-    /* 调用相关回调函数 */
+    /* ???????????????? */
     pst_alg_stru = &gst_alg_main;
 
-    /* EDCA 算法钩子函数，内部识别多用户多优先级和32用户单优先级业务 */
+    /* EDCA ??????????????????????????????????????32???????????????? */
     if (OAL_PTR_NULL != pst_alg_stru->p_edca_stat_event_notify_func)
     {
         ul_ret = pst_alg_stru->p_edca_stat_event_notify_func(uc_device_id, uc_vap_id, aast_uc_traffic_num);
@@ -2859,7 +2859,7 @@ oal_uint32 dmac_edca_opt_stat_event_process(frw_event_mem_stru *pst_event_mem)
     }
 
 #ifdef _PRE_WLAN_FEATURE_EDCA_MULTI_USER_MULTI_AC
-    /*调度更新参数算法钩子函数*/
+    /*????????????????????????*/
     if (OAL_PTR_NULL != pst_alg_stru->p_tx_schedule_stat_event_notify_func)
     {
         ul_ret = pst_alg_stru->p_tx_schedule_stat_event_notify_func(uc_device_id, uc_vap_id, aast_uc_traffic_num);
@@ -2998,13 +2998,13 @@ oal_uint32  dmac_alg_get_mgmt_tx_pow(mac_user_stru *pst_user, wlan_channel_band_
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* TBD: txpwr最小值，来源为mac_set_power_cap_ie，待补充宏 */
+    /* TBD: txpwr??????????????mac_set_power_cap_ie?????????? */
     uc_mix_txpwr = (WLAN_BAND_2G == en_freq_band) ? 4 : 3;
     us_tx_pow    = uc_mix_txpwr;
 
     ul_ret = gst_alg_main.p_get_mgmt_tx_pow_notify_func(pst_user, en_freq_band, &us_tx_pow, OAL_FALSE);
 
-    /* TBD: us_tx_pow需要减去rf_line_txrx_gain_db_2g_band1_mult10，此值需要在host，待实现同步到divce */
+    /* TBD: us_tx_pow????????rf_line_txrx_gain_db_2g_band1_mult10????????????host??????????????divce */
     us_tx_pow = us_tx_pow - 3;
 
     if (us_tx_pow < uc_mix_txpwr )

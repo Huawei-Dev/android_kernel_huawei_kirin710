@@ -53,9 +53,9 @@
 extern "C" {
 #endif
 
-/* field id定义只允许添加，不允许删除，枚举定义删除之后，id值需要保留，新添加id需要跳过删除id */
-/* 后续新增id放到DYNAMIC区域，添加AP新的field，放到DUMP_AP_FIELD_END之前，添加CP新的field，放到DUMP_CP_FIELD_END之前 */
-/* 添加M3新的field，放到DUMP_M3_FIELD_END之前 */
+/* field id??????????????????????????????????????????????id??????????????????id????????????id */
+/* ????????id????DYNAMIC??????????AP????field??????DUMP_AP_FIELD_END??????????CP????field??????DUMP_CP_FIELD_END???? */
+/* ????M3????field??????DUMP_M3_FIELD_END???? */
 typedef enum{
     /*AP FIELD IDs*/
     DUMP_MODEMAP_FIELD_BEGIN     = (0x010F0000),
@@ -149,14 +149,14 @@ typedef enum{
     DUMP_CP_BBP                  = (0x02000098),
     DUMP_CP_DSP1                 = (0x02000099),
     DUMP_CP_CPM_LTEV             = (0x0200009a),
-    /*0x02F00000-- 专用于smp修改新增的特定格式段其他模块不得使用*/
+    /*0x02F00000-- ??????smp????????????????????????????????????*/
     DUMP_CP_BASE_INFO_SMP        = (0x02f00000),
     DUMP_CP_CPUINFO              = (0x02f00001),
     DUMP_CP_CPUINFO1             = (0x02f00002),
     DUMP_CP_CPUINFO2             = (0x02f00003),
     DUMP_CP_CPUINFO3             = (0x02f00004),
     DUMP_CP_TASK_TCB_SMP         = (0x02f00005),
-    DUMP_CP_DEBUGREG_CPU         = (0x02f00006),/*0x02f00006 ~ 0x02f0000d :8个预留给Debug Reg保存使用*/
+    DUMP_CP_DEBUGREG_CPU         = (0x02f00006),/*0x02f00006 ~ 0x02f0000d :8????????Debug Reg????????*/
     DUMP_CP_DEBUGREG_CPU_END     = (0x02f0000d),
     DUMP_CP_TASK_TCB_SMP_NEW     = (0x02f0000e),
     DUMP_CP_SEC_DUMP_TARNS       = (0x02f0000f),
@@ -178,11 +178,11 @@ typedef enum{
     DUMP_KERNEL_CPUVIEW         = (0x030F0009),
     DUMP_KERNEL_USER_DATA       = (0x030F000B),
     DUMP_KERNEL_AMON            = (0x030F000C),
-    DUMP_KERNEL_RUNNING_TRACE   = (0x030F000D),/*0x030F000D ~ 0x030F0014 :8个预留给running trace使用*/
-    DUMP_KERNEL_CPU_INFO        = (0x030F0015),/*0x030F0015 ~ 0x030F001D :8个预留给cpu info使用*/
-    DUMP_KERNEL_BASE_INFO1      = (0x030F001E),/*SMP 系统新增扩展baseinfo ID*/
+    DUMP_KERNEL_RUNNING_TRACE   = (0x030F000D),/*0x030F000D ~ 0x030F0014 :8????????running trace????*/
+    DUMP_KERNEL_CPU_INFO        = (0x030F0015),/*0x030F0015 ~ 0x030F001D :8????????cpu info????*/
+    DUMP_KERNEL_BASE_INFO1      = (0x030F001E),/*SMP ????????????baseinfo ID*/
     DUMP_KERNEL_TASK_TCB        = (0x030F001F),
-    DUMP_KERNEL_DEBUGREG_CPU    = (0x030F0020),/*0x030F0020 ~ 0x030F0027 :8个预留给Debug Reg保存使用*/
+    DUMP_KERNEL_DEBUGREG_CPU    = (0x030F0020),/*0x030F0020 ~ 0x030F0027 :8????????Debug Reg????????*/
     DUMP_KERNEL_DEBUGREG_CPU_END= (0x030F0027),
     DUMP_KERNEL_USB             = (0x03100000),
     DUMP_KERNEL_UTRACE          = (0x03100001),
@@ -214,7 +214,7 @@ typedef enum{
     DUMP_M3_DDRMNT              = (0x0400002C),
     DUMP_M3_BOOST               = (0x04000064),
 
-    /*0x04100000--0x04200000 专用于smp修改新增的段其他模块不得使用*/
+    /*0x04100000--0x04200000 ??????smp????????????????????????????*/
     DUMP_M3_SMP_START           = (0x04100000),
     DUMP_M3_CPUINFO             = (DUMP_M3_SMP_START),
     DUMP_M3_BASEINFO_SMP        = (DUMP_M3_SMP_START+1),
@@ -250,17 +250,17 @@ typedef enum{
 #define CP_TRACE_ID(id)                 (DUMP_CP_UTRACE##id)
 
 typedef enum _teeos_errno_e{
-    TEEOS_ERRNO_LOAD_SEC_IMAGE  = 0x83000000,   /* modem单独复位中,加载安全镜像失败 */
+    TEEOS_ERRNO_LOAD_SEC_IMAGE  = 0x83000000,   /* modem??????????,???????????????? */
     TEEOS_ERRNO_BUTT            = 0x83ffffff
 }dump_teeos_errno_t;
 
 typedef enum _hifi_errno_e{
-    HIFI_ERRNO_MODEM_RESET      = 0x84000000,   /* modem单独复位中HIFI回调失败 */
+    HIFI_ERRNO_MODEM_RESET      = 0x84000000,   /* modem??????????HIFI???????? */
     HIFI_ERRNO_BUTT             = 0x84ffffff
 }dump_hifi_errno_t;
 
 typedef enum _mcore_errno_e{
-    LPM3_ERRNO_MODEM_RESET      = 0x85000000,   /* modem单独复位中M3异常 */
+    LPM3_ERRNO_MODEM_RESET      = 0x85000000,   /* modem??????????M3???? */
     LPM3_ERRNO_BUTT             = 0x85ffffff
 }dump_mcore_errno_t;
 

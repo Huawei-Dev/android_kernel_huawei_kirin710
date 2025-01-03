@@ -64,14 +64,14 @@ extern "C" {
 *****************************************************************************/
 
 /*****************************************************************************
-0.	HSO连接管理类（0x5000-0x50ff ）
-1.	寄存器操作类（0x5100-0x51ff ）
-2.	数采操作类  （0x5200-0x52ff ）
-3.	开关设置类  （0x5300-0x53ff ）
-4.	自动化类    （0x5400-0x54ff ）
-5.	NV操作类    （0x5500-0x55ff ）
+0.	HSO????????????0x5000-0x50ff ??
+1.	??????????????0x5100-0x51ff ??
+2.	??????????  ??0x5200-0x52ff ??
+3.	??????????  ??0x5300-0x53ff ??
+4.	????????    ??0x5400-0x54ff ??
+5.	NV??????    ??0x5500-0x55ff ??
 *****************************************************************************/
-/* HIDS连接管理类（0x5000-0x50ff）*/
+/* HIDS????????????0x5000-0x50ff??*/
 #define DIAG_CMD_HOST_CONNECT                   (0x10065000)
 #define DIAG_CMD_HOST_CONNECT_AGENT             (0x10066000)
 #define DIAG_CMD_HOST_DISCONNECT                (0x10065001)
@@ -80,11 +80,11 @@ extern "C" {
 #define DIAG_CMD_GET_MODEM_NUM                  (0x10014002)
 #define DIAG_CMD_PID_TABLE_MSG                  (0x10014003)
 
-/*2.	超时类（0x5100-0x51ff）*/
+/*2.	????????0x5100-0x51ff??*/
 #define DIAG_CMD_TIMER_OUT_IND                  (0x10015100)
 #define DIAG_CMD_HIGH_TIMESTAPM_IND             (0x10015101)
 
-/*3.	开关设置类（0x5300-0x53ff）*/
+/*3.	????????????0x5300-0x53ff??*/
 #define DIAG_CMD_LOG_CAT_PRINT                  (0x10015310)
 #define DIAG_CMD_LOG_CAT_LAYER                  (0x10015311)
 #define DIAG_CMD_LOG_CAT_AIR                    (0x10015312)
@@ -93,33 +93,33 @@ extern "C" {
 #define DIAG_CMD_LOG_CAT_EVENT                  (0x10015315)
 #define DIAG_CMD_LOG_CAT_CMD                    (0x10015316)    /* TODO */
 #define DIAG_CMD_LOG_CAT_MSG                    (0x10015317)
-#define DIAG_CMD_DEBUG_MSG                      (0x10015318)    /* debug 收到后会上报所有类型IND 消息*/
+#define DIAG_CMD_DEBUG_MSG                      (0x10015318)    /* debug ????????????????????IND ????*/
 #define DIAG_CMD_LOG_USERPLANE                  (0x10015319)
 #define DIAG_CMD_LOG_TRANS                      (0x1001531A)
 #define DIAG_CMD_LOG_TIMESTAMP                  (0x1001531B)
 #define DIAG_CMD_LOG_MNTN                       (0x1001531C)
 
-/* 自动化类（0x5400-0x54ff）*/
+/* ??????????0x5400-0x54ff??*/
 #define DIAG_CMD_GTR_SET                        (0x10015454)
-#define DIAG_CMD_GU_GTR_SET                     (0x10015455)    /* GU的RTT测试，只转发，不回复 */
+#define DIAG_CMD_GU_GTR_SET                     (0x10015455)    /* GU??RTT???????????????????? */
 
-/* 2/3/4G BBP数采操作类 */
-#define DIAG_CMD_BBP_TL_SAMPLE_GEN_REQ          (0x4001521B)    /* 2/3/4G BBP数采TL-PHY start/stop命令*/
-#define DIAG_CMD_BBP_GU_SAMPLE_GEN_REQ          (0x4201521B)    /* 2/3/4G BBP数采GU-PHY start/stop命令*/
-#define DIAG_CMD_BBP_SAMPLE_ADDR_REQ            (0x4001521C)    /* 2/3/4G BBP数采Hids获取基地址*/
-#define DIAG_CMD_BBP_SAMPLE_CHNSIZE_REQ         (0x4001521D)    /* 2/3/4G BBP数采获取通道大小*/
-#define DIAG_CMD_BBP_SAMPLE_GET_VERSION_REQ     (0x4001521E)    /* 2/3/4G BBP数采获取版本信息*/
-#define DIAG_CMD_BBP_SAMPLE_ABLE_CHN_REQ       	(0x4001521F)    /* 2/3/4G BBP数采EXPORT/FINISH命令*/
-#define DIAG_CMD_BBP_SAMPLE_PAM_TRIGGER_CFG     (0x4200ff09)    /* 2/3/4G BBP数采PAM Trigeer配置下发命令 */
-#define DIAG_CMD_BBP_SAMPLE_PAM_TRIGGER_START   (0x4200ff0b)    /* 2/3/4G BBP数采PAM Trigeer启动命令 */
+/* 2/3/4G BBP?????????? */
+#define DIAG_CMD_BBP_TL_SAMPLE_GEN_REQ          (0x4001521B)    /* 2/3/4G BBP????TL-PHY start/stop????*/
+#define DIAG_CMD_BBP_GU_SAMPLE_GEN_REQ          (0x4201521B)    /* 2/3/4G BBP????GU-PHY start/stop????*/
+#define DIAG_CMD_BBP_SAMPLE_ADDR_REQ            (0x4001521C)    /* 2/3/4G BBP????Hids??????????*/
+#define DIAG_CMD_BBP_SAMPLE_CHNSIZE_REQ         (0x4001521D)    /* 2/3/4G BBP????????????????*/
+#define DIAG_CMD_BBP_SAMPLE_GET_VERSION_REQ     (0x4001521E)    /* 2/3/4G BBP????????????????*/
+#define DIAG_CMD_BBP_SAMPLE_ABLE_CHN_REQ       	(0x4001521F)    /* 2/3/4G BBP????EXPORT/FINISH????*/
+#define DIAG_CMD_BBP_SAMPLE_PAM_TRIGGER_CFG     (0x4200ff09)    /* 2/3/4G BBP????PAM Trigeer???????????? */
+#define DIAG_CMD_BBP_SAMPLE_PAM_TRIGGER_START   (0x4200ff0b)    /* 2/3/4G BBP????PAM Trigeer???????? */
 
-/* 5G BBP数采操作类 */
-#define DIAG_CMD_BBP_5G_SAMPLE_GEN_REQ          (0x4601521B)    /* 5G BBP数采start/stop命令 */
-#define DIAG_CMD_BBP_5G_SAMPLE_ABLE_CHN_REQ     (0x4601521F)    /* 5G BBP数采EXPORT/FINISH命令 */
+/* 5G BBP?????????? */
+#define DIAG_CMD_BBP_5G_SAMPLE_GEN_REQ          (0x4601521B)    /* 5G BBP????start/stop???? */
+#define DIAG_CMD_BBP_5G_SAMPLE_ABLE_CHN_REQ     (0x4601521F)    /* 5G BBP????EXPORT/FINISH???? */
 
-/* BBA 数采操作类 */
-#define DIAG_CMD_BBA_SAMPLE_GEN_REQ             (0x4f01521B)    /* BBA数采start/stop命令 */
-#define DIAG_CMD_BBA_SAMPLE_ABLE_CHN_REQ        (0x4f01521F)    /* BBA数采EXPORT/FINISH命令 */
+/* BBA ?????????? */
+#define DIAG_CMD_BBA_SAMPLE_GEN_REQ             (0x4f01521B)    /* BBA????start/stop???? */
+#define DIAG_CMD_BBA_SAMPLE_ABLE_CHN_REQ        (0x4f01521F)    /* BBA????EXPORT/FINISH???? */
 
 /* APP LOG */
 #define DIAG_CMD_APPLOG_CONFIG                  (0xEF000001)

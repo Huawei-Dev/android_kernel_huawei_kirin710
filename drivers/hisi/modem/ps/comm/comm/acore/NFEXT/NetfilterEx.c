@@ -47,7 +47,7 @@
  */
 
 /******************************************************************************
-   1 头文件包含
+   1 ??????????
 ******************************************************************************/
 #include "product_config.h"
 
@@ -57,26 +57,26 @@
 #include "linux/inet.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 
 #define THIS_FILE_ID PS_FILE_ID_ACPU_NFEX_C
 
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-#define             PACKAGE_HEAD_LEN        (80)        /*设定的截取包头的长度*/
-#define             OM_SOCK_PORT_NUM        (3000)      /*与OM的宏SOCK_PORT_NUM保持一致*/
+#define             PACKAGE_HEAD_LEN        (80)        /*????????????????????*/
+#define             OM_SOCK_PORT_NUM        (3000)      /*??OM????SOCK_PORT_NUM????????*/
 /*****************************************************************************
-  3 外部函数变量声明
+  3 ????????????????
 *****************************************************************************/
 
 extern NF_EXT_ENTITY_STRU           g_stExEntity;
 extern NF_EXT_FLOW_CTRL_ENTITY      g_stExFlowCtrlEntity;
 
 /******************************************************************************
-  4 函数实现
+  4 ????????
 ******************************************************************************/
 
 NF_EXT_FLAG_OM_DATA_ENUM_U32 NFExt_IsOmData(struct sk_buff *skb)
@@ -91,13 +91,13 @@ NF_EXT_FLAG_OM_DATA_ENUM_U32 NFExt_IsOmData(struct sk_buff *skb)
 
     ipHeader        = (struct iphdr *)(skb_network_header(skb));
 
-    /*如果不是TCP报文则直接返回*/
+    /*????????TCP??????????????*/
     if ( NF_EXT_RPO_TCP != ipHeader->protocol )
     {
         return NF_EXT_FLAG_NOT_OM_DATA;
     }
 
-    /* 传输层的数据在ip层之后 */
+    /* ??????????????ip?????? */
     tcpHeader       = (struct tcphdr *)(skb_network_header(skb) + sizeof(struct iphdr));
 
     srcIp           = ipHeader->saddr;
@@ -124,7 +124,7 @@ VOS_VOID NFExt_BrDataExport( struct sk_buff *skb,
     VOS_UINT8                       *pucData;
     VOS_UINT32                       ulHookDataLen;
 
-    /* skb->data指向数据包的IP头部，上移14个字节令 pucData指向数据包的mac头部 */
+    /* skb->data????????????IP??????????14???????? pucData????????????mac???? */
     pucData             = skb->data - MAC_HEADER_LENGTH;
     ulHookDataLen       = ((skb->len > NF_EXT_MAX_IP_SIZE) ? NF_EXT_MAX_IP_SIZE : skb->len) + MAC_HEADER_LENGTH;
 
@@ -167,7 +167,7 @@ unsigned int NFExt_BrPreRoutingHook(unsigned int hooknum,
                             const struct net_device *out,
                             int (*okfn)(struct sk_buff *))
 {
-    /* 判断是否OM的数据 */
+    /* ????????OM?????? */
     if ( NF_EXT_FLAG_OM_DATA == NFExt_IsOmData(skb) )
     {
         return NF_ACCEPT;
@@ -390,7 +390,7 @@ unsigned int NFExt_Ip6ForwardHook(unsigned int hooknum,
 }
 
 /*****************************************************************************
-                        流控功能
+                        ????????
 *****************************************************************************/
 
 
@@ -403,11 +403,11 @@ unsigned int NFExt_BrForwardFlowCtrlHook(unsigned int hooknum,
 {
     NF_EXT_STATS_INC(1, NF_EXT_STATS_BR_FC_ENTER);
 
-    /* 网桥转发统计 */
+    /* ???????????? */
     NF_EXT_TX_BYTES_INC(skb->len, NF_EXT_TX_BYTES_CNT_BR);
 
 
-    /* 当前在网桥forward流控状态，直接丢包 */
+    /* ??????????forward?????????????????? */
     if (NF_EXT_BR_FORWARD_FLOW_CTRL_MASK == (g_stExFlowCtrlEntity.ulFlowCtrlMsk & NF_EXT_BR_FORWARD_FLOW_CTRL_MASK))
     {
         NF_EXT_STATS_INC(1, NF_EXT_STATS_BR_FC_DROP);
@@ -421,7 +421,7 @@ unsigned int NFExt_BrForwardFlowCtrlHook(unsigned int hooknum,
 
 unsigned int NFExt_BrPreRoutingHook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state)
 {
-    /* 判断是否OM的数据 */
+    /* ????????OM?????? */
     if ( NF_EXT_FLAG_OM_DATA == NFExt_IsOmData(skb) )
     {
         return NF_ACCEPT;
@@ -580,18 +580,18 @@ unsigned int NFExt_Ip6ForwardHook(void *priv, struct sk_buff *skb, const struct 
 }
 
 /*****************************************************************************
-                        流控功能
+                        ????????
 *****************************************************************************/
 
 unsigned int NFExt_BrForwardFlowCtrlHook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state)
 {
     NF_EXT_STATS_INC(1, NF_EXT_STATS_BR_FC_ENTER);
 
-    /* 网桥转发统计 */
+    /* ???????????? */
     NF_EXT_TX_BYTES_INC(skb->len, NF_EXT_TX_BYTES_CNT_BR);
 
 
-    /* 当前在网桥forward流控状态，直接丢包 */
+    /* ??????????forward?????????????????? */
     if (NF_EXT_BR_FORWARD_FLOW_CTRL_MASK == (g_stExFlowCtrlEntity.ulFlowCtrlMsk & NF_EXT_BR_FORWARD_FLOW_CTRL_MASK))
     {
         NF_EXT_STATS_INC(1, NF_EXT_STATS_BR_FC_DROP);

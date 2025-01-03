@@ -214,7 +214,7 @@ void bbox_cleartext_end_filep(struct file *fp, char *dir_path, char *file_name)
 	/* close the specified file descriptor */
 	filp_close(fp, NULL);/*lint !e668 */
 
-	/* 根据权限要求，hisi_logs目录及子目录群组调整为root-system */
+	/* ??????????????hisi_logs??????????????????????root-system */
 	ret = (int)bbox_chown((const char __user *)path, ROOT_UID, SYSTEM_GID, false);
 	if (unlikely(ret)) {
 		BB_PRINT_ERR("[%s], chown %s uid [%d] gid [%d] failed err [%d]!\n",

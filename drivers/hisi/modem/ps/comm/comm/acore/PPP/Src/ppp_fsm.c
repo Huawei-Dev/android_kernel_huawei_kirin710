@@ -48,7 +48,7 @@
 #include "PPP/Inc/ppp_atcmd.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_PPP_FSM_C
 
@@ -181,10 +181,10 @@ fsm_Output(struct fsm *fp, VOS_CHAR code, VOS_CHAR id, VOS_CHAR *ptr, VOS_UINT32
         PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_WARNING, "no mbuf\r\n");
         return;
   }
-    /*预留头部*/
+    /*????????*/
     bp->m_offset = PPP_RECIEVE_RESERVE_FOR_HEAD;
 
-    /*头部与尾部都留出来了*/
+    /*????????????????????*/
     bp->m_len = plen;
 
   PSACORE_MEM_CPY(PPP_MBUF_CTOP(bp), sizeof(struct fsmheader), &lh, sizeof(struct fsmheader));
@@ -453,7 +453,7 @@ void FsmRecvConfigReq(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp
   VOS_INT32 plen, flen;
   VOS_INT32 ackaction = 0;
   VOS_CHAR *cp;
-  /* lcp标志或ipcp pdp激活成功的标志, 该标杆在lcp阶段或ipcp pdp激活成功之后置1 */
+  /* lcp??????ipcp pdp??????????????, ????????lcp??????ipcp pdp??????????????1 */
   VOS_UINT32 lcpOrIpcpAck = 1;
   PPP_REQ_CONFIG_INFO_STRU  PppReqConfigInfo;
   VOS_UINT8                 SendBuffer[200];
@@ -481,7 +481,7 @@ void FsmRecvConfigReq(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp
 
   if(fp->link->phase == PHASE_NETWORK)
   {
-      /* ipcp阶段，该标志置0 */
+      /* ipcp??????????????0 */
       lcpOrIpcpAck = 0;
       switch(fp->link->ipcp.stage)
       {
@@ -524,16 +524,16 @@ void FsmRecvConfigReq(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp
               PppReqConfigInfo.stIPCP.pIpcp     = SendBuffer;
               PppReqConfigInfo.stIPCP.usIpcpLen = (VOS_UINT16)(flen + sizeof(struct fsmheader));
 
-              /*把ipcp config req报文的头拷贝进去*/
+              /*??ipcp config req????????????????*/
               PSACORE_MEM_CPY(SendBuffer,sizeof(struct fsmheader),lhp,sizeof(struct fsmheader));
-              /*把ipcp config req报文的option拷贝进去*/
+              /*??ipcp config req??????option????????*/
               PSACORE_MEM_CPY((SendBuffer + sizeof(struct fsmheader)),
                             (sizeof(SendBuffer) - sizeof(struct fsmheader)),cp,flen); /*lint !e668 !e613*/
 
-              /* 可维可测信息上报*/
+              /* ????????????????*/
               Ppp_RcvConfigInfoReqMntnInfo((VOS_UINT16)PPP_LINK_TO_ID(fp->link), &PppReqConfigInfo);
 
-              /*PDP激活请求，发送用户名、密码还有IPCP数据包*/
+              /*PDP??????????????????????????????IPCP??????*/
               PPP_ProcTeConfigInfo((VOS_UINT16)PPP_LINK_TO_ID(fp->link),&PppReqConfigInfo);
           }
           break;
@@ -546,7 +546,7 @@ void FsmRecvConfigReq(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp
 
           case IPCP_SUCCESS_FROM_GGSN:
           {
-              /* ipcp阶段，PDP激活成功该标志置1 */
+              /* ipcp??????PDP????????????????1 */
               lcpOrIpcpAck = 1;
               PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_NORMAL, "have receive from ggsn\r\n");
           }
@@ -564,7 +564,7 @@ void FsmRecvConfigReq(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp
 
   }
 
-  /* 如果PDP激活未成功,不去解帧,直接回NAK,NAK里面不带任何OPTION项 */
+  /* ????PDP??????????,????????,??????NAK,NAK????????????OPTION?? */
   if (1 == lcpOrIpcpAck)
   {
     /*lint -e{613}*/
@@ -863,7 +863,7 @@ FsmRecvTermReq(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp)
         fp->link->phase = PHASE_TERMINATE;
     }
 
-    /*通知AT进行PDP去激活*/
+    /*????AT????PDP??????*/
     PPP_ProcPppRelEvent((VOS_UINT16)PPP_LINK_TO_ID(fp->link));
 
     break;
@@ -982,7 +982,7 @@ FsmRecvProtoRej(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp)
 {
   VOS_UINT16 proto;
 
-  /* 初始化 */
+  /* ?????? */
   PSACORE_MEM_SET(&proto, sizeof(proto), 0x0, sizeof(proto));
   PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_NORMAL, "FsmRecvProtoRej\r\n");
   if (ppp_m_length(bp) < 2) {
@@ -1018,7 +1018,7 @@ FsmRecvProtoRej(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp)
     if (fp->proto == PROTO_LCP) {
       struct lcp *lcp = fsm2lcp(fp);
       /*lint -e{613}*/
-      if (lcp->want_mrru && lcp->his_mrru) { /* [false alarm]:移植开源代码 */
+      if (lcp->want_mrru && lcp->his_mrru) { /* [false alarm]:???????????? */
         PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_NORMAL, "MP protocol reject is fatal\r\n");
         fsm_Close(fp);
       }
@@ -1044,7 +1044,7 @@ FsmRecvEchoReq(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp)
 
   if (lcp && VOS_NTOHS(lhp->length) - sizeof *lhp >= 4) {
     cp = PPP_MBUF_CTOP(bp);
-    ua_ntohl(cp, &magic); /* [false alarm]:移植开源代码 */
+    ua_ntohl(cp, &magic); /* [false alarm]:???????????? */
     if (magic != lcp->his_magic) {
       PPP_MNTN_LOG2(PS_PID_APP_PPP, 0, LOG_LEVEL_WARNING,
                     "magic wrong,magic %d;his magic %d\r\n",
@@ -1067,7 +1067,7 @@ FsmRecvEchoRep(struct fsm *fp, struct fsmheader *lhp, struct ppp_mbuf *bp)
     struct hdlc    *hdlc;
     struct echolqr  lqr;
 
-    /* 初始化 */
+    /* ?????? */
     PSACORE_MEM_SET(&lqr, sizeof(lqr), 0x0, sizeof(lqr));
 
     if (lcp)
@@ -1166,7 +1166,7 @@ fsm_Input(struct fsm *fp, struct ppp_mbuf *bp)
   struct fsmheader lh;
   const struct fsmcodedesc *codep;
 
-  /* 初始化 */
+  /* ?????? */
   PSACORE_MEM_SET(&lh, sizeof(lh), 0x0, sizeof(lh));
 
   PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_NORMAL, "fsm_Input\r\n");
@@ -1196,13 +1196,13 @@ fsm_Input(struct fsm *fp, struct ppp_mbuf *bp)
     bp = ppp_m_prepend(bp, &lh, sizeof lh, 0);
     bp = ppp_m_pullup(bp);
     /*
-       由于PPP state machine存在open->stopping后不闭环问题,
-       经代码分析目前能够进入此分支的情况只有一个过程, 收到PC的code, UE不支持,
-       UE发出Code-Reject, PC发出Terminate, UE发送Terminate-Ack,
-       之后UE中PPP state machine始终停在stopping状态, 不闭环, 将导致用户拨号总是失败,
-       直到用户PC重启
-       如果要修正此问题, 目前PPP的定时器机制可能需要重新设计, 改动比较大,
-       而且发生此错误的概率比较低, 故暂不修改, 仅是通过LOG把这种情况甄别出来
+       ????PPP state machine????open->stopping????????????,
+       ??????????????????????????????????????????????, ????PC??code, UE??????,
+       UE????Code-Reject, PC????Terminate, UE????Terminate-Ack,
+       ????UE??PPP state machine????????stopping????, ??????, ??????????????????????,
+       ????????PC????
+       ????????????????, ????PPP????????????????????????????, ??????????,
+       ??????????????????????????, ??????????, ????????LOG??????????????????
     */
     PPP_MNTN_LOG(PS_PID_APP_PPP, 0, PS_PRINT_ERROR, "UE sent Code-Reject!\r\n");
     /*lint -e{613}*/

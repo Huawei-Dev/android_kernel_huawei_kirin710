@@ -58,22 +58,22 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-/* ASIC2 调试 */
+/* ASIC2 ???? */
 
 #ifndef INLINE
 #define INLINE /*__inline__*/
 #endif
 
 /**************************************************************************
-  宏定义
+  ??????
 **************************************************************************/
-/* 主核定义 */
+/* ???????? */
 #ifdef PRODUCT_CFG_CORE_TYPE_MODEM
 #define BSP_MEM_MAIN_PART
 #endif
 
-/* 长度定义 */
-/* 长度定义 */
+/* ???????? */
+/* ???????? */
 #ifdef PRODUCT_CFG_CORE_TYPE_MODEM
 #define MEM_NORM_DDR_POOL_SIZE      (512*1024)
 #else
@@ -82,18 +82,18 @@ extern "C"
 #define MEM_ICC_DDR_POOL_SIZE       (SHM_SIZE_SIM_MEMORY)
 #define MEM_ICC_AXI_POOL_SIZE       (SRAM_SIZE_DYNAMIC_SEC)
 
-/* Mem 全局变量放在AXI中 */
+/* Mem ????????????AXI?? */
 #define MEM_CTX_ADDR                ((unsigned long)SHM_BASE_ADDR + SHM_OFFSET_MEMMGR_FLAG)
 
 
-/* 基地址定义 */
+/* ?????????? */
 #define _ALIGN(addr, size) (((addr) + (size) - 1) & (~((size) - 1)))
 #define MEM_NORM_DDR_POOL_BASE_ADDR (__get_free_pages(GFP_KERNEL, 0))//(kmalloc( _ALIGN(MEM_NORM_DDR_POOL_SIZE, 32), GFP_KERNEL))
 #define MEM_ICC_AXI_POOL_BASE_ADDR  ((unsigned long)SRAM_BASE_ADDR + SRAM_OFFSET_DYNAMIC_SEC)
 #define MEM_ICC_DDR_POOL_BASE_ADDR  ((unsigned long)SHM_BASE_ADDR + SHM_OFFSET_SIM_MEMORY)
 
 
-/* 使用ACP模式不需要刷 Cache */
+/* ????ACP???????????? Cache */
 //#define MEM_USE_ACP
 
 #ifdef __cplusplus

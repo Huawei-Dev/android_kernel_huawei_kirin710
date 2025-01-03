@@ -2,7 +2,7 @@
  * Copyright (C) 2010 - 2016 Novatek, Inc.
  *
  * $Revision: 4301 $
- * $Date: 2016-04-22 17:28:06 +0800 (星期五, 22 四月 2016) $
+ * $Date: 2016-04-22 17:28:06 +0800 (?????????, 22 ?????? 2016) $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

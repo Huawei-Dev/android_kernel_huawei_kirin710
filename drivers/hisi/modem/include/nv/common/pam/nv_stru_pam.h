@@ -3,7 +3,7 @@
 #define __NV_STRU_PAM_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "nv_id_pam.h"
@@ -20,18 +20,18 @@ extern "C" {
 #pragma pack(push, 4)
 #endif
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define ESN_NV_DATA_LEN                             (8)
 #define MEID_NV_DATA_LEN                            (8)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
- 枚举名    : AT_PHY_PORT_ENUM
- 枚举说明  : 物理端口号枚举值
+ ??????    : AT_PHY_PORT_ENUM
+ ????????  : ????????????????
 *****************************************************************************/
 enum AT_PHY_PORT_ENUM
 {
@@ -46,16 +46,16 @@ typedef VOS_UINT32  AT_PHY_PORT_ENUM_UINT32;
 
 enum
 {
-    CPM_IND_PORT = AT_PORT_BUTT,    /* OM数据上报端口 */
-    CPM_CFG_PORT,                   /* OM配置端口 */
+    CPM_IND_PORT = AT_PORT_BUTT,    /* OM???????????? */
+    CPM_CFG_PORT,                   /* OM???????? */
     CPM_SD_PORT,
-    CPM_WIFI_OM_IND_PORT,           /* WIFI下OM数据上报端口 */
-    CPM_WIFI_OM_CFG_PORT,           /* WIFI下OM配置下发端口 */
-    CPM_WIFI_AT_PORT,               /* WIFI下AT端口 */
+    CPM_WIFI_OM_IND_PORT,           /* WIFI??OM???????????? */
+    CPM_WIFI_OM_CFG_PORT,           /* WIFI??OM???????????? */
+    CPM_WIFI_AT_PORT,               /* WIFI??AT???? */
     CPM_HSIC_IND_PORT,
     CPM_HSIC_CFG_PORT,
-    CPM_VCOM_IND_PORT,              /* VCOM上OM数据上报接口 */
-    CPM_VCOM_CFG_PORT,              /* VCOM上OM配置接口 */
+    CPM_VCOM_IND_PORT,              /* VCOM??OM???????????? */
+    CPM_VCOM_CFG_PORT,              /* VCOM??OM???????? */
     CPM_FS_PORT,
     CPM_PORT_BUTT
 };
@@ -95,49 +95,49 @@ enum ESN_MEID_FLAG_ENUM
 typedef VOS_UINT8 ESN_MEID_FLAG_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 typedef struct
 {
-    VOS_UINT8                           ucTempOverCount;     /*在正常模式下温度连续超过告警门限或低功耗门限的极限次数*/
-    VOS_UINT8                           ucTempRsumeCount;    /*在低功耗模式或告警模式下温度连续低于告警门的极限次数*/
-    VOS_UINT8                           ucTempCloseCount;    /*在降速模式下温度连续超过告警门限的极限次数*/
-    VOS_UINT8                           ucTempPowerOffCount; /*超过下电门限的极限次数*/
-    VOS_UINT32                          ulWaitTimer;         /*等待定时器时长*/
+    VOS_UINT8                           ucTempOverCount;     /*??????????????????????????????????????????????????????*/
+    VOS_UINT8                           ucTempRsumeCount;    /*????????????????????????????????????????????????????*/
+    VOS_UINT8                           ucTempCloseCount;    /*??????????????????????????????????????????*/
+    VOS_UINT8                           ucTempPowerOffCount; /*??????????????????????*/
+    VOS_UINT32                          ulWaitTimer;         /*??????????????*/
 }TEMP_PARA_CTRL_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulIsEnable;           /*是否需要启动保护机制, 0为关闭，1为开启*/
-    VOS_UINT32                          ulLocation;           /*使用哪里的温度作为温保的输入，该参数直接作为入参进入底软的函数,目前的取值范围是0到6 */
-    VOS_INT32                           lPowerOffThreshold;   /*进入下电模式的门限*/
-    VOS_INT32                           lCloseAdcThreshold;   /*进入低功耗模式的温度门限*/
-    VOS_INT32                           lAlarmAdcThreshold;   /*需要进行给出警报的温度门限*/
-    VOS_INT32                           lResumeAdcThreshold;  /*恢复到正常模式的温度门限*/
-    VOS_INT32                           lSIMPowerOffThreshold;  /*E5形态下SIM过温保护门限*/
+    VOS_UINT32                          ulIsEnable;           /*????????????????????, 0????????1??????*/
+    VOS_UINT32                          ulLocation;           /*??????????????????????????????????????????????????????????????,????????????????0??6 */
+    VOS_INT32                           lPowerOffThreshold;   /*??????????????????*/
+    VOS_INT32                           lCloseAdcThreshold;   /*????????????????????????*/
+    VOS_INT32                           lAlarmAdcThreshold;   /*??????????????????????????*/
+    VOS_INT32                           lResumeAdcThreshold;  /*????????????????????????*/
+    VOS_INT32                           lSIMPowerOffThreshold;  /*E5??????SIM????????????*/
     TEMP_PARA_CTRL_STRU                 stTempCtrlPara;
 }SPY_TEMP_PROTECT_NV_STRU;
 
 
 typedef struct
 {
-    CPM_OM_PORT_ENUM_UINT32             enPortNum;         /* 物理通道类型 */
-    CPM_CBT_PORT_ENUM_UINT32            enCbtPortNum;      /* 校准通道类型 */
+    CPM_OM_PORT_ENUM_UINT32             enPortNum;         /* ???????????? */
+    CPM_CBT_PORT_ENUM_UINT32            enCbtPortNum;      /* ???????????? */
 }OM_CHANNLE_PORT_CFG_STRU;
 
 
@@ -190,9 +190,9 @@ typedef struct
     VOS_UINT8                           aucPasswords[8];
     VOS_UINT16                          usUsed;
     VOS_UINT16                          usTotal;
-    VOS_UINT8                           ucAnrMaxNum;        /*Balong支持的ANR的最大值*/
-    VOS_UINT8                           ucEmailFlag;        /*Balong支持Email标记*/
-    VOS_UINT8                           ucSPBFlag;         /*复合电话本支持标记，为1时表示支持*/
+    VOS_UINT8                           ucAnrMaxNum;        /*Balong??????ANR????????*/
+    VOS_UINT8                           ucEmailFlag;        /*Balong????Email????*/
+    VOS_UINT8                           ucSPBFlag;         /*??????????????????????1??????????*/
     VOS_UINT8                           ucRsv;
 }SI_PB_CTRL_INFO_ST;
 
@@ -221,12 +221,12 @@ typedef struct
 }USIMM_STK_CFG_STRU;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 #if (VOS_OS_VER != VOS_WIN32)

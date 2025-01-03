@@ -52,11 +52,11 @@
 #include "ATCmdProc.h"
 
 /***************************************************************************** 
- 函 数 名  : atSetTmodePara
- 功能描述  : 发送TMODE模式到TL C核 
- 输入参数  : ucClientId Client ID
-             ulTmode 模式 输出参数  : 无
- 返 回 值  : 成功返回AT_OK，失败返回AT_ERROR*****************************************************************************/VOS_UINT32 atSetTmodePara(VOS_UINT8 ucClientId, VOS_UINT32 ulTmode)
+ ?? ?? ??  : atSetTmodePara
+ ????????  : ????TMODE??????TL C?? 
+ ????????  : ucClientId Client ID
+             ulTmode ???? ????????  : ??
+ ?? ?? ??  : ????????AT_OK??????????AT_ERROR*****************************************************************************/VOS_UINT32 atSetTmodePara(VOS_UINT8 ucClientId, VOS_UINT32 ulTmode)
 {
     SYM_SET_TMODE_REQ_STRU stTmode ;
     stTmode.enTmodeMode = (SYM_TMODE_ENUM)ulTmode;
@@ -73,18 +73,18 @@
 }
 
 /***************************************************************************** 
- 函 数 名  : atSetTmodeParaCnfProc
- 功能描述  : TL C核模式设置返回处理函数 输入参数  : ucClientId Client ID
-             pMsgBlock  消息内容             
- 输出参数  : 无 
- 返 回 值  : 返回AT_FW_CLIENT_STATUS_READY
+ ?? ?? ??  : atSetTmodeParaCnfProc
+ ????????  : TL C?????????????????????? ????????  : ucClientId Client ID
+             pMsgBlock  ????????             
+ ????????  : ?? 
+ ?? ?? ??  : ????AT_FW_CLIENT_STATUS_READY
 *****************************************************************************/
 VOS_UINT32 atSetTmodeParaCnfProc(VOS_UINT8 ucClientId, VOS_VOID *pMsgBlock)
 {
     OS_MSG_STRU* pEvent = NULL;
     SYM_SET_TMODE_CNF_STRU * pTmodeCnf = NULL;
 
-    /* pMsgBlock 在上层调用中已判断是否为空 */
+    /* pMsgBlock ?????????????????????????? */
     pEvent = (OS_MSG_STRU*)(((MsgBlock*)pMsgBlock)->aucValue);
     pTmodeCnf = (SYM_SET_TMODE_CNF_STRU *)pEvent->ulParam1;
     

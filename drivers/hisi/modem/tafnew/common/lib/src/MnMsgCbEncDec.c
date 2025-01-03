@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include  "product_config.h"
 #include  "PsTypeDef.h"
@@ -63,33 +63,33 @@
 
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 #define MSG_CBPAGE_HEADER_LEN                               6
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 typedef struct
 {
@@ -100,12 +100,12 @@ typedef struct
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 LOCAL MN_MSG_LANG_CONVERT_STRU f_astMsgCbLangTable[MN_MSG_MAX_LANG_NUM] =
@@ -134,7 +134,7 @@ LOCAL MN_MSG_LANG_CONVERT_STRU f_astMsgCbLangTable[MN_MSG_MAX_LANG_NUM] =
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 
@@ -184,9 +184,9 @@ VOS_UINT32 MN_MSG_DecodeDcsIf01(
         */
         case 0:
             /*
-               7 Bit编码 language Represetation Occupy 3 7bit，至少3个字节
-               1) 前2个7BIT是语言
-               2) 最后一个字节时<CR>
+               7 Bit???? language Represetation Occupy 3 7bit??????3??????
+               1) ??2??7BIT??????
+               2) ??????????????<CR>
             */
             if (ulContentLength <= TAF_MSG_CBA_LANG_LENGTH)
             {
@@ -197,7 +197,7 @@ VOS_UINT32 MN_MSG_DecodeDcsIf01(
             pstDcsInfo->enMsgCoding     = MN_MSG_MSG_CODING_7_BIT;
             pstDcsInfo->ucLangIndLen    = TAF_MSG_CBA_LANG_LENGTH + 1;
 
-            /* 根据消息内容的前两个字符得到CBS语言编码LangCode */
+            /* ????????????????????????????CBS????????LangCode */
             ulRet = TAF_STD_UnPack7Bit(pucContent, TAF_MSG_CBA_LANG_LENGTH, 0, aucLang);
             if (VOS_OK != ulRet)
             {
@@ -234,7 +234,7 @@ VOS_UINT32 MN_MSG_DecodeDcsIf01(
 
         default:
             /*Reserved selection we don't support;*/
-            /*记录错误Trace               设置返回值*/
+            /*????????Trace               ??????????*/
             ulRet = MN_ERR_CLASS_SMS_INVALID_MSG_CODING;
             return ulRet;
     }
@@ -285,7 +285,7 @@ LOCAL VOS_UINT32 MN_MSG_DecodeDcsIf07(
     {
         pstDcsInfo->bCompressed     =  VOS_FALSE;
     }
-    switch((ucDcs&0x0C)>>2) /*bit2,3，具体为编码方式*/
+    switch((ucDcs&0x0C)>>2) /*bit2,3????????????????*/
     {
         case 0:
             pstDcsInfo->enMsgCoding = MN_MSG_MSG_CODING_7_BIT;
@@ -305,7 +305,7 @@ LOCAL VOS_UINT32 MN_MSG_DecodeDcsIf07(
             break;
     }
 
-    /*判断bit4的值，0表示无Class含义，1表示有Class含义*/
+    /*????bit4??????0??????Class??????1??????Class????*/
     if (0 == (ucDcs&0x10))
     {
         pstDcsInfo->enMsgClass      = MN_MSG_MSG_CLASS_NONE;
@@ -330,7 +330,7 @@ LOCAL VOS_UINT32 MN_MSG_DecodeDcsIf09(
 
     ulRet                           = MN_ERR_NO_ERROR;
 
-    switch((ucDcs&0x0C)>>2) /*bit2,3，具体为编码方式*/
+    switch((ucDcs&0x0C)>>2) /*bit2,3????????????????*/
     {
         case 0:
             pstDcsInfo->enMsgCoding = MN_MSG_MSG_CODING_7_BIT;
@@ -407,14 +407,14 @@ MODULE_EXPORTED VOS_UINT32 MN_MSG_DecodeCbsDcs(
 
     switch (pstDcsInfo->ucMsgCodingGroup)
     {
-        /*判断高四位为0000,0011,0010*/
+        /*????????????0000,0011,0010*/
         case 0x00:
         case 0x02:
         case 0x03:
             pstDcsInfo->enMsgLang = (ucDcs & 0x0f) ;
             break;
 
-        case 0x01: /*判断高四位为0001*/
+        case 0x01: /*????????????0001*/
             ulRet = MN_MSG_DecodeDcsIf01(ucDcs, pucContent, ulContentLength, pstDcsInfo);
             if ( MN_ERR_NO_ERROR != ulRet )
             {
@@ -422,7 +422,7 @@ MODULE_EXPORTED VOS_UINT32 MN_MSG_DecodeCbsDcs(
             }
             break;
 
-        /*判断高四位为01xx  */
+        /*????????????01xx  */
         case 0x04:
         case 0x05:
         case 0x06:
@@ -491,7 +491,7 @@ VOS_UINT32  MN_MSG_DecodeCbmPage(
     MN_MSG_CBGSMPAGE_STRU               *pstGsmPage;
     VOS_UINT32                          ulDataLen;
 
-    /*判断输入参数的合法性*/
+    /*????????????????????*/
     if ((VOS_NULL_PTR == pstCbRawInfo)
      || (VOS_NULL_PTR == pstCbmPageInfo))
     {
@@ -501,7 +501,7 @@ VOS_UINT32  MN_MSG_DecodeCbmPage(
 
     pstGsmPage = (MN_MSG_CBGSMPAGE_STRU   *)pstCbRawInfo->aucData;
 
-    /* 解析DCS */
+    /* ????DCS */
     ulRet = MN_MSG_DecodeCbsDcs(pstGsmPage->ucDCS,
                                 pstGsmPage->aucContent,
                                 TAF_CBA_MAX_CBDATA_LEN,
@@ -511,14 +511,14 @@ VOS_UINT32  MN_MSG_DecodeCbmPage(
         MN_WARN_LOG1("MN_MSG_DecodeCbmPage:DCS Invalid:ulRet",(VOS_INT32)ulRet);
     }
 
-    /* 解析SN */
+    /* ????SN */
     ulRet = MSG_CbDecodeSn(pstGsmPage, &(pstCbmPageInfo->stSn));
     if (MN_ERR_NO_ERROR != ulRet)
     {
         MN_WARN_LOG1("MN_MSG_DecodeCbmPage:SN Invalid:ulRet",(VOS_INT32)ulRet);
     }
 
-    /* 解析MID */
+    /* ????MID */
     pstCbmPageInfo->usMid = pstGsmPage->ucMIdHigh;
     pstCbmPageInfo->usMid = (VOS_UINT16)(pstCbmPageInfo->usMid << 8) | pstGsmPage->ucMIdLow;
 
@@ -539,7 +539,7 @@ VOS_UINT32  MN_MSG_DecodeCbmPage(
     }
     ulDataLen = pstCbRawInfo->ulLen - MSG_CBPAGE_HEADER_LEN;
 
-    /* 如果是 7bit编码需要将其转化为8bit */
+    /* ?????? 7bit??????????????????8bit */
     if (MN_MSG_MSG_CODING_7_BIT == pstCbmPageInfo->stDcs.enMsgCoding )
     {
 

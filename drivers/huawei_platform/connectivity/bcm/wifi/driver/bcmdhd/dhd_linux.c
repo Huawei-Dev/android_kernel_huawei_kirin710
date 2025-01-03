@@ -3418,7 +3418,7 @@ dhd_start_xmit(struct sk_buff *skb, struct net_device *net)
 #endif /* DHD_WMF */
 
 #ifdef CONFIG_HUAWEI_XENGINE
-	/*for high priority data ,set  priority of skbuff as DSCP_EF£¨2E£©*/
+	/*for high priority data ,set  priority of skbuff as DSCP_EF??2E??*/
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 23))
 	sk = skb_to_full_sk((struct sk_buff*)pktbuf);
 #else

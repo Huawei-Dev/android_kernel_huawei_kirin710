@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "frw_ext_if.h"
@@ -31,13 +31,13 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_ACS_TEST_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 acs_hw_verify_stru                g_st_acs_verify_info;
 OAL_STATIC struct proc_dir_entry *g_pst_acs_proc_entry = NULL;
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -492,13 +492,13 @@ oal_void    dmac_acs_channel_meas_comp_handler(mac_device_stru *pst_mac_dev, hal
 oal_void  dmac_acs_verify_init(oal_void)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 59))
-	/* E5 高版本内核，无create_proc_entry接口 */
+	/* E5 ??????????????create_proc_entry???? */
 #else
     if(g_pst_acs_proc_entry)
     {
         return;
     }
-    /* 创建PROC目录 */
+    /* ????PROC???? */
     g_pst_acs_proc_entry = ACS_CREATE_PROC_ENTRY(ACS_VERIFY_PROC_NAME, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH, NULL);
     if (OAL_PTR_NULL == g_pst_acs_proc_entry)
     {
@@ -506,7 +506,7 @@ oal_void  dmac_acs_verify_init(oal_void)
     }
 
     g_pst_acs_proc_entry->data  = 0;
-    g_pst_acs_proc_entry->nlink = 1;        /* linux创建proc默认值 */
+    g_pst_acs_proc_entry->nlink = 1;        /* linux????proc?????? */
     g_pst_acs_proc_entry->proc_fops  = &st_acs_proc_fops;
 
     OAL_MEMZERO(&g_st_acs_verify_info, OAL_SIZEOF(g_st_acs_verify_info));

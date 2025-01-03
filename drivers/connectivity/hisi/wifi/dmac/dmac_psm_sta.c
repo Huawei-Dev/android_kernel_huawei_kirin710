@@ -10,7 +10,7 @@ extern "C" {
 #ifdef _PRE_WLAN_FEATURE_STA_PM
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "dmac_psm_sta.h"
 #include "dmac_psm_ap.h"
@@ -42,13 +42,13 @@ oal_uint8  dmac_psm_is_hw_queues_empty(mac_device_stru  *pst_device);
 oal_uint8  dmac_psm_is_tid_queues_empty(dmac_vap_stru  *pst_dmac_vap);
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 //OAL_STATIC oal_uint8  g_uc_bmap[8] = {1, 2, 4, 8, 16, 32, 64, 128}; /* Bit map */
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_uint32  dmac_psm_get_max_sleep_time(dmac_vap_stru  *pst_dmac_vap)
@@ -58,7 +58,7 @@ oal_uint32  dmac_psm_get_max_sleep_time(dmac_vap_stru  *pst_dmac_vap)
     oal_uint32    ul_max_allow_sleep_time;
     //oal_uint32    aul_addr[]              = {0x2010020c,0x20100234,0x2010025c};
 
-    /* 关联上后才计算最大睡眠时间 */
+    /* ?????????????????????????? */
     if ((MAC_VAP_STATE_UP == pst_dmac_vap->st_vap_base_info.en_vap_state) || (MAC_VAP_STATE_PAUSE == pst_dmac_vap->st_vap_base_info.en_vap_state))
     {
         //ul_dtim_period = mac_mib_get_dot11dtimperiod(&(pst_dmac_vap->st_vap_base_info));
@@ -72,10 +72,10 @@ oal_uint32  dmac_psm_get_max_sleep_time(dmac_vap_stru  *pst_dmac_vap)
             hal_sta_tsf_restore(pst_dmac_vap->pst_hal_vap);
 
         }
-        /* 此维测用于判断是否睡的过多，由于动态dtim周期可能会从500ms调整到100ms，因此需要放宽 */
+        /* ????????????????????????????????????dtim????????????500ms??????100ms?????????????? */
         ul_max_allow_sleep_time = (ul_bank3_bcn_period * ul_dtim_period + 500);
     }
-    /* 否则不计算睡眠时间*/
+    /* ??????????????????*/
     else
     {
         ul_max_allow_sleep_time = 0xFFFFFFFF;
@@ -93,7 +93,7 @@ oal_void dmac_psm_process_no_powersave(dmac_vap_stru *pst_dmac_vap)
         return;
     }
 
-    /* 异常此时应该处于active状态 */
+    /* ????????????????active???? */
     if (STA_GET_PM_STATE((mac_sta_pm_handler_stru *)(pst_dmac_vap->pst_pm_handler)) != STA_PWR_SAVE_STATE_ACTIVE)
     {
         dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_NO_POWERSAVE, 0, OAL_PTR_NULL);
@@ -108,7 +108,7 @@ oal_uint32  dmac_psm_process_fast_ps_state_change(dmac_vap_stru *pst_dmac_vap, o
 
      pst_mac_sta_pm_handle = (mac_sta_pm_handler_stru *)(pst_dmac_vap->pst_pm_handler);
 
-     /* awake->active 需要发送唤醒null帧 */
+     /* awake->active ????????????null?? */
      if (STA_PWR_SAVE_STATE_AWAKE == STA_GET_PM_STATE(pst_mac_sta_pm_handle))
      {
          if((STA_PWR_SAVE_STATE_ACTIVE == uc_psm) && (OAL_FALSE == pst_mac_sta_pm_handle->st_null_wait.en_active_null_wait))
@@ -123,7 +123,7 @@ oal_uint32  dmac_psm_process_fast_ps_state_change(dmac_vap_stru *pst_dmac_vap, o
          }
      }
 
-     /* active->doze的超时需要发送睡眠null帧 */
+     /* active->doze??????????????????null?? */
      else if (STA_PWR_SAVE_STATE_ACTIVE == STA_GET_PM_STATE(pst_mac_sta_pm_handle))
      {
          if((STA_PWR_SAVE_STATE_DOZE == uc_psm) && (OAL_FALSE == pst_mac_sta_pm_handle->st_null_wait.en_doze_null_wait))
@@ -156,7 +156,7 @@ oal_void dmac_psm_start_activity_timer(dmac_vap_stru *pst_dmac_vap, mac_sta_pm_h
         pst_sta_pm_handle->ul_activity_timeout = g_device_wlan_pm_timeout;
 
 #ifdef _PRE_WLAN_FEATURE_P2P
-        /* 修改定时器时间使发送睡眠null帧的时间落在go active时间内 */
+        /* ????????????????????????null????????????go active?????? */
         if (IS_P2P_NOA_ENABLED(pst_dmac_vap))
         {
             pst_sta_pm_handle->ul_activity_timeout = (pst_dmac_vap->st_p2p_noa_param.ul_duration / 1000);
@@ -172,7 +172,7 @@ oal_void dmac_psm_start_activity_timer(dmac_vap_stru *pst_dmac_vap, mac_sta_pm_h
         pst_sta_pm_handle->ul_activity_timeout = MIN_ACTIVITY_TIME_OUT;
     }
 
-    /* 节能下超时时间和非节能下的超时时间不一样，启动定时器 */
+    /* ???????????????????????????????????????????????????? */
     FRW_TIMER_CREATE_TIMER(&(pst_sta_pm_handle->st_inactive_timer),
                         dmac_psm_alarm_callback,
                         pst_sta_pm_handle->ul_activity_timeout ,
@@ -186,7 +186,7 @@ oal_void dmac_psm_sync_dtim_count(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc_dtim
 {
     oal_uint16               us_listen_interval_count;
 
-    /* 写STA dtim_count寄存器, dtim update 寄存器不允许写0 */
+    /* ??STA dtim_count??????, dtim update ??????????????0 */
     if (0 == uc_dtim_count)
     {
         hal_set_psm_dtim_count(pst_dmac_vap->pst_hal_vap, pst_dmac_vap->uc_psm_dtim_period);
@@ -229,7 +229,7 @@ oal_void dmac_psm_max_powersave_enable(mac_device_stru *pst_mac_device)
     {
         pst_dmac_vap = mac_res_get_dmac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
 
-        /* 关联的STAUT才需要更新 */
+        /* ??????STAUT?????????? */
         if ((WLAN_VAP_MODE_BSS_STA == pst_dmac_vap->st_vap_base_info.en_vap_mode)
             &&(0!=pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.ul_dot11DTIMPeriod)
             &&((MAC_VAP_STATE_UP == pst_dmac_vap->st_vap_base_info.en_vap_state) || (MAC_VAP_STATE_PAUSE == pst_dmac_vap->st_vap_base_info.en_vap_state)))
@@ -251,7 +251,7 @@ oal_void  dmac_psm_update_bcn_tout_max_cnt(dmac_vap_stru  *pst_dmac_vap)
 
     if (ul_div_value != 0)
     {
-        /* 不能整除+1 1000 / (100 * 3) 取4 */
+        /* ????????+1 1000 / (100 * 3) ??4 */
         if (ul_bcn_tout_max_time % ul_div_value)
         {
             pst_dmac_vap->uc_bcn_tout_max_cnt = (oal_uint8)((ul_bcn_tout_max_time / ul_div_value) + 1);
@@ -282,13 +282,13 @@ oal_bool_enum_uint8 dmac_psm_auto_dtim(dmac_vap_stru *pst_dmac_vap)
         return OAL_FALSE;
     }
 
-    /* 如果ap不支持proxy_arp，则不开启动态dtim调整策略，防止arp丢包 */
+    /* ????ap??????proxy_arp??????????????dtim??????????????arp???? */
     if (OAL_FALSE == pst_mac_user->st_cap_info.bit_proxy_arp)
     {
         return OAL_FALSE;
     }
 
-    /* 如果ap不支持HISTREAM，则不开启动态dtim调整策略，防止兼容性问题 */
+    /* ????ap??????HISTREAM??????????????dtim???????????????????????? */
     if (OAL_FALSE == pst_mac_user->st_cap_info.bit_histream_cap)
     {
         return OAL_FALSE;
@@ -299,12 +299,12 @@ oal_bool_enum_uint8 dmac_psm_auto_dtim(dmac_vap_stru *pst_dmac_vap)
 
     if (OAL_TRUE == PM_WLAN_IsHostSleep())
     {
-        /* 自动调整不能使得两次dtim的时间间隔超过500ms */
+        /* ????????????????????dtim??????????????500ms */
         if (pst_dmac_vap->uc_psm_dtim_period * ul_beacon_period >= 500)
         {
             return OAL_FALSE;
         }
-        /* host进入休眠以后，每8个周期动态增加1 */
+        /* host????????????????8??????????????1 */
         pst_dmac_vap->uc_psm_auto_dtim_cnt++;
         uc_auto_dtim += (pst_dmac_vap->uc_psm_auto_dtim_cnt/8);
     }
@@ -328,7 +328,7 @@ oal_bool_enum_uint8 dmac_psm_auto_dtim(dmac_vap_stru *pst_dmac_vap)
         pst_dmac_vap->us_psm_listen_interval = (pst_dmac_vap->uc_psm_dtim_period  < DMAC_DEFAULT_DTIM_LISTEN_DIFF) ? ((oal_uint16)(pst_dmac_vap->uc_psm_dtim_period)) : DMAC_DEFAULT_LISTEN_INTERVAL;
     }
 
-    /* 设置period寄存器的值 */
+    /* ????period?????????? */
     hal_set_sta_dtim_period(pst_dmac_vap->pst_hal_vap, pst_dmac_vap->uc_psm_dtim_period);
     hal_set_psm_listen_interval(pst_dmac_vap->pst_hal_vap, pst_dmac_vap->us_psm_listen_interval);
 
@@ -374,30 +374,30 @@ oal_void dmac_psm_update_dtime_period(mac_vap_stru *pst_mac_vap, oal_uint8 uc_mi
 
         pst_dmac_vap->us_psm_listen_interval = (pst_dmac_vap->uc_psm_dtim_period  < DMAC_DEFAULT_DTIM_LISTEN_DIFF) ? ((oal_uint16)(pst_dmac_vap->uc_psm_dtim_period )) : DMAC_DEFAULT_LISTEN_INTERVAL;
     }
-    /* 更新最大收不到beaocn睡眠值 */
+    /* ??????????????beaocn?????? */
     dmac_psm_update_bcn_tout_max_cnt(pst_dmac_vap);
 
-    /* 切信道中按dtim 1睡眠唤醒产生tbtt中断并且收不到beacon也不去睡 */
+    /* ??????????dtim 1????????????tbtt??????????????beacon???????? */
     if ((OAL_TRUE == pst_dmac_vap->st_vap_base_info.st_ch_switch_info.en_waiting_to_shift_channel) &&
         (OAL_FALSE == pst_mac_vap->st_ch_switch_info.bit_bad_ap))
     {
         pst_dmac_vap->us_psm_listen_interval = 1;
-        pst_dmac_vap->uc_bcn_tout_max_cnt    = 0;//切信道过程中，收不到beacon不去睡，保证我们能接收
+        pst_dmac_vap->uc_bcn_tout_max_cnt    = 0;//????????????????????beacon??????????????????????
     }
 
     OAM_WARNING_LOG3(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR, "{dmac_psm_update_dtime_period:set psm dtim period[%d],bcn tout max cnt[%d]listen interval[%d]}",
                         pst_dmac_vap->uc_psm_dtim_period,pst_dmac_vap->uc_bcn_tout_max_cnt,pst_dmac_vap->us_psm_listen_interval);
 
-    /* 设置period寄存器的值 */
+    /* ????period?????????? */
     hal_set_sta_dtim_period(pst_dmac_vap->pst_hal_vap, pst_dmac_vap->uc_psm_dtim_period);
     hal_set_psm_listen_interval(pst_dmac_vap->pst_hal_vap, pst_dmac_vap->us_psm_listen_interval);
 
-    /* 设置count寄存器,防止出现interval 和 dtim 的count错开唤醒 */
+    /* ????count??????,????????interval ?? dtim ??count???????? */
     if ((pst_dmac_vap->us_psm_listen_interval != 1) && (pst_dmac_vap->uc_psm_dtim_period != 1))
     {
         hal_get_psm_dtim_count(pst_dmac_vap->pst_hal_vap, &uc_dtim_cnt);
 
-        /* 设置count寄存器的值 */
+        /* ????count?????????? */
         dmac_psm_sync_dtim_count(pst_dmac_vap, uc_dtim_cnt);
     }
 
@@ -407,11 +407,11 @@ oal_void dmac_psm_update_dtime_period(mac_vap_stru *pst_mac_vap, oal_uint8 uc_mi
 
 oal_void dmac_psm_update_keepalive(dmac_vap_stru *pst_dmac_vap)
 {
-    mac_sta_pm_handler_stru 	   *pst_mac_sta_pm_handle; /* STA节能状态下结构体 */
+    mac_sta_pm_handler_stru 	   *pst_mac_sta_pm_handle; /* STA???????????????? */
     oal_uint32                      ul_dtime_period;
     oal_uint32                      ul_keepalive_time;
 
-    /* 根据Beacon interval修改对应的STA节能下keepalive的DTIM interval */
+    /* ????Beacon interval??????????STA??????keepalive??DTIM interval */
     pst_mac_sta_pm_handle = (mac_sta_pm_handler_stru *)(pst_dmac_vap->pst_pm_handler);
     if (OAL_PTR_NULL == pst_mac_sta_pm_handle)
     {
@@ -469,12 +469,12 @@ oal_uint32 dmac_psm_is_tim_dtim_set(dmac_vap_stru *pst_dmac_vap, oal_uint8* puc_
     ul_min_ix =  pst_time_ie->uc_tim_bitctl &~ 1;
     ul_max_ix =  pst_time_ie->uc_tim_len + ul_min_ix - 4;
 
-    /*检查是否是TIM*/
+    /*??????????TIM*/
     if(pst_time_ie->uc_tim_ie != MAC_EID_TIM)
     {
         return ul_tim_dtim_present;
     }
-    /* 读dtim period寄存器 */
+    /* ??dtim period?????? */
     //hal_get_sta_dtim_period(pst_dmac_vap->pst_hal_vap, &ul_dtim_period);
 
     /* Check if AP's DTIM period has changed */
@@ -484,7 +484,7 @@ oal_uint32 dmac_psm_is_tim_dtim_set(dmac_vap_stru *pst_dmac_vap, oal_uint8* puc_
 
         dmac_psm_update_dtime_period(&(pst_dmac_vap->st_vap_base_info),pst_time_ie->uc_dtim_period,pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.ul_dot11BeaconPeriod);
 
-        /* 设置count寄存器的值 */
+        /* ????count?????????? */
         dmac_psm_sync_dtim_count(pst_dmac_vap, pst_time_ie->uc_dtim_count);
 
         dmac_psm_update_keepalive(pst_dmac_vap);
@@ -523,7 +523,7 @@ oal_uint8 dmac_psm_is_tim_dtim_set(dmac_vap_stru *pst_dmac_vap, oal_uint8* puc_t
     ul_aid = pst_dmac_vap->st_vap_base_info.us_sta_aid;
     pst_mac_sta_pm_handle = (mac_sta_pm_handler_stru *)(pst_dmac_vap->pst_pm_handler);
 
-    /*检查是否是TIM*/
+    /*??????????TIM*/
     if(puc_tim_elm[0]!= MAC_EID_TIM)
     {
       return uc_status;
@@ -535,7 +535,7 @@ oal_uint8 dmac_psm_is_tim_dtim_set(dmac_vap_stru *pst_dmac_vap, oal_uint8* puc_t
     /* Check if AP's DTIM period has changed */
     if(puc_tim_elm[3] != mac_mib_get_dot11dtimperiod(&(pst_dmac_vap->st_vap_base_info)))
     {
-      /* 重新设置DTIM寄存器的值 */
+      /* ????????DTIM?????????? */
       hal_set_psm_dtim_period(pst_dmac_vap->pst_hal_vap, puc_tim_elm[3], pst_mac_sta_pm_handle->uc_listen_intervl_to_dtim_times,
                                   pst_mac_sta_pm_handle->en_receive_dtim);
     }
@@ -605,16 +605,16 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
         return;
     }
 
-    /* 接收beacon计数统计 */
+    /* ????beacon???????? */
     pst_mac_sta_pm_handle->aul_pmDebugCount[PM_MSG_PSM_BEACON_CNT]++;
 
     pst_hal_vap         = pst_dmac_vap->pst_hal_vap;
     pst_rx_ctrl         = (dmac_rx_ctl_stru *)oal_netbuf_cb(pst_netbuf);
     pst_rx_info         = (mac_rx_ctl_stru *)(&(pst_rx_ctrl->st_rx_info));
-    us_frame_len        = pst_rx_info->us_frame_len - pst_rx_info->bit_mac_header_len; /* 帧体长度 */
+    us_frame_len        = pst_rx_info->us_frame_len - pst_rx_info->bit_mac_header_len; /* ???????? */
     puc_payload         = OAL_NETBUF_PAYLOAD(pst_netbuf);
 
-    /* Reset beacon wait bit位 */
+    /* Reset beacon wait bit?? */
     pst_mac_sta_pm_handle->en_beacon_frame_wait  = OAL_FALSE;
     puc_tim_elm = mac_find_ie(MAC_EID_TIM, puc_payload + MAC_DEVICE_BEACON_OFFSET, us_frame_len - MAC_DEVICE_BEACON_OFFSET);
     if (OAL_PTR_NULL == puc_tim_elm)
@@ -622,7 +622,7 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
         return;
     }
 
-    /* 非节能模式不进行beacon帧处理 */
+    /* ????????????????beacon?????? */
     if ((mac_mib_get_powermanagementmode(&(pst_dmac_vap->st_vap_base_info)) != WLAN_MIB_PWR_MGMT_MODE_PWRSAVE) ||
             (0 == pst_dmac_vap->st_vap_base_info.us_sta_aid))
     {
@@ -632,13 +632,13 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
     ul_tim_dtim_present = dmac_psm_is_tim_dtim_set(pst_dmac_vap, puc_tim_elm);
     pst_time_ie         = (dmac_tim_ie_stru *)puc_tim_elm;
 
-	/* 非tim元素也不处理 */
+	/* ??tim???????????? */
     if (MAC_EID_TIM != pst_time_ie->uc_tim_ie)
     {
         return;
     }
 
-    /* TIM IE长度校验 */
+    /* TIM IE???????? */
     if (pst_time_ie->uc_tim_len < MAC_MIN_TIM_LEN)
     {
         return;
@@ -647,16 +647,16 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
 #ifdef _PRE_WLAN_FEATURE_HISTREAM
     if (OAL_TRUE == dmac_psm_auto_dtim(pst_dmac_vap))
     {
-        /* 设置count寄存器的值 */
+        /* ????count?????????? */
         dmac_psm_sync_dtim_count(pst_dmac_vap, pst_time_ie->uc_dtim_count);
         dmac_psm_update_keepalive(pst_dmac_vap);
     }
 #endif //_PRE_WLAN_FEATURE_HISTREAM
 
-    /* 取DTIM值,保证睡眠与AP同步 先不打开dtim cnt 同步 */
+    /* ??DTIM??,??????????AP???? ????????dtim cnt ???? */
     if (pst_hal_vap->uc_dtim_cnt != pst_time_ie->uc_dtim_count)
     {
-        /* 设置count寄存器的值 */
+        /* ????count?????????? */
         dmac_psm_sync_dtim_count(pst_dmac_vap, pst_time_ie->uc_dtim_count);
 
         //hal_vap_tsf_get_32bit(pst_hal_vap, &ul_tsf_lo);
@@ -681,7 +681,7 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
 
             pst_mac_sta_pm_handle->en_more_data_expected = OAL_FALSE;
 
-            /* 状态切换成功后才能进行TIM元素的后续处理 */
+            /* ??????????????????????TIM?????????????? */
             if ((OAL_FALSE == pst_mac_sta_pm_handle->st_null_wait.en_active_null_wait) &&
             (OAL_FALSE == pst_mac_sta_pm_handle->st_null_wait.en_doze_null_wait))
             {
@@ -762,7 +762,7 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
             dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_DTIM, 0, OAL_PTR_NULL);
         }
 
-		/* staut会丢tbtt中断，软件暂时规避 */
+		/* staut????tbtt?????????????????? */
         if (OAL_TRUE == (ul_tim_dtim_present & DMAC_TIM_IS_SET))
         {
             if (STA_PWR_SAVE_STATE_DOZE == STA_GET_PM_STATE(pst_mac_sta_pm_handle))
@@ -772,18 +772,18 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
 
             if (OAL_TRUE == dmac_is_any_legacy_ac_present(pst_dmac_vap))
             {
-                if (OAL_TRUE == dmac_is_sta_fast_ps_enabled(pst_mac_sta_pm_handle)) /* fast ps 模式 */
+                if (OAL_TRUE == dmac_is_sta_fast_ps_enabled(pst_mac_sta_pm_handle)) /* fast ps ???? */
                 {
                     dmac_send_null_frame_to_ap(pst_dmac_vap, STA_PWR_SAVE_STATE_ACTIVE, OAL_FALSE);
                 }
                 else
                 {
-                    dmac_send_pspoll_to_ap(pst_dmac_vap);                           /* pspoll 模式 */
+                    dmac_send_pspoll_to_ap(pst_dmac_vap);                           /* pspoll ???? */
                 }
             }
             else
             {
-                dmac_psm_process_tim_set_sta_prot(pst_dmac_vap);                    /* UAPSD模式 */
+                dmac_psm_process_tim_set_sta_prot(pst_dmac_vap);                    /* UAPSD???? */
             }
         }
     }
@@ -804,7 +804,7 @@ oal_void dmac_psm_process_tim_elm(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *
 
 oal_uint32  dmac_psm_rx_process_data_sta(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_buf)
 {
-    oal_uint8                *puc_dest_addr;      /* 目的地址 */
+    oal_uint8                *puc_dest_addr;      /* ???????? */
     mac_ieee80211_frame_stru *pst_frame_hdr;
     mac_sta_pm_handler_stru  *pst_mac_sta_pm_handle;
 
@@ -857,14 +857,14 @@ oal_uint32  dmac_psm_rx_process_data_sta(dmac_vap_stru *pst_dmac_vap, oal_netbuf
     if (STA_PWR_SAVE_STATE_ACTIVE != STA_GET_PM_STATE(pst_mac_sta_pm_handle))
 #endif
     {
-        /* 如果此时处于doze状态先切到awake状态 */
+        /* ????????????doze??????????awake???? */
         if (STA_PWR_SAVE_STATE_DOZE == STA_GET_PM_STATE(pst_mac_sta_pm_handle))
         {
             OAM_WARNING_LOG3(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR,"{dmac_psm_rx_process_data_sta::event[%d] change state doze,frame is multi[%d],bcn wait[%d]}",pst_mac_sta_pm_handle->uc_doze_event,ETHER_IS_MULTICAST(puc_dest_addr),pst_mac_sta_pm_handle->en_beacon_frame_wait);
             dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_TBTT, 0, OAL_PTR_NULL);
         }
 
-        /* 收到单播的处理 */
+        /* ?????????????? */
         if (OAL_TRUE != ETHER_IS_MULTICAST(puc_dest_addr))
         {
             if (OAL_FALSE == dmac_psm_get_more_data_sta(pst_frame_hdr))
@@ -891,7 +891,7 @@ oal_uint32  dmac_psm_rx_process_data_sta(dmac_vap_stru *pst_dmac_vap, oal_netbuf
     {
         if (OAL_FALSE == dmac_psm_get_more_data_sta(pst_frame_hdr))
         {
-            /* 收到最后一个广播组播,关闭广播组播超时等待定时器 */
+            /* ????????????????????,?????????????????????????? */
             if (OAL_TRUE == pst_mac_sta_pm_handle->st_mcast_timer.en_is_registerd)
             {
                 FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&(pst_mac_sta_pm_handle->st_mcast_timer));
@@ -903,7 +903,7 @@ oal_uint32  dmac_psm_rx_process_data_sta(dmac_vap_stru *pst_dmac_vap, oal_netbuf
         {
             pst_mac_sta_pm_handle->en_more_data_expected = OAL_TRUE;
 
-            /* 收到不是最后一个广播组播,重启定时器,再等待一个定时器时间 */
+            /* ????????????????????????,??????????,???????????????????? */
             FRW_TIMER_RESTART_TIMER(&(pst_mac_sta_pm_handle->st_mcast_timer), pst_mac_sta_pm_handle->us_mcast_timeout, OAL_FALSE);
         }
     }
@@ -923,7 +923,7 @@ oal_uint8 dmac_psm_tx_process_data_sta(dmac_vap_stru *pst_dmac_vap, mac_tx_ctl_s
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 非节能模式下的处理 */
+    /* ?????????????????? */
     if ((mac_mib_get_powermanagementmode(&(pst_dmac_vap->st_vap_base_info)) != WLAN_MIB_PWR_MGMT_MODE_PWRSAVE) ||
         (0 == pst_dmac_vap->st_vap_base_info.us_sta_aid))
     {
@@ -954,12 +954,12 @@ oal_uint8 dmac_psm_tx_process_data_sta(dmac_vap_stru *pst_dmac_vap, mac_tx_ctl_s
             dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_TX_DATA, 0, OAL_PTR_NULL);
         }
         /*lint +e731*/
-        /* 发送第一个数据/管理包pm=0 */
+        /* ??????????????/??????pm=0 */
         if (STA_PWR_SAVE_STATE_ACTIVE == dmac_psm_process_tx_process_data_sta_prot(pst_dmac_vap, pst_tx_ctl))
         {
             if(OAL_TRUE == dmac_is_sta_fast_ps_enabled(pst_mac_sta_pm_handle))
             {
-                /* 只有在awake状态下,tx pm=0 的data切换到active状态 */
+                /* ??????awake??????,tx pm=0 ??data??????active???? */
                 if ((STA_PWR_SAVE_STATE_AWAKE == STA_GET_PM_STATE(pst_mac_sta_pm_handle)))
                 {
                     uc_pwr_mgmt_bit = 0;
@@ -975,7 +975,7 @@ oal_void dmac_psm_tx_set_power_mgmt_bit(dmac_vap_stru *pst_dmac_vap, mac_tx_ctl_
 {
     oal_uint8                 uc_pwr_mgmt_bit = 0;
 
-    /* 检查是否是节能模式 */
+    /* ?????????????????? */
     uc_pwr_mgmt_bit = dmac_psm_tx_process_data_sta(pst_dmac_vap, pst_tx_ctl);
     if (OAL_TRUE == uc_pwr_mgmt_bit)
     {
@@ -1049,17 +1049,17 @@ oal_uint8 dmac_null_frame_complete_sta(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc
     if ((OAL_TRUE == pst_mac_sta_pm_handle->st_null_wait.en_active_null_wait) ||
         (OAL_TRUE == pst_mac_sta_pm_handle->st_null_wait.en_doze_null_wait))
     {
-        /* NULL帧发送成功的处理 */
+        /* NULL???????????????? */
         if (DMAC_TX_SUCC == uc_dscr_status)
         {
-            /* PM的状态不应该处于DOZE状态，如果是此状态切换到awake状态 */
+            /* PM????????????????DOZE????????????????????????awake???? */
             if (STA_PWR_SAVE_STATE_DOZE == STA_GET_PM_STATE(pst_mac_sta_pm_handle))
             {
                 //OAM_WARNING_LOG1(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR, "{dmac_null_frame_complete_sta::pm state is [%d] not awake}", STA_GET_PM_STATE(pst_mac_sta_pm_handle));
                 //OAL_IO_PRINT("dmac_null_frame_complete_sta::event:[%d] change state to doze not awake\r\n", pst_mac_sta_pm_handle->uc_doze_event);
                 dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_SEND_NULL_SUCCESS, 0, OAL_PTR_NULL);
             }
-            /* null 帧重传标志清零 */
+            /* null ?????????????? */
             if (STA_PWR_SAVE_STATE_ACTIVE == pst_mac_header->st_frame_control.bit_power_mgmt)
             {
                 pst_mac_sta_pm_handle->uc_active_null_retran_cnt = 0;
@@ -1075,19 +1075,19 @@ oal_uint8 dmac_null_frame_complete_sta(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc
             dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_SEND_NULL_SUCCESS, OAL_SIZEOF(mac_ieee80211_frame_stru), (oal_uint8 *)pst_mac_header);
 
         #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-            /* 以6Mbps发送成功，则增加成功次数计数 */
+            /* ??6Mbps???????????????????????????? */
             if (uc_send_rate_rank == HAL_TX_RATE_RANK_0)
             {
                 dmac_psm_inc_null_frm_ofdm_succ(pst_dmac_vap);
             }
-            /* 只是以1Mbps发送成功，则减少成功次数计数 */
+            /* ??????1Mbps???????????????????????????? */
             else
             {
                 dmac_psm_dec_null_frm_ofdm_succ(pst_dmac_vap);
             }
         #endif
         }
-        /* NULL帧发送不成功,软重传10次,硬件重传8次(一共80次)后,对端依然没有响应,代表此时链路异常,去关联liuzhengqi todo */
+        /* NULL????????????,??????10??,????????8??(????80??)??,????????????????,????????????????,??????liuzhengqi todo */
         else
         {
         #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
@@ -1108,7 +1108,7 @@ oal_uint8 dmac_null_frame_complete_sta(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc
 
                     pst_mac_sta_pm_handle->st_null_wait.en_active_null_wait = OAL_FALSE;
 
-                    /*唤醒的null帧重传失败,1、下次ap beacon告知缓存继续发送,2、主动唤醒,发下个数据帧继续发送唤醒null帧 */
+                    /*??????null??????????,1??????ap beacon????????????????,2??????????,????????????????????????null?? */
                     if (pst_mac_sta_pm_handle->uc_active_null_retran_cnt > WLAN_MAX_NULL_SENT_NUM)
                     {
                         OAM_WARNING_LOG1(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR, "{dmac_null_frame_complete_sta::sta_pm state[%d],retrans active null data to max cnt}",STA_GET_PM_STATE(pst_mac_sta_pm_handle));
@@ -1132,13 +1132,13 @@ oal_uint8 dmac_null_frame_complete_sta(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc
                     {
                         OAM_WARNING_LOG1(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR, "{dmac_null_frame_complete_sta::sta_pm state[%d],retrans sleep null data to max cnt}",STA_GET_PM_STATE(pst_mac_sta_pm_handle));
 
-                        /* awake状态下发送睡眠null帧失败此时应该为keepalive的null帧,缩短下一次的keepalive的到来时间5s后触发 */
+                        /* awake??????????????null????????????????keepalive??null??,????????????keepalive??????????5s?????? */
                         if ((STA_PWR_SAVE_STATE_AWAKE == STA_GET_PM_STATE(pst_mac_sta_pm_handle)))
                         {
                             pst_mac_sta_pm_handle->ul_ps_keepalive_cnt = (pst_mac_sta_pm_handle->ul_ps_keepalive_max_num) >> 2;
                         }
 
-                        /* acticve->doze的睡眠null帧,重发WLAN_MAX_NULL_SENT_NUM次,重启定时器相当于延迟一个定时器时间再发 */
+                        /* acticve->doze??????null??,????WLAN_MAX_NULL_SENT_NUM??,?????????????????????????????????????? */
                         else
                         {
                             dmac_psm_start_activity_timer(pst_dmac_vap,pst_mac_sta_pm_handle);
@@ -1149,7 +1149,7 @@ oal_uint8 dmac_null_frame_complete_sta(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc
                     }
                 }
 
-                /* 非软件节能回退继续软件重传,否则在noa唤醒的时候发送此null帧 */
+                /* ??????????????????????????,??????noa????????????????null?? */
                 if (DMAC_TX_SOFT_PSM_BACK != uc_dscr_status)
                 {
                     if (OAL_SUCC != dmac_send_null_frame_to_ap(pst_dmac_vap, (oal_uint8)(pst_mac_header->st_frame_control.bit_power_mgmt), OAL_FALSE))
@@ -1158,7 +1158,7 @@ oal_uint8 dmac_null_frame_complete_sta(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc
                     }
                 }
             }
-            /* 发送前up,发送完成时pause,发送不成功,清null帧等待标志位,防止再也睡不下去 */
+            /* ??????up,??????????pause,??????????,??null????????????,???????????????? */
             else
             {
                 OAM_WARNING_LOG3(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR, "{dmac_null_frame_complete_sta::pm[%d]vap state[%d]send null fail[%d]}",pst_mac_header->st_frame_control.bit_power_mgmt,
@@ -1171,7 +1171,7 @@ oal_uint8 dmac_null_frame_complete_sta(dmac_vap_stru *pst_dmac_vap, oal_uint8 uc
                 {
                     pst_mac_sta_pm_handle->st_null_wait.en_doze_null_wait = OAL_FALSE;
 
-                    /* acticve->doze的睡眠null帧,重启activtity定时器,防止处于active状态,无睡眠定时器,无法睡眠 */
+                    /* acticve->doze??????null??,????activtity??????,????????active????,????????????,???????? */
                     if (STA_PWR_SAVE_STATE_ACTIVE == STA_GET_PM_STATE(pst_mac_sta_pm_handle))
                     {
                         dmac_psm_start_activity_timer(pst_dmac_vap,pst_mac_sta_pm_handle);
@@ -1194,13 +1194,13 @@ oal_void dmac_psm_tx_complete_sta(dmac_vap_stru *pst_dmac_vap, hal_tx_dscr_stru 
     oal_uint8                            uc_type;
     oal_uint16                           us_user_idx;
 
-    /* p2p 扫描用dev 无低功耗状态机结构体，不需要进行低功耗处理 */
+    /* p2p ??????dev ?????????????????????????????????????????? */
     if (IS_P2P_DEV(&(pst_dmac_vap->st_vap_base_info)))
     {
         return;
     }
 
-    /* 非节能模式下的处理 */
+    /* ?????????????????? */
     if ((mac_mib_get_powermanagementmode(&(pst_dmac_vap->st_vap_base_info)) != WLAN_MIB_PWR_MGMT_MODE_PWRSAVE)
          || (0 == pst_dmac_vap->st_vap_base_info.us_sta_aid))
     {
@@ -1217,14 +1217,14 @@ oal_void dmac_psm_tx_complete_sta(dmac_vap_stru *pst_dmac_vap, hal_tx_dscr_stru 
         return;
     }
 
-    /* 节能模式下的处理 */
+    /* ???????????????? */
     if (WLAN_MIB_PWR_MGMT_MODE_PWRSAVE == (mac_mib_get_powermanagementmode(&(pst_dmac_vap->st_vap_base_info))))
     {
         pst_mac_header = (mac_ieee80211_frame_stru *)oal_netbuf_header(pst_netbuf);
         uc_subtype     =  mac_get_frame_sub_type((oal_uint8 *)pst_mac_header);
         uc_type        =  mac_get_frame_type((oal_uint8 *)pst_mac_header);
 
-        /* 获取发送状态位 */
+        /* ?????????????? */
         hal_tx_get_dscr_status(pst_dmac_vap->pst_hal_device, pst_dscr, &uc_dscr_status);
         hal_tx_get_dscr_send_rate_rank(pst_dmac_vap->pst_hal_device, pst_dscr, &uc_send_rate_rank);
 
@@ -1233,13 +1233,13 @@ oal_void dmac_psm_tx_complete_sta(dmac_vap_stru *pst_dmac_vap, hal_tx_dscr_stru 
             pst_mac_sta_pm_handle->ul_ps_keepalive_cnt = 0;
         }
 
-        /* 发送完成时处于doze状态(睡眠null帧先发送成功，状态先切到doze, pm=0的数据包的发送完成才到)的异常处理,先切到awake状态 */
+        /* ??????????????doze????(????null????????????????????????doze, pm=0??????????????????????)??????????,??????awake???? */
         if (STA_PWR_SAVE_STATE_DOZE == STA_GET_PM_STATE(pst_mac_sta_pm_handle))
         {
             dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_TX_COMPLETE, 0, OAL_PTR_NULL);
         }
 
-        /* NULL帧的发送完成 */
+        /* NULL???????????? */
         if ((WLAN_FC0_SUBTYPE_NODATA | WLAN_FC0_TYPE_DATA) == uc_subtype)
         {
             if (OAL_SUCC != (dmac_null_frame_complete_sta(pst_dmac_vap, uc_dscr_status, uc_send_rate_rank, pst_netbuf)))
@@ -1250,20 +1250,20 @@ oal_void dmac_psm_tx_complete_sta(dmac_vap_stru *pst_dmac_vap, hal_tx_dscr_stru 
 
         /* For non-NULL frame check if a NULL ACTIVE frame has to be sent to */
         /* the AP and then process the frame based on protocol.              */
-        /* 防止发了数据包,优先来了管理帧的发送完成中断,pro req等,清了等待标志位 */
+        /* ??????????????,????????????????????????????,pro req??,?????????????? */
         else
         {
-            /* 无论成功失败都必须清等待标志位,存在发送唤醒的null帧提前切到了active,后续置了等待标志位的唤醒的数据包才到*/
-            /* 发给关联ap的单播帧都可以切状态*/
+            /* ??????????????????????????????,??????????????null????????????active,????????????????????????????????????*/
+            /* ????????ap????????????????????*/
             if (OAL_SUCC == mac_vap_find_user_by_macaddr(&(pst_dmac_vap->st_vap_base_info), pst_mac_header->auc_address1, &us_user_idx))
             {
-                /* 直接切换标志只等待一个发送完成中断 */
+                /* ?????????????????????????????????? */
                 if (OAL_TRUE == pst_mac_sta_pm_handle->en_direct_change_to_active)
                 {
                     pst_mac_sta_pm_handle->en_direct_change_to_active = OAL_FALSE;
                 }
 
-                /* awake状态下发送唤醒的数据包成功必须切换到active状态,不管此包是否发送成功都切换到active状态 */
+                /* awake????????????????????????????????????active????,????????????????????????????active???? */
                 if ((STA_PWR_SAVE_STATE_AWAKE == STA_GET_PM_STATE(pst_mac_sta_pm_handle)) && (0 == pst_mac_header->st_frame_control.bit_power_mgmt))
                 {
                     dmac_pm_change_to_active_state(pst_dmac_vap,pst_mac_sta_pm_handle,STA_PWR_EVENT_TX_COMPLETE);
@@ -1290,7 +1290,7 @@ oal_void dmac_psm_process_tbtt_sta(dmac_vap_stru *pst_dmac_vap, mac_device_stru 
 
     if (MAC_SCAN_STATE_RUNNING != pst_mac_device->en_curr_scan_state)
     {
-        /* 接收tbtt计数统计 */
+        /* ????tbtt???????? */
         pst_sta_pm_handle->aul_pmDebugCount[PM_MSG_TBTT_CNT]++;
     }
 
@@ -1307,7 +1307,7 @@ oal_void dmac_psm_process_tbtt_sta(dmac_vap_stru *pst_dmac_vap, mac_device_stru 
     ul_max_allow_sleep_time = dmac_psm_get_max_sleep_time(pst_dmac_vap);
     ul_max_pl_sleep_time    = g_ul_max_deep_sleep_time > g_ul_max_light_sleep_time ? g_ul_max_deep_sleep_time : g_ul_max_light_sleep_time;
 
-    /* 平台最大睡眠时间*/
+    /* ????????????????*/
     if (ul_max_pl_sleep_time > ul_max_allow_sleep_time)
     {
         OAM_WARNING_LOG3(pst_dmac_vap->st_vap_base_info.uc_vap_id,OAM_SF_PWR,"{dmac_psm_process_tbtt_sta::deep sleep[%d]light sleep[%d] > allow[%d]}",g_ul_max_deep_sleep_time,g_ul_max_light_sleep_time,ul_max_allow_sleep_time);
@@ -1315,10 +1315,10 @@ oal_void dmac_psm_process_tbtt_sta(dmac_vap_stru *pst_dmac_vap, mac_device_stru 
         g_ul_max_deep_sleep_time   = 0;
         g_ul_max_light_sleep_time   = 0;
 
-        /* 协议的关键计数 */
+        /* ?????????????? */
         dmac_pm_key_info_dump(pst_dmac_vap);
 
-        /* 平台的睡眠计数*/
+        /* ??????????????*/
         PM_WLAN_DumpSleepCnt();
     }
 
@@ -1330,7 +1330,7 @@ oal_void dmac_psm_process_tbtt_sta(dmac_vap_stru *pst_dmac_vap, mac_device_stru 
         FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&(pst_sta_pm_handle->st_mcast_timer));
     }
 
-    /* 协议的状态和平台的状态分开 */
+    /* ?????????????????????????? */
     PM_WLAN_PsmHandle(pst_dmac_vap->pst_hal_vap->uc_service_id, PM_WLAN_WORK_PROCESS);
     dmac_pm_enable_front_end(pst_mac_device, OAL_FALSE);
 
@@ -1349,10 +1349,10 @@ oal_void dmac_psm_process_tbtt_sta(dmac_vap_stru *pst_dmac_vap, mac_device_stru 
         //dmac_start_dpd_calibration(&pst_dmac_vap->st_vap_base_info);
     }
 #endif
-    /* p2p noa可以在active状态浅睡,tbtt中断后需要确定收到了beacon才能noa浅睡 */
+    /* p2p noa??????active????????,tbtt????????????????????beacon????noa???? */
     pst_sta_pm_handle->en_beacon_frame_wait         = OAL_TRUE;
 
-    /* pspoll节能模式下,设置beacon等待标志，如果目前状态为doze，切换到awake状态 */
+    /* pspoll??????????,????beacon????????????????????????doze????????awake???? */
     if (STA_GET_PM_STATE(pst_sta_pm_handle) != STA_PWR_SAVE_STATE_ACTIVE)
     {
         if (STA_PWR_SAVE_STATE_DOZE == STA_GET_PM_STATE(pst_sta_pm_handle))
@@ -1388,13 +1388,13 @@ oal_uint8  dmac_psm_is_hw_queues_empty(mac_device_stru  *pst_device)
     oal_uint8                        uc_queue_num;
 
 
-    /*低功耗前面的流程已检查过合法性，不需要重复检查*/
+    /*??????????????????????????????????????????????*/
     pst_hal_device = pst_device->pst_device_stru;
 
-    /* 硬件发送队列 */
+    /* ???????????? */
     for (uc_queue_num = 0; uc_queue_num < HAL_TX_QUEUE_BUTT; uc_queue_num++)
     {
-        /*对应的硬件队列检查 */
+        /*?????????????????? */
         if (OAL_FALSE == (oal_dlist_is_empty(&(pst_hal_device->ast_tx_dscr_queue[uc_queue_num].st_header))))
         {
             //PRINT("{hw queue[%d]not empty}\r\n", uc_queue_num);
@@ -1411,7 +1411,7 @@ oal_uint8  dmac_psm_is_tid_queues_empty(dmac_vap_stru  *pst_dmac_vap)
     dmac_user_stru                   *pst_user;
     oal_uint8                        uc_tid_idx;
 
-    /* TID队列 */
+    /* TID???? */
     pst_user = (dmac_user_stru *)mac_res_get_dmac_user((oal_uint16)(pst_dmac_vap->st_vap_base_info.uc_assoc_vap_id));
 
     if (OAL_PTR_NULL != pst_user)
@@ -1452,7 +1452,7 @@ oal_uint32 dmac_send_pspoll_to_ap(dmac_vap_stru *pst_dmac_vap)
     dmac_user_stru                      *pst_dmac_user;
     mac_ieee80211_pspoll_frame_stru     *pst_pspoll_frame_hdr;
 
-    /* 申请net_buff */
+    /* ????net_buff */
     pst_net_buf = OAL_MEM_NETBUF_ALLOC(OAL_NORMAL_NETBUF, WLAN_SHORT_NETBUF_SIZE, OAL_NETBUF_PRIORITY_HIGH);
     if (OAL_PTR_NULL == pst_net_buf)
     {
@@ -1473,9 +1473,9 @@ oal_uint32 dmac_send_pspoll_to_ap(dmac_vap_stru *pst_dmac_vap)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 设置pspoll的frame control域 */
-    us_frame_ctl  = WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_CTL | WLAN_FC0_SUBTYPE_PS_POLL; //低八位
-    us_frame_ctl |= (WLAN_FC1_DIR_NODS << 8 ) | (WLAN_FC1_PWR_MGT << 8); //高八位
+    /* ????pspoll??frame control?? */
+    us_frame_ctl  = WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_CTL | WLAN_FC0_SUBTYPE_PS_POLL; //??????
+    us_frame_ctl |= (WLAN_FC1_DIR_NODS << 8 ) | (WLAN_FC1_PWR_MGT << 8); //??????
     mac_hdr_set_frame_control((oal_uint8 *)pst_pspoll_frame_hdr, us_frame_ctl);
 
     /* Set bits 14 and 15 to 1 when duration field carries Association ID */
@@ -1487,11 +1487,11 @@ oal_uint32 dmac_send_pspoll_to_ap(dmac_vap_stru *pst_dmac_vap)
     oal_set_mac_addr(pst_pspoll_frame_hdr->auc_bssid, pst_dmac_user->st_user_base_info.auc_user_mac_addr);
     oal_set_mac_addr(pst_pspoll_frame_hdr->auc_trans_addr, pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
-    /* 填写cb字段 */
+    /* ????cb???? */
     pst_tx_ctrl = (mac_tx_ctl_stru *)OAL_NETBUF_CB(pst_net_buf);
     OAL_MEMZERO(pst_tx_ctrl, OAL_SIZEOF(mac_tx_ctl_stru));
 
-    /* 填写tx部分 */
+    /* ????tx???? */
     mac_set_cb_ack_policy(pst_tx_ctrl, WLAN_TX_NORMAL_ACK);
     MAC_GET_CB_EVENT_TYPE(pst_tx_ctrl)         = FRW_EVENT_TYPE_WLAN_DTX;
     mac_set_cb_is_bar(pst_tx_ctrl, OAL_FALSE);
@@ -1499,9 +1499,9 @@ oal_uint32 dmac_send_pspoll_to_ap(dmac_vap_stru *pst_dmac_vap)
     MAC_GET_CB_RETRIED_NUM(pst_tx_ctrl)           = 0;
     mac_set_cb_tid(pst_tx_ctrl, WLAN_TID_FOR_DATA);
     MAC_GET_CB_TX_VAP_INDEX(pst_tx_ctrl)          = pst_dmac_vap->st_vap_base_info.uc_vap_id;
-    MAC_GET_CB_TX_USER_IDX(pst_tx_ctrl)           = pst_dmac_vap->st_vap_base_info.uc_assoc_vap_id; //sta方式和ap不一样
+    MAC_GET_CB_TX_USER_IDX(pst_tx_ctrl)           = pst_dmac_vap->st_vap_base_info.uc_assoc_vap_id; //sta??????ap??????
 
-    /* 填写tx rx公共部分 */
+    /* ????tx rx???????? */
     MAC_GET_CB_IS_MCAST(pst_tx_ctrl)            = OAL_FALSE;
     mac_set_cb_is_amsdu(pst_tx_ctrl, OAL_FALSE);
     MAC_GET_CB_IS_FROM_PS_QUEUE(pst_tx_ctrl)   = OAL_TRUE;
@@ -1560,7 +1560,7 @@ oal_uint32 dmac_send_null_frame_to_ap(dmac_vap_stru *pst_dmac_vap, oal_uint8  uc
 {
     oal_uint32      ul_ret = OAL_SUCC;
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
-    oal_uint32      uc_ac = WLAN_WME_AC_BE; //qos的ac默认为be，后续再根据业务需要动态获取
+    oal_uint32      uc_ac = WLAN_WME_AC_BE; //qos??ac??????be????????????????????????????
 #endif
     oal_uint8       en_ps;
     dmac_user_stru  *pst_dmac_user;
@@ -1584,13 +1584,13 @@ oal_uint32 dmac_send_null_frame_to_ap(dmac_vap_stru *pst_dmac_vap, oal_uint8  uc
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* DBAC running 不发送null帧，此时低功耗关闭,睡眠定时器可以停掉,dbac后再开低功耗 */
+    /* DBAC running ??????null??????????????????,??????????????????,dbac???????????? */
     if(OAL_TRUE == mac_is_dbac_running(pst_device))
     {
         return OAL_SUCC;
     }
 
-    /* 不是UP状态,不发送null帧 */
+    /* ????UP????,??????null?? */
     if (MAC_VAP_STATE_UP != pst_dmac_vap->st_vap_base_info.en_vap_state)
     {
         return OAL_FAIL;
@@ -1603,7 +1603,7 @@ oal_uint32 dmac_send_null_frame_to_ap(dmac_vap_stru *pst_dmac_vap, oal_uint8  uc
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 设置pm位是否置true */
+    /* ????pm????????true */
     en_ps = (uc_psm > 0) ? 1 : 0;
 
     //OAM_WARNING_LOG2(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR,"{dmac_send_null_frame_to_ap::ps:[%d],return addr[0x%x]}", en_ps,__return_address());
@@ -1663,7 +1663,7 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
     }
 
 #ifdef _PRE_WLAN_FEATURE_P2P
-    /* p2p节能开启,如果处于pause状态,重启定时器 */
+    /* p2p????????,????????pause????,?????????? */
     if ((OAL_TRUE == (oal_uint8)IS_P2P_PS_ENABLED(pst_dmac_vap)) && (OAL_TRUE == pst_mac_device->st_p2p_info.en_p2p_ps_pause))
     {
         dmac_psm_start_activity_timer(pst_dmac_vap,pst_sta_pm_handle);
@@ -1678,7 +1678,7 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
     if ((mac_mib_get_powermanagementmode(&(pst_dmac_vap->st_vap_base_info)) != WLAN_MIB_PWR_MGMT_MODE_PWRSAVE) &&
         (OAL_FALSE == dmac_psm_sta_is_activity_cnt_zero(pst_sta_pm_handle)))
     {
-        /* restart 定时器 */
+        /* restart ?????? */
         dmac_psm_start_activity_timer(pst_dmac_vap,pst_sta_pm_handle);
         pst_sta_pm_handle->aul_pmDebugCount[PM_MSG_PSM_TIMEOUT_PM_OFF]++;
 
@@ -1687,11 +1687,11 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
         return OAL_SUCC;
     }
 
-    /* 超时切doze的条件 */
+    /* ??????doze?????? */
     uc_doze_trans_flag = (pst_sta_pm_handle->en_beacon_frame_wait) | (pst_sta_pm_handle->st_null_wait.en_doze_null_wait << 1) | (pst_sta_pm_handle->en_more_data_expected << 2)
             | (pst_sta_pm_handle->st_null_wait.en_active_null_wait << 3) | (pst_sta_pm_handle->en_direct_change_to_active << 4);
 
-    /* 队列不为空(tid + 单vap也可提前检查硬件队列),restart定时器 */
+    /* ??????????(tid + ??vap????????????????????),restart?????? */
     if ((OAL_FALSE == dmac_psm_is_tid_queues_empty(pst_dmac_vap)) || (OAL_FALSE == dmac_psm_is_hw_queues_empty(pst_mac_device)))
     {
         dmac_psm_start_activity_timer(pst_dmac_vap,pst_sta_pm_handle);
@@ -1706,20 +1706,20 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
         dmac_psm_start_activity_timer(pst_dmac_vap,pst_sta_pm_handle);
         pst_sta_pm_handle->aul_pmDebugCount[PM_MSG_PSM_TIMEOUT_PKT_CNT]++;
         pst_sta_pm_handle->ul_psm_pkt_cnt = 0;
-        pst_sta_pm_handle->uc_psm_timer_restart_cnt = 0; //有包收发从start count重头开始计
+        pst_sta_pm_handle->uc_psm_timer_restart_cnt = 0; //??????????start count??????????
     }
-     /* 队列为空,分低功耗模式和非低功耗KEEPALVIVE模式 */
+     /* ????????,??????????????????????KEEPALVIVE???? */
     else
     {
         if (WLAN_MIB_PWR_MGMT_MODE_PWRSAVE == (mac_mib_get_powermanagementmode(&(pst_dmac_vap->st_vap_base_info))))
         {
-            /* uc_doze_trans_flag条件不满足,不需等待uc_psm_timer_restart_cnt*g_device_wlan_pm_timeout时间,只需下一个g_device_wlan_pm_timeout */
+            /* uc_doze_trans_flag??????????,????????uc_psm_timer_restart_cnt*g_device_wlan_pm_timeout????,??????????g_device_wlan_pm_timeout */
             pst_sta_pm_handle->uc_psm_timer_restart_cnt++;
 
-            /* 节能模式下的超时函数只有在非doze的情况下才作用 */
+            /* ????????????????????????????doze?????????????? */
             if (STA_PWR_SAVE_STATE_DOZE != STA_GET_PM_STATE(pst_sta_pm_handle))
             {
-                /* 此处, 从非节能的active态可以切换到节能的doze态 */
+                /* ????, ??????????active??????????????????doze?? */
                 if((OAL_FALSE == uc_doze_trans_flag) && (pst_sta_pm_handle->uc_psm_timer_restart_cnt >= g_pm_timer_restart_cnt))
                 {
                     pst_sta_pm_handle->uc_timer_fail_doze_trans_cnt = 0;
@@ -1733,7 +1733,7 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
                         dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_TIMEOUT, 0, OAL_PTR_NULL);
                     }
 
-                    pst_sta_pm_handle->uc_psm_timer_restart_cnt = 0; //满足睡眠条件计数清0,即使null帧发送失败，下一次也还是重头计数
+                    pst_sta_pm_handle->uc_psm_timer_restart_cnt = 0; //??????????????????0,????null????????????????????????????????
                 }
                 else
                 {
@@ -1741,7 +1741,7 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
 
                     pst_sta_pm_handle->aul_pmDebugCount[PM_MSG_PSM_RESTART_A]++;
 
-                    /* 重启activity 定时器 */
+                    /* ????activity ?????? */
                     dmac_psm_start_activity_timer(pst_dmac_vap,pst_sta_pm_handle);
                 }
             }
@@ -1749,7 +1749,7 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
             {
                 OAM_WARNING_LOG1(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR, "{dmac_psm_alarm_callback::event:[%d]change pm state doze.}", pst_sta_pm_handle->uc_doze_event);
             }
-            /* uc_psm_timer_restart_cnt < g_pm_timer_restart_cnt 非异常不需打印 */
+            /* uc_psm_timer_restart_cnt < g_pm_timer_restart_cnt ?????????????? */
             if ((DMAC_TIMER_DOZE_TRANS_FAIL_NUM < pst_sta_pm_handle->uc_timer_fail_doze_trans_cnt) && (pst_sta_pm_handle->uc_psm_timer_restart_cnt >= g_pm_timer_restart_cnt))
             {
                 OAM_WARNING_LOG3(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_PWR, "{dmac_psm_alarm_callback::pm state:[%d],doze trans flag:[%d]timer restart cnt[%d].}", STA_GET_PM_STATE(pst_sta_pm_handle),uc_doze_trans_flag,pst_sta_pm_handle->uc_psm_timer_restart_cnt);
@@ -1771,7 +1771,7 @@ oal_uint32 dmac_psm_alarm_callback(void *p_arg)
 
         if(OAL_SUCC != ul_ps_ret)
         {
-            /* fast模式切换失败重启activity 定时器 */
+            /* fast????????????????activity ?????? */
             pst_sta_pm_handle->aul_pmDebugCount[PM_MSG_PSM_RESTART_C]++;
             dmac_psm_start_activity_timer(pst_dmac_vap,pst_sta_pm_handle);
 

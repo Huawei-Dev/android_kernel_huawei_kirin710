@@ -61,7 +61,7 @@
 #define  wdt_pinfo(fmt,...)		(bsp_info(fmt, ##__VA_ARGS__))
 #define  wdt_debug(fmt,...)		(bsp_debug(fmt,##__VA_ARGS__))
 
-/* 整理后 */
+/* ?????? */
 #define WDT_NUM              			(2)
 #define WDT_INDEX                		(0)
 #define TIMER_INDEX              		(1)
@@ -71,7 +71,7 @@
 #define WDT_NULL            			(void*)0
 #define WDT_RES_NUM              		(4)
 
-/*硬狗使用*/
+/*????????*/
 #define WDT_UNLOCK               		(0x1ACCE551)
 #define WDT_LOCK                 		(0x0)
 #define WDT_COUNT_DEFAULT       		(0xf0000)
@@ -132,7 +132,7 @@ typedef enum _WDT_CORE_ID{
 	MAX_WDT_CORE_ID,
 }WDT_CORE_ID;
 
-typedef void(*wdt_timeout_cb)(void);/*A、C核共用*/
+typedef void(*wdt_timeout_cb)(void);/*A??C??????*/
 
 s32 bsp_wdt_register_hook(WDT_CORE_ID core_id, void *func);
 s32 bsp_wdt_unregister_hook(WDT_CORE_ID core_id);

@@ -51,7 +51,7 @@
 #include "msp_at.h"
 #include "at_lte_common.h"
 #include "ATCmdProc.h"
-#include "AtParse.h"/*为包含MnClient.h
+#include "AtParse.h"/*??????MnClient.h
  */
 #include "gen_common.h"
 #include "at_common.h"
@@ -60,7 +60,7 @@
 #include "AtCmdMiscProc.h"
 
 
-/*lint -e767 原因:Log打印*/
+/*lint -e767 ????:Log????*/
 #define    THIS_FILE_ID        MSP_FILE_ID_AT_LTE_EVENTREPORT_C
 /*lint +e767 */
 
@@ -68,28 +68,28 @@
 
 /******************************************************************************
  */
-/* 函数名称: atCsqInfoIndProc
+/* ????????: atCsqInfoIndProc
  */
-/* 功能描述: 处理CSQ主动上报信息
- */
-/*
- */
-/* 参数说明: pMsgBlock，MSP MSG消息结构
+/* ????????: ????CSQ????????????
  */
 /*
  */
-/* 返 回 值:
+/* ????????: pMsgBlock??MSP MSG????????
  */
 /*
  */
-/* 调用要求: TODO: ...
+/* ?? ?? ??:
  */
-/* 调用举例: TODO: ...
+/*
+ */
+/* ????????: TODO: ...
+ */
+/* ????????: TODO: ...
  */
 
 /******************************************************************************
  */
-/*按照V1中的#define MSP_HAVE_AT_RSSI_REPORT修改的
+/*????V1????#define MSP_HAVE_AT_RSSI_REPORT??????
  */
 VOS_UINT32 atCsqInfoIndProc(VOS_VOID *pMsgBlock)
 {
@@ -141,7 +141,7 @@ VOS_UINT8 AT_CalculateLTEAntennaLevel(
 {
     VOS_INT16 usLevel = 0;
        g_ATE5Order =4;
-    /*天线格式显示规则
+    /*????????????????
  */
     if ( usRsrp <= g_stRsrpCfg.ssValue[3])
     {
@@ -169,7 +169,7 @@ VOS_UINT8 AT_GetSmoothLTEAntennaLevel(
 {
     VOS_UINT8                               i;
     g_ATE5Order =5;
-    /* 丢网时 立即更新  */
+    /* ?????? ????????  */
     if ( AT_CMD_ANTENNA_LEVEL_0 == enLevel )
     {
         g_ulAntennaLevel = enLevel;
@@ -178,7 +178,7 @@ VOS_UINT8 AT_GetSmoothLTEAntennaLevel(
         return g_ulAntennaLevel;
     }
 
-    /* 丢网到有服务状态  立即更新  */
+    /* ????????????????  ????????  */
     if ( AT_CMD_ANTENNA_LEVEL_0 == g_ulAntennaLevel )
     {
         g_ulAntennaLevel = enLevel;
@@ -188,7 +188,7 @@ VOS_UINT8 AT_GetSmoothLTEAntennaLevel(
         return g_ulAntennaLevel;
     }
 
-    /* 与上次的信号格数比较, 变化比较大(超过1格)就立即更新 */
+    /* ????????????????????, ??????????(????1??)?????????? */
     if ( enLevel > (g_ulAntennaLevel + 1) )
     {
         g_ulAntennaLevel = enLevel;
@@ -210,7 +210,7 @@ VOS_UINT8 AT_GetSmoothLTEAntennaLevel(
       /* Do nothing... */
     }
 
-    /* 先进先出存最近3次的查询结果 */
+    /* ??????????????3???????????? */
     for ( i=0; i<AT_ANTENNA_LEVEL_NUM-1; i++ )
     {
          g_ATAntennaLevel[i] = g_ATAntennaLevel[i+1];
@@ -218,7 +218,7 @@ VOS_UINT8 AT_GetSmoothLTEAntennaLevel(
     g_ATAntennaLevel[i] = enLevel;
 
 
-    /* 格数波动则不更新，以达到平滑的效果 */
+    /* ?????????????????????????????????? */
     for ( i=0; i<AT_ANTENNA_LEVEL_NUM-1; i++ )
     {
         if (g_ATAntennaLevel[i]  != g_ATAntennaLevel[i+1] )
@@ -227,7 +227,7 @@ VOS_UINT8 AT_GetSmoothLTEAntennaLevel(
         }
     }
 
-    /* 信号格数稳定了 AT_ANTENNA_LEVEL_MAX_NUM 次时才做更新 */
+    /* ?????????????? AT_ANTENNA_LEVEL_MAX_NUM ???????????? */
     g_ulAntennaLevel = enLevel;
     return g_ulAntennaLevel;
 }
@@ -249,7 +249,7 @@ VOS_UINT32 at_CsqInfoProc(VOS_VOID *pMsgBlock,AT_ANLEVEL_INFO_CNF_STRU* pAnlevel
     pAnlevelAnqueryInfo->usClientId= pCsqInfo->usClientId;
     pAnlevelAnqueryInfo->ulErrorCode = pCsqInfo->ulErrorCode;
 
-    /*RSSI 格式显示规则
+    /*RSSI ????????????
  */
     if(AT_RSSI_UNKNOWN == pCsqInfo->sRssi)
     {
@@ -268,22 +268,22 @@ VOS_UINT32 at_CsqInfoProc(VOS_VOID *pMsgBlock,AT_ANLEVEL_INFO_CNF_STRU* pAnlevel
         pAnlevelAnqueryInfo->sRssi = ( VOS_UINT16)((pCsqInfo->sRssi - AT_RSSI_LOW) / 2);
     }
 
-    /* 上报数据转换:将 Rscp、Ecio显示为非负值，若Rscp、Ecio为-145，-32，或者rssi为99，
-       则转换为0 */
+    /* ????????????:?? Rscp??Ecio????????????????Rscp??Ecio??-145??-32??????rssi??99??
+       ????????0 */
     if ( (AT_RSSI_UNKNOWN  == pCsqInfo->sRsrp)|| (AT_RSSI_UNKNOWN == pCsqInfo->sRssi) )
     {
-        /* 丢网返回0, 对应应用的圈外 */
+        /* ????????0, ?????????????? */
         enCurAntennaLevel       = AT_CMD_ANTENNA_LEVEL_0;
     }
     else
     {
-         /* 取绝对值 */
+         /* ???????? */
         usRsrp                    = ( VOS_UINT16)(-(pCsqInfo->sRsrp));
-        /* 调用函数AT_CalculateAntennaLevel来根据D25算法计算出信号格数 */
+        /* ????????AT_CalculateAntennaLevel??????D25?????????????????? */
         enCurAntennaLevel = AT_CalculateLTEAntennaLevel((VOS_INT16)usRsrp);
     }
 
-    /* 信号磁滞处理 */
+    /* ???????????? */
     pAnlevelAnqueryInfo->sLevel = AT_GetSmoothLTEAntennaLevel( enCurAntennaLevel );
 
     pAnlevelAnqueryInfo->sRsrp = pCsqInfo->sRsrp;
@@ -364,29 +364,29 @@ VOS_UINT32 atSetAnlevelCnfSameProc(VOS_VOID *pMsgBlock)
 
 /******************************************************************************
  */
-/* 函数名称: atSetCsqCnfProc
+/* ????????: atSetCsqCnfProc
  */
-/* 功能描述: 处理SET CSQ命令回复信息
- */
-/*
- */
-/* 参数说明: pMsgBlock，MSP MSG消息结构
+/* ????????: ????SET CSQ????????????
  */
 /*
  */
-/* 返 回 值:
+/* ????????: pMsgBlock??MSP MSG????????
  */
 /*
  */
-/* 调用要求: TODO: ...
+/* ?? ?? ??:
  */
-/* 调用举例: TODO: ...
+/*
+ */
+/* ????????: TODO: ...
+ */
+/* ????????: TODO: ...
  */
 
 /******************************************************************************
  */
 
-/*这个函数跟AT命令表中的函数名字相同，是不是要重新改名字
+/*??????????AT??????????????????????????????????????????
  */
 VOS_UINT32 atSetCsqCnfSameProc(VOS_VOID *pMsgBlock)
 {
@@ -465,7 +465,7 @@ VOS_UINT32 atCerssiInfoCnfProc(VOS_VOID *pMsgBlock)
 
     pCerssi = (L4A_CSQ_INFO_CNF_STRU*)pMsgBlock;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     /* coverity[example_checked] */
     if (AT_FAILURE == At_ClientIdToUserId(pCerssi->usClientId,&ucIndex))
     {
@@ -493,23 +493,23 @@ VOS_UINT32 atCerssiInfoCnfProc(VOS_VOID *pMsgBlock)
 
 /******************************************************************************
  */
-/* 函数名称: atSysModeIndProc
+/* ????????: atSysModeIndProc
  */
-/* 功能描述: 处理SYSMODE主动上报信息
- */
-/*
- */
-/* 参数说明: pMsgBlock，MSP MSG消息结构
+/* ????????: ????SYSMODE????????????
  */
 /*
  */
-/* 返 回 值:
+/* ????????: pMsgBlock??MSP MSG????????
  */
 /*
  */
-/* 调用要求: TODO: ...
+/* ?? ?? ??:
  */
-/* 调用举例: TODO: ...
+/*
+ */
+/* ????????: TODO: ...
+ */
+/* ????????: TODO: ...
  */
 
 /******************************************************************************
@@ -566,15 +566,15 @@ VOS_UINT32 atLwclashCnfProc(VOS_VOID *pMsgBlock)
 
 
 /*****************************************************************************
- 函 数 名  : atLacellCnfProc
- 功能描述  : ^LCACELL命令应答处理
- 输入参数  : VOS_VOID *pMsgBlock
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : atLacellCnfProc
+ ????????  : ^LCACELL????????????
+ ????????  : VOS_VOID *pMsgBlock
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
+ ????????  :
+ ????????  :
 
- 修改历史  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 atLcacellCnfProc(VOS_VOID *pMsgBlock)
 {
@@ -665,7 +665,7 @@ VOS_UINT32 atQryCellInfoCnfProc(VOS_VOID *pMsgBlock)
     }
     else
     {
-        /*同频*/
+        /*????*/
         for( i =0; i < pstcnf->stNcellListInfo.stIntraFreqNcellList.ulNCellNumber ;i++)
         {
             ulCellNum ++;
@@ -679,7 +679,7 @@ VOS_UINT32 atQryCellInfoCnfProc(VOS_VOID *pMsgBlock)
                 pstcnf->stNcellListInfo.stIntraFreqNcellList.stCellMeasInfo[i].stMeasRslt.sRssi,
                 gaucAtCrLf);
         }
-         /*异频*/
+         /*????*/
         for( i =0; i < pstcnf->stNcellListInfo.stInterFreqNcellList.ulNCellNumber ;i++)
         {
             ulCellNum ++;
@@ -693,7 +693,7 @@ VOS_UINT32 atQryCellInfoCnfProc(VOS_VOID *pMsgBlock)
                 pstcnf->stNcellListInfo.stInterFreqNcellList.stCellMeasInfo[i].stMeasRslt.sRssi,
                 gaucAtCrLf);
         }
-        /*W异频*/
+        /*W????*/
         for( i =0; i < pstcnf->stNcellListInfo.stInterRATUMTSNcellList.ulNCellNumber ;i++)
         {
             ulCellNum ++;
@@ -707,7 +707,7 @@ VOS_UINT32 atQryCellInfoCnfProc(VOS_VOID *pMsgBlock)
                 pstcnf->stNcellListInfo.stInterRATUMTSNcellList.stUMTSNcellList[i].sCpichRscp,
                 gaucAtCrLf);
         }
-        /*G异频*/
+        /*G????*/
         for( i =0; i < pstcnf->stNcellListInfo.stInterRATGeranNcellList.ulNCellNumber ;i++)
         {
             ulCellNum ++;
@@ -789,7 +789,7 @@ VOS_UINT32 atLcacellInd(VOS_VOID *pMsgBlock)
 
     pstLcacell = (L4A_READ_LCACELL_IND_STRU *)pMsgBlock;
 
-    /* 此命令头尾添加\r\n */
+    /* ??????????????\r\n */
     usLength += (VOS_UINT16)At_sprintf( AT_CMD_MAX_LEN,
                 (VOS_CHAR *)pgucLAtSndCodeAddr,
                 (VOS_CHAR *)pgucLAtSndCodeAddr+usLength,
@@ -829,7 +829,7 @@ VOS_UINT32 atLcacellInd(VOS_VOID *pMsgBlock)
 
 typedef VOS_UINT32 (*AT_L4A_MSG_FUN)(VOS_VOID* pMsgBlock);
 
-/*lint -e958 原因:只在A核使用 */
+/*lint -e958 ????:????A?????? */
 typedef struct
 {
     VOS_UINT32 ulMsgId;
@@ -859,23 +859,23 @@ static const AT_L4A_MSG_FUN_TABLE_STRU g_astAtL4aIndMsgFunTable[] = {
 
 /******************************************************************************
  */
-/* 函数名称: atL4aGetMsgFun
+/* ????????: atL4aGetMsgFun
  */
-/* 功能描述: 获取处理L4A回复消息的函数
- */
-/*
- */
-/* 参数说明: ulMsgId，消息ID
+/* ????????: ????????L4A??????????????
  */
 /*
  */
-/* 返 回 值:
+/* ????????: ulMsgId??????ID
  */
 /*
  */
-/* 调用要求: TODO: ...
+/* ?? ?? ??:
  */
-/* 调用举例: TODO: ...
+/*
+ */
+/* ????????: TODO: ...
+ */
+/* ????????: TODO: ...
  */
 
 /******************************************************************************
@@ -897,30 +897,30 @@ AT_L4A_MSG_FUN_TABLE_STRU* atL4aGetCnfMsgFun(VOS_UINT32 ulMsgId)
         }
     }
 
-    /*如果找不到
+    /*??????????
  */
     return NULL;
 }
 
 /******************************************************************************
  */
-/* 函数名称: atL4aGetIndMsgFun
+/* ????????: atL4aGetIndMsgFun
  */
-/* 功能描述: 获取处理L4A回复消息的函数
- */
-/*
- */
-/* 参数说明: ulMsgId，消息ID
+/* ????????: ????????L4A??????????????
  */
 /*
  */
-/* 返 回 值:
+/* ????????: ulMsgId??????ID
  */
 /*
  */
-/* 调用要求: TODO: ...
+/* ?? ?? ??:
  */
-/* 调用举例: TODO: ...
+/*
+ */
+/* ????????: TODO: ...
+ */
+/* ????????: TODO: ...
  */
 
 /******************************************************************************
@@ -942,7 +942,7 @@ AT_L4A_MSG_FUN_TABLE_STRU* atL4aGetIndMsgFun(VOS_UINT32 ulMsgId)
         }
     }
 
-    /*如果找不到
+    /*??????????
  */
     return NULL;
 }
@@ -952,23 +952,23 @@ AT_L4A_MSG_FUN_TABLE_STRU* atL4aGetIndMsgFun(VOS_UINT32 ulMsgId)
 
 /******************************************************************************
  */
-/* 函数名称: at_L4aCnfProc
+/* ????????: at_L4aCnfProc
  */
-/* 功能描述: 接收L4A的CNF，IND消息，并查找对应函数进行处理
- */
-/*
- */
-/* 参数说明: pMsgBlockTmp，VOS消息
+/* ????????: ????L4A??CNF??IND????????????????????????????
  */
 /*
  */
-/* 返 回 值:
+/* ????????: pMsgBlockTmp??VOS????
  */
 /*
  */
-/* 调用要求: TODO: ...
+/* ?? ?? ??:
  */
-/* 调用举例: TODO: ...
+/*
+ */
+/* ????????: TODO: ...
+ */
+/* ????????: TODO: ...
  */
 
 /******************************************************************************
@@ -1022,7 +1022,7 @@ AT_FTM_CNF_MSG_PROC_STRU g_astLteAtFtmCnfMsgTbl[] =
     { ID_MSG_FTM_SET_RXON_CNF,          atSetFRXONParaCnfProc },
     { ID_MSG_FTM_RD_RXON_CNF,           atQryFRXONParaCnfProc },
     { ID_MSG_FTM_SET_FWAVE_CNF,         atSetFWAVEParaCnfProc },
-    { ID_MSG_FTM_SET_TSELRF_CNF,        atSetTselrfParaCnfProc},/*TSELRF 已实现未联调 */
+    { ID_MSG_FTM_SET_TSELRF_CNF,        atSetTselrfParaCnfProc},/*TSELRF ???????????? */
     { ID_MSG_FTM_SET_AAGC_CNF,          atSetFLNAParaCnfProc },
     { ID_MSG_FTM_RD_AAGC_CNF,           atQryFLNAParaCnfProc },
     { ID_MSG_FTM_FRSSI_CNF,             atQryFRSSIParaCnfProc },
@@ -1051,21 +1051,21 @@ AT_FTM_IND_MSG_PROC_STRU g_astLteAtFtmIndMsgTbl[] =
 
 /******************************************************************************
  */
-/* 函数名称: atGetFtmCnfMsgProc
+/* ????????: atGetFtmCnfMsgProc
  */
-/* 功能描述: 根据回复的消息找到匹配的处理函数
+/* ????????: ????????????????????????????????
  */
 /*
  */
-/* 参数说明:
+/* ????????:
  */
-/*   MsgId  [in] 消息ID
+/*   MsgId  [in] ????ID
  */
-/* 返 回 值:
+/* ?? ?? ??:
  */
-/*    非NULL g_astLteAtFtmCnfMsgTbl 元素地址，包含了处理函数
+/*    ??NULL g_astLteAtFtmCnfMsgTbl ????????????????????????
  */
-/*    NULL 匹配失败
+/*    NULL ????????
  */
 
 /*******************************************************************************/
@@ -1106,21 +1106,21 @@ AT_FTM_IND_MSG_PROC_STRU* At_GetFtmIndMsgProc(VOS_UINT32 ulMsgId)
 
 /******************************************************************************
  */
-/* 函数名称: atGetFtmCnfMsgProc
+/* ????????: atGetFtmCnfMsgProc
  */
-/* 功能描述: AT处理LTE装备FTM回复消息入口
+/* ????????: AT????LTE????FTM????????????
  */
 /*
  */
-/* 参数说明:
+/* ????????:
  */
-/*   pMsg  [in] 核间消息结构
+/*   pMsg  [in] ????????????
  */
-/* 返 回 值:
+/* ?? ?? ??:
  */
-/*    ERR_MSP_SUCCESS 成功
+/*    ERR_MSP_SUCCESS ????
  */
-/*    ERR_MSP_FAILURE 失败
+/*    ERR_MSP_FAILURE ????
  */
 
 /******************************************************************************
@@ -1142,7 +1142,7 @@ VOS_UINT32 At_FtmEventMsgProc(VOS_VOID* pMsg)
         return ERR_MSP_FAILURE;
     }
 
-    /* 消息结构转换 */
+    /* ???????????? */
     pstMsgBlock->ulSenderPid = pDataMsg->ulSenderPid;
     pOsMsg = (OS_MSG_STRU *)(pstMsgBlock->aucValue);
     pOsMsg->ulMsgId = pDataMsg->ulMsgId;
@@ -1161,7 +1161,7 @@ VOS_UINT32 At_FtmEventMsgProc(VOS_VOID* pMsg)
 
     MSP_MEMCPY((VOS_UINT8*)(pOsMsg->ulParam1), pDataMsg->ulLen, pDataMsg->pContext, pDataMsg->ulLen);
 
-    /* 消息处理 */
+    /* ???????? */
     pMsgProcItem        = atGetFtmCnfMsgProc(pDataMsg->ulMsgId);
     pstFtmIndMsgItem    = At_GetFtmIndMsgProc(pDataMsg->ulMsgId);
 

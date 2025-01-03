@@ -134,7 +134,7 @@ static int noc_dump_err_probe(void)
 static int noc_dump_prt(void)
 {
 	uint reg_value, reg_val1;
-/* NoPendingTrans×´Ì¬ */
+/* NoPendingTrans???? */
 	NOC_L_D_PRT("***NoPendingTrans status***\n");
 	reg_value = readl_relaxed((u8 __iomem *)g_noc_dump_info.noc_device_ptr->pctrl_base
 					+ g_noc_dump_info.noc_device_ptr->preg_list->pctrl_stat2_offset);
@@ -142,7 +142,7 @@ static int noc_dump_prt(void)
 	reg_value = readl_relaxed((u8 __iomem *)g_noc_dump_info.noc_device_ptr->sctrl_base
 					+ g_noc_dump_info.noc_device_ptr->preg_list->sctrl_scperstatus6_offset);
 	NOC_L_D_PRT("SCTRL_SCPERSTATUS6 = 0x%x\n", reg_value);
-/* µÍ¹¦ºÄÎÕÊÖ×´Ì¬ */
+/* ?????????????? */
 	NOC_L_D_PRT("***LowPower HandInHand***\n");
 	reg_value =
 	    readl_relaxed((u8 __iomem *)g_noc_dump_info.noc_device_ptr->pmctrl_base
@@ -155,7 +155,7 @@ static int noc_dump_prt(void)
 	reg_value = readl_relaxed((u8 __iomem *)g_noc_dump_info.noc_device_ptr->pmctrl_base
 					+ g_noc_dump_info.noc_device_ptr->preg_list->pmctrl_power_idle_offset);
 	NOC_L_D_PRT("PMCTRL_NOC_POWER_IDLE = 0x%x\n", reg_value);
-/* Timeout ×´Ì¬ */
+/* Timeout ???? */
 	NOC_L_D_PRT("***Timeout status***\n");
 	reg_value =
 	    readl_relaxed((u8 __iomem *)g_noc_dump_info.noc_device_ptr->pmctrl_base
@@ -170,7 +170,7 @@ static int noc_dump_prt(void)
 		noc_dump_err_probe();
 	}
 
-/* µØÖ·½»Ö¯Á£¶ÈÅäÖÃ */
+/* ???????????????? */
 	NOC_L_D_PRT("***Address interleaving status***\n");
 	reg_value = readl_relaxed((u8 __iomem *)g_noc_dump_info.noc_device_ptr->pctrl_base
 					+ g_noc_dump_info.noc_device_ptr->preg_list->pctrl_ctrl19_offset);

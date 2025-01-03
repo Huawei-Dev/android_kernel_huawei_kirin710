@@ -47,7 +47,7 @@ struct rpmb_devinfo {
 
 	uint32_t mdt;	/* 1: EMMC 2: UFS */
 	uint32_t support_bit_map;/* the device's support bit map, for example, if it support 1,2,32, then the value is 0x80000003 */
-	uint32_t version; /*??16bit??0x5a5a???support_bit_map??��????16bit??��????	0x1???*/
+	uint32_t version; /*??16bit??0x5a5a???support_bit_map????????????16bit????????????	0x1???*/
 	uint32_t tmp3;
 };
 struct rpmb_ioc {
@@ -67,8 +67,8 @@ struct rpmb_ctrl_t {
 	enum rpmb_op_type op_type;
 
 	union __args {
-		struct rpmb_devinfo get_devinfo;	/* ��С 8 * 7 */
-		struct rpmb_ioc send_ioccmd;		/* ��С 8 * 11 */
+		struct rpmb_devinfo get_devinfo;	/* ???????? 8 * 7 */
+		struct rpmb_ioc send_ioccmd;		/* ???????? 8 * 11 */
 	} args;
 
 

@@ -57,11 +57,11 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID PS_FILE_ID_STK_API_C
 
-/*Envelope 命令回复列表 */
+/*Envelope ???????????? */
 VOS_UINT8 gucCallCtrlRsp[]      = {CAP_CFG_PARA_TAG,SUBADDRESS_TAG,ALPHA_IDENTIFIER_TAG,BC_REPEAT_INDICATOR_TAG,CAP_CFG_PARA_TAG};
 
 VOS_UINT8 gucMOSMSCtrlRsp[]     = {ALPHA_IDENTIFIER_TAG};
@@ -79,7 +79,7 @@ VOS_UINT32 SI_STK_GetReceiverPid(
     MODEM_ID_ENUM_UINT16                enModemID;
     SI_PIH_CARD_SLOT_ENUM_UINT32        enSlotId;
 
-    /* 调用接口获取Modem ID */
+    /* ????????????Modem ID */
     if(VOS_OK != AT_GetModemIdFromClient(ClientId,&enModemID))
     {
         return VOS_ERR;
@@ -231,7 +231,7 @@ VOS_UINT32 SI_STK_SetUpCallConfirm(
     MN_CLIENT_ID_T                      ClientId,
     SI_STK_SETUPCALLCONFIRM_ENUM_UINT32 enAction)
 {
-    /* 参数检查 */
+    /* ???????? */
     if (SI_STK_SETUPCALL_BUTT <= enAction)
     {
         STK_ERROR_LOG("SI_STK_SetUpCallConfirm: The Input Para is Error");

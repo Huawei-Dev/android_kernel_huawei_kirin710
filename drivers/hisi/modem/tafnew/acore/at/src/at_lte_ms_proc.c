@@ -54,7 +54,7 @@
 
 #include "nv_stru_lps.h"
 
-/*lint -e767 原因:Log打印*/
+/*lint -e767 ????:Log????*/
 #define    THIS_FILE_ID        MSP_FILE_ID_AT_LTE_MS_PROC_C
 /*lint +e767 */
 
@@ -67,18 +67,18 @@ extern VOS_BOOL AT_IsNVWRAllowedNvId(VOS_UINT16 usNvId);
 
 
 // *****************************************************************************
-// oˉêy??3?: atSetNVRDLenPara
-// 1|?ü?èê?: ?áNV3¤?èY
+// o????y??3?: atSetNVRDLenPara
+// 1|?????????: ???NV3?????Y
 //
-// 2?êy?μ?÷:
-//   ulIndex [in] ó??§?÷òy
+// 2???y??????:
+//   ulIndex [in] ???????????y
 //
-// ·μ ?? ?μ:
+// ???? ?? ???:
 //    TODO: ...
 //
-// μ÷ó?òa?ó: TODO: ...
-// μ÷ó??ùày: TODO: ...
-// ×÷    ??: óú???1?/00193980 [2013-02-24]
+// ?????????a???: TODO: ...
+// ????????????y: TODO: ...
+// ????    ??: ???????1?/00193980 [2013-02-24]
 // *****************************************************************************
 VOS_UINT32 atSetNVRDLenPara(VOS_UINT8 ucClientId)
 {
@@ -355,7 +355,7 @@ VOS_UINT32 At_SetLFromConnToIdlePara(VOS_UINT8 ucIndex)
     stReq.stCtrl.ulOpId = 0;
     stReq.stCtrl.ulPid = WUEPS_PID_AT;
 
-    /* 参数检查 */
+    /* ???????? */
     if(AT_CMD_OPT_SET_CMD_NO_PARA != g_stATParseCmd.ucCmdOptType)
     {
         return AT_CME_INCORRECT_PARAMETERS;
@@ -371,7 +371,7 @@ VOS_UINT32 At_SetLFromConnToIdlePara(VOS_UINT8 ucIndex)
         return AT_OK;
     }
 
-    /*L模调用如下接口转发*/
+    /*L??????????????????*/
     ulRet = atSendL4aDataMsg(gastAtClientTab[ucIndex].usClientId,
                              I0_MSP_L4_L4A_PID,
                              ID_MSG_L4A_LTE_TO_IDLE_REQ,
@@ -406,7 +406,7 @@ VOS_UINT32 At_SetLWThresholdCfgPara(VOS_UINT8 ucIndex)
         return AT_OK;
     }
 
-    /*L模调用如下接口转发*/
+    /*L??????????????????*/
     ulRet = atSendL4aDataMsg(gastAtClientTab[ucIndex].usClientId,
                              I0_MSP_L4_L4A_PID,
                              ID_MSG_L4A_LW_THRESHOLD_REQ,
@@ -426,7 +426,7 @@ VOS_UINT32 AT_SetLFastDormPara(VOS_UINT8 ucIndex)
     L4A_SET_FAST_DORM_REQ_STRU stReq = {0};
     LPS_SWITCH_PARA_STRU stDrxControlFlag = {0};
 
-    /* 参数检查在AT入口已做
+    /* ??????????AT????????
  */
 
     stReq.stCtrl.ulClientId = gastAtClientTab[ucIndex].usClientId;
@@ -445,7 +445,7 @@ VOS_UINT32 AT_SetLFastDormPara(VOS_UINT8 ucIndex)
         return AT_OK;
     }
 
-    /*L模调用如下接口转发*/
+    /*L??????????????????*/
     ulRet = atSendL4aDataMsg(gastAtClientTab[ucIndex].usClientId,
                              I0_MSP_L4_L4A_PID,
                              ID_MSG_L4A_FAST_DORM_REQ,
@@ -465,7 +465,7 @@ VOS_UINT32 At_SetLCellInfoPara(VOS_UINT8 ucIndex)
     L4A_READ_CELL_INFO_REQ_STRU         stCellInfo;
     VOS_UINT32                          ulRet = ERR_MSP_SUCCESS;
 
-    /* 参数过多 */
+    /* ???????? */
     if(gucAtParaIndex != 1)
     {
         return AT_CME_INCORRECT_PARAMETERS;

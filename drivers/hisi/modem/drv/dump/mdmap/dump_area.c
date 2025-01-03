@@ -55,7 +55,7 @@
 #undef	THIS_MODU
 #define THIS_MODU mod_dump
 
-/*对外接口打桩*/
+/*????????????*/
 u8 * bsp_dump_get_field_addr(u32 field_id)
 {
     return NULL;

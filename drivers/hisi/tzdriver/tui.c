@@ -1411,7 +1411,7 @@ static ssize_t tui_dbg_state_read(struct file *filp,char __user *ubuf,
 	mutex_lock(&tui_drv_lock);
 	list_for_each_entry(pos, &tui_drv_head, list) {
 		ret = snprintf_s(buf + r, READ_BUF - r, READ_BUF - r, "%s-%s,", pos->name,
-				1 == pos->state ? "ok" : "no ok");/* [false alarm]:buffer足够大不会越界  */
+				1 == pos->state ? "ok" : "no ok");/* [false alarm]:buffer?????????????????????  */
 		if (ret < 0) {
 			mutex_unlock(&tui_drv_lock);
 			return -EINVAL;
@@ -1473,7 +1473,7 @@ static ssize_t tui_dbg_msg_read(struct file *filp, char __user *ubuf,
 	/* event type list */
 	for (i = 0; i < TUI_POLL_MAX - 1; i++) {
 		ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s, ",
-				 poll_event_type_name[i]);/* [false alarm]:buffer足够大不会越界 */
+				 poll_event_type_name[i]);/* [false alarm]:buffer????????????????????? */
 		if (ret < 0)
 			return -EINVAL;
 		r += (unsigned int)ret;

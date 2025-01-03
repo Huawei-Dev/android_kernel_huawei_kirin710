@@ -78,7 +78,7 @@ typedef enum _diag_frame_ssid_type
 }diag_frame_ssid_type;
 
 /* DIAG_SERVICE_HEAD_STRU:sessionid8b */
-#define DIAG_FRAME_MSP_SERVICE_SESSION_ID        (0x1) /* 标识Service与Client之间的连接,固定为1*/
+#define DIAG_FRAME_MSP_SERVICE_SESSION_ID        (0x1) /* ????Service??Client??????????,??????1*/
 
 /* DIAG_SERVICE_HEAD_STRU:mt2b */
 typedef enum _diag_frame_msgtype_type
@@ -172,22 +172,22 @@ enum _diag_frame_ver_type
 
 typedef struct
 {
-    u32 u32module;                        /* 打印信息所在的模块ID */
-    u32 u32level;                         /* 输出级别 */
-    u32 u32no;                            /* IND标号 */
-    //u8  sztext[APPLOG_MAX_USER_BUFF_LEN];   /* 所有打印文本内容，可能包括文件和行号,以'\0'结尾 */
+    u32 u32module;                        /* ??????????????????ID */
+    u32 u32level;                         /* ???????? */
+    u32 u32no;                            /* IND???? */
+    //u8  sztext[APPLOG_MAX_USER_BUFF_LEN];   /* ????????????????????????????????????,??'\0'???? */
 } diag_print_head_stru;
-/* 描述 :一级头: service头 */
+/* ???? :??????: service?? */
 typedef struct
 {
-    u32 ulModule;     /* 源模块ID*/
+    u32 ulModule;     /* ??????ID*/
     u32 ulMsgId;      /* ID*/
-    u32 ulNo;         /* 序号*/
-    u8  aucDta[0];    /* 用户数据缓存区*//*lint !e43 */
+    u32 ulNo;         /* ????*/
+    u8  aucDta[0];    /* ??????????????*//*lint !e43 */
 } diag_trans_head_stru;
 
 #ifdef DIAG_SYSTEM_5G
-/* 描述 :5G 一级头: service头 */
+/* ???? :5G ??????: service?? */
 typedef struct
 {
     u32    sid4b       :4;   /* service id, value:DIAG_SID_TYPE */
@@ -201,12 +201,12 @@ typedef struct
     u32    ff1b        :1;
 
     u16    MsgTransId;
-    u16    srcCounter;      /* SOCP填写 */
+    u16    srcCounter;      /* SOCP???? */
 
     u8     aucTimeStamp[4];
 }diag_service_head_stru;
 #else
-/* 描述 :一级头: service头 */
+/* ???? :??????: service?? */
 typedef struct
 {
     u32    sid8b       :8;
@@ -222,7 +222,7 @@ typedef struct
     u8     aucTimeStamp[8];
 }diag_service_head_stru;
 #endif
-/* 描述 :二级头: DIAG消息头 */
+/* ???? :??????: DIAG?????? */
 typedef struct
 {
     u32    cmdid19b:19;
@@ -232,23 +232,23 @@ typedef struct
 } diag_stid_stru;
 
 
-/* 描述 :三级头: 工具软件信息头，用于REQ/CNF消息 */
+/* ???? :??????: ????????????????????REQ/CNF???? */
 typedef struct
 {
-    u32 ulAuid;         /* 原AUID*/
-    u32 ulSn;           /* HSO分发，插件命令管理*/
-    u8  ucData[0];      /* 参数的数据*//*lint !e43 */
+    u32 ulAuid;         /* ??AUID*/
+    u32 ulSn;           /* HSO??????????????????*/
+    u8  ucData[0];      /* ??????????*//*lint !e43 */
 }MSP_DIAG_DATA_REQ_STRU;
 
 
-/* 描述 :整体帧结构 */
+/* ???? :?????????? */
 typedef struct
 {
     diag_service_head_stru  stService;
 
     union
     {
-        u32                 u32CmdId;           /* 结构化ID */
+        u32                 u32CmdId;           /* ??????ID */
         diag_stid_stru      stID;
     };
 
@@ -260,14 +260,14 @@ typedef struct
 typedef struct
 {
     u32                  u32HisiMagic;   /*"HISI"*/
-    u32                  u32DataLen;     /*数据长度*/
+    u32                  u32DataLen;     /*????????*/
     u8                   aucData[0];     /*lint !e43 */
 }diag_socp_head_stru;
 
 typedef struct
 {
-    u32  ulAuid;                     /* 原AUID*/
-    u32  ulSn;                       /* HSO分发，插件命令管理*/
+    u32  ulAuid;                     /* ??AUID*/
+    u32  ulSn;                       /* HSO??????????????????*/
     u32  ulRet;
 }DIAG_BSP_COMM_CNF_STRU;
 

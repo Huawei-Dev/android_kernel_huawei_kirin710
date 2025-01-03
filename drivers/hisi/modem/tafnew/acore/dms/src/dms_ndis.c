@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 
 #include "msp_errno.h"
@@ -59,14 +59,14 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 
 #define THIS_FILE_ID                    PS_FILE_ID_DMS_NDIS_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 VOS_UINT32              g_ulNdisCfgFlag     = 0xffffffffU;
@@ -75,7 +75,7 @@ USBNdisAtRecvFunc       g_atCmdRcv          = NULL;
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -110,7 +110,7 @@ VOS_UINT32 DMS_NcmOpen(VOS_VOID)
         }
     }
 
-    /* 配置 NDIS CTRL 通道 */
+    /* ???? NDIS CTRL ???? */
     DMS_NcmProcCbReg(g_atConnectBrk,(USB_NAS_AT_CMD_RECV)g_atCmdRcv);
 
     return ulRet;
@@ -147,7 +147,7 @@ VOS_UINT32 DMS_NcmSendData(VOS_UINT8 *pData, VOS_UINT32 ulLen)
 
     ptrAddr = (VOS_UINT_PTR)pData;
 
-    /*检查NDIS通道状态*/
+    /*????NDIS????????*/
     if (ACM_EVT_DEV_SUSPEND == pstPhyBearProp->ucChanStat)
     {
         return ERR_MSP_FAILURE;
@@ -230,7 +230,7 @@ VOS_VOID DMS_NcmProcCbReg(USBNdisStusChgFunc connectBrk,USB_NAS_AT_CMD_RECV atCm
         return ;
     }
 
-    /*NDIS 通道没有打开或者 通道已经被配置，则直接返回*/
+    /*NDIS ???????????????? ??????????????????????????*/
     if ((g_ulNdisCfgFlag == 0xffffffffU)||(g_ulNdisCfgFlag == 0))
     {
         return ;

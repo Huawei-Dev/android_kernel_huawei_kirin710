@@ -50,7 +50,7 @@
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "TafTypeDef.h"
@@ -69,7 +69,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 typedef VOS_UINT8 MN_CALLBACK_TYPE_T;   /* Type of callback functions for event reporting*/
 #define MN_CALLBACK_CS_CALL             0 /* CS call */
@@ -95,73 +95,73 @@ typedef VOS_UINT8 MN_CALLBACK_TYPE_T;   /* Type of callback functions for event 
 
 #define  TAF_MAX_CLIENT_OF_ONE_PROC       OMA_CLIENT_ID_BUTT
 
-#define TAF_FREE                        0   /*未使用*/
-#define TAF_USED                        1   /*使用*/
+#define TAF_FREE                        0   /*??????*/
+#define TAF_USED                        1   /*????*/
 
 
 
-#define TAF_CALL_APP_MSG_BASE           (0x0000)                                /* AT与CALL模块间消息起始 */
-#define TAF_MSG_APP_MSG_BASE            (0x1000)                                /* AT与MSG模块间消息起始 */
-#define TAF_SSA_APP_MSG_BASE            (0x2000)                                /* AT与SSA模块间消息起始 */
-#define TAF_MMA_APP_MSG_BASE            (0x3000)                                /* AT与MMA模块间消息起始 */
-#define TAF_APP_SET_MSG_BASE            (0x5000)                                /* AT与MN模块间设置消息起始 */
-#define TAF_APP_QRY_MSG_BASE            (0x6000)                                /* AT与MN模块间查询消息起始 */
-#define TAF_APS_MSG_BASE                (0x7000)                                /* AT/IMSA与PS适配模块间消息起始 */
-#define TAF_SPM_IMSA_MSG_BASE           (0x8000)                                /* IMSA与SPM模块间消息起始 */
-#define TAF_MSG_IMSA_MSG_BASE           (0x9000)                                /* IMSA与MSG模块间消息起始 */
-#define TAF_MMA_IMSA_MSG_BASE           (0xa000)                                /* IMSA与MMA模块间消息起始 */
-#define TAF_CALL_IMSA_MSG_BASE          (0xb000)                                /* CALL与IMSA公共消息起始 */
-#define TAF_IMSA_COMM_MSG_BASE          (0xc000)                                /* TAF与IMSA公共消息起始 */
-#define TAF_SSA_IMSA_MSG_BASE           (0xd000)                                /* IMSA与SSA模块间消息起始 */
-#define TAF_IMSA_MSG_MASK               (0xf000)                                /* IMSA与TAF间的MASK */
+#define TAF_CALL_APP_MSG_BASE           (0x0000)                                /* AT??CALL?????????????? */
+#define TAF_MSG_APP_MSG_BASE            (0x1000)                                /* AT??MSG?????????????? */
+#define TAF_SSA_APP_MSG_BASE            (0x2000)                                /* AT??SSA?????????????? */
+#define TAF_MMA_APP_MSG_BASE            (0x3000)                                /* AT??MMA?????????????? */
+#define TAF_APP_SET_MSG_BASE            (0x5000)                                /* AT??MN?????????????????? */
+#define TAF_APP_QRY_MSG_BASE            (0x6000)                                /* AT??MN?????????????????? */
+#define TAF_APS_MSG_BASE                (0x7000)                                /* AT/IMSA??PS?????????????????? */
+#define TAF_SPM_IMSA_MSG_BASE           (0x8000)                                /* IMSA??SPM?????????????? */
+#define TAF_MSG_IMSA_MSG_BASE           (0x9000)                                /* IMSA??MSG?????????????? */
+#define TAF_MMA_IMSA_MSG_BASE           (0xa000)                                /* IMSA??MMA?????????????? */
+#define TAF_CALL_IMSA_MSG_BASE          (0xb000)                                /* CALL??IMSA???????????? */
+#define TAF_IMSA_COMM_MSG_BASE          (0xc000)                                /* TAF??IMSA???????????? */
+#define TAF_SSA_IMSA_MSG_BASE           (0xd000)                                /* IMSA??SSA?????????????? */
+#define TAF_IMSA_MSG_MASK               (0xf000)                                /* IMSA??TAF????MASK */
 
 
 
 
-/* 控制头填写 */
+/* ?????????? */
 #define TAF_API_CTRL_HEADER(pstCtrlHeader, ModuleId, ClientId, OpId) \
                             ((TAF_CTRL_STRU *)(pstCtrlHeader))->ulModuleId = ModuleId; \
                             ((TAF_CTRL_STRU *)(pstCtrlHeader))->usClientId = ClientId;\
                             ((TAF_CTRL_STRU *)(pstCtrlHeader))->ucOpId     = OpId
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum TAF_LMM_MULTIMODE_CARD_TYPE_ENUM
 {
-    TAF_LMM_CTCC_CDMA_SINGLE_MODE_CARD,                         /* 中国电信CDMA单模卡 */
-    TAF_LMM_CTCC_CDMA_DUAL_MODE_CARD,                           /* 中国电信CDMA双模卡 */
-    TAF_LMM_UNKONWN_CDMA_SINGLE_MODE_CARD,                      /* 未知CDMA单模卡 */
-    TAF_LMM_UNKONWN_CDMA_DUAL_MODE_CARD,                        /* 未知CDMA双模卡 */
-    TAF_LMM_SINGLE_MODE_USIM_CARD,                              /* (U)SIM单模卡 */
-    TAF_LMM_NO_CARD,                                            /* 无卡 */
+    TAF_LMM_CTCC_CDMA_SINGLE_MODE_CARD,                         /* ????????CDMA?????? */
+    TAF_LMM_CTCC_CDMA_DUAL_MODE_CARD,                           /* ????????CDMA?????? */
+    TAF_LMM_UNKONWN_CDMA_SINGLE_MODE_CARD,                      /* ????CDMA?????? */
+    TAF_LMM_UNKONWN_CDMA_DUAL_MODE_CARD,                        /* ????CDMA?????? */
+    TAF_LMM_SINGLE_MODE_USIM_CARD,                              /* (U)SIM?????? */
+    TAF_LMM_NO_CARD,                                            /* ???? */
     TAF_LMM_MULTIMODE_CARD_TYPE_BUTT
 };
 typedef VOS_UINT8 TAF_LMM_MULTIMODE_CARD_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 typedef struct
 {
-    VOS_UINT32                          ulModuleId;         /* 填入PID */
+    VOS_UINT32                          ulModuleId;         /* ????PID */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucOpId;
     VOS_UINT8                           aucReserved[1];
@@ -179,18 +179,18 @@ typedef TAF_PS_MSG_STRU     TAF_SSA_MSG_STRU;
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern TAF_LMM_MULTIMODE_CARD_TYPE_ENUM_UINT8 TAF_LMM_GetCtccRoamCtrlMultiModeCardType(VOS_VOID);
 

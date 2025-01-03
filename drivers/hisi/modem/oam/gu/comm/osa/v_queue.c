@@ -85,13 +85,13 @@
 #include "v_int.h"
 #include "v_blkMem.h"
 
-/* LINUX 不支持 */
+/* LINUX ?????? */
 
 
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_V_QUEUE_C
 
@@ -170,7 +170,7 @@ VOS_CHAR g_acVosQueueBuf[VOS_QUEUE_BUF_SIZE];
 /*the location of buf which should be allocated */
 VOS_UINT32 g_ulVosQueueBufSuffix = 0;
 
-/* 自旋锁，用来作queue的临界资源保护 */
+/* ??????????????queue?????????????? */
 VOS_SPINLOCK             g_stVosQueueSpinLock;
 
 /*****************************************************************************
@@ -485,28 +485,28 @@ VOS_UINT32 VOS_AddQueue(VOS_UINT32 ulQueueID, int suffix,
         if ( vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QOut
             == vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QStart )
         {
-            vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QOut            /* [false alarm]:前边已有严谨的判断  */
-                = vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QEnd - 1; /* [false alarm]:前边已有严谨的判断  */
+            vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QOut            /* [false alarm]:??????????????????  */
+                = vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QEnd - 1; /* [false alarm]:??????????????????  */
         }
         else
         {
-            vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QOut--;         /* [false alarm]:前边已有严谨的判断  */
+            vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QOut--;         /* [false alarm]:??????????????????  */
         }
 
-        *vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QOut = ulTmpValue; /* [false alarm]:前边已有严谨的判断  */
-        vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QEntries++;         /* [false alarm]:前边已有严谨的判断  */
-        vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QUrgentSize++;      /* [false alarm]:前边已有严谨的判断  */
+        *vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QOut = ulTmpValue; /* [false alarm]:??????????????????  */
+        vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QEntries++;         /* [false alarm]:??????????????????  */
+        vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QUrgentSize++;      /* [false alarm]:??????????????????  */
     }
     else
     {
 
-        *vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QIn++ = AddressValue;     /* [false alarm]:前边已有严谨的判断  */
-        vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QEntries++;                /* [false alarm]:前边已有严谨的判断  */
+        *vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QIn++ = AddressValue;     /* [false alarm]:??????????????????  */
+        vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QEntries++;                /* [false alarm]:??????????????????  */
         if (vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QIn
             == vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QEnd )
         {
-            vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QIn            /* [false alarm]:前边已有严谨的判断  */
-                = vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QStart;  /* [false alarm]:前边已有严谨的判断  */
+            vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QIn            /* [false alarm]:??????????????????  */
+                = vos_QueueCtrlBlcok[ulQueueID].Q[suffix].QStart;  /* [false alarm]:??????????????????  */
         }
     }
 

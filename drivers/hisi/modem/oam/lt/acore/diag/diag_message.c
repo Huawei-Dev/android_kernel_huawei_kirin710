@@ -75,7 +75,7 @@ PS-----trans
       |
       |-PS_REPLAY
       |
-      |-MMA鉴权
+      |-MMA????
       |
       |-RTT GTR
 
@@ -93,7 +93,7 @@ BSP----Read NV/Write NV/NV_IMPORT/NV_EXPORT/GetNvIdList/BackupNv/NVID filterlist
       |
       |-SYSVIEW_SWT/SYSVIEW_IND/AXI_DATA_CFG/AXI_REG_CFG/AXI_DATA_CTRL/AXI_MON_CFG/AXI_MON_START/AXI_MON_TERMINATE/UTRACE_START/UTRACE_TERMINATE/CPU_SWT
 
-GUBBP---BBP dump/配置BBP数采/停止BBP数采/配置BBP上报/配置BBP收到EDMA错误消息后通知PC
+GUBBP---BBP dump/????BBP????/????BBP????/????BBP????/????BBP????EDMA??????????????PC
 ******************************************************************************/
 
 struct DIAG_MESSAGE_PROC_STRU g_aFnMsgTbl[DIAG_MSG_TYPE_BUTT] =
@@ -114,7 +114,7 @@ VOS_UINT32 diag_MessageProc(VOS_VOID *pMsg);
 
 /*****************************************************************************
  Function Name   : diag_MessageInit
- Description     : DIAG message层初始化接口
+ Description     : DIAG message????????????
 
  History         :
     1.c64416         2014-11-18  Draft Enact
@@ -128,7 +128,7 @@ VOS_VOID diag_MessageInit(VOS_VOID)
 
 /*****************************************************************************
  Function Name   : diag_MessageProc
- Description     : DIAG message层处理接口
+ Description     : DIAG message??????????
 
  History         :
     1.c64416         2014-11-18  Draft Enact
@@ -146,7 +146,7 @@ VOS_UINT32 diag_MessageProc(VOS_VOID *pMsg)
     {
         return VOS_ERR;
     }
-    /* 数据长度不能小于第三级DIAG业务层头的大小 */
+    /* ??????????????????????DIAG?????????????? */
     if(pData->ulMsgLen < sizeof(MSP_DIAG_DATA_REQ_STRU))
     {
         diag_error("rev tool datalen error, 0x%x\n", pData->ulMsgLen);
@@ -174,7 +174,7 @@ VOS_UINT32 diag_MessageProc(VOS_VOID *pMsg)
 
 /*****************************************************************************
  Function Name   : DIAG_MsgProcReg
- Description     : 诊断命令解包回调注册接口
+ Description     : ????????????????????????
 
  History         :
     1.c64416         2014-11-18  Draft Enact
@@ -194,7 +194,7 @@ VOS_UINT32 DIAG_MsgProcReg (DIAG_MESSAGE_TYPE_U32 ulMsgType, DIAG_MESSAGE_FUNC p
 
 /*****************************************************************************
  Function Name   : DIAG_MsgReport
- Description     : DIAG message 层上报接口
+ Description     : DIAG message ??????????
 
  History         :
     1.c64416         2014-11-18  Draft Enact
@@ -207,7 +207,7 @@ VOS_UINT32 DIAG_MsgReport (VOS_VOID *pstMessage, VOS_VOID *pstData, VOS_UINT32 u
 
     MSP_DIAG_CNF_INFO_STRU *pstDiagInfo = (MSP_DIAG_CNF_INFO_STRU *)pstMessage;
 
-    /*检查DIAG是否初始化且HSO是否连接上*/
+    /*????DIAG????????????HSO??????????*/
     if(!DIAG_IS_CONN_ON)
     {
         return ERR_MSP_NO_INITILIZATION;

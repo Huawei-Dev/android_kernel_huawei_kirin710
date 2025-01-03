@@ -50,7 +50,7 @@
 #define __ATCTX_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "product_config.h"
 #include "v_id.h"
@@ -85,29 +85,29 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-/* 广播ClientIndex说明，最高的2个bit位表示ModemId。
-   Modem0对应的广播Client index为00111111(0x3F)，
-   Modem1对应的广播Client index为01111111(0x7F)
-   Modem2对应的广播Client index为10111111(0xBF)*/
+/* ????ClientIndex????????????2??bit??????ModemId??
+   Modem0??????????Client index??00111111(0x3F)??
+   Modem1??????????Client index??01111111(0x7F)
+   Modem2??????????Client index??10111111(0xBF)*/
 
-/*广播Client Id对应的index值*/
-/* Modem 0的广播Client Index */
+/*????Client Id??????index??*/
+/* Modem 0??????Client Index */
 #define AT_BROADCAST_CLIENT_INDEX_MODEM_0  (0x3F)
 
-/* Modem 1的广播Client Index */
+/* Modem 1??????Client Index */
 #define AT_BROADCAST_CLIENT_INDEX_MODEM_1  (0x7F)
 
-/* Modem 2的广播Client Index */
+/* Modem 2??????Client Index */
 #define AT_BROADCAST_CLIENT_INDEX_MODEM_2  (0xBF)
 
-/* 判断是否为广播Client Id */
+/* ??????????????Client Id */
 #define AT_IS_BROADCAST_CLIENT_INDEX(i)    ((AT_BROADCAST_CLIENT_INDEX_MODEM_0 == (i)) \
                                          || (AT_BROADCAST_CLIENT_INDEX_MODEM_1 == (i)) \
                                          || (AT_BROADCAST_CLIENT_INDEX_MODEM_2 == (i)))
 
-/* Modem ID在NV项中的Bit位 */
+/* Modem ID??NV??????Bit?? */
 #define AT_NV_CLIENT_CONFIG_MODEM_ID_OFFSET (2)
 
 
@@ -118,39 +118,39 @@ extern "C" {
 /*================================PORT NO Begin================================*/
 
 typedef VOS_UINT8 AT_PORT_NO;
-#define AT_BUTT_PORT_NO                 (0xFF)              /*无效PORT NO*/
+#define AT_BUTT_PORT_NO                 (0xFF)              /*????PORT NO*/
 
 #define AT_UART_PORT_NO                 (0)
 
-/* MODEM口修改为always-on方式，modem链路的建立由AT在PID初始化时执行，那么所使用的PORT_TYPE与原先架构中底软所使用的一致 */
+/* MODEM????????always-on??????modem????????????AT??PID??????????????????????????PORT_TYPE???????????????????????????? */
 #define AT_PORT_TYPE_MODEM              (3)
-#define AT_USB_MODEM_PORT_NO            (4)                 /*目前架构中，MODEM保持与B020之前的实现一致，该串口号目前无效*/
-#define AT_SOCK_PORT_NO                 (5)                 /*增加SOCK端口*/
-#define AT_APP_PORT_NO                  (6)                 /*增加APP端口*/
-#define AT_APP_SOCK_PORT_NO             (7)                 /*增加APP SOCK端口*/
+#define AT_USB_MODEM_PORT_NO            (4)                 /*????????????MODEM??????B020????????????????????????????????*/
+#define AT_SOCK_PORT_NO                 (5)                 /*????SOCK????*/
+#define AT_APP_PORT_NO                  (6)                 /*????APP????*/
+#define AT_APP_SOCK_PORT_NO             (7)                 /*????APP SOCK????*/
 #if (VOS_WIN32 == VOS_OS_VER)
 #define AT_USB_COM_PORT_NO              (2)
 #else
-#define AT_USB_COM_PORT_NO              (DMS_PHY_BEAR_USB_PCUI) /*值为8*/
+#define AT_USB_COM_PORT_NO              (DMS_PHY_BEAR_USB_PCUI) /*????8*/
 #endif
-#define AT_CTR_PORT_NO                  (DMS_PHY_BEAR_USB_CTRL)/*值为9，产品线需求，增加一个control端口*/
-#define AT_PCUI2_PORT_NO                (DMS_PHY_BEAR_USB_PCUI2)/*值为10，天际通需求，增加一个PCUI2端口*/
+#define AT_CTR_PORT_NO                  (DMS_PHY_BEAR_USB_CTRL)/*????9??????????????????????control????*/
+#define AT_PCUI2_PORT_NO                (DMS_PHY_BEAR_USB_PCUI2)/*????10??????????????????????PCUI2????*/
 
-#define AT_NDIS_PORT_NO                 (DMS_PHY_BEAR_USB_NCM)     /*值为11，NDIS AT端口号，该端口号无用*/
-#define AT_HSIC1_PORT_NO                (12)                /*HSIC AT通道1端口*/
-#define AT_HSIC2_PORT_NO                (13)                /*HSIC AT通道2端口*/
-#define AT_HSIC3_PORT_NO                (14)                /*HSIC AT通道3端口*/
-#define AT_HSIC4_PORT_NO                (15)                /*HSIC AT通道4端口*/
-#define AT_MUX1_PORT_NO                 (16)                /*MUX AT通道1端口*/
-#define AT_MUX2_PORT_NO                 (17)                /*MUX AT通道2端口*/
-#define AT_MUX3_PORT_NO                 (18)                /*MUX AT通道3端口*/
-#define AT_MUX4_PORT_NO                 (19)                /*MUX AT通道4端口*/
-#define AT_MUX5_PORT_NO                 (20)                /*MUX AT通道5端口*/
-#define AT_MUX6_PORT_NO                 (21)                /*MUX AT通道6端口*/
-#define AT_MUX7_PORT_NO                 (22)                /*MUX AT通道7端口*/
-#define AT_MUX8_PORT_NO                 (23)                /*MUX AT通道8端口*/
-#define AT_HSIC_MODEM_PORT_NO           (24)                /* HSIC MODEM端口 */
-#define AT_HSUART_PORT_NO               (25)                /* HSUART端口 */
+#define AT_NDIS_PORT_NO                 (DMS_PHY_BEAR_USB_NCM)     /*????11??NDIS AT????????????????????*/
+#define AT_HSIC1_PORT_NO                (12)                /*HSIC AT????1????*/
+#define AT_HSIC2_PORT_NO                (13)                /*HSIC AT????2????*/
+#define AT_HSIC3_PORT_NO                (14)                /*HSIC AT????3????*/
+#define AT_HSIC4_PORT_NO                (15)                /*HSIC AT????4????*/
+#define AT_MUX1_PORT_NO                 (16)                /*MUX AT????1????*/
+#define AT_MUX2_PORT_NO                 (17)                /*MUX AT????2????*/
+#define AT_MUX3_PORT_NO                 (18)                /*MUX AT????3????*/
+#define AT_MUX4_PORT_NO                 (19)                /*MUX AT????4????*/
+#define AT_MUX5_PORT_NO                 (20)                /*MUX AT????5????*/
+#define AT_MUX6_PORT_NO                 (21)                /*MUX AT????6????*/
+#define AT_MUX7_PORT_NO                 (22)                /*MUX AT????7????*/
+#define AT_MUX8_PORT_NO                 (23)                /*MUX AT????8????*/
+#define AT_HSIC_MODEM_PORT_NO           (24)                /* HSIC MODEM???? */
+#define AT_HSUART_PORT_NO               (25)                /* HSUART???? */
 
 #define AT_MIN_ABORT_TIME_INTERNAL      (13)
 #define AT_MAX_TICK_TIME_VALUE          (0xFFFFFFFFU)
@@ -164,7 +164,7 @@ typedef TAF_UINT8 AT_CMEE_TYPE;
 #define AT_CMEE_ERROR_CODE                1
 #define AT_CMEE_ERROR_CONTENT             2
 
-/* AP-Modem 中，目前规格支持最大8个MUX AT通道 */
+/* AP-Modem ????????????????????8??MUX AT???? */
 #define AT_MUX_AT_CHANNEL_MAX           (8)
 
 #define AT_MUX_AT_CHANNEL_INDEX_1       (0)
@@ -175,10 +175,10 @@ typedef TAF_UINT8 AT_CMEE_TYPE;
 #define AT_MUX_AT_CHANNEL_INDEX_6       (5)
 #define AT_MUX_AT_CHANNEL_INDEX_7       (6)
 #define AT_MUX_AT_CHANNEL_INDEX_8       (7)
-#define AT_OCTET_MOVE_FOUR_BITS    (0x04)  /* 将一个字节移动4位 */
-#define AT_OCTET_MOVE_EIGHT_BITS   (0x08)  /* 将一个字节移动8位 */
-#define AT_OCTET_LOW_FOUR_BITS     (0x0f)  /* 获取一个字节中的低4位 */
-#define AT_OCTET_HIGH_FOUR_BITS    (0xf0)  /* 获取一个字节中的高4位 */
+#define AT_OCTET_MOVE_FOUR_BITS    (0x04)  /* ??????????????4?? */
+#define AT_OCTET_MOVE_EIGHT_BITS   (0x08)  /* ??????????????8?? */
+#define AT_OCTET_LOW_FOUR_BITS     (0x0f)  /* ??????????????????4?? */
+#define AT_OCTET_HIGH_FOUR_BITS    (0xf0)  /* ??????????????????4?? */
 #define AT_MIN(n1,n2)         (((n1) > (n2)) ? (n2):(n1))
 /*********************************COMM End*****************************/
 
@@ -290,7 +290,7 @@ typedef VOS_UINT8 AT_CGREG_TYPE;
 /*********************************NET End************************************/
 
 /*********************************CTRL Begin************************************/
-/* 记录天线信号格数  */
+/* ????????????????  */
 #define AT_ANTENNA_LEVEL_MAX_NUM        3
 
 #define AT_RSSI_RESULT_CODE_NOT_REPORT_TYPE    (0)
@@ -301,27 +301,27 @@ typedef VOS_UINT8 AT_CGREG_TYPE;
 /*********************************CTRL End************************************/
 
 /*****************************************************************************
-    以下为UART相关宏定义
+    ??????UART??????????
 *****************************************************************************/
-/* 新短信RING脚波形高低电平持续时间(ms) */
+/* ??????RING??????????????????????(ms) */
 #define AT_UART_DEFAULT_SMS_RI_ON_INTERVAL      (1000)
 #define AT_UART_DEFAULT_SMS_RI_OFF_INTERVAL     (1000)
 
-/* 来电RING脚波形低电平持续时间(ms) */
+/* ????RING????????????????????(ms) */
 #define AT_UART_DEFAULT_VOICE_RI_ON_INTERVAL    (1000)
 #define AT_UART_DEFAULT_VOICE_RI_OFF_INTERVAL   (4000)
 
-/* 来电RING脚波形循环次数 */
+/* ????RING?????????????? */
 #define AT_UART_DEFAULT_VOICE_RI_CYCLE_TIMES    (10)
 
 #define AT_UART_DEFAULT_BAUDRATE        (AT_UART_BAUDRATE_115200)
 #define AT_UART_DEFAULT_FORMAT          (AT_UART_FORMAT_8DATA_1STOP)
 /*
- * 注: 不同版本选用的UART IP不同, 默认校验方式差异如下
+ * ??: ??????????????UART IP????, ????????????????????
  *
- * V3R3            --- 空校验 SPACE
+ * V3R3            --- ?????? SPACE
  *
- * V7R11(or later) --- 奇校验 ODD
+ * V7R11(or later) --- ?????? ODD
  *
  */
 #define AT_UART_DEFAULT_PARITY          (AT_UART_PARITY_ODD)
@@ -339,7 +339,7 @@ typedef VOS_UINT8 AT_CGREG_TYPE;
 #define AT_ARRAY_SIZE(a)                (sizeof((a)) / sizeof((a[0])))
 #endif
 
-/* 将port对应的位设置为1 */
+/* ??port??????????????1 */
 #define AT_SET_BIT32(n)       ((VOS_UINT32)1 << (n))
 
 #define AT_SET_BIT32_SELECT0(n)                (((n) < 32) ? AT_SET_BIT32(n):0)
@@ -357,7 +357,7 @@ typedef VOS_UINT8 AT_CGREG_TYPE;
 
 #define AT_PORT_LEN_MAX                     (20)
 
-/* WIFI n模式WL命令的速率值为0~7，共8个 */
+/* WIFI n????WL??????????????0~7????8?? */
 #define AT_WIFI_N_RATE_NUM              (8)
 
 #define AT_RELEASE_R11                  (0x00000b00)
@@ -387,7 +387,7 @@ typedef VOS_UINT8 AT_CGREG_TYPE;
 #define  AT_CONST_MILLION               (1000000)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 /*********************************TIMER Begin*****************************/
 enum AT_INTERNAL_TIMER_TYPE_ENUM
@@ -423,11 +423,11 @@ enum AT_IO_LEVEL_ENUM
 };
 typedef VOS_UINT8 AT_IO_LEVEL_ENUM_UINT8;
 
-/* 与AT^APRPTPORTSEL命令配合使用，标识指定HSIC AT通道是否允许AT命令主动上报 */
+/* ??AT^APRPTPORTSEL??????????????????????HSIC AT????????????AT???????????? */
 enum AT_HSIC_REPORT_TYPE_ENUM
 {
-    AT_HSIC_REPORT_ON,                  /* 允许主动上报 */
-    AT_HSIC_REPORT_OFF,                 /* 不允许主动上报 */
+    AT_HSIC_REPORT_ON,                  /* ???????????? */
+    AT_HSIC_REPORT_OFF,                 /* ?????????????? */
 
     AT_HSIC_REPORT_BUTT
 };
@@ -494,9 +494,9 @@ typedef TAF_UINT8 AT_CMGF_MSG_FORMAT_ENUM_U8;
 
 enum AT_CEREG_TYPE_ENUM
 {
-    AT_CEREG_RESULT_CODE_NOT_REPORT_TYPE,    /* 禁止+CEREG 的主动上报 */
-    AT_CEREG_RESULT_CODE_BREVITE_TYPE,       /* 网络注册状态发生改变时，使用+CEREG: <stat>的主动上报方式进行上报*/
-    AT_CEREG_RESULT_CODE_ENTIRE_TYPE,        /* 小区信息发生改变时，使用+CEREG:<stat>[,<tac>,<ci>[,<AcT>]]的主动上报方式进行上报*/
+    AT_CEREG_RESULT_CODE_NOT_REPORT_TYPE,    /* ????+CEREG ?????????? */
+    AT_CEREG_RESULT_CODE_BREVITE_TYPE,       /* ????????????????????????????+CEREG: <stat>??????????????????????*/
+    AT_CEREG_RESULT_CODE_ENTIRE_TYPE,        /* ????????????????????????+CEREG:<stat>[,<tac>,<ci>[,<AcT>]]??????????????????????*/
     AT_CEREG_RESULT_CODE_TYPE_BUTT
 };
 typedef VOS_UINT8 AT_CEREG_TYPE_ENUM_UINT8;
@@ -504,12 +504,12 @@ typedef VOS_UINT8 AT_CEREG_TYPE_ENUM_UINT8;
 
 enum AT_CERSSI_REPORT_TYPE_ENUM
 {
-    AT_CERSSI_REPORT_TYPE_NOT_REPORT,               /* 禁止^CERSSI的主动上报 */
-    AT_CERSSI_REPORT_TYPE_1DB_CHANGE_REPORT,        /* 信号质量改变超过1db时^CERSSI的主动上报 */
-    AT_CERSSI_REPORT_TYPE_2DB_CHANGE_REPORT,        /* 信号质量改变超过2db时^CERSSI的主动上报 */
-    AT_CERSSI_REPORT_TYPE_3DB_CHANGE_REPORT,        /* 信号质量改变超过3db时^CERSSI的主动上报 */
-    AT_CERSSI_REPORT_TYPE_4DB_CHANGE_REPORT,        /* 信号质量改变超过4db时^CERSSI的主动上报 */
-    AT_CERSSI_REPORT_TYPE_5DB_CHANGE_REPORT,        /* 信号质量改变超过5db时^CERSSI的主动上报 */
+    AT_CERSSI_REPORT_TYPE_NOT_REPORT,               /* ????^CERSSI?????????? */
+    AT_CERSSI_REPORT_TYPE_1DB_CHANGE_REPORT,        /* ????????????????1db??^CERSSI?????????? */
+    AT_CERSSI_REPORT_TYPE_2DB_CHANGE_REPORT,        /* ????????????????2db??^CERSSI?????????? */
+    AT_CERSSI_REPORT_TYPE_3DB_CHANGE_REPORT,        /* ????????????????3db??^CERSSI?????????? */
+    AT_CERSSI_REPORT_TYPE_4DB_CHANGE_REPORT,        /* ????????????????4db??^CERSSI?????????? */
+    AT_CERSSI_REPORT_TYPE_5DB_CHANGE_REPORT,        /* ????????????????5db??^CERSSI?????????? */
     AT_CERSSI_REPORT_TYPE_BUTT
 };
 typedef VOS_UINT8 AT_CERSSI_REPORT_TYPE_ENUM_UINT8;
@@ -543,10 +543,10 @@ enum AT_RPT_CMD_INDEX_ENUM
 
     AT_RPT_CMD_PLMN,
 
-    /* call state的上报由CURC控制 */
+    /* call state????????CURC???? */
     AT_RPT_CMD_CALLSTATE,
 
-    /* 新增单个命令控制的主动上报命令 */
+    /* ?????????????????????????????? */
     AT_RPT_CMD_CREG,
     AT_RPT_CMD_CUSD,
     AT_RPT_CMD_CSSI,
@@ -564,17 +564,17 @@ typedef VOS_UINT8 AT_RPT_CMD_INDEX_ENUM_UINT8;
 
 enum AT_CMD_RPT_CTRL_TYPE_ENUM
 {
-    AT_CMD_RPT_CTRL_BY_CURC,               /* 主动上报受CURC控制 */
-    AT_CMD_RPT_CTRL_BY_UNSOLICITED,        /* 主动上报受单独的命令控制 */
+    AT_CMD_RPT_CTRL_BY_CURC,               /* ??????????CURC???? */
+    AT_CMD_RPT_CTRL_BY_UNSOLICITED,        /* ???????????????????????? */
     AT_CMD_RPT_CTRL_BUTT
 };
 typedef VOS_UINT8 AT_CMD_RPT_CTRL_TYPE_ENUM_UINT8;
 
 
 /*****************************************************************************
- 结构名    : AT_RATE_WCDMA_CATEGORY_ENUM
- 协议表格  : 无
- 结构说明  : WCDMA模式的能力枚举
+ ??????    : AT_RATE_WCDMA_CATEGORY_ENUM
+ ????????  : ??
+ ????????  : WCDMA??????????????
 *****************************************************************************/
 enum AT_RATE_WCDMA_CATEGORY_ENUM
 {
@@ -592,11 +592,11 @@ enum AT_RATE_WCDMA_CATEGORY_ENUM
 };
 typedef VOS_UINT8 AT_RATE_WCDMA_CATEGORY_ENUM_UINT8;
 
-/* VDF需求: CREG/CGREG命令<CI>域字节上报数枚举 */
+/* VDF????: CREG/CGREG????<CI>???????????????? */
 enum ELF_CREG_CGREG_CI_RPT_BYTE_ENUM
 {
-    CREG_CGREG_CI_RPT_TWO_BYTE        = 0, /* CREG/CGREG的<CI>域以2字节方式上报*/
-    CREG_CGREG_CI_RPT_FOUR_BYTE       = 1, /* CREG/CGREG的<CI>域以4字节方式上报*/
+    CREG_CGREG_CI_RPT_TWO_BYTE        = 0, /* CREG/CGREG??<CI>????2????????????*/
+    CREG_CGREG_CI_RPT_FOUR_BYTE       = 1, /* CREG/CGREG??<CI>????4????????????*/
     CREG_CGREG_CI_RPT_BUTT
 };
 typedef VOS_UINT8   CREG_CGREG_CI_RPT_BYTE_ENUM;
@@ -607,8 +607,8 @@ typedef VOS_UINT8   CREG_CGREG_CI_RPT_BYTE_ENUM;
 
 enum AT_CPOSR_FLG_ENUM
 {
-    AT_CPOSR_DISABLE        = 0,                                                /* 不允许主动上报 */
-    AT_CPOSR_ENABLE,                                                            /* 允许主动上报 */
+    AT_CPOSR_DISABLE        = 0,                                                /* ?????????????? */
+    AT_CPOSR_ENABLE,                                                            /* ???????????? */
     AT_CPOSR_BUTT
 };
 typedef VOS_UINT8 AT_CPOSR_FLG_ENUM_UNIT8;
@@ -616,8 +616,8 @@ typedef VOS_UINT8 AT_CPOSR_FLG_ENUM_UNIT8;
 
 enum AT_XCPOSR_FLG_ENUM
 {
-    AT_XCPOSR_DISABLE        = 0,                                                /* 不允许主动上报 */
-    AT_XCPOSR_ENABLE,                                                            /* 允许主动上报 */
+    AT_XCPOSR_DISABLE        = 0,                                                /* ?????????????? */
+    AT_XCPOSR_ENABLE,                                                            /* ???????????? */
     AT_XCPOSR_BUTT
 };
 typedef VOS_UINT8 AT_XCPOSR_FLG_ENUM_UNIT8;
@@ -625,8 +625,8 @@ typedef VOS_UINT8 AT_XCPOSR_FLG_ENUM_UNIT8;
 
 enum AT_CMOLRE_TYPE_ENUM
 {
-    AT_CMOLRE_NUMERIC        = 0,                                               /* 数字格式 */
-    AT_CMOLRE_VERBOSE,                                                          /* 字符描述格式 */
+    AT_CMOLRE_NUMERIC        = 0,                                               /* ???????? */
+    AT_CMOLRE_VERBOSE,                                                          /* ???????????? */
 
     AT_CMOLRE_TYPE_BUTT
 };
@@ -635,8 +635,8 @@ typedef VOS_UINT8 AT_CMOLRE_TYPE_ENUM_UNIT8;
 
 enum AT_XML_END_CHAR_ENUM
 {
-    AT_XML_CTRL_Z        = 0,                                                   /* 结束字符为“ctrl-Z” */
-    AT_XML_ESC,                                                                 /* 结束字符为“ESC” */
+    AT_XML_CTRL_Z        = 0,                                                   /* ????????????ctrl-Z?? */
+    AT_XML_ESC,                                                                 /* ????????????ESC?? */
     AT_XML_BUTT
 };
 typedef VOS_UINT8 AT_XML_END_CHAR_ENUM_UNIT8;
@@ -644,8 +644,8 @@ typedef VOS_UINT8 AT_XML_END_CHAR_ENUM_UNIT8;
 
 enum AT_XML_PROC_TYPE_ENUM
 {
-    AT_XML_PROC_TYPE_FINISH             = 0,                                    /* 输入了"ctrl-Z"或"ESC"    */
-    AT_XML_PROC_TYPE_CONTINUE           = 1,                                    /* 输入了回车符             */
+    AT_XML_PROC_TYPE_FINISH             = 0,                                    /* ??????"ctrl-Z"??"ESC"    */
+    AT_XML_PROC_TYPE_CONTINUE           = 1,                                    /* ????????????             */
     AT_XML_PROC_TYPE_BUTT
 };
 typedef VOS_UINT8 AT_XML_PROC_TYPE_ENUM_UINT8;
@@ -654,8 +654,8 @@ typedef VOS_UINT8 AT_XML_PROC_TYPE_ENUM_UINT8;
 
 enum AT_ANT_STATE_ENUM
 {
-    AT_ANT_AIRWIRE_MODE            =   0,  /* 天线模式 */
-    AT_ANT_CONDUCTION_MODE         =   1,  /* 传导模式 */
+    AT_ANT_AIRWIRE_MODE            =   0,  /* ???????? */
+    AT_ANT_CONDUCTION_MODE         =   1,  /* ???????? */
     AT_ANT_MODE_BUTT
 };
 typedef VOS_UINT16 AT_ANT_STATE_ENUM_UINT16;
@@ -663,33 +663,33 @@ typedef VOS_UINT16 AT_ANT_STATE_ENUM_UINT16;
 
 enum AT_UART_BAUDRATE_ENUM
 {
-    AT_UART_BAUDRATE_0                  = 0,                /* 表示波特率自适应 */
-    AT_UART_BAUDRATE_300                = 300,              /* 对应波特率为300 */
-    AT_UART_BAUDRATE_600                = 600,              /* 对应波特率为600 */
-    AT_UART_BAUDRATE_1200               = 1200,             /* 对应波特率为1200 */
-    AT_UART_BAUDRATE_2400               = 2400,             /* 对应波特率为2400 */
-    AT_UART_BAUDRATE_4800               = 4800,             /* 对应波特率为4800 */
-    AT_UART_BAUDRATE_9600               = 9600,             /* 对应波特率为9600 */
-    AT_UART_BAUDRATE_19200              = 19200,            /* 对应波特率为19200 */
-    AT_UART_BAUDRATE_38400              = 38400,            /* 对应波特率为38400 */
-    AT_UART_BAUDRATE_57600              = 57600,            /* 对应波特率为57600 */
-    AT_UART_BAUDRATE_115200             = 115200,           /* 对应波特率为115200 */
-    AT_UART_BAUDRATE_230400             = 230400,           /* 对应波特率为230400 */
-    AT_UART_BAUDRATE_250000             = 250000,           /* 对应波特率为250000 */
-    AT_UART_BAUDRATE_300000             = 300000,           /* 对应波特率为300000 */
-    AT_UART_BAUDRATE_375000             = 375000,           /* 对应波特率为375000 */
-    AT_UART_BAUDRATE_460800             = 460800,           /* 对应波特率为460800 */
-    AT_UART_BAUDRATE_600000             = 600000,           /* 对应波特率为600000 */
-    AT_UART_BAUDRATE_750000             = 750000,           /* 对应波特率为750000 */
-    AT_UART_BAUDRATE_921600             = 921600,           /* 对应波特率为921600 */
-    AT_UART_BAUDRATE_1000000            = 1000000,          /* 对应波特率为1000000 */
-    AT_UART_BAUDRATE_1152000            = 1152000,          /* 对应波特率为1152000 */
-    AT_UART_BAUDRATE_1500000            = 1500000,          /* 对应波特率为1500000 */
-    AT_UART_BAUDRATE_2000000            = 2000000,          /* 对应波特率为2000000 */
-    AT_UART_BAUDRATE_2250000            = 2250000,          /* 对应波特率为2250000 */
-    AT_UART_BAUDRATE_2764800            = 2764800,          /* 对应波特率为2764800 */
-    AT_UART_BAUDRATE_3000000            = 3000000,          /* 对应波特率为3000000 */
-    AT_UART_BAUDRATE_4000000            = 4000000,          /* 对应波特率为4000000 */
+    AT_UART_BAUDRATE_0                  = 0,                /* ???????????????? */
+    AT_UART_BAUDRATE_300                = 300,              /* ????????????300 */
+    AT_UART_BAUDRATE_600                = 600,              /* ????????????600 */
+    AT_UART_BAUDRATE_1200               = 1200,             /* ????????????1200 */
+    AT_UART_BAUDRATE_2400               = 2400,             /* ????????????2400 */
+    AT_UART_BAUDRATE_4800               = 4800,             /* ????????????4800 */
+    AT_UART_BAUDRATE_9600               = 9600,             /* ????????????9600 */
+    AT_UART_BAUDRATE_19200              = 19200,            /* ????????????19200 */
+    AT_UART_BAUDRATE_38400              = 38400,            /* ????????????38400 */
+    AT_UART_BAUDRATE_57600              = 57600,            /* ????????????57600 */
+    AT_UART_BAUDRATE_115200             = 115200,           /* ????????????115200 */
+    AT_UART_BAUDRATE_230400             = 230400,           /* ????????????230400 */
+    AT_UART_BAUDRATE_250000             = 250000,           /* ????????????250000 */
+    AT_UART_BAUDRATE_300000             = 300000,           /* ????????????300000 */
+    AT_UART_BAUDRATE_375000             = 375000,           /* ????????????375000 */
+    AT_UART_BAUDRATE_460800             = 460800,           /* ????????????460800 */
+    AT_UART_BAUDRATE_600000             = 600000,           /* ????????????600000 */
+    AT_UART_BAUDRATE_750000             = 750000,           /* ????????????750000 */
+    AT_UART_BAUDRATE_921600             = 921600,           /* ????????????921600 */
+    AT_UART_BAUDRATE_1000000            = 1000000,          /* ????????????1000000 */
+    AT_UART_BAUDRATE_1152000            = 1152000,          /* ????????????1152000 */
+    AT_UART_BAUDRATE_1500000            = 1500000,          /* ????????????1500000 */
+    AT_UART_BAUDRATE_2000000            = 2000000,          /* ????????????2000000 */
+    AT_UART_BAUDRATE_2250000            = 2250000,          /* ????????????2250000 */
+    AT_UART_BAUDRATE_2764800            = 2764800,          /* ????????????2764800 */
+    AT_UART_BAUDRATE_3000000            = 3000000,          /* ????????????3000000 */
+    AT_UART_BAUDRATE_4000000            = 4000000,          /* ????????????4000000 */
 
     AT_UART_BAUDRATE_BUTT
 };
@@ -713,8 +713,8 @@ typedef VOS_UINT8 AT_UART_FORMAT_ENUM_UINT8;
 
 enum AT_UART_PARITY_ENUM
 {
-    AT_UART_PARITY_ODD                  = 0x00,             /* ODD 奇 */
-    AT_UART_PARITY_EVEN                 = 0x01,             /* EVEN 偶 */
+    AT_UART_PARITY_ODD                  = 0x00,             /* ODD ?? */
+    AT_UART_PARITY_EVEN                 = 0x01,             /* EVEN ?? */
     AT_UART_PARITY_MARK                 = 0x02,             /* MARK */
     AT_UART_PARITY_SPACE                = 0x03,             /* SPACE */
 
@@ -853,22 +853,22 @@ typedef VOS_UINT8 AT_CNAP_TYPE_ENUM_UINT8;
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 
@@ -884,11 +884,11 @@ typedef struct
 
 typedef struct
 {
-    TAF_MMA_USIMM_CARD_TYPE_ENUM_UINT32 enCardType;                             /* 卡类型:SIM、USIM */
-    USIMM_CARDAPP_SERVIC_ENUM_UINT32    enCardStatus;                           /* 卡状态*/
-    USIMM_CARD_MEDIUM_TYPE_ENUM_UINT32  enCardMediumType;                       /* 卡MEDIUM类型 */
-    VOS_UINT8                           aucIMSI[9];                             /* IMSI号*/
-    VOS_UINT8                           ucIMSILen;                              /* IMSI长度 */
+    TAF_MMA_USIMM_CARD_TYPE_ENUM_UINT32 enCardType;                             /* ??????:SIM??USIM */
+    USIMM_CARDAPP_SERVIC_ENUM_UINT32    enCardStatus;                           /* ??????*/
+    USIMM_CARD_MEDIUM_TYPE_ENUM_UINT32  enCardMediumType;                       /* ??MEDIUM???? */
+    VOS_UINT8                           aucIMSI[9];                             /* IMSI??*/
+    VOS_UINT8                           ucIMSILen;                              /* IMSI???? */
     VOS_UINT8                           aucReserve[2];
     TAF_MMA_SIMSQ_STATE_ENUM_UINT32     enSimsqStatus;
     VOS_UINT8                           aucRsv[4];
@@ -920,8 +920,8 @@ typedef struct
 /*********************************CTRL CTX Begin*****************************/
 typedef struct
 {
-    VOS_UINT8                           ucStatus;                               /* NV是否激活标志, 0: 不激活，1: 激活 */
-    VOS_UINT8                           ucAtStatusReportGeneralControl;         /* 私有命令是否允许状态上报*/
+    VOS_UINT8                           ucStatus;                               /* NV????????????, 0: ????????1: ???? */
+    VOS_UINT8                           ucAtStatusReportGeneralControl;         /* ????????????????????????*/
 }NVIM_AT_PRIVATE_CMD_STATUS_RPT_STRU;
 
 
@@ -944,7 +944,7 @@ typedef struct
     VOS_BOOL                            bTimerStart;
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucS0TimerLen;
-    VOS_UINT8                           ucReserved;                             /* 保留 */
+    VOS_UINT8                           ucReserved;                             /* ???? */
     VOS_UINT32                          ulTimerName;
     VOS_UINT8                           aucReserved[4];
 }AT_S0_TIMER_INFO_STRU;
@@ -1049,13 +1049,13 @@ typedef struct
 
 /*********************************AGPS CTX Begin*****************************/
 /*****************************************************************************
- 结构名    : AT_XML_STRU
- 结构说明  : AT模块XML文本结构
+ ??????    : AT_XML_STRU
+ ????????  : AT????XML????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_CHAR                           *pcXmlTextHead;                          /* XML码流存储区 */
-    VOS_CHAR                           *pcXmlTextCur;                           /* 指示当前XML文本长度 */
+    VOS_CHAR                           *pcXmlTextHead;                          /* XML?????????? */
+    VOS_CHAR                           *pcXmlTextCur;                           /* ????????XML???????? */
 }AT_XML_STRU;
 
 /*********************************AGPS CTX End*****************************/
@@ -1065,9 +1065,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucNumOfCalls;                           /* 所有正在通话的个数 */
+    VOS_UINT8                           ucNumOfCalls;                           /* ?????????????????? */
     VOS_UINT8                           aucReserved[7];
-    TAF_CALL_ECONF_INFO_PARAM_STRU      astCallInfo[TAF_CALL_MAX_ECONF_CALLED_NUM];  /* 每一个成员的信息 */
+    TAF_CALL_ECONF_INFO_PARAM_STRU      astCallInfo[TAF_CALL_MAX_ECONF_CALLED_NUM];  /* ???????????????? */
 }AT_ECONF_INFO_STRU;
 
 
@@ -1098,16 +1098,16 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulCurIsExistCallFlag;                   /* 当前是否存在呼叫标志 */
-    TAF_CS_CAUSE_ENUM_UINT32            enCsErrCause;                           /* 用于记录CS域错误码 */
+    VOS_UINT32                          ulCurIsExistCallFlag;                   /* ???????????????????? */
+    TAF_CS_CAUSE_ENUM_UINT32            enCsErrCause;                           /* ????????CS???????? */
 
-    AT_S0_TIMER_INFO_STRU               stS0TimeInfo;                           /* 自动应答时间，0表示关闭自动应答，1~255，启动自动应答的时间 */
+    AT_S0_TIMER_INFO_STRU               stS0TimeInfo;                           /* ??????????????0??????????????????1~255???????????????????? */
 
     AT_ECONF_INFO_STRU                  stEconfInfo;
 
-    TAF_CALL_ERROR_INFO_TEXT_STRU       stErrInfoText;                          /* SIP CANCEL消息错误原因值对应的文本信息 */
+    TAF_CALL_ERROR_INFO_TEXT_STRU       stErrInfoText;                          /* SIP CANCEL???????????????????????????? */
 
-    AT_CVHU_MODE_ENUM_UINT8             enCvhuMode;                             /* CVHU参数定制，控制是否支持ATH挂断语音 */
+    AT_CVHU_MODE_ENUM_UINT8             enCvhuMode;                             /* CVHU??????????????????????ATH???????? */
     VOS_UINT8                           aucReserved[3];
 
 }AT_MODEM_CC_CTX_STRU;
@@ -1115,69 +1115,69 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                          usUssdTransMode;                        /* USSD传输模式 */
-    AT_CMOD_MODE_ENUM                   enCModType;                             /* 呼叫模式类型 */
-    AT_SALS_TYPE                        ucSalsType;                             /* 使能/禁止线路选择 */
-    AT_CLIP_TYPE                        ucClipType;                             /* 使能/禁止主叫号码显示 */
-    AT_CLIR_TYPE                        ucClirType;                             /* 使能/禁止主叫号码限制 */
-    AT_COLP_TYPE                        ucColpType;                             /* 使能/禁止连接号码显示 */
-    AT_CRC_TYPE                         ucCrcType;                              /* 使能/禁止来电指示扩展上报格式 */
-    AT_CCWA_TYPE                        ucCcwaType;                             /* 使能/禁止呼叫等待 */
-    AT_CNAP_TYPE_ENUM_UINT8             enCnapType;                             /* 使能/禁止主叫名称显示 */
+    VOS_UINT16                          usUssdTransMode;                        /* USSD???????? */
+    AT_CMOD_MODE_ENUM                   enCModType;                             /* ???????????? */
+    AT_SALS_TYPE                        ucSalsType;                             /* ????/???????????? */
+    AT_CLIP_TYPE                        ucClipType;                             /* ????/???????????????? */
+    AT_CLIR_TYPE                        ucClirType;                             /* ????/???????????????? */
+    AT_COLP_TYPE                        ucColpType;                             /* ????/???????????????? */
+    AT_CRC_TYPE                         ucCrcType;                              /* ????/???????????????????????? */
+    AT_CCWA_TYPE                        ucCcwaType;                             /* ????/???????????? */
+    AT_CNAP_TYPE_ENUM_UINT8             enCnapType;                             /* ????/???????????????? */
     VOS_UINT8                           aucReserved[6];
 
-    AT_CBST_DATA_CFG_STRU               stCbstDataCfg;                          /* 承载(CBST)类型*/
-    AT_CCUG_CFG_STRU                    stCcugCfg;                              /* 闭合用户群(CUG)参数 */
+    AT_CBST_DATA_CFG_STRU               stCbstDataCfg;                          /* ????(CBST)????*/
+    AT_CCUG_CFG_STRU                    stCcugCfg;                              /* ??????????(CUG)???? */
 }AT_MODEM_SS_CTX_STRU;
 
 
 typedef struct
 {
-    AT_CMGF_MSG_FORMAT_ENUM_U8          enCmgfMsgFormat;                        /* 短信格式 TXT or PDU */
-    AT_CSDH_TYPE                        ucCsdhType;                             /* 文本模式下参数显示类型 */
-    VOS_UINT8                           ucParaCmsr;                             /* 读取短信标记 */
-    VOS_UINT8                           ucSmsAutoReply;                         /* 自动回复标志 */
-    MN_MSG_CSMS_MSG_VERSION_ENUM_U8     enCsmsMsgVersion;                       /* 短信服务类型 */
-    MN_MSG_ME_STORAGE_STATUS_ENUM_UINT8 enMsgMeStorageStatus;                   /* ME存储状态标志 */
+    AT_CMGF_MSG_FORMAT_ENUM_U8          enCmgfMsgFormat;                        /* ???????? TXT or PDU */
+    AT_CSDH_TYPE                        ucCsdhType;                             /* ?????????????????????? */
+    VOS_UINT8                           ucParaCmsr;                             /* ???????????? */
+    VOS_UINT8                           ucSmsAutoReply;                         /* ???????????? */
+    MN_MSG_CSMS_MSG_VERSION_ENUM_U8     enCsmsMsgVersion;                       /* ???????????? */
+    MN_MSG_ME_STORAGE_STATUS_ENUM_UINT8 enMsgMeStorageStatus;                   /* ME???????????? */
     VOS_UINT8                           ucLocalStoreFlg;
     VOS_UINT8                           ucReserve2;
 
-    AT_CNMI_TYPE_STRU                   stCnmiType;                             /* CNMI类型 */
-    AT_CSCA_CSMP_INFO_STRU              stCscaCsmpInfo;                         /* 文本模式参数 */
-    AT_MSG_CPMS_STRU                    stCpmsInfo;                             /* 短信存储器 */
-    AT_SMS_MT_BUFFER_STRU               astSmsMtBuffer[AT_SMSMT_BUFFER_MAX];    /* 收到短信的缓存 */
-    AT_SMT_BUFFER_STRU                  stSmtBuffer;                            /* 短信或状态报告不存储直接上报PDU缓存 */
+    AT_CNMI_TYPE_STRU                   stCnmiType;                             /* CNMI???? */
+    AT_CSCA_CSMP_INFO_STRU              stCscaCsmpInfo;                         /* ???????????? */
+    AT_MSG_CPMS_STRU                    stCpmsInfo;                             /* ?????????? */
+    AT_SMS_MT_BUFFER_STRU               astSmsMtBuffer[AT_SMSMT_BUFFER_MAX];    /* ?????????????? */
+    AT_SMT_BUFFER_STRU                  stSmtBuffer;                            /* ????????????????????????????PDU???? */
 
 #if ((FEATURE_ON == FEATURE_GCBS) || (FEATURE_ON == FEATURE_WCBS))
     AT_CBM_BUFFER_STRU                  stCbmBuffer;
-    TAF_CBA_CBMI_RANGE_LIST_STRU        stCbsDcssInfo;                          /* 语言相关信息直接保留在AT中 */
+    TAF_CBA_CBMI_RANGE_LIST_STRU        stCbsDcssInfo;                          /* ??????????????????????AT?? */
 #endif
-    AT_SMS_MT_CUSTOMIZE_STRU            stSmMeFullCustomize;                    /* 短信接收定制类型 */
+    AT_SMS_MT_CUSTOMIZE_STRU            stSmMeFullCustomize;                    /* ???????????????? */
 }AT_MODEM_SMS_CTX_STRU;
 
 
 typedef struct
 {
-    /* 控制上报相关 */
-    AT_CERSSI_REPORT_TYPE_ENUM_UINT8    ucCerssiReportType;                     /* VOS_TRUE: ^CERSSI上报，VOS_FALSE: 不上报 */
-    AT_CREG_TYPE                        ucCregType;                             /* VOS_TRUE: CS域服务状态上报，VOS_FALSE: 不上报 */
-    AT_CGREG_TYPE                       ucCgregType;                            /* VOS_TRUE: PS域服务状态上报，VOS_FALSE: 不上报 */
-    AT_COPS_FORMAT_TYPE                 ucCopsFormatType;                       /* COPS命令PLMN的格式 */
+    /* ???????????? */
+    AT_CERSSI_REPORT_TYPE_ENUM_UINT8    ucCerssiReportType;                     /* VOS_TRUE: ^CERSSI??????VOS_FALSE: ?????? */
+    AT_CREG_TYPE                        ucCregType;                             /* VOS_TRUE: CS????????????????VOS_FALSE: ?????? */
+    AT_CGREG_TYPE                       ucCgregType;                            /* VOS_TRUE: PS????????????????VOS_FALSE: ?????? */
+    AT_COPS_FORMAT_TYPE                 ucCopsFormatType;                       /* COPS????PLMN?????? */
 
-    MN_PH_PREF_PLMN_TYPE_ENUM_U8        enPrefPlmnType;                         /* CPOL命令PLMN的类型 */
-    AT_COPS_FORMAT_TYPE                 ucCpolFormatType;                       /* CPOL命令PLMN的格式 */
-    VOS_UINT8                           ucRoamFeature;                          /* 漫游特性是否使能 */
-    VOS_UINT8                           ucSpnType;                              /* 记录AT^SPN查询的SPN类型 */
+    MN_PH_PREF_PLMN_TYPE_ENUM_U8        enPrefPlmnType;                         /* CPOL????PLMN?????? */
+    AT_COPS_FORMAT_TYPE                 ucCpolFormatType;                       /* CPOL????PLMN?????? */
+    VOS_UINT8                           ucRoamFeature;                          /* ???????????????? */
+    VOS_UINT8                           ucSpnType;                              /* ????AT^SPN??????SPN???? */
 
-    AT_CMD_ANTENNA_LEVEL_ENUM_UINT8     enCalculateAntennaLevel;                /* 磁滞处理后的天线格数 */
-    AT_CMD_ANTENNA_LEVEL_ENUM_UINT8     aenAntennaLevel[AT_ANTENNA_LEVEL_MAX_NUM]; /* 记录3次天线格数 */
-    VOS_UINT8                           ucCerssiMinTimerInterval;               /* 信号上报的最小间隔时间 */
+    AT_CMD_ANTENNA_LEVEL_ENUM_UINT8     enCalculateAntennaLevel;                /* ???????????????????? */
+    AT_CMD_ANTENNA_LEVEL_ENUM_UINT8     aenAntennaLevel[AT_ANTENNA_LEVEL_MAX_NUM]; /* ????3?????????? */
+    VOS_UINT8                           ucCerssiMinTimerInterval;               /* ?????????????????????? */
     VOS_UINT8                           ucReserve1[3];
 
-    NAS_MM_INFO_IND_STRU                stTimeInfo;                             /* 时间信息 */
+    NAS_MM_INFO_IND_STRU                stTimeInfo;                             /* ???????? */
 
 #if(FEATURE_ON == FEATURE_LTE)
-    AT_CEREG_TYPE_ENUM_UINT8            ucCeregType;                            /* VOS_TRUE: EPS域服务状态上报，VOS_FALSE: 不上报 */
+    AT_CEREG_TYPE_ENUM_UINT8            ucCeregType;                            /* VOS_TRUE: EPS????????????????VOS_FALSE: ?????? */
     VOS_UINT8                           ucReserve2[7];
 #endif
 
@@ -1192,13 +1192,13 @@ typedef struct
 
 typedef struct
 {
-    AT_CPOSR_FLG_ENUM_UNIT8             enCposrReport;                          /* +CPOSR命令主动上报控制，上电开机默认为不允许主动上报 */
-    AT_XCPOSR_FLG_ENUM_UNIT8            enXcposrReport;                         /* +XCPOSR命令主动上报控制，上电开机默认为不允许主动上报 */
-    AT_CMOLRE_TYPE_ENUM_UNIT8           enCmolreType;                           /* +CMOLRE命令错误码上报格式，默认为数字格式 */
-    VOS_UINT8                           ucAtCgpsClockEnableFlag;                /* AT^CGPSCLOCK中第一个参数 */
+    AT_CPOSR_FLG_ENUM_UNIT8             enCposrReport;                          /* +CPOSR?????????????????????????????????????????????? */
+    AT_XCPOSR_FLG_ENUM_UNIT8            enXcposrReport;                         /* +XCPOSR?????????????????????????????????????????????? */
+    AT_CMOLRE_TYPE_ENUM_UNIT8           enCmolreType;                           /* +CMOLRE?????????????????????????????????? */
+    VOS_UINT8                           ucAtCgpsClockEnableFlag;                /* AT^CGPSCLOCK???????????? */
     VOS_UINT8                           aucReserve[4];
 
-    AT_XML_STRU                         stXml;                                  /* XML码流结构，存储AGPS下发的数据信息 */
+    AT_XML_STRU                         stXml;                                  /* XML??????????????AGPS?????????????? */
 }AT_MODEM_AGPS_CTX_STRU;
 
 
@@ -1221,8 +1221,8 @@ typedef struct
 
 typedef struct
 {
-    MODEM_ID_ENUM_UINT16                enModemId;                              /* 该端口属于哪个modem */
-    VOS_UINT8                           ucReportFlg;                            /* 该端口是否允许主动上报，VOS_TRUE为允许，VOS_FALSE为不允许，默认允许 */
+    MODEM_ID_ENUM_UINT16                enModemId;                              /* ??????????????modem */
+    VOS_UINT8                           ucReportFlg;                            /* ????????????????????????VOS_TRUE????????VOS_FALSE?????????????????? */
     VOS_UINT8                           aucRsv[1];
 }AT_CLIENT_CONFIGURATION_STRU;
 /*********************************Client CTX End*****************************/
@@ -1231,28 +1231,28 @@ typedef struct
 
 typedef struct
 {
-    RCV_UL_DLCI_DATA_FUNC               pReadDataCB;                            /* 注册给MUX的接口，用于获取MUX发送给协议栈的AT码流 */
+    RCV_UL_DLCI_DATA_FUNC               pReadDataCB;                            /* ??????MUX????????????????MUX??????????????AT???? */
 
-    AT_HSIC_REPORT_TYPE_ENUM_UINT32     enRptType;                              /* MUX通道都是复用HSIC通道。指定HSIC AT通道是否允许AT命令主动上报，
-                                                                                   ^APRPTPORTSEL命令配套使用，上电时默认为AT_HSIC_REPORT_ON*/
+    AT_HSIC_REPORT_TYPE_ENUM_UINT32     enRptType;                              /* MUX????????????HSIC??????????HSIC AT????????????AT??????????????
+                                                                                   ^APRPTPORTSEL??????????????????????????AT_HSIC_REPORT_ON*/
 
-    AT_CLIENT_ID_ENUM_UINT16            enAtClientId;                           /* MUX AT通道所对应的AT CLIENT ID*/
+    AT_CLIENT_ID_ENUM_UINT16            enAtClientId;                           /* MUX AT????????????AT CLIENT ID*/
 
-    AT_CLIENT_TAB_INDEX_UINT8           enAtClientTabIdx;                       /* MUX所使用的gastAtClientTab的index索引 */
+    AT_CLIENT_TAB_INDEX_UINT8           enAtClientTabIdx;                       /* MUX????????gastAtClientTab??index???? */
 
-    AT_USER_TYPE                        ucMuxUser;                              /* MUX AT通道所对应的AT USER type */
+    AT_USER_TYPE                        ucMuxUser;                              /* MUX AT????????????AT USER type */
 
-    AT_PORT_NO                          ucMuxPort;                              /* MUX AT通道所对应的AT PORT NO */
+    AT_PORT_NO                          ucMuxPort;                              /* MUX AT????????????AT PORT NO */
 
-    AT_MUX_DLCI_TYPE_ENUM_UINT8         enDlci;                                 /* 目前MUX AT通道所用的通道ID*/
+    AT_MUX_DLCI_TYPE_ENUM_UINT8         enDlci;                                 /* ????MUX AT??????????????ID*/
 
     VOS_UINT8                           aucRsv[6];
 }AT_MUX_CLIENT_TAB_STRU;
 
 typedef struct
 {
-    AT_MUX_CLIENT_TAB_STRU              astMuxClientTab[AT_MUX_AT_CHANNEL_MAX]; /* MUX 8个通道表 */
-    VOS_UINT8                           ucMuxSupportFlg;                        /* 是否支持MUX特性 */
+    AT_MUX_CLIENT_TAB_STRU              astMuxClientTab[AT_MUX_AT_CHANNEL_MAX]; /* MUX 8???????? */
+    VOS_UINT8                           ucMuxSupportFlg;                        /* ????????MUX???? */
     VOS_UINT8                           aucRsv[7];
 }AT_MUX_CTX_STRU;
 /*********************************COMM CTX End*****************************/
@@ -1267,15 +1267,15 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucFilterEnableFlg;                      /* 隐私过滤功能是否使能标识 */
+    VOS_UINT8                           ucFilterEnableFlg;                      /* ???????????????????????? */
     VOS_UINT8                           aucReserved[7];
 }AT_MODEM_PRIVACY_FILTER_CTX_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                               ucEnableFlg;                                 /* 开启CDMAMODEMSWITCH不重启特性 */
-    VOS_UINT8                               aucReserved[7];                              /* 保留位 */
+    VOS_UINT8                               ucEnableFlg;                                 /* ????CDMAMODEMSWITCH?????????? */
+    VOS_UINT8                               aucReserved[7];                              /* ?????? */
 } AT_MODEM_CDMAMODEMSWITCH_CTX_STRU;
 
 /*********************************Modem CTX End*****************************/
@@ -1284,8 +1284,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_SEM                             hResetSem;                              /* 二进制信号量，用于复位处理  */
-    VOS_UINT32                          ulResetingFlag;                         /* 复位标志 */
+    VOS_SEM                             hResetSem;                              /* ??????????????????????????  */
+    VOS_UINT32                          ulResetingFlag;                         /* ???????? */
     VOS_UINT32                          ulReserved;
 }AT_RESET_CTX_STRU;
 
@@ -1338,12 +1338,12 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulSmsRiOnInterval;      /* 短信RI拉高持续时间(ms) */
-    VOS_UINT32                          ulSmsRiOffInterval;     /* 短信RI拉低持续时间(ms) */
+    VOS_UINT32                          ulSmsRiOnInterval;      /* ????RI????????????(ms) */
+    VOS_UINT32                          ulSmsRiOffInterval;     /* ????RI????????????(ms) */
 
-    VOS_UINT32                          ulVoiceRiOnInterval;    /* 语音RI拉高持续时间(ms) */
-    VOS_UINT32                          ulVoiceRiOffInterval;   /* 语音RI拉低持续时间(ms) */
-    VOS_UINT8                           ucVoiceRiCycleTimes;    /* 语音RI波形周期次数     */
+    VOS_UINT32                          ulVoiceRiOnInterval;    /* ????RI????????????(ms) */
+    VOS_UINT32                          ulVoiceRiOffInterval;   /* ????RI????????????(ms) */
+    VOS_UINT8                           ucVoiceRiCycleTimes;    /* ????RI????????????     */
     VOS_UINT8                           aucReserved[7];
 
 } AT_UART_RI_CFG_STRU;
@@ -1351,31 +1351,31 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulRunFlg;           /* 标示是否有短信或语音呼叫 */
-    AT_UART_RI_TYPE_ENUM_UINT32         enType;             /* RI 类型 */
+    VOS_UINT32                          ulRunFlg;           /* ???????????????????????? */
+    AT_UART_RI_TYPE_ENUM_UINT32         enType;             /* RI ???? */
 
-    HTIMER                              hVoiceRiTmrHdl;     /* 语音RI定时器句柄 */
-    AT_TIMER_STATUS_ENUM_UINT32         enVoiceRiTmrStatus; /* 语音RI定时器状态 */
-    VOS_UINT32                          ulVoiceRiCycleCount;/* 语音上报周期计数 */
+    HTIMER                              hVoiceRiTmrHdl;     /* ????RI?????????? */
+    AT_TIMER_STATUS_ENUM_UINT32         enVoiceRiTmrStatus; /* ????RI?????????? */
+    VOS_UINT32                          ulVoiceRiCycleCount;/* ???????????????? */
     AT_UART_RI_STATUS_ENUM_UINT8        aenVoiceRiStatus[MN_CALL_MAX_NUM + 1];
-                                                            /* 语音RI状态(多个CALLID) */
+                                                            /* ????RI????(????CALLID) */
 
-    HTIMER                              hSmsRiTmrHdl;       /* 短信RI定时器句柄 */
-    AT_TIMER_STATUS_ENUM_UINT32         enSmsRiTmrStatus;   /* 短信RI定时器状态 */
-    VOS_UINT32                          ulSmsRiOutputCount; /* 短信RI输出计数 */
+    HTIMER                              hSmsRiTmrHdl;       /* ????RI?????????? */
+    AT_TIMER_STATUS_ENUM_UINT32         enSmsRiTmrStatus;   /* ????RI?????????? */
+    VOS_UINT32                          ulSmsRiOutputCount; /* ????RI???????? */
 
 } AT_UART_RI_STATE_INFO_STRU;
 
 
 typedef struct
 {
-    AT_UART_PHY_CFG_STRU                stPhyConfig;            /* UART 物理配置 */
-    AT_UART_LINE_CTRL_STRU              stLineCtrl;             /* UART 管脚控制模式 */
-    AT_UART_FLOW_CTRL_STRU              stFlowCtrl;             /* UART 流控模式 */
-    AT_UART_RI_CFG_STRU                 stRiConfig;             /* UART RI 配置 */
-    AT_UART_RI_STATE_INFO_STRU          stRiStateInfo;          /* UART RI 状态 */
-    AT_UART_WM_LOW_FUNC                 pWmLowFunc;             /* UART TX低水线处理函数指针 */
-    VOS_UINT32                          ulTxWmHighFlg;          /* UART TX高水线标识 */
+    AT_UART_PHY_CFG_STRU                stPhyConfig;            /* UART ???????? */
+    AT_UART_LINE_CTRL_STRU              stLineCtrl;             /* UART ???????????? */
+    AT_UART_FLOW_CTRL_STRU              stFlowCtrl;             /* UART ???????? */
+    AT_UART_RI_CFG_STRU                 stRiConfig;             /* UART RI ???? */
+    AT_UART_RI_STATE_INFO_STRU          stRiStateInfo;          /* UART RI ???? */
+    AT_UART_WM_LOW_FUNC                 pWmLowFunc;             /* UART TX?????????????????? */
+    VOS_UINT32                          ulTxWmHighFlg;          /* UART TX?????????? */
     VOS_UINT8                           aucReserved[4];
 
 } AT_UART_CTX_STRU;
@@ -1384,17 +1384,17 @@ typedef struct
 typedef struct
 {
     AT_PORT_BUFF_CFG_ENUM_UINT8         enSmsBuffCfg;
-    VOS_UINT8                           ucNum;                                  /* 当前表中的个数 */
+    VOS_UINT8                           ucNum;                                  /* ?????????????? */
     VOS_UINT8                           aucRcv[2];
-    VOS_UINT32                          ulUsedClientID[AT_MAX_CLIENT_NUM];      /* 已经使用的client ID记录 */
+    VOS_UINT32                          ulUsedClientID[AT_MAX_CLIENT_NUM];      /* ??????????client ID???? */
 }AT_PORT_BUFF_CFG_STRU;
 
 
 typedef struct
 {
-    VOS_UINT16                          usCurrIdx;          /* 电话本读取当前索引 */
-    VOS_UINT16                          usLastIdx;          /* 电话本读取目标索引 */
-    VOS_UINT32                          ulSingleReadFlg;    /* 电话本读取单条标识 */
+    VOS_UINT16                          usCurrIdx;          /* ?????????????????? */
+    VOS_UINT16                          usLastIdx;          /* ?????????????????? */
+    VOS_UINT32                          ulSingleReadFlg;    /* ?????????????????? */
 } AT_COMM_PB_CTX_STRU;
 
 
@@ -1451,15 +1451,15 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucSystemAppConfigAddr;                  /* 保存后台版本 */
+    VOS_UINT8                           ucSystemAppConfigAddr;                  /* ???????????? */
     VOS_UINT8                           aucReserve[7];
 
-    AT_MUX_CTX_STRU                     stMuxCtx;                               /* MUX AT通道上下文 */
-    AT_COMM_PS_CTX_STRU                 stPsCtx;                                /* PS域相关的公共上下文 */
-    AT_UART_CTX_STRU                    stUartCtx;                              /* UART相关上下文 */
+    AT_MUX_CTX_STRU                     stMuxCtx;                               /* MUX AT?????????? */
+    AT_COMM_PS_CTX_STRU                 stPsCtx;                                /* PS?????????????????? */
+    AT_UART_CTX_STRU                    stUartCtx;                              /* UART?????????? */
     AT_PORT_BUFF_CFG_STRU               stPortBuffCfg;
 
-    AT_COMM_PB_CTX_STRU                 stCommPbCtx;                            /* 电话本相关公共上下文 */
+    AT_COMM_PB_CTX_STRU                 stCommPbCtx;                            /* ???????????????????? */
 
     AT_CMD_PROC_CTX_STRU                stCmdProcCtx;
 
@@ -1472,27 +1472,27 @@ typedef struct
 
 typedef struct
 {
-    AT_USIM_INFO_CTX_STRU               stAtUsimInfoCtx;                      /* 卡状态 */
-    AT_MODEM_SPT_CAP_STRU               stPlatformCapList;                      /* AT Modem配置模式 */
-    AT_MODEM_CC_CTX_STRU                stCcCtx;                                /* 呼叫相关的上下文 */
-    AT_MODEM_SS_CTX_STRU                stSsCtx;                                /* 补充业务相关的上下文 */
-    AT_MODEM_SMS_CTX_STRU               stSmsCtx;                               /* 短信相关的上下文 */
-    AT_MODEM_NET_CTX_STRU               stNetCtx;                               /* 网络相关的上下文 */
-    AT_MODEM_AGPS_CTX_STRU              stAgpsCtx;                              /* AGPS相关的上下文*/
-    AT_MODEM_PS_CTX_STRU                stPsCtx;                                /* PS相关的上下文 */
-    AT_MODEM_MT_INFO_CTX_STRU           stMtInfoCtx;                            /* 终端信息的上下文 */
-    AT_MODEM_IMS_CONTEXT_STRU           stAtImsCtx;                             /* IMS信息的上下文 */
-    AT_MODEM_PRIVACY_FILTER_CTX_STRU    stFilterCtx;                            /* 隐私信息过滤的上下文 */
-    AT_MODEM_CDMAMODEMSWITCH_CTX_STRU   stCdmaModemSwitchCtx;                   /* CdmaModemSwitch不重启特性上下文 */
+    AT_USIM_INFO_CTX_STRU               stAtUsimInfoCtx;                      /* ?????? */
+    AT_MODEM_SPT_CAP_STRU               stPlatformCapList;                      /* AT Modem???????? */
+    AT_MODEM_CC_CTX_STRU                stCcCtx;                                /* ???????????????? */
+    AT_MODEM_SS_CTX_STRU                stSsCtx;                                /* ???????????????????? */
+    AT_MODEM_SMS_CTX_STRU               stSmsCtx;                               /* ???????????????? */
+    AT_MODEM_NET_CTX_STRU               stNetCtx;                               /* ???????????????? */
+    AT_MODEM_AGPS_CTX_STRU              stAgpsCtx;                              /* AGPS????????????*/
+    AT_MODEM_PS_CTX_STRU                stPsCtx;                                /* PS???????????? */
+    AT_MODEM_MT_INFO_CTX_STRU           stMtInfoCtx;                            /* ???????????????? */
+    AT_MODEM_IMS_CONTEXT_STRU           stAtImsCtx;                             /* IMS???????????? */
+    AT_MODEM_PRIVACY_FILTER_CTX_STRU    stFilterCtx;                            /* ???????????????????? */
+    AT_MODEM_CDMAMODEMSWITCH_CTX_STRU   stCdmaModemSwitchCtx;                   /* CdmaModemSwitch???????????????? */
 }AT_MODEM_CTX_STRU;
 
 
 typedef struct
 {
-    AT_CLIENT_CONFIGURATION_STRU        stClientConfiguration;                  /* 每个端口的配置信息 */
+    AT_CLIENT_CONFIGURATION_STRU        stClientConfiguration;                  /* ?????????????????? */
 }AT_CLIENT_CTX_STRU;
 
-/*********************************后续需要调整的*************************************/
+/*********************************??????????????*************************************/
 /*********************************Other Begin*****************************/
 
 enum  AT_E5_RIGHT_FLAG_ENUM
@@ -1522,8 +1522,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucAbortEnableFlg;                               /* AT打断开关标志. VOS_TRUE: 使能; VOS_FALE: 未使能 */
-    VOS_UINT8                           aucAbortAtCmdStr[AT_MAX_ABORT_CMD_STR_LEN+1];   /* 比NV中的结构过一个字节用于保证有字符串结束符 */
+    VOS_UINT8                           ucAbortEnableFlg;                               /* AT????????????. VOS_TRUE: ????; VOS_FALE: ?????? */
+    VOS_UINT8                           aucAbortAtCmdStr[AT_MAX_ABORT_CMD_STR_LEN+1];   /* ??NV???????????????????????????????????????? */
     VOS_UINT8                           aucAbortAtRspStr[AT_MAX_ABORT_RSP_STR_LEN+1];
     VOS_UINT8                           ucAnyAbortFlg;
 }AT_ABORT_CMD_PARA_STRU;
@@ -1543,11 +1543,11 @@ typedef struct
 
 
 
-/* 拨号错误码上报 */
+/* ?????????????? */
 enum
 {
-    PPP_DIAL_ERR_CODE_DISABLE         = 0, /* 错误码不上报，*/
-    PPP_DIAL_ERR_CODE_ENABLE          = 1, /* 错误码上报*/
+    PPP_DIAL_ERR_CODE_DISABLE         = 0, /* ??????????????*/
+    PPP_DIAL_ERR_CODE_ENABLE          = 1, /* ??????????*/
     PPP_DIAL_ERR_CODE_BUTT
 };
 typedef VOS_UINT8   PPP_DIAL_ERR_CODE_ENUM;
@@ -1566,18 +1566,18 @@ typedef struct
 }AT_DIAL_CONNECT_DISPLAY_RATE_STRU;
 
 /*****************************************************************************
- 结构名    : AT_DOWNLINK_RATE_CATEGORY_STRU
- 协议表格  : 无
- 结构说明  : UE能力信息
+ ??????    : AT_DOWNLINK_RATE_CATEGORY_STRU
+ ????????  : ??
+ ????????  : UE????????
 *****************************************************************************/
 typedef struct
 {
     VOS_INT8                            cWasRelIndicator;                       /* Access Stratum Release Indicator */
     VOS_UINT8                           ucWasCategory;
     VOS_UINT8                           ucGasMultislotClass33Flg;
-    VOS_UINT8                           ucLteUeDlCategory;                      /* LTE下UE下行category */
-    VOS_UINT8                           ucLteUeUlCategory;                      /* LTE下UE上行category */
-    VOS_UINT8                           aucReserve[3];                          /* 保留位 */
+    VOS_UINT8                           ucLteUeDlCategory;                      /* LTE??UE????category */
+    VOS_UINT8                           ucLteUeUlCategory;                      /* LTE??UE????category */
+    VOS_UINT8                           aucReserve[3];                          /* ?????? */
 
 } AT_DOWNLINK_RATE_CATEGORY_STRU;
 
@@ -1753,7 +1753,7 @@ typedef struct
 
 typedef struct
 {
-    AT_ACCESS_STRATUM_REL_ENUM_UINT8    enAccessStratumRel; /* 接入层的协议版本 */
+    AT_ACCESS_STRATUM_REL_ENUM_UINT8    enAccessStratumRel; /* ???????????????? */
     VOS_UINT8                           aucRsv[3];
 }AT_ACCESS_STRATUM_RELEASE_STRU;
 
@@ -1778,12 +1778,12 @@ typedef struct
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 extern AT_COMM_CTX_STRU                        g_stAtCommCtx;
 
@@ -1791,7 +1791,7 @@ extern AT_MODEM_CTX_STRU                       g_astAtModemCtx[];
 
 extern AT_CLIENT_CTX_STRU                      g_astAtClientCtx[];
 
-/*********************************后续需要调整的*************************************/
+/*********************************??????????????*************************************/
 extern AT_E5_RIGHT_FLAG_ENUM_U32               g_enATE5RightFlag;
 
 extern VOS_INT8                                g_acATOpwordPwd[];
@@ -1814,7 +1814,7 @@ extern VOS_UINT8                               ucAtS5;
 extern VOS_UINT8                               ucAtS6;
 extern VOS_UINT8                               ucAtS7;
 
-extern AT_CMEE_TYPE                            gucAtCmeeType;                   /* 指示错误命令返回码类型 */
+extern AT_CMEE_TYPE                            gucAtCmeeType;                   /* ?????????????????????? */
 
 extern TAF_UINT32                              g_ulSTKFunctionFlag;
 
@@ -1827,7 +1827,7 @@ extern MN_MSG_CLASS0_TAILOR_U8                 g_enClass0Tailor;
 /*********************************NET Begin*************************************/
 extern VOS_UINT16                              g_usReportCregActParaFlg;
 
-/*CREG/CGREG的<CI>域以4字节上报是否使能(VDF需求)*/
+/*CREG/CGREG??<CI>????4????????????????(VDF????)*/
 extern CREG_CGREG_CI_RPT_BYTE_ENUM             gucCiRptByte;
 
 /*********************************NET End*************************************/
@@ -1846,7 +1846,7 @@ extern const VOS_UINT8                     g_ucAtClientCfgMapTabLen;
 extern VOS_UINT32                          g_ulCtzuFlag;
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern VOS_VOID AT_InitUsimStatus(MODEM_ID_ENUM_UINT16 enModemId);
 extern VOS_VOID AT_InitPlatformRatList(MODEM_ID_ENUM_UINT16 enModemId);

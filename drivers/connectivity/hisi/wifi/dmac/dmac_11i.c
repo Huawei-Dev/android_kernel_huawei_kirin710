@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "oal_list.h"
@@ -33,7 +33,7 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_11I_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #define MAC_ADDR(_puc_mac)   ((oal_uint32)(((oal_uint32)_puc_mac[2] << 24) |\
                                                   ((oal_uint32)_puc_mac[3] << 16) |\
@@ -41,12 +41,12 @@ extern "C" {
                                                   ((oal_uint32)_puc_mac[5])))
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_uint32 dmac_check_igtk_exist(oal_uint8 uc_igtk_index)
 {
-    /* igtk的key index 为4或5 */
+    /* igtk??key index ??4??5 */
     if ((WLAN_MAX_IGTK_KEY_INDEX < uc_igtk_index) ||
         ((WLAN_MAX_IGTK_KEY_INDEX - WLAN_NUM_IGTK) >= uc_igtk_index))
     {
@@ -61,7 +61,7 @@ oal_uint32  dmac_11i_update_key_to_ce(mac_vap_stru *pst_mac_vap, hal_security_ke
 {
     dmac_vap_stru           *pst_dmac_vap;
 
-    /*2.1 获取dmac_vap*/
+    /*2.1 ????dmac_vap*/
     if ((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == pst_key))
     {
         return OAL_ERR_CODE_PTR_NULL;
@@ -69,17 +69,17 @@ oal_uint32  dmac_11i_update_key_to_ce(mac_vap_stru *pst_mac_vap, hal_security_ke
 
     pst_dmac_vap = (dmac_vap_stru *)pst_mac_vap;
 
-    /* 重要信息打印warning */
+    /* ????????????warning */
     OAM_WARNING_LOG4(pst_mac_vap->uc_vap_id, OAM_SF_WPA, "{dmac_11i_update_key_to_ce::keyid=%u, keytype=%u,lutidx=%u,cipher=%u}",
                      pst_key->uc_key_id, pst_key->en_key_type, pst_key->uc_lut_idx, pst_key->en_cipher_type);
     OAM_WARNING_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_WPA, "{dmac_11i_update_key_to_ce::en_update_key=%u, en_key_origin=%u}",
                      pst_key->en_update_key, pst_key->en_key_origin);
 
-    /* 3.1 写硬件寄存器   */
+    /* 3.1 ????????????   */
     hal_ce_add_key(pst_dmac_vap->pst_hal_device, pst_key, puc_addr);
 
 #ifdef _PRE_WLAN_INIT_PTK_TX_PN
-    /* 3.2 初始化TX PN */
+    /* 3.2 ??????TX PN */
     hal_init_ptk_tx_pn(pst_dmac_vap->pst_hal_device, pst_key);
     dmac_init_iv_word_lut(pst_dmac_vap->pst_hal_device, pst_key);
 #endif
@@ -109,15 +109,15 @@ oal_uint32  dmac_11i_del_key_to_ce(mac_vap_stru                   *pst_mac_vap,
     st_security_key.puc_cipher_key = OAL_PTR_NULL;
     st_security_key.puc_mic_key    = OAL_PTR_NULL;
 
-    /* 重要信息打印warning */
+    /* ????????????warning */
     OAM_WARNING_LOG3(pst_mac_vap->uc_vap_id, OAM_SF_WPA,
                      "{dmac_11i_del_key_to_ce::keyid=%u, keytype=%u,lutidx=%u}", uc_key_id, en_key_type, uc_lut_index);
 
-    /* 写硬件寄存器   */
+    /* ????????????   */
     hal_ce_del_key(pst_dmac_vap->pst_hal_device, &st_security_key);
 
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
-    /*接收组播秘钥应该删除2个*/
+    /*????????????????????2??*/
     if ((HAL_KEY_TYPE_RX_GTK == en_key_type) || (HAL_KEY_TYPE_RX_GTK2 == en_key_type))
     {
         st_security_key.en_key_type = (HAL_KEY_TYPE_RX_GTK == en_key_type) ? HAL_KEY_TYPE_RX_GTK2 : HAL_KEY_TYPE_RX_GTK;
@@ -148,7 +148,7 @@ OAL_STATIC hal_cipher_key_type_enum_uint8 dmac_11i_get_gtk_key_type(mac_vap_stru
     if (IS_AP(pst_mac_vap) && (WLAN_80211_CIPHER_SUITE_BIP != en_cipher_type))
     {
 #if (defined(_PRE_PRODUCT_ID_HI110X_DEV))
-        /* 1102 组播管理帧密钥的key type发送改变 */
+        /* 1102 ????????????????key type???????? */
         return HAL_KEY_TYPE_RX_GTK;
 #else
         return HAL_KEY_TYPE_TX_GTK;
@@ -210,7 +210,7 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
     }
     pst_dmac_vap = (dmac_vap_stru *)pst_mac_vap;
 
-    /* 写硬件寄存器   */
+    /* ????????????   */
     hal_ce_del_peer_macaddr(pst_dmac_vap->pst_hal_device, uc_lut_index);
     return OAL_SUCC;
 }
@@ -226,7 +226,7 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
     oal_uint16                          us_user_idx                            = 0;
     hal_security_key_stru               st_security_key;
 
-    /*1.0 ptk index 检查 */
+    /*1.0 ptk index ???? */
     if(uc_key_index >= WLAN_NUM_TK)
     {
         return OAL_ERR_CODE_SECURITY_KEY_ID;
@@ -236,7 +236,7 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
         return OAL_ERR_CODE_SECURITY_USER_INVAILD;
     }
 
-    /*1.1 根据mac地址找到user索引*/
+    /*1.1 ????mac????????user????*/
     pst_current_dmac_user = mac_vap_get_dmac_user_by_addr(pst_mac_vap, puc_mac_addr);
     if (OAL_PTR_NULL == pst_current_dmac_user)
     {
@@ -247,7 +247,7 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
     }
     pst_current_mac_user = &pst_current_dmac_user->st_user_base_info;
 
-    /*2.1 参数准备*/
+    /*2.1 ????????*/
     pst_key = &pst_current_mac_user->st_key_info.ast_key[uc_key_index];
     if ((WLAN_80211_CIPHER_SUITE_TKIP !=(oal_uint8)pst_key->ul_cipher)
         && (WLAN_80211_CIPHER_SUITE_CCMP != (oal_uint8)pst_key->ul_cipher))
@@ -272,7 +272,7 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
     if (WLAN_TEMPORAL_KEY_LENGTH < pst_key->ul_key_len)
     {
         st_security_key.puc_mic_key = auc_mic_key;
-        /* 对于TKIP模式，MIC存在txrx交换bit顺序的情况，需要转换顺序*/
+        /* ????TKIP??????MIC????txrx????bit????????????????????????*/
         if ((WLAN_80211_CIPHER_SUITE_TKIP == st_security_key.en_cipher_type) && (IS_STA(pst_mac_vap)))
         {
             oal_memcopy(auc_mic_key, pst_key->auc_key + WLAN_TEMPORAL_KEY_LENGTH + WLAN_MIC_KEY_LENGTH, WLAN_MIC_KEY_LENGTH);
@@ -285,7 +285,7 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
         }
     }
 
-    /*3.1 用户相关MIB信息保存*/
+    /*3.1 ????????MIB????????*/
     us_user_idx = pst_current_mac_user->us_assoc_id;
     mibset_RSNAStatsSTAAddress(puc_mac_addr,pst_mac_vap, us_user_idx);
     mibset_RSNAStatsSelectedPairwiseCipher(pst_current_mac_user->st_key_info.en_cipher_type, pst_mac_vap, us_user_idx);
@@ -297,7 +297,7 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
         puc_mac_addr = mac_mib_get_StationID(pst_mac_vap);
     }
 #endif
-    /* 4.1 将加密方式和加密密钥写入CE中, 同时增加激活用户 */
+    /* 4.1 ????????????????????????CE??, ???????????????? */
     ul_ret = dmac_11i_update_key_to_ce(pst_mac_vap, &st_security_key, puc_mac_addr);
 
     if (OAL_SUCC != ul_ret)
@@ -309,13 +309,13 @@ oal_uint32  dmac_11i_del_peer_macaddr(mac_vap_stru *pst_mac_vap, oal_uint8 uc_lu
     }
 
 
-    /* 寄存器写入成功后，更新单播用户密钥 */
+    /* ?????????????????????????????????? */
     mac_user_set_key(pst_current_mac_user, st_security_key.en_key_type, st_security_key.en_cipher_type, st_security_key.uc_key_id);
 
-    /*5.1 打开1X端口认证状态*/
+    /*5.1 ????1X????????????*/
     mac_user_set_port(pst_current_mac_user, OAL_TRUE);
 
-    /*6.1 打开发送描述符的加密属性*/
+    /*6.1 ????????????????????????*/
     pst_current_mac_user->st_user_tx_info.st_security.en_cipher_key_type = HAL_KEY_TYPE_PTK;
 
     return OAL_SUCC;
@@ -337,24 +337,24 @@ oal_uint32  dmac_11i_add_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*1.1 根据索引找到组播user内存区域*/
+    /*1.1 ????????????????user????????*/
     pst_multi_user = (mac_user_stru *)mac_res_get_mac_user(pst_mac_vap->us_multi_user_idx);
     if (OAL_PTR_NULL == pst_multi_user)
     {
         return OAL_ERR_CODE_SECURITY_USER_INVAILD;
     }
 
-    /*1.2 根据mac_vap获取dmac_vap*/
+    /*1.2 ????mac_vap????dmac_vap*/
     pst_dmac_vap = (dmac_vap_stru *)pst_mac_vap;
 
-    /*2.1 参数准备*/
+    /*2.1 ????????*/
     pst_key = &pst_multi_user->st_key_info.ast_key[uc_key_index];
 
 #if(_PRE_WLAN_FEATURE_PMF == _PRE_PMF_HW_CCMP_SW_BIP)
 
     if (WLAN_80211_CIPHER_SUITE_BIP == (oal_uint8)pst_key->ul_cipher)
     {
-        /* BIP由软件完成，不需要设置给mac*/
+        /* BIP????????????????????????mac*/
         return OAL_SUCC;
     }
 #endif
@@ -368,17 +368,17 @@ oal_uint32  dmac_11i_add_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
         return OAL_ERR_CODE_SECURITY_CHIPER_TYPE;
     }
 
-    /* 规避AP更新组播密钥使用的是相同的keyid，导致组播密钥槽的keyid一致，组播解密失败
-       keyid一致，采用原有密钥槽重新配置密钥 */
+    /* ????AP??????????????????????????keyid??????????????????keyid??????????????????
+       keyid???????????????????????????????? */
     if (uc_key_index == pst_multi_user->st_key_info.uc_last_gtk_key_idx)
     {
-        pst_multi_user->st_key_info.bit_gtk ^= BIT0; /* GTK 槽位乒乓使用 */
+        pst_multi_user->st_key_info.bit_gtk ^= BIT0; /* GTK ???????????? */
     }
 
     st_security_key.en_cipher_type = (oal_uint8)pst_key->ul_cipher;
     st_security_key.uc_key_id      = uc_key_index;
     st_security_key.en_key_type    = dmac_11i_get_gtk_key_type(pst_mac_vap, st_security_key.en_cipher_type);
-    pst_multi_user->st_key_info.bit_gtk ^= BIT0; /* GTK 槽位乒乓使用 */
+    pst_multi_user->st_key_info.bit_gtk ^= BIT0; /* GTK ???????????? */
     pst_multi_user->st_key_info.uc_last_gtk_key_idx = uc_key_index;
 
     OAM_WARNING_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_WPA, "{dmac_11i_add_gtk_key::new bit_gtk=%u, keyidx = %u.}",
@@ -396,7 +396,7 @@ oal_uint32  dmac_11i_add_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
     if (WLAN_TEMPORAL_KEY_LENGTH < pst_key->ul_key_len)
     {
         st_security_key.puc_mic_key = pst_key->auc_key + WLAN_TEMPORAL_KEY_LENGTH;
-        /* 对于TKIP模式，MIC存在txrx交换bit顺序的情况，需要转换顺序*/
+        /* ????TKIP??????MIC????txrx????bit????????????????????????*/
         if ((WLAN_80211_CIPHER_SUITE_TKIP == st_security_key.en_cipher_type) && (IS_STA(pst_mac_vap)))
         {
             oal_memcopy(auc_mic_key, st_security_key.puc_mic_key, 8);
@@ -405,7 +405,7 @@ oal_uint32  dmac_11i_add_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
         }
     }
 
-    /*3.1 将加密方式和加密密钥写入CE中*/
+    /*3.1 ????????????????????????CE??*/
     ul_ret = dmac_11i_update_key_to_ce(pst_mac_vap, &st_security_key, OAL_PTR_NULL);
     if (OAL_SUCC != ul_ret)
     {
@@ -415,13 +415,13 @@ oal_uint32  dmac_11i_add_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
         return ul_ret;
     }
 
-    /* 设置成功后，更新一下multiuser中的安全信息,目前只有keyid在发送组播帧时会使用到 */
+    /* ????????????????????multiuser????????????,????????keyid?????????????????????? */
     mac_user_set_key(pst_multi_user, st_security_key.en_key_type, st_security_key.en_cipher_type, st_security_key.uc_key_id);
 
-    /*4.1 打开1X端口认证状态*/
+    /*4.1 ????1X????????????*/
     mac_user_set_port(pst_multi_user, OAL_TRUE);
 
-    /*5.1 打开发送描述符的加密属性*/
+    /*5.1 ????????????????????????*/
     if (WLAN_KEY_TYPE_TX_GTK == st_security_key.en_key_type)
     {
         pst_multi_user->st_user_tx_info.st_security.en_cipher_key_type = WLAN_KEY_TYPE_TX_GTK;
@@ -449,14 +449,14 @@ oal_uint32  dmac_11i_add_wep_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
     }
 
 
-    /*1.1 根据索引找到组播user内存区域*/
+    /*1.1 ????????????????user????????*/
     pst_multi_user = mac_res_get_mac_user(pst_mac_vap->us_multi_user_idx);
     if (OAL_PTR_NULL == pst_multi_user)
     {
         return OAL_ERR_CODE_SECURITY_USER_INVAILD;
     }
 
-    /*1.2 根据mac_vap获取dmac_vap*/
+    /*1.2 ????mac_vap????dmac_vap*/
     pst_dmac_vap = (dmac_vap_stru *)pst_mac_vap;
 
     if (WLAN_80211_CIPHER_SUITE_WEP_104 != pst_multi_user->st_key_info.en_cipher_type
@@ -468,7 +468,7 @@ oal_uint32  dmac_11i_add_wep_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
         return OAL_ERR_CODE_SECURITY_CHIPER_TYPE;
     }
     pst_key = &pst_multi_user->st_key_info.ast_key[uc_key_index];
-    /*2.1 参数准备*///未覆盖
+    /*2.1 ????????*///??????
     st_security_key.uc_key_id      = uc_key_index;
     st_security_key.en_cipher_type = pst_multi_user->st_key_info.en_cipher_type;
 
@@ -481,11 +481,11 @@ oal_uint32  dmac_11i_add_wep_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
     {
         if (WLAN_KEY_TYPE_PTK == st_security_key.en_key_type)
         {
-            st_security_key.uc_lut_idx = dmac_vap_psta_lut_idx(pst_dmac_vap); /* Proxy STA 需要和lut idx对齐 */
+            st_security_key.uc_lut_idx = dmac_vap_psta_lut_idx(pst_dmac_vap); /* Proxy STA ??????lut idx???? */
         }
         else
         {
-            st_security_key.uc_lut_idx = 0; /* Proxy STA 需要和lut idx对齐 */
+            st_security_key.uc_lut_idx = 0; /* Proxy STA ??????lut idx???? */
         }
     }
     else if(mac_vap_is_msta(&pst_dmac_vap->st_vap_base_info))
@@ -493,7 +493,7 @@ oal_uint32  dmac_11i_add_wep_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
         st_security_key.uc_lut_idx = pst_dmac_vap->pst_hal_vap->uc_vap_id;
         if (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode && WLAN_KEY_TYPE_RX_GTK == st_security_key.en_key_type)
         {
-            /* sta0的rx gtk的lut idx为0 */
+            /* sta0??rx gtk??lut idx??0 */
             st_security_key.uc_lut_idx = 0;
         }
     }
@@ -505,7 +505,7 @@ oal_uint32  dmac_11i_add_wep_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
     st_security_key.puc_cipher_key = pst_key->auc_key;
     st_security_key.puc_mic_key    = OAL_PTR_NULL;
 
-    /*3.1 将加密方式和加密密钥写入CE中*/
+    /*3.1 ????????????????????????CE??*/
     if (OAL_SUCC != dmac_11i_update_key_to_ce(pst_mac_vap, &st_security_key, OAL_PTR_NULL))
     {
         OAM_ERROR_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_WPA,
@@ -514,7 +514,7 @@ oal_uint32  dmac_11i_add_wep_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_key_ind
         return OAL_FAIL;
     }
 
-    /*5.1 打开发送描述符的加密属性*/
+    /*5.1 ????????????????????????*/
     if (WLAN_KEY_TYPE_TX_GTK == st_security_key.en_key_type)
     {
         pst_multi_user->st_user_tx_info.st_security.en_cipher_key_type = HAL_KEY_TYPE_TX_GTK;
@@ -532,7 +532,7 @@ OAL_STATIC oal_uint32  dmac_11i_del_ptk_key(mac_vap_stru *pst_mac_vap, oal_uint8
     oal_uint8                           uc_ce_lut_index;
     hal_cipher_key_type_enum_uint8      en_key_type;
 
-    /*1.1 根据mac地址找到user索引*/
+    /*1.1 ????mac????????user????*/
     pst_current_dmac_user = mac_vap_get_dmac_user_by_addr(pst_mac_vap, puc_mac_addr);
     if (OAL_PTR_NULL == pst_current_dmac_user)
     {
@@ -540,12 +540,12 @@ OAL_STATIC oal_uint32  dmac_11i_del_ptk_key(mac_vap_stru *pst_mac_vap, oal_uint8
         return OAL_ERR_CODE_SECURITY_USER_INVAILD;
     }
 
-    /*2.1 参数准备*/
+    /*2.1 ????????*/
     en_key_type     = HAL_KEY_TYPE_PTK;
     uc_key_id       = uc_key_index;
     uc_ce_lut_index = pst_current_dmac_user->uc_lut_index;
 
-    /*3.2 删除CE中的对应密钥*/
+    /*3.2 ????CE????????????*/
     ul_ret = dmac_11i_del_key_to_ce(pst_mac_vap, uc_key_id, en_key_type, uc_ce_lut_index);
     if (OAL_SUCC != ul_ret)
     {//weifugai
@@ -556,12 +556,12 @@ OAL_STATIC oal_uint32  dmac_11i_del_ptk_key(mac_vap_stru *pst_mac_vap, oal_uint8
         return ul_ret;
     }
 
-    /*4.1 关闭1X端口认证状态*/
+    /*4.1 ????1X????????????*/
     mac_user_set_port(&pst_current_dmac_user->st_user_base_info, OAL_FALSE);
-    /* 初始化用户的密钥信息 */
+    /* ???????????????????? */
     mac_user_init_key(&pst_current_dmac_user->st_user_base_info);
 
-    /*5.1 关闭发送描述符的加密属性*/
+    /*5.1 ????????????????????????*/
     pst_current_dmac_user->st_user_base_info.st_user_tx_info.st_security.en_cipher_key_type = HAL_KEY_TYPE_BUTT;
 
 
@@ -583,17 +583,17 @@ OAL_STATIC oal_uint32  dmac_11i_del_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*1.1 根据索引找到组播user内存区域*/
+    /*1.1 ????????????????user????????*/
     pst_current_mac_user = (mac_user_stru *)mac_res_get_mac_user(pst_mac_vap->us_multi_user_idx);
     if(OAL_PTR_NULL == pst_current_mac_user)
     {
         return OAL_ERR_CODE_SECURITY_USER_INVAILD;
     }
 
-    /*1.2 根据mac_vap获取dmac_vap*/
+    /*1.2 ????mac_vap????dmac_vap*/
     pst_dmac_vap = (dmac_vap_stru *)mac_res_get_dmac_vap(pst_mac_vap->uc_vap_id);
 
-    /*2.1 参数准备*/
+    /*2.1 ????????*/
     uc_key_id = 0;
     en_key_type = dmac_11i_get_gtk_key_type(pst_mac_vap, pst_current_mac_user->st_key_info.en_cipher_type);
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -602,7 +602,7 @@ OAL_STATIC oal_uint32  dmac_11i_del_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8
     uc_ce_lut_index = (IS_AP(pst_mac_vap)) ? pst_dmac_vap->pst_hal_vap->uc_vap_id : 0;
 #endif
 
-    /*3.1 删除CE中的对应密钥*/
+    /*3.1 ????CE????????????*/
     ul_ret = dmac_11i_del_key_to_ce(pst_mac_vap, uc_key_id, en_key_type, uc_ce_lut_index);
     if (OAL_SUCC != ul_ret)
     {
@@ -613,11 +613,11 @@ OAL_STATIC oal_uint32  dmac_11i_del_gtk_key(mac_vap_stru *pst_mac_vap, oal_uint8
         return ul_ret;
     }
 
-    /*4.1 关闭1X端口认证状态*/
+    /*4.1 ????1X????????????*/
     mac_user_set_port(pst_current_mac_user, OAL_FALSE);
     mac_user_init_key(pst_current_mac_user);
 
-    /*5.1 关闭发送描述符的加密属性*/
+    /*5.1 ????????????????????????*/
     if (HAL_KEY_TYPE_TX_GTK == en_key_type)
     {
         pst_current_mac_user->st_user_tx_info.st_security.en_cipher_key_type = HAL_KEY_TYPE_BUTT;
@@ -650,7 +650,7 @@ oal_uint32  dmac_11i_add_key_from_user(mac_vap_stru *pst_mac_vap, dmac_user_stru
         en_auth_supp = HAL_SUPP_KEY;
     }
 
-    /* wep加密时不需要恢复PTK密钥 */
+    /* wep????????????????PTK???? */
     if(OAL_TRUE == mac_is_wep_allowed(pst_mac_vap))
     {
         return OAL_SUCC;
@@ -659,8 +659,8 @@ oal_uint32  dmac_11i_add_key_from_user(mac_vap_stru *pst_mac_vap, dmac_user_stru
 
     for(uc_key_id=0; uc_key_id <= pst_dmac_user->uc_max_key_index; uc_key_id++)
     {
-        puc_cipkey = pst_dmac_user->st_user_base_info.st_key_info.ast_key[uc_key_id].auc_key;        /* 前16字节是cipherkey */
-        puc_mickey = pst_dmac_user->st_user_base_info.st_key_info.ast_key[uc_key_id].auc_key + 16;   /* 后16字节是mickey */
+        puc_cipkey = pst_dmac_user->st_user_base_info.st_key_info.ast_key[uc_key_id].auc_key;        /* ??16??????cipherkey */
+        puc_mickey = pst_dmac_user->st_user_base_info.st_key_info.ast_key[uc_key_id].auc_key + 16;   /* ??16??????mickey */
 
         st_security_key.uc_key_id      = uc_key_id;
         st_security_key.en_key_type    = HAL_KEY_TYPE_PTK;
@@ -690,7 +690,7 @@ oal_uint32  dmac_11i_remove_key_from_user(mac_vap_stru *pst_mac_vap, dmac_user_s
     oal_uint8   uc_key_id;
     oal_uint32  ul_ret;
 
-    /*只需要删除TIKP/CCMP单播密钥*/
+    /*??????????TIKP/CCMP????????*/
     switch (pst_dmac_user->st_user_base_info.st_key_info.en_cipher_type)
     {
         case WLAN_80211_CIPHER_SUITE_GROUP_CIPHER:
@@ -737,7 +737,7 @@ oal_uint32 dmac_config_11i_init_port(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len
 
     MAC_11I_ASSERT(OAL_PTR_NULL != pst_mac_vap, OAL_ERR_CODE_PTR_NULL);
 
-    /* 根据mac找到对应AP USER结构 */
+    /* ????mac????????AP USER???? */
     pst_mac_user = mac_vap_get_user_by_addr(pst_mac_vap, puc_param);
     MAC_11I_ASSERT(OAL_PTR_NULL != pst_mac_user, OAL_ERR_CODE_PTR_NULL);
 
@@ -752,18 +752,18 @@ oal_uint32  dmac_config_11i_add_key_set_reg(mac_vap_stru *pst_mac_vap, oal_uint8
 {
     oal_uint32                            ul_ret;
 
-    /*1.1 入参检查*/
+    /*1.1 ????????*/
     if (OAL_PTR_NULL == pst_mac_vap)
     {
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*2.1 如果是单播，需要设置PTK*/
+    /*2.1 ????????????????????PTK*/
     if (OAL_PTR_NULL != puc_mac_addr)
     {
         ul_ret = dmac_11i_add_ptk_key(pst_mac_vap, puc_mac_addr, uc_key_index);
     }
-    /*2.2 如果是组播，需要设置GTK*/
+    /*2.2 ????????????????????GTK*/
     else
     {
         ul_ret = dmac_11i_add_gtk_key(pst_mac_vap, uc_key_index);
@@ -795,7 +795,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*2.1 获取参数*/
+    /*2.1 ????????*/
     pst_payload_addkey_params = (mac_addkey_param_stru *)puc_param;
     uc_key_index = pst_payload_addkey_params->uc_key_index;
     puc_mac_addr = (oal_uint8*)pst_payload_addkey_params->auc_mac_addr;
@@ -804,7 +804,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
 
     pst_key      = &(pst_payload_addkey_params->st_key);
 
-    /*2.2 索引值最大值检查*/
+    /*2.2 ????????????????*/
     if(uc_key_index >= WLAN_NUM_TK + WLAN_NUM_IGTK)
     {
         OAM_ERROR_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_WPA, "{dmac_config_11i_add_key::invalid uc_key_index[%d].}", uc_key_index);
@@ -812,7 +812,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
     }
 
 
-    /*2.3 密钥参数指针不能为空*/
+    /*2.3 ????????????????????*/
     if (OAL_PTR_NULL == pst_key)
     {
         OAM_ERROR_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_WPA, "{dmac_config_11i_add_key::pst_params null.}");
@@ -821,7 +821,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
 
     if (OAL_TRUE == pst_payload_addkey_params->en_pairwise)
     {
-        /* 单播密钥存放在单播用户中 */
+        /* ???????????????????????? */
         ul_ret = mac_vap_find_user_by_macaddr(pst_mac_vap, puc_mac_addr, &us_user_idx);
         if (OAL_SUCC != ul_ret)
         {
@@ -831,7 +831,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
     }
     else
     {
-        /* 组播密钥存放在组播用户中 */
+        /* ???????????????????????? */
         us_user_idx  = pst_mac_vap->us_multi_user_idx;
     }
 
@@ -849,7 +849,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
         return OAL_ERR_CODE_SECURITY_USER_INVAILD;
     }
 
-    /*3.1 将加密属性更新到用户中*/
+    /*3.1 ??????????????????????*/
     ul_ret = mac_vap_add_key(pst_mac_vap, pst_mac_user, uc_key_index, pst_key);
     if (OAL_SUCC != ul_ret)
     {
@@ -859,7 +859,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
 
 #endif /* #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE) */
 
-    /* WEP模式下不需要在addkey流程设置寄存器 */
+    /* WEP??????????????addkey?????????????? */
     if (OAL_TRUE == mac_is_wep_enabled(pst_mac_vap))
     {
         return OAL_SUCC;
@@ -887,7 +887,7 @@ oal_uint32  dmac_config_11i_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
     }
 #endif
 
-    /* 设置硬件寄存器 */
+    /* ?????????????? */
     ul_ret = dmac_config_11i_add_key_set_reg(pst_mac_vap, uc_key_index, puc_mac_addr);
     if (OAL_SUCC != ul_ret)
     {
@@ -912,7 +912,7 @@ oal_uint32  dmac_config_wapi_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len
 {
     dmac_vap_stru       *pst_dmac_vap;
 
-    /*1.2 根据mac_vap获取dmac_vap*/
+    /*1.2 ????mac_vap????dmac_vap*/
     pst_dmac_vap = (dmac_vap_stru *)mac_res_get_dmac_vap(pst_mac_vap->uc_vap_id);
     if (OAL_PTR_NULL == pst_dmac_vap)
     {
@@ -920,7 +920,7 @@ oal_uint32  dmac_config_wapi_add_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len
         return OAL_FAIL;
     }
 
-    /* 关掉硬件的加解密功能 */
+    /* ???????????????????? */
     hal_disable_ce(pst_dmac_vap->pst_hal_device);
 
     return OAL_SUCC;
@@ -939,7 +939,7 @@ oal_uint32  dmac_config_11i_remove_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_l
     oal_uint8                       *puc_mac_addr = OAL_PTR_NULL;
     mac_removekey_param_stru        *pst_removekey_params         = OAL_PTR_NULL;
 
-    /*1.1 入参检查*/
+    /*1.1 ????????*/
     if ((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == puc_param))
     {
         OAM_ERROR_LOG0(0, OAM_SF_WPA, "{dmac_config_11i_remove_key::param null.}");
@@ -947,7 +947,7 @@ oal_uint32  dmac_config_11i_remove_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_l
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*2.1 获取参数*/
+    /*2.1 ????????*/
     pst_removekey_params = (mac_removekey_param_stru *)puc_param;
     uc_key_index = pst_removekey_params->uc_key_index;
     en_pairwise  = pst_removekey_params->en_pairwise;
@@ -961,7 +961,7 @@ oal_uint32  dmac_config_11i_remove_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_l
     }
 #endif
 
-    /*3.1 如果是单播*/
+    /*3.1 ??????????*/
     if((OAL_TRUE != mac_addr_is_zero(puc_mac_addr)) && (OAL_TRUE == en_pairwise))
     {
         ul_ret = dmac_11i_del_ptk_key(pst_mac_vap, uc_key_index, puc_mac_addr);
@@ -973,7 +973,7 @@ oal_uint32  dmac_config_11i_remove_key(mac_vap_stru *pst_mac_vap, oal_uint8 uc_l
             return ul_ret;
         }
     }
-    /*3.2 如果是组播*/
+    /*3.2 ??????????*/
     else
     {
         ul_ret = dmac_11i_del_gtk_key(pst_mac_vap, uc_key_index);
@@ -997,18 +997,18 @@ oal_uint32  dmac_config_11i_set_default_key(mac_vap_stru *pst_mac_vap, oal_uint8
     oal_bool_enum_uint8              en_unicast;
     oal_bool_enum_uint8              en_multicast;
 
-    /*1.1 入参检查*/
+    /*1.1 ????????*/
     if ((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == puc_param))
     {
         OAM_ERROR_LOG0(0, OAM_SF_WPA, "{dmac_config_11i_set_default_key::param null.}");
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*2.1 获取参数*/
+    /*2.1 ????????*/
     pst_defaultkey_params = (mac_setdefaultkey_param_stru *)puc_param;
     uc_key_index = pst_defaultkey_params->uc_key_index;
 
-    /*2.2 索引值最大值检查*/
+    /*2.2 ????????????????*/
     if(uc_key_index >= (WLAN_NUM_TK + WLAN_NUM_IGTK))
     {
         OAM_ERROR_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_WPA,
@@ -1018,7 +1018,7 @@ oal_uint32  dmac_config_11i_set_default_key(mac_vap_stru *pst_mac_vap, oal_uint8
     }
     en_unicast   = pst_defaultkey_params->en_unicast;
     en_multicast = pst_defaultkey_params->en_multicast;
-    /*2.3 参数有效性检查*/
+    /*2.3 ??????????????*/
     if ((OAL_FALSE == en_multicast) && (OAL_FALSE == en_unicast))
     {
         OAM_ERROR_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_WPA, "{dmac_config_11i_set_default_key::invalid mode.}");
@@ -1029,12 +1029,12 @@ oal_uint32  dmac_config_11i_set_default_key(mac_vap_stru *pst_mac_vap, oal_uint8
 
     if (uc_key_index >= WLAN_NUM_TK)
     {
-        /*3.1 设置default mgmt key属性*/
+        /*3.1 ????default mgmt key????*/
         ul_ret = mac_vap_set_default_mgmt_key(pst_mac_vap, uc_key_index);
     }
     else
     {
-        /*3.2 设置 WEP default key属性*/
+        /*3.2 ???? WEP default key????*/
         ul_ret = mac_vap_set_default_key(pst_mac_vap, uc_key_index);
     }
 
@@ -1065,8 +1065,8 @@ oal_uint32  dmac_config_11i_set_default_key(mac_vap_stru *pst_mac_vap, oal_uint8
 
 oal_void dmac_11i_tkip_mic_failure_handler(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_user_mac, oal_nl80211_key_type en_key_type)
 {
-    frw_event_mem_stru           *pst_event_mem;          /* 申请事件返回的内存指针 */
-    frw_event_stru               *pst_dmac_to_hmac_event; /* 指向申请事件的payload指针 */
+    frw_event_mem_stru           *pst_event_mem;          /* ?????????????????????? */
+    frw_event_stru               *pst_dmac_to_hmac_event; /* ??????????????payload???? */
     dmac_to_hmac_mic_event_stru  *pst_mic_event;
 
     if ((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == puc_user_mac))
@@ -1082,29 +1082,29 @@ oal_void dmac_11i_tkip_mic_failure_handler(mac_vap_stru *pst_mac_vap, oal_uint8 
         return;
     }
 
-    /* 获得事件指针 */
+    /* ???????????? */
     pst_dmac_to_hmac_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_dmac_to_hmac_event->st_event_hdr),
                        FRW_EVENT_TYPE_WLAN_DRX,
-                       DMAC_WLAN_DRX_EVENT_SUB_TYPE_TKIP_MIC_FAILE,/* DMAC tkip mic faile 上报给HMAC */
+                       DMAC_WLAN_DRX_EVENT_SUB_TYPE_TKIP_MIC_FAILE,/* DMAC tkip mic faile ??????HMAC */
                        OAL_SIZEOF(dmac_to_hmac_mic_event_stru),
                        FRW_EVENT_PIPELINE_STAGE_1,
                        pst_mac_vap->uc_chip_id,
                        pst_mac_vap->uc_device_id,
                        pst_mac_vap->uc_vap_id);
 
-    /*将mic信息上报给hmac*/
+    /*??mic??????????hmac*/
     pst_mic_event = (dmac_to_hmac_mic_event_stru *)(pst_dmac_to_hmac_event->auc_event_data);
     oal_memcopy(pst_mic_event->auc_user_mac, puc_user_mac, WLAN_MAC_ADDR_LEN);
     pst_mic_event->en_key_type   = en_key_type;
-    pst_mic_event->l_key_id     = 0;/*tkip 只支持1个密钥，写死0*/
+    pst_mic_event->l_key_id     = 0;/*tkip ??????1????????????0*/
 
-    /* 分发 */
+    /* ???? */
     frw_event_dispatch_event(pst_event_mem);
 
-    /* 释放事件内存 */
+    /* ???????????? */
     FRW_EVENT_FREE(pst_event_mem);
 }
 

@@ -39,7 +39,7 @@ typedef __s32 TBL_CELL;
 int wacom_touch_short_test(int *result);
 int wacom_touch_open_test(char *i2c_device, int *result);
 int wacom_touch_open_short_test(char *i2c_device, int *result);
-        // i2c_device:  ( IN),	the device file of wacom_touch_device  for example “/dev/i2c-1”
+        // i2c_device:  ( IN),	the device file of wacom_touch_device  for example ???/dev/i2c-1???
         // result:      (OUT),  the result code as defined below (ERR_CODE_NO_ERR...)
         // return Value:        0 for OK, others for return code defined as below
 

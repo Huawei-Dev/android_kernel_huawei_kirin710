@@ -76,7 +76,7 @@ extern "C" {
   5 struct
 *****************************************************************************/
 /*****************************************************************************
- 描述 : 针对模块的打印开关命令,支持多个命令参数
+ ???? : ??????????????????????,????????????????
 ID   : DIAG_CMD_LOG_CAT_PRINT
 REQ : DIAG_CMD_LOG_CAT_PRINT_REQ_STRU
 CNF : DIAG_CMD_LOG_CAT_PRINT_CNF_STRU
@@ -85,43 +85,43 @@ IND : DIAG_CMD_LOG_PRINT_RAW_TXT_IND_STRU
 
 typedef struct
 {
-    VOS_UINT32 ulModuleId;      /* 如果为0xFFFFFFFF表示为所有模块的Level开关*/
+    VOS_UINT32 ulModuleId;      /* ??????0xFFFFFFFF????????????????Level????*/
     VOS_UINT32 ulLevelFilter;   /* (0|ERROR|WARNING|NORMAL|INFO|0|0|0) 1:OPEN, 0:CLOSE*/
 } DIAG_CMD_LOG_CAT_PRINT_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
     VOS_UINT32 ulModuleId;
 } DIAG_CMD_LOG_CAT_PRINT_CNF_STRU;
 
 /*****************************************************************************
-描述 : 针对模块的层间开关,支持多个命令参数
+???? : ??????????????????,????????????????
 ID   : DIAG_CMD_LOG_CAT_LAYER
 REQ : DIAG_CMD_LOG_CAT_LAYER_REQ_STRU
 CNF : DIAG_CMD_LOG_CAT_LAYER_CNF_STRU
-说明: 如果多包命令参数的情况，一个模块错误，就会返回失败，但是正确的模块参数依然会存储
+????: ????????????????????????????????????????????????????????????????????????????????
 IND : DIAG_CMD_LOG_LAYER_IND_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32 ulModuleId;       /* 模块ID*/
-    VOS_UINT32 ulIsDestModule;   /* 0: 表示Source Module， 1：表示Dest Module*/
-    VOS_UINT32 ulSwitch;         /* (0x00000000): 关；(0x80000000)：开*/
+    VOS_UINT32 ulModuleId;       /* ????ID*/
+    VOS_UINT32 ulIsDestModule;   /* 0: ????Source Module?? 1??????Dest Module*/
+    VOS_UINT32 ulSwitch;         /* (0x00000000): ????(0x80000000)????*/
 } DIAG_CMD_LOG_CAT_LAYER_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
     VOS_UINT32 ulModuleId;
 } DIAG_CMD_LOG_CAT_LAYER_CNF_STRU;
 
 /*****************************************************************************
-描述 : 针对AIR的总开关,支持多个命令参数
+???? : ????AIR????????,????????????????
 ID   : DIAG_CMD_LOG_CAT_AIR
 REQ : DIAG_CMD_LOG_CAT_AIR_REQ_STRU
 CNF : DIAG_CMD_LOG_CAT_AIR_CNF_STRU
@@ -129,19 +129,19 @@ IND : DIAG_CMD_LOG_AIR_IND_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32 ulSwitch;        /* (0x00000000): 关；(0x80000000)：开*/
-    VOS_UINT32 ulGuSwitch;      /*  1开，0关*/
+    VOS_UINT32 ulSwitch;        /* (0x00000000): ????(0x80000000)????*/
+    VOS_UINT32 ulGuSwitch;      /*  1????0??*/
 } DIAG_CMD_LOG_CAT_AIR_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 } DIAG_CMD_LOG_CAT_AIR_CNF_STRU;
 
 /*****************************************************************************
-描述 : 针对EVENT的总开关,支持多个命令参数
+???? : ????EVENT????????,????????????????
 ID   : DIAG_CMD_LOG_CAT_EVENT
 REQ : DIAG_CMD_LOG_CAT_EVENT_REQ_STRU
 CNF : DIAG_CMD_LOG_CAT_EVENT_CNF_STRU
@@ -156,62 +156,62 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 } DIAG_CMD_LOG_CAT_EVENT_CNF_STRU;
 
 /* user plane */
 typedef struct
 {
-    VOS_UINT32 ulSwitch;        /* 1 打开 0关闭 */
+    VOS_UINT32 ulSwitch;        /* 1 ???? 0???? */
 }DIAG_CMD_LOG_USERPLANE_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 }DIAG_CMD_LOG_CAT_USERPLANE_CNF_STRU;
 
 /* trans */
 typedef struct
 {
-    VOS_UINT32 ulSwitch;        /* 1 打开 0关闭 */
+    VOS_UINT32 ulSwitch;        /* 1 ???? 0???? */
 }DIAG_CMD_LOG_TRANS_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 }DIAG_CMD_LOG_CAT_TRANS_CNF_STRU;
 
 /* time stamp */
 typedef struct
 {
-    VOS_UINT32 ulSwitch;        /* 1 打开 0关闭 */
+    VOS_UINT32 ulSwitch;        /* 1 ???? 0???? */
     VOS_UINT32 ulPeriod;        /* period min */
 }DIAG_CMD_LOG_TIMESTAMP_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 }DIAG_CMD_LOG_CAT_TIMESTAMP_CNF_STRU;
 
 /* diag debug switch */
 typedef struct
 {
-    VOS_UINT32 ulSwitch;        /* 1 打开 0关闭 */
+    VOS_UINT32 ulSwitch;        /* 1 ???? 0???? */
 }DIAG_CMD_LOG_DIAG_MNTN_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 }DIAG_CMD_LOG_CAT_DIAG_MNTN_CNF_STRU;
 
 /*****************************************************************************

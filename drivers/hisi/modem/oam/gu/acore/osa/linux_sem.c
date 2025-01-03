@@ -81,7 +81,7 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_V_SEM_C
 
@@ -110,7 +110,7 @@ VOS_UINT32              vos_SemMaxSemId;
 
 VOS_CHAR g_acVosSemCtrlBuf[VOS_SEM_CTRL_BUF_SIZE];
 
-/* 自旋锁，用来作信号量的临界资源保护 */
+/* ?????????????????????????????????? */
 VOS_SPINLOCK             g_stVosSemSpinLock;
 
 /*****************************************************************************
@@ -255,7 +255,7 @@ VOS_UINT32 VOS_SmCCreate( VOS_CHAR   acSmName[4],
     if( 0xFFFFFFFF == ulSmInit )
     {
         iSemId->SemType  = VOS_SEM_TYPE_MUTEX;
-        sema_init(&(iSemId->sem), 1); /* 互斥信号量该值为1*/
+        sema_init(&(iSemId->sem), 1); /* ????????????????1*/
     }
     else
     {

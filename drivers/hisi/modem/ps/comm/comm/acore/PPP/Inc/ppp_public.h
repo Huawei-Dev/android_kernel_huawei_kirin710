@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "AtPppInterface.h"
@@ -56,7 +56,7 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 #ifndef VOS_NTOHL
@@ -133,22 +133,22 @@ extern "C" {
         *(((VOS_CHAR*)tgt)+1) = *((VOS_CHAR*)src);
 
 #endif
-/*系统最多需要的PPP ID的数目，实际需要的空间是
-该值加一，因为头是不被分配的*/
+/*??????????????PPP ID????????????????????????
+????????????????????????????*/
 /*#define PPP_MAX_ID_NUM 1*/
 #define PPP_MAX_ID_NUM_ALLOC (PPP_MAX_ID_NUM+1)
 
-/*接收到的报文向系统申请空间，需要预留的添加头部的*/
+/*????????????????????????????????????????????????*/
 #define PPP_RECIEVE_RESERVE_FOR_HEAD 4
 
-/*接收到的报文向系统申请空间，需要预留的添加尾部的*/
+/*????????????????????????????????????????????????*/
 #define PPP_RECIEVE_RESERVE_FOR_TAIL 2
 
-#define PPPoE_RESERVE_HEADER_LEN    20     /*预留的字节数，供PPPoE填写以太帧头部和PPPoE头部*/
+#define PPPoE_RESERVE_HEADER_LEN    20     /*????????????????PPPoE????????????????PPPoE????*/
 
-#define PPP_FEATURE_PPP         0          /*使用PPP*/
+#define PPP_FEATURE_PPP         0          /*????PPP*/
 
-#define PPP_FEATURE             PPP_FEATURE_PPP   /*当前选择PPP*/
+#define PPP_FEATURE             PPP_FEATURE_PPP   /*????????PPP*/
 
 #define PPP_MAX_DATA_CNT_IN_QUEUE (2000)
 
@@ -169,13 +169,13 @@ extern "C" {
 #define PPP_MNTN_LOG4(ModulePID, SubMod, Level, String, Para1, Para2, Para3, Para4) \
             ((VOS_VOID)DIAG_LogReport(DIAG_GEN_LOG_MODULE(MODEM_ID_0, DIAG_MODE_COMM, Level), (ModulePID), __FILE__, __LINE__, "%d, %d, %d, %d \r\n", Para1, Para2, Para3, Para4))
 
-/* --------------零拷贝操作相关宏-------------- */
+/* --------------????????????????-------------- */
 typedef IMM_ZC_STRU      PPP_ZC_STRU;
 typedef IMM_ZC_HEAD_STRU PPP_ZC_QUEUE_STRU;
 
-#define PPP_ZC_MAX_DATA_LEN                  (IMM_MAX_ETH_FRAME_LEN)            /* A核内可申请内存块最大长度 */
-#define PPP_ZC_UL_RESERVE_LEN                (IMM_MAC_HEADER_RES_LEN)           /* MAC头长度，上行方向需要保留 */
-#define PPP_ZC_DL_RESERVE_LEN                (0)                                /* 下行方向不需要保留 */
+#define PPP_ZC_MAX_DATA_LEN                  (IMM_MAX_ETH_FRAME_LEN)            /* A???????????????????????? */
+#define PPP_ZC_UL_RESERVE_LEN                (IMM_MAC_HEADER_RES_LEN)           /* MAC???????????????????????? */
+#define PPP_ZC_DL_RESERVE_LEN                (0)                                /* ?????????????????? */
 
 #define PPP_ZC_MEM_ALLOC(ulLen)              (IMM_ZcStaticAlloc(ulLen))
 #define PPP_ZC_MEM_FREE(pstMem)              (IMM_ZcFreeAny(pstMem))
@@ -197,40 +197,40 @@ typedef IMM_ZC_HEAD_STRU PPP_ZC_QUEUE_STRU;
 #define PPP_ZC_PEEK_QUEUE_TAIL(pstZcQueue)      (IMM_ZcQueuePeekTail(pstZcQueue))
 #define PPP_ZC_GET_QUEUE_LEN(pstZcQueue)        (IMM_ZcQueueLen(pstZcQueue))
 
-/* A核可维可测接口 */
+/* A?????????????? */
 #define PPP_MNTN_TRACE_MSG(pMsg)                DIAG_TraceReport(pMsg)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  4 STRUCT定义
+  4 STRUCT????
 *****************************************************************************/
-/* STRUCT声明 */
+/* STRUCT???? */
 struct link;
 struct ppp_mbuf;
 struct lcp;
 
-/*IP地址*/
+/*IP????*/
 struct ppp_in_addr
 {
     VOS_UINT32 s_addr;
 };
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  6 消息头定义
+  6 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 消息定义
+  7 ????????
 *****************************************************************************/
-/* 定时器消息 */
+/* ?????????? */
 #define TIMER_PPP_PHASE_MSG                     (0x0001)
 #define TIMER_PPP_LCP_ECHO_MSG                  (0x0002)
 #define TIMER_HDLC_FRM_OUTPUT_SPACE_ALLOC_FAIL  (0x0003)
@@ -239,14 +239,14 @@ struct ppp_in_addr
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
-/* 按照以下方法进行矩阵变换，生成随机序列。
+/* ????????????????????????????????????????
          C0  C1  C2  C3              C0  C1  C2  C3
     R0 | 0 | 1 | 2 | 3 |        R0 | 3 | 6 | 9 | C |
        -----------------           -----------------
@@ -277,7 +277,7 @@ struct ppp_in_addr
 }
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern PPP_ZC_STRU *PPP_MemAlloc(VOS_UINT16 usLen, VOS_UINT16 usReserveLen);
 extern PPP_ZC_STRU *PPP_MemCopyAlloc(VOS_UINT8 *pSrc, VOS_UINT16 usLen, VOS_UINT16 usReserveLen);

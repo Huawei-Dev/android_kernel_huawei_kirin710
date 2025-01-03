@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "ATCmdProc.h"
 #include "product_config.h"
@@ -60,17 +60,17 @@
 #define THIS_FILE_ID        PS_FILE_ID_AT_MSG_PRINT_C
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3类型定义
+  3????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 函数实现
+  5 ????????
 *****************************************************************************/
 
 TAF_UINT32 AT_StubSendAutoReplyMsg(
@@ -84,7 +84,7 @@ TAF_UINT32 AT_StubSendAutoReplyMsg(
     MN_MSG_SUBMIT_STRU                  *pstSubmit;
     TAF_UINT32                          ulRet;
 
-    /*1. 为自动回复消息SUBMIT申请内存并情况*/
+    /*1. ??????????????SUBMIT??????????????*/
     pstTsSubmitInfo = (MN_MSG_TS_DATA_INFO_STRU *)PS_MEM_ALLOC(WUEPS_PID_AT, sizeof(MN_MSG_TS_DATA_INFO_STRU));
     if (VOS_NULL_PTR == pstTsSubmitInfo)
     {
@@ -92,7 +92,7 @@ TAF_UINT32 AT_StubSendAutoReplyMsg(
     }
     TAF_MEM_SET_S(pstTsSubmitInfo, sizeof(MN_MSG_TS_DATA_INFO_STRU), 0x00, sizeof(MN_MSG_TS_DATA_INFO_STRU));
 
-    /*2. 为自动回复消息SUBMIT填写TPDU数据内容*/
+    /*2. ??????????????SUBMIT????TPDU????????*/
     pstTsSubmitInfo->enTpduType = MN_MSG_TPDU_SUBMIT;
     pstSubmit = (MN_MSG_SUBMIT_STRU *)&pstTsSubmitInfo->u.stSubmit;
     TAF_MEM_CPY_S(&pstSubmit->stDestAddr,
@@ -105,7 +105,7 @@ TAF_UINT32 AT_StubSendAutoReplyMsg(
                sizeof(pstSubmit->stDcs));
     pstSubmit->stValidPeriod.enValidPeriod = MN_MSG_VALID_PERIOD_NONE;
 
-    /*3. 为自动回复消息SUBMIT编码*/
+    /*3. ??????????????SUBMIT????*/
     ulRet = MN_MSG_Encode(pstTsSubmitInfo, &stSendMsg.stMsgInfo.stTsRawData);
     if (MN_ERR_NO_ERROR != ulRet)
     {
@@ -115,7 +115,7 @@ TAF_UINT32 AT_StubSendAutoReplyMsg(
         return AT_ERROR;
     }
 
-    /*4. 填写回复消息的短信中心, 存储设备，消息类型和发送域*/
+    /*4. ??????????????????????, ??????????????????????????*/
     stSendMsg.enMemStore                        = MN_MSG_MEM_STORE_NONE;
     stSendMsg.enClientType                      = MN_MSG_CLIENT_NORMAL;
     stSendMsg.stMsgInfo.stTsRawData.enTpduType  = MN_MSG_TPDU_SUBMIT;
@@ -124,7 +124,7 @@ TAF_UINT32 AT_StubSendAutoReplyMsg(
                &pstEvent->u.stDeliverInfo.stRcvMsgInfo.stScAddr,
                sizeof(stSendMsg.stMsgInfo.stScAddr));
 
-    /*5. 发送回复消息*/
+    /*5. ????????????*/
     ulRet = MN_MSG_Send(ucIndex, 0, &stSendMsg);
     if (MN_ERR_NO_ERROR != ulRet)
     {
@@ -177,7 +177,7 @@ TAF_VOID AT_StubTriggerAutoReply(
 
     pstSmsCtx->ucSmsAutoReply = ucCfgValue;
 
-    /*若关闭自动回复功能，则清空相关动态内存*/
+    /*??????????????????????????????????????*/
     if (0 == pstSmsCtx->ucSmsAutoReply)
     {
         for (ucLoop = 0; ucLoop < AT_SMSMT_BUFFER_MAX; ucLoop++)
@@ -189,7 +189,7 @@ TAF_VOID AT_StubTriggerAutoReply(
         return;
     }
 
-    /*若已启用自动回复功能，按顺序回复接收到的短信*/
+    /*????????????????????????????????????????????*/
     for (ucLoop = 0; ucLoop < AT_SMSMT_BUFFER_MAX; ucLoop++)
     {
         if (TAF_TRUE != pstSmsCtx->astSmsMtBuffer[ucLoop].bUsed)
@@ -231,20 +231,20 @@ TAF_VOID AT_StubSaveAutoReplyData(
 
     pstSmsCtx = AT_GetModemSmsCtxAddrFromClientId(ucIndex);
 
-    /*自动回复功能未开启直接返回;*/
+    /*??????????????????????????;*/
     if (0 == pstSmsCtx->ucSmsAutoReply)
     {
         return;
     }
 
-    /*接收消息不是DELIVER短信或TP-RP没有置位直接返回*/
+    /*????????????DELIVER??????TP-RP????????????????*/
     if ((MN_MSG_TPDU_DELIVER != pstTsDataInfo->enTpduType)
      || (VOS_TRUE != pstTsDataInfo->u.stDeliver.bReplayPath))
     {
         return;
     }
 
-    /*申请并保存自动回复相关参数到缓存*/
+    /*????????????????????????????????*/
     for (ucLoop = 0; ucLoop < AT_SMSMT_BUFFER_MAX; ucLoop++)
     {
         if (TAF_TRUE == pstSmsCtx->astSmsMtBuffer[ucLoop].bUsed)
@@ -254,7 +254,7 @@ TAF_VOID AT_StubSaveAutoReplyData(
 
         AT_StubClearSpecificAutoRelyMsg(ucIndex, ucLoop);
 
-        /*记录接收短信信息记录到内存，用于 GCF测试用例34。2。8*/
+        /*???????????????????????????????? GCF????????34??2??8*/
         pstSmsCtx->astSmsMtBuffer[ucLoop].pstEvent = (MN_MSG_EVENT_INFO_STRU *)PS_MEM_ALLOC(WUEPS_PID_AT,
                                                   sizeof(MN_MSG_EVENT_INFO_STRU));
         if (VOS_NULL_PTR == pstSmsCtx->astSmsMtBuffer[ucLoop].pstEvent)
@@ -296,14 +296,14 @@ VOS_UINT32 At_ParseCsmpFo(
 {
     TAF_UINT32                          ulRet;
 
-    /* 检查<fo>,数字类型 */
+    /* ????<fo>,???????? */
     ulRet = At_CheckNumString(gastAtParaList[0].aucPara,gastAtParaList[0].usParaLen);
     if (AT_SUCCESS != ulRet)
     {
         return AT_CMS_OPERATION_NOT_ALLOWED;
     }
 
-    /* 注意: gastAtParaList[0].ulParaValue此时尚未转换，检查其它命令的这种情况 */
+    /* ????: gastAtParaList[0].ulParaValue???????????????????????????????????? */
     ulRet = At_Auc2ul(gastAtParaList[0].aucPara,gastAtParaList[0].usParaLen,
                       &gastAtParaList[0].ulParaValue);
     if (AT_FAILURE == ulRet)
@@ -311,7 +311,7 @@ VOS_UINT32 At_ParseCsmpFo(
         return AT_CMS_OPERATION_NOT_ALLOWED;
     }
 
-    /* 检查<fo>,一个字节 */
+    /* ????<fo>,???????? */
     if (gastAtParaList[0].ulParaValue > 0xff)
     {
         return AT_CMS_OPERATION_NOT_ALLOWED;
@@ -345,7 +345,7 @@ TAF_UINT32 At_GetAbsoluteTime(
 
 
     /* 6th of May 1994, 22:10:00 GMT+2 "94/05/06,22:10:00+08"
-       注意:还要判断中间字符是否合法
+       ????:????????????????????????
     */
     if ((TAF_NULL_PTR == pucTimeStr)
      || (TAF_NULL_PTR == pstAbsoluteTime))
@@ -354,7 +354,7 @@ TAF_UINT32 At_GetAbsoluteTime(
         return AT_ERROR;
     }
 
-    /* 检查<vp>,字符串类型 */
+    /* ????<vp>,?????????? */
     if ((22 != usTimeStrLen)
      || ('"' != pucTimeStr[0])
      || ('"' != pucTimeStr[usTimeStrLen - 1])/* '"' */
@@ -427,7 +427,7 @@ TAF_UINT32 At_GetAbsoluteTime(
         return AT_CMS_OPERATION_NOT_ALLOWED;
     }
 
-    /* '+' 或者 '-' */
+    /* '+' ???? '-' */
     switch(pucTimeStr[18])
     {
     case '+':
@@ -525,14 +525,14 @@ VOS_UINT32  AT_SetRelativeValidPeriod(
     }
     else
     {
-        /* 检查<vp>,数字类型 */
+        /* ????<vp>,???????? */
         ulRet = At_CheckNumString(pucPara, usParaLen);
         if (AT_SUCCESS != ulRet)
         {
             return AT_CMS_OPERATION_NOT_ALLOWED;
         }
 
-        /* 注意: gastAtParaList[1].ulParaValue此时尚未转换，检查其它命令的这种情况 */
+        /* ????: gastAtParaList[1].ulParaValue???????????????????????????????????? */
         ulRet = At_Auc2ul(pucPara, usParaLen, &ulRelativeValidPeriod);
         if (AT_FAILURE == ulRet)
         {
@@ -560,7 +560,7 @@ VOS_UINT32 At_ParseCsmpVp(
 
     pstSmsCtx = AT_GetModemSmsCtxAddrFromClientId(ucIndex);
 
-    /*获取当前配置的TP-VPF值，若用户不配置TP-VPF和TP-VP两项，则复制当前结构到临时结构并推出*/
+    /*??????????????TP-VPF????????????????TP-VPF??TP-VP????????????????????????????????????*/
     if (0 != gastAtParaList[0].usParaLen)
     {
         AT_GET_MSG_TP_VPF(pstVp->enValidPeriod, pstSmsCtx->stCscaCsmpInfo.ucTmpFo);
@@ -575,7 +575,7 @@ VOS_UINT32 At_ParseCsmpVp(
         return AT_SUCCESS;
     }
 
-    /*短信有效期类型设置为无效，<VP>参数项必须为空*/
+    /*??????????????????????????<VP>??????????????*/
     if (MN_MSG_VALID_PERIOD_NONE == pstVp->enValidPeriod)
     {
         if (0 != gastAtParaList[1].usParaLen)
@@ -585,7 +585,7 @@ VOS_UINT32 At_ParseCsmpVp(
         TAF_MEM_SET_S(pstVp, sizeof(MN_MSG_VALID_PERIOD_STRU), 0x00, sizeof(MN_MSG_VALID_PERIOD_STRU));
         return AT_SUCCESS;
     }
-    /*短信有效期类型设置为相对有效期，*/
+    /*????????????????????????????????*/
     else if (MN_MSG_VALID_PERIOD_RELATIVE == pstVp->enValidPeriod)
     {
         ulRet = AT_SetRelativeValidPeriod(ucIndex,
@@ -617,7 +617,7 @@ TAF_VOID At_MsgResultCodeFormat(
 {
     if(AT_V_ENTIRE_TYPE == gucAtVType)
     {
-        TAF_MEM_CPY_S((TAF_CHAR *)pgucAtSndCrLfAddr, AT_CMD_MAX_LEN + 20 - 1, (TAF_CHAR *)gaucAtCrLf,2);/*Code前面加\r\n*/
+        TAF_MEM_CPY_S((TAF_CHAR *)pgucAtSndCrLfAddr, AT_CMD_MAX_LEN + 20 - 1, (TAF_CHAR *)gaucAtCrLf,2);/*Code??????\r\n*/
         At_SendResultData(ucIndex,pgucAtSndCrLfAddr,usLength + 2);
     }
     else
@@ -714,7 +714,7 @@ VOS_VOID At_SendMsgFoAttr(
     }
     else
     {
-        /*判断FO的有效性*/
+        /*????FO????????*/
         if (TAF_TRUE == pstSmsCtx->stCscaCsmpInfo.bFoUsed)
         {
             ucFo = pstSmsCtx->stCscaCsmpInfo.ucFo;
@@ -1048,8 +1048,8 @@ VOS_UINT32  AT_AsciiNumberToBcd(
     {
         ulRet = AT_AsciiToBcdCode(pcAsciiNumber[ucInputLoop], &ucBcdCode);
 
-        /* AT_IsDCmdValidChar以前是将号码中的+滤掉 */
-        /* 现在在这里滤掉，因为BCD码中没有对+的表示 */
+        /* AT_IsDCmdValidChar????????????????+???? */
+        /* ????????????????????BCD??????????+?????? */
         if ((MN_ERR_INVALID_ASCII == ulRet)
          || (MN_ERR_NULLPTR       == ulRet))
         {
@@ -1064,16 +1064,16 @@ VOS_UINT32  AT_AsciiNumberToBcd(
             /* for lint */
         }
 
-        /*将当前需要填入的空间清0*/
+        /*??????????????????????0*/
         pucBcdNumber[(ucOutputLoop / 2)] &= ((ucOutputLoop % 2) == 1) ? 0x0F : 0xF0;
 
-        /*将数字填入相应的空间*/
+        /*????????????????????*/
         pucBcdNumber[(ucOutputLoop / 2)] |= (((ucOutputLoop % 2) == 1) ? ((ucBcdCode << 4) & 0xF0) : (ucBcdCode & 0x0F));
 
         ucOutputLoop++;
     }
 
-    /*如果长度为奇数，则最后一个字符需要填 F */
+    /*???????????????????????????????????? F */
     if (1 == (ucOutputLoop % 2))
     {
         pucBcdNumber[(ucOutputLoop / 2)] |= 0xF0;
@@ -1104,17 +1104,17 @@ VOS_UINT32  AT_BcdToAsciiCode(
     }
     else if (0x0A == ucBcdCode)
     {
-        cAsciiCode = (VOS_CHAR)(ucBcdCode + 0x20);    /*字符'*'*/
+        cAsciiCode = (VOS_CHAR)(ucBcdCode + 0x20);    /*????'*'*/
     }
     else if (0x0B == ucBcdCode)
     {
-        cAsciiCode = (VOS_CHAR)(ucBcdCode + 0x18);    /*字符'#'*/
+        cAsciiCode = (VOS_CHAR)(ucBcdCode + 0x18);    /*????'#'*/
     }
     else if ((0x0C == ucBcdCode)
           || (0x0D == ucBcdCode)
           || (0x0E == ucBcdCode))
     {
-        cAsciiCode = (VOS_CHAR)(ucBcdCode + 0x55);    /*字符'a', 'b', 'c'*/
+        cAsciiCode = (VOS_CHAR)(ucBcdCode + 0x55);    /*????'a', 'b', 'c'*/
     }
     else
     {
@@ -1146,7 +1146,7 @@ VOS_UINT32  AT_BcdNumberToAscii(
         return MN_ERR_NULLPTR;
     }
 
-    /*整理号码字符串，去除无效的0XFF数据*/
+    /*??????????????????????????0XFF????*/
     while (ucBcdLen > 1)
     {
         if (0xFF == pucBcdNumber[ucBcdLen - 1])
@@ -1159,8 +1159,8 @@ VOS_UINT32  AT_BcdNumberToAscii(
         }
     }
 
-    /*判断pucBcdAddress所指向的字符串的最后一个字节的高位是否为1111，
-    如果是，说明号码位数为奇数，否则为偶数*/
+    /*????pucBcdAddress????????????????????????????????????????1111??
+    ??????????????????????????????????????*/
     if ((pucBcdNumber[ucBcdLen - 1] & 0xF0) == 0xF0)
     {
         ucLen = (VOS_UINT8)((ucBcdLen * 2) - 1);
@@ -1170,22 +1170,22 @@ VOS_UINT32  AT_BcdNumberToAscii(
         ucLen = (VOS_UINT8)(ucBcdLen * 2);
     }
 
-    /*解析号码*/
+    /*????????*/
     for (ucLoop = 0; ucLoop < ucLen; ucLoop++)
     {
-        /*判断当前解码的是奇数位号码还是偶数位号码，从0开始，是偶数*/
+        /*????????????????????????????????????????????0????????????*/
         if (1 == (ucLoop % 2))
         {
-            /*如果是奇数位号码，则取高4位的值*/
+            /*????????????????????????4??????*/
             ucBcdCode = ((pucBcdNumber[(ucLoop / 2)] >> 4) & 0x0F);
         }
         else
         {
-            /*如果是偶数位号码，则取低4位的值*/
+            /*????????????????????????4??????*/
             ucBcdCode = (pucBcdNumber[(ucLoop / 2)] & 0x0F);
         }
 
-        /*将二进制数字转换成Ascii码形式*/
+        /*??????????????????Ascii??????*/
         ulRet = AT_BcdToAsciiCode(ucBcdCode, &(pcAsciiNumber[ucLoop]));
         if (MN_ERR_NO_ERROR != ulRet)
         {
@@ -1193,7 +1193,7 @@ VOS_UINT32  AT_BcdNumberToAscii(
         }
     }
 
-    pcAsciiNumber[ucLoop] = '\0';      /*字符串末尾为0*/
+    pcAsciiNumber[ucLoop] = '\0';      /*????????????0*/
 
     return MN_ERR_NO_ERROR;
 }
@@ -1210,7 +1210,7 @@ TAF_UINT32  At_GetAsciiOrBcdAddr(
 )
 {
     TAF_UINT8                           aucAsciiNum[MN_MAX_ASCII_ADDRESS_NUM+2];   /*array  of ASCII Num*/
-    TAF_UINT8                           *pucNum;                                /*指向实际号码（不包括+号）的指针*/
+    TAF_UINT8                           *pucNum;                                /*????????????????????+??????????*/
     TAF_UINT32                          ulAsciiAddrLen;
     TAF_UINT32                          ulRet;
     MN_MSG_TON_ENUM_U8                  enNumType;                              /*type of number*/
@@ -1251,7 +1251,7 @@ TAF_UINT32  At_GetAsciiOrBcdAddr(
         return AT_CMS_OPERATION_NOT_ALLOWED;
     }
 
-    /* 设置<toda> */
+    /* ????<toda> */
     if (AT_MSG_INTERNAL_ISDN_ADDR_TYPE == (At_GetCodeType(aucAsciiNum[0])))
     {
         pucNum = (TAF_UINT8 *)(aucAsciiNum + 1);
@@ -1362,7 +1362,7 @@ TAF_UINT32  At_PrintListMsg(
                                                (TAF_CHAR *)pgucAtSndCodeAddr,
                                                (TAF_CHAR *)(pucDst + usLength),
                                                ",");
-            /* <alpha> 不报 */
+            /* <alpha> ???? */
             usLength += (TAF_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                                (TAF_CHAR *)pgucAtSndCodeAddr,
                                                (TAF_CHAR *)(pucDst + usLength),
@@ -1389,7 +1389,7 @@ TAF_UINT32  At_PrintListMsg(
                                               (pucDst + usLength));
             }
 
-            /* <data> 有可能得到是UCS2，需仔细处理*/
+            /* <data> ????????????UCS2????????????*/
             usLength += (TAF_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                                (TAF_CHAR *)pucDst,
                                                (TAF_CHAR *)(pucDst + usLength),
@@ -1414,7 +1414,7 @@ TAF_UINT32  At_PrintListMsg(
                                                (TAF_CHAR *)(pucDst + usLength),
                                                ",");
 
-            /* <alpha> 不报 */
+            /* <alpha> ???? */
             usLength += (TAF_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                                (TAF_CHAR *)pgucAtSndCodeAddr,
                                                (TAF_CHAR *)(pucDst + usLength),
@@ -1438,7 +1438,7 @@ TAF_UINT32  At_PrintListMsg(
 
             }
 
-            /* <data> 有可能得到是UCS2，需仔细处理*/
+            /* <data> ????????????UCS2????????????*/
             usLength += (TAF_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                                (TAF_CHAR *)pucDst,
                                                (TAF_CHAR *)(pucDst + usLength),
@@ -1542,7 +1542,7 @@ TAF_VOID At_GetCpmsMemStatus(
     {
         pstStorageList = &(pstSmsCtx->stCpmsInfo.stNvimStorage);
     }
-    else/*无存储设备*/
+    else/*??????????*/
     {
         *pulUsedRec = 0;
         *pulTotalRec = 0;
@@ -1745,7 +1745,7 @@ TAF_UINT32 At_SmsPrintScts(
         AT_WARN_LOG("At_SmsPrintScts: Date is invalid.");
     }
 
-    /* "yy/MM/dd,hh:mm:ss±zz" */
+    /* "yy/MM/dd,hh:mm:ss??zz" */
     if (0 == (MN_MSG_DATE_INVALID_YEAR & ucDateInvalidType))
     {
         usLength = (TAF_UINT16)At_sprintf(AT_CMD_MAX_LEN,
@@ -1853,7 +1853,7 @@ TAF_UINT32 At_SmsPrintScts(
                                            "00");
     }
 
-    /* ±zz */
+    /* ??zz */
     AT_PrintTimeZone(pstTimeStamp->cTimezone,
                      (pDst + usLength),
                      &usTimeZoneLength);

@@ -50,7 +50,7 @@
 #define __CBTRL_H__
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "vos.h"
 #if (OSA_CPU_CCPU == VOS_OSA_CPU)
@@ -64,7 +64,7 @@ extern "C"{
 #endif
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 /*OM<->APP : NON SIGALING Transparent Message.*/
 #define APP_OM_NON_SIG_BT_TRAN_REQ      (0x1601)
@@ -121,8 +121,8 @@ extern "C"{
 #define OM_APP_SWITCH_RF_ANT_CNF         0x0068
 
 
-#define CBT_STATE_IDLE                          0 /*IDLE态，不能正常与工具进行通信*/
-#define CBT_STATE_ACTIVE                        1 /*ACTIVE态，能够正常工作*/
+#define CBT_STATE_IDLE                          0 /*IDLE??????????????????????????*/
+#define CBT_STATE_ACTIVE                        1 /*ACTIVE????????????????*/
 
 #define CBT_MSG_ID_COMP_LENGTH                  (4U)
 
@@ -153,8 +153,8 @@ extern "C"{
 
 #define OM_BER_DATA_MAX_SIZE                    (1024)
 #define CBT_NV_TO_FLASH_HEAD_SIZE               (4)
-#define OM_STATE_IDLE                               0 /*IDLE态，OM不能正常与工具进行通信*/
-#define OM_STATE_ACTIVE                             1 /*ACTIVE态，OM能够正常工作*/
+#define OM_STATE_IDLE                               0 /*IDLE????OM??????????????????????*/
+#define OM_STATE_ACTIVE                             1 /*ACTIVE????OM????????????*/
 
 /*OM<->APP : Just for LMT.*/
 #define APP_OM_WRITE_NV_REQ                       0x8023
@@ -168,19 +168,19 @@ extern "C"{
 #define APP_OM_ACTIVE_PHY_REQ                     0x80a3
 #define OM_APP_ACTIVE_PHY_CNF                     0x80a4
 
-/*OM<->APP :查询PA的属性*/
+/*OM<->APP :????PA??????*/
 #define APP_OM_PA_ATTRIBUTE_REQ                   0x80c1
 #define OM_APP_PA_ATTRIBUTE_IND                   0x80c2
 
-/*OM<->APP :通过物理通道查询PA的温度*/
+/*OM<->APP :????????????????PA??????*/
 #define APP_OM_PA_TEMP_PHY_CHAN_REQ               0x80c7
 #define OM_APP_PA_TEMP_PHY_CHAN_IND               0x80c8
 
-/*设置从信令下切换到非信令下*/
+/*??????????????????????????*/
 #define APP_OM_SET_FTM_REQ                        0x80e5
 #define OM_APP_SET_FTM_CNF                        0x80e6
 
-/* OM<->APP :LMT查询DSDA支持状态 */
+/* OM<->APP :LMT????DSDA???????? */
 #define APP_OM_QUERY_MODEM_NUM_REQ                0x8211
 #define OM_APP_QUERY_MODEM_NUM_CNF                0x8212
 
@@ -203,18 +203,18 @@ extern "C"{
 
 #define OM_TRANS_PRIMID                           0x5001
 
-/* OM<->APP :设置C核NV存储到Flash*/
+/* OM<->APP :????C??NV??????Flash*/
 #define APP_OM_NV_TO_FLASH_REQ                    0x802B
 #define OM_APP_NV_TO_FLASH_CNF                    0x802C
 
-/* OM<->APP :设置C核一次性写NV存储Flash*/
+/* OM<->APP :????C??????????NV????Flash*/
 #define APP_OM_NV_WRITE_FLASH_REQ                 0x802D
 #define OM_APP_NV_WRITE_FLASH_CNF                 0x802E
 
-/* GUCCBT->NRNOSIG发送IND，NR核融合后该消息删除 */
+/* GUCCBT->NRNOSIG????IND??NR?????????????????? */
 #define ID_GUCCBT_NRNOSIG_IND                     0x0F0F
 /*****************************************************************************
-  6 STRUCT定义
+  6 STRUCT????
 *****************************************************************************/
 enum OM_W_SNYC_STATUS
 {
@@ -253,7 +253,7 @@ enum LMT_RAT_MODE
     LMT_RAT_BUTT
 };
 
-/* ComponentType使用 */
+/* ComponentType???? */
 typedef enum
 {
     CBT_MODE_LTE = 0,
@@ -317,8 +317,8 @@ typedef enum
 }CBT_TEST_MODE_ENUM;
 
 /*****************************************************************************
-结构名    : MODEM_SSID_STRU
-结构说明  : 定义包含modem和ssid的数据结构
+??????    : MODEM_SSID_STRU
+????????  : ????????modem??ssid??????????
 *****************************************************************************/
 typedef struct
 {
@@ -328,20 +328,20 @@ typedef struct
 } CBT_MODEM_SSID_STRU;
 
 /*****************************************************************************
-结构名    : FRAGMENT_INFO_STRU
-结构说明  : 定义包含消息类型和消息分段信息的数据结构
+??????    : FRAGMENT_INFO_STRU
+????????  : ????????????????????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8 ucMsgType    : 2; /*消息类型，REQ: 1   CNF: 2   IND: 3*/
-    VOS_UINT8 ucFragIndex  : 4; /*消息分段的片段索引*/
-    VOS_UINT8 ucEof        : 1; /*分段结束标识，0分段未结束，1分段结束*/
-    VOS_UINT8 ucFragFlag   : 1; /*是否分段标识，0不分段，1分段*/
+    VOS_UINT8 ucMsgType    : 2; /*??????????REQ: 1   CNF: 2   IND: 3*/
+    VOS_UINT8 ucFragIndex  : 4; /*??????????????????*/
+    VOS_UINT8 ucEof        : 1; /*??????????????0????????????1????????*/
+    VOS_UINT8 ucFragFlag   : 1; /*??????????????0????????1????*/
 } CBT_FRAGMENT_INFO_STRU;
 
 /*****************************************************************************
-结构名    : TIME_STAMP_STRU
-结构说明  : 定义包含时间戳的数据结构
+??????    : TIME_STAMP_STRU
+????????  : ????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -351,46 +351,46 @@ typedef struct
 } CBT_TIME_STAMP_STRU;
 
 /*****************************************************************************
-结构名    : COMPONENT_MODE_STRU
-结构说明  : 定义包含组件和模的数据结构
+??????    : COMPONENT_MODE_STRU
+????????  : ??????????????????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT8 ucRsv;
-    VOS_UINT8 ucMode     : 4;  /*区分GUTLC模*/
+    VOS_UINT8 ucMode     : 4;  /*????GUTLC??*/
     VOS_UINT8 ucCompID   : 4;
 } CBT_COMPONENT_MODE_STRU;
 
 /*****************************************************************************
-结构名    : CBT_MSG_HEAD_STRU
-结构说明  : 定义OM消息头的数据结构
+??????    : CBT_MSG_HEAD_STRU
+????????  : ????OM????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8               ucSid;              /* 固定为 7*/
+    VOS_UINT8               ucSid;              /* ?????? 7*/
     CBT_MODEM_SSID_STRU     stModemSsid;
-    VOS_UINT8               ucSessionID;        /*固定为 1*/
+    VOS_UINT8               ucSessionID;        /*?????? 1*/
     CBT_FRAGMENT_INFO_STRU  stMsgSegment;
     VOS_UINT32              ulTransId;
-    CBT_TIME_STAMP_STRU     stTimeStamp;        /*时间戳信息*/
+    CBT_TIME_STAMP_STRU     stTimeStamp;        /*??????????*/
 } CBT_MSG_HEAD_STRU;
 
 /*****************************************************************************
-结构名    : CBT_UNIFORM_MSG_STRU
-结构说明  : 工具下发数据包扩展结构
+??????    : CBT_UNIFORM_MSG_STRU
+????????  : ??????????????????????
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU               stMsgHeader;
-    VOS_UINT16                      usMsgId;      /* 消息ID */
+    VOS_UINT16                      usMsgId;      /* ????ID */
     CBT_COMPONENT_MODE_STRU         stCompMode;
     VOS_UINT32                      ulMsgLength;
-    VOS_UINT8                       aucPara[4];   /* 消息内容 */
+    VOS_UINT8                       aucPara[4];   /* ???????? */
 } CBT_UNIFORM_MSG_STRU;
 
 /*****************************************************************************
-结构名    : CBT_UNIFORM_MSG_STRU
-结构说明  : 工具下发数据包扩展结构
+??????    : CBT_UNIFORM_MSG_STRU
+????????  : ??????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -399,133 +399,133 @@ typedef struct
 } CBT_UNIFORM_MSG_WITH_HEADER_STRU;
 
 /*****************************************************************************
-结构名    : CBT_TRANS_MSG_STRU
-结构说明  : 工具下发数据包扩展结构
+??????    : CBT_TRANS_MSG_STRU
+????????  : ??????????????????????
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU               stMsgHeader;
-    VOS_UINT16                      usMsgId;      /* 消息ID */
+    VOS_UINT16                      usMsgId;      /* ????ID */
     VOS_UINT16                      usCompMode;
     VOS_UINT32                      ulMsgLength;
-    VOS_UINT32                      ulReceiverPid; /* 接收消息的模块PID */
-    VOS_UINT8                       aucPara[4];    /* 消息内容 */
+    VOS_UINT32                      ulReceiverPid; /* ??????????????PID */
+    VOS_UINT8                       aucPara[4];    /* ???????? */
 } CBT_TRANS_MSG_STRU;
 /*****************************************************************************
-结构名    : CBT_HOOK_MSG_STRU
-结构说明  : 发送给CBT模块的非透传消息数据包结构
+??????    : CBT_HOOK_MSG_STRU
+????????  : ??????CBT??????????????????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT16                          usPrimId;
     VOS_UINT16                          usReserve;
-    VOS_UINT8                           aucPara[4];   /* 消息内容 */
+    VOS_UINT8                           aucPara[4];   /* ???????? */
 } CBT_HOOK_MSG_STRU;
 /*****************************************************************************
-结构名    : CBT_RCV_TRANS_MSG_STRU
-结构说明  : 透传给CBT模块的数据包结构
+??????    : CBT_RCV_TRANS_MSG_STRU
+????????  : ??????CBT????????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT16                          usTransPrimId;
     VOS_UINT16                          usRsv;
-    VOS_UINT16                          usMsgId;     /* 指示当前消息类型 */
+    VOS_UINT16                          usMsgId;     /* ???????????????? */
     VOS_UINT16                          usCompMode;
-    VOS_UINT8                           aucPara[4];   /* 消息内容 */
+    VOS_UINT8                           aucPara[4];   /* ???????? */
 }CBT_RCV_TRANS_MSG_STRU;
 
 /*****************************************************************************
-结构名    : CBT_SEND_COMM_MSG_STRU
-结构说明  : PHY层或者Agent代理层发送给CBT模块的数据包结构
+??????    : CBT_SEND_COMM_MSG_STRU
+????????  : PHY??????Agent????????????CBT????????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT16                          usMsgId;     /* 指示当前消息类型 */
+    VOS_UINT16                          usMsgId;     /* ???????????????? */
     VOS_UINT16                          usCompMode;
-    VOS_UINT8                           aucPara[4];   /* 消息内容 */
+    VOS_UINT8                           aucPara[4];   /* ???????? */
 }CBT_SEND_COMM_MSG_STRU;
 /*****************************************************************************
-结构名    : PS_TO_CBT_MSG_STRU
-结构说明  : PHY层或者Agent代理层发送给CBT模块的数据包结构
+??????    : PS_TO_CBT_MSG_STRU
+????????  : PHY??????Agent????????????CBT????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT16                          usMsgId;     /* 指示当前消息类型 */
-    VOS_UINT16                          usCompMode;     /* 目前未使用 */
-    VOS_UINT8                           aucPara[4];   /* 消息内容 */
+    VOS_UINT16                          usMsgId;     /* ???????????????? */
+    VOS_UINT16                          usCompMode;     /* ?????????? */
+    VOS_UINT8                           aucPara[4];   /* ???????? */
 }PS_TO_CBT_MSG_STRU;
 /*****************************************************************************
-结构名    : CBT_CTOA_MSG_STRU
-结构说明  : 工具下发数据包扩展结构
+??????    : CBT_CTOA_MSG_STRU
+????????  : ??????????????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT16                      usPrimId;            /* 消息ID */
+    VOS_UINT16                      usPrimId;            /* ????ID */
     VOS_UINT16                      usLen;
     VOS_UINT8                       aucData[4];
 }CBT_CTOA_MSG_STRU;
 
 /*****************************************************************************
-结构名    : CBT_WRITE_NV_REQ_STRU
-结构说明  : 写NV请求
+??????    : CBT_WRITE_NV_REQ_STRU
+????????  : ??NV????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32 ulCount;             /*要写入的NV项个数*/
-    VOS_UINT16 ausNvItemData[2];    /*包括NVID值、NVID内容的长度、NVID的内容*/
+    VOS_UINT32 ulCount;             /*????????NV??????*/
+    VOS_UINT16 ausNvItemData[2];    /*????NVID????NVID????????????NVID??????*/
 }CBT_WRITE_NV_REQ_STRU;
 
 /*****************************************************************************
-结构名    : CBT_WRITE_NV_CNF_STRU
-结构说明  : 写NV结果
+??????    : CBT_WRITE_NV_CNF_STRU
+????????  : ??NV????
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU           stMsgHead;
-    VOS_UINT16                  usMsgId;      /* 消息ID */
+    VOS_UINT16                  usMsgId;      /* ????ID */
     CBT_COMPONENT_MODE_STRU     stCompMode;
     VOS_UINT32                  ulMsgLength;
-    VOS_UINT32                  ulErrorCode;        /*返回执行结果*/
-    VOS_UINT32                  ulErrNvId;          /*返回出现错误的NVID*/
+    VOS_UINT32                  ulErrorCode;        /*????????????*/
+    VOS_UINT32                  ulErrNvId;          /*??????????????NVID*/
 }CBT_WRITE_NV_CNF_STRU;
 
 /*****************************************************************************
-结构名    : CBT_WRITE_NV_FLASH_REQ_STRU
-结构说明  : 写NV刷flash请求
+??????    : CBT_WRITE_NV_FLASH_REQ_STRU
+????????  : ??NV??flash????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32 ulCount;             /*要写入的NV项个数*/
-    VOS_UINT16 ausNvItemData[2];    /*包括NVID值、NVID内容的长度、NVID的内容*/
+    VOS_UINT32 ulCount;             /*????????NV??????*/
+    VOS_UINT16 ausNvItemData[2];    /*????NVID????NVID????????????NVID??????*/
 }CBT_WRITE_NV_FLASH_REQ_STRU;
 
 /*****************************************************************************
-结构名    : CBT_WRITE_NV_FLASH_CNF_STRU
-结构说明  : 写NV刷flash结果
+??????    : CBT_WRITE_NV_FLASH_CNF_STRU
+????????  : ??NV??flash????
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU           stMsgHead;
-    VOS_UINT16                  usMsgId;            /* 消息ID */
+    VOS_UINT16                  usMsgId;            /* ????ID */
     CBT_COMPONENT_MODE_STRU     stCompMode;
     VOS_UINT32                  ulMsgLength;
-    VOS_UINT32                  ulErrorCode;        /*返回执行结果*/
-    VOS_UINT32                  ulErrNvId;          /*返回出现错误的NVID*/
+    VOS_UINT32                  ulErrorCode;        /*????????????*/
+    VOS_UINT32                  ulErrNvId;          /*??????????????NVID*/
 }CBT_WRITE_NV_FLASH_CNF_STRU;
 
 /*****************************************************************************
-结构名    : CBT_NV_TO_FLASH_CNF_STRU
-结构说明  : 存储NV到FLASH命令响应包结构
+??????    : CBT_NV_TO_FLASH_CNF_STRU
+????????  : ????NV??FLASH??????????????
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU           stMsgHead;
-    VOS_UINT16                  usMsgId;      /* 消息ID */
+    VOS_UINT16                  usMsgId;      /* ????ID */
     CBT_COMPONENT_MODE_STRU     stCompMode;
     VOS_UINT32                  ulMsgLength;
-    VOS_UINT32                  ulErrorCode;        /*返回执行结果*/
+    VOS_UINT32                  ulErrorCode;        /*????????????*/
 }CBT_NV_TO_FLASH_CNF_STRU;
 
 typedef VOS_UINT32 (*CBT_FUN)(CBT_UNIFORM_MSG_STRU *pstCbtMsg, VOS_UINT16 usReturnPrimId);
@@ -537,15 +537,15 @@ typedef struct
     VOS_UINT32  ulReturnPrimId;     /*Indicates return msg type.*/
 } CBT_MSG_FUN_STRU;
 /*****************************************************************************
- 结构名    : CBT_LISI_MODE_CTRL_STRU
- 协议表格  :
- 结构说明  : Listmode相关的数据结构
+ ??????    : CBT_LISI_MODE_CTRL_STRU
+ ????????  :
+ ????????  : Listmode??????????????
 *****************************************************************************/
 typedef struct
 {
     CBT_MODEM_SSID_STRU         stModemSsid;            /* Modem */
-    VOS_UINT8                   ucReserve;              /* 保留字 */
-    CBT_COMPONENT_MODE_STRU     stCompMode;             /* 组件ID */
+    VOS_UINT8                   ucReserve;              /* ?????? */
+    CBT_COMPONENT_MODE_STRU     stCompMode;             /* ????ID */
 
     VOS_UINT32                  ulBand;
     VOS_UINT16                  usTxChan;
@@ -562,26 +562,26 @@ typedef struct
     VOS_UINT16                  usEnableReport;
     VOS_UINT16                  usListModeSegIndex;             /* list mode segment index, start by 1 */
     VOS_UINT16                  usRsv2;
-    VOS_UINT32                  ulHandOverStartTime;            /* Handover 开始时间: ms */
-    VOS_UINT16                  usEnableRssiReport;             /* RSSI上报使能 */
-    VOS_UINT16                  usOffSetFrames;                 /* Handover后延时触发dsp测量上报RSSI，单位: Frames */
-    VOS_UINT16                  usRssiReportFrames;             /* RSSI上报帧数 */
-    VOS_UINT16                  usTrigRssiTimer;                /* 触发dsp测量上报RSSI的计数器 */
-    VOS_BOOL                    bCbtCallSuc;                    /*CBT listmode call 结果*/
-    VOS_UINT32                  ulCbtCallSucStartTime;          /* CBT call 搜到信号的起始时间 */
-    VOS_UINT32                  ulCbtCallTimeOut;               /* 仪器触发CBT call 超时时间，单位ms ，0 无须触发*/
-    VOS_INT16                   sCbtCallRxLevel;                /* CBT call 时的下行信号强度，单位0.1dBm */
-    VOS_INT16                   sCbtCallTxPower;                /* CBT call 时的上行信号强度，单位0.1dBm */
+    VOS_UINT32                  ulHandOverStartTime;            /* Handover ????????: ms */
+    VOS_UINT16                  usEnableRssiReport;             /* RSSI???????? */
+    VOS_UINT16                  usOffSetFrames;                 /* Handover??????????dsp????????RSSI??????: Frames */
+    VOS_UINT16                  usRssiReportFrames;             /* RSSI???????? */
+    VOS_UINT16                  usTrigRssiTimer;                /* ????dsp????????RSSI???????? */
+    VOS_BOOL                    bCbtCallSuc;                    /*CBT listmode call ????*/
+    VOS_UINT32                  ulCbtCallSucStartTime;          /* CBT call ?????????????????? */
+    VOS_UINT32                  ulCbtCallTimeOut;               /* ????????CBT call ??????????????ms ??0 ????????*/
+    VOS_INT16                   sCbtCallRxLevel;                /* CBT call ??????????????????????0.1dBm */
+    VOS_INT16                   sCbtCallTxPower;                /* CBT call ??????????????????????0.1dBm */
 
-    VOS_UINT16                  usTotalFrameNum;        /* 总帧数 */
-    VOS_UINT16                  usCurFrameNum;          /* 上报的BER当前帧数 */
-    VOS_UINT16                  usReportFrameNum;       /* 上报的BER总帧数 */
-    VOS_UINT16                  usCurReportFrameNum;    /* 上报的BER总帧数 */
-    VOS_UINT32                  ulFrameStatistic;       /* listmode 测试帧计数 */
-    VOS_UINT32                  ulListmodeFrameTotal;   /* listmode 已测试帧数 */
+    VOS_UINT16                  usTotalFrameNum;        /* ?????? */
+    VOS_UINT16                  usCurFrameNum;          /* ??????BER???????? */
+    VOS_UINT16                  usReportFrameNum;       /* ??????BER?????? */
+    VOS_UINT16                  usCurReportFrameNum;    /* ??????BER?????? */
+    VOS_UINT32                  ulFrameStatistic;       /* listmode ?????????? */
+    VOS_UINT32                  ulListmodeFrameTotal;   /* listmode ?????????? */
 
-    VOS_UINT16                  usTxTotalFrameNum;      /* 上报的BER总帧数 */
-    VOS_UINT16                  usTxCurFrameNum;        /* 上报的BER当前帧数 */
+    VOS_UINT16                  usTxTotalFrameNum;      /* ??????BER?????? */
+    VOS_UINT16                  usTxCurFrameNum;        /* ??????BER???????? */
 
     VOS_SEM                     ulCbtTotalFrameSem;
     VOS_SEM                     ulCbtTxSegmentFrameSem;
@@ -593,9 +593,9 @@ typedef struct
 #endif
 }CBT_LISI_MODE_CTRL_STRU;
 /*****************************************************************************
- 结构名    : CBT_GE_DL_STATUS_STRU
- 协议表格  :
- 结构说明  : GSM上报下行质量消息结构
+ ??????    : CBT_GE_DL_STATUS_STRU
+ ????????  :
+ ????????  : GSM????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -606,9 +606,9 @@ typedef struct
     VOS_UINT16             usBerValue[2];
 }CBT_GE_DL_STATUS_STRU;
 /*****************************************************************************
- 结构名    : CBT_LIST_MODE_BER_IND_STRU
- 协议表格  :
- 结构说明  : Ber上报消息结构
+ ??????    : CBT_LIST_MODE_BER_IND_STRU
+ ????????  :
+ ????????  : Ber????????????
 *****************************************************************************/
 typedef struct
 {
@@ -623,13 +623,13 @@ typedef struct
     VOS_UINT16              usRxChan;
     VOS_UINT16              usCrcData;
     VOS_UINT16              usListModeSegIndex;  /* list mode segment index, start by 1 */
-    VOS_UINT32              ulDataLen;           /* 数据长度,单位:字节,在数值上是4的整数倍,范围[0..WTTFPHY_MAX_PHY_DATA_REQ_LEN-1] */
-    VOS_UINT8               aucData[OM_BER_DATA_MAX_SIZE]; /* 上行数据块 */
+    VOS_UINT32              ulDataLen;           /* ????????,????:????,??????????4????????,????[0..WTTFPHY_MAX_PHY_DATA_REQ_LEN-1] */
+    VOS_UINT8               aucData[OM_BER_DATA_MAX_SIZE]; /* ?????????? */
 }CBT_LIST_MODE_BER_IND_STRU;
 /*****************************************************************************
- 结构名    : CBT_C_FER_DATA_CNF_STRU
- 协议表格  :
- 结构说明  : C模 Fer上报消息结构
+ ??????    : CBT_C_FER_DATA_CNF_STRU
+ ????????  :
+ ????????  : C?? Fer????????????
 *****************************************************************************/
 typedef struct
 {
@@ -646,9 +646,9 @@ typedef struct
 }CBT_C_FER_DATA_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : CBT_G_BER_DATA_IND_STRU
- 协议表格  :
- 结构说明  : G模 Ber上报消息结构
+ ??????    : CBT_G_BER_DATA_IND_STRU
+ ????????  :
+ ????????  : G?? Ber????????????
 *****************************************************************************/
 typedef struct
 {
@@ -660,14 +660,14 @@ typedef struct
     VOS_UINT16              usTotalFrameNum;
     VOS_UINT16              usCurFrameNum;
     VOS_UINT16              usCrcData;
-    VOS_UINT16              usDataLen;           /* 数据长度,单位:字节,在数值上是4的整数倍,范围[0..WTTFPHY_MAX_PHY_DATA_REQ_LEN-1] */
-    VOS_UINT8               aucData[OM_BER_DATA_MAX_SIZE]; /* 上行数据块 */
+    VOS_UINT16              usDataLen;           /* ????????,????:????,??????????4????????,????[0..WTTFPHY_MAX_PHY_DATA_REQ_LEN-1] */
+    VOS_UINT8               aucData[OM_BER_DATA_MAX_SIZE]; /* ?????????? */
 }CBT_G_BER_DATA_IND_STRU;
 
 /*****************************************************************************
- 结构名    : CBT_LT_SWITCH_RF_ANT_STRU
- 协议表格  :
- 结构说明  : Ber上报消息结构
+ ??????    : CBT_LT_SWITCH_RF_ANT_STRU
+ ????????  :
+ ????????  : Ber????????????
 *****************************************************************************/
 typedef struct
 {
@@ -676,9 +676,9 @@ typedef struct
 } CBT_LT_SWITCH_RF_ANT_STRU;
 
 /*****************************************************************************
- 结构名    : CBT_LIST_MODE_RSSI_IND_STRU
- 协议表格  :
- 结构说明  : listmode Rssi上报消息结构
+ ??????    : CBT_LIST_MODE_RSSI_IND_STRU
+ ????????  :
+ ????????  : listmode Rssi????????????
 *****************************************************************************/
 typedef struct
 {
@@ -691,14 +691,14 @@ typedef struct
     VOS_UINT16              usRxChan;
     VOS_UINT16              usListModeSegIndex; /* list mode segment index, start by 1 */
     VOS_UINT16              usRsv;
-    VOS_INT32               lRxLevel;           /* 上报的RX level 0.125dBm */
-    VOS_INT32               lRscp;                /* 上报的Rscp 0.125dBm */
+    VOS_INT32               lRxLevel;           /* ??????RX level 0.125dBm */
+    VOS_INT32               lRscp;                /* ??????Rscp 0.125dBm */
 }CBT_LIST_MODE_RSSI_IND_STRU;
 
 /*****************************************************************************
- 结构名    : CBT_NO_SIG_BT_RSSI_IND_STRU
- 协议表格  :
- 结构说明  : 慢速综测Rssi上报消息结构
+ ??????    : CBT_NO_SIG_BT_RSSI_IND_STRU
+ ????????  :
+ ????????  : ????????Rssi????????????
 *****************************************************************************/
 typedef struct
 {
@@ -708,17 +708,17 @@ typedef struct
     VOS_UINT32              ulMsgLength;
 
     VOS_UINT32              ulErrorCode;
-    VOS_INT32               lRxLevel;           /* 上报的RX level 0.125dBm */
+    VOS_INT32               lRxLevel;           /* ??????RX level 0.125dBm */
 }CBT_NO_SIG_BT_RSSI_CNF_STRU;
 
 /*****************************************************************************
-结构名    : CBT_RTT_AGENT_MSG_STRU
-结构说明  : CBT模块转发给RTT模块的消息
+??????    : CBT_RTT_AGENT_MSG_STRU
+????????  : CBT??????????RTT??????????
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU               stMsgHeader;
-    VOS_UINT16                      usMsgId;      /* 消息ID */
+    VOS_UINT16                      usMsgId;      /* ????ID */
     CBT_COMPONENT_MODE_STRU         stCompMode;
     VOS_UINT32                      ulMsgLength;
     VOS_UINT16                      usTMode;      /* TMode */
@@ -726,8 +726,8 @@ typedef struct
 } CBT_RTT_AGENT_MSG_STRU;
 
 /*****************************************************************************
-结构名    : CBT_LMT_MSG_INFO
-结构说明  : 加载LMT的部分参数
+??????    : CBT_LMT_MSG_INFO
+????????  : ????LMT??????????
 *****************************************************************************/
 typedef struct
 {
@@ -741,8 +741,8 @@ typedef struct
 typedef VOS_UINT32 (* RTTAgentFunc)(VOS_VOID *pMsg);
 
 /*****************************************************************************
-结构名    : GUCCBT_NRNOSIG_IND_MSG_STRU
-结构说明  : NR主模BT业务下，usBusiness标识
+??????    : GUCCBT_NRNOSIG_IND_MSG_STRU
+????????  : NR????BT????????usBusiness????
 *****************************************************************************/
 typedef struct
 {
@@ -754,24 +754,24 @@ typedef struct
 typedef struct
 {
     VOS_UINT8               ucRsv;
-    VOS_UINT8               ucComponentType    : 4;   //当ucComponentType是OM/MSP,则无效 0x0: LTE, 0x1: TDS,0x2: GSM, 0x3: UMTS,0x4: X, 0xF: 与模无关
+    VOS_UINT8               ucComponentType    : 4;   //??ucComponentType??OM/MSP,?????? 0x0: LTE, 0x1: TDS,0x2: GSM, 0x3: UMTS,0x4: X, 0xF: ????????
     VOS_UINT8               ucComponentID      : 4;   // OM/MSP:0x1, nosig:0x2, PHY:0x3
 }CBT_COMPONENT_ID_STRU;
 
 /*****************************************************************************
-结构名    : NRNOSIG_GUCCBT_MSG_STRU
-结构说明  : NrNosig给GUCCBT回复消息暂定
+??????    : NRNOSIG_GUCCBT_MSG_STRU
+????????  : NrNosig??GUCCBT????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT16              usMsgId;      /* 指示当前消息类型 */
+    VOS_UINT16              usMsgId;      /* ???????????????? */
     CBT_COMPONENT_ID_STRU   stComponentId;
     VOS_UINT32              ulResult;
 }NRNOSIG_GUCCBT_MSG_STRU;
 
 /*****************************************************************************
-  函数声明
+  ????????
 *****************************************************************************/
 #if (OSA_CPU_CCPU == VOS_OSA_CPU)
 

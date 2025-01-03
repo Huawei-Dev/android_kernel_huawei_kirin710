@@ -68,7 +68,7 @@ struct uart_infor
 	unsigned int interrupt_num; /*interrupt number*/
 };
 
-/*占用空间较小的部分*/
+/*??????????????????*/
 #define SRAM_TEMP_PROTECT_SIZE 32
 #define SRAM_DSP_MNTN_SIZE 32
 #define SRAM_CDSP_MNTN_SIZE 32
@@ -94,13 +94,13 @@ typedef struct tag_SRAM_SMALL_SECTIONS
 {
 	unsigned int        SRAM_USB_ASHELL;
 	struct uart_infor   UART_INFORMATION[3];                            /*three uarts:0/1/2*/
-	unsigned int        SRAM_DICC[8];				                    /*GU使用的DICC*/
+	unsigned int        SRAM_DICC[8];				                    /*GU??????DICC*/
 	unsigned int        SRAM_DSP_DRV;
-	unsigned int        SRAM_PCIE_INFO[64];			                    /*DSP镜像加载时使用*/
+	unsigned int        SRAM_PCIE_INFO[64];			                    /*DSP??????????????*/
 	unsigned int        SRAM_RESERVED[65];
-	unsigned int        SRAM_WDT_AM_FLAG;	                            /*连仿真器停狗标志*/
+	unsigned int        SRAM_WDT_AM_FLAG;	                            /*????????????????*/
 	unsigned int        SRAM_WDT_CM_FLAG;
-	unsigned int        SRAM_BUCK3_ACORE_ONOFF_FLAG;                    /*BUCK3上下电标志*/
+	unsigned int        SRAM_BUCK3_ACORE_ONOFF_FLAG;                    /*BUCK3??????????*/
 	unsigned int        SRAM_BUCK3_CCORE_ONOFF_FLAG;
 	unsigned int        SRAM_CUR_CPUFREQ_PROFILE;                       /* current profile */
 	unsigned int        SRAM_MAX_CPUFREQ_PROFILE;                       /* max profile */
@@ -109,14 +109,14 @@ typedef struct tag_SRAM_SMALL_SECTIONS
 	unsigned int        SRAM_CPUFREQ_DOWN_PROFILE[2];
 	unsigned int        SRAM_REBOOT_INFO[8];
 	unsigned int        SRAM_TEMP_PROTECT[SRAM_TEMP_PROTECT_SIZE];
-	struct tagOcrShareData  SRAM_SEC_SHARE;			                    /*onchiprom启动时存放信息的标志位，放在SRAM的高地址处,不可修改*/
+	struct tagOcrShareData  SRAM_SEC_SHARE;			                    /*onchiprom????????????????????????????SRAM??????????,????????*/
 
-	unsigned char       SRAM_DSP_MNTN_INFO[SRAM_DSP_MNTN_SIZE];		    /* DSP邮箱异常时的可维可测信息 */
+	unsigned char       SRAM_DSP_MNTN_INFO[SRAM_DSP_MNTN_SIZE];		    /* DSP???????????????????????? */
 	struct dfs_ddr_cfg  SRAM_DFS_DDRC_CFG[2];
 	unsigned int 	    SRAM_DUMP_POWER_OFF_FLAG;
 	unsigned int 	    SRAM_PM_CHECK_ADDR;
         unsigned int        SRAM_CDSP_DRV;
-	unsigned char       SRAM_CDSP_MNTN_INFO[SRAM_CDSP_MNTN_SIZE];		    /* CDSP邮箱异常时的可维可测信息 */
+	unsigned char       SRAM_CDSP_MNTN_INFO[SRAM_CDSP_MNTN_SIZE];		    /* CDSP???????????????????????? */
  	unsigned int        SRAM_SEC_ROOTCA[ROOT_CA_LEN/4]; /*lint !e43*/
         struct hpm_tem_print hpm_tem;
 }SRAM_SMALL_SECTIONS;
@@ -151,19 +151,19 @@ typedef struct tag_SRAM_SMALL_SECTIONS
 #endif
 
 #define SRAM_OFFSET_SMALL_SECTIONS      (0)
-#define SRAM_SIZE_SMALL_SECTIONS		(2*1024) /*预留2k大小，暂为用完*/
+#define SRAM_SIZE_SMALL_SECTIONS		(2*1024) /*????2k??????????????*/
 
 /* MCU PM 1K */
 #define SRAM_OFFSET_MCU_RESERVE         (SRAM_OFFSET_SMALL_SECTIONS + SRAM_SIZE_SMALL_SECTIONS)
 #define SRAM_SIZE_MCU_RESERVE           (1*1024)
 
-/* ICC通道(mcore与acore; mcore与ccore), 各2KB, 共4KB */
+/* ICC????(mcore??acore; mcore??ccore), ??2KB, ??4KB */
 #define SRAM_OFFSET_ICC                 (SRAM_OFFSET_MCU_RESERVE + SRAM_SIZE_MCU_RESERVE)
 #define SRAM_SIZE_ICC                   (4*1024)
 
 
-/*LDSP 使用 包括rtt 浅睡标志/ 动态调频调压
-第一个4字节为浅睡标志  置为1表示此次睡眠是dsp 浅睡*/
+/*LDSP ???? ????rtt ????????/ ????????????
+??????4??????????????  ????1??????????????dsp ????*/
 #define SRAM_OFFSET_TLDSP_SHARED        (SRAM_OFFSET_ICC + SRAM_SIZE_ICC)
 #define SRAM_SIZE_TLDSP_SHARED          (256)
 
@@ -179,7 +179,7 @@ typedef struct tag_SRAM_SMALL_SECTIONS
 #define SRAM_SIZE_LTEV_SHARED          (0)
 #endif
 
-/*SRAM动态区*/
+/*SRAM??????*/
 #define SRAM_OFFSET_DYNAMIC_SEC         (SRAM_OFFSET_LTEV_SHARED + SRAM_SIZE_LTEV_SHARED)
 #define SRAM_SIZE_DYNAMIC_SEC           (DRV_SRAM_SIZE - SRAM_OFFSET_DYNAMIC_SEC)
 

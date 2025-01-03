@@ -152,7 +152,7 @@ static void mdmcp_coresight_etb_store(u32 cpu)
         return;
     }
 
-    /*该cpu是否已经热插拔*/
+    /*??cpu??????????????*/
     if(*(u32*)etb_buf == CORESIGHT_HOTPLUG_MAGICNUM)
     {
         cs_error("modem cp cpu%d has powerdown or hotplug,no need to store data!\n",(int)cpu);
@@ -160,10 +160,10 @@ static void mdmcp_coresight_etb_store(u32 cpu)
     }
 
 
-    /* unlock etb, 配置ETF_LOCK_ACCESS */
+    /* unlock etb, ????ETF_LOCK_ACCESS */
     writel(0xC5ACCE55, tmc_base + 0xFB0);
 
-    /* stop etb, 配置ETF_FORMAT_FLUSH_CTRL */
+    /* stop etb, ????ETF_FORMAT_FLUSH_CTRL */
     reg_value = (u32)readl(tmc_base + 0x304);
     /* FFCR StopOnFl */
     reg_value |= 1 << 12;
@@ -175,9 +175,9 @@ static void mdmcp_coresight_etb_store(u32 cpu)
 
     for(i=0; i<10000; i++)
     {
-        /* read etb status, 读取ETF_STATUS */
+        /* read etb status, ????ETF_STATUS */
         reg_value = (u32)readl(tmc_base + 0x304);
-        /* bit2为TMCReady指示位 */
+        /* bit2??TMCReady?????? */
         if(0 != ((reg_value & (1 << 6)) >> 6))
         {
             break;
@@ -188,12 +188,12 @@ static void mdmcp_coresight_etb_store(u32 cpu)
     {
         cs_error("ETF_STATUS register is not ready\n");
     }
-    /* 等待TMCReady */
+    /* ????TMCReady */
     for(i=0; i<10000; i++)
     {
-        /* read etb status, 读取ETF_STATUS */
+        /* read etb status, ????ETF_STATUS */
         reg_value = (u32)readl(tmc_base + 0xc);
-        /* bit2为TMCReady指示位 */
+        /* bit2??TMCReady?????? */
         if(0 != (reg_value & 0x4))/*lint !e774*/
         {
             break;
@@ -201,19 +201,19 @@ static void mdmcp_coresight_etb_store(u32 cpu)
         udelay(10);/*lint !e747 !e774 !e778*/
     }
 
-    /* 超时判断 */
+    /* ???????? */
     if(i >= 10000)
     {
         cs_error("save etb time out\n");
     }
 
-    /* 导出etb数据 */
+    /* ????etb???? */
     memset_s((void *)etb_buf, 0x1100, 0x0, (unsigned long)len);
     /* lint --e{124}*/
     data = (u32*)(etb_buf + 8);/*lint !e124*/
     for(i=0; i<len/4; i++)
     {
-        /* read etb, 读取ETF_RAM_RD_DATA */
+        /* read etb, ????ETF_RAM_RD_DATA */
         reg_value = (u32)readl(tmc_base + 0x10);
         *data = reg_value;
         data++;
@@ -223,12 +223,12 @@ static void mdmcp_coresight_etb_store(u32 cpu)
         }
     }
 
-    /* 0-3字节存放标识码 */
+    /* 0-3?????????????? */
     *((u32 *)etb_buf) = (u32)CORESIGHT_MAGIC_NUM;
-    /* 4-7个字节存放ETB数据长度 */
+    /* 4-7??????????ETB???????? */
     *((u32 *)etb_buf + 1) = i*4;
 
-    /* lock etb, 配置ETF_LOCK_ACCESS */
+    /* lock etb, ????ETF_LOCK_ACCESS */
     writel(0x1, tmc_base + 0xFB0);
 
     cs_error("%s store success at 0x%pK!\n",g_mdmcp_coresight[cpu].tmc_name,tmc_base);
@@ -445,7 +445,7 @@ void bsp_coresight_save_cp_etb(char* dir_name)
     for(cpu = 0; cpu < CPU_NUMS; cpu++)
     {
         memset_s(file_name,256, 0, sizeof(file_name));
-        /*modem etb数据手机版本中需要上传apr网站，cpu0 的命名不能加索引号*/
+        /*modem etb??????????????????????apr??????cpu0 ??????????????????*/
         if(cpu == 0)
             snprintf_s(file_name, sizeof(file_name),(sizeof(file_name) -1), "%smodem_etb.bin", dir_name);
         else

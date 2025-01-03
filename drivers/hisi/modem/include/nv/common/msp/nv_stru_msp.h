@@ -62,14 +62,14 @@ extern "C" {
 /* 53255 */
 typedef struct
 {
-   VOS_UINT32  FLMidPrioThred;        /*中优先级NV项阈值*/
+   VOS_UINT32  FLMidPrioThred;        /*????????NV??????*/
 }NV_ID_FLASH_LESS_MID_THRED_STRU;
 
 /* 53277 */
 typedef struct
 {
-    VOS_UINT32 ulAgentFlag; /*：1，路测 0 非路测*/
-    VOS_UINT8 ulRandData[260];  /*前鉴权随机数校验码*/
+    VOS_UINT32 ulAgentFlag; /*??1?????? 0 ??????*/
+    VOS_UINT8 ulRandData[260];  /*??????????????????*/
 }NV_ITEM_AGENT_FLAG_STRU;
 
 #ifdef __cplusplus

@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "GuNasLogFilter.h"
 #include "MnMsgApi.h"
@@ -73,7 +73,7 @@
 #define    AT_SMS_MODE              (1)
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 typedef VOS_VOID* (*pGuNasMsgFilterProcFunc)(
     PS_MSG_HEADER_STRU                 *pstMsg
@@ -109,7 +109,7 @@ GUNAS_MSG_FILTER_PROC_TBL_FUNC              g_astGuNasMsgFilterProcFuncTbl[] =
 
 VOS_CHAR*                                       g_apcATFileterTable[]=
 {
-        /* USIM相关 */
+        /* USIM???? */
         "AT+CPIN"           ,
         "\r\n+CPIN:"        ,
         "AT+CLCK"           ,
@@ -135,7 +135,7 @@ VOS_CHAR*                                       g_apcATFileterTable[]=
         "\r\n+CGLA:"        ,
         "AT+CRLA"           ,
         "\r\n+CRLA:"        ,
-        //删除CIMI
+        //????CIMI
         "AT^CSIN"           ,
         "\r\n^CSIN:"        ,
         "AT^CSTR"           ,
@@ -157,7 +157,7 @@ VOS_CHAR*                                       g_apcATFileterTable[]=
         "\r\n^CRLA:"        ,
         "\r\n^USIMICCID:"   ,
 
-        /* 短信相关 */
+        /* ???????? */
         "AT+CMGS"           ,
         "AT+CMGW"           ,
         "AT+CMGC"           ,
@@ -170,7 +170,7 @@ VOS_CHAR*                                       g_apcATFileterTable[]=
         "AT^RSTRIGGER"      ,
         "\r\n+CMGL:"        ,
 
-        /* SIM LOCK相关 */
+        /* SIM LOCK???? */
         "AT^SIMLOCKUNLOCK"  ,
         "AT^CMLCK"          ,
 
@@ -180,7 +180,7 @@ VOS_CHAR*                                       g_apcATFileterTable[]=
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -256,7 +256,7 @@ VOS_VOID* GUNAS_FilterAtToAtMsg(
             {
                 if (AT_SMS_MODE == g_stParseContext[pstAtMsg->ucIndex].ucMode)
                 {
-                    /* 短信模式直接进行过滤 */
+                    /* ???????????????????? */
                     MN_NORM_LOG1("GUNAS_FilterAtToAtMsg: TRUE,SMS MODE, ulMsgName ", pstAtMsg->enMsgId);
                     return VOS_NULL_PTR;
                 }
@@ -286,7 +286,7 @@ VOS_VOID* GUNAS_FilterAtToMmaMsg(
 {
     switch (pstMsg->ulMsgName)
     {
-        /* 补充业务相关的信息 */
+        /* ?????????????????? */
         case TAF_MSG_MMA_OP_PIN_REQ:
         case TAF_MSG_MMA_SET_PIN:
         case TAF_MSG_MMA_ME_PERSONAL_REQ:
@@ -305,7 +305,7 @@ VOS_VOID* GUNAS_FilterAtToMtaMsg(
 {
     switch (pstMsg->ulMsgName)
     {
-        /* 补充业务相关的信息 */
+        /* ?????????????????? */
         case ID_AT_MTA_SIMLOCKUNLOCK_SET_REQ:
             MN_NORM_LOG1("GUNAS_FilterAtToMtaMsg: TRUE ulMsgName ", pstMsg->ulMsgName);
             return VOS_NULL_PTR;
@@ -322,7 +322,7 @@ VOS_VOID* GUNAS_FilterAtToPihMsg(
 {
     switch (pstMsg->ulMsgName)
     {
-        /* 补充业务相关的信息 */
+        /* ?????????????????? */
         /* SI_PIH_FDN_ENABLE_REQ */
         case AT_PIH_FDN_ENABLE_REQ:
         /* SI_PIH_FDN_DISALBE_REQ */
@@ -342,7 +342,7 @@ VOS_VOID* GUNAS_FilterAtToTafMsg(
 {
     switch (pstMsg->ulMsgName)
     {
-        /* 短信相关的信息 */
+        /* ?????????????? */
         case MN_MSG_MSGTYPE_SEND_RPDATA_DIRECT:
         case MN_MSG_MSGTYPE_SEND_RPDATA_FROMMEM:
         case MN_MSG_MSGTYPE_WRITE:
@@ -353,7 +353,7 @@ VOS_VOID* GUNAS_FilterAtToTafMsg(
             MN_NORM_LOG1("GUNAS_FilterAtToTafMsg: TRUE ulMsgName ", pstMsg->ulMsgName);
             return VOS_NULL_PTR;
 
-        /* 补充业务相关的信息 */
+        /* ?????????????????? */
         case TAF_MSG_ACTIVATESS_MSG:
         case TAF_MSG_DEACTIVATESS_MSG:
         case TAF_MSG_REGPWD_MSG:
@@ -447,8 +447,8 @@ VOS_VOID* GUNAS_OM_LayerMsgFilter(
     struct MsgCB                       *pstMsg
 )
 {
-    /* 注册函数接口调整，之前所有pid消息在一起处理过滤，先对所有pid使用当前函数注册过滤，
-       在后续脱敏项目中对当前函数进行拆分，各个pid注册自己的过滤函数 */
+    /* ??????????????????????????pid????????????????????????????pid??????????????????????
+       ????????????????????????????????????????pid?????????????????? */
 
     return GUNAS_FilterLayerMsg(pstMsg);
 }
@@ -461,7 +461,7 @@ VOS_VOID  *NAS_OM_LogFilterImsaAtMtStatesIndMsgAcpu(VOS_VOID *pMsg)
 
     pstSrcImsaAtMsg = (IMSA_AT_MT_STATES_IND_STRU *)pMsg;
 
-    /* 申请新的内存 */
+    /* ???????????? */
     pstDstImsaAtMsg = (VOS_VOID*)VOS_MemAlloc(WUEPS_PID_AT, DYNAMIC_MEM_PT, sizeof(IMSA_AT_MT_STATES_IND_STRU));
     if( VOS_NULL_PTR == pstDstImsaAtMsg )
     {
@@ -489,7 +489,7 @@ VOS_VOID  *NAS_OM_LogFilterImsaAtVolteImpuCnfMsgAcpu(VOS_VOID *pMsg)
 
     pstSrcImsaAtMsg = (IMSA_AT_VOLTEIMPU_QRY_CNF_STRU *)pMsg;
 
-    /* 申请新的内存 */
+    /* ???????????? */
     pstDstImsaAtMsg = (VOS_VOID*)VOS_MemAlloc(WUEPS_PID_AT, DYNAMIC_MEM_PT, sizeof(IMSA_AT_VOLTEIMPU_QRY_CNF_STRU));
     if( VOS_NULL_PTR == pstDstImsaAtMsg )
     {
@@ -517,7 +517,7 @@ STATIC VOS_VOID *NAS_OM_LogFilterImsaAtDmuserQryCnfMsgAcpu(VOS_VOID *pMsg)
 
     pstSrcImsaAtMsg = (IMSA_AT_DMUSER_QRY_CNF_STRU *)pMsg;
 
-    /* 申请新的内存 */
+    /* ???????????? */
     pstDstImsaAtMsg = (VOS_VOID*)VOS_MemAlloc(WUEPS_PID_AT, DYNAMIC_MEM_PT,sizeof(IMSA_AT_DMUSER_QRY_CNF_STRU));
     if( VOS_NULL_PTR == pstDstImsaAtMsg )
     {
@@ -533,12 +533,12 @@ STATIC VOS_VOID *NAS_OM_LogFilterImsaAtDmuserQryCnfMsgAcpu(VOS_VOID *pMsg)
                   sizeof(IMSA_AT_DMUSER_QRY_CNF_STRU),
                   pstSrcImsaAtMsg,
                   sizeof(IMSA_AT_DMUSER_QRY_CNF_STRU));
-    /*过滤IMPI*/
+    /*????IMPI*/
     TAF_MEM_SET_S(pstDstImsaAtMsg->stDmUser.acImpi,
                   sizeof(pstSrcImsaAtMsg->stDmUser.acImpi),
                   0,
                   sizeof(pstSrcImsaAtMsg->stDmUser.acImpi));
-     /*过滤IMPU*/
+     /*????IMPU*/
     TAF_MEM_SET_S(pstDstImsaAtMsg->stDmUser.acImpu,
                   sizeof(pstSrcImsaAtMsg->stDmUser.acImpu),
                   0,

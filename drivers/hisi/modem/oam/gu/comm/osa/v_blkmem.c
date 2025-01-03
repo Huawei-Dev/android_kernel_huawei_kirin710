@@ -86,7 +86,7 @@
 #include "product_config.h"
 #include "v_MemCfg.inc"
 
-/* LINUX 不支持 */
+/* LINUX ?????? */
 
 #include <asm/dma-mapping.h>
 #include <linux/version.h>
@@ -96,7 +96,7 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_V_BLKMEM_C
 
@@ -134,10 +134,10 @@ extern VOS_MEM_BLOCK_INFO AppMemBlockInfo[];
 /* the number of words which on the tail of the user's space */
 #define VOS_MEMORY_RESERVED_WORD_TAIL                          1
 
-/* 导出OSA内存控制信息的个数 */
+/* ????OSA?????????????????? */
 #define VOS_DUMP_MEM_HEAD_NUM                                  (3)
 
-/* 导出OSA内存控制信息的个数加一是为了带出其它信息 */
+/* ????OSA???????????????????????????????????????? */
 #define VOS_DUMP_MEM_HEAD_TOTAL_NUM                            (VOS_DUMP_MEM_HEAD_NUM+1)
 
 /* the number of bytes which on the user's space */
@@ -145,7 +145,7 @@ extern VOS_MEM_BLOCK_INFO AppMemBlockInfo[];
     ((sizeof(VOS_UINT_PTR) * VOS_MEMORY_RESERVED_WORD_HEAD) \
     + (sizeof(VOS_UINT_PTR) * VOS_MEMORY_RESERVED_WORD_TAIL))
 
-/* 由于LINUX不支持浮点类型，由之前的浮点类型改为整型 0.1 -> 1 */
+/* ????LINUX???????????????????????????????????????? 0.1 -> 1 */
 /* the ratio of count */
 #define VOS_CALC_MEM_RATIO                                     (10)
 /* the begin address of user's space */
@@ -169,7 +169,7 @@ VOS_UINT_PTR g_ulVosMemCtrlSpaceEnd;
 /* the buf of VOS's mem */
 
 /* the buf of VOS's mem */
-VOS_CHAR g_acVosMemBuf[1577424]; /* 由于A核支持64位，内存需要增大 */
+VOS_CHAR g_acVosMemBuf[1577424]; /* ????A??????64???????????????? */
 
 
 
@@ -190,13 +190,13 @@ VOS_VOID VOS_MsgDump(VOS_UINT32 ulInfo, VOS_UINT32 ulSize,
 
 extern VOS_UINT32 VOS_GetMsgName(VOS_UINT_PTR ulAddrress);
 
-/* 自旋锁，用来作Memory的临界资源保护 */
+/* ??????????????Memory?????????????? */
 VOS_SPINLOCK             g_stVosMemSpinLock;
 
-/* 自旋锁，用来作静态Memory的临界资源保护 */
+/* ??????????????????Memory?????????????? */
 VOS_SPINLOCK             g_stVosStaticMemSpinLock;
 
-/* 自旋锁，用来作Dump Memory的临界资源保护 */
+/* ??????????????Dump Memory?????????????? */
 VOS_SPINLOCK             g_stVosDumpMemSpinLock;
 VOS_UINT32               g_ulVosDumpMemFlag;
 
@@ -625,7 +625,7 @@ VOS_UINT32 VOS_MemCtrlBlkFree( VOS_MEM_CTRL_BLOCK *VOS_MemCtrlBlock,
 
     VOS_SpinLockIntLock(&g_stVosMemSpinLock, ulLockLevel);
 
-    if ( VOS_NOT_USED == Block->ulMemUsedFlag )/*[false alarm]:屏蔽Fortify的Redundant Null Check告警*/
+    if ( VOS_NOT_USED == Block->ulMemUsedFlag )/*[false alarm]:????Fortify??Redundant Null Check????*/
     {
         VOS_ProtectionReboot(VOS_FREE_MSG_AGAIN, (VOS_INT)ulFileID, (VOS_INT)Pid, (VOS_CHAR *)Block, sizeof(VOS_MEM_HEAD_BLOCK));
 
@@ -664,9 +664,9 @@ VOS_UINT32 VOS_MemCtrlBlkFree( VOS_MEM_CTRL_BLOCK *VOS_MemCtrlBlock,
 
     Block->pstNext = VOS_MemCtrlBlock->Blocks;
 
-    VOS_MemCtrlBlock->Blocks = Block;/*[false alarm]:屏蔽Fortify的Redundant Null Check告警*/
+    VOS_MemCtrlBlock->Blocks = Block;/*[false alarm]:????Fortify??Redundant Null Check????*/
 
-    VOS_MemCtrlBlock->IdleBlockNumber++;/*[false alarm]:屏蔽Fortify的Redundant Null Check告警*/
+    VOS_MemCtrlBlock->IdleBlockNumber++;/*[false alarm]:????Fortify??Redundant Null Check????*/
 
     /*lint -e613*/
     pstTemp = (VOS_MEM_CTRL_BLOCK *)(Block->ulRealCtrlAddr);
@@ -798,7 +798,7 @@ MODULE_EXPORTED VOS_VOID * V_MemAlloc( VOS_UINT32 ulInfo, VOS_UINT8  ucPtNo, VOS
         return VOS_NULL_PTR;
     }
 
-    /* 如果申请的空间大小超过0x7FFFFFFF个Byte，直接返回空指针 */
+    /* ??????????????????????0x7FFFFFFF??Byte???????????????? */
     if (0x7FFFFFFF < ulSize)
     {
         Print2("# V_MemAlloc size over 0x7FFFFFFF,FileID: %d LineNo: %d.\r\n", ulFileID, usLineNo);
@@ -1668,7 +1668,7 @@ VOS_VOID VOS_MsgDump(VOS_UINT32 ulInfo, VOS_UINT32 ulSize,
 
         while ( VOS_NULL_PTR != pstTmpMemHead)
         {
-            /* 省出一个阈来存放 cpu tick */
+            /* ???????????????? cpu tick */
             *(pulDumpBuffer++) = (pstTmpMemHead->aulMemRecord[0] << 16)|(pstTmpMemHead->aulMemRecord[1] & 0x0000ffff);
             *(pulDumpBuffer++) = pstTmpMemHead->ulcputickAlloc;
 

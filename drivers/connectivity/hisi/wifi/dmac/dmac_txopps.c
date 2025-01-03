@@ -10,7 +10,7 @@ extern "C" {
 #ifdef _PRE_WLAN_FEATURE_TXOPPS
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_types.h"
 #include "oam_ext_if.h"
@@ -24,12 +24,12 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_TXOPPS_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_uint32  dmac_txopps_set_machw_en_sta(
@@ -100,11 +100,11 @@ oal_uint32  dmac_txopps_set_en(mac_vap_stru *pst_mac_vap, oal_switch_enum_uint8 
         return OAL_ERR_CODE_INVALID_CONFIG;
     }
 
-    /* ap和sta都需要配置mib和vap的能力 */
+    /* ap??sta??????????mib??vap?????? */
     //pst_mac_vap->st_cap_flag.bit_txop_ps = en_switch;
     pst_mac_vap->pst_mib_info->st_wlan_mib_vht_sta_config.en_dot11VHTTXOPPowerSaveOptionImplemented = en_switch;
 
-    /* sta模式还需要配置mac寄存器 */
+    /* sta??????????????mac?????? */
     if (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode)
     {
         dmac_txopps_set_machw(pst_mac_vap);
@@ -118,7 +118,7 @@ oal_uint32  dmac_txopps_set_en(mac_vap_stru *pst_mac_vap, oal_switch_enum_uint8 
 oal_uint32 dmac_config_set_txop_ps_machw(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param)
 {
 
-    /* 只有sta需要设置，如果是ap，直接返回 */
+    /* ????sta????????????????ap?????????? */
     if (WLAN_VAP_MODE_BSS_STA != pst_mac_vap->en_vap_mode)
     {
         OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_TXOP,
@@ -126,7 +126,7 @@ oal_uint32 dmac_config_set_txop_ps_machw(mac_vap_stru *pst_mac_vap, oal_uint8 uc
         return OAL_SUCC;
     }
 
-    /* 如果不是11ac的，不涉及txop ps，直接返回 */
+    /* ????????11ac??????????txop ps?????????? */
     if ((WLAN_VHT_MODE != pst_mac_vap->en_protocol) && (WLAN_VHT_ONLY_MODE != pst_mac_vap->en_protocol))
     {
         OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_TXOP,
@@ -171,7 +171,7 @@ oal_uint32  dmac_txopps_set_machw_partialaid_sta(mac_vap_stru *pst_mac_vap, oal_
     pst_txop_info = (mac_cfg_txop_sta_stru *)puc_param;
     us_partial_aid = pst_txop_info->us_partial_aid;
 
-    /* 转化为DMAC VAP */
+    /* ??????DMAC VAP */
     pst_dmac_vap = (dmac_vap_stru *)mac_res_get_dmac_vap(pst_mac_vap->uc_vap_id);
     pst_mac_dev = (mac_device_stru *)mac_res_get_dev(pst_mac_vap->uc_device_id);
     if (OAL_UNLIKELY((OAL_PTR_NULL == pst_mac_dev) || (OAL_PTR_NULL == pst_dmac_vap)))

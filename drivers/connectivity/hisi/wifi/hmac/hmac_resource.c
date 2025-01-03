@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "hmac_resource.h"
 
@@ -19,13 +19,13 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 hmac_res_stru    g_st_hmac_res;
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -61,7 +61,7 @@ oal_uint32  hmac_res_free_mac_dev(oal_uint32 ul_dev_idx)
         return OAL_SUCC;
     }
 
-    /* 入队索引值需要加1操作 */
+    /* ????????????????1???? */
     oal_queue_enqueue(&(g_st_hmac_res.st_hmac_dev_res.st_queue), (oal_void *)((oal_uint)ul_dev_idx + 1));
 
     return OAL_SUCC;
@@ -88,7 +88,7 @@ oal_uint32  hmac_res_init(oal_void)
     OAL_MEMZERO(&g_st_hmac_res, OAL_SIZEOF(g_st_hmac_res));
 
     /***************************************************************************
-            初始化HMAC DEV的资源管理内容
+            ??????HMAC DEV??????????????
     ***************************************************************************/
     oal_queue_set(&(g_st_hmac_res.st_hmac_dev_res.st_queue),
                   g_st_hmac_res.st_hmac_dev_res.aul_idx,
@@ -96,10 +96,10 @@ oal_uint32  hmac_res_init(oal_void)
 
     for (ul_loop = 0; ul_loop < MAC_RES_MAX_DEV_NUM; ul_loop++)
     {
-        /* 初始值保存的是对应数组下标值加1 */
+        /* ??????????????????????????????1 */
         oal_queue_enqueue(&(g_st_hmac_res.st_hmac_dev_res.st_queue), (oal_void *)((oal_uint)ul_loop + 1));
 
-        /* 初始化对应的引用计数值为0 */
+        /* ????????????????????????0 */
         g_st_hmac_res.st_hmac_dev_res.auc_user_cnt[ul_loop] = 0;
     }
 
@@ -115,19 +115,19 @@ oal_uint32  hmac_res_exit(mac_board_stru *pst_hmac_board)
     oal_uint16          ul_chip_max_num;
     mac_chip_stru       *pst_chip;
 
-    /* chip支持的最大数由PCIe总线处理提供; */
+    /* chip??????????????PCIe????????????; */
     ul_chip_max_num = oal_bus_get_chip_num();
 
     for (uc_chip = 0; uc_chip < ul_chip_max_num; uc_chip++)
     {
         pst_chip = &pst_hmac_board->ast_chip[uc_chip];
 
-        /* OAL接口获取支持device个数 */
+        /* OAL????????????device???? */
         uc_device_max = oal_chip_get_device_num(pst_chip->ul_chip_ver);
 
         for (uc_device = 0; uc_device < uc_device_max; uc_device++)
         {
-            /* 释放hmac res资源 */
+            /* ????hmac res???? */
             hmac_res_free_mac_dev(pst_chip->auc_device_id[uc_device]);
         }
     }

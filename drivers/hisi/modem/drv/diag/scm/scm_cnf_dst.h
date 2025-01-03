@@ -50,7 +50,7 @@
 #define _SCM_CNF_DST_H_
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include <mdrv.h>
 #include <mdrv_diag_system.h>
@@ -69,7 +69,7 @@ extern "C"{
 #endif
 #endif
 
-#define SCM_CODER_DST_CNF_SIZE      (64*1024)       /* 命令回复编码目的通道空间大小 */
+#define SCM_CODER_DST_CNF_SIZE      (64*1024)       /* ???????????????????????????? */
 
 u32 scm_malloc_cnf_dst_buff(void);
 u32 scm_cnf_dst_buff_init(void);

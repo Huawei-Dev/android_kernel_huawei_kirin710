@@ -9,7 +9,7 @@ extern "C" {
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "dmac_uapsd_sta.h"
 #include "dmac_psm_sta.h"
@@ -19,12 +19,12 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_UAPSD_STA_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void dmac_uapsd_trigger_sp_sta(dmac_vap_stru *pst_dmac_vap)
@@ -115,7 +115,7 @@ oal_void dmac_uapsd_rx_process_data_sta(dmac_vap_stru *pst_dmac_vap, oal_netbuf_
         return;
     }
 
-    /* 考虑四地址情况获取报文的tid */
+    /* ????????????????????????tid */
     uc_is_tods    = mac_hdr_get_to_ds((oal_uint8 *)pst_frame_hdr);
     uc_is_from_ds = mac_hdr_get_from_ds((oal_uint8 *)pst_frame_hdr);
     en_is_4addr   = uc_is_tods && uc_is_from_ds;
@@ -124,7 +124,7 @@ oal_void dmac_uapsd_rx_process_data_sta(dmac_vap_stru *pst_dmac_vap, oal_netbuf_
     /* Received frames are processed only for delivery enabled ACs */
    if(OAL_TRUE == dmac_is_delivery_enabled(pst_dmac_vap, uc_tid))
    {
-       /* TAG-ITTIAM新增代码合入 */
+       /* TAG-ITTIAM???????????? */
        /* Reception of packets within a SP indicates there is no hang       */
        /* Hence reset the eosp timeout counter which is used to track any   */
        /* such hang scenearios                                              */

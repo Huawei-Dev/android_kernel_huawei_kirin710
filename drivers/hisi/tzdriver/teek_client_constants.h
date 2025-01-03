@@ -9,23 +9,23 @@ enum global_service_cmd_id {
 	GLOBAL_CMD_ID_OPEN_SESSION = 0x2,
 	GLOBAL_CMD_ID_CLOSE_SESSION = 0x3,
 	GLOBAL_CMD_ID_LOAD_SECURE_APP = 0x4,
-	/**< Global Task 动态加载安全应用*/
-	GLOBAL_CMD_ID_NEED_LOAD_APP = 0x5,/**< Global Task 判断是否是需要加载安全应用*/
+	/**< Global Task ????????????????*/
+	GLOBAL_CMD_ID_NEED_LOAD_APP = 0x5,/**< Global Task ??????????????????????????*/
 	GLOBAL_CMD_ID_REGISTER_AGENT = 0x6,
 	GLOBAL_CMD_ID_UNREGISTER_AGENT = 0x7,
 	GLOBAL_CMD_ID_REGISTER_NOTIFY_MEMORY = 0x8,
 	GLOBAL_CMD_ID_UNREGISTER_NOTIFY_MEMORY = 0x9,
-	GLOBAL_CMD_ID_INIT_CONTENT_PATH = 0xa,    /**< Global Task初始化content path*/
+	GLOBAL_CMD_ID_INIT_CONTENT_PATH = 0xa,    /**< Global Task??????content path*/
 	GLOBAL_CMD_ID_TERMINATE_CONTENT_PATH = 0xb,
-	/**< Global Task释放content path*/
+	/**< Global Task????content path*/
 	GLOBAL_CMD_ID_ALLOC_EXCEPTION_MEM = 0xc,
 	GLOBAL_CMD_ID_TEE_TIME = 0xd,
 	GLOBAL_CMD_ID_TEE_INFO = 0xe,
 	GLOBAL_CMD_ID_REGISTER_RDR_MEM = 0xf,
 	GLOBAL_CMD_ID_KILL_TASK = 0x10,   /** Global Task Kill session */
-	GLOBAL_CMD_ID_TUI_EXCEPTION = 0x11,   /** TUI异常事件处理 */
-	GLOBAL_CMD_ID_ADJUST_TIME = 0x12,   /** TIME时间校正处理 */
-	GLOBAL_CMD_ID_SET_CA_HASH = 0x13,   /*set ca hash info设置用于检验CA身份的hash*/
+	GLOBAL_CMD_ID_TUI_EXCEPTION = 0x11,   /** TUI???????????? */
+	GLOBAL_CMD_ID_ADJUST_TIME = 0x12,   /** TIME???????????? */
+	GLOBAL_CMD_ID_SET_CA_HASH = 0x13,   /*set ca hash info????????????CA??????hash*/
 	GLOBAL_CMD_ID_SET_BUILD_VERSION = 0x14, /* set the Android's build version */
 	GLOBAL_CMD_ID_REGISTER_TTF_MEM = 0x15,
 	/** get session key for encrypting dialog */
@@ -55,15 +55,15 @@ enum TEEC_Result {
 	TEEC_ERROR_INVALID_CMD = 0x1,
 	TEEC_ERROR_SERVICE_NOT_EXIST = 0x2,
 	TEEC_ERROR_SESSION_NOT_EXIST = 0x3,
-	TEEC_ERROR_SESSION_MAXIMUM,		 /**< 安全服务的链接数已满 */
-	TEEC_ERROR_REGISTER_EXIST_SERVICE,	 /**< 注册已经存在的安全服务 */
-	TEEC_ERROR_TAGET_DEAD_FATAL,		 /**< 安全服务Global出错 ，(安全服务Global是所有安全服务的基础) */
-	TEEC_ERROR_READ_DATA,			 /**< 读取文件错误	*/
-	TEEC_ERROR_WRITE_DATA,			 /**< 写入文件错误	*/
-	TEEC_ERROR_TRUNCATE_OBJECT,		 /**< 截断文件错误	*/
-	TEEC_ERROR_SEEK_DATA,			 /**< 查找文件错误	*/
-	TEEC_ERROR_RENAME_OBJECT,		 /**< 重命名文件错误  */
-	TEEC_ERROR_TRUSTED_APP_LOAD_ERROR,	 /**< 打开会话时，加载安全服务失败*/
+	TEEC_ERROR_SESSION_MAXIMUM,		 /**< ???????????????????? */
+	TEEC_ERROR_REGISTER_EXIST_SERVICE,	 /**< ?????????????????????? */
+	TEEC_ERROR_TAGET_DEAD_FATAL,		 /**< ????????Global???? ??(????????Global????????????????????) */
+	TEEC_ERROR_READ_DATA,			 /**< ????????????	*/
+	TEEC_ERROR_WRITE_DATA,			 /**< ????????????	*/
+	TEEC_ERROR_TRUNCATE_OBJECT,		 /**< ????????????	*/
+	TEEC_ERROR_SEEK_DATA,			 /**< ????????????	*/
+	TEEC_ERROR_RENAME_OBJECT,		 /**< ??????????????  */
+	TEEC_ERROR_TRUSTED_APP_LOAD_ERROR,	 /**< ????????????????????????????*/
 	TEEC_ERROR_GENERIC = 0xFFFF0000,
 	TEEC_ERROR_ACCESS_DENIED = 0xFFFF0001,
 	TEEC_ERROR_CANCEL = 0xFFFF0002,

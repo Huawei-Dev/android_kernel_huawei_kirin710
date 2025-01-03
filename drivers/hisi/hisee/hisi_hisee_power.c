@@ -50,7 +50,7 @@ hisee_power_vote_status g_power_vote_status;
 unsigned int g_power_vote_cnt;
 unsigned int g_cos_id;
 
-/*保存当前启动运行的cos镜像id*/
+/*??????????????????cos????id*/
 unsigned int g_runtime_cosid = COS_IMG_ID_0;
 
 hisee_power_vote_record g_vote_record_method;

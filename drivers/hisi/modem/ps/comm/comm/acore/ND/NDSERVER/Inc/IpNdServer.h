@@ -69,7 +69,7 @@ extern "C" {
 #endif
 #endif
 /*****************************************************************************
-  #pragma pack(*)    设置字节对齐方式
+  #pragma pack(*)    ????????????????
 *****************************************************************************/
 #if (VOS_OS_VER != VOS_WIN32)
 #pragma pack(4)
@@ -87,10 +87,10 @@ extern "C" {
 #define NDIS_NDSERVER_PID     UEPS_PID_NDSERVER
 #endif
 
-/*下行IP包缓存队列长度*/
+/*????IP??????????????*/
 #define ND_IPV6_WAIT_ADDR_RSLT_Q_LEN   (10)
 
-/* ND SERVER最大地址信息数 */
+/* ND SERVER?????????????? */
 #define IP_NDSERVER_ADDRINFO_MAX_NUM                    (11)
 
 #define IP_NDSERVER_GET_ADDR_INFO_INDEX(ucExRabId)       (NdSer_GetAddrInfoIdx(ucExRabId))
@@ -161,14 +161,14 @@ extern "C" {
   4 Enum
 *****************************************************************************/
 /*****************************************************************************
- 枚举名    : NDSER_TIMER_ENUM
- 协议表格  :
- ASN.1描述 :
- 枚举说明  : NDSERVER定时器枚举
+ ??????    : NDSER_TIMER_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  : NDSERVER??????????
 *****************************************************************************/
 enum NDSER_TIMER_ENUM
 {
-    /* ND SERVER定时器 */
+    /* ND SERVER?????? */
     IP_ND_SERVER_TIMER_NS               = 0,
     IP_ND_SERVER_TIMER_PERIODIC_NS      = 1,
     IP_ND_SERVER_TIMER_FIRST_NS         = 2,
@@ -179,19 +179,19 @@ enum NDSER_TIMER_ENUM
 typedef VOS_UINT32 NDSER_TIMER_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : IP_NDSERVER_TE_ADDR_STATE_ENUM
- 协议表格  :
- ASN.1描述 :
- 枚举说明  : TE地址状态类型
+ ??????    : IP_NDSERVER_TE_ADDR_STATE_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  : TE????????????
 *****************************************************************************/
 enum IP_NDSERVER_TE_ADDR_STATE_ENUM
 {
-    IP_NDSERVER_TE_ADDR_INEXISTENT          = 0,            /* 不存在 */
-    IP_NDSERVER_TE_ADDR_INCOMPLETE          = 1,            /* 未完成 */
-    IP_NDSERVER_TE_ADDR_REACHABLE           = 2,            /* 可达 */
-    /*IP_NDSERVER_TE_ADDR_STALE               = 3,*/            /* 失效 */
-    /*IP_NDSERVER_TE_ADDR_DELAY               = 4,*/            /* 延迟 */
-    /*IP_NDSERVER_TE_ADDR_PROBE               = 5,*/            /* 探测 */
+    IP_NDSERVER_TE_ADDR_INEXISTENT          = 0,            /* ?????? */
+    IP_NDSERVER_TE_ADDR_INCOMPLETE          = 1,            /* ?????? */
+    IP_NDSERVER_TE_ADDR_REACHABLE           = 2,            /* ???? */
+    /*IP_NDSERVER_TE_ADDR_STALE               = 3,*/            /* ???? */
+    /*IP_NDSERVER_TE_ADDR_DELAY               = 4,*/            /* ???? */
+    /*IP_NDSERVER_TE_ADDR_PROBE               = 5,*/            /* ???? */
 
     IP_NDSERVER_TE_ADDR_BUTT
 };
@@ -202,10 +202,10 @@ typedef VOS_UINT8 IP_NDSERVER_TE_ADDR_STATE_ENUM_UINT8;
   5 STRUCT
 *****************************************************************************/
 /*****************************************************************************
- 结构名    : IP_NDSERVER_TE_ADDR_INFO_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : ND SERVER保存的TE地址结构体
+ ??????    : IP_NDSERVER_TE_ADDR_INFO_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ND SERVER??????TE??????????
 *****************************************************************************/
 typedef struct
 {
@@ -217,10 +217,10 @@ typedef struct
 }IP_NDSERVER_TE_ADDR_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : IP_IPV6_ADDR_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : IPV6地址结构体
+ ??????    : IP_IPV6_ADDR_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : IPV6??????????
 *****************************************************************************/
 typedef struct
 {
@@ -229,10 +229,10 @@ typedef struct
 }IP_IPV6_ADDR_STRU;
 
 /*****************************************************************************
- 结构名    : IP_NDSERVER_TE_DETECT_BUF_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : ND SERVER保存的TE地址结构体，用于MAC地址获取
+ ??????    : IP_NDSERVER_TE_DETECT_BUF_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ND SERVER??????TE????????????????MAC????????
 *****************************************************************************/
 typedef struct
 {
@@ -243,18 +243,18 @@ typedef struct
 }IP_NDSERVER_TE_DETECT_BUF_STRU;
 
 /*****************************************************************************
- 结构名    : IP_NDSERVER_ADDR_INFO_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : ND SERVER数据结构体
+ ??????    : IP_NDSERVER_ADDR_INFO_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ND SERVER??????????
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT8                           ucEpsbId;
     VOS_UINT8                           ucValidFlag;
     VOS_UINT8                           aucReserved[14];
-    /*为了同64位操作系统兼容，放在8字节对齐位置*/
-    LUP_QUEUE_STRU                     *pstDlPktQue;                            /*下行包缓存队列*/
+    /*??????64????????????????????8????????????*/
+    LUP_QUEUE_STRU                     *pstDlPktQue;                            /*??????????????*/
     IP_SND_MSG_STRU                     stIpSndNwMsg;
 
     ESM_IP_IPV6_NW_PARA_STRU            stIpv6NwPara;
@@ -270,38 +270,38 @@ typedef struct
 }IP_NDSERVER_ADDR_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : IP_NDSERVER_PACKET_STATISTICS_INFO_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : ND SERVER报文统计数据结构体
+ ??????    : IP_NDSERVER_PACKET_STATISTICS_INFO_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ND SERVER??????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulRcvPktTotalNum;         /* 收到数据包总数 */
-    VOS_UINT32                          ulDiscPktNum;             /* 丢弃数据包数量 */
-    VOS_UINT32                          ulRcvNsPktNum;            /* 收到NS数据包数量 */
-    VOS_UINT32                          ulRcvNaPktNum;            /* 收到NA数据包数量 */
-    VOS_UINT32                          ulRcvRsPktNum;            /* 收到RS数据包数量 */
-    VOS_UINT32                          ulRcvEchoPktNum;          /* 收到PING包数量*/
-    VOS_UINT32                          ulRcvTooBigPktNum;        /* 收到IPV6超长包数量*/
-    VOS_UINT32                          ulRcvDhcpv6PktNum;        /* 收到DHCPV6包数量*/
-    VOS_UINT32                          ulErrNsPktNum;            /* 错误NS数据包数量 */
-    VOS_UINT32                          ulErrNaPktNum;            /* 错误NA数据包数量 */
-    VOS_UINT32                          ulErrRsPktNum;            /* 错误RS数据包数量 */
-    VOS_UINT32                          ulErrEchoPktNum;          /* 错误ECHO REQ数据包数量 */
-    VOS_UINT32                          ulErrTooBigPktNum;        /* 错误超长包数量 */
-    VOS_UINT32                          ulErrDhcpv6PktNum;        /* 错误DHCPV6数据包数量 */
-    VOS_UINT32                          ulTransPktTotalNum;       /* 发送数据包总数 */
-    VOS_UINT32                          ulTransPktFailNum;        /* 发送数据包失败数量 */
-    VOS_UINT32                          ulTransNsPktNum;          /* 发送NS数据包数量 */
-    VOS_UINT32                          ulTransNaPktNum;          /* 发送NA数据包数量 */
-    VOS_UINT32                          ulTransRaPktNum;          /* 发送RA数据包数量 */
-    VOS_UINT32                          ulTransEchoPktNum;        /* 发送ECHO REPLY数据包数量 */
-    VOS_UINT32                          ulTransTooBigPktNum;      /* 发送IPV6超长包响应数量 */
-    VOS_UINT32                          ulTransDhcpv6PktNum;      /* 发送DHCPV6 REPLY数据包数量*/
-    VOS_UINT32                          ulMacInvalidPktNum;       /* 下行IP包发送时PC MAC地址无效的统计量*/
-    VOS_UINT32                          ulEnquePktNum;            /* 下行成功缓存的IP包个数*/
-    VOS_UINT32                          ulSendQuePktNum;          /* 下行成功发送缓存的IP包个数*/
+    VOS_UINT32                          ulRcvPktTotalNum;         /* ?????????????? */
+    VOS_UINT32                          ulDiscPktNum;             /* ?????????????? */
+    VOS_UINT32                          ulRcvNsPktNum;            /* ????NS?????????? */
+    VOS_UINT32                          ulRcvNaPktNum;            /* ????NA?????????? */
+    VOS_UINT32                          ulRcvRsPktNum;            /* ????RS?????????? */
+    VOS_UINT32                          ulRcvEchoPktNum;          /* ????PING??????*/
+    VOS_UINT32                          ulRcvTooBigPktNum;        /* ????IPV6??????????*/
+    VOS_UINT32                          ulRcvDhcpv6PktNum;        /* ????DHCPV6??????*/
+    VOS_UINT32                          ulErrNsPktNum;            /* ????NS?????????? */
+    VOS_UINT32                          ulErrNaPktNum;            /* ????NA?????????? */
+    VOS_UINT32                          ulErrRsPktNum;            /* ????RS?????????? */
+    VOS_UINT32                          ulErrEchoPktNum;          /* ????ECHO REQ?????????? */
+    VOS_UINT32                          ulErrTooBigPktNum;        /* ?????????????? */
+    VOS_UINT32                          ulErrDhcpv6PktNum;        /* ????DHCPV6?????????? */
+    VOS_UINT32                          ulTransPktTotalNum;       /* ?????????????? */
+    VOS_UINT32                          ulTransPktFailNum;        /* ?????????????????? */
+    VOS_UINT32                          ulTransNsPktNum;          /* ????NS?????????? */
+    VOS_UINT32                          ulTransNaPktNum;          /* ????NA?????????? */
+    VOS_UINT32                          ulTransRaPktNum;          /* ????RA?????????? */
+    VOS_UINT32                          ulTransEchoPktNum;        /* ????ECHO REPLY?????????? */
+    VOS_UINT32                          ulTransTooBigPktNum;      /* ????IPV6?????????????? */
+    VOS_UINT32                          ulTransDhcpv6PktNum;      /* ????DHCPV6 REPLY??????????*/
+    VOS_UINT32                          ulMacInvalidPktNum;       /* ????IP????????PC MAC????????????????*/
+    VOS_UINT32                          ulEnquePktNum;            /* ??????????????IP??????*/
+    VOS_UINT32                          ulSendQuePktNum;          /* ??????????????????IP??????*/
 }IP_NDSERVER_PACKET_STATISTICS_INFO_STRU;
 
 

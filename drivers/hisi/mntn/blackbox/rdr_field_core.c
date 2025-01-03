@@ -28,7 +28,7 @@ static struct rdr_struct_s *tmp_pbb;
 
 u64 rdr_area_mem_addr[RDR_AREA_MAXIMUM + 1];
 u32 rdr_area_mem_size[RDR_AREA_MAXIMUM] = {
-	0,			/* 6, 有多少个核可以分配到内存 */
+	0,			/* 6, ???????????????????????? */
 	0,			/* 0x180000, CP */
 	0,			/* 0x20000, TEE */
 	0,			/* 0x20000, HIFI */

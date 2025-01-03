@@ -70,7 +70,7 @@ extern "C" {
 #define    MAX_MTU        2048
 #define    MIN_MTU        296
 
-/* 解封装单个输入报文最大长度为可申请内存块最大长度 */
+/* ???????????????????????????????????????????????? */
 #define PPP_HDLC_DEF_ONE_MAX_SIZE       (2048)
 
 #define HDLC_MAKE_WORD(hi,low)    ((VOS_UINT16)(((VOS_UINT8)(low))|(((VOS_UINT16)((VOS_UINT8)(hi)))<<8)))
@@ -87,7 +87,7 @@ extern "C" {
 struct ppp_mbuf;
 
 struct hdlc {
-  HTIMER                      hTimerHandle;                   /* LCP ECHO周期性定时器 */
+  HTIMER                      hTimerHandle;                   /* LCP ECHO???????????? */
 
   struct {
     VOS_INT32 badfcs;

@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "frw_ext_if.h"
@@ -31,16 +31,16 @@ extern "C" {
 
 #ifdef _PRE_WLAN_CHIP_TEST
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void dmac_test_sch_modify_txdscp_timestamp(oal_uint16 *p_us_tsf, oal_int16 s_adjust_time_ms)
 {
-    /* 判断开关是否打开 */
+    /* ???????????????? */
     if (0 == g_st_dmac_test_mng.uc_lifetime_flag)
     {
         OAM_INFO_LOG0(0, OAM_SF_ANY, "{dmac_test_sch_modify_txdscp_timestamp::uc_lifetime_flag closed}\r\n");
@@ -66,13 +66,13 @@ oal_void dmac_test_sch_stat_tx_mpdu_num(dmac_user_stru *pst_dmac_user,
         return;
     }
 
-    /* 只统计数据帧 */
+    /* ???????????? */
     if (WLAN_DATA_BASICTYPE != pst_cb->en_frame_type)
     {
         return;
     }
 
-    /* 判断开关是否打开 */
+    /* ???????????????? */
     if (0 == g_st_dmac_test_mng.uc_lifetime_flag)
     {
         OAM_INFO_LOG0(0, OAM_SF_ANY, "{dmac_test_sch_stat_tx_mpdu_num::uc_lifetime_flag closed}\r\n");
@@ -99,13 +99,13 @@ oal_void dmac_test_sch_stat_rx_mpdu_num(frw_event_hdr_stru *pst_event_hdr,
         return;
     }
 
-    /* 管理帧不需要统计 */
+    /* ???????????????? */
     if (FRW_EVENT_TYPE_WLAN_DRX != pst_event_hdr->en_type)
     {
         return;
     }
 
-    /* 判断开关是否打开 */
+    /* ???????????????? */
     if (0 == g_st_dmac_test_mng.uc_lifetime_flag)
     {
         OAM_INFO_LOG0(0, OAM_SF_ANY, "{dmac_test_sch_stat_rx_mpdu_num::uc_lifetime_flag closed}\r\n");
@@ -129,7 +129,7 @@ oal_void dmac_test_sch_set_long_nav_enable(hal_tx_dscr_stru *pst_tx_dscr)
         return;
     }
 
-	/* 判断开关是否打开 */
+	/* ???????????????? */
     if (0 == g_st_dmac_test_mng.uc_long_nav_flag)
     {
         OAM_INFO_LOG0(0, OAM_SF_ANY, "{dmac_test_sch_set_long_nav_enable::uc_long_nav_flag closed}\r\n");
@@ -166,25 +166,25 @@ oal_void dmac_test_sch_stat_rx_sta_num(frw_event_hdr_stru *pst_event_hdr,
         return;
     }
 
-    /* 管理帧不需要统计 */
+    /* ???????????????? */
     if (FRW_EVENT_TYPE_WLAN_DRX != pst_event_hdr->en_type)
     {
         return;
     }
 
-    /* 判断开关是否打开 */
+    /* ???????????????? */
     if (0 == g_st_dmac_test_mng.uc_cca_flag)
     {
         OAM_INFO_LOG0(0, OAM_SF_ANY, "{dmac_test_sch_stat_rx_sta_num::uc_cca_flag closed}\r\n");
         return;
     }
 
-    /* 获取802.11头指针、发送端地址 */
+    /* ????802.11?????????????????? */
     pst_frame_hdr       = (mac_ieee80211_frame_stru *)(pst_rx_ctl->st_rx_info.pul_mac_hdr_start_addr);
     puc_rx_addr         = pst_frame_hdr->auc_address1;
     puc_tx_addr         = pst_frame_hdr->auc_address2;
 
-    /* 如果接收地址AP，且发送地址为对应的STA */
+    /* ????????????AP????????????????????STA */
     if (0 == (oal_compare_mac_addr(auc_ap_addr, puc_rx_addr))
             && 0 == (oal_compare_mac_addr(auc_sta_addr, puc_tx_addr)))
     {
@@ -193,7 +193,7 @@ oal_void dmac_test_sch_stat_rx_sta_num(frw_event_hdr_stru *pst_event_hdr,
                                         g_st_dmac_test_mng.ul_cca_rx_sta_num);
     }
 
-    /* 如果接收地址为STA，且发送地址为对应的AP */
+    /* ??????????????STA????????????????????AP */
     if (0 == (oal_compare_mac_addr(auc_sta_addr, puc_rx_addr))
             && 0 == (oal_compare_mac_addr(auc_ap_addr, puc_tx_addr)))
     {

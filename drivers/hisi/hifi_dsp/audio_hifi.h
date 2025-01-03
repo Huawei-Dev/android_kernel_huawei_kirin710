@@ -32,67 +32,67 @@ typedef struct HIFI_CHN_CMD_STRUCT
 } HIFI_CHN_CMD;
 
 /*
-	入参，透传给HIFI的参数
-	出参，HIFI返回的，透传给AP的参数
+	????????????HIFI??????
+	??????HIFI??????????????AP??????
 */
 struct misc_io_async_param {
-	unsigned int			para_in_l;		/*入参buffer*/
-	unsigned int			para_in_h;		/*入参buffer*/
-	unsigned int			para_size_in;	/*入参buffer长度*/
+	unsigned int			para_in_l;		/*????buffer*/
+	unsigned int			para_in_h;		/*????buffer*/
+	unsigned int			para_size_in;	/*????buffer????*/
 };
 
 
 /* misc_io_sync_cmd */
 struct misc_io_sync_param {
-	unsigned int			para_in_l;			 /*入参buffer*/
-	unsigned int			para_in_h;			 /*入参buffer*/
-	unsigned int			para_size_in;		/*入参buffer长度*/
+	unsigned int			para_in_l;			 /*????buffer*/
+	unsigned int			para_in_h;			 /*????buffer*/
+	unsigned int			para_size_in;		/*????buffer????*/
 
-	unsigned int			para_out_l; 		  /*出参buffer*/
-	unsigned int			para_out_h; 		  /*出参buffer*/
-	unsigned int			para_size_out;		/*出参buffer长度*/
+	unsigned int			para_out_l; 		  /*????buffer*/
+	unsigned int			para_out_h; 		  /*????buffer*/
+	unsigned int			para_size_out;		/*????buffer????*/
 };
 
 /* misc_io_senddata_cmd */
 struct misc_io_senddata_async_param {
-	unsigned int			para_in_l;			 /*入参buffer*/
-	unsigned int			para_in_h;			 /*入参buffer*/
-	unsigned int			para_size_in;		/*入参buffer长度*/
+	unsigned int			para_in_l;			 /*????buffer*/
+	unsigned int			para_in_h;			 /*????buffer*/
+	unsigned int			para_size_in;		/*????buffer????*/
 
-	unsigned int			data_src_l; 		  /*大数据源地址*/
-	unsigned int			data_src_h; 		  /*大数据源地址*/
-	unsigned int			data_src_size;		/*大数据源长度*/
+	unsigned int			data_src_l; 		  /*????????????*/
+	unsigned int			data_src_h; 		  /*????????????*/
+	unsigned int			data_src_size;		/*????????????*/
 };
 
 struct misc_io_senddata_sync_param {
-	unsigned int			para_in_l;			/*入参buffer*/
-	unsigned int			para_in_h;			/*入参buffer*/
-	unsigned int			para_size_in;		/*入参buffer长度*/
+	unsigned int			para_in_l;			/*????buffer*/
+	unsigned int			para_in_h;			/*????buffer*/
+	unsigned int			para_size_in;		/*????buffer????*/
 
-	unsigned int			src_l;				/*数据源地址*/
-	unsigned int			src_h;				/*数据源地址*/
-	unsigned int			src_size;			/*数据源长度*/
+	unsigned int			src_l;				/*??????????*/
+	unsigned int			src_h;				/*??????????*/
+	unsigned int			src_size;			/*??????????*/
 
-	unsigned int			dst_l;				/*地址*/
-	unsigned int			dst_h;				/*地址*/
-	unsigned int			dst_size;			/*长度*/
+	unsigned int			dst_l;				/*????*/
+	unsigned int			dst_h;				/*????*/
+	unsigned int			dst_size;			/*????*/
 
-	unsigned int			para_out_l; 		/*出参buffer*/
-	unsigned int			para_out_h; 		/*出参buffer*/
-	unsigned int			para_size_out;		/*出参buffer长度*/
+	unsigned int			para_out_l; 		/*????buffer*/
+	unsigned int			para_out_h; 		/*????buffer*/
+	unsigned int			para_size_out;		/*????buffer????*/
 };
 
 struct misc_io_get_phys_param {
 	unsigned int		   flag;			   /**/
-	unsigned int		   phys_addr_l; 		 /*获取的物理地址*/
-	unsigned int		   phys_addr_h; 		 /*获取的物理地址*/
+	unsigned int		   phys_addr_l; 		 /*??????????????*/
+	unsigned int		   phys_addr_h; 		 /*??????????????*/
 };
 
 struct misc_io_dump_buf_param {
-	unsigned int			user_buf_l; 		/*用户空间分配的内存地址*/
-	unsigned int			user_buf_h; 		/*用户空间分配的内存地址*/
+	unsigned int			user_buf_l; 		/*??????????????????????*/
+	unsigned int			user_buf_h; 		/*??????????????????????*/
 	unsigned int			clear;				/*clear current log buf*/
-	unsigned int			buf_size;			/*用户空间分配的内存长度*/
+	unsigned int			buf_size;			/*??????????????????????*/
 };
 
 /*
@@ -131,13 +131,13 @@ enum voice_proxy_voice_msg_id {
 	ID_PROXY_VOICE_ENCRYPT_KEY_BEGIN = 0xDDFD,
 	ID_PROXY_VOICE_ENCRYPT_KEY_END = 0xDDFE,
 
-	ID_PROXY_RTT_HIFI_TX_NTF = 0xDFD1,      // Kernel将HAL层数据发送给HIFI
-	ID_HIFI_PROXY_RTT_TX_CNF = 0xDFD2,      // HIFI将处理完Kernel的消息后，返回确认消息
-	ID_HIFI_PROXY_RTT_RX_NTF = 0xDFD3,      // HiFi将RTT数据发送给Kernel
-	ID_PROXY_RTT_HIFI_RX_CNF = 0xDFD4,      // Kernel收到Hifi的RTT数据后，返回确认消息
-	ID_HIFI_PROXY_RTT_CHANNEL_STATUS_IND = 0xDFD5, // HIFI通知RTT的channel的状态，open还是close
+	ID_PROXY_RTT_HIFI_TX_NTF = 0xDFD1,      // Kernel??HAL????????????HIFI
+	ID_HIFI_PROXY_RTT_TX_CNF = 0xDFD2,      // HIFI????????Kernel??????????????????????
+	ID_HIFI_PROXY_RTT_RX_NTF = 0xDFD3,      // HiFi??RTT??????????Kernel
+	ID_PROXY_RTT_HIFI_RX_CNF = 0xDFD4,      // Kernel????Hifi??RTT????????????????????
+	ID_HIFI_PROXY_RTT_CHANNEL_STATUS_IND = 0xDFD5, // HIFI????RTT??channel????????open????close
 
-	ID_HIFI_PROXY_WIFI_STATUS_NTF = 0xDFD6, // HIFI通知VOWIFI上行状态
+	ID_HIFI_PROXY_WIFI_STATUS_NTF = 0xDFD6, // HIFI????VOWIFI????????
 
 	ID_PROXY_VOICE_DATA_MSGID_BUT
 };
@@ -258,39 +258,39 @@ struct voice_proxy_voice_encrypt_key_end {
 
 /*defined in hifi, kernel and hal use it*/
 struct proxy_rtt_hifi_tx_notify {
-	uint16_t msg_id;                                     // Kernel与HIFI之间的消息ID
-	uint8_t frag_seq;                                    // 当前序列号
-	uint8_t frag_seq_max;                               // 当前序列号最大值
-	uint32_t resv;                                       // 保留字段
-	uint16_t channel_id;                                // rtt文本的channelId
-	uint16_t data_len;                                  // 实际传输的字节大小
-	uint8_t data[PROXY_HIFI_RTT_MAX_DATA_LEN];       // 实际的数据,最大为256
+	uint16_t msg_id;                                     // Kernel??HIFI??????????ID
+	uint8_t frag_seq;                                    // ??????????
+	uint8_t frag_seq_max;                               // ????????????????
+	uint32_t resv;                                       // ????????
+	uint16_t channel_id;                                // rtt??????channelId
+	uint16_t data_len;                                  // ??????????????????
+	uint8_t data[PROXY_HIFI_RTT_MAX_DATA_LEN];       // ??????????,??????256
 };
 
 /*defined in hifi, kernel and hal use it*/
 struct hifi_proxy_rtt_rx_notify {
-	uint16_t msg_id;                                    // Kernel与HIFI之间的消息ID
-	uint8_t frag_seq;                                   // 当前序列号
-	uint8_t frag_seq_max;                               // 当前序列号最大值
-	uint32_t resv;                                       // 保留字段
-	uint16_t channel_id;                                // rtt文本的channelId
-	uint16_t data_len;                                  // 实际传输的字节大小
-	uint8_t data[PROXY_HIFI_RTT_MAX_DATA_LEN];       // 实际的数据,最大为256
+	uint16_t msg_id;                                    // Kernel??HIFI??????????ID
+	uint8_t frag_seq;                                   // ??????????
+	uint8_t frag_seq_max;                               // ????????????????
+	uint32_t resv;                                       // ????????
+	uint16_t channel_id;                                // rtt??????channelId
+	uint16_t data_len;                                  // ??????????????????
+	uint8_t data[PROXY_HIFI_RTT_MAX_DATA_LEN];       // ??????????,??????256
 };
 
 /*hifi to proxy:channel status indication*/
 struct hifi_proxy_rtt_channel_status_ind {
-	uint16_t msg_id;                                    // Kernel与HIFI之间的消息ID
-	uint8_t  channel_status;                           // 通道状态: 1-open; 0-close;
-	uint8_t  resv;                                      // 保留字段
-	uint32_t channel_id;                               // rtt文本的channelId
+	uint16_t msg_id;                                    // Kernel??HIFI??????????ID
+	uint8_t  channel_status;                           // ????????: 1-open; 0-close;
+	uint8_t  resv;                                      // ????????
+	uint32_t channel_id;                               // rtt??????channelId
 };
 
 /*hifi to proxy:wifi status indication*/
 struct hifi_proxy_wifi_status_ind {
-	uint16_t msg_id;                                    // Kernel与HIFI之间的消息ID
-	uint8_t  status;                                    // 通道状态: 1-open; 0-close;
-	uint8_t  resv;                                      // 保留字段
+	uint16_t msg_id;                                    // Kernel??HIFI??????????ID
+	uint8_t  status;                                    // ????????: 1-open; 0-close;
+	uint8_t  resv;                                      // ????????
 };
 /*
   *end
@@ -321,16 +321,16 @@ struct voice_bsd_param_hsm {
 	unsigned char *pdata;
 };
 
-//下面是AP发给HiFi Misc设备的ioctl命令，需要HiFi Misc设备进行响应
-#define HIFI_MISC_IOCTL_ASYNCMSG		_IOWR('A', 0x70, struct misc_io_async_param)		  //AP向HiFi传递异步消息
-#define HIFI_MISC_IOCTL_SYNCMSG 		_IOW('A', 0x71, struct misc_io_sync_param)			  //AP向HiFi传递同步消息
-#define HIFI_MISC_IOCTL_GET_PHYS		_IOWR('A', 0x73, struct misc_io_get_phys_param) 	   //AP获取物理地址
-#define HIFI_MISC_IOCTL_TEST			_IOWR('A', 0x74, struct misc_io_senddata_sync_param)   //AP测试消息
-#define HIFI_MISC_IOCTL_WRITE_PARAMS	_IOWR('A', 0x75, struct misc_io_sync_param) 		   //写算法参数到HIFI
-#define HIFI_MISC_IOCTL_DUMP_HIFI		_IOWR('A', 0x76, unsigned int) 	   //读取HIFI在DDR上的数据并传递至用户空间
-#define HIFI_MISC_IOCTL_DUMP_CODEC		_IOWR('A', 0x77, struct misc_io_dump_buf_param) 	   //读取CODEC寄存器并传递至用户空间
-#define HIFI_MISC_IOCTL_WAKEUP_THREAD	_IOW('A',  0x78, unsigned int) 	   //唤醒read线程,正常退出
-#define HIFI_MISC_IOCTL_DISPLAY_MSG		_IOWR('A', 0x79, struct misc_io_dump_buf_param) 	   //读取HIFI在DDR上的数据并传递至用户空间
+//??????AP????HiFi Misc??????ioctl??????????HiFi Misc????????????
+#define HIFI_MISC_IOCTL_ASYNCMSG		_IOWR('A', 0x70, struct misc_io_async_param)		  //AP??HiFi????????????
+#define HIFI_MISC_IOCTL_SYNCMSG 		_IOW('A', 0x71, struct misc_io_sync_param)			  //AP??HiFi????????????
+#define HIFI_MISC_IOCTL_GET_PHYS		_IOWR('A', 0x73, struct misc_io_get_phys_param) 	   //AP????????????
+#define HIFI_MISC_IOCTL_TEST			_IOWR('A', 0x74, struct misc_io_senddata_sync_param)   //AP????????
+#define HIFI_MISC_IOCTL_WRITE_PARAMS	_IOWR('A', 0x75, struct misc_io_sync_param) 		   //????????????HIFI
+#define HIFI_MISC_IOCTL_DUMP_HIFI		_IOWR('A', 0x76, unsigned int) 	   //????HIFI??DDR????????????????????????
+#define HIFI_MISC_IOCTL_DUMP_CODEC		_IOWR('A', 0x77, struct misc_io_dump_buf_param) 	   //????CODEC??????????????????????
+#define HIFI_MISC_IOCTL_WAKEUP_THREAD	_IOW('A',  0x78, unsigned int) 	   //????read????,????????
+#define HIFI_MISC_IOCTL_DISPLAY_MSG		_IOWR('A', 0x79, struct misc_io_dump_buf_param) 	   //????HIFI??DDR????????????????????????
 #define HIFI_MISC_IOCTL_WAKEUP_PCM_READ_THREAD _IOW('A',  0x7a, unsigned int)
 #define HIFI_MISC_IOCTL_AUDIO_EFFECT_PARAMS        _IOWR('A', 0x7B, struct misc_io_sync_param)
 #define HIFI_MISC_IOCTL_USBAUDIO        _IOW('A', 0x7C, struct misc_io_sync_param)      //for usbaudio
@@ -346,7 +346,7 @@ struct voice_bsd_param_hsm {
 #define CLT_HIFI_MISC_IOCTL_SEND_VOICE _IOWR('A', 0x90, struct misc_io_async_param)
 #endif
 
-#define HIFI_MISC_IOCTL_GET_VOICE_BSD_PARAM	_IOWR('A', 0x7c, struct voice_bsd_param_hsm)    //获取Voice BSD参数
+#define HIFI_MISC_IOCTL_GET_VOICE_BSD_PARAM	_IOWR('A', 0x7c, struct voice_bsd_param_hsm)    //????Voice BSD????
 #define INT_TO_ADDR(low,high) (void*) (unsigned long)((unsigned long long)(low) | ((unsigned long long)(high)<<32))
 #define GET_LOW32(x) (unsigned int)(((unsigned long long)(unsigned long)(x))&0xffffffffULL)
 #define GET_HIG32(x) (unsigned int)((((unsigned long long)(unsigned long)(x))>>32)&0xffffffffULL)

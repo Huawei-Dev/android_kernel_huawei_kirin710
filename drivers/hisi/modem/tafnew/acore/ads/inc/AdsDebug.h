@@ -50,7 +50,7 @@
 #define __ADSTEST_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 #include "vos.h"
@@ -72,7 +72,7 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 #define ADS_FLOW_DL_DEFAULT_RPT_THRESHOLD   (5000000)
@@ -98,7 +98,7 @@ extern "C" {
             ADS_DBG_PRINT(ADS_LOG_LEVEL_ERROR, __VA_ARGS__)
 
 
-/* 上行IPF中断事件统计 */
+/* ????IPF???????????? */
 #define ADS_DBG_UL_QUE_NON_EMPTY_TRIG_EVENT(n)      (g_stAdsStats.stUlComStatsInfo.ulULQueNonEmptyTrigEvent += (n))
 #define ADS_DBG_UL_QUE_HIT_THRES_TRIG_EVENT(n)      (g_stAdsStats.stUlComStatsInfo.ulULQueHitThresTrigEvent += (n))
 #define ADS_DBG_UL_TMR_HIT_THRES_TRIG_EVENT(n)      (g_stAdsStats.stUlComStatsInfo.ulULTmrHitThresTrigEvent += (n))
@@ -106,7 +106,7 @@ extern "C" {
 #define ADS_DBG_UL_SPE_INT_TRIG_EVENT(n)            (g_stAdsStats.stUlComStatsInfo.ulULSpeIntTrigEvent += (n))
 #define ADS_DBG_UL_PROC_EVENT_NUM(n)                (g_stAdsStats.stUlComStatsInfo.ulULProcEventNum += (n))
 
-/* 上行数据统计 */
+/* ???????????? */
 #define ADS_DBG_UL_RMNET_RX_PKT_NUM(n)              (g_stAdsStats.stUlComStatsInfo.ulULRmnetRxPktNum += (n))
 #define ADS_DBG_UL_RMNET_MODEMID_ERR_NUM(n)         (g_stAdsStats.stUlComStatsInfo.ulULRmnetModemIdErrNum += (n))
 #define ADS_DBG_UL_RMNET_RABID_NUM(n)               (g_stAdsStats.stUlComStatsInfo.ulULRmnetRabIdErrNum += (n))
@@ -115,7 +115,7 @@ extern "C" {
 #define ADS_DBG_UL_PKT_ENQUE_SUCC_NUM(n)            (g_stAdsStats.stUlComStatsInfo.ulULPktEnQueSuccNum += (n))
 #define ADS_DBG_UL_PKT_ENQUE_FAIL_NUM(n)            (g_stAdsStats.stUlComStatsInfo.ulULPktEnQueFailNum += (n))
 
-/* 上行BD统计 */
+/* ????BD???? */
 #define ADS_DBG_UL_BDQ_CFG_IPF_HAVE_NO_BD_NUM(n)    (g_stAdsStats.stUlComStatsInfo.ulULBdqCfgIpfHaveNoBd += (n))
 #define ADS_DBG_UL_BDQ_CFG_BD_SUCC_NUM(n)           (g_stAdsStats.stUlComStatsInfo.ulULBdqCfgBdSuccNum += (n))
 #define ADS_DBG_UL_BDQ_CFG_BD_FAIL_NUM(n)           (g_stAdsStats.stUlComStatsInfo.ulULBdqCfgBdFailNum += (n))
@@ -125,18 +125,18 @@ extern "C" {
 #define ADS_DBG_UL_BDQ_FREE_SRC_MEM_NUM(n)          (g_stAdsStats.stUlComStatsInfo.ulULBdqFreeSrcMemNum += (n))
 #define ADS_DBG_UL_BDQ_FREE_SRC_MEM_ERR(n)          (g_stAdsStats.stUlComStatsInfo.ulULBdqFreeSrcMemErr += (n))
 
-/* 上行组包统计 */
+/* ???????????? */
 #define ADS_DBG_UL_WM_LEVEL_1_HIT_NUM(n)            (g_stAdsStats.stUlComStatsInfo.ulULWmLevel1HitNum += (n))
 #define ADS_DBG_UL_WM_LEVEL_2_HIT_NUM(n)            (g_stAdsStats.stUlComStatsInfo.ulULWmLevel2HitNum += (n))
 #define ADS_DBG_UL_WM_LEVEL_3_HIT_NUM(n)            (g_stAdsStats.stUlComStatsInfo.ulULWmLevel3HitNum += (n))
 #define ADS_DBG_UL_WM_LEVEL_4_HIT_NUM(n)            (g_stAdsStats.stUlComStatsInfo.ulULWmLevel4HitNum += (n))
 
-/* 上行复位统计 */
+/* ???????????? */
 #define ADS_DBG_UL_RESET_CREATE_SEM_FAIL_NUM(n)     (g_stAdsStats.stResetStatsInfo.ulULResetCreateSemFailNum += (n))
 #define ADS_DBG_UL_RESET_LOCK_FAIL_NUM(n)           (g_stAdsStats.stResetStatsInfo.ulULResetLockFailNum += (n))
 #define ADS_DBG_UL_RESET_SUCC_NUM(n)                (g_stAdsStats.stResetStatsInfo.ulULResetSuccNum += (n))
 
-/* 下行IPF中断事件统计 */
+/* ????IPF???????????? */
 #define ADS_DBG_DL_RCV_IPF_RD_INT_NUM(n)            (g_stAdsStats.stDlComStatsInfo.ulDLRcvIpfRdIntNum += (n))
 #define ADS_DBG_DL_CCORE_RESET_TRIG_EVENT(n)        (g_stAdsStats.stDlComStatsInfo.ulDLCCoreResetTrigEvent += (n))
 #define ADS_DBG_DL_PROC_IPF_RD_EVENT_NUM(n)         (g_stAdsStats.stDlComStatsInfo.ulDLProcIpfRdEventNum += (n))
@@ -144,7 +144,7 @@ extern "C" {
 #define ADS_DBG_DL_RECYCLE_MEM_TRIG_EVENT(n)        (g_stAdsStats.stDlComStatsInfo.ulDLRecycleMemTrigEvent += (n))
 #define ADS_DBG_DL_PROC_IPF_AD_EVENT_NUM(n)         (g_stAdsStats.stDlComStatsInfo.ulDLProcIpfAdEventNum += (n))
 
-/* 下行RD统计 */
+/* ????RD???? */
 #define ADS_DBG_DL_RDQ_RX_RD_NUM(n)                 (g_stAdsStats.stDlComStatsInfo.ulDLRdqRxRdNum += (n))
 #define ADS_DBG_DL_RDQ_GET_RD0_NUM(n)               (g_stAdsStats.stDlComStatsInfo.ulDLRdqGetRd0Num += (n))
 #define ADS_DBG_DL_RDQ_TRANS_MEM_FAIL_NUM(n)        (g_stAdsStats.stDlComStatsInfo.ulDLRdqTransMemFailNum += (n))
@@ -154,13 +154,13 @@ extern "C" {
 #define ADS_DBG_DL_RDQ_RX_ERR_PKT_NUM(n)            (g_stAdsStats.stDlComStatsInfo.ulDLRdqRxErrPktNum += (n))
 #define ADS_DBG_DL_RDQ_FILTER_ERR_PKT_NUM(n)        (g_stAdsStats.stDlComStatsInfo.ulDLRdqFilterErrNum += (n))
 
-/* 下行数据统计*/
+/* ????????????*/
 #define ADS_DBG_DL_RMNET_TX_PKT_NUM(n)              (g_stAdsStats.stDlComStatsInfo.ulDLRmnetTxPktNum += (n))
 #define ADS_DBG_DL_RMNET_MODEMID_ERR_NUM(n)         (g_stAdsStats.stDlComStatsInfo.ulDLRmnetModemIdErrNum += (n))
 #define ADS_DBG_DL_RMNET_RABID_ERR_NUM(n)           (g_stAdsStats.stDlComStatsInfo.ulDLRmnetRabIdErrNum += (n))
 #define ADS_DBG_DL_RMNET_NO_FUNC_FREE_PKT_NUM(n)    (g_stAdsStats.stDlComStatsInfo.ulDLRmnetNoFuncFreePktNum += (n))
 
-/* 下行AD统计  */
+/* ????AD????  */
 #define ADS_DBG_DL_ADQ_ALLOC_SYS_MEM_SUCC_NUM(n)    (g_stAdsStats.stDlComStatsInfo.ulDLAdqAllocSysMemSuccNum += (n))
 #define ADS_DBG_DL_ADQ_ALLOC_SYS_MEM_FAIL_NUM(n)    (g_stAdsStats.stDlComStatsInfo.ulDLAdqAllocSysMemFailNum += (n))
 #define ADS_DBG_DL_ADQ_ALLOC_MEM_SUCC_NUM(n)        (g_stAdsStats.stDlComStatsInfo.ulDLAdqAllocMemSuccNum += (n))
@@ -184,24 +184,24 @@ extern "C" {
 #define ADS_DBG_DL_ADQ_RCV_AD0_EMPTY_INT_NUM(n)     (g_stAdsStats.stDlComStatsInfo.ulDLAdqRcvAd0EmptyIntNum += (n))
 #define ADS_DBG_DL_ADQ_RCV_AD1_EMPTY_INT_NUM(n)     (g_stAdsStats.stDlComStatsInfo.ulDLAdqRcvAd1EmptyIntNum += (n))
 
-/* 下行流控统计 */
+/* ???????????? */
 #define ADS_DBG_DL_FC_ACTIVATE_NUM(n)               (g_stAdsStats.stDlComStatsInfo.ulDLFcActivateNum += (n))
 #define ADS_DBG_DL_FC_TMR_TIMEOUT_NUM(n)            (g_stAdsStats.stDlComStatsInfo.ulDLFcTmrTimeoutNum += (n))
 
-/* 下行复位统计 */
+/* ???????????? */
 #define ADS_DBG_DL_RESET_CREATE_SEM_FAIL_NUM(n)     (g_stAdsStats.stResetStatsInfo.ulDLResetCreateSemFailNum += (n))
 #define ADS_DBG_DL_RESET_LOCK_FAIL_NUM(n)           (g_stAdsStats.stResetStatsInfo.ulDLResetLockFailNum += (n))
 #define ADS_DBG_DL_RESET_SUCC_NUM(n)                (g_stAdsStats.stResetStatsInfo.ulDLResetSuccNum += (n))
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 /*****************************************************************************
- 枚举名    : ADS_FLOW_DEBUG_ENUM
- 协议表格  :
- ASN.1描述 :
- 枚举说明  : ADS流量上报Debug开关
+ ??????    : ADS_FLOW_DEBUG_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  : ADS????????Debug????
 *****************************************************************************/
 enum ADS_FLOW_DEBUG_ENUM
 {
@@ -213,8 +213,8 @@ enum ADS_FLOW_DEBUG_ENUM
 };
 
 /*****************************************************************************
- 枚举名称  : ADS_LOG_LEVEL_ENUM
- 枚举说明  : ADS打印LOG等级
+ ????????  : ADS_LOG_LEVEL_ENUM
+ ????????  : ADS????LOG????
 *****************************************************************************/
 enum ADS_LOG_LEVEL_ENUM
 {
@@ -231,23 +231,23 @@ typedef VOS_UINT32 ADS_LOG_LEVEL_ENUM_UINT32;
 
 
 /*****************************************************************************
-  4 消息头定义
+  4 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息定义
+  5 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 STRUCT定义
+  6 STRUCT????
 *****************************************************************************/
 
 
 typedef struct
 {
-    /* 上行IPF事件统计 */
+    /* ????IPF???????? */
     VOS_UINT32                          ulULQueNonEmptyTrigEvent;
     VOS_UINT32                          ulULQueFullTrigEvent;
     VOS_UINT32                          ulULQueHitThresTrigEvent;
@@ -256,7 +256,7 @@ typedef struct
     VOS_UINT32                          ulULSpeIntTrigEvent;
     VOS_UINT32                          ulULProcEventNum;
 
-    /* 上行数据统计 */
+    /* ???????????? */
     VOS_UINT32                          ulULRmnetRxPktNum;
     VOS_UINT32                          ulULRmnetModemIdErrNum;
     VOS_UINT32                          ulULRmnetRabIdErrNum;
@@ -265,7 +265,7 @@ typedef struct
     VOS_UINT32                          ulULPktEnQueSuccNum;
     VOS_UINT32                          ulULPktEnQueFailNum;
 
-    /* 上行BD统计 */
+    /* ????BD???? */
     VOS_UINT32                          ulULBdqCfgIpfHaveNoBd;
     VOS_UINT32                          ulULBdqCfgBdSuccNum;
     VOS_UINT32                          ulULBdqCfgBdFailNum;
@@ -275,13 +275,13 @@ typedef struct
     VOS_UINT32                          ulULBdqFreeSrcMemNum;
     VOS_UINT32                          ulULBdqFreeSrcMemErr;
 
-    /* 上行组包统计 */
+    /* ???????????? */
     VOS_UINT32                          ulULWmLevel1HitNum;
     VOS_UINT32                          ulULWmLevel2HitNum;
     VOS_UINT32                          ulULWmLevel3HitNum;
     VOS_UINT32                          ulULWmLevel4HitNum;
 
-    /* 上行流量统计 */
+    /* ???????????? */
     VOS_UINT32                          ulULFlowDebugFlag;
     VOS_UINT32                          ulULFlowRptThreshold;
     VOS_UINT32                          ulULFlowInfo;
@@ -293,7 +293,7 @@ typedef struct
 
 typedef struct
 {
-    /* 下行IPF事件统计 */
+    /* ????IPF???????? */
     VOS_UINT32                          ulDLRcvIpfRdIntNum;
     VOS_UINT32                          ulDLCCoreResetTrigEvent;
     VOS_UINT32                          ulDLProcIpfRdEventNum;
@@ -301,7 +301,7 @@ typedef struct
     VOS_UINT32                          ulDLRecycleMemTrigEvent;
     VOS_UINT32                          ulDLProcIpfAdEventNum;
 
-    /* 下行RD统计 */
+    /* ????RD???? */
     VOS_UINT32                          ulDLRdqRxRdNum;
     VOS_UINT32                          ulDLRdqGetRd0Num;
     VOS_UINT32                          ulDLRdqTransMemFailNum;
@@ -311,13 +311,13 @@ typedef struct
     VOS_UINT32                          ulDLRdqRxErrPktNum;
     VOS_UINT32                          ulDLRdqFilterErrNum;
 
-    /* 下行数据统计 */
+    /* ???????????? */
     VOS_UINT32                          ulDLRmnetTxPktNum;
     VOS_UINT32                          ulDLRmnetModemIdErrNum;
     VOS_UINT32                          ulDLRmnetRabIdErrNum;
     VOS_UINT32                          ulDLRmnetNoFuncFreePktNum;
 
-    /* 下行AD统计 */
+    /* ????AD???? */
     VOS_UINT32                          ulDLAdqAllocSysMemSuccNum;
     VOS_UINT32                          ulDLAdqAllocSysMemFailNum;
     VOS_UINT32                          ulDLAdqAllocMemSuccNum;
@@ -341,11 +341,11 @@ typedef struct
     VOS_UINT32                          ulDLAdqRcvAd0EmptyIntNum;
     VOS_UINT32                          ulDLAdqRcvAd1EmptyIntNum;
 
-    /* 下行流控统计 */
+    /* ???????????? */
     VOS_UINT32                          ulDLFcActivateNum;
     VOS_UINT32                          ulDLFcTmrTimeoutNum;
 
-    /* 下行流量统计 */
+    /* ???????????? */
     VOS_UINT32                          ulDLFlowDebugFlag;
     VOS_UINT32                          ulDLFlowRptThreshold;
     VOS_UINT32                          ulDLFlowInfo;
@@ -357,12 +357,12 @@ typedef struct
 
 typedef struct
 {
-    /* 上行复位统计 */
+    /* ???????????? */
     VOS_UINT32                          ulULResetCreateSemFailNum;
     VOS_UINT32                          ulULResetLockFailNum;
     VOS_UINT32                          ulULResetSuccNum;
 
-    /* 下行复位统计 */
+    /* ???????????? */
     VOS_UINT32                          ulDLResetCreateSemFailNum;
     VOS_UINT32                          ulDLResetLockFailNum;
     VOS_UINT32                          ulDLResetSuccNum;
@@ -379,7 +379,7 @@ typedef struct
 
 
 /*****************************************************************************
-  8 全局变量声明
+  8 ????????????
 *****************************************************************************/
 
 extern ADS_STATS_INFO_STRU              g_stAdsStats;
@@ -387,17 +387,17 @@ extern VOS_UINT32                       g_ulAdsDlDiscardPktFlag;
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 VOS_VOID ADS_ResetDebugInfo(VOS_VOID);

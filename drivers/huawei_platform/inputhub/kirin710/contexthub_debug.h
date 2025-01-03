@@ -109,15 +109,15 @@ typedef enum {
     AR_ACTIVITY_STATIONARY = 0x04,
     AR_ACTIVITY_TILT = 0x05,
     AR_ACTIVITY_END = 0x10,
-    AR_VE_BUS = 0x11,				/* 大巴 */
-    AR_VE_CAR = 0x12,				/* 小车 */
-    AR_VE_METRO = 0x13,				/* 地铁 */
-    AR_VE_HIGH_SPEED_RAIL = 0x14,	/* 高铁 */
-    AR_VE_AUTO = 0x15,				/* 公路交通 */
-    AR_VE_RAIL = 0x16,				/* 铁路交通 */
-    AR_CLIMBING_MOUNT = 0x17,          /*爬山*/
-    AR_FAST_WALK = 0x18,                   /*快走*/
-    AR_STOP_VEHICLE = 0x19, 		/*停车*/
+    AR_VE_BUS = 0x11,				/* ???? */
+    AR_VE_CAR = 0x12,				/* ???? */
+    AR_VE_METRO = 0x13,				/* ???? */
+    AR_VE_HIGH_SPEED_RAIL = 0x14,	/* ???? */
+    AR_VE_AUTO = 0x15,				/* ???????? */
+    AR_VE_RAIL = 0x16,				/* ???????? */
+    AR_CLIMBING_MOUNT = 0x17,          /*????*/
+    AR_FAST_WALK = 0x18,                   /*????*/
+    AR_STOP_VEHICLE = 0x19, 		/*????*/
     AR_UNKNOWN = 0x3F,
 } AR_ACTIVITY_TYPE;
 

@@ -6,22 +6,22 @@ extern "C"
 #endif
 
 /*****************************************************************************
- 函 数 名  : mdrv_slt_set_bsn
- 功能描述  : mdrv_slt_set_bsn
- 输入参数  : bsn --- 待设置bsn号
+ ?? ?? ??  : mdrv_slt_set_bsn
+ ????????  : mdrv_slt_set_bsn
+ ????????  : bsn --- ??????bsn??
             
- 输出参数  : 无
- 返 回 值  : 0    - successful
+ ????????  : ??
+ ?? ?? ??  : 0    - successful
              -1   - unsuccessful
 *****************************************************************************/
 int mdrv_slt_set_bsn(char * bsn);
 
 /*****************************************************************************
- 函 数 名  : mdrv_slt_get_bsn
- 功能描述  : mdrv_slt_get_bsn
- 输入参数  : 无
- 输出参数  : *bsn --- 返回bsn号
- 返 回 值  : 0    - successful
+ ?? ?? ??  : mdrv_slt_get_bsn
+ ????????  : mdrv_slt_get_bsn
+ ????????  : ??
+ ????????  : *bsn --- ????bsn??
+ ?? ?? ??  : 0    - successful
              -1 - unsuccessful
 *****************************************************************************/
 int mdrv_slt_get_bsn(char * bsn);

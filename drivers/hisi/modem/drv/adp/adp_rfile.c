@@ -95,7 +95,7 @@ typedef  struct semaphore       rfile_sem_id;
 #define Rfile_Free(ptr)         kfree(ptr)
 
 
-#define RFILE_TIMEOUT_MAX           (2000)           /* 最长等待2s */
+#define RFILE_TIMEOUT_MAX           (2000)           /* ????????2s */
 
 typedef struct
 {   
@@ -231,7 +231,7 @@ int rfile_stdioFpDestroy(RFILE_FILE *fp)
 }
 
 
-/*文件系统接口*/
+/*????????????*/
 void *mdrv_file_open(const char *path, const char *mode)
 {
     int ret;
@@ -245,7 +245,7 @@ void *mdrv_file_open(const char *path, const char *mode)
         return 0;
     }
 
-    /* 将字符串参数转换成整数 */
+    /* ?????????????????????? */
     flags = rfile_getmode(mode, &oflags);
     if(0 == flags)
     {
@@ -488,9 +488,9 @@ struct rfile_dirent_info
 {
     DRV_DIR_S        *phandle;
     RFILE_DIRENT_STRU   *pdirent;
-    int                 len;        /* 总长度 */
-    int                 ptr;        /* 当前偏移 */
-    struct list_head    stlist;     /* 链表节点 */
+    int                 len;        /* ?????? */
+    int                 ptr;        /* ???????? */
+    struct list_head    stlist;     /* ???????? */
     DRV_DIRENT_S stdirent;
 };
 

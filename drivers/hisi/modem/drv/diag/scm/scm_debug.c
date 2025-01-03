@@ -51,7 +51,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 **************************************************************************** */
 #include "scm_ind_src.h"
 #include "scm_ind_dst.h"
@@ -63,7 +63,7 @@
 #include "scm_debug.h"
 #include "diag_system_debug.h"
 
-SCM_INFODATA_STRU           g_stSCMInfoData = {};    /* 用于保存log信息 */
+SCM_INFODATA_STRU           g_stSCMInfoData = {};    /* ????????log???? */
 
 SCM_CODER_SRC_DEBUG_STRU g_astScmIndSrcDebugInfo = {};
 SCM_CODER_SRC_DEBUG_STRU g_astScmCnfSrcDebugInfo = {};

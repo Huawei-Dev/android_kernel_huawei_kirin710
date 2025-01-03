@@ -48,7 +48,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 **************************************************************************** */
 #include <product_config.h>
 #include <mdrv_diag_system.h>
@@ -62,19 +62,19 @@
 
 
 /* ****************************************************************************
-  2 全局变量定义
+  2 ????????????
 **************************************************************************** */
 
-/* 用于记录 VCOM 通道发送的统计信息 */
+/* ???????? VCOM ?????????????????? */
 OM_VCOM_DEBUG_INFO                      g_stVComDebugInfo[3];
 
 /*****************************************************************************
-  3 外部引用声明
+  3 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 函数实现
+  4 ????????
 *****************************************************************************/
 
 
@@ -99,7 +99,7 @@ u32 PPM_VComCfgSendData(u8 *pucVirAddr, u8 *pucPhyAddr, u32 ulDataLen)
         return CPM_SEND_ERR;
     }
 
-    /* 与手机软件连接时，启动延时上报，且打印到缓存中，可以输出打印 */
+    /* ???????????????????????????????????????????????????????????? */
     diag_crit("vcom cnf cmd success, ind sum len 0x%x, ind err len 0x%x.\n", \
             g_stVComDebugInfo[OM_LOGIC_CHANNEL_IND].ulVCOMSendLen, \
             g_stVComDebugInfo[OM_LOGIC_CHANNEL_IND].ulVCOMSendErrLen);
@@ -131,7 +131,7 @@ void PPM_VComEvtCB(u32 ulChan, u32 ulEvent)
         return;
     }
 
-    /*打开操作直接返回*/
+    /*????????????????*/
     if(ulEvent == PPM_VCOM_EVT_CHAN_OPEN)
     {
         diag_crit("PPM_VComEvtCB open, do nothing.\n");
@@ -182,7 +182,7 @@ u32 PPM_VComCfgReadData(u32 ulDevIndex, u8 *pData, u32 uslength)
         return ERR_MSP_FAILURE;
     }
 
-    /* 与手机软件连接时，下发命令有限，且打印到缓存中，可以输出打印 */
+    /* ???????????????????????????????????????????????????????????? */
     diag_crit("vcom receive cmd, length : 0x%x, sum length : 0x%x.\n", \
         uslength, g_stVComDebugInfo[OM_LOGIC_CHANNEL_CNF].ulVCOMRcvLen);
 
@@ -284,10 +284,10 @@ void PPM_VComPortInit(void)
 {
     (void)memset_s(g_stVComDebugInfo, sizeof(g_stVComDebugInfo), 0, sizeof(g_stVComDebugInfo));
 
-    /* Vcom 口OM IND通道的初始化 */
+    /* Vcom ??OM IND???????????? */
     PPM_VComIndPortInit();
 
-    /* Vcom 口OM CNF通道的初始化 */
+    /* Vcom ??OM CNF???????????? */
     PPM_VComCfgPortInit();
 
 

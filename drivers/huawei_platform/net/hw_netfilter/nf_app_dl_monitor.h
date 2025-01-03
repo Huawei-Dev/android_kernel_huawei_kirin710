@@ -29,7 +29,7 @@ struct dl_info {
 	struct sk_buff *skb;
 	char *url;
 	int len;
-	int action;/* user select action ，0 allow ，other reject */
+	int action;/* user select action ???0 allow ???other reject */
 };
 void init_appdl(void);
 void uninit_appdl(void);

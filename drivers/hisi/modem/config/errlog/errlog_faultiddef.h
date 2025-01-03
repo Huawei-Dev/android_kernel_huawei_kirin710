@@ -51,7 +51,7 @@
 #define __ERRLOG_CFG_FAULT_ID_DEF_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "product_config.h"
@@ -92,28 +92,28 @@ enum ERR_LOG_FAULT_ID_ENUM
     FAULT_ID_1X_VOICE_QUALITY_BAD           = 0XB1, /* ????? */
     FAULT_ID_AP_GET_PHY_COUNT_DATA_REQ      = 0XB2, /* AP????????????? */
     FAULT_ID_1X_COUNT_DATA_REPORT           = 0XB3, /* CSDR 1X???????? */
-    FAULT_ID_1X_WAKESLEEP_REPORT            = 0XB4, /* MODEM功耗异常 */
-    FAULT_ID_1X_ABNORMAL_REPORT             = 0XB5, /* 1x异常主动上报 */
-    FAULT_ID_HRPD_OR_LTE_OOS                = 0XC1, /* CL模式下HRPD或LTE丢网*/
-    FAULT_ID_HRPD_PS_CALL_EXCEPTION         = 0XC2, /* PS呼叫失败 */
-    FAULT_ID_HRPD_PS_SESSION_EXCEPTION      = 0XC3, /* PS会话异常 */
-    FAULT_ID_HRPD_PS_DISC_EXCEPTION         = 0XC4, /* PS断链 */
-    FAULT_ID_CL_OOS_SEARCH                  = 0XC5, /* CL多模搜网过程 */
-    FAULT_ID_HRPD_OR_LTE_OOS_RECOVERY       = 0XC6, /* CL模式下HRPD或LTE掉网恢复 */
-    FAULT_ID_HRPD_EXCEPTION_COLLECTION      = 0XC7, /* 通用异常收集 */
+    FAULT_ID_1X_WAKESLEEP_REPORT            = 0XB4, /* MODEM???????? */
+    FAULT_ID_1X_ABNORMAL_REPORT             = 0XB5, /* 1x???????????? */
+    FAULT_ID_HRPD_OR_LTE_OOS                = 0XC1, /* CL??????HRPD??LTE????*/
+    FAULT_ID_HRPD_PS_CALL_EXCEPTION         = 0XC2, /* PS???????? */
+    FAULT_ID_HRPD_PS_SESSION_EXCEPTION      = 0XC3, /* PS???????? */
+    FAULT_ID_HRPD_PS_DISC_EXCEPTION         = 0XC4, /* PS???? */
+    FAULT_ID_CL_OOS_SEARCH                  = 0XC5, /* CL???????????? */
+    FAULT_ID_HRPD_OR_LTE_OOS_RECOVERY       = 0XC6, /* CL??????HRPD??LTE???????? */
+    FAULT_ID_HRPD_EXCEPTION_COLLECTION      = 0XC7, /* ???????????? */
 
-    FAULT_ID_CL_LEAVE_LTE                   = 0xC8, /* CL模式下长时间不回4G */
+    FAULT_ID_CL_LEAVE_LTE                   = 0xC8, /* CL????????????????4G */
 
-    FAULT_ID_VOLTE_IMS_1X_SWITCH            = 0xCB, /* 电信VOLTE下， ims<->1x乒乓切换主动上报 */
+    FAULT_ID_VOLTE_IMS_1X_SWITCH            = 0xCB, /* ????VOLTE???? ims<->1x???????????????? */
 
-    FAULT_ID_MODEM_RESTART_ABORT_SERVICE      = 0xCC,  /* modem重启导致业务释放主动上报，具体FAULT_ID需要与AP确认 */
+    FAULT_ID_MODEM_RESTART_ABORT_SERVICE      = 0xCC,  /* modem??????????????????????????????FAULT_ID??????AP???? */
 
-    FAULT_ID_CL_MULTI_RAT_MODE_SWITCH       = 0xCD,  /* CL下各个驻留模式异常切换 */
-    FAULT_ID_GUL_CL_MODE_SWITCH             = 0xCE,  /* GUL/CL乒乓切换*/
+    FAULT_ID_CL_MULTI_RAT_MODE_SWITCH       = 0xCD,  /* CL?????????????????????? */
+    FAULT_ID_GUL_CL_MODE_SWITCH             = 0xCE,  /* GUL/CL????????*/
 
-    FAULT_ID_CL_1X_RESEL                    = 0xCF,  /* 1X重选*/
+    FAULT_ID_CL_1X_RESEL                    = 0xCF,  /* 1X????*/
 
-    FAULT_ID_ENC_VOICE_FAIL                = 0xD0,  /* 加密语音失败 */
+    FAULT_ID_ENC_VOICE_FAIL                = 0xD0,  /* ???????????? */
 
     FAULT_ID_LOCK_COUNT                     = 0xD1, /* lock related */
 
@@ -126,37 +126,37 @@ enum ERR_LOG_FAULT_ID_ENUM
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 

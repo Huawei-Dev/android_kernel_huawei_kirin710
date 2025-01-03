@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "mac_regdomain.h"
 #include "mac_device.h"
@@ -19,12 +19,12 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_MAC_REGDOMAIN_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
-/* 管制域信息全局变量 */
+/* ?????????????????? */
 OAL_STATIC mac_regdomain_info_stru g_st_mac_regdomain;
 
-/* 信道号列表，初始化其管制类为无效 */
+/* ???????????????????????????????? */
 OAL_STATIC mac_channel_info_stru g_ast_channel_list_5G[MAC_CHANNEL_FREQ_5_BUTT] =
 {
     {36,  MAC_INVALID_RC}, {40,  MAC_INVALID_RC}, {44,  MAC_INVALID_RC},
@@ -50,7 +50,7 @@ OAL_STATIC mac_channel_info_stru g_ast_channel_list_2G[MAC_CHANNEL_FREQ_2_BUTT] 
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void  mac_get_regdomain_info(mac_regdomain_info_stru **ppst_rd_info)
@@ -75,11 +75,11 @@ oal_void  mac_init_regdomain(oal_void)
 
     oal_memcopy(g_st_mac_regdomain.ac_country, ac_default_country, OAL_SIZEOF(ac_default_country));
 
-    /* 初始默认的管制类个数为2 */
+    /* ??????????????????????2 */
     g_st_mac_regdomain.uc_regclass_num = 2;
 
     /*************************************************************************
-        初始化管制类1
+        ????????????1
     *************************************************************************/
     pst_regclass = &(g_st_mac_regdomain.ast_regclass[0]);
 
@@ -105,7 +105,7 @@ oal_void  mac_init_regdomain(oal_void)
                                     MAC_GET_CH_BIT(MAC_CHANNEL13);
 
     /*************************************************************************
-        初始化管制类2
+        ????????????2
     *************************************************************************/
     pst_regclass = &(g_st_mac_regdomain.ast_regclass[1]);
 
@@ -164,25 +164,25 @@ oal_uint32  mac_set_country_ie_2g(
 
     for (uc_rc_idx = 0; uc_rc_idx < pst_rd_info->uc_regclass_num; uc_rc_idx++)
     {
-        /* 获取 Regulatory Class */
+        /* ???? Regulatory Class */
         pst_reg_class = &(pst_rd_info->ast_regclass[uc_rc_idx]);
 
-        /* 如果频段不匹配 */
+        /* ?????????????? */
         if (MAC_RC_START_FREQ_2 != pst_reg_class->en_start_freq)
         {
             continue;
         }
 
-        /*异常检查，信道位图为0表示此管制域没有信道存在，不能少 */
+        /*????????????????????0???????????????????????????????? */
         if (0 == pst_reg_class->ul_channel_bmap)
         {
             continue;
         }
 
-        /* 获取信道位图的最低一位, 返回0代表bit0置1 */
+        /* ??????????????????????, ????0????bit0??1 */
         uc_lsb_bit_position = oal_bit_find_first_bit_four_byte(pst_reg_class->ul_channel_bmap);
 
-        /* 获取信道号，例如Channel_Map为1100，其对应的索引值为2与3，再由索引值找到信道号 */
+        /* ????????????????Channel_Map??1100??????????????????2??3?????????????????????? */
         ul_ret = mac_get_channel_num_from_idx(MAC_RC_START_FREQ_2, uc_lsb_bit_position, &puc_buffer[uc_len++]);
         if (OAL_SUCC != ul_ret)
         {
@@ -192,10 +192,10 @@ oal_uint32  mac_set_country_ie_2g(
             return ul_ret;
         }
 
-        /* 获取信道数 */
+        /* ?????????? */
         puc_buffer[uc_len++] = (oal_uint8)oal_bit_get_num_four_byte(pst_reg_class->ul_channel_bmap);
 
-        /* 获取最大功率 */
+        /* ???????????? */
         puc_buffer[uc_len++] = pst_reg_class->uc_max_reg_tx_pwr;
     }
 
@@ -257,7 +257,7 @@ oal_void  mac_init_channel_list(oal_void)
 
     pst_rd_info = &g_st_mac_regdomain;
 
-    /* 先初始化所有信道的管制类为无效 */
+    /* ?????????????????????????????? */
     for (uc_ch_idx = 0; uc_ch_idx < MAC_CHANNEL_FREQ_2_BUTT; uc_ch_idx++)
     {
         g_ast_channel_list_2G[uc_ch_idx].uc_reg_class = MAC_INVALID_RC;
@@ -268,10 +268,10 @@ oal_void  mac_init_channel_list(oal_void)
         g_ast_channel_list_5G[uc_ch_idx].uc_reg_class = MAC_INVALID_RC;
     }
 
-    /* 然后根据管制域更新信道的管制类信息 */
+    /* ?????????????????????????????????? */
     uc_rc_num = pst_rd_info->uc_regclass_num;
 
-    /* 更新2G频段上信道的管制类信息 */
+    /* ????2G?????????????????????? */
     uc_freq = MAC_RC_START_FREQ_2;
 
     for (uc_rc_idx = 0; uc_rc_idx < uc_rc_num; uc_rc_idx++)
@@ -287,7 +287,7 @@ oal_void  mac_init_channel_list(oal_void)
         }
     }
 
-    /* 更新5G频段上信道的管制类信息 */
+    /* ????5G?????????????????????? */
     uc_freq = MAC_RC_START_FREQ_5;
 
     for (uc_rc_idx = 0; uc_rc_idx < uc_rc_num; uc_rc_idx++)
@@ -347,7 +347,7 @@ oal_uint32 mac_get_channel_idx_from_num(
     oal_uint8                    uc_total_channel_num  = 0;
     oal_uint8                    uc_idx;
 
-    /* 根据频段获取信道信息 */
+    /* ???????????????????? */
     switch(uc_band)
     {
         case MAC_RC_START_FREQ_2:
@@ -364,7 +364,7 @@ oal_uint32 mac_get_channel_idx_from_num(
             return OAL_ERR_CODE_INVALID_CONFIG;
     }
 
-    /* 检查信道索引号 */
+    /* ?????????????? */
     for(uc_idx = 0; uc_idx < uc_total_channel_num; uc_idx++)
     {
         if(pst_channel[uc_idx].uc_chan_number == uc_channel_num)
@@ -505,16 +505,16 @@ oal_uint32  mac_regdomain_set_country(oal_uint16 us_len, oal_uint8 *puc_param)
 
     pst_mac_regdom = (mac_regdomain_info_stru *)pst_country_param->p_mac_regdom;
 
-    /* 获取管制类的个数 */
+    /* ???????????????? */
     uc_rc_num = pst_mac_regdom->uc_regclass_num;
 
-    /* 计算配置命令 */
+    /* ???????????? */
     ul_size = (oal_uint32)(OAL_SIZEOF(mac_regclass_info_stru) * uc_rc_num + MAC_RD_INFO_LEN);
 
-    /* 更新管制域信息 */
+    /* ?????????????? */
     oal_memcopy((oal_uint8 *)&g_st_mac_regdomain, (oal_uint8 *)pst_mac_regdom, ul_size);
 
-    /* 更新信道的管制域信息 */
+    /* ???????????????????? */
     mac_init_channel_list();
 
     return OAL_SUCC;

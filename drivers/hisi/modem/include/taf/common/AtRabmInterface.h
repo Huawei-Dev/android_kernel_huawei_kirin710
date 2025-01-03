@@ -49,7 +49,7 @@
 #define __AT_RABM_INTERFACE_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include  "vos.h"
 #include  "TafTypeDef.h"
@@ -65,12 +65,12 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum AT_RABM_MSG_ID_ENUM
@@ -101,8 +101,8 @@ typedef VOS_UINT32 AT_RABM_MSG_ID_ENUM_UINT32;
 
 enum    AT_RABM_PARA_SET_RSLT_ENUM
 {
-    AT_RABM_PARA_SET_RSLT_SUCC         = 0,                                     /* 参数设置成功 */
-    AT_RABM_PARA_SET_RSLT_FAIL,                                                 /* 参数设置失败 */
+    AT_RABM_PARA_SET_RSLT_SUCC         = 0,                                     /* ???????????? */
+    AT_RABM_PARA_SET_RSLT_FAIL,                                                 /* ???????????? */
     AT_RABM_PARA_SET_RSLT_BUTT
 };
 typedef VOS_UINT32 AT_RABM_PARA_SET_RSLT_ENUM_UINT32;
@@ -111,37 +111,37 @@ typedef VOS_UINT32 AT_RABM_PARA_SET_RSLT_ENUM_UINT32;
 
 enum AT_RABM_FASTDORM_OPERATION_ENUM
 {
-    AT_RABM_FASTDORM_STOP_FD_ASCR,                                              /* 停止FD和ASCR */
-    AT_RABM_FASTDORM_START_FD_ONLY,                                             /* 仅允许FD */
-    AT_RABM_FASTDORM_START_ASCR_ONLY,                                           /* 仅允许ASCR */
-    AT_RABM_FASTDORM_START_FD_ASCR,                                             /* 允许FD和ASCR */
+    AT_RABM_FASTDORM_STOP_FD_ASCR,                                              /* ????FD??ASCR */
+    AT_RABM_FASTDORM_START_FD_ONLY,                                             /* ??????FD */
+    AT_RABM_FASTDORM_START_ASCR_ONLY,                                           /* ??????ASCR */
+    AT_RABM_FASTDORM_START_FD_ASCR,                                             /* ????FD??ASCR */
     AT_RABM_FASTDORM_START_BUTT
 };
 typedef VOS_UINT32 AT_RABM_FASTDORM_OPERATION_ENUM_UINT32;
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 typedef struct
 {
-    AT_RABM_FASTDORM_OPERATION_ENUM_UINT32      enFastDormOperationType;        /* 操作类型 */
-    VOS_UINT32                                  ulTimeLen;                      /* 无流量时长 */
+    AT_RABM_FASTDORM_OPERATION_ENUM_UINT32      enFastDormOperationType;        /* ???????? */
+    VOS_UINT32                                  ulTimeLen;                      /* ?????????? */
 }AT_RABM_FASTDORM_PARA_STRU;
 
 
@@ -149,122 +149,122 @@ typedef struct
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
-    AT_RABM_FASTDORM_PARA_STRU          stFastDormPara;                         /* FAST DORMANCY特性相关的参数 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
+    AT_RABM_FASTDORM_PARA_STRU          stFastDormPara;                         /* FAST DORMANCY?????????????? */
 }AT_RABM_SET_FASTDORM_PARA_REQ_STRU;
 
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
 }AT_RABM_QRY_FASTDORM_PARA_REQ_STRU;
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    VOS_UINT16                          usClientId;                             /* AT发消息给RABM所带的ClientId */
-    VOS_UINT8                           ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    VOS_UINT16                          usClientId;                             /* AT????????RABM??????ClientId */
+    VOS_UINT8                           ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
 }AT_RABM_RELEASE_RRC_REQ_STRU;
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    VOS_UINT16                          usClientId;                             /* AT发消息给RABM所带的ClientId */
-    VOS_UINT8                           ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
-    VOS_UINT32                          ulRslt;                                 /* 设置结果 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    VOS_UINT16                          usClientId;                             /* AT????????RABM??????ClientId */
+    VOS_UINT8                           ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
+    VOS_UINT32                          ulRslt;                                 /* ???????? */
 }RABM_AT_RELEASE_RRC_CNF_STRU;
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
-    AT_RABM_PARA_SET_RSLT_ENUM_UINT32   enRslt;                                 /* 设置结果 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
+    AT_RABM_PARA_SET_RSLT_ENUM_UINT32   enRslt;                                 /* ???????? */
 }RABM_AT_SET_FASTDORM_PARA_CNF_STRU;
 
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           ucRslt;                                 /* 结果 */
-    AT_RABM_FASTDORM_PARA_STRU          stFastDormPara;                         /* 查询返回的当前参数 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           ucRslt;                                 /* ???? */
+    AT_RABM_FASTDORM_PARA_STRU          stFastDormPara;                         /* ?????????????????? */
 }RABM_AT_QRY_FASTDORM_PARA_CNF_STRU;
 
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
     VOS_UINT32                          ulVoicePreferApStatus;                    /* VoicePrefer AP status */
 }AT_RABM_SET_VOICEPREFER_PARA_REQ_STRU;
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
-    AT_RABM_PARA_SET_RSLT_ENUM_UINT32   enRslt;                                 /* 设置结果 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
+    AT_RABM_PARA_SET_RSLT_ENUM_UINT32   enRslt;                                 /* ???????? */
 }RABM_AT_SET_VOICEPREFER_PARA_CNF_STRU;
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
 }AT_RABM_QRY_VOICEPREFER_PARA_REQ_STRU;
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
-    VOS_UINT32                          ulRslt;                                 /* 结果 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
+    VOS_UINT32                          ulRslt;                                 /* ???? */
 }RABM_AT_QRY_VOICEPREFER_PARA_CNF_STRU;
 
 
 typedef struct
 {
-    MSG_HEADER_STRU                     stMsgHeader;                            /* 消息头 */ /*_H2ASN_Skip*/
-    MN_CLIENT_ID_T                      usClientId;                             /* AT发消息给RABM所带的ClientId */
-    MN_OPERATION_ID_T                   ucOpId;                                 /* AT发消息给RABM所带的OpId */
-    VOS_UINT8                           aucReserve1[1];                         /* 保留 */
-    VOS_UINT32                          ulVpStatus;                             /* modem 侧VP状态0:未激活,1:激活 */
+    MSG_HEADER_STRU                     stMsgHeader;                            /* ?????? */ /*_H2ASN_Skip*/
+    MN_CLIENT_ID_T                      usClientId;                             /* AT????????RABM??????ClientId */
+    MN_OPERATION_ID_T                   ucOpId;                                 /* AT????????RABM??????OpId */
+    VOS_UINT8                           aucReserve1[1];                         /* ???? */
+    VOS_UINT32                          ulVpStatus;                             /* modem ??VP????0:??????,1:???? */
 }RABM_AT_VOICEPREFER_STATUS_REPORT_STRU;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 /*****************************************************************************
-  H2ASN顶级消息结构定义
+  H2ASN????????????????
 *****************************************************************************/
 typedef struct
 {
     AT_RABM_MSG_ID_ENUM_UINT32          enMsgID;    /*_H2ASN_MsgChoice_Export AT_RABM_MSG_ID_ENUM_UINT32 */
-                                                    /* 为了兼容NAS的消息头定义，所以转换ASN.AT_RABM_MSG_ID_ENUM_UINT32 */
+                                                    /* ????????NAS??????????????????????ASN.AT_RABM_MSG_ID_ENUM_UINT32 */
 
     VOS_UINT8                           aucMsgBlock[4];
     /***************************************************************************
@@ -282,12 +282,12 @@ typedef struct
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 #if (VOS_OS_VER == VOS_WIN32)

@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "wlan_types.h"
@@ -42,7 +42,7 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_WAL_LINUX_RX_RSP_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_DFR
 extern  hmac_dfr_info_stru    g_st_dfr_info;
@@ -50,13 +50,13 @@ extern  hmac_dfr_info_stru    g_st_dfr_info;
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
 OAL_STATIC oal_void wal_scan_report(hmac_scan_stru *pst_scan_mgmt)
 {
-    /* 通知 kernel scan 已经结束 */
+    /* ???? kernel scan ???????? */
     oal_cfg80211_scan_done(pst_scan_mgmt->pst_request, 0);
 
     pst_scan_mgmt->pst_request = OAL_PTR_NULL;
@@ -64,7 +64,7 @@ OAL_STATIC oal_void wal_scan_report(hmac_scan_stru *pst_scan_mgmt)
 
     OAM_WARNING_LOG0(0, OAM_SF_SCAN, "{wal_scan_report::scan complete.!}");
 
-    /* 让编译器优化时保证OAL_WAIT_QUEUE_WAKE_UP在最后执行 */
+    /* ??????????????????OAL_WAIT_QUEUE_WAKE_UP?????????? */
     OAL_SMP_MB();
     OAL_WAIT_QUEUE_WAKE_UP_INTERRUPT(&pst_scan_mgmt->st_wait_queue);
 }
@@ -72,7 +72,7 @@ OAL_STATIC oal_void wal_scan_report(hmac_scan_stru *pst_scan_mgmt)
 
 OAL_STATIC oal_void wal_schedule_scan_report(oal_wiphy_stru *pst_wiphy, hmac_scan_stru *pst_scan_mgmt)
 {
-    /* 上报调度扫描结果 */
+    /* ???????????????? */
     oal_cfg80211_sched_scan_result(pst_wiphy);
 
     pst_scan_mgmt->pst_sched_scan_req     = OAL_PTR_NULL;
@@ -100,7 +100,7 @@ oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 
     pst_event  = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 获取hmac vap结构体 */
+    /* ????hmac vap?????? */
     pst_hmac_vap = mac_res_get_hmac_vap(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_hmac_vap)
     {
@@ -108,13 +108,13 @@ oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 删除等待扫描超时定时器 */
+    /* ?????????????????????? */
     if (OAL_TRUE == pst_hmac_vap->st_scan_timeout.en_is_registerd)
     {
         FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&(pst_hmac_vap->st_scan_timeout));
     }
 
-    /* 获取hmac device 指针*/
+    /* ????hmac device ????*/
     pst_hmac_device = hmac_res_get_mac_dev(pst_event->st_event_hdr.uc_device_id);
     if (OAL_PTR_NULL == pst_hmac_device)
     {
@@ -126,44 +126,44 @@ oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     pst_scan_mgmt = &(pst_hmac_device->st_scan_mgmt);
     pst_wiphy      = pst_hmac_device->pst_device_base_info->pst_wiphy;
 
-    /* 获取扫描结果的管理结构地址 */
+    /* ?????????????????????????? */
     pst_bss_mgmt = &(pst_hmac_device->st_scan_mgmt.st_scan_record_mgmt.st_bss_mgmt);
 
-    /* 获取驱动上报的扫描结果结构体指针 */
+    /* ???????????????????????????????? */
     pst_scan_rsp = (hmac_scan_rsp_stru *)pst_event->auc_event_data;
 
-    /* 如果扫描返回结果的非成功，打印维测信息 */
+    /* ?????????????????????????????????????? */
     if ((MAC_SCAN_SUCCESS != pst_scan_rsp->uc_result_code) && (MAC_SCAN_PNO != pst_scan_rsp->uc_result_code))
     {
         OAM_WARNING_LOG1(pst_event->st_event_hdr.uc_vap_id, OAM_SF_SCAN, "{wal_scan_comp_proc_sta::scan not succ, err_code[%d]!}", pst_scan_rsp->uc_result_code);
     }
 
-    /* 上报所有扫描到的bss, 无论扫描结果成功与否，统一上报扫描结果，有几个上报几个 */
+    /* ????????????????bss, ?????????????????????????????????????????????????????? */
     wal_inform_all_bss(pst_wiphy, pst_bss_mgmt, pst_event->st_event_hdr.uc_vap_id);
 
-    /* 对于内核下发的扫描request资源加锁 */
+    /* ??????????????????request???????? */
     oal_spin_lock(&(pst_scan_mgmt->st_scan_request_spinlock));
 
-    /* 没有未释放的扫描资源，直接返回 */
+    /* ?????????????????????????????? */
     if((OAL_PTR_NULL == pst_scan_mgmt->pst_request) && (OAL_PTR_NULL == pst_scan_mgmt->pst_sched_scan_req))
     {
         OAM_WARNING_LOG0(0, OAM_SF_SCAN, "{wal_scan_comp_proc_sta::legacy scan and pno scan are complete!}");
 
-        /* 通知完内核，释放资源后解锁 */
+        /* ?????????????????????????? */
         oal_spin_unlock(&(pst_scan_mgmt->st_scan_request_spinlock));
         return OAL_SUCC;
     }
 
     if((OAL_PTR_NULL != pst_scan_mgmt->pst_request) && (OAL_PTR_NULL != pst_scan_mgmt->pst_sched_scan_req))
     {
-        /* 一般情况下,2个扫描同时存在是一种异常情况,在此添加打印,暂不做异常处理 */
+        /* ??????????,2????????????????????????????,????????????,?????????????? */
         OAM_WARNING_LOG0(0, OAM_SF_SCAN, "{wal_scan_comp_proc_sta::legacy scan and pno scan are all started!!!}");
     }
 
-    /* 上层下发的普通扫描进行对应处理 */
+    /* ?????????????????????????????? */
     if (MAC_SCAN_PNO == pst_scan_rsp->uc_result_code)
     {
-        /* PNO扫描结束事件 */
+        /* PNO???????????? */
         if(OAL_PTR_NULL != pst_scan_mgmt->pst_sched_scan_req)
         {
             wal_schedule_scan_report(pst_wiphy, pst_scan_mgmt);
@@ -175,7 +175,7 @@ oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     }
     else
     {
-        /* 普通扫描结束事件 */
+        /* ???????????????? */
         if(OAL_PTR_NULL != pst_scan_mgmt->pst_request)
         {
             wal_scan_report(pst_scan_mgmt);
@@ -186,7 +186,7 @@ oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         }
     }
 
-    /* 通知完内核，释放资源后解锁 */
+    /* ?????????????????????????? */
     oal_spin_unlock(&(pst_scan_mgmt->st_scan_request_spinlock));
 
     return OAL_SUCC;
@@ -211,7 +211,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     pst_event     = (frw_event_stru *)pst_event_mem->puc_data;
     pst_asoc_rsp  = (hmac_asoc_rsp_stru *)pst_event->auc_event_data;
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
     {
@@ -223,7 +223,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 
     oal_memset(&st_connet_result, 0, OAL_SIZEOF(oal_connet_result_stru));
 
-    /* 准备上报内核的关联结果结构体 */
+    /* ???????????????????????????? */
     oal_memcopy(st_connet_result.auc_bssid, pst_asoc_rsp->auc_addr_ap, WLAN_MAC_ADDR_LEN);
     st_connet_result.puc_req_ie       = pst_asoc_rsp->puc_asoc_req_ie_buff;
     st_connet_result.ul_req_ie_len    = pst_asoc_rsp->ul_asoc_req_ie_len;
@@ -255,7 +255,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     }
     
 
-    /* 调用内核接口，上报关联结果 */
+    /* ?????????????????????????? */
     ul_ret = oal_cfg80211_connect_result(pst_net_device,
                                 st_connet_result.auc_bssid,
                                 st_connet_result.puc_req_ie,
@@ -273,7 +273,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     pst_asoc_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
 
 #ifdef _PRE_WLAN_FEATURE_11D
-    /* 如果关联成功，sta根据AP的国家码设置自己的管制域 */
+    /* ??????????????sta????AP???????????????????????? */
     if (HMAC_MGMT_SUCCESS == pst_asoc_rsp->en_result_code)
     {
         wal_regdomain_update_sta(pst_event->st_event_hdr.uc_vap_id);
@@ -288,7 +288,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         return ul_ret;
     }
 
-    /* 启动发送队列，防止发送队列被漫游关闭后无法恢复 */
+    /* ?????????????????????????????????????????????? */
     oal_net_tx_wake_all_queues(pst_net_device);
 
     OAM_WARNING_LOG1(pst_event->st_event_hdr.uc_vap_id, OAM_SF_ASSOC, "{wal_asoc_comp_proc_sta status_code[%d] OK!}\r\n", st_connet_result.us_status_code);
@@ -318,7 +318,7 @@ oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     pst_event     = (frw_event_stru *)pst_event_mem->puc_data;
     pst_roam_rsp  = (hmac_roam_rsp_stru *)pst_event->auc_event_data;
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
     {
@@ -327,7 +327,7 @@ oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         pst_roam_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
         return OAL_ERR_CODE_PTR_NULL;
     }
-    /* 获取device id 指针*/
+    /* ????device id ????*/
     pst_mac_device = mac_res_get_dev(pst_event->st_event_hdr.uc_device_id);
     if (OAL_PTR_NULL == pst_mac_device)
     {
@@ -364,7 +364,7 @@ oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 
     pst_channel = (struct ieee80211_channel*)oal_ieee80211_get_channel(pst_mac_device->pst_wiphy, l_freq);
 
-    /* 调用内核接口，上报关联结果 */
+    /* ?????????????????????????? */
     ul_ret = oal_cfg80211_roamed(pst_net_device,
                                  pst_channel,
                                  pst_roam_rsp->auc_bssid,
@@ -412,7 +412,7 @@ oal_uint32  wal_ft_event_proc_sta(frw_event_mem_stru *pst_event_mem)
     pst_event     = (frw_event_stru *)pst_event_mem->puc_data;
     pst_ft_event  = (hmac_roam_ft_stru *)pst_event->auc_event_data;
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
     {
@@ -426,7 +426,7 @@ oal_uint32  wal_ft_event_proc_sta(frw_event_mem_stru *pst_event_mem)
     st_cfg_ft_event.ric_ies       = OAL_PTR_NULL;
     st_cfg_ft_event.ric_ies_len   = 0;
 
-    /* 调用内核接口，上报关联结果 */
+    /* ?????????????????????????? */
     ul_ret = oal_cfg80211_ft_event(pst_net_device, &st_cfg_ft_event);
     if (OAL_SUCC != ul_ret)
     {
@@ -454,7 +454,7 @@ oal_uint32  wal_disasoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 
     pst_event  = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
     {
@@ -462,15 +462,15 @@ oal_uint32  wal_disasoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 获取去关联原因码指针 */
+    /* ???????????????????? */
     pus_disasoc_reason_code = (oal_uint16 *)pst_event->auc_event_data;
 
     oal_memset(&st_disconnect_result, 0, OAL_SIZEOF(oal_disconnect_result_stru));
 
-    /* 准备上报内核的关联结果结构体 */
+    /* ???????????????????????????? */
     st_disconnect_result.us_reason_code = *pus_disasoc_reason_code;
 
-    /* 调用内核接口，上报去关联结果 */
+    /* ???????????????????????????? */
     ul_ret = oal_cfg80211_disconnected(pst_net_device,
                               st_disconnect_result.us_reason_code,
                               st_disconnect_result.pus_disconn_ie,
@@ -508,7 +508,7 @@ oal_uint32  wal_connect_new_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
 
     pst_event  = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
     {
@@ -521,9 +521,9 @@ oal_uint32  wal_connect_new_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
     oal_memset(&st_station_info, 0, OAL_SIZEOF(oal_station_info_stru));
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-    /* 向内核标记填充了关联请求帧的ie信息 */
+    /* ????????????????????????????ie???? */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
-    /* Linux 4.0 版本不需要STATION_INFO_ASSOC_REQ_IES 标识 */
+    /* Linux 4.0 ??????????STATION_INFO_ASSOC_REQ_IES ???? */
 #else
     st_station_info.filled |=  STATION_INFO_ASSOC_REQ_IES;
 #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)) */
@@ -536,14 +536,14 @@ oal_uint32  wal_connect_new_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
     }
     st_station_info.assoc_req_ies_len = pst_asoc_user_req_info->ul_assoc_req_ie_len;
 
-    /* 获取关联user mac addr */
+    /* ????????user mac addr */
     oal_memcopy(auc_connect_user_addr, (oal_uint8 *)pst_asoc_user_req_info->auc_user_mac_addr, WLAN_MAC_ADDR_LEN);
 #else
-    /* 获取关联user mac addr */
+    /* ????????user mac addr */
     oal_memcopy(auc_connect_user_addr, (oal_uint8 *)pst_event->auc_event_data, WLAN_MAC_ADDR_LEN);
 #endif
 
-    /* 调用内核接口，上报STA关联结果 */
+    /* ??????????????????STA???????? */
     ul_ret = oal_cfg80211_new_sta(pst_net_device, auc_connect_user_addr, &st_station_info, GFP_ATOMIC);
     if (OAL_SUCC != ul_ret)
     {
@@ -577,7 +577,7 @@ oal_uint32  wal_disconnect_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
 
     pst_event  = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
     {
@@ -586,10 +586,10 @@ oal_uint32  wal_disconnect_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
     }
 
 
-    /* 获取去关联user mac addr */
+    /* ??????????user mac addr */
     oal_memcopy(auc_disconn_user_addr, (oal_uint8 *)pst_event->auc_event_data, WLAN_MAC_ADDR_LEN);
 
-    /* 调用内核接口，上报STA去关联结果 */
+    /* ??????????????????STA?????????? */
     ul_ret = oal_cfg80211_del_sta(pst_net_device, auc_disconn_user_addr, GFP_ATOMIC);
     if (OAL_SUCC != ul_ret)
     {
@@ -618,7 +618,7 @@ oal_uint32  wal_mic_failure_proc(frw_event_mem_stru *pst_event_mem)
     pst_event       = (frw_event_stru *)pst_event_mem->puc_data;
     pst_mic_event   = (hmac_mic_event_stru *)(pst_event->auc_event_data);
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
     {
@@ -626,7 +626,7 @@ oal_uint32  wal_mic_failure_proc(frw_event_mem_stru *pst_event_mem)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 调用内核接口，上报mic攻击 */
+    /* ??????????????????mic???? */
     oal_cfg80211_mic_failure(pst_net_device, pst_mic_event->auc_user_mac, pst_mic_event->en_key_type, pst_mic_event->l_key_id, NULL, GFP_ATOMIC);
 
     OAM_WARNING_LOG3(pst_event->st_event_hdr.uc_vap_id, OAM_SF_CRYPTO, "{wal_mic_failure_proc::mac[%x %x %x] OK!}\r\n",
@@ -662,7 +662,7 @@ oal_uint32  wal_send_mgmt_to_host(frw_event_mem_stru *pst_event_mem)
     pst_event       = (frw_event_stru *)pst_event_mem->puc_data;
     pst_mgmt_frame  = (hmac_rx_mgmt_event_stru *)(pst_event->auc_event_data);
 
-    /* 获取net_device*/
+    /* ????net_device*/
     pst_net_device = oal_dev_get_by_name(pst_mgmt_frame->ac_name);
     //pst_net_device = hmac_vap_get_net_device(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_PTR_NULL == pst_net_device)
@@ -679,7 +679,7 @@ oal_uint32  wal_send_mgmt_to_host(frw_event_mem_stru *pst_event_mem)
     uc_rssi = pst_mgmt_frame->uc_rssi;
 
     pst_ieee80211_mgmt = (oal_ieee80211_mgmt *)puc_buf;
-    /* 调用内核接口，上报接收到管理帧 */
+    /* ?????????????????????????????? */
     ul_ret = oal_cfg80211_rx_mgmt(pst_net_device, l_freq, uc_rssi, puc_buf, us_len, GFP_ATOMIC);
     if (OAL_SUCC != ul_ret)
     {
@@ -692,7 +692,7 @@ oal_uint32  wal_send_mgmt_to_host(frw_event_mem_stru *pst_event_mem)
         return OAL_FAIL;
     }
 #if 0
-    /* 统计上报结果 */
+    /* ???????????? */
 #ifdef _PRE_WLAN_DFT_STAT
     pst_mac_vap  = mac_res_get_mac_vap(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_vap))
@@ -732,7 +732,7 @@ oal_uint32 wal_p2p_listen_timeout(frw_event_mem_stru *pst_event_mem)
     }
 
     pst_event               = (frw_event_stru *)pst_event_mem->puc_data;
-    /* 获取mac_device_stru */
+    /* ????mac_device_stru */
     pst_mac_device = mac_res_get_dev(pst_event->st_event_hdr.uc_device_id);
     if (OAL_PTR_NULL == pst_mac_device)
     {

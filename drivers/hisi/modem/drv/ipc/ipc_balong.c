@@ -93,9 +93,9 @@ static s32 bsp_ipc_int_enable_noirq (IPC_INT_LEV_E ulLvl)
 	   ipc_print_error("[%s]Wrong para , line:%d,para = %d\n",__FUNCTION__, __LINE__,ulLvl);
            return MDRV_ERROR; 
      } 
-    /*写中断屏蔽寄存器*/
+    /*????????????????*/
     u32IntMask = readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_CPU_INT_MASK(ipc_ctrl.core_num)));
-    u32IntMask |= (u32)1 << ulLvl;/* [false alarm]:误报 */
+    u32IntMask |= (u32)1 << ulLvl;/* [false alarm]:???? */
     writel(u32IntMask,(volatile void *)(ipc_ctrl.ipc_base+BSP_IPC_CPU_INT_MASK(ipc_ctrl.core_num)));    
     return MDRV_OK;
 }
@@ -109,7 +109,7 @@ s32 bsp_ipc_int_enable (IPC_INT_LEV_E ulLvl)
 	   ipc_print_error("[%s]Wrong para , line:%d,para = %d\n",__FUNCTION__, __LINE__,ulLvl);
            return MDRV_ERROR; 
      } 
-    /*写中断屏蔽寄存器*/
+    /*????????????????*/
     spin_lock_irqsave(&ipc_ctrl.lock,flags);
     ret = bsp_ipc_int_enable_noirq(ulLvl);
     spin_unlock_irqrestore(&ipc_ctrl.lock,flags);
@@ -124,9 +124,9 @@ static s32 bsp_ipc_int_disable_noirq(IPC_INT_LEV_E ulLvl)
 		ipc_print_error("[%s]Wrong para , line:%d,para = %d\n",__FUNCTION__, __LINE__,ulLvl);
 		return MDRV_ERROR; 
 	 } 
-	/*写中断屏蔽寄存器*/
+	/*????????????????*/
 	u32IntMask = readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_CPU_INT_MASK(ipc_ctrl.core_num)));
-    u32IntMask = u32IntMask & (~((u32)1 << ulLvl));/* [false alarm]:误报 */
+    u32IntMask = u32IntMask & (~((u32)1 << ulLvl));/* [false alarm]:???? */
 	writel(u32IntMask,(volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_CPU_INT_MASK(ipc_ctrl.core_num)));
 	return MDRV_OK;
 }
@@ -140,7 +140,7 @@ s32 bsp_ipc_int_disable(IPC_INT_LEV_E ulLvl)
 		ipc_print_error("[%s]Wrong para , line:%d,para = %d\n",__FUNCTION__, __LINE__,ulLvl);
 		return MDRV_ERROR; 
 	 } 
-	/*写中断屏蔽寄存器*/
+	/*????????????????*/
 	spin_lock_irqsave(&ipc_ctrl.lock,flags);
 	ret = bsp_ipc_int_disable_noirq(ulLvl);
 	spin_unlock_irqrestore(&ipc_ctrl.lock,flags);
@@ -193,9 +193,9 @@ OSL_IRQ_FUNC(irqreturn_t,ipc_int_handler,irq,dev_id)
 	u32 u32Date = 0x1;
 	u32 u32BitValue = 0;
 	u32IntStat=readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_CPU_INT_STAT(ipc_ctrl.core_num)));
-	/*清中断*/
+	/*??????*/
 	writel(u32IntStat,(volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_CPU_INT_CLR(ipc_ctrl.core_num)));
-	/* 遍历32个中断 */
+	/* ????32?????? */
 	for (i = 0; i < INTSRC_NUM; i++)
 	{
 		if(0!=i)
@@ -203,10 +203,10 @@ OSL_IRQ_FUNC(irqreturn_t,ipc_int_handler,irq,dev_id)
 			u32Date <<= 1;   
 		} 
 		u32BitValue = u32IntStat & u32Date;
-		/* 如果有中断 ,则调用对应中断处理函数 */
+		/* ?????????? ,?????????????????????? */
 		if (0 != u32BitValue)
 		{  
-			/*调用注册的中断处理函数*/
+			/*??????????????????????*/
 			if (NULL !=  ipc_ctrl.ipc_int_table[i].routine)
 			{
 				begin = bsp_get_slice_value();
@@ -240,11 +240,11 @@ s32 bsp_ipc_int_send(IPC_INT_CORE_E enDstCore, IPC_INT_LEV_E ulLvl)
 		return MDRV_ERROR; 
 	 } 
 	
- 	if(modem_reset_flag && (IPC_INT_LEV_E)IPC_CCPU_INT_SRC_ACPU_RESET != ulLvl) /* 核间信息不可以交互 */
+ 	if(modem_reset_flag && (IPC_INT_LEV_E)IPC_CCPU_INT_SRC_ACPU_RESET != ulLvl) /* ?????????????????? */
 	{
 		return IPC_ERR_MODEM_RESETING;
 	}
-	/*写原始中断寄存器,产生中断*/
+	/*????????????????,????????*/
 	spin_lock_irqsave(&ipc_ctrl.lock,flags);
 	writel((u32)1 << ulLvl,(volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_CPU_RAW_INT(enDstCore)));
 	
@@ -260,7 +260,7 @@ static void  mask_int(u32 u32SignalNum)
 	unsigned long flags=0;
 	spin_lock_irqsave(&ipc_ctrl.lock,flags);
 	u32IntMask = readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_SEM_INT_MASK(ipc_ctrl.core_num)));
-	u32IntMask = u32IntMask & (~((u32)1 << u32SignalNum)); /* [false alarm]:误报 */
+	u32IntMask = u32IntMask & (~((u32)1 << u32SignalNum)); /* [false alarm]:???? */
 	writel(u32IntMask,(volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_SEM_INT_MASK(ipc_ctrl.core_num)));
 	spin_unlock_irqrestore(&ipc_ctrl.lock,flags);
 }
@@ -272,7 +272,7 @@ static void  mask_int(u32 u32SignalNum)
 		ipc_print_error("[%s]Wrong para , line:%d,para = %d\n",__FUNCTION__, __LINE__,u32SignalNum);
 		return MDRV_ERROR; 
 	 } 
-	 if(true != ipc_ctrl.sem_exist[u32SignalNum])/*避免同一个信号量在没有删除的情况下创建多次*/
+	 if(true != ipc_ctrl.sem_exist[u32SignalNum])/*??????????????????????????????????????????*/
 	 {
 	 	osl_sem_init(SEM_EMPTY,&(ipc_ctrl.sem_ipc_task[u32SignalNum]));
 		ipc_ctrl.sem_exist[u32SignalNum] = true;
@@ -312,13 +312,13 @@ static void  mask_int(u32 u32SignalNum)
  int bsp_ipc_sem_take(u32 u32SignalNum, int s32timeout)
  {
 	u32 u32IntMask = 0,ret = 0;    
-	/*参数检查*/
+	/*????????*/
 	if (u32SignalNum >= IPC_SEM_BUTTOM_ACORE)
 	{
 		ipc_print_error("[%s]Wrong para , line:%d,para = %d\n",__FUNCTION__, __LINE__,u32SignalNum);
 		return MDRV_ERROR; 
 	 } 
-	 /*将申请的信号量对应的释放中断清零*/
+	 /*????????????????????????????????*/
 	writel((u32)1<<u32SignalNum, (volatile void *)(ipc_ctrl.ipc_base+BSP_IPC_SEM_INT_CLR(ipc_ctrl.core_num)));
 	ret =  readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_HS_CTRL(ipc_ctrl.core_num, u32SignalNum)));
 	if(0 == ret)
@@ -337,9 +337,9 @@ static void  mask_int(u32 u32SignalNum)
 		}
 		if(0 != s32timeout)
 		{
-			/*使能信号量释放中断*/
+			/*??????????????????*/
 			u32IntMask = readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_SEM_INT_MASK(ipc_ctrl.core_num)));
-			u32IntMask = u32IntMask | ((u32)1 << u32SignalNum);/* [false alarm]:误报 */
+			u32IntMask = u32IntMask | ((u32)1 << u32SignalNum);/* [false alarm]:???? */
 			writel(u32IntMask,(volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_SEM_INT_MASK(ipc_ctrl.core_num)));
 			 if (MDRV_OK != osl_sem_downtimeout(&(ipc_ctrl.sem_ipc_task[u32SignalNum]), s32timeout))  
 			{
@@ -372,7 +372,7 @@ s32 bsp_ipc_sem_give(u32 u32SignalNum)
 		return MDRV_ERROR; 
 	 } 
 	ipc_debug.u32SemGiveTimes[u32SignalNum]++;
-	/*向信号量请求寄存器写0*/
+	/*????????????????????0*/
 	writel(0,(volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_HS_CTRL(ipc_ctrl.core_num, u32SignalNum)));
 	return MDRV_OK;
  }
@@ -397,16 +397,16 @@ s32 bsp_ipc_sem_give(u32 u32SignalNum)
  }
 
  /*****************************************************************************
- * 函 数 名      : ipc_sem_int_handler
+ * ?? ?? ??      : ipc_sem_int_handler
  *
- * 功能描述  : 信号量释放中断处理函数
+ * ????????  : ??????????????????????
  *
- * 输入参数  : 无  
- * 输出参数  : 无
+ * ????????  : ??  
+ * ????????  : ??
  *
- * 返 回 值      : 无
+ * ?? ?? ??      : ??
  *
- * 修改记录  :  2013年1月9日 lixiaojie 
+ * ????????  :  2013??1??9?? lixiaojie 
  *****************************************************************************/
 OSL_IRQ_FUNC(irqreturn_t,ipc_sem_int_handler,irq,dev_id)
 {
@@ -417,7 +417,7 @@ OSL_IRQ_FUNC(irqreturn_t,ipc_sem_int_handler,irq,dev_id)
 	{
 		do
 		{
-			 /*如果有信号量释放中断，清除该中断*/
+			 /*????????????????????????????????*/
 			writel((u32)1<<--u32SNum, (volatile void *)(ipc_ctrl.ipc_base+BSP_IPC_SEM_INT_CLR(ipc_ctrl.core_num)));
 			u32HsCtrl = readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_HS_CTRL(ipc_ctrl.core_num, u32SNum)));
 			if (0 == u32HsCtrl)
@@ -576,7 +576,7 @@ static void ipc_free_sem_taked(u32 core_id)
 
     for(i = 0; i < 32; i++)
     {
-        /*判断资源锁占用，如果占用，则释放*/
+        /*????????????????????????????????*/
         ret = readl((const volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_HS_STAT(core_id, i)));
         if (ret == ((1 << 3) | core_id))
         {
@@ -663,7 +663,7 @@ static s32  bsp_ipc_probe(struct platform_device *dev)
 
 	ipc_ctrl.core_num = IPC_CORE_ACORE;
 
-	/* 内存映射，获得基址 */
+	/* ?????????????????? */
 	p_iomap_ret = of_iomap(node, 0);
 	if (NULL == p_iomap_ret)
 	{
@@ -685,7 +685,7 @@ static s32  bsp_ipc_probe(struct platform_device *dev)
 	writel(0x0,(volatile void *)(ipc_ctrl.ipc_base + BSP_IPC_SEM_INT_MASK(ipc_ctrl.core_num)));
 	spin_lock_init(&ipc_ctrl.lock);
 
-	/* 获取中断号 */
+	/* ?????????? */
 	ipc_ctrl.irq_int_no = irq_of_parse_and_map(node, 0);
 	ret = request_irq(ipc_ctrl.irq_int_no, ipc_int_handler, IRQF_NO_SUSPEND, "ipc_irq",(void*) NULL);
 	if (ret )
@@ -749,7 +749,7 @@ void ccore_ipc_disable(void)
 
     writel(0x0,(volatile void *)(ipc_ctrl.ipc_base+BSP_IPC_CPU_INT_MASK(ipc_ctrl.core_num)));  
 	
-	/*单独复位的特殊处理，不屏蔽*/
+	/*??????????????????????????*/
 	(void)bsp_ipc_int_enable_noirq(IPC_ACPU_INT_SRC_CCPU_RESET_IDLE);
 	(void)bsp_ipc_int_enable_noirq(IPC_ACPU_INT_SRC_CCPU_RESET_SUCC);
 

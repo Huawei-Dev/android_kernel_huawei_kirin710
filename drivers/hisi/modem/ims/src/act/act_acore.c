@@ -20,8 +20,8 @@
 
 #define BUFFERSIZE 256
 #define RCSSRVBUFSIZE 3796
-#define DEVICE_MAJOR 250 /*设置一个主设备号*/
-#define DEVICE_MINOR 0   /*次设备号*/
+#define DEVICE_MAJOR 250 /*????????????????*/
+#define DEVICE_MINOR 0   /*????????*/
 
 //#define VT_AP_CP_CHID  ((ICC_CHN_GUOM0 << 16) || GUOM0_FUNC_ID_VT_AC)
 
@@ -51,17 +51,17 @@ struct act_instance {
     u32 iChannelID;
     u8 *ucData;
     wait_queue_head_t inq;
-    spinlock_t list_lock;//新增一个成员，定义一个spin锁,访问链表时需要加锁
+    spinlock_t list_lock;//??????????????????????spin??,??????????????????
     struct list_head msg_list;
     struct act_cdev *act_cdev;
 };
 
 struct act_cdev {
-    struct cdev cdev; /*cdev结构体，与字符设备对应*/
+    struct cdev cdev; /*cdev??????????????????????*/
     struct act_instance stInstance[2];
 };
 
-struct act_cdev *act_cdevp     = NULL; /*设备结构体指针*/
+struct act_cdev *act_cdevp     = NULL; /*??????????????*/
 static struct class *act_class = NULL;
 static int act_major = 0;
 
@@ -80,7 +80,7 @@ unsigned int act_rcsSrvMsgProc(unsigned int channel_id , int len)
        return -1;
     }
 
-    //分配链表内存kmalloc，用于存储数据
+    //????????????kmalloc??????????????
     data = (struct act_cdev_data*)kmalloc(sizeof(struct act_cdev_data) + len, GFP_KERNEL);
     if (!data)
     {
@@ -103,13 +103,13 @@ unsigned int act_rcsSrvMsgProc(unsigned int channel_id , int len)
     }
 
 
-    //获取信号量 spinlock_irq_save(lock)
+    //?????????? spinlock_irq_save(lock)
     spin_lock_irqsave(&(act_cdevp->stInstance[1].list_lock), flags);
 
-    //挂接到链表，spinlick_irq_restore释放锁
-    list_add_tail(&(data->msg_list), &(act_cdevp->stInstance[1].msg_list)); //应该是list_add_tail
+    //????????????spinlick_irq_restore??????
+    list_add_tail(&(data->msg_list), &(act_cdevp->stInstance[1].msg_list)); //??????list_add_tail
 
-    //释放信号量
+    //??????????
     spin_unlock_irqrestore(&(act_cdevp->stInstance[1].list_lock), flags);
     act_cdevp->stInstance[1].hasData = true;
     wake_up(&(act_cdevp->stInstance[1].inq)); //wake up the read process
@@ -136,7 +136,7 @@ unsigned int act_msgProc(unsigned int channel_id, int len)
        return -1;
     }
 
-    //分配链表内存kmalloc，用于存储数据
+    //????????????kmalloc??????????????
     data = (struct act_cdev_data*)kmalloc(sizeof(struct act_cdev_data) + len, GFP_KERNEL);
     if (!data)
     {
@@ -145,18 +145,18 @@ unsigned int act_msgProc(unsigned int channel_id, int len)
         return ret;
     }
 
-    //调用mdrv_icc_read读取数据到分配的内存中
+    //????mdrv_icc_read??????????????????????
     memset_s(data, sizeof(struct act_cdev_data) + len, 0, sizeof(struct act_cdev_data) + len);
     ret = mdrv_icc_read(channel_id, data->data, len);
     data->len = len;
 
-    //获取信号量 spinlock_irq_save(lock)
+    //?????????? spinlock_irq_save(lock)
     spin_lock_irqsave(&(act_cdevp->stInstance[0].list_lock), flags);
 
-    //挂接到链表，spinlick_irq_restore释放锁
-    list_add_tail(&(data->msg_list), &(act_cdevp->stInstance[0].msg_list)); //应该是list_add_tail
+    //????????????spinlick_irq_restore??????
+    list_add_tail(&(data->msg_list), &(act_cdevp->stInstance[0].msg_list)); //??????list_add_tail
 
-    //释放信号量
+    //??????????
     spin_unlock_irqrestore(&(act_cdevp->stInstance[0].list_lock), flags);
 
     act_cdevp->stInstance[0].hasData = true;
@@ -236,10 +236,10 @@ static ssize_t act_read(struct file *filp, char __user *buf, size_t size, loff_t
 
     printk(KERN_INFO "act_read start read Data(%d).\n", pstInstance->len);
 
-    //获取信号量 spinlock_irq_save(lock)
+    //?????????? spinlock_irq_save(lock)
     spin_lock_irqsave(&(pstInstance->list_lock), flags);
 
-    //读取数据链表
+    //????????????
     if (! list_empty(&(pstInstance->msg_list)))
     {
         data = list_first_entry(&(pstInstance->msg_list), struct act_cdev_data, msg_list);
@@ -272,7 +272,7 @@ static ssize_t act_read(struct file *filp, char __user *buf, size_t size, loff_t
         printk(KERN_ERR "act_read msg_list is empty! \n");
     }
 
-    //判断链表是否为空 list_empty(act_cdevp->data)；如果是空，false；如果非空，true;
+    //???????????????? list_empty(act_cdevp->data)????????????false????????????true;
     if (list_empty(&(pstInstance->msg_list)))
     {
         pstInstance->hasData = false; //has no data to read
@@ -282,7 +282,7 @@ static ssize_t act_read(struct file *filp, char __user *buf, size_t size, loff_t
         pstInstance->hasData = true; //has data to read
         printk(KERN_ERR "act_read msg_list is not empty! \n");
     }
-    //释放信号量
+    //??????????
     spin_unlock_irqrestore(&(pstInstance->list_lock), flags);
 
     //osl_sem_up(&g_ActSemId);

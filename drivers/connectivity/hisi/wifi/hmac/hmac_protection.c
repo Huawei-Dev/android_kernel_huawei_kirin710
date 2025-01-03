@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "hmac_user.h"
 #include "hmac_main.h"
@@ -23,12 +23,12 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_HMAC_PROTECTION_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 OAL_STATIC oal_uint32 hmac_protection_set_mode(
@@ -53,15 +53,15 @@ OAL_STATIC oal_uint32 hmac_protection_set_mode(
     else
     {
         pst_mac_vap->st_protection.bit_auto_protection = OAL_SWITCH_ON;
-        /*VAP 为 AP情况下*/
+        /*VAP ?? AP??????*/
         if (WLAN_VAP_MODE_BSS_AP == pst_mac_vap->en_vap_mode)
         {
             ul_ret = hmac_protection_update_mode_ap(pst_mac_vap);
         }
-        /*VAP 为 STA情况下*/
+        /*VAP ?? STA??????*/
         else if (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode)
         {
-            pst_hmac_user = mac_res_get_hmac_user(pst_mac_vap->uc_assoc_vap_id); /*user保存的是AP的信息*/
+            pst_hmac_user = mac_res_get_hmac_user(pst_mac_vap->uc_assoc_vap_id); /*user????????AP??????*/
             if (OAL_PTR_NULL == pst_hmac_user)
             {
                 return OAL_ERR_CODE_PTR_NULL;
@@ -84,7 +84,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_rtscts_mechanism(mac_vap_stru *pst_mac
 
     ul_ret = hmac_config_set_rts_param(pst_mac_vap, OAL_SIZEOF(mac_cfg_rts_tx_param_stru), (oal_uint8*)(&st_rts_tx_param));
 
-    /*数据帧/管理帧发送时候，需要根据bit_rts_cts_protect_mode值填写发送描述符中的RTS/CTS enable位*/
+    /*??????/????????????????????????bit_rts_cts_protect_mode????????????????????RTS/CTS enable??*/
     pst_mac_vap->st_protection.bit_rts_cts_protect_mode = en_flag;
 
     return ul_ret;
@@ -94,7 +94,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_rtscts_mechanism(mac_vap_stru *pst_mac
 OAL_STATIC OAL_INLINE oal_uint32 hmac_protection_set_erp_protection(mac_vap_stru *pst_mac_vap, oal_switch_enum_uint8 en_flag)
 {
     oal_uint32 ul_ret = OAL_SUCC;
-    /*1151只支持RTS-CTS机制来保护， 不支持Self-To-CTS机制*/
+    /*1151??????RTS-CTS???????????? ??????Self-To-CTS????*/
     ul_ret = hmac_protection_set_rtscts_mechanism(pst_mac_vap, en_flag, WLAN_PROT_ERP);
 
     return ul_ret;
@@ -105,7 +105,7 @@ OAL_STATIC oal_bool_enum hmac_protection_lsigtxop_check(mac_vap_stru *pst_mac_va
 {
     mac_user_stru  *pst_mac_user;
 
-    /*如果不是11n站点，则不支持lsigtxop保护*/
+    /*????????11n??????????????lsigtxop????*/
     if ((WLAN_HT_MODE != pst_mac_vap->en_protocol)
         && (WLAN_HT_ONLY_MODE != pst_mac_vap->en_protocol)
         && (WLAN_HT_11G_MODE != pst_mac_vap->en_protocol))
@@ -115,14 +115,14 @@ OAL_STATIC oal_bool_enum hmac_protection_lsigtxop_check(mac_vap_stru *pst_mac_va
 
     if (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode)
     {
-        pst_mac_user = (mac_user_stru *)mac_res_get_mac_user(pst_mac_vap->uc_assoc_vap_id); /*user保存的是AP的信息*/
+        pst_mac_user = (mac_user_stru *)mac_res_get_mac_user(pst_mac_vap->uc_assoc_vap_id); /*user????????AP??????*/
         if (OAL_PTR_NULL == pst_mac_user)
         {
             return OAL_FALSE;
         }
     }
     /*lint -e644*/
-    /*BSS 中所有站点都支持Lsig txop protection, 则使用Lsig txop protection机制，开销小, AP和STA采用不同的判断*/
+    /*BSS ????????????????Lsig txop protection, ??????Lsig txop protection????????????, AP??STA??????????????*/
     if (((WLAN_VAP_MODE_BSS_AP == pst_mac_vap->en_vap_mode) && (OAL_TRUE == mac_mib_get_LsigTxopFullProtectionActivated(pst_mac_vap)))
          ||((WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode) && (OAL_TRUE == pst_mac_user->st_ht_hdl.bit_lsig_txop_protection_full_support)))
     {
@@ -147,7 +147,7 @@ OAL_STATIC oal_uint32 hmac_protection_update_ht_protection(mac_vap_stru *pst_mac
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*当前vap并没有设置ht 保护，直接返回*/
+    /*????vap??????????ht ??????????????*/
     if (WLAN_PROT_HT != pst_mac_vap->st_protection.en_protection_mode)
     {
         return OAL_SUCC;
@@ -155,10 +155,10 @@ OAL_STATIC oal_uint32 hmac_protection_update_ht_protection(mac_vap_stru *pst_mac
 
     en_lsigtxop = hmac_protection_lsigtxop_check(pst_mac_vap);
 
-    /*如果可以设置lsigtxop保护， 则优先设置lsigtxop保护*/
+    /*????????????lsigtxop?????? ??????????lsigtxop????*/
     if (OAL_TRUE == en_lsigtxop)
     {
-        /*如果启用了rts cts protection机制， 则更新为lsig txop protection机制*/
+        /*??????????rts cts protection?????? ????????lsig txop protection????*/
         if (OAL_SWITCH_ON == pst_mac_vap->st_protection.bit_rts_cts_protect_mode)
         {
             ul_ret = hmac_protection_set_rtscts_mechanism(pst_mac_vap, OAL_SWITCH_OFF, WLAN_PROT_HT);
@@ -170,9 +170,9 @@ OAL_STATIC oal_uint32 hmac_protection_update_ht_protection(mac_vap_stru *pst_mac
             mac_protection_set_lsig_txop_mechanism(pst_mac_vap, OAL_SWITCH_ON);
         }
     }
-    else/*其余情况需要设置ht保护方式为rts cts protection 机制*/
+    else/*????????????????ht??????????rts cts protection ????*/
     {
-        /*如果启用了rts cts protection机制， 则更新为lsig txop protection机制*/
+        /*??????????rts cts protection?????? ????????lsig txop protection????*/
         if (OAL_SWITCH_ON == pst_mac_vap->st_protection.bit_lsig_txop_protect_mode)
         {
             mac_protection_set_lsig_txop_mechanism(pst_mac_vap, OAL_SWITCH_OFF);
@@ -194,7 +194,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_ht_protection(mac_vap_stru *pst_mac_va
     oal_bool_enum   en_lsigtxop = OAL_FALSE;
 
     en_lsigtxop = mac_protection_lsigtxop_check(pst_mac_vap);
-    /*优先使用lsigtxop保护，开销小*/
+    /*????????lsigtxop????????????*/
     if (OAL_TRUE == en_lsigtxop)
     {
         mac_protection_set_lsig_txop_mechanism(pst_mac_vap, en_flag);
@@ -298,7 +298,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_mode(
 {
     oal_uint32 ul_ret = OAL_SUCC;
 
-    /*相同的保护模式已经被设置，直接返回*/
+    /*??????????????????????????????????*/
     if (en_prot_mode == pst_mac_vap->st_protection.en_protection_mode)
     {
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
@@ -307,7 +307,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_mode(
         return ul_ret;
     }
 
-    /*关闭之前的保护模式*/
+    /*??????????????????*/
     if (WLAN_PROT_ERP == pst_mac_vap->st_protection.en_protection_mode)
     {
         ul_ret = hmac_protection_set_erp_protection(pst_mac_vap, OAL_SWITCH_OFF);
@@ -326,12 +326,12 @@ OAL_STATIC oal_uint32 hmac_protection_set_mode(
     }
     else
     {
-        /*GF保护和无保护无需额外操作*/
+        /*GF????????????????????????*/
     }
 
     pst_mac_vap->st_protection.en_protection_mode = en_prot_mode;
 
-    /*开启新的保护模式*/
+    /*????????????????*/
     if (WLAN_PROT_ERP == en_prot_mode)
     {
         ul_ret = hmac_protection_set_erp_protection(pst_mac_vap, OAL_SWITCH_ON);
@@ -350,14 +350,14 @@ OAL_STATIC oal_uint32 hmac_protection_set_mode(
     }
     else
     {
-        /*GF保护和无保护无需额外操作*/
+        /*GF????????????????????????*/
     }
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
     ul_ret = hmac_protection_sync_data(pst_mac_vap);
 #else
-    /*更新数据帧或管理帧与保护特性相关的发送参数*/
-    hmac_config_update_protection_tx_param(pst_mac_vap, OAL_SIZEOF(ul_ret), (oal_uint8*)(&ul_ret)); /*后面两个参数无作用*/
+    /*??????????????????????????????????????????*/
+    hmac_config_update_protection_tx_param(pst_mac_vap, OAL_SIZEOF(ul_ret), (oal_uint8*)(&ul_ret)); /*??????????????????*/
 #endif
 
     return ul_ret;
@@ -381,11 +381,11 @@ oal_uint32 hmac_protection_update_mib_ap(mac_vap_stru *pst_mac_vap)
 
     pst_protection = &(pst_mac_vap->st_protection);
 
-    /*更新vap的en_dot11NonGFEntitiesPresent字段*/
+    /*????vap??en_dot11NonGFEntitiesPresent????*/
     en_non_gf_entities_present = (0 != pst_protection->uc_sta_non_gf_num) ? OAL_TRUE : OAL_FALSE;
     mac_mib_set_NonGFEntitiesPresent(pst_mac_vap, en_non_gf_entities_present);
 
-    /*更新vap的en_dot11LSIGTXOPFullProtectionActivated字段*/
+    /*????vap??en_dot11LSIGTXOPFullProtectionActivated????*/
     en_lsig_txop_full_protection_activated = (0 == pst_protection->uc_sta_no_lsig_txop_num) ? OAL_TRUE : OAL_FALSE;
 
     mac_mib_set_LsigTxopFullProtectionActivated(pst_mac_vap, en_lsig_txop_full_protection_activated);
@@ -397,7 +397,7 @@ oal_uint32 hmac_protection_update_mib_ap(mac_vap_stru *pst_mac_vap)
         return ul_ret;
     }
 
-    /*更新vap的en_dot11HTProtection和en_dot11RIFSMode字段*/
+    /*????vap??en_dot11HTProtection??en_dot11RIFSMode????*/
     if (0 != pst_protection->uc_sta_non_ht_num)
     {
         en_ht_protection = WLAN_MIB_HT_NON_HT_MIXED;
@@ -441,35 +441,35 @@ oal_uint32 hmac_protection_update_mode_ap(mac_vap_stru *pst_mac_vap)
 
     pst_protection = &(pst_mac_vap->st_protection);
 
-    /*如果保护机制不启用， 直接返回*/
+    /*???????????????????? ????????*/
     if (OAL_SWITCH_OFF == mac_vap_protection_autoprot_is_enabled(pst_mac_vap))
     {
         return OAL_SUCC;
     }
 
-    /*在2G频段下，如果有non erp站点与AP关联， 或者OBSS中存在non erp站点， 设置为erp保护*/
+    /*??2G??????????????non erp??????AP?????? ????OBSS??????non erp?????? ??????erp????*/
     if ((WLAN_BAND_2G == pst_mac_vap->st_channel.en_band)
          && ((0 != pst_protection->uc_sta_non_erp_num) || (OAL_TRUE == pst_protection->bit_obss_non_erp_present)))
     {
         en_protection_mode = WLAN_PROT_ERP;
     }
-    /*如果有non ht站点与AP关联， 或者OBSS中存在non ht站点， 设置为ht保护*/
+    /*??????non ht??????AP?????? ????OBSS??????non ht?????? ??????ht????*/
     else if ((0 != pst_protection->uc_sta_non_ht_num) || (OAL_TRUE == pst_protection->bit_obss_non_ht_present))
     {
         en_protection_mode = WLAN_PROT_HT;
     }
-    /*如果有non gf站点与AP关联， 设置为gf保护*/
+    /*??????non gf??????AP?????? ??????gf????*/
     else if (0 != pst_protection->uc_sta_non_gf_num)
     {
         en_protection_mode = WLAN_PROT_GF;
     }
-    /*剩下的情况不做保护*/
+    /*??????????????????*/
     else
     {
         en_protection_mode = WLAN_PROT_NO;
     }
 
-    /*设置具体保护模式*/
+    /*????????????????*/
     ul_ret = hmac_protection_set_mode(pst_mac_vap, en_protection_mode);
 
     return ul_ret;
@@ -485,7 +485,7 @@ oal_uint32 hmac_protection_update_mode_sta(mac_vap_stru *pst_mac_vap_sta, hmac_u
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*如果保护机制不启用， 直接返回*/
+    /*???????????????????? ????????*/
     if (OAL_SWITCH_OFF == mac_vap_protection_autoprot_is_enabled(pst_mac_vap_sta))
     {
         return OAL_SUCC;
@@ -493,7 +493,7 @@ oal_uint32 hmac_protection_update_mode_sta(mac_vap_stru *pst_mac_vap_sta, hmac_u
 
     en_protection_mode = mac_vap_get_user_protection_mode(pst_mac_vap_sta, &(pst_hmac_user->st_user_base_info));
 
-    /*设置具体保护模式*/
+    /*????????????????*/
     return hmac_protection_set_mode(pst_mac_vap_sta, en_protection_mode);
 }
 
@@ -501,14 +501,14 @@ oal_uint32 hmac_protection_update_mode_sta(mac_vap_stru *pst_mac_vap_sta, hmac_u
 oal_uint32 hmac_protection_obss_aging_ap(mac_vap_stru *pst_mac_vap)
 {
     oal_uint32    ul_ret               = OAL_SUCC;
-    oal_bool_enum em_update_protection = OAL_FALSE; /*指示是否需要更新vap的protection*/
+    oal_bool_enum em_update_protection = OAL_FALSE; /*????????????????vap??protection*/
 
     if (OAL_PTR_NULL == pst_mac_vap)
     {
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*更新ERP老化计数*/
+    /*????ERP????????*/
     if (OAL_TRUE == pst_mac_vap->st_protection.bit_obss_non_erp_present)
     {
         pst_mac_vap->st_protection.uc_obss_non_erp_aging_cnt++;
@@ -520,7 +520,7 @@ oal_uint32 hmac_protection_obss_aging_ap(mac_vap_stru *pst_mac_vap)
         }
     }
 
-    /*更新HT老化计数*/
+    /*????HT????????*/
     if (OAL_TRUE == pst_mac_vap->st_protection.bit_obss_non_ht_present)
     {
         pst_mac_vap->st_protection.uc_obss_non_ht_aging_cnt++;
@@ -533,7 +533,7 @@ oal_uint32 hmac_protection_obss_aging_ap(mac_vap_stru *pst_mac_vap)
         }
     }
 
-    /*需要更新保护模式*/
+    /*????????????????*/
     if(OAL_TRUE == em_update_protection)
     {
         ul_ret = hmac_protection_update_mib_ap(pst_mac_vap);
@@ -556,7 +556,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_legacy_ap(mac_vap_stru *pst
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*如果去关联的站点不支持ERP*/
+    /*??????????????????????ERP*/
     if ((OAL_FALSE == pst_hmac_user->st_hmac_cap_info.bit_erp)
         && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_no_erp_stats_flag)
         && (0 != pst_protection->uc_sta_non_erp_num))
@@ -564,7 +564,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_legacy_ap(mac_vap_stru *pst
         pst_protection->uc_sta_non_erp_num--;
     }
 
-    /*如果去关联的站点不支持short preamble*/
+    /*??????????????????????short preamble*/
     if ((OAL_FALSE == pst_hmac_user->st_hmac_cap_info.bit_short_preamble)
         && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_no_short_preamble_stats_flag)
         && (0 != pst_protection->uc_sta_no_short_preamble_num))
@@ -572,7 +572,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_legacy_ap(mac_vap_stru *pst
         pst_protection->uc_sta_no_short_preamble_num--;
     }
 
-    /*如果去关联的站点不支持short slot*/
+    /*??????????????????????short slot*/
     if ((OAL_FALSE == pst_hmac_user->st_hmac_cap_info.bit_short_slot_time)
         && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_no_short_slot_stats_flag)
         && (0 != pst_protection->uc_sta_no_short_slot_num))
@@ -603,16 +603,16 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_ht_ap(mac_vap_stru *pst_mac
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*如果去关联的站点不支持HT*/
+    /*??????????????????????HT*/
     if ((OAL_FALSE == pst_ht_hdl->en_ht_capable)
         && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_no_ht_stats_flag)
         && (0 != pst_protection->uc_sta_non_ht_num))
     {
         pst_protection->uc_sta_non_ht_num--;
     }
-    else /*支持HT*/
+    else /*????HT*/
     {
-        /*如果去关联的站点不支持20/40Mhz频宽*/
+        /*??????????????????????20/40Mhz????*/
         if ((OAL_FALSE == pst_ht_hdl->bit_supported_channel_width)
             && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_20M_only_stats_flag)
             && (0 != pst_protection->uc_sta_20M_only_num))
@@ -620,7 +620,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_ht_ap(mac_vap_stru *pst_mac
             pst_protection->uc_sta_20M_only_num--;
         }
 
-        /*如果去关联的站点不支持GF*/
+        /*??????????????????????GF*/
         if ((OAL_FALSE == pst_ht_hdl->bit_ht_green_field)
             && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_no_gf_stats_flag)
             && (0 != pst_protection->uc_sta_non_gf_num))
@@ -628,7 +628,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_ht_ap(mac_vap_stru *pst_mac
             pst_protection->uc_sta_non_gf_num--;
         }
 
-        /*如果去关联的站点不支持L-SIG TXOP Protection*/
+        /*??????????????????????L-SIG TXOP Protection*/
         if ((OAL_FALSE == pst_ht_hdl->bit_lsig_txop_protection)
             && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_no_lsig_txop_stats_flag)
             && (0 != pst_protection->uc_sta_no_lsig_txop_num))
@@ -636,7 +636,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_ht_ap(mac_vap_stru *pst_mac
             pst_protection->uc_sta_no_lsig_txop_num--;
         }
 
-        /*如果去关联的站点不支持40Mhz cck*/
+        /*??????????????????????40Mhz cck*/
         if ((OAL_FALSE == pst_ht_hdl->bit_dsss_cck_mode_40mhz)
              && (OAL_TRUE == pst_ht_hdl->bit_supported_channel_width)
              && (OAL_TRUE == pst_hmac_user->st_user_stats_flag.bit_no_40dsss_stats_flag)
@@ -675,20 +675,20 @@ oal_uint32 hmac_protection_del_user(mac_vap_stru *pst_mac_vap, mac_user_stru *ps
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*AP 更新VAP结构体统计量，更新保护机制*/
+    /*AP ????VAP??????????????????????????*/
     if (WLAN_VAP_MODE_BSS_AP == pst_mac_vap->en_vap_mode)
     {
-        /*删除保护模式相关user统计*/
+        /*????????????????user????*/
         hmac_protection_del_user_stat_ap(pst_mac_vap, pst_mac_user);
 
-        /*更新AP中保护相关mib量*/
+        /*????AP??????????mib??*/
         ul_ret = hmac_protection_update_mib_ap(pst_mac_vap);
         if(OAL_SUCC != ul_ret)
         {
 		return ul_ret;
 	 }
     }
-    /*恢复STA为无保护状态*/
+    /*????STA????????????*/
     else if (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode)
     {
         ul_ret = hmac_protection_set_mode(pst_mac_vap, WLAN_PROT_NO);
@@ -712,8 +712,8 @@ oal_uint32  hmac_protection_obss_update_timer(void *p_arg)
 
     pst_mac_device = (mac_device_stru *)p_arg;
 
-    /* 遍历device下对应VAP, 定时更新OBSS 保护模式 */
-    /* 业务vap从1开始 */
+    /* ????device??????VAP, ????????OBSS ???????? */
+    /* ????vap??1???? */
     for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
     {
         pst_mac_vap = mac_res_get_mac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -723,7 +723,7 @@ oal_uint32  hmac_protection_obss_update_timer(void *p_arg)
             return OAL_ERR_CODE_PTR_NULL;
         }
 
-        /* OBSS老化只针对AP模式，非AP模式则跳出 */
+        /* OBSS??????????AP????????AP?????????? */
         if (WLAN_VAP_MODE_BSS_AP != pst_mac_vap->en_vap_mode)
         {
             continue;
@@ -747,12 +747,12 @@ oal_uint32 hmac_protection_start_timer(hmac_vap_stru  *pst_hmac_vap)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 启动OBSS保护老化定时器 定时器已开启，则不用再开启 */
+    /* ????OBSS?????????????? ?????????????????????????? */
     if (OAL_FALSE == pst_mac_device->st_obss_aging_timer.en_is_registerd)
     {
         FRW_TIMER_CREATE_TIMER(&(pst_mac_device->st_obss_aging_timer),
                                hmac_protection_obss_update_timer,
-                               WLAN_USER_AGING_TRIGGER_TIME,                    /* 5000ms触发一次 */
+                               WLAN_USER_AGING_TRIGGER_TIME,                    /* 5000ms???????? */
                                pst_mac_device,
                                OAL_TRUE,
                                OAM_MODULE_ID_HMAC,

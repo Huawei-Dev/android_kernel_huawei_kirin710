@@ -59,7 +59,7 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID PS_FILE_ID_PIH_API_C
 
@@ -72,7 +72,7 @@ VOS_UINT32 SI_PIH_GetReceiverPid(
     MODEM_ID_ENUM_UINT16                enModemID;
     SI_PIH_CARD_SLOT_ENUM_UINT32        enSlotId;
 
-    /* 调用接口获取Modem ID */
+    /* ????????????Modem ID */
     if(VOS_OK != AT_GetModemIdFromClient(ClientId,&enModemID))
     {
         return VOS_ERR;
@@ -358,7 +358,7 @@ VOS_UINT32 SI_PIH_CchoSetReq(
     SI_PIH_CCHO_SET_REQ_STRU           *pstMsg;
     VOS_UINT32                          ulReceiverPid;
 
-    /* 参数检测 */
+    /* ???????? */
     if ((0 == pstCchoCmd->ulAIDLen)
         || ((USIMM_AID_LEN_MAX*2) < pstCchoCmd->ulAIDLen))
     {
@@ -374,7 +374,7 @@ VOS_UINT32 SI_PIH_CchoSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_CCHO_SET_REQ_STRU*)VOS_AllocMsg(WUEPS_PID_AT,
                             (VOS_UINT32)(sizeof(SI_PIH_CCHO_SET_REQ_STRU) - VOS_MSG_HEAD_LENGTH));
 
@@ -414,7 +414,7 @@ VOS_UINT32 SI_PIH_CchpSetReq(
     SI_PIH_CCHP_SET_REQ_STRU           *pstMsg;
     VOS_UINT32                          ulReceiverPid;
 
-    /* 参数检测 */
+    /* ???????? */
     if ((0 == pstCchpCmd->ulAIDLen)
       || ((USIMM_AID_LEN_MAX*2) < pstCchpCmd->ulAIDLen))
     {
@@ -430,7 +430,7 @@ VOS_UINT32 SI_PIH_CchpSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_CCHP_SET_REQ_STRU*)VOS_AllocMsg(WUEPS_PID_AT,
                             (VOS_UINT32)(sizeof(SI_PIH_CCHP_SET_REQ_STRU) - VOS_MSG_HEAD_LENGTH));
 
@@ -471,7 +471,7 @@ VOS_UINT32 SI_PIH_PrivateCchoSetReq(
     SI_PIH_CCHO_SET_REQ_STRU           *pstMsg;
     VOS_UINT32                          ulReceiverPid;
 
-    /* 参数检测 */
+    /* ???????? */
     if (USIMM_AID_LEN_MAX < pstCchoCmd->ulAIDLen)
     {
         PIH_ERROR_LOG("SI_PIH_PrivateCchoSetReq: AID length is incorrect.");
@@ -486,7 +486,7 @@ VOS_UINT32 SI_PIH_PrivateCchoSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_CCHO_SET_REQ_STRU*)VOS_AllocMsg(WUEPS_PID_AT,
                             (VOS_UINT32)(sizeof(SI_PIH_CCHO_SET_REQ_STRU) - VOS_MSG_HEAD_LENGTH));
 
@@ -529,7 +529,7 @@ VOS_UINT32 SI_PIH_PrivateCchpSetReq(
     SI_PIH_CCHP_SET_REQ_STRU           *pstMsg;
     VOS_UINT32                          ulReceiverPid;
 
-    /* 参数检测 */
+    /* ???????? */
     if (USIMM_AID_LEN_MAX < pstCchpCmd->ulAIDLen)
     {
         PIH_ERROR_LOG("SI_PIH_PrivateCchpSetReq: AID length is incorrect.");
@@ -544,7 +544,7 @@ VOS_UINT32 SI_PIH_PrivateCchpSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_CCHP_SET_REQ_STRU*)VOS_AllocMsg(WUEPS_PID_AT,
                             (VOS_UINT32)(sizeof(SI_PIH_CCHP_SET_REQ_STRU) - VOS_MSG_HEAD_LENGTH));
 
@@ -594,7 +594,7 @@ VOS_UINT32 SI_PIH_CchcSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_CCHC_SET_REQ_STRU*)VOS_AllocMsg(WUEPS_PID_AT,
                         sizeof(SI_PIH_CCHC_SET_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
 
@@ -632,7 +632,7 @@ VOS_UINT32 SI_PIH_CglaSetReq(
     SI_PIH_CGLA_REQ_STRU               *pstMsg;
     VOS_UINT32                          ulReceiverPid;
 
-    /* 参数检测 */
+    /* ???????? */
     if ((SI_APDU_MAX_LEN + 1) < pstData->ulLen)
     {
         PIH_ERROR_LOG("SI_PIH_CglaSetReq:Command length is incorrect.");
@@ -646,7 +646,7 @@ VOS_UINT32 SI_PIH_CglaSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_CGLA_REQ_STRU *)VOS_AllocMsg(WUEPS_PID_AT,
                                                    sizeof(SI_PIH_CGLA_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
 
@@ -692,7 +692,7 @@ VOS_UINT32 SI_PIH_GetCardATRReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_MSG_HEADER_STRU *)VOS_AllocMsg(WUEPS_PID_AT,
                                                    sizeof(SI_PIH_MSG_HEADER_STRU) - VOS_MSG_HEAD_LENGTH);
 
@@ -997,7 +997,7 @@ VOS_UINT32 SI_PIH_UiccAuthReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_UICCAUTH_REQ_STRU *)VOS_AllocMsg(WUEPS_PID_AT, sizeof(SI_PIH_UICCAUTH_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
 
     if (VOS_NULL_PTR == pstMsg)
@@ -1048,7 +1048,7 @@ VOS_UINT32 SI_PIH_AccessUICCFileReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_ACCESSFILE_REQ_STRU *)VOS_AllocMsg(WUEPS_PID_AT,
                     (VOS_UINT32)(sizeof(SI_PIH_ACCESSFILE_REQ_STRU) - VOS_MSG_HEAD_LENGTH));
 
@@ -1289,7 +1289,7 @@ VOS_UINT32 SI_PIH_PrivateCglaSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstMsg  = (SI_PIH_CGLA_REQ_STRU *)VOS_AllocMsg(WUEPS_PID_AT,
                                             (VOS_UINT32)(sizeof(SI_PIH_CGLA_REQ_STRU) - VOS_MSG_HEAD_LENGTH));
 
@@ -1336,7 +1336,7 @@ VOS_UINT32 SI_PIH_CrsmSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstCrsmMsg  = (SI_PIH_CRSM_SET_REQ_STRU*)VOS_AllocMsg(WUEPS_PID_AT, sizeof(SI_PIH_CRSM_SET_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
 
     if (VOS_NULL_PTR == pstCrsmMsg)
@@ -1380,7 +1380,7 @@ VOS_UINT32 SI_PIH_CrlaSetReq(
         return TAF_FAILURE;
     }
 
-    /* 分配消息内存 */
+    /* ???????????? */
     pstCrlaMsg  = (SI_PIH_CRLA_SET_REQ_STRU*)VOS_AllocMsg(WUEPS_PID_AT, sizeof(SI_PIH_CRLA_SET_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
 
     if (VOS_NULL_PTR == pstCrlaMsg)

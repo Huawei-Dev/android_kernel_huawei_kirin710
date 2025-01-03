@@ -78,13 +78,13 @@ extern "C" {
 #include "mdrv_errno.h"
 
 /*****************************************************************************
-  1 宏定义
+  1 ??????
 *****************************************************************************/
 #define RDR_MODEM_NR_MOD_ID_START          0xb0000000
 #define RDR_MODEM_NR_MOD_ID_END            0xbfffffff
 #define OM_SYSCTRL_MAGIC        (0x5B5C5C5B)
 
-/* dump侵入内核修改 begin */
+/* dump???????????? begin */
 #ifdef __KERNEL__
 #define EXC_VEC_RESET       0x00    /* reset */
 #define EXC_VEC_UNDEF       0x04    /* undefined instruction */
@@ -94,7 +94,7 @@ extern "C" {
 #define EXC_VEC_IRQ         0x18    /* interrupt */
 #define EXC_VEC_FIQ         0x1C    /* fast interrupt */
 #endif
-/* dump侵入内核修改 end */
+/* dump???????????? end */
 
 #define DUMP_INT_IN_FLAG                    (0xAAAA)
 #define DUMP_FLAG_INT_ENTER                 (0xAAAA0000)
@@ -113,7 +113,7 @@ extern "C" {
 #define DUMP_REG_SET_MAX                    0x1000
 
 /*****************************************************************************
-  2 枚举定义
+  2 ????????
 *****************************************************************************/
 #define NVID_DUMP   (NV_ID_DRV_DUMP)
 
@@ -142,10 +142,10 @@ typedef enum
 
 
 
-/* 枚举值与dump_file_cfg_s必须保持匹配 */
+/* ????????dump_file_cfg_s???????????? */
 
 
-/* dump文件结点，ioctl命令字 */
+/* dump??????????ioctl?????? */
 
 typedef enum
 {
@@ -201,26 +201,26 @@ typedef struct _dump_exc_contex
 #define DUMP_LOAD_MAGIC     0xEEEE1234
 typedef struct _dump_load_info_s
 {
-    u32 magic_num;      /* dump加载信息区标识，用于兼容之前版本 */
-    u32 mdm_ddr;        /* MODEM DDR加载地址 */
-    u32 mdm_share;      /* MODEM共享内存加载地址 */
-    u32 mdm_dump;       /* MODEM可维可测内存加载地址 */
-    u32 mdm_sram;       /* MODEM SRAM加载地址 */
-    u32 mdm_dts;        /* MODEM DTS加载地址 */
-    u32 mdm_secshare;   /* MODEM安全共享内存加载地址 */
-    u32 mdm_llram;      /* MODEM安全共享内存加载地址 */
-    u64 ap_ddr;         /* AP DDR加载地址 */
-    u64 ap_share;       /* AP共享内存加载地址 */
-    u64 ap_dump;        /* AP可维可测内存加载地址 */
-    u64 ap_sram;        /* AP SRAM加载地址 */
-    u64 ap_dts;         /* AP DTS加载地址 */
-    u32 lpm3_tcm0;      /* LPM3 TCM0加载地址 */
-    u32 lpm3_tcm1;      /* LPM3 TCM1加载地址 */
-    u32 mdm_ddr_saveoff;    /* MODEM DDR保存bin时的偏移(去掉text段)*/
-    u32 mdm_share_ddr_size;    /* MODEM DDR保存bin时的偏移(去掉text段)*/
+    u32 magic_num;      /* dump???????????????????????????????? */
+    u32 mdm_ddr;        /* MODEM DDR???????? */
+    u32 mdm_share;      /* MODEM???????????????? */
+    u32 mdm_dump;       /* MODEM???????????????????? */
+    u32 mdm_sram;       /* MODEM SRAM???????? */
+    u32 mdm_dts;        /* MODEM DTS???????? */
+    u32 mdm_secshare;   /* MODEM???????????????????? */
+    u32 mdm_llram;      /* MODEM???????????????????? */
+    u64 ap_ddr;         /* AP DDR???????? */
+    u64 ap_share;       /* AP???????????????? */
+    u64 ap_dump;        /* AP???????????????????? */
+    u64 ap_sram;        /* AP SRAM???????? */
+    u64 ap_dts;         /* AP DTS???????? */
+    u32 lpm3_tcm0;      /* LPM3 TCM0???????? */
+    u32 lpm3_tcm1;      /* LPM3 TCM1???????? */
+    u32 mdm_ddr_saveoff;    /* MODEM DDR????bin????????(????text??)*/
+    u32 mdm_share_ddr_size;    /* MODEM DDR????bin????????(????text??)*/
 }dump_load_info_t;
 
-/*RTOSck里任务结构体*/
+/*RTOSck????????????*/
 typedef struct tagListObject
 {
     struct tagListObject *pstPrev;
@@ -236,34 +236,34 @@ typedef struct tagMsgQHead
 #if defined(__OS_RTOSCK__)
 typedef struct tagPublicTskCB
 {
-    VOID               *pStackPointer;              // 当前任务的SP
-    TSK_STATUS_T        usTaskStatus;               // 任务状态
-    TSK_PRIOR_T         usPriority;                 // 任务的运行优先级
-    UINT32              uwStackSizes;                // 任务栈大小
-    UINT32              uwTopOfStack;               // 任务栈顶
-    TSK_HANDLE_T        uwTaskPID;                  // 任务PID
-    TSK_ENTRY_FUNC      pfnTaskEntry;               // 任务入口函数
-    VOID               *pTaskSem;                   // 任务Pend的信号量指针
-    INT32               swFsemCount;                // 快速信号量计数
-    UINT32              auwArgs[4];                 // 任务的参数
-#if (OS_HAVE_COPROCESSOR1 == YES)                   // 只有Tensilica平台才有该功能
-    VOID               *pCpSaveAreaA;               // 矢量寄存器缓存地址A
-    VOID               *pCpSaveAreaB;               // 矢量寄存器缓存地址B
+    VOID               *pStackPointer;              // ??????????SP
+    TSK_STATUS_T        usTaskStatus;               // ????????
+    TSK_PRIOR_T         usPriority;                 // ????????????????
+    UINT32              uwStackSizes;                // ??????????
+    UINT32              uwTopOfStack;               // ????????
+    TSK_HANDLE_T        uwTaskPID;                  // ????PID
+    TSK_ENTRY_FUNC      pfnTaskEntry;               // ????????????
+    VOID               *pTaskSem;                   // ????Pend????????????
+    INT32               swFsemCount;                // ??????????????
+    UINT32              auwArgs[4];                 // ??????????
+#if (OS_HAVE_COPROCESSOR1 == YES)                   // ????Tensilica??????????????
+    VOID               *pCpSaveAreaA;               // ??????????????????A
+    VOID               *pCpSaveAreaB;               // ??????????????????B
 #endif
-    TSK_PRIOR_T         usOrigPriority;             // 任务的原始优先级
-    UINT16              usStackCfgFlg;              // 任务栈配置标记
-    UINT16              usQNum;                     // 消息队列数
-    UINT16              usRecvQID;                  // 期望接收消息的QID
-    UINT32              uwPrivateData;              // 私有数据
-    MSG_QHead_S        *pstMsgQ;                    // 指向消息队列数组
-    LIST_OBJECT_S       stPendList;                 // 信号量链表指针
-    LIST_OBJECT_S       stTimerList;                // 任务延时链表指针
-    LIST_OBJECT_S       stSemBList;                 // 持有互斥信号量链表
-    UINT64              ullExpirationTick;          // 任务恢复的时间点(单位Tick)
-    UINT32              uwEvent;                    // 任务事件
-    UINT32              uwEventMask;                // 任务事件掩码
-    UINT32              uwLastErr;                  // 任务记录的最后一个错误码
-    UINT32              uwReserved;                 // 增加一个PAD，保证TCB 8字节对齐
+    TSK_PRIOR_T         usOrigPriority;             // ????????????????
+    UINT16              usStackCfgFlg;              // ??????????????
+    UINT16              usQNum;                     // ??????????
+    UINT16              usRecvQID;                  // ??????????????QID
+    UINT32              uwPrivateData;              // ????????
+    MSG_QHead_S        *pstMsgQ;                    // ????????????????
+    LIST_OBJECT_S       stPendList;                 // ??????????????
+    LIST_OBJECT_S       stTimerList;                // ????????????????
+    LIST_OBJECT_S       stSemBList;                 // ??????????????????
+    UINT64              ullExpirationTick;          // ????????????????(????Tick)
+    UINT32              uwEvent;                    // ????????
+    UINT32              uwEventMask;                // ????????????
+    UINT32              uwLastErr;                  // ????????????????????????
+    UINT32              uwReserved;                 // ????????PAD??????TCB 8????????
 } TSK_CB_S;
 #elif  defined(__OS_RTOSCK_SMP__)
 typedef struct tagPushablTskList
@@ -274,64 +274,64 @@ typedef struct tagPushablTskList
 }PUSHABL_TLIST;
 typedef struct tagPublicTskCB
 {
-    VOID               *pStackPointer;              // 当前任务的SP
-    TSK_STATUS_T        usTaskStatus;               // 任务状态
+    VOID               *pStackPointer;              // ??????????SP
+    TSK_STATUS_T        usTaskStatus;               // ????????
 #if (OS_HARDWARE_PLATFORM == OS_CORTEX_RX)
-    UINT16              uwReserved1;                // 不使用，保证可以对usTaskStatus进行32位的原子操作
+    UINT16              uwReserved1;                // ??????????????????usTaskStatus????32????????????
 #endif
-    TSK_PRIOR_T         usPriority;                 // 任务的运行优先级
+    TSK_PRIOR_T         usPriority;                 // ????????????????
 #if (OS_HARDWARE_PLATFORM == OS_CORTEX_RX)
-    UINT16              usSpinLockCount;            // 任务持有的spinlock锁个数
-    UINT32              uwLastSpinLock;             // 任务持有的最后一个spinlock
-    volatile UINT32     uwTaskOperating;            // 任务正在进行的操作类型
-    UINT32              uwReserved2;                // 保留
+    UINT16              usSpinLockCount;            // ??????????spinlock??????
+    UINT32              uwLastSpinLock;             // ??????????????????spinlock
+    volatile UINT32     uwTaskOperating;            // ??????????????????????
+    UINT32              uwReserved2;                // ????
 #endif
-    UINT32              uwStackSize;                // 任务栈大小
-    UINT32              uwTopOfStack;               // 任务栈顶
-    TSK_HANDLE_T        uwTaskPID;                  // 任务PID：SMP下为任务OS内部索引,AMP下为核号 | 任务索引
-    TSK_ENTRY_FUNC      pfnTaskEntry;               // 任务入口函数
-    VOID               *pTaskSem;                   // 任务Pend的信号量指针
-    INT32               swFsemCount;                // 快速信号量计数
-    UINT32              auwArgs[4];                 // 任务的参数
-#if (OS_OPTION_COPROCESSOR == YES)                  // 只有Tensilica平台才有该功能
-    VOID               *pCpSaveAreaA;               // 矢量寄存器缓存地址A
-    VOID               *pCpSaveAreaB;               // 矢量寄存器缓存地址B
+    UINT32              uwStackSize;                // ??????????
+    UINT32              uwTopOfStack;               // ????????
+    TSK_HANDLE_T        uwTaskPID;                  // ????PID??SMP????????OS????????,AMP???????? | ????????
+    TSK_ENTRY_FUNC      pfnTaskEntry;               // ????????????
+    VOID               *pTaskSem;                   // ????Pend????????????
+    INT32               swFsemCount;                // ??????????????
+    UINT32              auwArgs[4];                 // ??????????
+#if (OS_OPTION_COPROCESSOR == YES)                  // ????Tensilica??????????????
+    VOID               *pCpSaveAreaA;               // ??????????????????A
+    VOID               *pCpSaveAreaB;               // ??????????????????B
 #endif
-    TSK_PRIOR_T         usOrigPriority;             // 任务的原始优先级
-    UINT16              usStackCfgFlg;              // 任务栈配置标记
-    UINT16              usQNum;                     // 消息队列数
-    UINT16              usRecvQID;                  // 期望接收消息的QID
-    UINT32              uwPrivateData;              // 私有数据
-    MSG_QHead_S        *pstMsgQ;                    // 指向消息队列数组
-    LIST_OBJECT_S       stPendList;                 // 信号量链表指针
-    LIST_OBJECT_S       stTimerList;                // 任务延时链表指针
-    LIST_OBJECT_S       stSemBList;                 // 持有互斥信号量链表
-    UINT64              ullExpirationTick;          // 任务恢复的时间点(单位Tick)
-    UINT32              uwEvent;                    // 任务事件
-    UINT32              uwEventMask;                // 任务事件掩码
-    UINT32              uwLastErr;                  // 任务记录的最后一个错误码
+    TSK_PRIOR_T         usOrigPriority;             // ????????????????
+    UINT16              usStackCfgFlg;              // ??????????????
+    UINT16              usQNum;                     // ??????????
+    UINT16              usRecvQID;                  // ??????????????QID
+    UINT32              uwPrivateData;              // ????????
+    MSG_QHead_S        *pstMsgQ;                    // ????????????????
+    LIST_OBJECT_S       stPendList;                 // ??????????????
+    LIST_OBJECT_S       stTimerList;                // ????????????????
+    LIST_OBJECT_S       stSemBList;                 // ??????????????????
+    UINT64              ullExpirationTick;          // ????????????????(????Tick)
+    UINT32              uwEvent;                    // ????????
+    UINT32              uwEventMask;                // ????????????
+    UINT32              uwLastErr;                  // ????????????????????????
 #if (OS_OPTION_SMP == YES)
-    UINT32              uwTcbLock;                  // 任务tcb锁，核间操作需要上锁
-    BOOL                bIsInterruptable;           // 任务特殊临界区保护标志
+    UINT32              uwTcbLock;                  // ????tcb????????????????????
+    BOOL                bIsInterruptable;           // ??????????????????????
     UINT32              uwSMPReserve;               // reserved
-    PUSHABL_TLIST       stPushAbleList;             // 可push队列链表
-    UINT32              uwCoreAllowedMask;          // 该任务可以执行的核bitmap
-    UINT32              uwNrCoresAllowed;           // 该任务可以执行的核个数
-    UINT32              uwCoreID;                   // 该任务所处的rq挂接的核号
-    BOOL                bIsOnRq;                    // 该任务是否在运行队列上(ready)
-    UINT32              uwTskLoad;                  // 该任务的负载
-    void               *pstScheClass;               // 该任务使用的调度类
+    PUSHABL_TLIST       stPushAbleList;             // ??push????????
+    UINT32              uwCoreAllowedMask;          // ??????????????????bitmap
+    UINT32              uwNrCoresAllowed;           // ??????????????????????
+    UINT32              uwCoreID;                   // ????????????rq??????????
+    BOOL                bIsOnRq;                    // ??????????????????????(ready)
+    UINT32              uwTskLoad;                  // ????????????
+    void               *pstScheClass;               // ??????????????????
 #endif
 
-    UINT32              uwReserved;                 // 增加一个PAD，保证TCB 8字节对齐
+    UINT32              uwReserved;                 // ????????PAD??????TCB 8????????
 } TSK_CB_S;
 
 #endif
 
 typedef struct
 {
-    u32 task_id;            /*任务id*/
-    u8  task_name[12];      /*任务名*/
+    u32 task_id;            /*????id*/
+    u8  task_name[12];      /*??????*/
 }dump_task_info_s;
 
 
@@ -365,7 +365,7 @@ typedef struct dump_baseinfo_head
     u32 cpu_online_num;     /*0x88 */
     u8  version[32];        /*0xA0 */
     u8  compile_time[32];   /*0xB0 */
-    u32 reboot_reason;      /*m3专用*/
+    u32 reboot_reason;      /*m3????*/
 
 }dump_base_info_t;
 
@@ -410,12 +410,12 @@ typedef enum _dump_reboot_ctx_e
 
 typedef struct
 {
-    u32 cpu_state;                      /*cpu 状态*/
-    dump_reboot_ctx_t current_ctx;      /*cpu上下文*/
-    u32 current_int;                    /*当前的中断*/
-    u32 current_task;                   /*当前正在运行的任务*/
-    u8  taskName[TASK_NAME_LEN];        /*任务名*/
-    u32 regSet[ARM_REGS_NUM];           /*寄存器信息*/
+    u32 cpu_state;                      /*cpu ????*/
+    dump_reboot_ctx_t current_ctx;      /*cpu??????*/
+    u32 current_int;                    /*??????????*/
+    u32 current_task;                   /*??????????????????*/
+    u8  taskName[TASK_NAME_LEN];        /*??????*/
+    u32 regSet[ARM_REGS_NUM];           /*??????????*/
     u8  callstack[DUMP_FIELD_CPUINFO_SIZE - sizeof(dump_reboot_ctx_t) - sizeof(u32)- sizeof(u32)- TASK_NAME_LEN - sizeof(u32) * ARM_REGS_NUM];
 }dump_cpu_info_t;
 
@@ -505,17 +505,17 @@ typedef struct
 struct dump_ddr_trans_head_info
 {
     unsigned int magic;                 /*magic num  0x5678fedc */
-    unsigned int packet_num;            /*BD包个数*/
-    unsigned int total_length;          /*总包长*/
-    unsigned int lp_length;             /*最后一个包的长度*/
-    char file_name[28];                 /*需要保存的文件名*/
+    unsigned int packet_num;            /*BD??????*/
+    unsigned int total_length;          /*??????*/
+    unsigned int lp_length;             /*????????????????*/
+    char file_name[28];                 /*????????????????*/
     unsigned int resv;
 };
 
 #ifndef __OS_NRCCPU__
 
 /*****************************************************************************
-  3 函数声明
+  3 ????????
 *****************************************************************************/
 #ifdef ENABLE_BUILD_OM
 
@@ -530,12 +530,12 @@ u8 * bsp_dump_get_field_phy_addr(u32 field_id);
 void bsp_dump_trace_stop(void);
 int bsp_dump_save_all_task_name(void);
 void bsp_om_save_reboot_log(const char * func_name, const void* caller);
-/* dump侵入内核修改 begin */
+/* dump???????????? begin */
 void adump_set_exc_vec(u32 vec);
 void dump_int_enter(u32 dir, u32 irq_num);
 void dump_int_exit(u32 dir, u32 irq_num);
 int  dump_stack_trace_print(unsigned long where);
-/* dump侵入内核修改 end */
+/* dump???????????? end */
 s32  dump_exc_register(exc_hook func);
 void bsp_ccore_wdt_register_hook(void);
 void bsp_dump_get_reset_modid(u32 reason, u32 reboot_modid, u32 * modId);
@@ -776,7 +776,7 @@ static inline void bsp_dump_get_avaiable_size(u32* size)
 #endif
 
 /*****************************************************************************
-  4 错误码声明
+  4 ??????????
 *****************************************************************************/
 
 

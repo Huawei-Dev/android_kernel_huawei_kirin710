@@ -59,7 +59,7 @@
 #include  "msp_diag.h"
 
 /*lint -e767*/
-#define    THIS_FILE_ID        PS_FILE_ID_IPCOMM_C    /*待修改*/
+#define    THIS_FILE_ID        PS_FILE_ID_IPCOMM_C    /*??????*/
 /*lint +e767*/
 
 /*****************************************************************************
@@ -111,7 +111,7 @@ VOS_VOID IP_BuildLinkLocalAddr
     const VOS_UINT8 *pucIfId
 )
 {
-    /* 构造link-local address */
+    /* ????link-local address */
     IP_SetUint16Data(pucLinkLocalAddr, IP_IPV6_LINK_LOCAL_PREFIX);
     IP_MEM_CPY_S(&pucLinkLocalAddr[ND_IPV6_IF_OFFSET], ND_IPV6_IF_LEN, pucIfId, ND_IPV6_IF_LEN);
 }
@@ -127,16 +127,16 @@ VOS_VOID IP_BuildIPv6Header
 {
     VOS_UINT8    aucLinkLocalAddr[IP_IPV6_ADDR_LEN] = {0};
 
-    /* 构造link-local address */
+    /* ????link-local address */
     IP_BuildLinkLocalAddr(aucLinkLocalAddr, pucInterfaceId);
 
-    /* 设置IP版本号 */
+    /* ????IP?????? */
     *pucIpv6 = IP_VERSION_6 << 4;
 
-    /* 设置Payload，没有扩展头 */
+    /* ????Payload???????????? */
     IP_SetUint16Data(pucIpv6 + IP_IPV6_BASIC_HEAD_PAYLOAD_OFFSET, ulUpperLength);
 
-    /* 设置next header */
+    /* ????next header */
     *(pucIpv6 + IP_IPV6_BASIC_HEAD_NEXT_HEAD_OFFSET) = IP_HEAD_PROTOCOL_ICMPV6;
 
     /* Hop Limit 255 */
@@ -145,7 +145,7 @@ VOS_VOID IP_BuildIPv6Header
     IP_MEM_CPY_S(pucIpv6 + IP_IPV6_SRC_ADDR_OFFSET, IP_IPV6_ADDR_LEN, aucLinkLocalAddr, IP_IPV6_ADDR_LEN);
     IP_MEM_CPY_S(pucIpv6 + IP_IPV6_DST_ADDR_OFFSET, IP_IPV6_ADDR_LEN, g_aucNdAllRoutersMulticaseAddr, IP_IPV6_ADDR_LEN);
 
-    /* 为计算checksum构造pseudo-header */
+    /* ??????checksum????pseudo-header */
     IP_MEM_CPY_S(pstPseduoHeader->aucIPSrc, IP_IPV6_ADDR_LEN, aucLinkLocalAddr, IP_IPV6_ADDR_LEN);
     IP_MEM_CPY_S(pstPseduoHeader->aucIPDes, IP_IPV6_ADDR_LEN, g_aucNdAllRoutersMulticaseAddr, IP_IPV6_ADDR_LEN);
     IP_SetUint32Data((VOS_UINT8*)&pstPseduoHeader->ulUpperLength, ulUpperLength);
@@ -164,33 +164,33 @@ VOS_VOID IP_ND_FormIPv6HeaderMsg
     VOS_UINT8                           ucType
 )
 {
-    /* 版本 */
+    /* ???? */
     *pucData = (VOS_UINT8)((IP_VERSION_6 << IP_MOVEMENT_4_BITS) & IP_IPDATA_HIGH_4_BIT_MASK);
     pucData++;
 
-    /* 传输类型、流标签 */
+    /* ???????????????? */
     pucData += 3;
 
-    /* 有效负载长度 */
+    /* ???????????? */
     IP_SetUint16Data(pucData, (VOS_UINT16)ulPduLen);
     pucData += 2;
 
-    /* 下一报头 */
+    /* ???????? */
     *pucData = ucType;
     pucData++;
 
-    /* 跳限制 */
+    /* ?????? */
     *pucData = IP_IPV6_ND_HOP_LIMIT;
     pucData++;
 
-    /* 源地址 */
+    /* ?????? */
     IP_MEM_CPY_S( pucData,
                 IP_IPV6_ADDR_LEN,
                 aucSrcIPAddr,
                 IP_IPV6_ADDR_LEN);
     pucData += IP_IPV6_ADDR_LEN;
 
-    /* 目的地址 */
+    /* ???????? */
     IP_MEM_CPY_S( pucData,
                 IP_IPV6_ADDR_LEN,
                 aucDstIPAddr,
@@ -254,35 +254,35 @@ IP_ERR_ENUM_UINT32 IP_GetIpv6UpLayerProtocol
     IP_ASSERT_RTN(VOS_NULL_PTR != pucNextHeader, IP_FAIL);
     IP_ASSERT_RTN(VOS_NULL_PTR != pulDecodedLen, IP_FAIL);
 
-    /* 获取nextheader */
+    /* ????nextheader */
     ucNextHeader = *(pucIpMsgTemp + IP_IPV6_BASIC_HEAD_NEXT_HEAD_OFFSET);
 
     pucIpMsgTemp = pucIpMsgTemp + IP_IPV6_HEAD_LEN;
 
-    /* 已跳过的数据包长度小于ulIpMsgLen */
+    /* ??????????????????????ulIpMsgLen */
     while (ulDecodeLen <= usPayLoad)
     {
         switch (ucNextHeader)
         {
-            case IP_EXTENSION_HEADER_TYPE_FRAGMENT/* 分段头 */:
-            case IP_EXTENSION_HEADER_TYPE_AH/* AH头 */:
-            case IP_EXTENSION_HEADER_TYPE_ESP/* ESP头 */:
+            case IP_EXTENSION_HEADER_TYPE_FRAGMENT/* ?????? */:
+            case IP_EXTENSION_HEADER_TYPE_AH/* AH?? */:
+            case IP_EXTENSION_HEADER_TYPE_ESP/* ESP?? */:
                 *pucNextHeader = ucNextHeader;
                 *pulDecodedLen = ulDecodeLen + IP_IPV6_HEAD_LEN;
                 return IP_SUCC;
-            case IP_EXTENSION_HEADER_TYPE_HOPBYHOP/* 逐跳选项头 */:
-            case IP_EXTENSION_HEADER_TYPE_DESTINATION/* 目的地选项头 */:
-            case IP_EXTENSION_HEADER_TYPE_ROUTING/* 选路头 */:
+            case IP_EXTENSION_HEADER_TYPE_HOPBYHOP/* ?????????? */:
+            case IP_EXTENSION_HEADER_TYPE_DESTINATION/* ???????????? */:
+            case IP_EXTENSION_HEADER_TYPE_ROUTING/* ?????? */:
                 if (ulDecodeLen + IP_IPV6_EXT_HEAD_LEN_OFFSET >= usPayLoad)
                 {
                     IPND_WARNING_LOG(ND_TASK_PID, "IP_GetIpv6UpLayerProtocol: PayLoad Lenth is Error!");
                     return IP_FAIL;
                 }
 
-                /* 当前扩展头中的下一跳 */
+                /* ???????????????????? */
                 ucNextHeader =  *(pucIpMsgTemp + IP_IPV6_EXT_HEAD_NEXT_HEAD_OFFSET);
 
-                /* 读取扩展头中的长度信息，跳过此扩展头 */
+                /* ???????????????????????????????????? */
                 ucExtHeaderLen = *(pucIpMsgTemp + IP_IPV6_EXT_HEAD_LEN_OFFSET);
 
                 pucIpMsgTemp = pucIpMsgTemp + IP_GetExtensionLen(ucExtHeaderLen);
@@ -356,7 +356,7 @@ IP_BOOL_ENUM_UINT8 IP_IsIcmpv6Packet
     IP_ASSERT_RTN(VOS_NULL_PTR != pucIpMsg, IP_FALSE);
     IP_ASSERT_RTN(VOS_NULL_PTR != pulDecodedLen, IP_FALSE);
 
-    /* 获取IP版本号 */
+    /* ????IP?????? */
     if (0 == ulIpMsgLen)
     {
         IPND_INFO_LOG(ND_TASK_PID, "\nIP_IsIcmpv6Packet: MsgLen Is ZERO!");
@@ -364,14 +364,14 @@ IP_BOOL_ENUM_UINT8 IP_IsIcmpv6Packet
     }
     ucIpVersion = IP_GetIpVersion(pucIpMsg);
 
-    /* 如果版本号不是IPV6，则不是ICMPv6包 */
+    /* ??????????????IPV6????????ICMPv6?? */
     if (IP_VERSION_6 != ucIpVersion)
     {
         IPND_INFO_LOG1(ND_TASK_PID, "IP_IsIcmpv6Packet: IpVersion:", ucIpVersion);
         return IP_FALSE;
     }
 
-    /* 获取PAYLOAD */
+    /* ????PAYLOAD */
     if ((IP_IPV6_BASIC_HEAD_PAYLOAD_OFFSET + 1) >= ulIpMsgLen)
     {
         IPND_INFO_LOG(ND_TASK_PID, "\nIP_IsIcmpv6Packet: MsgLen Is Less Than IP_IPV6_BASIC_HEAD_PAYLOAD_OFFSET + 1!");
@@ -379,7 +379,7 @@ IP_BOOL_ENUM_UINT8 IP_IsIcmpv6Packet
     }
     IP_GetUint16Data(usPayLoad, pucIpMsg + IP_IPV6_BASIC_HEAD_PAYLOAD_OFFSET);
 
-    /* 长度合法检查 */
+    /* ???????????? */
     if (((VOS_UINT32)usPayLoad + IP_IPV6_HEAD_LEN) > ulIpMsgLen)
     {
         if(1 == g_ulCnNd)
@@ -393,7 +393,7 @@ IP_BOOL_ENUM_UINT8 IP_IsIcmpv6Packet
         return IP_FALSE;
     }
 
-    /* 获取上层协议号 */
+    /* ?????????????? */
     ulRslt = IP_GetIpv6UpLayerProtocol(pucIpMsg, usPayLoad, &ucProtocol, &ulDecodedLen);
     if (IP_SUCC != ulRslt)
     {
@@ -408,7 +408,7 @@ IP_BOOL_ENUM_UINT8 IP_IsIcmpv6Packet
         return IP_FALSE;
     }
 
-    /* 判断上层协议号是否为Icmpv6 */
+    /* ????????????????????Icmpv6 */
     if (IP_HEAD_PROTOCOL_ICMPV6 != ucProtocol)
     {
         IPND_INFO_LOG1(ND_TASK_PID, "IP_IsIcmpv6Packet: Protocol:", ucProtocol);
@@ -438,7 +438,7 @@ VOS_UINT32 IP_ConstructICMPv6PseudoHeader
 
     pstPseduoHeader->ucNextHead = IP_HEAD_PROTOCOL_ICMPV6;
 
-    /* 获取PAYLOAD */
+    /* ????PAYLOAD */
     IP_GetUint16Data(ulLength, pucMsgData + IP_IPV6_BASIC_HEAD_PAYLOAD_OFFSET);
 
     ulLengthTmp = (ulTypeOffset - IP_IPV6_HEAD_LEN);
@@ -494,10 +494,10 @@ VOS_UINT16 IPv6_Checksum
     IP_ASSERT_RTN(VOS_NULL_PTR != pucData, 0);
     IP_ASSERT_RTN(0 != ulLen, 0);
 
-    /* pseduo-header求和 */
+    /* pseduo-header???? */
     ulCheckSum += IP_Unit16Sum(pucPseduoHeader, sizeof(IPV6_PSEDUOHEADER_STRU));
 
-    /* IPV6 Upper-layer package求和 */
+    /* IPV6 Upper-layer package???? */
     ulCheckSum += IP_Unit16Sum(pucData, ulLen);
 
     while(ulCheckSum >> 16)
@@ -526,7 +526,7 @@ IP_ERR_ENUM_UINT32 IP_VerifyICMPv6
         return IP_FAIL;
     }
 
-    /* 判断是否需要检验，若没有携带checksum，作为非法包处理 */
+    /* ????????????????????????????checksum???????????????? */
     if ((0 == *(pucIpMsg + ulTypeOffset + IP_ICMPV6_CHECKSUM_OFFSET))
         && (0 == *(pucIpMsg + ulTypeOffset + IP_ICMPV6_CHECKSUM_OFFSET + 1)))
     {
@@ -534,13 +534,13 @@ IP_ERR_ENUM_UINT32 IP_VerifyICMPv6
         return IP_FAIL;
     }
 
-    /* 构造pseduo-header */
+    /* ????pseduo-header */
     if (0 == (ulLen = IP_ConstructICMPv6PseudoHeader(pucIpMsg, ulTypeOffset, &stPseduoHeader)))
     {
         return IP_FAIL;
     }
 
-    /* 校验ICMPv6包 */
+    /* ????ICMPv6?? */
     if(0 != IPv6_Checksum(&stPseduoHeader, pucIpMsg + ulTypeOffset, ulLen))
     {
         IPND_WARNING_LOG(ND_TASK_PID, "IP_VerifyICMPv6: CHECKSUM Error!");
@@ -564,14 +564,14 @@ IP_BOOL_ENUM_UINT8 IP_IsValidNdMsg
     IP_ASSERT_RTN(VOS_NULL_PTR != pucIpMsg, IP_FALSE);
     IP_ASSERT_RTN(VOS_NULL_PTR != pulTypeOffset, IP_FALSE);
 
-    /* 判断是否为ICMPv6包 */
+    /* ??????????ICMPv6?? */
     if (IP_TRUE != IP_IsIcmpv6Packet(pucIpMsg, ulIpMsgLen, &ulDecodedLen))
     {
         IPND_ERROR_LOG(ND_TASK_PID, "IP_IsValidNdMsg: Not Icmpv6 Packet");
         return IP_FALSE;
     }
 
-    /* 长度不足以携带checksum，作为非法包处理 */
+    /* ??????????????checksum???????????????? */
     if (ulDecodedLen + IP_ICMPV6_CHECKSUM_OFFSET + 1 >= ulIpMsgLen)
     {
         IPND_WARNING_LOG(ND_TASK_PID, "IP_VerifyICMPv6: NONE CHECKSUM!");
@@ -584,7 +584,7 @@ IP_BOOL_ENUM_UINT8 IP_IsValidNdMsg
         return IP_FALSE;
     }
 
-    /* 取ICMPV6消息中的TYPE字段 */
+    /* ??ICMPV6????????TYPE???? */
     ucType = *(pucIpMsg + ulDecodedLen);
     if (IP_ICMPV6_TYPE_ECHOREQUEST != ucType)
     {
@@ -595,7 +595,7 @@ IP_BOOL_ENUM_UINT8 IP_IsValidNdMsg
         }
     }
 
-    /* TYPE是否位于[128,137] */
+    /* TYPE????????[128,137] */
     if ((IP_ICMPV6_TYPE_ECHOREQUEST <= ucType)
         && (IP_ICMPV6_TYPE_REDIRECT >= ucType))
     {
@@ -627,18 +627,18 @@ IP_ERR_ENUM_UINT32 IP_BuildIcmpv6Checksum
     }
 
     /*lint -e679 -esym(679,*)*/
-    /* 清除ICMPv6校验和字段 */
+    /* ????ICMPv6?????????? */
     pucIpMsg[ulTypeOffset + IP_ICMPV6_CHECKSUM_OFFSET] = 0;
     pucIpMsg[ulTypeOffset + IP_ICMPV6_CHECKSUM_OFFSET + 1] = 0;
     /*lint -e679 +esym(679,*)*/
 
-    /* 构造pseduo-header */
+    /* ????pseduo-header */
     if (0 == (ulLen = IP_ConstructICMPv6PseudoHeader(pucIpMsg, ulTypeOffset, &stPseduoHeader)))
     {
         return IP_FAIL;
     }
 
-    /* 生成ICMPv6包校验和 */
+    /* ????ICMPv6???????? */
     usCheckSum = IPv6_Checksum(&stPseduoHeader, pucIpMsg + ulTypeOffset, ulLen);
 
     /*lint -e679 -esym(679,*)*/
@@ -773,7 +773,7 @@ VOS_UINT32 TTF_NDIS_Ipv6GetDhcpOption
 
     *pOpt = pFirstOpt;
 
-    while ( usTotOptLen >= 4 ) /*IPV6_PKT_DHCP_OPT_HDR_STRU中 OptCode与OptLen的长度*/
+    while ( usTotOptLen >= 4 ) /*IPV6_PKT_DHCP_OPT_HDR_STRU?? OptCode??OptLen??????*/
     {
         usOptLen = VOS_NTOHS((*pOpt)->usDhcpOptLen);
         if ( usOptLen == 0 )
@@ -781,7 +781,7 @@ VOS_UINT32 TTF_NDIS_Ipv6GetDhcpOption
             return PS_FAIL;
         }
 
-        /*剩余总长度小于当前Option长度, 退出*/
+        /*??????????????????Option????, ????*/
         if (usTotOptLen < (usOptLen + 4))
         {
             break;

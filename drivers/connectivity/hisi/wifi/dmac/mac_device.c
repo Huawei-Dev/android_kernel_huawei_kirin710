@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oam_ext_if.h"
 #include "frw_ext_if.h"
@@ -25,7 +25,7 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_MAC_DEVICE_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST)
 extern oal_uint32 band_5g_enabled;
@@ -35,7 +35,7 @@ oal_bool_enum_uint8 g_en_wmmac_switch = OAL_FALSE;
 #endif
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -83,7 +83,7 @@ oal_uint32  mac_chip_exit(mac_board_stru *pst_board, mac_chip_stru *pst_chip)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /*放入Device自身结构释放*/
+    /*????Device????????????*/
 #if 0
     for (uc_device = 0; uc_device < pst_chip->uc_device_nums; uc_device++)
     {
@@ -100,7 +100,7 @@ oal_uint32  mac_chip_exit(mac_board_stru *pst_board, mac_chip_stru *pst_chip)
 
     pst_chip->uc_device_nums = 0;
 
-    /* destroy流程最后将状态置为FALSE */
+    /* destroy??????????????????FALSE */
     pst_chip->en_chip_state  = OAL_FALSE;
 
     return OAL_SUCC;
@@ -124,7 +124,7 @@ oal_uint32  mac_board_exit(mac_board_stru *pst_board)
 #if 0
     while (0 != pst_board->uc_chip_id_bitmap)
     {
-        /* 获取最右边一位为1的位数，此值即为chip的数组下标 */
+        /* ????????????????1????????????????chip?????????? */
         uc_chip_idx = oal_bit_find_first_bit_one_byte(pst_board->uc_chip_id_bitmap);
         if (OAL_UNLIKELY(uc_chip_idx >= WLAN_CHIP_MAX_NUM_PER_BOARD))
         {
@@ -144,7 +144,7 @@ oal_uint32  mac_board_exit(mac_board_stru *pst_board)
             return ul_ret;
         }
 
-        /* 清除对应的bitmap位 */
+        /* ??????????bitmap?? */
         oal_bit_clear_bit_one_byte(&pst_board->uc_chip_id_bitmap, uc_chip_idx);
     }
 #endif
@@ -172,11 +172,11 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
        return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 初始化device的索引 */
+    /* ??????device?????? */
     pst_mac_device->uc_chip_id   = uc_chip_id;
     pst_mac_device->uc_device_id = uc_device_id;
 
-    /* 初始化device级别的一些参数 */
+    /* ??????device?????????????? */
     pst_mac_device->en_max_bandwidth = WLAN_BAND_WIDTH_BUTT;
     pst_mac_device->en_max_band      = WLAN_BAND_BUTT;
     pst_mac_device->uc_max_channel   = 0;
@@ -206,12 +206,12 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
 
-    /* 根据初始化通道数，设置支持的空间流数 */
+    /* ???????????????????????????????????? */
     if ((WITP_RF_CHANNEL_NUMS == g_l_rf_channel_num) && (WITP_RF_CHANNEL_ZERO == g_l_rf_single_tran))
     {
         pst_mac_device->en_nss_num  = WLAN_DOUBLE_NSS;
 
-        /* 发送通道为双通道，通道0 & 通道1 */
+        /* ??????????????????????0 & ????1 */
         pst_mac_device->uc_tx_chain = WITP_TX_CHAIN_DOUBLE;
     }
     else
@@ -220,12 +220,12 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
 
         if (WITP_RF_CHANNEL_ZERO == g_l_rf_single_tran)
         {
-            /* 发送通道为双通道，通道0 */
+            /* ??????????????????????0 */
             pst_mac_device->uc_tx_chain =  WITP_TX_CHAIN_ZERO;
         }
         else if(WITP_RF_CHANNEL_ONE == g_l_rf_single_tran)
         {
-            /* 发送通道为双通道，通道1 */
+            /* ??????????????????????1 */
             pst_mac_device->uc_tx_chain =  WITP_TX_CHAIN_ONE;
         }
     }
@@ -233,14 +233,14 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
     pst_mac_device->uc_tx_chain =  WITP_TX_CHAIN_ZERO;
 #endif
 
-    /* 默认关闭wmm,wmm超时计数器设为0 */
+    /* ????????wmm,wmm??????????????0 */
     pst_mac_device->en_wmm = OAL_TRUE;
 
 #ifdef _PRE_WLAN_FEATURE_PROXYSTA
     OAL_MEMZERO(&pst_mac_device->st_psta, OAL_SIZEOF(pst_mac_device->st_psta));
 #endif
 
-    /* 根据芯片版本初始化device能力信息 */
+    /* ??????????????????device???????? */
    switch(ul_chip_ver)
    {
     case WLAN_CHIP_VERSION_HI1151V100H:
@@ -277,9 +277,9 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
     pst_mac_device->bit_su_bfmer     =  OAL_FALSE;
 #endif
     pst_mac_device->bit_su_bfmee     = OAL_TRUE;
-    pst_mac_device->bit_rx_stbc      = 1;                       /* 支持2个空间流 */
+    pst_mac_device->bit_rx_stbc      = 1;                       /* ????2???????? */
 
-    /* 关闭MU-BFMEE */
+    /* ????MU-BFMEE */
     pst_mac_device->bit_mu_bfmee     = OAL_FALSE;
 
 #else
@@ -290,26 +290,26 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
     pst_mac_device->bit_rx_stbc      = 1;
 #endif
 
-    /* 初始化vap num统计信息 */
+    /* ??????vap num???????? */
     pst_mac_device->uc_vap_num = 0;
     pst_mac_device->uc_sta_num = 0;
 #ifdef _PRE_WLAN_FEATURE_P2P
     pst_mac_device->st_p2p_info.uc_p2p_device_num   = 0;
     pst_mac_device->st_p2p_info.uc_p2p_goclient_num = 0;
-    pst_mac_device->st_p2p_info.pst_primary_net_device = OAL_PTR_NULL;/* 初始化主net_device 为空指针 */
+    pst_mac_device->st_p2p_info.pst_primary_net_device = OAL_PTR_NULL;/* ????????net_device ???????? */
 #endif
 
-    /* 初始化默认管制域 */
+    /* ???????????????? */
     mac_init_regdomain();
 
-    /* 初始化信道列表 */
+    /* ?????????????? */
     mac_init_channel_list();
 
-    /* 初始化复位状态*/
+    /* ??????????????*/
     MAC_DEV_RESET_IN_PROGRESS(pst_mac_device, OAL_FALSE);
     pst_mac_device->us_device_reset_num = 0;
 
-    /* 默认关闭DBAC特性 */
+    /* ????????DBAC???? */
 #ifdef _PRE_WLAN_FEATURE_DBAC
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     pst_mac_device->en_dbac_enabled = OAL_FALSE;
@@ -335,7 +335,7 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
 
     pst_mac_device->uc_wapi = OAL_FALSE;
 
-    /* AGC绑定通道默认为自适应   */
+    /* AGC????????????????????   */
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
     pst_mac_device->uc_lock_channel = 0x02;
 #endif
@@ -343,7 +343,7 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
     pst_mac_device->uc_scan_count    = 0;
 #endif
 
-    /* 初始化随机mac oui为0(3个字节都是0),确保只有Android下发有效mac oui才进行随机mac地址扫描(在随机mac扫描开关打开的情况下) */
+    /* ??????????mac oui??0(3??????????0),????????Android????????mac oui??????????mac????????(??????mac????????????????????) */
     pst_mac_device->en_is_random_mac_addr_scan = OAL_FALSE;
     pst_mac_device->auc_mac_oui[0] = 0x0;
     pst_mac_device->auc_mac_oui[1] = 0x0;
@@ -842,7 +842,7 @@ oal_void  mac_device_dec_active_user(mac_device_stru *pst_mac_device)
 #if 0
 oal_void  mac_device_set_dfs(mac_device_stru *pst_mac_device, oal_bool_enum_uint8 en_dfs_switch, oal_uint8 uc_debug_level)
 {
-    /*待整改dfs变量后 生效*/
+    /*??????dfs?????? ????*/
 #if 0
     pst_mac_device->en_dfs_switch = en_dfs_switch;
     pst_mac_device->uc_debug_level = uc_debug_level;
@@ -863,7 +863,7 @@ oal_uint32  mac_device_clear_fbt_scan_list(mac_device_stru *pst_mac_dev, oal_uin
     oal_uint8                   uc_idx;
     mac_fbt_scan_result_stru   *pst_user;
 
-    /* 入参检查 */
+    /* ???????? */
     if (OAL_UNLIKELY(OAL_PTR_NULL == puc_param))
     {
         OAM_ERROR_LOG0(0, OAM_SF_CFG, "{mac_device_clear_fbt_scan_list::null param.}");
@@ -877,7 +877,7 @@ oal_uint32  mac_device_clear_fbt_scan_list(mac_device_stru *pst_mac_dev, oal_uin
     }
 
     pst_fbt_scan_info = &(pst_mac_dev->st_fbt_scan_mgmt);
-    /* 遍历所有用户，清零 */
+    /* ?????????????????? */
     for(uc_idx = 0; uc_idx < HMAC_FBT_MAX_USER_NUM; uc_idx++)
     {
         pst_user = &(pst_fbt_scan_info->ast_fbt_scan_user_list[uc_idx]);
@@ -894,7 +894,7 @@ oal_uint32  mac_device_set_fbt_scan_sta(mac_device_stru *pst_mac_dev, mac_fbt_sc
     mac_fbt_scan_mgmt_stru                     *pst_fbt_scan_info;
     oal_uint32                                  ul_idx;
 
-    /* 入参检查 */
+    /* ???????? */
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_dev))
     {
         OAM_ERROR_LOG0(0, OAM_SF_CFG, "{mac_device_set_fbt_scan_sta::pst_mac_device null.}");
@@ -909,10 +909,10 @@ oal_uint32  mac_device_set_fbt_scan_sta(mac_device_stru *pst_mac_dev, mac_fbt_sc
 
     pst_fbt_scan_info = &(pst_mac_dev->st_fbt_scan_mgmt);
 
-    /* 遍历所有用户，在空用户处写入mac地址，更改使用状态 */
+    /* ????????????????????????????mac?????????????????? */
     for (ul_idx = 0; ul_idx < HMAC_FBT_MAX_USER_NUM; ul_idx++)
     {
-        /* 如果需要侦听的STA已经在列表中，则不再重新添加 */
+        /* ??????????????STA???????????????????????????? */
         if (HMAC_FBT_SCAN_USER_IS_USED == pst_fbt_scan_info->ast_fbt_scan_user_list[ul_idx].uc_is_used)
         {
             if (0 == oal_memcmp(pst_fbt_scan_info->ast_fbt_scan_user_list[ul_idx].auc_user_mac_addr, pst_fbt_scan_sta->auc_mac_addr, WLAN_MAC_ADDR_LEN))
@@ -935,7 +935,7 @@ oal_uint32  mac_device_set_fbt_scan_sta(mac_device_stru *pst_mac_dev, mac_fbt_sc
         }
     }
 
-    /* 列表已满 */
+    /* ???????? */
     if (OAL_UNLIKELY(HMAC_FBT_MAX_USER_NUM == ul_idx))
     {
         OAM_ERROR_LOG0(0, OAM_SF_CFG, "{mac_device_set_fbt_scan_sta::scan user list is full}");
@@ -951,7 +951,7 @@ oal_uint32  mac_device_set_fbt_scan_interval(mac_device_stru *pst_mac_dev, oal_u
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_info;
 
-    /* 入参检查 */
+    /* ???????? */
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_dev))
     {
         OAM_ERROR_LOG0(0, OAM_SF_CFG, "{mac_device_set_fbt_scan_interval::pst_mac_device null.}");
@@ -993,7 +993,7 @@ oal_uint32  mac_device_set_fbt_scan_report_period(mac_device_stru *pst_mac_dev, 
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_info;
 
-    /* 入参检查 */
+    /* ???????? */
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_dev))
     {
         OAM_ERROR_LOG0(0, OAM_SF_CFG, "{mac_device_set_fbt_scan_report_period::pst_mac_device null.}");
@@ -1015,7 +1015,7 @@ oal_uint32  mac_device_set_fbt_scan_enable(mac_device_stru *pst_mac_device, oal_
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_mgmt;
     oal_uint8                   uc_user_index = 0;
 
-    /* 入参检查 */
+    /* ???????? */
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_device))
     {
         OAM_ERROR_LOG0(0, OAM_SF_CFG, "{mac_device_set_fbt_scan_enable::pst_mac_device null.}");
@@ -1028,11 +1028,11 @@ oal_uint32  mac_device_set_fbt_scan_enable(mac_device_stru *pst_mac_device, oal_
         return OAL_ERR_CODE_INVALID_CONFIG;
     }
 
-    /* 获取mac vap实体中的fbt scan管理实体 */
+    /* ????mac vap????????fbt scan???????? */
     pst_fbt_scan_mgmt = &(pst_mac_device->st_fbt_scan_mgmt);
 
-    /* 如果要配置的模式与fbg scan管理实体中的模式一致，
-       则不做处理，直接返回，并给出提示信息；*/
+    /* ??????????????????fbg scan??????????????????????
+       ??????????????????????????????????????*/
     if (uc_cfg_fbt_scan_enable == pst_fbt_scan_mgmt->uc_fbt_scan_enable)
     {
         OAM_WARNING_LOG0(pst_mac_device->uc_device_id, OAM_SF_HILINK, "{mac_device_set_fbt_scan_enable::uc_cfg_fbt_scan_enable eq pst_fbt_scan_mgmt->uc_fbt_scan_enable,return.}");
@@ -1040,7 +1040,7 @@ oal_uint32  mac_device_set_fbt_scan_enable(mac_device_stru *pst_mac_device, oal_
     }
 
 
-    /* 记录配置的模式到fbt scan管理实体中，当前只支持侦听一个用户 */
+    /* ????????????????fbt scan?????????????????????????????????? */
     pst_fbt_scan_mgmt->uc_fbt_scan_enable = uc_cfg_fbt_scan_enable;
 
     OAM_INFO_LOG4(pst_mac_device->uc_device_id, OAM_SF_HILINK, "mac_device_set_fbt_scan_enable::user uc_cfg_fbt_scan_enable=%d, ul_scan_report_period=%d, uc_scan_channel=%d ul_scan_interval=%d",

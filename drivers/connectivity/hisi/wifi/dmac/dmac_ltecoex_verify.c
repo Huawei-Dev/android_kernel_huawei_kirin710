@@ -10,7 +10,7 @@ extern "C" {
 #ifdef _PRE_WLAN_FEATURE_LTECOEX
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "dmac_ltecoex_verify.h"
 #include "oal_util.h"
@@ -29,13 +29,13 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 #if 0
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -555,7 +555,7 @@ void dmac_btcoex_encap_null_data(oal_uint8 *puc_frame, oal_uint8 *puc_da, oal_ui
 {
     oal_uint16  us_frame_ctl;
 
-    /* 填写帧头,其中from ds为1，to ds为0，ps=1 因此frame control的第二个字节为12 */
+    /* ????????,????from ds??1??to ds??0??ps=1 ????frame control??????????????12 */
     us_frame_ctl = (oal_uint16)(WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_DATA | WLAN_FC0_SUBTYPE_NODATA) | 0x1100;
 
     /*
@@ -581,10 +581,10 @@ oal_uint32 dmac_btcoex_init_null_data(oal_uint8 *puc_frame,oal_uint8 *puc_da, oa
     mac_ieee80211_frame_stru        *pst_mac_header;
 
 
-    /* 申请最大的80211头 */
+    /* ??????????80211?? */
     pst_mac_header = (mac_ieee80211_frame_stru *)puc_frame;
 
-    /* 填写帧头*/
+    /* ????????*/
     dmac_btcoex_encap_null_data((oal_uint8*)pst_mac_header,puc_da,puc_sa);
     pst_mac_header->st_frame_control.bit_power_mgmt = 1;
     pst_mac_header->bit_seq_num = 1;
@@ -624,7 +624,7 @@ void dmac_btcoex_encap_qosnull_data(oal_uint8 *puc_frame, oal_uint8 *puc_da, oal
 
     oal_uint16  us_frame_ctl;
 
-    /* 填写帧头,其中from ds为1，to ds为0，ps=1 因此frame control的第二个字节为12 */
+    /* ????????,????from ds??1??to ds??0??ps=1 ????frame control??????????????12 */
     us_frame_ctl = (oal_uint16)(WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_DATA | WLAN_FC0_SUBTYPE_QOS_NULL) | 0x1100;
 
     /*
@@ -653,7 +653,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_init_qosnull_data(oal_void)
      oal_uint8                       count = 0;
 
 
-     /* 申请最大的80211头 */
+     /* ??????????80211?? */
      pst_mac_header = (mac_ieee80211_qoscoex_frame_stru *)OAL_MEM_ALLOC(OAL_MEM_POOL_ID_SHARED_MGMT_PKT,MAC_80211_QOS_FRAME_LEN,OAL_FALSE);
      if (OAL_PTR_NULL == pst_mac_header)
      {
@@ -662,18 +662,18 @@ OAL_STATIC oal_uint32 dmac_btcoex_init_qosnull_data(oal_void)
          return OAL_ERR_CODE_ALLOC_MEM_FAIL;
      }
 
-     /* 填写帧头*/
+     /* ????????*/
      dmac_btcoex_encap_qosnull_data((oal_uint8*)pst_mac_header,g_auc_ap_bssid,g_auc_sta_mac);
      pst_mac_header->st_frame_control.bit_power_mgmt = 1;
      pst_mac_header->bit_qc_tid = 0;
      pst_mac_header->bit_qc_eosp = 0;
 
-     /* 设置seq的序列号 */
+     /* ????seq???????? */
      pst_mac_header->bit_sc_seq_num = (dmac_btcoex_abort_qos_null_seq_num_get() + 1);
 
      dmac_btcoex_abort_qos_null_seq_num_set(pst_mac_header->bit_sc_seq_num);
 
-     /*协议规定单播的QOS NULL DATA只允许normal ack 共存里面要设置0是对方会回ack */
+     /*??????????????QOS NULL DATA??????normal ack ??????????????0??????????ack */
      pst_mac_header->bit_qc_ack_polocy = WLAN_TX_NORMAL_ACK;
 
      OAM_INFO_LOG1(0, OAM_SF_COEX, "{(oal_uint32)pst_mac_header = 0x%x.}",(oal_uint32)pst_mac_header);
@@ -718,7 +718,7 @@ oal_uint32  dmac_btcoex_abort_timeout(void *p_arg)
 
 
 #if 0
-    /* 维测代码 统计查询preempt机制是否失败 */
+    /* ???????? ????????preempt???????????? */
     uc_preempt_time_status = dmac_btcoex_abort_preempt_time_out_get();
     uc_preempt_status = dmac_btcoex_abort_preempt_done_get();
     uc_post_status = dmac_btcoex_abort_post_preempt_done_get();
@@ -728,7 +728,7 @@ oal_uint32  dmac_btcoex_abort_timeout(void *p_arg)
     }
 #endif
 
-    /* 发送preempt 帧 */
+    /* ????preempt ?? */
     dmac_btcoex_sw_all_abort_req_set(0x1);
     OAM_INFO_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_preempt_timeout uc_count = %d}",uc_count);
 
@@ -751,7 +751,7 @@ oal_uint32 dmac_btcoex_preempt_timeout(void *p_arg)
     mac_device_stru     *pst_mac_device = (mac_device_stru *)p_arg;
 #if 0
 
-    /* 维测代码 统计查询preempt机制是否失败 */
+    /* ???????? ????????preempt???????????? */
     uc_preempt_time_status = dmac_btcoex_abort_preempt_time_out_get();
     uc_preempt_status = dmac_btcoex_abort_preempt_done_get();
     uc_post_status = dmac_btcoex_abort_post_preempt_done_get();
@@ -761,7 +761,7 @@ oal_uint32 dmac_btcoex_preempt_timeout(void *p_arg)
     }
 #endif
 
-    /* 发送post preempt 帧 */
+    /* ????post preempt ?? */
     dmac_btcoex_sw_all_abort_req_set(0x0);
     OAM_INFO_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_post_preempt_timeout uc_count = %d}",uc_count);
 
@@ -784,22 +784,22 @@ oal_void  dmac_btcoex_set_null_params(oal_void)
 
     if(BT == uc_btble_val)
     {
-        /* 暂且使用默认值，当需要更改时候更改参数 */
+        /* ?????????????????????????????????????? */
         dmac_btcoex_abort_timeout_val_set(ul_bt_time_val);
     }
     else if(BLE == uc_btble_val)
     {
-        /* 暂且使用默认值，当需要更改时候更改参数 */
+        /* ?????????????????????????????????????? */
        dmac_blecoex_abort_timeout_val_set(ul_ble_time_val);
     }
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_post_preempt_timeout_val_set(ul_post_preempt_val);
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_abort_null_phy_mode_set(ul_null_phy_val);
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_abort_null_data_rate_set(ul_null_rate_val);
 }
 
@@ -819,28 +819,28 @@ oal_void  dmac_btcoex_set_cf_end_cts_params(oal_void)
 
     if(BT == uc_btble_val)
     {
-        /* 暂且使用默认值，当需要更改时候更改参数 */
+        /* ?????????????????????????????????????? */
         dmac_btcoex_abort_timeout_val_set(ul_bt_time_val);
     }
     else if(BLE == uc_btble_val)
     {
-        /* 暂且使用默认值，当需要更改时候更改参数 */
+        /* ?????????????????????????????????????? */
         dmac_blecoex_abort_timeout_val_set(ul_ble_time_val);
     }
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_abort_cf_end_phy_mode_set(ul_cf_phy_val);
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_abort_cf_end_data_rate_set(ul_cf_daterate_val);
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_abort_selfcts_duration_set(ul_cts_duration_val);
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_abort_selfcts_phy_mode_set(ul_cts_phy_val);
 
-    /* 暂且使用默认值，当需要更改时候更改参数 */
+    /* ?????????????????????????????????????? */
     dmac_btcoex_abort_selfcts_data_rate_set(ul_cts_date_val);
 
 
@@ -865,11 +865,11 @@ oal_uint32  dmac_btcoex_abort_start_event_handler(frw_event_mem_stru *pst_event_
         OAM_ERROR_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_abort_start_event_handler::pst_event_mem null.}");
         return OAL_ERR_CODE_PTR_NULL;
     }
-    /* 获取事件、事件头以及事件payload结构体 */
+    /* ????????????????????????payload?????? */
     pst_event     = (frw_event_stru *)pst_event_mem->puc_data;
     pst_event_hdr = &pst_event->st_event_hdr;
     pst_mac_device = (mac_device_stru*)mac_res_get_dev(pst_event_hdr->uc_device_id);
-    /* 获取vap结构信息 */
+    /* ????vap???????? */
     pst_dmac_vap  = (dmac_vap_stru *)mac_res_get_dmac_vap(pst_event_hdr->uc_vap_id);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_dmac_vap))
     {
@@ -879,7 +879,7 @@ oal_uint32  dmac_btcoex_abort_start_event_handler(frw_event_mem_stru *pst_event_
 
     if(g_btcoex_soft_abort_switch)
     {
-        /* 初始化寄存器读取定时器 */
+        /* ?????????????????????? */
         FRW_TIMER_CREATE_TIMER(&pst_mac_device->bt_coex_preempt_timer,
                    dmac_btcoex_preempt_timeout,
                    g_btcoex_abort_timeout_ms,
@@ -933,14 +933,14 @@ oal_uint32  dmac_btcoex_abort_end_event_handler(frw_event_mem_stru *pst_event_me
         OAM_ERROR_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_abort_end_event_handler::pst_event_mem null.}");
         return OAL_ERR_CODE_PTR_NULL;
     }
-    /* 获取事件、事件头以及事件payload结构体 */
+    /* ????????????????????????payload?????? */
     pst_event     = (frw_event_stru *)pst_event_mem->puc_data;
     pst_event_hdr = &pst_event->st_event_hdr;
 
     pst_mac_device = (mac_device_stru*)mac_res_get_dev(pst_event_hdr->uc_device_id);
 
     FRW_TIMER_DESTROY_TIMER(&pst_mac_device->bt_coex_abort_timer);
-    /* 获取vap结构信息 */
+    /* ????vap???????? */
     pst_dmac_vap  = (dmac_vap_stru *)mac_res_get_dmac_vap(pst_event_hdr->uc_vap_id);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_dmac_vap))
     {
@@ -950,7 +950,7 @@ oal_uint32  dmac_btcoex_abort_end_event_handler(frw_event_mem_stru *pst_event_me
 
     if(g_btcoex_soft_abort_switch)
     {
-        /* 初始化寄存器读取定时器 */
+        /* ?????????????????????? */
         FRW_TIMER_CREATE_TIMER(&pst_mac_device->bt_coex_abort_timer,
                                    dmac_btcoex_abort_timeout,
                                    g_btcoex_post_timeout_ms,
@@ -1012,20 +1012,20 @@ oal_err_code_enum_uint32 dmac_btcoex_init(oal_void)
 
     dmac_btcoex_set_cf_end_cts_params();
 
-    /* wifi 切 bt的切换时间 */
+    /* wifi ?? bt?????????? */
     ul_wl_to_bt_time = dmac_btcoex_soc_wifi_switch_bt_timeout_get();
 
-    /* 默认是0xFFF 根据实际场景来调试 */
+    /* ??????0xFFF ?????????????????? */
     dmac_btcoex_soc_wifi_switch_bt_timeout_set(ul_wl_to_bt_time);
 
 
-    /* bt 切 wifi的切换时间 */
+    /* bt ?? wifi?????????? */
     ul_bt_to_wl_time = dmac_btcoex_soc_bt_switch_wifi_timeout_get();
 
-    /* 默认是0xFFF 根据实际场景来调试 */
+    /* ??????0xFFF ?????????????????? */
     dmac_btcoex_soc_bt_switch_wifi_timeout_set(ul_bt_to_wl_time);
 
-    /* 测试代码，软件触发abort中断 */
+    /* ??????????????????abort???? */
     dmac_btcoex_sw_all_abort_ctrl_set(1);
     dmac_btcoex_sw_all_abort_mode_set(1);
 
@@ -1081,7 +1081,7 @@ OAL_STATIC oal_bool_enum_uint8 dmac_btcoex_disable(oal_void)
 
 OAL_STATIC oal_void dmac_btcoex_sw_trigger_abort_verify(oal_void)
 {
-    /* 软件触发 BT共存AllAbort使能模式 */
+    /* ???????? BT????AllAbort???????? */
     dmac_btcoex_sw_all_abort_req_set(0x1);
     dmac_btcoex_sw_all_abort_mode_set(0x1);
 

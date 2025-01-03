@@ -60,11 +60,11 @@ extern "C"{
 #endif /* __cplusplus */
 
 /****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  #pragma pack(*)    设置字节对齐方式
+  #pragma pack(*)    ????????????????
 *****************************************************************************/
 #if (VOS_OS_VER != VOS_WIN32)
 #pragma pack(4)
@@ -74,7 +74,7 @@ extern "C"{
 
 
 /*****************************************************************************
-  2 枚举定义
+  2 ????????
 ******************************************************************************/
 #define PRINT_OFF             (0)
 #define PRINT_ON              (1)
@@ -82,7 +82,7 @@ extern "C"{
 
 #define PRINT2LAYER_SWITCH    (PRINT_ON)
 
-/* 模块ID的范围定义*/
+/* ????ID??????????*/
 #define     LOG_ERRLOG_ID                   0x63
 
 #define     LOG_MIN_MODULE_ID_PS            0x64
@@ -107,7 +107,7 @@ extern "C"{
 #define     LOG_MAX_MODULE_ID_APP           0x82ff
 
 
-/* File Id范围定义 */
+/* File Id???????? */
 #define     LOG_MIN_FILE_ID_PS          0x0000
 #define     LOG_MAX_FILE_ID_PS          0x07FF
 
@@ -126,9 +126,9 @@ extern "C"{
 #define     LOG_MIN_FILE_ID_MSP         0x2200
 #define     LOG_MAX_FILE_ID_MSP         0x29FF
 
-/* 为了降低debug信息，采用新的file id 方案,旧的方案后续需要删除 */
-/* 新的组件定义 */
-/* 0到9bit file id, 10到15 bit 组件， 高16位保留 */
+/* ????????debug??????????????file id ????,???????????????????? */
+/* ???????????? */
+/* 0??9bit file id, 10??15 bit ?????? ??16?????? */
 typedef enum
 {
     DRV_TEAM_FILE_ID          = 0x0,
@@ -161,7 +161,7 @@ typedef enum
     NL2_TEAM_FILE_ID          = 0x6C00,
 	NRNAS_TEAM_FILE_ID        = 0x7000,
 
-    /* 后续组件继续添加 */
+    /* ???????????????? */
     TEAM_FILE_ID_BUTT         = 0xfc00
 }FILE_ID_TEAM_ENUM;
 
@@ -272,36 +272,36 @@ typedef enum
 
 #endif
 
-/* 打印级别定义 */
+/* ???????????? */
 typedef enum
 {
-    LOG_LEVEL_OFF = 0,   /* 关闭打印     */
-    LOG_LEVEL_ERROR,     /* Error级别    */
-    LOG_LEVEL_WARNING,   /* Warning级别  */
-    LOG_LEVEL_NORMAL,    /* Normal级别   */
-    LOG_LEVEL_INFO,      /* Info级别     */
+    LOG_LEVEL_OFF = 0,   /* ????????     */
+    LOG_LEVEL_ERROR,     /* Error????    */
+    LOG_LEVEL_WARNING,   /* Warning????  */
+    LOG_LEVEL_NORMAL,    /* Normal????   */
+    LOG_LEVEL_INFO,      /* Info????     */
     LOG_LEVEL_BUTT
 }LOG_LEVEL_EN;
 
-/*L2添加，与之前版本日志级别兼容*/
+/*L2????????????????????????????*/
 #define PS_PRINT_OFF        LOG_LEVEL_OFF
 #define PS_PRINT_ERROR      LOG_LEVEL_ERROR
 #define PS_PRINT_WARNING    LOG_LEVEL_WARNING
 #define PS_PRINT_NORMAL     LOG_LEVEL_NORMAL
 #define PS_PRINT_INFO       LOG_LEVEL_INFO
 
-/* 部件定义 */
+/* ???????? */
 typedef enum
 {
-    LOG_PARTS_PS = 0,   /* 协议栈       */
-    LOG_PARTS_DRV,      /* 底软         */
-    LOG_PARTS_MEDIA,    /* 媒体         */
-    LOG_PARTS_APP,      /* 应用         */
-    LOG_PARTS_DSP,      /* 物理层       */
+    LOG_PARTS_PS = 0,   /* ??????       */
+    LOG_PARTS_DRV,      /* ????         */
+    LOG_PARTS_MEDIA,    /* ????         */
+    LOG_PARTS_APP,      /* ????         */
+    LOG_PARTS_DSP,      /* ??????       */
     LOG_PARTS_BUTT
 } LOG_PARTS_EN;
 
-/* PAM 文件ID号 */
+/* PAM ????ID?? */
 typedef enum
 {
 /* 18432 */      PS_FILE_ID_HPA_ENTITY_C = PAM_TEAM_FILE_ID,
@@ -377,7 +377,7 @@ typedef enum
                  PAM_FILE_ID_BUTT
 }PAM_FILE_ID_DEFINE_ENUM;
 
-/* LRRC 文件ID号 begin*/
+/* LRRC ????ID?? begin*/
 typedef enum
 {
 /* 10240 */       PS_FILE_ID_L_RRCCMMCOMM_C = LRRC_TEAM_FILE_ID,
@@ -556,9 +556,9 @@ typedef enum
 /* 10376 */       PS_FILE_ID_L_RRCITFNRRCFUNC_C,
                   LRRC_FILE_ID_BUTT
 }LRRC_FILE_ID_DEFINE_ENUM;
-/* LRRC 文件ID号 end*/
+/* LRRC ????ID?? end*/
 
-/* TRRC 文件ID号 begin*/
+/* TRRC ????ID?? begin*/
 typedef enum
 {
 /* 9216 */        PS_FILE_ID_T_TRRCCCB_C = TRRC_TEAM_FILE_ID,
@@ -654,7 +654,7 @@ typedef enum
                   PS_FILE_ID_T_TRRCDIRECTERRLOGCONVERT_C,
                  TRRC_FILE_ID_BUTT
  }TRRC_FILE_ID_DEFINE_ENUM;
- /* TRRC 文件ID号 end*/
+ /* TRRC ????ID?? end*/
 
 typedef enum
 {
@@ -933,7 +933,7 @@ typedef enum
     PS_FILE_ID_L_MACTIME_C,
     PS_FILE_ID_L_MACSEND_C,
     PS_FILE_ID_L_MACPHYPROC_C,
-    PS_FILE_ID_L_MACSTUB_C,/*对通测试使用*/
+    PS_FILE_ID_L_MACSTUB_C,/*????????????*/
     /*rlc*/
     PS_FILE_ID_L_RLC_C,
     PS_FILE_ID_L_RLCCOMM_C,
@@ -997,7 +997,7 @@ typedef enum
     PS_FILE_ID_L_ROHC_DECOMP_C,
     PS_FILE_ID_L_ROHC_CRC_C,
 
-    /*LTE用户面可维可测*/
+    /*LTE??????????????*/
     PS_FILE_ID_CDS_OMITF_C,
     PS_FILE_ID_LPDCP_OM_ITF_C,
     PS_FILE_ID_LRLC_OM_ITF_C,
@@ -1012,7 +1012,7 @@ typedef enum
     PS_FILE_ID_L2EVENTS_C,
     PS_FILE_ID_L2OMITF_C,
 
-    /*LTE硬件接口*/
+    /*LTE????????*/
     PS_FILE_ID_LUP_HARDWIRE_ITF_C,
 
     /*CDS*/
@@ -1531,7 +1531,7 @@ typedef enum
     PS_FILE_ID_GASGCOMCL2FSMBGGSEARCHG_C,
     PS_FILE_ID_GASGCOMCL2FSMBGGSEARCHW_C,
     PS_FILE_ID_GASGCOMCL2FSMBGPLMNLISTSEARCH_C,
-    /* 此文件废弃,但是保留文件名的枚举,防止HIDS解析前后版本不兼容 */
+    /* ??????????,????????????????????,????HIDS?????????????????? */
     PS_FILE_ID_GASGCOMSISCELLNORMALBGNCELLBCCH_C,
     PS_FILE_ID_GASGCOMSIINACTIVEBGNCELLBCCH_C,
     PS_FILE_ID_GAS_GCOMCGPRSCELLRESELECTION_C,
@@ -2577,7 +2577,7 @@ typedef enum
 }TAF_FILE_ID_DEFINE_ENUM;
 typedef unsigned long  TAF_FILE_ID_DEFINE_ENUM_UINT32;
 
-/* PS源文件ID号 */
+/* PS??????ID?? */
 typedef enum
 {
                 PS_FILE_ID_ACF_C = LOG_MIN_FILE_ID_PS,
@@ -2742,11 +2742,11 @@ typedef enum
 
 
 
-                  PS_FILE_ID_DEFINE_BUTT        /* 下面大的枚举的偏移 */
+                  PS_FILE_ID_DEFINE_BUTT        /* ?????????????????? */
 
 }PS_FILE_ID_DEFINE_ENUM1;
 
-/*解决VC6编译问题,大的枚举定义拆开*/
+/*????VC6????????,????????????????*/
 typedef enum
 {
 
@@ -2770,7 +2770,7 @@ typedef enum
                   PS_FILE_ID_L_PSAUTH_C,
                   PS_FILE_ID_L_PSMD5_C,
 
-                  /*STUB文件*/
+                  /*STUB????*/
 /*  952  */       PS_FILE_ID_L_SIML1SENDRRC_C,
                   PS_FILE_ID_L_RABMSTUB_C,
                   PS_FILE_ID_L_PSOM_ERRLOG_C,
@@ -2778,7 +2778,7 @@ typedef enum
 
 
 
-                  /*L2环回测试文件*/
+                  /*L2????????????*/
 
                   PS_FILE_ID_NASESMSMMSGPROC_C,
                   /*C50 code sync*/
@@ -2794,7 +2794,7 @@ typedef enum
 
                   PS_FILE_ID_MMC_LMMINTERFACE_C,
 
-/* R9 DC+MIMO合入 */
+/* R9 DC+MIMO???? */
                   PS_FILE_ID_ACPU_OM_C,
                   PS_FILE_ID_ACPU_OMRL_C,
                   PS_FILE_ID_OM_AGENT_C,
@@ -2823,7 +2823,7 @@ typedef enum
                   PS_FILE_ID_CCORE_FLOW_CTRL_C,
                   PS_FILE_ID_TTF_MEM_RB_C,
                   PS_FILE_ID_TTF_MEMCTRL_C,
-                  /* Added by h0016399 for DSDA Project，2012-12-24,  end */
+                  /* Added by h0016399 for DSDA Project??2012-12-24,  end */
                   PS_FILE_ID_IMM_RB_C,
                   PS_FILE_ID_IMM_ZC_C,
                   PS_FILE_ID_IMM_MNTN_C,
@@ -3737,7 +3737,7 @@ typedef enum
     CAS_FILE_ID_BUTT                                    = 0x0fff
 }CAS_FILE_ID_DEFINE_ENUM;
 typedef unsigned long  CAS_FILE_ID_DEFINE_ENUM_UINT32;
-/* DRV源文件ID号 */
+/* DRV??????ID?? */
 typedef enum
 {
                  DRV_FILE_ID_AMBADMTIMERDRV_C = DRV_TEAM_FILE_ID,
@@ -3917,7 +3917,7 @@ typedef enum
 }DRV_FILE_ID_DEFINE_ENUM;
 
 
-/*媒体源文件ID号*/
+/*??????????ID??*/
 typedef enum
 {
                  CODEC_FILE_ID_FSM_C = HIFI_TEAM_FILE_ID,
@@ -3936,7 +3936,7 @@ typedef enum
                  MED_FILE_ID_BUTT
 }MED_FILE_ID_DEFINE_ENUM;
 
-/*APP源文件ID号*/
+/*APP??????ID??*/
 typedef enum
 {
                  APP_FILE_ID_TEL_CLIENTSESSION_C = APP_TEAM_FILE_ID,
@@ -3946,7 +3946,7 @@ typedef enum
 }APP_FILE_ID_DEFINE_ENUM;
 
 
-/*MSP源文件ID号*/
+/*MSP??????ID??*/
 typedef enum
 {
                  MSP_FILE_ID_AT_LTE_COMMON_C = MSP_TEAM_FILE_ID,
@@ -4186,7 +4186,7 @@ typedef enum
     PS_FILE_ID_ED_C_RECOG_CS0087_C,
 }ENCODIX_FILE_ID_DEFINE_ENUM;
 
-/* 5G NRRC 打印文件ID定义  2017.09.25 */
+/* 5G NRRC ????????ID????  2017.09.25 */
 typedef enum
 {
     PS_FILE_ID_NRRC_MAIN_C                      = NRRC_TEAM_FILE_ID,
@@ -4295,7 +4295,7 @@ typedef enum
 typedef unsigned long  NRRC_FILE_ID_DEFINE_ENUM_UINT32;
 
 
-/* NL2 打印文件ID定义  2017.11.01 */
+/* NL2 ????????ID????  2017.11.01 */
 typedef enum
 {
     /*NPDCP*/
@@ -4392,7 +4392,7 @@ typedef enum
     PS_FILE_ID_SDAP_IP_MSG_PROC_C           = NL2_TEAM_FILE_ID + 506,
     PS_FILE_ID_SDAP_TASK_C                  = NL2_TEAM_FILE_ID + 507,
 
-    /*LTE和NR公共文件, 放到最后,从900开始*/
+    /*LTE??NR????????, ????????,??900????*/
     PS_FILE_ID_L2_GLB_MEM_C                 = NL2_TEAM_FILE_ID + 900,
     PS_FILE_ID_L2_ZEOR_COPY_C               = NL2_TEAM_FILE_ID + 901,
 
@@ -4473,7 +4473,7 @@ typedef enum
 }NRNAS_FILE_ID_DEFINE_ENUM;
 typedef unsigned long  NRNAS_FILE_ID_DEFINE_ENUM_UINT32;
 
-/* 模块ID号 */
+/* ????ID?? */
 typedef unsigned int LOG_MODULE_ID_EN;
 
 typedef enum
@@ -4504,7 +4504,7 @@ typedef enum
 
 
 /*****************************************************************************
-  #pragma pack(*)    设置字节对齐方式
+  #pragma pack(*)    ????????????????
 *****************************************************************************/
 #if (VOS_OS_VER != VOS_WIN32)
 #pragma pack()
@@ -4513,16 +4513,16 @@ typedef enum
 #endif
 
 /*******************************************************************************
-  3 STRUCT定义
+  3 STRUCT????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 UNION定义
+  4 UNION????
 *****************************************************************************/
 
 /*****************************************************************************
-  5 OTHERS定义
+  5 OTHERS????
 *****************************************************************************/
 
 #ifdef __cplusplus

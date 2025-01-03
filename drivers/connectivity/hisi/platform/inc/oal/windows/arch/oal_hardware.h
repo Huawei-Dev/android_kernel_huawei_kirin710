@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include <string.h>
 #include <stdio.h>
@@ -21,7 +21,7 @@ extern "C" {
 #include "oal_util.h"
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 typedef oal_uint8 (*oal_irq_handler_t)(oal_int32, oal_void *);
 
@@ -37,7 +37,7 @@ typedef oal_uint8 (*oal_irq_handler_t)(oal_int32, oal_void *);
 
 #define OAL_HI_TIMER_IRQ_NO                 80            /*5113 : 5   5115:80*/
 
-#define OAL_HI_TIMER_FREE_MODE              0         /* 1101测试新增 */
+#define OAL_HI_TIMER_FREE_MODE              0         /* 1101???????? */
 #define OAL_HI_TIMER_CYCLE_MODE             1
 #define OAL_HI_TIMER_SIZE_32_BIT            1
 #define OAL_HI_TIMER_WRAPPING               0
@@ -48,8 +48,8 @@ typedef oal_uint8 (*oal_irq_handler_t)(oal_int32, oal_void *);
 #define OAL_HI_SC_REG_BASE                  (0x10100000)
 #define OAL_HI_SC_CTRL                      (OAL_HI_SC_REG_BASE + 0x0000)
 
-#define OAL_IRQ_ENABLE     1  /* 可以中断 */
-#define OAL_IRQ_FORBIDDEN  0  /* 禁止中断 */
+#define OAL_IRQ_ENABLE     1  /* ???????? */
+#define OAL_IRQ_FORBIDDEN  0  /* ???????? */
 
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
 #define WL_WAKE_HOST   0
@@ -71,7 +71,7 @@ typedef oal_uint8 (*oal_irq_handler_t)(oal_int32, oal_void *);
 typedef oal_uint32                          oal_irqreturn_t;
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 typedef enum
 {
@@ -118,22 +118,22 @@ typedef oal_uint8 oal_5115irq_enum_uint8;
 typedef oal_int32         (*oal_dbac_isr_func)(int);
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 typedef DWORD_PTR           oal_cpumask;
 typedef HANDLE              oal_irq_num;
 typedef oal_uint32          (*oal_irq_intr_func)(oal_void *);
-#define OAL_SA_SHIRQ       0x00000080  /* 中断类型 */
+#define OAL_SA_SHIRQ       0x00000080  /* ???????? */
 
 typedef struct
 {
@@ -146,24 +146,24 @@ typedef struct
 	volatile oal_uint32 ul_timerx_bgload;
 	volatile oal_uint32 ul_reserve;
 } oal_hi_timerx_reg_stru;
-/*timer控制寄存器*/
+/*timer??????????*/
 typedef union
 {
 	volatile oal_uint32 ul_value;
 	struct
 	{
-		volatile oal_uint32 ul_oneshot: 1;                 /*选择计数模式 0：回卷计数 1：一次性计数*/
-		volatile oal_uint32 ul_timersize: 1;               /*16bit|32bit计数操作模式 0：16bit 1：32bit*/
-		volatile oal_uint32 ul_timerpre: 2;                /*预分频因子 00：不分频 01：4级分频 10：8级分频 11：未定义，设置相当于分频因子10*/
-		volatile oal_uint32 ul_reserved0: 1;               /*保留位*/
-		volatile oal_uint32 ul_intenable: 1;               /*中断屏蔽位 0：屏蔽 1：不屏蔽*/
-		volatile oal_uint32 ul_timermode: 1;               /*计数模式 0：自由模式 1：周期模式*/
-		volatile oal_uint32 ul_timeren: 1;                 /*定时器使能位 0：禁止 1：使能*/
-		volatile oal_uint32 ul_reserved1: 24;              /*保留位*/
+		volatile oal_uint32 ul_oneshot: 1;                 /*???????????? 0?????????? 1????????????*/
+		volatile oal_uint32 ul_timersize: 1;               /*16bit|32bit???????????? 0??16bit 1??32bit*/
+		volatile oal_uint32 ul_timerpre: 2;                /*?????????? 00???????? 01??4?????? 10??8?????? 11????????????????????????????10*/
+		volatile oal_uint32 ul_reserved0: 1;               /*??????*/
+		volatile oal_uint32 ul_intenable: 1;               /*?????????? 0?????? 1????????*/
+		volatile oal_uint32 ul_timermode: 1;               /*???????? 0?????????? 1??????????*/
+		volatile oal_uint32 ul_timeren: 1;                 /*???????????? 0?????? 1??????*/
+		volatile oal_uint32 ul_reserved1: 24;              /*??????*/
 	} bits_stru;
 } oal_hi_timer_control_union;
 
-/*timer2_3寄存器*/
+/*timer2_3??????*/
 typedef struct
 {
 	oal_hi_timerx_reg_stru ast_timer[2];
@@ -174,7 +174,7 @@ typedef struct
     oal_hi_timer_control_union  u_timerx_config;
 }oal_hi_timerx_config_stru;
 
-/* PCI驱动相关Win32封装 */
+/* PCI????????Win32???? */
 typedef struct
 {
     oal_uint32  vendor;         /* Vendor and device ID or PCI_ANY_ID */
@@ -201,14 +201,14 @@ typedef struct
     void      (*remove)(oal_pci_dev_stru *dev);
 }oal_pci_driver_stru;
 
-/* 中断设备结构体 */
+/* ?????????????? */
 typedef struct
 {
-    oal_uint32              ul_irq;                  /* 中断号 */
-    oal_int32               l_irq_type;             /* 中断类型标志 */
-    oal_void               *p_drv_arg;              /* 中断处理函数参数 */
-    oal_int8               *pc_name;                /* 中断设备名字 只为界面友好 */
-    oal_irq_intr_func       p_irq_intr_func;        /* 中断处理函数地址 */
+    oal_uint32              ul_irq;                  /* ?????? */
+    oal_int32               l_irq_type;             /* ???????????? */
+    oal_void               *p_drv_arg;              /* ???????????????? */
+    oal_int8               *pc_name;                /* ???????????? ???????????? */
+    oal_irq_intr_func       p_irq_intr_func;        /* ???????????????? */
 }oal_irq_dev_stru;
 
 typedef oal_uint8   oal_hi_timerx_index_enum_uint8;
@@ -222,20 +222,20 @@ typedef enum
     HI5115_TIMER_INDEX_BUTT
 }oal_hi_timerx_index_enum;
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 OAL_INLINE oal_void  oal_irq_enable(oal_void)
@@ -386,7 +386,7 @@ OAL_INLINE oal_void  oal_5115timer_exit(oal_void)
 {
 }
 
-/* 创建一个新的被使用资源区 */
+/* ???????????????????????? */
 OAL_STATIC OAL_INLINE oal_uint32 oal_request_mem_region(oal_uint32 start, oal_uint32 n, oal_int8 *name)
 {
     return start;

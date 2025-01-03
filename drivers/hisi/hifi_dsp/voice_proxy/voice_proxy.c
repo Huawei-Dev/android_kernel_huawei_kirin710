@@ -31,7 +31,7 @@
 #define COMMAND_CALLBACKS_SIZE 20
 #define SIGN_INIT_CALLBACKS_SIZE 20
 
-/* receive message from hifi£¬the size of msg_id (bytes)*/
+/* receive message from hifi??the size of msg_id (bytes)*/
 #define VOICE_PROXY_MSG_ID_SIZE (4)
 
 #define DTS_COMP_VOICE_PROXY_NAME "hisilicon,voice_proxy"

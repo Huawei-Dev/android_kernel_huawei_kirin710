@@ -90,7 +90,7 @@ extern "C" {
 
 #define VOS_PID_TIMER                   1
 
-#define MILLISECONDS_PER_TICK           10 /* 宏值不能为0，否则函数VOS_TmTickToMillSec会出异常 */
+#define MILLISECONDS_PER_TICK           10 /* ??????????0??????????VOS_TmTickToMillSec???????? */
 
 #ifndef VOS_OS_VER
 #define VOS_OS_VER                      VOS_VXWORKS

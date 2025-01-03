@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "MnCommApi.h"
 #include "AtMnInterface.h"
@@ -58,12 +58,12 @@
 #define    THIS_FILE_ID        PS_FILE_ID_MN_COMM_API_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 extern VOS_UINT32 AT_GetDestPid(
     MN_CLIENT_ID_T                      usClientId,
@@ -167,10 +167,10 @@ VOS_UINT32  MN_FillAndSndAppReqMsg(
 
     pMsgPara = (VOS_UINT8 *)pPara;
 
-    /* 获取消息长度 */
+    /* ???????????? */
     MN_GetAppReqMsgLen( ulParaLen, &ulMsgLen);
 
-    /* 申请消息 */
+    /* ???????? */
     pMsg = (VOS_UINT8 *)PS_ALLOC_MSG(WUEPS_PID_AT, ulMsgLen - VOS_MSG_HEAD_LENGTH);
 
     if (VOS_NULL_PTR == pMsg)
@@ -180,10 +180,10 @@ VOS_UINT32  MN_FillAndSndAppReqMsg(
 
     TAF_MEM_SET_S( (pMsg + VOS_MSG_HEAD_LENGTH), (ulMsgLen - VOS_MSG_HEAD_LENGTH), 0x00, (ulMsgLen - VOS_MSG_HEAD_LENGTH));
 
-    /* 填充消息头 */
+    /* ?????????? */
     MN_FillAppReqMsgHeader((MN_APP_REQ_MSG_STRU *)pMsg, ClientId, OpId, usMsgType, ulReceiverPid );
 
-    /* 填充消息参数 */
+    /* ???????????? */
     MN_FillAppReqMsgPara( &pMsg[sizeof(MN_APP_REQ_MSG_STRU) - 4], pMsgPara, ulParaLen );
 
     ulRet = PS_SEND_MSG(WUEPS_PID_AT, pMsg);

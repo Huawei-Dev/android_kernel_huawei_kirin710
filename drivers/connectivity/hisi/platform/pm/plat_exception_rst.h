@@ -10,18 +10,18 @@
 /*****************************************************************************
   2 Define macro
 *****************************************************************************/
-#define WAIT_BFGX_READ_STACK_TIME  (5000)   /* 等待bfgx读栈操作完成的时间，5000毫秒*/
-#define BFGX_BEAT_TIME             (3)      /* bfgx心跳超时时间为3秒钟*/
-#define WIFI_DUMP_BCPU_TIMEOUT     (1000)   /*wifi dump bcpu数据等待时间*/
+#define WAIT_BFGX_READ_STACK_TIME  (5000)   /* ????bfgx????????????????????5000????*/
+#define BFGX_BEAT_TIME             (3)      /* bfgx??????????????3????*/
+#define WIFI_DUMP_BCPU_TIMEOUT     (1000)   /*wifi dump bcpu????????????*/
 
-#define PLAT_EXCEPTION_RESET_IDLE  (0)      /* plat 没有在处理异常*/
-#define PLAT_EXCEPTION_RESET_BUSY  (1)      /* plat 正在处理异常*/
+#define PLAT_EXCEPTION_RESET_IDLE  (0)      /* plat ??????????????*/
+#define PLAT_EXCEPTION_RESET_BUSY  (1)      /* plat ????????????*/
 
-#define BFGX_NOT_RECV_BEAT_INFO    (0)      /* host没有收到心跳消息*/
-#define BFGX_RECV_BEAT_INFO        (1)      /* host收到心跳消息*/
+#define BFGX_NOT_RECV_BEAT_INFO    (0)      /* host????????????????*/
+#define BFGX_RECV_BEAT_INFO        (1)      /* host????????????*/
 
-#define RF_TEMERATURE_NORMAL       (0)      /* rf温度正常*/
-#define RF_TEMERATURE_OVERHEAT     (1)      /* rf温度过热*/
+#define RF_TEMERATURE_NORMAL       (0)      /* rf????????*/
+#define RF_TEMERATURE_OVERHEAT     (1)      /* rf????????*/
 
 #define EXCEPTION_SUCCESS          (0)
 #define EXCEPTION_FAIL             (1)
@@ -29,7 +29,7 @@
 #define BEAT_TIMER_DELETE          (0)
 #define BEAT_TIMER_RESET           (1)
 
-#define BFGX_MEM_DUMP_BLOCK_COUNT  (3)       /* BFGX 上报的内存块个数 */
+#define BFGX_MEM_DUMP_BLOCK_COUNT  (3)       /* BFGX ???????????????? */
 #define UART_READ_WIFI_MEM_TIMEOUT (10000)
 #define UART_HALT_WCPU_TIMEOUT     (500)
 
@@ -45,7 +45,7 @@
 #define UART_STORE_WIFI_MEM        "readm_wifi_uart"
 #define SDIO_STORE_WIFI_MEM        "readm_wifi_sdio"
 
-/*nfc buffer参数*/
+/*nfc buffer????*/
 #define OML_STATUS_ADD_LENGTH       13
 #define NFCLOGLEN                  (4 * sizeof(uint32) + OML_STATUS_ADD_LENGTH)
 #define NFCLOGNUM                  (100)
@@ -84,12 +84,12 @@ enum BFGX_THREAD_ENUM
 
 enum EXCEPTION_TYPE_ENUM
 {
-	BEAT_HEART_TIMEOUT     = 0,  /*心跳超时*/
-	LAST_WORD              = 1,  /*CPU挂死，临终遗言*/
-	WATCHDOG_TIMEOUT       = 2,  /*看门狗超时*/
-	TIMER_TIMEOUT          = 3,  /*定时器超时*/
-	ARP_TIMEOUT            = 4,  /*arp verifier超时，有发无收*/
-	//RF_OVERHEAT_EXCEPTION  = 5,  /*RF过热异常*/
+	BEAT_HEART_TIMEOUT     = 0,  /*????????*/
+	LAST_WORD              = 1,  /*CPU??????????????*/
+	WATCHDOG_TIMEOUT       = 2,  /*??????????*/
+	TIMER_TIMEOUT          = 3,  /*??????????*/
+	ARP_TIMEOUT            = 4,  /*arp verifier??????????????*/
+	//RF_OVERHEAT_EXCEPTION  = 5,  /*RF????????*/
     BFGX_POWER_ON_FAIL     = 6,
     BFGX_WAKEUP_FAIL       = 7,
     WIFI_POWER_ON_FAIL     = 8,
@@ -188,16 +188,16 @@ struct st_exception_info
     uint32 wifi_exception_cnt;
     uint32 bfgx_exception_cnt;
 
-	/*下边的变量调试使用*/
+	/*??????????????????*/
 	uint32 debug_beat_flag;
 
-    /*wifi打开BCPU for sdio mem dump，该功能仅在调试时使用，默认关闭*/
+    /*wifi????BCPU for sdio mem dump????????????????????????????????*/
     uint32 wifi_open_bcpu_enable;
 
     struct completion wait_uart_read_wifi_mem;
     struct completion wait_uart_halt_wcpu;
 
-    /* wifi异常触发 */
+    /* wifi???????? */
     struct work_struct          wifi_excp_worker;
     struct work_struct          wifi_excp_recovery_worker;
     struct workqueue_struct    *wifi_exception_workqueue;
@@ -216,7 +216,7 @@ struct sdio_dump_bcpu_buff
 *****************************************************************************/
 
 /*****************************************************************************
-  5 全局变量定义
+  5 ????????????
 *****************************************************************************/
 extern struct sdio_dump_bcpu_buff st_bcpu_dump_buff;
 extern oal_netbuf_stru*       st_bcpu_dump_netbuf;

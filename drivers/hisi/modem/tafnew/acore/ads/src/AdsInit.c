@@ -46,7 +46,7 @@
 *
 */
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "vos.h"
 #include "AdsInit.h"
@@ -58,20 +58,20 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_ADS_INIT_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 extern VOS_MSG_HOOK_FUNC                vos_MsgHook;
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 int ADS_UL_SetAffinity(VOS_VOID)
@@ -80,7 +80,7 @@ int ADS_UL_SetAffinity(VOS_VOID)
     VOS_LONG                ret;
     pid_t                   target_pid;
 
-    /* 获取当前线程的Pid */
+    /* ??????????????Pid */
     target_pid = current->pid;
 
     if (!alloc_cpumask_var(&mask, GFP_KERNEL))
@@ -88,7 +88,7 @@ int ADS_UL_SetAffinity(VOS_VOID)
         return -ENOMEM;
     }
 
-    /* 获取当前线程的affinity */
+    /* ??????????????affinity */
     ret = sched_getaffinity(target_pid, mask);
     if (ret == 0)
     {
@@ -120,10 +120,10 @@ VOS_UINT32 ADS_UL_PidInit(enum VOS_INIT_PHASE_DEFINE enPhase)
     {
         case VOS_IP_LOAD_CONFIG:
 
-            /* 上下文初始化 */
+            /* ???????????? */
             ADS_InitCtx();
 
-            /* 给低软注册回调函数，用于C核单独复位的处理 */
+            /* ????????????????????????C???????????????? */
             mdrv_sysboot_register_reset_notify(NAS_ADS_UL_FUNC_PROC_NAME,
                                                ADS_UL_CCpuResetCallback,
                                                0,
@@ -183,7 +183,7 @@ VOS_VOID ADS_UL_FidTask(
             continue;
         }
 
-        /*事件处理*/
+        /*????????*/
         if (VOS_MSG_SYNC_EVENT != ulEvent)
         {
             ADS_UL_ProcEvent(ulEvent);
@@ -226,7 +226,7 @@ VOS_UINT32 ADS_UL_FidInit(enum VOS_INIT_PHASE_DEFINE ip)
     {
         case VOS_IP_LOAD_CONFIG:
 
-            /* 注册ADS_UL PID */
+            /* ????ADS_UL PID */
             ulRslt = VOS_RegisterPIDInfo(ACPU_PID_ADS_UL,
                                          (Init_Fun_Type)ADS_UL_PidInit,
                                          (Msg_Fun_Type)ADS_UL_ProcMsg);
@@ -236,7 +236,7 @@ VOS_UINT32 ADS_UL_FidInit(enum VOS_INIT_PHASE_DEFINE ip)
                 return VOS_ERR;
             }
 
-            /* 注册RNIC PID */
+            /* ????RNIC PID */
             ulRslt = VOS_RegisterPIDInfo(ACPU_PID_RNIC,
                                 (Init_Fun_Type)RNIC_PidInit,
                                 (Msg_Fun_Type)RNIC_ProcMsg);
@@ -253,7 +253,7 @@ VOS_UINT32 ADS_UL_FidInit(enum VOS_INIT_PHASE_DEFINE ip)
                 return ulRslt;
             }
 
-            /* 任务优先级 */
+            /* ?????????? */
             ulRslt = VOS_RegisterTaskPrio(ACPU_FID_ADS_UL, ADS_UL_TASK_PRIORITY);
             if( VOS_OK != ulRslt )
             {
@@ -288,10 +288,10 @@ VOS_UINT32 ADS_DL_PidInit(enum VOS_INIT_PHASE_DEFINE enPhase)
         case VOS_IP_LOAD_CONFIG:
 
 
-            /* ADQ初始化 */
+            /* ADQ?????? */
             ADS_DL_AllocMemForAdq();
 
-            /* 给低软注册回调函数，用于C核单独复位的处理 */
+            /* ????????????????????????C???????????????? */
             mdrv_sysboot_register_reset_notify(NAS_ADS_DL_FUNC_PROC_NAME,
                                                ADS_DL_CCpuResetCallback,
                                                0,
@@ -350,7 +350,7 @@ VOS_VOID ADS_DL_FidTask(
             continue;
         }
 
-        /* 事件处理 */
+        /* ???????? */
         if (VOS_MSG_SYNC_EVENT != ulEvent)
         {
             ADS_DL_ProcEvent(ulEvent);
@@ -390,7 +390,7 @@ VOS_UINT32 ADS_DL_FidInit(enum VOS_INIT_PHASE_DEFINE ip)
     {
         case VOS_IP_LOAD_CONFIG:
 
-            /* 下行PID初始化 */
+            /* ????PID?????? */
             ulRslt = VOS_RegisterPIDInfo(ACPU_PID_ADS_DL,
                                          (Init_Fun_Type)ADS_DL_PidInit,
                                          (Msg_Fun_Type)ADS_DL_ProcMsg);
@@ -408,14 +408,14 @@ VOS_UINT32 ADS_DL_FidInit(enum VOS_INIT_PHASE_DEFINE ip)
                 return ulRslt;
             }
 
-            /* 调用mdrv_ipf_register_ops注册中断处理函数,以及AD空中断处理函数 */
+            /* ????mdrv_ipf_register_ops????????????????,????AD?????????????? */
             lIpfRslt = mdrv_ipf_register_ops(&stIpfOps);
             if (IPF_SUCCESS != lIpfRslt)
             {
                 return VOS_ERR;
             }
 
-            /* 任务优先级 */
+            /* ?????????? */
             ulRslt = VOS_RegisterMsgTaskPrio(ACPU_FID_ADS_DL, VOS_PRIORITY_P6);
             if( VOS_OK != ulRslt )
             {

@@ -22,8 +22,8 @@ typedef  enum {
 struct ps_uart_state_s {
     uint32 tty_tx_cnt;
     uint32 tty_rx_cnt;
-    uint32 tty_stopped;     /* tty 软件流控标志位 */
-    uint32 tty_hw_stopped;  /* tty 硬件流控标志位 */
+    uint32 tty_stopped;     /* tty ?????????????? */
+    uint32 tty_hw_stopped;  /* tty ?????????????? */
     struct uart_icount uart_cnt;
 };
 

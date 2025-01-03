@@ -9,7 +9,7 @@ extern "C" {
 #ifdef _PRE_WLAN_CFGID_DEBUG
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_types.h"
 #include "oal_ext_if.h"
@@ -69,13 +69,13 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_WAL_CONFIG_DEBUG_C
 
 /*****************************************************************************
-  2 结构体定义
+  2 ??????????
 *****************************************************************************/
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_OFFLOAD_FLOWCTL
 
@@ -427,7 +427,7 @@ oal_netbuf_stru*  wal_config_create_packet_ap(oal_uint32    ul_size,
     oal_set_mac_addr(&pst_buf->data[0], puc_mac_ra);
     oal_set_mac_addr(&pst_buf->data[6], puc_mac_ta);
 
-    /* 帧体内容 最后6个字节保持为0x00*/
+    /* ???????? ????6????????????0x00*/
     for (ul_loop = 0; ul_loop < ul_size - 20; ul_loop++)
     {
         pst_buf->data[14 + ul_loop] = (oal_uint8)ul_loop;
@@ -438,7 +438,7 @@ oal_netbuf_stru*  wal_config_create_packet_ap(oal_uint32    ul_size,
     /*lint -e778*/
     pst_ether_header->us_ether_type = OAL_HOST2NET_SHORT(ETHER_TYPE_IP);
     /*lint +e778*/
-    pst_ip = (mac_ip_header_stru *)(pst_ether_header + 1);      /* 偏移一个以太网头，取ip头 */
+    pst_ip = (mac_ip_header_stru *)(pst_ether_header + 1);      /* ????????????????????ip?? */
 
     pst_ip->uc_tos = (oal_uint8)(uc_tid << WLAN_IP_PRI_SHIFT);
 
@@ -475,7 +475,7 @@ OAL_STATIC oal_uint32  wal_config_packet_xmit(mac_vap_stru *pst_mac_vap, oal_uin
 
     pst_dev = hmac_vap_get_net_device(pst_mac_vap->uc_vap_id);
 
-    /*为profiling测试修改，只测量xmit时间*/
+    /*??profiling????????????????xmit????*/
     if (uc_skb_num <= 32)
     {
         for (uc_skb_idx = 0; uc_skb_idx < uc_skb_num; uc_skb_idx++)
@@ -759,7 +759,7 @@ OAL_STATIC oal_uint32 wal_config_set_feature_log(mac_vap_stru *pst_mac_vap, oal_
     oal_uint32          ul_ret;
 
     /***************************************************************************
-        抛事件到DMAC层, 同步DMAC数据
+        ????????DMAC??, ????DMAC????
     ***************************************************************************/
     ul_ret = hmac_config_send_event(pst_mac_vap, WLAN_CFGID_SET_FEATURE_LOG, us_len, puc_param);
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
@@ -777,7 +777,7 @@ OAL_STATIC oal_uint32 wal_config_set_log_lowpower(mac_vap_stru *pst_mac_vap, oal
     oal_uint32          ul_ret;
 
     /***************************************************************************
-        抛事件到DMAC层, 同步DMAC数据
+        ????????DMAC??, ????DMAC????
     ***************************************************************************/
     ul_ret = hmac_config_send_event(pst_mac_vap, WLAN_CFGID_SET_LOG_PM, us_len, puc_param);
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
@@ -801,7 +801,7 @@ OAL_STATIC oal_uint32  wal_config_set_nss(mac_vap_stru *pst_mac_vap, oal_uint16 
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 设置参数 */
+    /* ???????? */
     ul_ret = hmac_config_set_nss(pst_mac_vap, us_len, puc_param);
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
     {
@@ -824,7 +824,7 @@ OAL_STATIC oal_uint32  wal_config_set_rfch(mac_vap_stru *pst_mac_vap, oal_uint16
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 设置参数 */
+    /* ???????? */
     ul_ret = hmac_config_set_rfch(pst_mac_vap, us_len, puc_param);
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
     {
@@ -898,7 +898,7 @@ OAL_STATIC oal_uint32  wal_config_bcast_pkt(mac_vap_stru *pst_mac_vap, oal_uint3
     oal_uint8                       uc_tid;
     oal_uint32                      ul_ret = OAL_SUCC;
 
-    /* 入参检查 */
+    /* ???????? */
     if (OAL_PTR_NULL == pst_mac_vap || OAL_PTR_NULL == pst_mac_vap->pst_mib_info)
     {
         OAM_WARNING_LOG0(0, OAM_SF_ANY, "{wal_config_bcast_pkt::pst_mac_vap/puc_param is null ptr!}\r\n");
@@ -914,7 +914,7 @@ OAL_STATIC oal_uint32  wal_config_bcast_pkt(mac_vap_stru *pst_mac_vap, oal_uint3
 
     uc_tid = 0;
 
-    /* 组包 */
+    /* ???? */
     pst_netbuf = wal_config_create_al_tx_packet(ul_payload_len, uc_tid, (oal_uint8)pst_mac_vap->bit_payload_flag, (oal_uint8)pst_hmac_vap->bit_init_flag);
 
     if (OAL_PTR_NULL == pst_netbuf)
@@ -1242,7 +1242,7 @@ OAL_STATIC oal_uint32  wal_config_open_wmm_test(mac_vap_stru *pst_mac_vap, oal_u
 OAL_STATIC oal_uint32  wal_config_chip_test_open(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
 #ifdef _PRE_WLAN_CHIP_TEST
-        /* 设置一下hmac的芯片验证开关 */
+        /* ????????hmac?????????????? */
         hmac_test_set_chip_test(*(oal_uint8*)puc_param);
 #endif
 
@@ -1253,7 +1253,7 @@ OAL_STATIC oal_uint32  wal_config_chip_test_open(mac_vap_stru *pst_mac_vap, oal_
 
 OAL_STATIC oal_uint32 wal_config_set_coex(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
-    /*通过函数调用，hmac具体实现*/
+    /*??????????????hmac????????*/
 
 #ifdef _PRE_WLAN_CHIP_TEST
     return (hmac_config_set_coex(pst_mac_vap, us_len, puc_param));
@@ -1279,7 +1279,7 @@ OAL_STATIC oal_uint32  wal_config_set_dfx(mac_vap_stru *pst_mac_vap, oal_uint16 
 
 OAL_STATIC oal_uint32 wal_config_enable_pmf(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
-    /* 设置一下hmac的芯片验证开关 */
+    /* ????????hmac?????????????? */
     hmac_enable_pmf(pst_mac_vap, puc_param);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
@@ -1697,12 +1697,12 @@ OAL_STATIC oal_uint32  wal_config_m2u_deny_table(mac_vap_stru *pst_mac_vap, oal_
     }
     pst_clg_m2u_deny_table_param = (mac_clg_m2u_deny_table_stru *)puc_param;
 
-    /* 清空组播组黑名单 */
+    /* ???????????????? */
     if (1 == pst_clg_m2u_deny_table_param->uc_m2u_clear_deny_table)
     {
         hmac_m2u_clear_deny_table(pst_hmac_vap);
     }
-    /* show组播组黑名单 */
+    /* show???????????? */
     if (1 == pst_clg_m2u_deny_table_param->uc_m2u_show_deny_table)
     {
         hmac_m2u_show_snoop_deny_table(pst_hmac_vap);
@@ -1725,7 +1725,7 @@ OAL_STATIC oal_uint32  wal_show_m2u_snoop_table(mac_vap_stru *pst_mac_vap, oal_u
     }
     pst_show_m2u_snoop_table_param = (mac_show_m2u_snoop_table_stru *)puc_param;
 
-    /* show snoop 表 */
+    /* show snoop ?? */
     if (1 == pst_show_m2u_snoop_table_param->uc_m2u_show_snoop_table)
     {
         hmac_m2u_print_all_snoop_list(pst_hmac_vap);
@@ -1761,7 +1761,7 @@ oal_netbuf_stru*  wal_config_create_igmp_packet(oal_uint32 ul_size,
     oal_set_mac_addr(&pst_buf->data[0], puc_mac_ra);
     oal_set_mac_addr(&pst_buf->data[6], puc_mac_ta);
 
-    /* 帧体内容 最后6个字节保持为0x00*/
+    /* ???????? ????6????????????0x00*/
     for (ul_loop = 0; ul_loop < ul_size - 50; ul_loop++)
     {
         pst_buf->data[14 + ul_loop] = (oal_uint8)ul_loop;
@@ -1772,14 +1772,14 @@ oal_netbuf_stru*  wal_config_create_igmp_packet(oal_uint32 ul_size,
     /*lint -e778*/
     pst_ether_header->us_ether_type = OAL_HOST2NET_SHORT(ETHER_TYPE_IP);
     /*lint +e778*/
-    pst_ip = (mac_ip_header_stru *)(pst_ether_header + 1);      /* 偏移一个以太网头，取ip头 */
+    pst_ip = (mac_ip_header_stru *)(pst_ether_header + 1);      /* ????????????????????ip?? */
     pst_ip->uc_version_ihl = 0x45;
     pst_ip->uc_protocol = IPPROTO_IGMP;
-    //pst_ip->ul_saddr = oal_byteorder_host_to_net_uint32(0xc064642c);     /* STA的IP地址 192.100.100.44 */
-    //pst_ip->ul_daddr = oal_byteorder_host_to_net_uint32(0xe0804020);     /* 组播组的IP地址 224.128.64.32 */
+    //pst_ip->ul_saddr = oal_byteorder_host_to_net_uint32(0xc064642c);     /* STA??IP???? 192.100.100.44 */
+    //pst_ip->ul_daddr = oal_byteorder_host_to_net_uint32(0xe0804020);     /* ????????IP???? 224.128.64.32 */
 
     pst_ip->uc_tos = (oal_uint8)(uc_tid << WLAN_IP_PRI_SHIFT);
-    /* 指向igmp头指针 */
+    /* ????igmp?????? */
     pst_igmp_hdr = (mac_igmp_header_stru *)(pst_ip + 1);
     pst_igmp_hdr->uc_type = MAC_IGMPV2_REPORT_TYPE;
     pst_igmp_hdr->ul_group = oal_byteorder_host_to_net_uint32(0xe0804020);
@@ -2371,13 +2371,13 @@ OAL_CONST wal_wid_op_stru g_ast_board_wid_op_debug[] =
     {WLAN_CFGID_SET_LDPC_CAP,       OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_set_ldpc_cap},
 
 #ifdef _PRE_WLAN_FEATURE_CUSTOM_SECURITY
-    /* 自动黑名单参数配置 */
+    /* ?????????????????? */
     {WLAN_CFGID_AUTOBLACKLIST_ON        ,OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_autoblacklist_enable},
     {WLAN_CFGID_AUTOBLACKLIST_AGING     ,OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_set_autoblacklist_aging},
     {WLAN_CFGID_AUTOBLACKLIST_THRESHOLD ,OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_set_autoblacklist_threshold},
     {WLAN_CFGID_AUTOBLACKLIST_RESET     ,OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_set_autoblacklist_reset_time},
 
-    /* 用户隔离参数配置 */
+    /* ???????????????? */
     {WLAN_CFGID_ISOLATION_MODE          ,OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_set_isolation_mode},
     {WLAN_CFGID_ISOLATION_TYPE          ,OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_set_isolation_type},
     {WLAN_CFGID_ISOLATION_FORWARD       ,OAL_FALSE,  {0},   OAL_PTR_NULL,            wal_config_set_isolation_forward},

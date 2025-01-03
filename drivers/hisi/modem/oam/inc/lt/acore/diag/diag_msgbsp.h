@@ -134,8 +134,8 @@ enum
 
 typedef struct
 {
-    VOS_UINT32  ulAuid;                     /* 原AUID*/
-    VOS_UINT32  ulSn;                       /* HSO分发，插件命令管理*/
+    VOS_UINT32  ulAuid;                     /* ??AUID*/
+    VOS_UINT32  ulSn;                       /* HSO??????????????????*/
     VOS_UINT32  ulRet;
 }DIAG_BSP_COMM_CNF_STRU;
 
@@ -154,10 +154,10 @@ typedef struct
     VOS_UINT32  ulChannelId;
 }DIAG_BSP_CTRL;
 
-/* C核给A核发送NV鉴权结果 */
+/* C????A??????NV???????? */
 typedef struct
 {
-     VOS_MSG_HEADER                     /*VOS头 */
+     VOS_MSG_HEADER                     /*VOS?? */
      VOS_UINT32                         ulMsgId;
      VOS_UINT32                         ulLevel;
 }DIAG_BSP_NV_AUTH_STRU;
@@ -165,7 +165,7 @@ typedef struct
 #define    DIAG_HDS_CMD_MAX    50
 typedef struct
 {
-     VOS_MSG_HEADER                     /*VOS头 */
+     VOS_MSG_HEADER                     /*VOS?? */
      VOS_UINT32                         ulMsgId;
      VOS_UINT32                         ulCmdNum;
      VOS_UINT32                         ulCmdList[50];
@@ -173,9 +173,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32 ulNVId;         /* 需要写入的NV ID*/
-    VOS_UINT32 ulDataSize;     /* 需要写入的NV项数据的大小*/
-    VOS_UINT8  aucData[0];     /* 数据缓冲区*/
+    VOS_UINT32 ulNVId;         /* ??????????NV ID*/
+    VOS_UINT32 ulDataSize;     /* ??????????NV????????????*/
+    VOS_UINT8  aucData[0];     /* ??????????*/
 }DIAG_NV_WRITE_TABLE_STRU;
 /*****************************************************************************
   6 UNION

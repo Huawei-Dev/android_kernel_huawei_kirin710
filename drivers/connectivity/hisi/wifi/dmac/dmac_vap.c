@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oam_ext_if.h"
 
@@ -45,7 +45,7 @@ extern "C" {
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_VAP_C
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_BTCOEX
 oal_uint16 g_us_occupied_point[BTCOEX_LINKLOSS_OCCUPIED_NUMBER];
@@ -55,7 +55,7 @@ oal_uint16 g_us_occupied_point[BTCOEX_LINKLOSS_OCCUPIED_NUMBER];
 extern oal_uint8 g_pm_switch;
 #endif
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void dmac_vap_linkloss_init(dmac_vap_stru *pst_dmac_vap)
@@ -68,17 +68,17 @@ oal_void dmac_vap_linkloss_init(dmac_vap_stru *pst_dmac_vap)
     dmac_vap_linkloss_clean(pst_dmac_vap);
     if (WLAN_VAP_MODE_BSS_STA != pst_dmac_vap->st_vap_base_info.en_vap_mode)
     {
-        pst_dmac_vap->st_linkloss_info.us_linkloss_threshold  = 0; /* 无效 */
+        pst_dmac_vap->st_linkloss_info.us_linkloss_threshold  = 0; /* ???? */
         return;
     }
 
-    /* 尚未关联，预先设置对端ap的beacon周期为100 */
+    /* ??????????????????????ap??beacon??????100 */
     pst_dmac_vap->st_linkloss_info.ul_old_dot11BeaconPeriod = WLAN_BEACON_INTVAL_DEFAULT;
     pst_dmac_vap->st_linkloss_info.uc_linkloss_times = 1;
     pst_dmac_vap->st_linkloss_info.en_old_bt_on        = OAL_FALSE;
     pst_dmac_vap->st_linkloss_info.en_old_dbac_runing  = OAL_FALSE;
     pst_dmac_vap->st_linkloss_info.en_old_far_distance = OAL_FALSE;
-    /* staut/p2p cl linkloss门限一致 */
+    /* staut/p2p cl linkloss???????? */
     pst_dmac_vap->st_linkloss_info.us_linkloss_threshold  = (oal_uint16)(40); /* 4s */
 
 #ifdef _PRE_WLAN_FEATURE_BTCOEX
@@ -132,7 +132,7 @@ void dmac_vap_vowifi_exit(dmac_vap_stru *pst_dmac_vap)
 
     pst_vowifi_status = pst_dmac_vap->pst_vowifi_status;
 
-    /*先置空再释放*/
+    /*????????????*/
     pst_dmac_vap->pst_vowifi_status = OAL_PTR_NULL;
     OAL_MEM_FREE(pst_vowifi_status, OAL_TRUE);
 
@@ -157,17 +157,17 @@ oal_uint32  dmac_vap_init(
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* DMAC VAP 部分初始清零 */
+    /* DMAC VAP ???????????? */
     OAL_MEMZERO(((oal_uint8 *)pst_dmac_vap) + OAL_SIZEOF(mac_vap_stru), OAL_SIZEOF(dmac_vap_stru) - OAL_SIZEOF(mac_vap_stru));
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
 
-    /* 统计信息清零 */
+    /* ???????????? */
     oam_stats_clear_vap_stat_info(uc_vap_id);
 #endif
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-    /* 在非OFFLOAD情况下，这些操作HMAC都已经做过了 */
-    /* 初始化mac vap */
+    /* ????OFFLOAD????????????????HMAC???????????? */
+    /* ??????mac vap */
     ul_ret = mac_vap_init(&pst_dmac_vap->st_vap_base_info,
                            uc_chip_id,
                            uc_device_id,
@@ -194,14 +194,14 @@ oal_uint32  dmac_vap_init(
     pst_dmac_vap->en_multi_user_multi_ac_flag = OAL_FALSE;
     pst_dmac_vap->uc_traffic_type    = OAL_TRAFFIC_NORMAL;
 
-    /* 初始化特性标识中BEACON帧不轮流发送 */
+    /* ????????????????BEACON???????????? */
     pst_dmac_vap->en_beacon_chain_active = OAL_FALSE;
 
-    /* VAP发送通道默认值赋值，按照device下能力赋值 */
+    /* VAP????????????????????????device?????????? */
     pst_dmac_vap->uc_vap_tx_chain = pst_mac_device->uc_tx_chain;
 
-    /* 速率结构体赋初值 */
-    /* 按照PHY给出的初始值 ul_value = 0x00800211 */
+    /* ???????????????? */
+    /* ????PHY???????????? ul_value = 0x00800211 */
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.bit_tx_count = 1;
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.bit_stbc_mode = 0;
@@ -214,13 +214,13 @@ oal_uint32  dmac_vap_init(
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.un_nss_rate.st_ht_rate.bit_ht_mcs = 0;
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.un_nss_rate.st_ht_rate.bit_protocol_mode = WLAN_HT_PHY_PROTOCOL_MODE;
 
-    /* 默认是HOST VAP */
+    /* ??????HOST VAP */
     pst_dmac_vap->en_is_host_vap = OAL_TRUE;
 
-    /* 默认天线组合 */
+    /* ???????????? */
     pst_dmac_vap->uc_default_ant_bitmap = 0xFF;
 
-    /* 初始化节能相关参数 */
+    /* ?????????????????? */
     pst_dmac_vap->uc_ps_user_num = 0;
     pst_dmac_vap->uc_dtim_count  = WLAN_DTIM_DEFAULT;
 #ifdef _PRE_WLAN_CHIP_TEST
@@ -237,7 +237,7 @@ oal_uint32  dmac_vap_init(
             pst_dmac_vap->puc_tim_bitmap = OAL_PTR_NULL;
         }
 
-        /* 下述计算tim_bitmap需要的字节数((user_num + 7)>>3表示多少字节的bitmap能表达所有的用户 ) */
+        /* ????????tim_bitmap????????????((user_num + 7)>>3??????????????bitmap???????????????? ) */
         pst_dmac_vap->uc_tim_bitmap_len = (oal_uint8)(2 + ((MAC_RES_MAX_USER_NUM + 7 ) >> 3));
         pst_dmac_vap->puc_tim_bitmap = OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, pst_dmac_vap->uc_tim_bitmap_len, OAL_TRUE);
         if (OAL_PTR_NULL == pst_dmac_vap->puc_tim_bitmap)
@@ -274,7 +274,7 @@ oal_uint32  dmac_vap_init(
     OAL_MEMZERO(pst_dmac_vap->pst_rrm_info, OAL_SIZEOF(mac_rrm_info_stru));
     oal_dlist_init_head(&(pst_dmac_vap->pst_rrm_info->st_meas_rpt_list));
 
-    pst_dmac_vap->bit_bcn_table_switch  = OAL_FALSE; //宏打开时默认使能，可修改
+    pst_dmac_vap->bit_bcn_table_switch  = OAL_FALSE; //????????????????????????
     //pst_dmac_vap->bit_voe_enable        = OAL_FALSE;
     pst_dmac_vap->bit_11k_enable        = OAL_FALSE;
     pst_dmac_vap->bit_11v_enable        = OAL_FALSE;
@@ -285,7 +285,7 @@ oal_uint32  dmac_vap_init(
     pst_dmac_vap->bit_11r_enable        = OAL_FALSE;
 #endif
 
-    /* 初始化重排序超时时间 */
+    /* ???????????????????? */
     pst_dmac_vap->us_del_timeout                = DMAC_BA_DELBA_TIMEOUT;
 
 #ifdef _PRE_WLAN_FEATURE_ARP_OFFLOAD
@@ -333,7 +333,7 @@ oal_void dmac_vap_init_tx_data_ucast(dmac_vap_stru *pst_dmac_vap,oal_uint8 uc_pr
 
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].ul_value = 0x0;
 
-    /* 单播数据帧参数 */
+    /* ?????????????? */
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.bit_tx_count           = 3;
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.bit_stbc_mode          = 0;
@@ -346,7 +346,7 @@ oal_void dmac_vap_init_tx_data_ucast(dmac_vap_stru *pst_dmac_vap,oal_uint8 uc_pr
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.bit_rts_cts_enable     = 0;
     pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.bit_txbf_mode          = 0;
 
-    /* 11b 1M速率不可以使用短导码 */
+    /* 11b 1M???????????????????? */
     if ((WLAN_11B_PHY_PROTOCOL_MODE == uc_protocol_mode) && (0 == uc_legacy_rate))
     {
         pst_dmac_vap->st_tx_alg.ast_per_rate[0].rate_bit_stru.bit_preamble_mode  = 1;
@@ -394,7 +394,7 @@ oal_void dmac_vap_init_tx_data_mcast(
                 uc_protocol_mode = WLAN_11B_PHY_PROTOCOL_MODE;
                 uc_legacy_rate   = 0;
 #ifdef _PRE_WLAN_FEATURE_P2P
-                /* P2P 设备不能发送11b 速率的帧 */
+                /* P2P ????????????11b ???????? */
                 uc_protocol_mode = WLAN_LEGACY_OFDM_PHY_PROTOCOL_MODE;
                 uc_legacy_rate   = 0xB;
 #endif  /* _PRE_WLAN_FEATURE_P2P */
@@ -432,7 +432,7 @@ oal_void dmac_vap_init_tx_data_mcast(
 
     pst_dmac_vap->st_tx_data_mcast.ast_per_rate[0].ul_value = 0x0;
 
-    /* 广播数据帧参数 */
+    /* ?????????????? */
     pst_dmac_vap->st_tx_data_mcast.ast_per_rate[0].rate_bit_stru.bit_tx_count           = 3;
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     pst_dmac_vap->st_tx_data_mcast.ast_per_rate[0].rate_bit_stru.bit_stbc_mode          = 0;
@@ -455,7 +455,7 @@ oal_void dmac_vap_init_tx_data_mcast(
     pst_dmac_vap->st_tx_data_mcast.ast_per_rate[0].rate_bit_stru.bit_rts_cts_enable     = 0;
     pst_dmac_vap->st_tx_data_mcast.ast_per_rate[0].rate_bit_stru.bit_txbf_mode          = 0;
 
-    /* 11b 1M速率不可以使用短导码 */
+    /* 11b 1M???????????????????? */
     if ((WLAN_11B_PHY_PROTOCOL_MODE == uc_protocol_mode) && (0 == uc_legacy_rate))
     {
         pst_dmac_vap->st_tx_data_mcast.ast_per_rate[0].rate_bit_stru.bit_preamble_mode  = 1;
@@ -503,7 +503,7 @@ oal_uint32  dmac_vap_init_tx_data_bcast(
                 uc_protocol_mode = WLAN_11B_PHY_PROTOCOL_MODE;
                 uc_legacy_rate   = 0;
 #ifdef _PRE_WLAN_FEATURE_P2P
-                /* P2P 设备不能发送11b 速率的帧 */
+                /* P2P ????????????11b ???????? */
                 uc_protocol_mode = WLAN_LEGACY_OFDM_PHY_PROTOCOL_MODE;
                 uc_legacy_rate   = 0xB;
 #endif  /* _PRE_WLAN_FEATURE_P2P */
@@ -540,7 +540,7 @@ oal_uint32  dmac_vap_init_tx_data_bcast(
 
     pst_dmac_vap->st_tx_data_bcast.ast_per_rate[0].ul_value = 0x0;
 
-    /* 广播数据帧参数 */
+    /* ?????????????? */
     pst_dmac_vap->st_tx_data_bcast.ast_per_rate[0].rate_bit_stru.bit_tx_count           = 3;
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     pst_dmac_vap->st_tx_data_bcast.ast_per_rate[0].rate_bit_stru.bit_stbc_mode          = 0;
@@ -563,7 +563,7 @@ oal_uint32  dmac_vap_init_tx_data_bcast(
     pst_dmac_vap->st_tx_data_bcast.ast_per_rate[0].rate_bit_stru.bit_rts_cts_enable     = 0;
     pst_dmac_vap->st_tx_data_bcast.ast_per_rate[0].rate_bit_stru.bit_txbf_mode          = 0;
 
-    /* 11b 1M速率不可以使用短导码 */
+    /* 11b 1M???????????????????? */
     if ((WLAN_11B_PHY_PROTOCOL_MODE == uc_protocol_mode) && (0 == uc_legacy_rate))
     {
         pst_dmac_vap->st_tx_data_bcast.ast_per_rate[0].rate_bit_stru.bit_preamble_mode  = 1;
@@ -597,7 +597,7 @@ oal_uint32  dmac_vap_init_tx_mgmt_ucast(dmac_vap_stru *pst_dmac_vap)
 {
     oal_uint32 ul_value;
 
-    /* 初始化2.4G参数 */
+    /* ??????2.4G???? */
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_tx_count             = 3;
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_stbc_mode            = 0;
@@ -617,14 +617,14 @@ oal_uint32  dmac_vap_init_tx_mgmt_ucast(dmac_vap_stru *pst_dmac_vap)
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_short_gi_enable      = 0;
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_reserve              = 0;
 
-    /* 2.4G初始化为11b 1M, long preable */
+    /* 2.4G????????11b 1M, long preable */
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_legacy_rate   = 0;
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_protocol_mode = WLAN_11B_PHY_PROTOCOL_MODE;
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_preamble_mode                            = 1;
 #ifdef _PRE_WLAN_FEATURE_P2P
     if (!IS_LEGACY_VAP(&(pst_dmac_vap->st_vap_base_info)))
     {
-        /* P2P 设备不能发送11b 速率的帧 */
+        /* P2P ????????????11b ???????? */
         pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_legacy_rate   = 0xb;  /* 6M */
         pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_protocol_mode = WLAN_LEGACY_OFDM_PHY_PROTOCOL_MODE;
     }
@@ -638,7 +638,7 @@ oal_uint32  dmac_vap_init_tx_mgmt_ucast(dmac_vap_stru *pst_dmac_vap)
 
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_2G].st_rate.bit_lsig_txop = OAL_FALSE;
 
-    /* 初始化5G参数 */
+    /* ??????5G???? */
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_tx_count             = 3;
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_stbc_mode            = 0;
@@ -651,7 +651,7 @@ oal_uint32  dmac_vap_init_tx_mgmt_ucast(dmac_vap_stru *pst_dmac_vap)
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_short_gi_enable      = 0;
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_reserve              = 0;
 
-    /* 5G初始化为OFDM 6M, short preable */
+    /* 5G????????OFDM 6M, short preable */
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_legacy_rate   = 0xb;  /* 6M */
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_protocol_mode = WLAN_LEGACY_OFDM_PHY_PROTOCOL_MODE;
     pst_dmac_vap->ast_tx_mgmt_ucast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_preamble_mode                            = 0;
@@ -672,7 +672,7 @@ oal_uint32  dmac_vap_init_tx_mgmt_bmcast(dmac_vap_stru *pst_dmac_vap)
 {
     oal_uint32  ul_data_rate;
 
-    /* 初始化2.4G参数 */
+    /* ??????2.4G???? */
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].ul_value                               = 0x0;
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_tx_count             = 4;
@@ -696,14 +696,14 @@ oal_uint32  dmac_vap_init_tx_mgmt_bmcast(dmac_vap_stru *pst_dmac_vap)
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_short_gi_enable      = 0;
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_reserve              = 0;
 
-    /* 2.4G初始化为11b 1M, long preable */
+    /* 2.4G????????11b 1M, long preable */
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_legacy_rate   = 0;
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_protocol_mode = WLAN_11B_PHY_PROTOCOL_MODE;
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.bit_preamble_mode                            = 1;
 #ifdef _PRE_WLAN_FEATURE_P2P
     if (!IS_LEGACY_VAP(&(pst_dmac_vap->st_vap_base_info)))
     {
-        /* P2P 设备不能发送11b 速率的帧 */
+        /* P2P ????????????11b ???????? */
         pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_legacy_rate   = 0xb;  /* 6M */
         pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_protocol_mode = WLAN_LEGACY_OFDM_PHY_PROTOCOL_MODE;
     }
@@ -717,7 +717,7 @@ oal_uint32  dmac_vap_init_tx_mgmt_bmcast(dmac_vap_stru *pst_dmac_vap)
 
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_2G].st_rate.bit_lsig_txop = OAL_FALSE;
 
-    /* 初始化5G参数 */
+    /* ??????5G???? */
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_5G].ast_per_rate[0].ul_value                               = 0x0;
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_tx_count             = 4;
@@ -734,7 +734,7 @@ oal_uint32  dmac_vap_init_tx_mgmt_bmcast(dmac_vap_stru *pst_dmac_vap)
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_short_gi_enable      = 0;
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_reserve              = 0;
 
-    /* 5G初始化为OFDM 6M, short preable */
+    /* 5G????????OFDM 6M, short preable */
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_legacy_rate   = 0xb;  /* 6M */
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.un_nss_rate.st_legacy_rate.bit_protocol_mode = WLAN_LEGACY_OFDM_PHY_PROTOCOL_MODE;
     pst_dmac_vap->ast_tx_mgmt_bmcast[WLAN_BAND_5G].ast_per_rate[0].rate_bit_stru.bit_preamble_mode                            = 0;
@@ -753,25 +753,25 @@ oal_uint32  dmac_vap_init_tx_mgmt_bmcast(dmac_vap_stru *pst_dmac_vap)
 
 oal_uint32  dmac_vap_init_tx_frame_params(dmac_vap_stru *pst_dmac_vap, oal_bool_enum_uint8  en_mgmt_rate_init_flag)
 {
-    wlan_protocol_enum_uint8            en_protocol;        /* 工作的协议模式 */
-    wlan_channel_band_enum_uint8        en_band;            /* 频段 */
+    wlan_protocol_enum_uint8            en_protocol;        /* ?????????????? */
+    wlan_channel_band_enum_uint8        en_band;            /* ???? */
 
     en_protocol  = pst_dmac_vap->st_vap_base_info.en_protocol;
     en_band      = pst_dmac_vap->st_vap_base_info.st_channel.en_band;
 
     if (OAL_TRUE == en_mgmt_rate_init_flag)
     {
-        /* 初始化单播管理帧参数 */
+        /* ???????????????????? */
         dmac_vap_init_tx_mgmt_ucast(pst_dmac_vap);
 
-        /* 初始化组播、广播管理帧参数 */
+        /* ?????????????????????????? */
         dmac_vap_init_tx_mgmt_bmcast(pst_dmac_vap);
     }
 
-    /* 初始化组播数据帧发送参数 */
+    /* ???????????????????????? */
     dmac_vap_init_tx_data_mcast(pst_dmac_vap, en_protocol, en_band);
 
-    /* 初始化广播数据帧发送参数 */
+    /* ???????????????????????? */
     dmac_vap_init_tx_data_bcast(pst_dmac_vap, en_protocol, en_band);
 
     return OAL_SUCC;
@@ -846,19 +846,19 @@ oal_uint32  dmac_vap_sta_reset(dmac_vap_stru *pst_dmac_vap)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 恢复帧过滤寄存器 */
+    /* ???????????????? */
     //hal_disable_non_frame_filter(pst_dmac_vap->pst_hal_device);
 
-    /* 删除BSSID */
+    /* ????BSSID */
     hal_set_sta_bssid(pst_dmac_vap->pst_hal_vap, auc_bssid);
 
-    /* 停止STA tsf */
+    /* ????STA tsf */
     hal_disable_sta_tsf_tbtt(pst_dmac_vap->pst_hal_vap);
 
-    /* 恢复slottime类型为short */
+    /* ????slottime??????short */
     hal_cfg_slottime_type(pst_dmac_vap->pst_hal_device, 0);
 
-    /* 恢复TXOP不使能状态 */
+    /* ????TXOP?????????? */
     if (pst_device->en_txop_enable)
     {
         pst_device->en_txop_enable = OAL_FALSE;
@@ -948,7 +948,7 @@ oal_void  dmac_one_packet_send_null_data(mac_device_stru *pst_mac_device, mac_va
     mac_fcs_prepare_one_packet_cfg(pst_mac_vap, &pst_fcs_cfg->st_one_packet_cfg, 20);
     mac_fcs_send_one_packet_start(pst_fcs_mgr, &pst_fcs_cfg->st_one_packet_cfg, pst_mac_device->pst_device_stru, &st_status, en_ps);
 
-    /* 开关PA只需要在02的产品中打开 */
+    /* ????PA????????02???????????? */
     hal_disable_machw_phy_and_pa(pst_mac_device->pst_device_stru);
 
 #ifdef _PRE_WLAN_FEATURE_BTCOEX
@@ -984,11 +984,11 @@ oal_void dmac_vap_update_rsp_frm_rate(oal_uint8 uc_vap_id, oal_uint8 uc_protocol
         return;
     }
 
-    /* 数据速率为11ac/11n */
+    /* ??????????11ac/11n */
     if ((WLAN_VHT_PHY_PROTOCOL_MODE == uc_protocol_mode) ||
         (WLAN_HT_PHY_PROTOCOL_MODE == uc_protocol_mode))
     {
-        /* 80M/40M带宽回复CTS固定6Mbps */
+        /* 80M/40M????????CTS????6Mbps */
         if (uc_bandwidth >= WLAN_BAND_ASSEMBLE_40M)
         {
             if (WLAN_PHY_RATE_6M != pst_dmac_dev->uc_rsp_frm_rate_val)
@@ -997,7 +997,7 @@ oal_void dmac_vap_update_rsp_frm_rate(oal_uint8 uc_vap_id, oal_uint8 uc_protocol
                 hal_set_rsp_rate((oal_uint32)pst_dmac_dev->uc_rsp_frm_rate_val);
             }
         }
-        /* 20M带宽 */
+        /* 20M???? */
         else
         {
             if (uc_ref_rate >= WLAN_VHT_MCS3)
@@ -1040,7 +1040,7 @@ oal_void dmac_vap_update_rsp_frm_rate(oal_uint8 uc_vap_id, oal_uint8 uc_protocol
             hal_set_rsp_rate((oal_uint32)pst_dmac_dev->uc_rsp_frm_rate_val);
         }
     }
-    /* DBAC场景，1个VAP为11b时 */
+    /* DBAC??????1??VAP??11b?? */
     else if (WLAN_11B_PHY_PROTOCOL_MODE == uc_protocol_mode)
     {
         if (WLAN_11B_PHY_PROTOCOL_MODE != pst_dmac_dev->uc_rsp_frm_rate_val)
@@ -1075,7 +1075,7 @@ oal_void  dmac_vap_resume_tx_by_chl(mac_device_stru *pst_device, mac_channel_str
         if (OAL_TRUE == mac_fcs_is_same_channel(&(pst_dmac_vap->st_vap_base_info.st_channel), pst_dst_channel))
         {
 #ifdef _PRE_WLAN_FEATURE_ROAM
-            /* 当回到漫游vap所在的信道时，不需要切vap的状态。*/
+            /* ??????????vap??????????????????????vap????????*/
             if (MAC_VAP_STATE_ROAMING == pst_dmac_vap->st_vap_base_info.en_vap_state)
             {
                 pst_dmac_user = mac_res_get_dmac_user(pst_dmac_vap->st_vap_base_info.uc_assoc_vap_id);
@@ -1110,7 +1110,7 @@ oal_void  dmac_vap_resume_tx_by_chl(mac_device_stru *pst_device, mac_channel_str
             mac_vap_resume_tx(&(pst_dmac_vap->st_vap_base_info));
             hal_vap_beacon_resume(pst_dmac_vap->pst_hal_vap);
 
-            /* 判断目的信道上的vap模式, 如果是sta则需要发节能位置0的null data */
+            /* ????????????????vap????, ??????sta????????????????0??null data */
             if (WLAN_VAP_MODE_BSS_STA == pst_dmac_vap->st_vap_base_info.en_vap_mode)
             {
                 pst_dmac_user = mac_res_get_dmac_user(pst_dmac_vap->st_vap_base_info.uc_assoc_vap_id);
@@ -1185,9 +1185,9 @@ oal_uint32  dmac_vap_is_in_p2p_listen(mac_vap_stru *pst_mac_vap)
 oal_uint32 dmac_ie_proc_opmode_notify(mac_user_stru *pst_mac_user, mac_vap_stru *pst_mac_vap, mac_opmode_notify_stru *pst_opmode_notify)
 {
     oal_uint32              ul_relt;
-    wlan_bw_cap_enum_uint8  en_bwcap_user = 0;                      /* user之前的带宽信息 */
-	oal_uint8               uc_avail_bf_num_spatial_stream;         /* 用户支持的Beamforming空间流个数 */
-    oal_uint8               uc_avail_num_spatial_stream;            /* Tx和Rx支持Nss的交集,供算法调用 */
+    wlan_bw_cap_enum_uint8  en_bwcap_user = 0;                      /* user?????????????? */
+	oal_uint8               uc_avail_bf_num_spatial_stream;         /* ??????????Beamforming?????????? */
+    oal_uint8               uc_avail_num_spatial_stream;            /* Tx??Rx????Nss??????,?????????? */
 
     if ((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == pst_mac_user) || (OAL_PTR_NULL == pst_opmode_notify))
     {
@@ -1207,11 +1207,11 @@ oal_uint32 dmac_ie_proc_opmode_notify(mac_user_stru *pst_mac_user, mac_vap_stru 
         return ul_relt;
     }
 
-    /* opmode带宽改变通知算法,并同步带宽信息到HOST */
+    /* opmode????????????????,????????????????HOST */
     if (pst_mac_user->en_avail_bandwidth != en_bwcap_user)
     {
 
-        /* user级别调用算法改变带宽通知链 */
+        /* user?????????????????????????? */
         dmac_alg_cfg_user_bandwidth_notify(pst_mac_vap, pst_mac_user);
 
         if (OAL_SUCC != dmac_config_d2h_user_info_syn(pst_mac_vap, pst_mac_user))
@@ -1224,7 +1224,7 @@ oal_uint32 dmac_ie_proc_opmode_notify(mac_user_stru *pst_mac_user, mac_vap_stru 
     if ((pst_mac_user->uc_avail_bf_num_spatial_stream != uc_avail_bf_num_spatial_stream) ||
           (pst_mac_user->uc_avail_num_spatial_stream != uc_avail_num_spatial_stream))
     {
-        /* 调用算法钩子函数 */
+        /* ???????????????? */
         dmac_alg_cfg_user_spatial_stream_notify(pst_mac_user);
     }
 

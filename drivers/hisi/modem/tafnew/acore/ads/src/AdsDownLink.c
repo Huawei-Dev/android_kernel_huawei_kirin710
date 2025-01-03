@@ -46,7 +46,7 @@
 *
 */
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AdsDownLink.h"
 #include "AdsDebug.h"
@@ -60,18 +60,18 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_ADS_DOWNLINK_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
-VOS_UINT32                              g_ulAdsDlDiscardPktFlag  = VOS_FALSE;   /* ADS下行直接丢包开关 */
+VOS_UINT32                              g_ulAdsDlDiscardPktFlag  = VOS_FALSE;   /* ADS???????????????? */
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -82,12 +82,12 @@ VOS_INT ADS_DL_CCpuResetCallback(
 {
     ADS_CCPU_RESET_IND_STRU                *pstMsg = VOS_NULL_PTR;
 
-    /* 参数为0表示复位前调用 */
+    /* ??????0?????????????? */
     if (MDRV_RESET_CB_BEFORE == enParam)
     {
         ADS_TRACE_HIGH("before reset enter.\n");
 
-        /* 构造消息 */
+        /* ???????? */
         pstMsg = (ADS_CCPU_RESET_IND_STRU*)PS_ALLOC_MSG_WITH_HEADER_LEN(ACPU_PID_ADS_DL,
                                                                         sizeof(ADS_CCPU_RESET_IND_STRU));
         if (VOS_NULL_PTR == pstMsg)
@@ -96,18 +96,18 @@ VOS_INT ADS_DL_CCpuResetCallback(
             return VOS_ERROR;
         }
 
-        /* 填写消息头 */
+        /* ?????????? */
         pstMsg->ulReceiverPid               = ACPU_PID_ADS_DL;
         pstMsg->enMsgId                     = ID_ADS_CCPU_RESET_START_IND;
 
-        /* 发消息 */
+        /* ?????? */
         if (VOS_OK != PS_SEND_MSG(ACPU_PID_ADS_DL, pstMsg))
         {
             ADS_TRACE_HIGH("before reset: send msg failed.\n");
             return VOS_ERROR;
         }
 
-        /* 等待回复信号量初始为锁状态，等待消息处理完后信号量解锁。 */
+        /* ???????????????????????????????????????????????????????? */
         if (VOS_OK != VOS_SmP(ADS_GetDLResetSem(), ADS_RESET_TIMEOUT_LEN))
         {
             ADS_TRACE_HIGH("before reset VOS_SmP failed.\n");
@@ -118,12 +118,12 @@ VOS_INT ADS_DL_CCpuResetCallback(
         ADS_TRACE_HIGH("before reset succ.\n");
         return VOS_OK;
     }
-    /* 复位后 */
+    /* ?????? */
     else if (MDRV_RESET_CB_AFTER == enParam)
     {
         ADS_TRACE_HIGH("after reset enter.\n");
 
-        /* 构造消息 */
+        /* ???????? */
         pstMsg = (ADS_CCPU_RESET_IND_STRU*)PS_ALLOC_MSG_WITH_HEADER_LEN(ACPU_PID_ADS_DL,
                                                                         sizeof(ADS_CCPU_RESET_IND_STRU));
         if (VOS_NULL_PTR == pstMsg)
@@ -132,11 +132,11 @@ VOS_INT ADS_DL_CCpuResetCallback(
             return VOS_ERROR;
         }
 
-        /* 填写消息头 */
+        /* ?????????? */
         pstMsg->ulReceiverPid               = ACPU_PID_ADS_DL;
         pstMsg->enMsgId                     = ID_ADS_CCPU_RESET_END_IND;
 
-        /* 发消息 */
+        /* ?????? */
         if (VOS_OK != PS_SEND_MSG(ACPU_PID_ADS_DL, pstMsg))
         {
             ADS_TRACE_HIGH("after reset: send msg failed.\n");
@@ -199,7 +199,7 @@ VOS_VOID ADS_DL_RcvTiAdqEmptyExpired(
     VOS_UINT32                          ulTimerName
 )
 {
-    /* 触发下行ADQ空中断处理事件 */
+    /* ????????ADQ?????????????? */
     ADS_DL_SndEvent(ADS_DL_EVENT_IPF_ADQ_EMPTY_INT);
     ADS_DBG_DL_ADQ_EMPTY_TMR_TIMEOUT_NUM(1);
     return;
@@ -255,7 +255,7 @@ VOS_UINT32 ADS_DL_ConfigAdq(
 
         ADS_DBG_DL_ADQ_ALLOC_MEM_SUCC_NUM(1);
 
-        /* 填写AD描述符: OUTPUT0 ---> 目的地址; OUTPUT1 ---> SKBUFF */
+        /* ????AD??????: OUTPUT0 ---> ????????; OUTPUT1 ---> SKBUFF */
         pstAdDesc = ADS_DL_GET_IPF_AD_DESC_PTR(enAdType, ulCnt);
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0))
         pstAdDesc->OutPtr0 = (modem_phy_addr)virt_to_phys((VOS_VOID *)pstImmZc->data);
@@ -265,7 +265,7 @@ VOS_UINT32 ADS_DL_ConfigAdq(
         pstAdDesc->OutPtr1 = (modem_phy_addr)virt_to_phys((VOS_VOID *)pstImmZc);
 #endif/* (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0) */
 
-        /* 记录描述符信息 */
+        /* ?????????????? */
         if (enAdType < IPF_AD_MAX)
         {
             pstAdRecord = ADS_DL_GET_IPF_AD_RECORD_PTR(enAdType);
@@ -287,11 +287,11 @@ VOS_UINT32 ADS_DL_ConfigAdq(
         return 0;
     }
 
-    /* 申请到AD才需要配置ADQ */
+    /* ??????AD??????????ADQ */
     lRslt = mdrv_ipf_config_dlad(enAdType, ulCnt, ADS_DL_GET_IPF_AD_DESC_PTR(enAdType, 0));
     if (IPF_SUCCESS != lRslt)
     {
-        /* 配置失败，释放内存 */
+        /* ?????????????????? */
         ulTmp = ulCnt;
         for (ulCnt = 0; ulCnt < ulTmp; ulCnt++)
         {
@@ -305,7 +305,7 @@ VOS_UINT32 ADS_DL_ConfigAdq(
         return 0;
     }
 
-    /* 输出实际配置的AD数目 */
+    /* ??????????????AD???? */
     ADS_DBG_DL_ADQ_CFG_AD_NUM(ulCnt);
     ADS_DBG_DL_ADQ_CFG_IPF_SUCC_NUM(1);
     return ulCnt;
@@ -325,7 +325,7 @@ VOS_VOID ADS_DL_AllocMemForAdq(VOS_VOID)
     ulActAd0Num = 0;
     ulActAd1Num = 0;
 
-    /* 获取两个ADQ的空闲的AD个数 */
+    /* ????????ADQ????????AD???? */
     lRslt = mdrv_ipf_get_dlad_num(&ulIpfAd0Num, &ulIpfAd1Num);
     if (IPF_SUCCESS != lRslt)
     {
@@ -335,25 +335,25 @@ VOS_VOID ADS_DL_AllocMemForAdq(VOS_VOID)
 
     ADS_DBG_DL_ADQ_GET_FREE_AD_SUCC_NUM(1);
 
-    /* 首先配置大内存的ADQ1 */
+    /* ????????????????ADQ1 */
     if (0 != ulIpfAd1Num)
     {
         ulActAd1Num = ADS_DL_ConfigAdq(IPF_AD_1, ulIpfAd1Num);
         ADS_DBG_DL_ADQ_CFG_AD1_NUM(ulActAd1Num);
     }
 
-    /* 再配置小内存的ADQ0 */
+    /* ??????????????ADQ0 */
     if (0 != ulIpfAd0Num)
     {
         ulActAd0Num = ADS_DL_ConfigAdq(IPF_AD_0, ulIpfAd0Num);
         ADS_DBG_DL_ADQ_CFG_AD0_NUM(ulActAd0Num);
     }
 
-    /* AD0为空或者AD1为空需要重新启动定时器 */
+    /* AD0????????AD1?????????????????????? */
     if ( ((0 == ulActAd0Num) && (ADS_IPF_DLAD_START_TMR_THRESHOLD < ulIpfAd0Num))
       || ((0 == ulActAd1Num) && (ADS_IPF_DLAD_START_TMR_THRESHOLD < ulIpfAd1Num)) )
     {
-        /* 如果两个ADQ任何一个空且申请不到内存，启定时器 */
+        /* ????????ADQ?????????????????????????????????? */
         ADS_StartTimer(TI_ADS_DL_ADQ_EMPTY, TI_ADS_DL_ADQ_EMPTY_LEN);
     }
 
@@ -370,7 +370,7 @@ VOS_VOID ADS_DL_SendNdClientDataInd(IMM_ZC_STRU *pstImmZc)
 
     ulDataLen = IMM_ZcGetUsedLen(pstImmZc);
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (ADS_NDCLIENT_DATA_IND_STRU *)PS_ALLOC_MSG_WITH_HEADER_LEN(
                                                ACPU_PID_ADS_DL,
                                                sizeof(ADS_NDCLIENT_DATA_IND_STRU) + ulDataLen - 2);
@@ -385,18 +385,18 @@ VOS_VOID ADS_DL_SendNdClientDataInd(IMM_ZC_STRU *pstImmZc)
                0x00,
                (VOS_SIZE_T)(sizeof(ADS_NDCLIENT_DATA_IND_STRU) + ulDataLen - 2 - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->ulReceiverPid = UEPS_PID_NDCLIENT;
     pstMsg->enMsgId       = ID_ADS_NDCLIENT_DATA_IND;
     pstMsg->enModemId     = ADS_DL_GET_MODEMID_FROM_IMM(pstImmZc);
     pstMsg->ucRabId       = ADS_DL_GET_RABID_FROM_IMM(pstImmZc);
     pstMsg->usLen         = (VOS_UINT16)ulDataLen;
 
-    /* 拷贝数据内容 */
+    /* ???????????? */
     pucData = IMM_ZcGetDataPtr(pstImmZc);
     TAF_MEM_CPY_S(pstMsg->aucData, ulDataLen, pucData, ulDataLen);
 
-    /* 发送消息 */
+    /* ???????? */
     ulResult = PS_SEND_MSG(ACPU_PID_ADS_DL, pstMsg);
     if (VOS_OK != ulResult)
     {
@@ -416,12 +416,12 @@ VOS_VOID ADS_DL_SendDhcpClientDataInd(IMM_ZC_STRU *pstImmZc)
 
     ulDataLen = IMM_ZcGetUsedLen(pstImmZc);
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (ADS_DHCP_DATA_IND_STRU *)PS_ALLOC_MSG_WITH_HEADER_LEN(
                                                ACPU_PID_ADS_DL,
                                                sizeof(ADS_DHCP_DATA_IND_STRU) + ulDataLen);
 
-    /* 内存申请失败，返回 */
+    /* ?????????????????? */
     if( VOS_NULL_PTR == pstMsg )
     {
         ADS_ERROR_LOG(ACPU_PID_ADS_DL, "ADS_DL_SendDhcpClientDataInd: pstMsg is NULL!");
@@ -433,18 +433,18 @@ VOS_VOID ADS_DL_SendDhcpClientDataInd(IMM_ZC_STRU *pstImmZc)
                0x00,
                (VOS_SIZE_T)(sizeof(ADS_DHCP_DATA_IND_STRU) + ulDataLen - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->ulReceiverPid = UEPS_PID_DHCP;
     pstMsg->enMsgId       = ID_ADS_DHCP_DATA_IND;
     pstMsg->enModemId     = ADS_DL_GET_MODEMID_FROM_IMM(pstImmZc);
     pstMsg->ucRabId       = ADS_DL_GET_RABID_FROM_IMM(pstImmZc);
     pstMsg->ulLen         = ulDataLen;
 
-    /* 拷贝数据 */
+    /* ???????? */
     pucData = IMM_ZcGetDataPtr(pstImmZc);
     TAF_MEM_CPY_S(pstMsg->aucData, ulDataLen, pucData, ulDataLen);
 
-    /* 调用VOS发送原语 */
+    /* ????VOS???????? */
     ulResult = PS_SEND_MSG(ACPU_PID_ADS_DL, pstMsg);
     if (VOS_OK != ulResult)
     {
@@ -463,12 +463,12 @@ VOS_VOID ADS_DL_SendMipDataInd(IMM_ZC_STRU *pstImmZc)
 
     ulDataLen = IMM_ZcGetUsedLen(pstImmZc);
 
-    /* 申请消息 */
+    /* ???????? */
     pstMsg = (ADS_MIP_DATA_IND_STRU *)PS_ALLOC_MSG_WITH_HEADER_LEN(
                                                ACPU_PID_ADS_DL,
                                                sizeof(ADS_MIP_DATA_IND_STRU) + ulDataLen - 4);
 
-    /* 内存申请失败，返回 */
+    /* ?????????????????? */
     if( VOS_NULL_PTR == pstMsg )
     {
         ADS_ERROR_LOG(ACPU_PID_ADS_DL, "ADS_DL_SendMipDataInd: pstMsg is NULL!");
@@ -480,18 +480,18 @@ VOS_VOID ADS_DL_SendMipDataInd(IMM_ZC_STRU *pstImmZc)
                0x00,
                (VOS_SIZE_T)(sizeof(ADS_MIP_DATA_IND_STRU) + ulDataLen - 4 - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->ulReceiverPid = MSPS_PID_MIP;
     pstMsg->enMsgId       = ID_ADS_MIP_DATA_IND;
     pstMsg->enModemId     = ADS_DL_GET_MODEMID_FROM_IMM(pstImmZc);
     pstMsg->ucRabId       = ADS_DL_GET_RABID_FROM_IMM(pstImmZc);
     pstMsg->usLen         = (VOS_UINT16)ulDataLen;
 
-    /* 拷贝数据 */
+    /* ???????? */
     pucData = IMM_ZcGetDataPtr(pstImmZc);
     TAF_MEM_CPY_S(pstMsg->aucData, ulDataLen, pucData, ulDataLen);
 
-    /* 调用VOS发送原语 */
+    /* ????VOS???????? */
     (VOS_VOID)PS_SEND_MSG(ACPU_PID_ADS_DL, pstMsg);
 
     return;
@@ -520,7 +520,7 @@ VOS_VOID ADS_DL_FreeIpfUsedAd0(VOS_VOID)
 
     if (IPF_SUCCESS == mdrv_ipf_get_used_dlad(IPF_AD_0, (VOS_UINT32 *)&ulAdNum, pstAdDesc))
     {
-        /* 释放ADQ0的内存 */
+        /* ????ADQ0?????? */
         for (i = 0; i < PS_MIN(ulAdNum, IPF_DLAD0_DESC_SIZE); i++)
         {
             IMM_ZcFreeAny((IMM_ZC_STRU *)phys_to_virt((unsigned long)pstAdDesc[i].OutPtr1));
@@ -561,7 +561,7 @@ VOS_VOID ADS_DL_FreeIpfUsedAd1(VOS_VOID)
 
     if (IPF_SUCCESS == mdrv_ipf_get_used_dlad(IPF_AD_1, (VOS_UINT32 *)&ulAdNum, pstAdDesc))
     {
-        /* 释放ADQ1的内存 */
+        /* ????ADQ1?????? */
         for (i = 0; i < PS_MIN(ulAdNum, IPF_DLAD1_DESC_SIZE); i++)
         {
             IMM_ZcFreeAny((IMM_ZC_STRU *)phys_to_virt((unsigned long)pstAdDesc[i].OutPtr1));
@@ -587,7 +587,7 @@ VOS_VOID ADS_DL_SndCdsErrorInd(
 {
     ADS_CDS_ERR_IND_STRU               *pstMsg = VOS_NULL_PTR;
 
-    /* 申请OSA消息 */
+    /* ????OSA???? */
     pstMsg = (ADS_CDS_ERR_IND_STRU *)ADS_DL_ALLOC_MSG_WITH_HDR(
                                             sizeof(ADS_CDS_ERR_IND_STRU));
     if (VOS_NULL_PTR == pstMsg)
@@ -596,18 +596,18 @@ VOS_VOID ADS_DL_SndCdsErrorInd(
         return;
     }
 
-    /* 清空消息内容 */
+    /* ???????????? */
     TAF_MEM_SET_S(ADS_DL_GET_MSG_ENTITY(pstMsg), ADS_DL_GET_MSG_LENGTH(pstMsg),
                   0x00, ADS_DL_GET_MSG_LENGTH(pstMsg));
 
-    /* 填写消息头 */
+    /* ?????????? */
     ADS_DL_CFG_CDS_MSG_HDR(pstMsg, ID_ADS_CDS_ERR_IND);
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->enModemId = usModemId;
     pstMsg->ucRabId   = (VOS_UINT8)ulRabId;
 
-    /* 发送消息 */
+    /* ???????? */
     ADS_DL_SEND_MSG(pstMsg);
     return;
 }
@@ -620,7 +620,7 @@ VOS_VOID ADS_DL_SndIntraPacketErrorInd(
 {
     ADS_PACKET_ERROR_IND_STRU          *pstMsg = VOS_NULL_PTR;
 
-    /* 申请OSA消息 */
+    /* ????OSA???? */
     pstMsg = (ADS_PACKET_ERROR_IND_STRU *)ADS_DL_ALLOC_MSG_WITH_HDR(
                                             sizeof(ADS_PACKET_ERROR_IND_STRU));
     if (VOS_NULL_PTR == pstMsg)
@@ -630,14 +630,14 @@ VOS_VOID ADS_DL_SndIntraPacketErrorInd(
         return;
     }
 
-    /* 填写消息头 */
+    /* ?????????? */
     ADS_DL_CFG_INTRA_MSG_HDR(pstMsg, ID_ADS_PACKET_ERROR_IND);
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->usModemId    = (VOS_UINT16)ulInstance;
     pstMsg->usBearerMask = usBearerMask;
 
-    /* 发送消息 */
+    /* ???????? */
     ADS_DL_SEND_MSG(pstMsg);
     return;
 }
@@ -773,14 +773,14 @@ VOS_UINT32 ADS_DL_ValidateImmMem(IMM_ZC_STRU *pstImmZc)
 
     pstImmPriv = ADS_DL_IMM_PRIV_CB(pstImmZc);
 
-    /* 检查MODEMID */
+    /* ????MODEMID */
     if (!ADS_IS_MODEMID_VALID(pstImmPriv->ucModemId))
     {
         ADS_DBG_DL_RMNET_MODEMID_ERR_NUM(1);
         return VOS_ERR;
     }
 
-    /* 检查RABID */
+    /* ????RABID */
     if (!ADS_IS_RABID_VALID(pstImmPriv->ucRabId))
     {
         ADS_DBG_DL_RMNET_RABID_ERR_NUM(1);
@@ -808,7 +808,7 @@ VOS_VOID ADS_DL_Xmit(
     pRcvDlDataFunc    = ADS_DL_GET_DATA_CALLBACK_FUNC(ulInstance, ulRabId);
     pRcvRdLstDataFunc = ADS_DL_GET_RD_LST_DATA_CALLBACK_FUNC(ulInstance, ulRabId);
 
-    /* 获取缓存的数据 */
+    /* ?????????????? */
     pstLstImmZc = ADS_DL_GET_LST_DATA_PTR(ulInstance, ulRabId);
     if (VOS_NULL_PTR != pstLstImmZc)
     {
@@ -822,7 +822,7 @@ VOS_VOID ADS_DL_Xmit(
         {
             (VOS_VOID)pRcvDlDataFunc(ucExRabId, pstLstImmZc, enIpType, ulExParam);
 
-            /* 最后一个报文 */
+            /* ???????????? */
             pRcvRdLstDataFunc = ADS_DL_GET_RD_LST_DATA_CALLBACK_FUNC(ulInstance, ulRabId);
             if ((VOS_NULL_PTR == pstImmZc) && (VOS_NULL_PTR != pRcvRdLstDataFunc))
             {
@@ -879,14 +879,14 @@ IMM_ZC_STRU* ADS_DL_RdDescTransImmMem(
     IMM_ZC_STRU                        *pstImmZc = VOS_NULL_PTR;
     VOS_UINT32                          ulCacheLen;
 
-    /* 将OUT指针转换为IMM内存指针 */
+    /* ??OUT??????????IMM???????? */
     pstImmZc = (IMM_ZC_STRU *)phys_to_virt((VOS_ULONG)ADS_DL_GET_IPF_RD_DESC_OUT_PTR(pstRdDesc));
     if (VOS_NULL_PTR == pstImmZc)
     {
         return VOS_NULL_PTR;
     }
 
-    /* 记录描述符信息 */
+    /* ?????????????? */
     pstRdRecord = ADS_DL_GET_IPF_RD_RECORD_PTR();
     if (pstRdRecord->ulPos >= ADS_IPF_RD_BUFF_RECORD_NUM)
     {
@@ -900,7 +900,7 @@ IMM_ZC_STRU* ADS_DL_RdDescTransImmMem(
     pstRdRecord->astRdBuff[pstRdRecord->ulPos].pOutPtr  = (VOS_VOID *)ADS_DL_GET_IPF_RD_DESC_OUT_PTR(pstRdDesc);
     pstRdRecord->ulPos++;
 
-    /* 统一刷CACHE */
+    /* ??????CACHE */
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0))
     ulCacheLen = pstRdDesc->u16PktLen + IMM_MAC_HEADER_RES_LEN;
 #else
@@ -908,10 +908,10 @@ IMM_ZC_STRU* ADS_DL_RdDescTransImmMem(
 #endif
     ADS_IPF_DL_MEM_UNMAP(pstImmZc, ulCacheLen);
 
-    /* 设置数据真实长度 */
+    /* ???????????????? */
     IMM_ZcPut(pstImmZc, pstRdDesc->u16PktLen);
 
-    /* 保存描述符信息: u16Result/u16UsrField1 */
+    /* ??????????????: u16Result/u16UsrField1 */
     ADS_DL_SAVE_RD_DESC_TO_IMM(pstImmZc, pstRdDesc);
 
     return pstImmZc;
@@ -925,17 +925,17 @@ VOS_VOID ADS_DL_ProcIpfFilterData(
     VOS_UINT32                          ulCacheLen;
     VOS_UINT16                          usIpfResult;
 
-    /* 统一刷CACHE */
+    /* ??????CACHE */
     usIpfResult = ADS_DL_GET_IPF_RESULT_FORM_IMM(pstImmZc);
     ulCacheLen  = IMM_ZcGetUsedLen(pstImmZc) + IMM_MAC_HEADER_RES_LEN;
 
     ADS_IPF_SPE_MEM_UNMAP(pstImmZc, ulCacheLen);
 
-    /* 匹配下行过滤规则的数据
-     * BearId 19: NDClient包，需要转发给NDClient
-     * BearId 17: DHCPv6包，需要转发给DHCP
-     * [0, 15]定义为非法数据包;
-     * [16, 18, 20, 21]目前直接释放
+    /* ??????????????????????
+     * BearId 19: NDClient??????????????NDClient
+     * BearId 17: DHCPv6??????????????DHCP
+     * [0, 15]????????????????;
+     * [16, 18, 20, 21]????????????
      */
     if (CDS_ADS_DL_IPF_BEARER_ID_ICMPV6 == ADS_DL_GET_BEAREDID_FROM_IPF_RESULT(usIpfResult))
     {
@@ -1002,32 +1002,32 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
     VOS_UINT32                          ulSlice;
 
     /*
-     * IPF_RD_DESC_S中u16Result含义
-     * [15]pkt_len_err     IP包长不在配置范围内
-     * [14]bd_cd_noeq      BD中len和CD的长度不等错误提示
-     * [13]pkt_parse_err   数据解析错误指示
-     * [12]bd_pkt_noeq     BD中len和IP包头指示的len不等错误指示
-     * [11]head_len_err    IPV4长度错误指示信号，IPV6不检查长度
-     * [10]version_err     版本号错误指示
-     * [9]ip_type          IP包类型，
-     *                     0 表示IPV4
-     *                     1 表示IPV6
-     * [8]ff_type          分片包第一个分片是否包含上层头指示
-     *                     0 表示分片包第一个分片包括上层头(IP包未分片时也为0)
-     *                     1 表示分片包第一个分片包括上层头
-     * [7:6]pf_type        IP包分片指示类型
-     *                     0 表示IP包未分片
-     *                     1 表示IP包分片，且为第一个分片，
-     *                     2 表示分片，且为最后一个分片，
-     *                     3 表示分片，且为中间分片
-     * [0:5]bear_id        承载号，如果为0x3F代表所有过滤器不匹配
+     * IPF_RD_DESC_S??u16Result????
+     * [15]pkt_len_err     IP??????????????????
+     * [14]bd_cd_noeq      BD??len??CD??????????????????
+     * [13]pkt_parse_err   ????????????????
+     * [12]bd_pkt_noeq     BD??len??IP??????????len????????????
+     * [11]head_len_err    IPV4??????????????????IPV6??????????
+     * [10]version_err     ??????????????
+     * [9]ip_type          IP????????
+     *                     0 ????IPV4
+     *                     1 ????IPV6
+     * [8]ff_type          ??????????????????????????????????
+     *                     0 ??????????????????????????????(IP??????????????0)
+     *                     1 ??????????????????????????????
+     * [7:6]pf_type        IP??????????????
+     *                     0 ????IP????????
+     *                     1 ????IP????????????????????????
+     *                     2 ????????????????????????????
+     *                     3 ??????????????????????
+     * [0:5]bear_id        ??????????????0x3F????????????????????
      */
 
-    /* 获取RD DESC */
+    /* ????RD DESC */
     pstRdDesc = ADS_DL_GET_IPF_RD_DESC_PTR(0);
     mdrv_ipf_get_dlrd(&ulRdNum, pstRdDesc);
 
-    /* 获取的RD为0 */
+    /* ??????RD??0 */
     if (0 == ulRdNum)
     {
         ADS_DBG_DL_RDQ_GET_RD0_NUM(1);
@@ -1035,10 +1035,10 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
     }
 
 
-    /* 增加RD统计个数 */
+    /* ????RD???????? */
     ADS_DBG_DL_RDQ_RX_RD_NUM(ulRdNum);
 
-    /* 先配置AD，再处理RD */
+    /* ??????AD????????RD */
     /*lint -e571*/
     VOS_SpinLockIntLock(&(g_stAdsCtx.stAdsIpfCtx.stAdqSpinLock), ulLockLevel);
     /*lint +e571*/
@@ -1051,7 +1051,7 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
     {
         pstRdDesc = ADS_DL_GET_IPF_RD_DESC_PTR(ulCnt);
 
-        /* 转换为IMM内存 */
+        /* ??????IMM???? */
         pstImmZc = ADS_DL_RdDescTransImmMem(pstRdDesc, ulSlice);
         if (VOS_NULL_PTR == pstImmZc)
         {
@@ -1059,20 +1059,20 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
             continue;
         }
 
-        /* 校验IMM内存 */
+        /* ????IMM???? */
         if (VOS_OK != ADS_DL_ValidateImmMem(pstImmZc))
         {
             IMM_ZcFreeAny(pstImmZc);
             continue;
         }
 
-        /* 统计异常数据 */
+        /* ???????????? */
         ADS_DL_RecordPacketErrorStats(pstImmZc);
 
-        /* 统计下行周期性收到的数据字节数，用于流量查询 */
+        /* ???????????????????????????????????????????? */
         ADS_RECV_DL_PERIOD_PKT_NUM(pstRdDesc->u16PktLen);
 
-        /* 待实现 */
+        /* ?????? */
         ulRnicNapiPollQueLen = 0;
 
         ADS_MNTN_RecDLIpPktInfo(pstImmZc,
@@ -1081,10 +1081,10 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
                                 pstRdDesc->u32UsrField3,
                                 ulRnicNapiPollQueLen);
 
-        /* 获取IPF RESULT */
+        /* ????IPF RESULT */
         pstIpfResult = (ADS_DL_IPF_RESULT_STRU *)&(pstRdDesc->u16Result);
 
-        /* BearId 0x3F: 正常下行数据包需要转发给NDIS/PPP/RNIC*/
+        /* BearId 0x3F: ????????????????????????NDIS/PPP/RNIC*/
         if (CDS_ADS_DL_IPF_BEARER_ID_INVALID == pstIpfResult->usBearedId)
         {
             if (pstRdDesc->u16Result & ADS_DL_IPF_RESULT_PKT_ERR_MASK)
@@ -1107,7 +1107,7 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
         {
             if (VOS_FALSE != VOS_CheckInterrupt())
             {
-                /* 先入队列缓存 */
+                /* ???????????? */
                 IMM_ZcQueueTail(ADS_GET_IPF_FILTER_QUE(), pstImmZc);
             }
             else
@@ -1117,7 +1117,7 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
         }
     }
 
-    /* 推送最后一个数据 */
+    /* ???????????????? */
     ADS_DL_ProcTxData(VOS_NULL_PTR);
 
     if (0 != IMM_ZcQueueLen(ADS_GET_IPF_FILTER_QUE()))
@@ -1125,7 +1125,7 @@ VOS_VOID ADS_DL_ProcIpfResult(VOS_VOID)
         ADS_DL_SndEvent(ADS_DL_EVENT_IPF_FILTER_DATA_PROC);
     }
 
-    /* 反馈错误提示给协议栈 */
+    /* ???????????????????? */
     ADS_DL_FeedBackPacketErrorIfNeeded();
 
     ADS_MNTN_ReportDLPktInfo();
@@ -1140,7 +1140,7 @@ VOS_UINT32 ADS_DL_IsFcAssemTuneNeeded(VOS_UINT32 ulRdNum)
     ADS_DL_FC_ASSEM_STRU               *pstFcAssemInfo;
     VOS_UINT32                          ulRslt = VOS_FALSE;
 
-    /* 获取流控阈值参数 */
+    /* ???????????????? */
     pstFcAssemInfo = ADS_DL_GET_FC_ASSEM_INFO_PTR(ADS_INSTANCE_INDEX_0);
 
     if (0 != pstFcAssemInfo->ulEnableMask)
@@ -1186,7 +1186,7 @@ VOS_UINT32 ADS_DL_RegDlDataCallback(
     VOS_UINT32                          ulInstance;
     VOS_UINT32                          ulRabId;
 
-    /* 检查MODEMID */
+    /* ????MODEMID */
     ulInstance = ADS_GET_MODEMID_FROM_EXRABID(ucExRabId);
     if (!ADS_IS_MODEMID_VALID(ulInstance))
     {
@@ -1195,7 +1195,7 @@ VOS_UINT32 ADS_DL_RegDlDataCallback(
         return VOS_ERR;
     }
 
-    /* 检查RABID */
+    /* ????RABID */
     ulRabId = ADS_GET_RABID_FROM_EXRABID(ucExRabId);
     if (!ADS_IS_RABID_VALID(ulRabId))
     {
@@ -1204,7 +1204,7 @@ VOS_UINT32 ADS_DL_RegDlDataCallback(
         return VOS_ERR;
     }
 
-    /* 保存下行数据回调参数 */
+    /* ???????????????????? */
     pstDlRabInfo = ADS_DL_GET_RAB_INFO_PTR(ulInstance, ulRabId);
     pstDlRabInfo->ulRabId           = ulRabId;
     pstDlRabInfo->ulExParam         = ulExParam;
@@ -1224,11 +1224,11 @@ VOS_UINT32 ADS_DL_RegFilterDataCallback(
     VOS_UINT32                          ulInstanceIndex;
     VOS_UINT32                          ulRealRabId;
 
-    /* ucRabId的高2个bit表示modem id*/
+    /* ucRabId????2??bit????modem id*/
     ulInstanceIndex = ADS_GET_MODEMID_FROM_EXRABID(ucRabId);
     ulRealRabId     = ADS_GET_RABID_FROM_EXRABID(ucRabId);
 
-    /* RabId合法性检查 */
+    /* RabId?????????? */
     if (!ADS_IS_RABID_VALID(ulRealRabId))
     {
         ADS_WARNING_LOG1(ACPU_PID_ADS_DL, "ADS_DL_RegFilterDataCallback: ucRabId is", ulRealRabId);
@@ -1237,11 +1237,11 @@ VOS_UINT32 ADS_DL_RegFilterDataCallback(
 
     pstDlRabInfo = ADS_DL_GET_RAB_INFO_PTR(ulInstanceIndex, ulRealRabId);
 
-    /* 设置ADS下行数据过滤回调内容 */
+    /* ????ADS???????????????????? */
     pstDlRabInfo->ulRabId               = ulRealRabId;
     pstDlRabInfo->pRcvDlFilterDataFunc  = pFunc;
 
-    /* 保存过滤地址信息 */
+    /* ???????????????? */
     ADS_FILTER_SaveIPAddrInfo(pstFilterIpAddr);
 
     return VOS_OK;
@@ -1254,11 +1254,11 @@ VOS_UINT32 ADS_DL_DeregFilterDataCallback(VOS_UINT32 ulRabId)
     VOS_UINT32                           ulInstanceIndex;
     VOS_UINT32                           ulRealRabId;
 
-    /* ucRabId的高2个bit表示modem id*/
+    /* ucRabId????2??bit????modem id*/
     ulInstanceIndex = ADS_GET_MODEMID_FROM_EXRABID(ulRabId);
     ulRealRabId     = ADS_GET_RABID_FROM_EXRABID(ulRabId);
 
-    /* RabId合法性检查 */
+    /* RabId?????????? */
     if (!ADS_IS_RABID_VALID(ulRealRabId))
     {
         ADS_WARNING_LOG1(ACPU_PID_ADS_DL, "ADS_DL_DeregFilterDataCallback: ulRabId is", ulRealRabId);
@@ -1267,10 +1267,10 @@ VOS_UINT32 ADS_DL_DeregFilterDataCallback(VOS_UINT32 ulRabId)
 
     pstDlRabInfo = ADS_DL_GET_RAB_INFO_PTR(ulInstanceIndex, ulRealRabId);
 
-    /* 去注册ADS下行数据过滤回调内容 */
+    /* ??????ADS???????????????????? */
     pstDlRabInfo->pRcvDlFilterDataFunc  = VOS_NULL_PTR;
 
-    /* 清除过滤信息 */
+    /* ???????????? */
     ADS_FILTER_Reset();
 
     return VOS_OK;
@@ -1287,7 +1287,7 @@ VOS_UINT32 ADS_DL_RegNapiCallback(
     VOS_UINT32                          ulInstance;
     VOS_UINT32                          ulRabId;
 
-    /* 检查MODEMID */
+    /* ????MODEMID */
     ulInstance = ADS_GET_MODEMID_FROM_EXRABID(ucExRabId);
     if (!ADS_IS_MODEMID_VALID(ulInstance))
     {
@@ -1296,7 +1296,7 @@ VOS_UINT32 ADS_DL_RegNapiCallback(
         return VOS_ERR;
     }
 
-    /* 检查RABID */
+    /* ????RABID */
     ulRabId = ADS_GET_RABID_FROM_EXRABID(ucExRabId);
     if (!ADS_IS_RABID_VALID(ulRabId))
     {
@@ -1305,7 +1305,7 @@ VOS_UINT32 ADS_DL_RegNapiCallback(
         return VOS_ERR;
     }
 
-    /* 保存下行数据回调参数 */
+    /* ???????????????????? */
     pstDlRabInfo = ADS_DL_GET_RAB_INFO_PTR(ulInstance, ulRabId);
     pstDlRabInfo->ulRabId            = ulRabId;
     pstDlRabInfo->ulExParam          = ulExParam;
@@ -1327,7 +1327,7 @@ VOS_UINT32 ADS_DL_RcvTafPdpStatusInd(MsgBlock *pMsg)
     enPktType       = ADS_CDS_IPF_PKT_TYPE_IP;
     ulInstanceIndex = pstPdpStatusInd->enModemId;
 
-    /* RabId合法性检查 */
+    /* RabId?????????? */
     if (!ADS_IS_RABID_VALID(pstPdpStatusInd->ucRabId))
     {
         ADS_ERROR_LOG(ACPU_PID_ADS_DL, "ADS_DL_RcvTafPdpStatusInd: Rab Id is invalid");
@@ -1341,17 +1341,17 @@ VOS_UINT32 ADS_DL_RcvTafPdpStatusInd(MsgBlock *pMsg)
 
     pstDlRabInfo = ADS_DL_GET_RAB_INFO_PTR(ulInstanceIndex, pstPdpStatusInd->ucRabId);
 
-    /* PDP激活 */
+    /* PDP???? */
     if (ADS_PDP_STATUS_ACT == pstPdpStatusInd->enPdpStatus)
     {
-        /* 设置ADS下行数据回调的RABID */
+        /* ????ADS??????????????RABID */
         pstDlRabInfo->ulRabId           = pstPdpStatusInd->ucRabId;
         pstDlRabInfo->enPktType         = enPktType;
     }
-    /* PDP去激活  */
+    /* PDP??????  */
     else if (ADS_PDP_STATUS_DEACT == pstPdpStatusInd->enPdpStatus)
     {
-        /* 清除ADS下行数据回调内容 */
+        /* ????ADS???????????????? */
         pstDlRabInfo->ulRabId           = ADS_RAB_ID_INVALID;
         pstDlRabInfo->enPktType         = ADS_CDS_IPF_PKT_TYPE_IP;
         pstDlRabInfo->ulExParam         = 0;
@@ -1381,16 +1381,16 @@ VOS_UINT32 ADS_DL_RcvCcpuResetStartInd(VOS_VOID)
 
     ADS_TRACE_HIGH("proc reset msg: enter.\n");
 
-    /* 停止所有启动的定时器 */
+    /* ???????????????????? */
     for (ulIndex = 0; ulIndex < ADS_MAX_TIMER_NUM; ulIndex++)
     {
         ADS_StopTimer(ACPU_PID_ADS_DL, ulIndex, ADS_TIMER_STOP_CAUSE_USER);
     }
 
-    /* 重置下行上下文 */
+    /* ?????????????? */
     ADS_ResetDlCtx();
 
-    /* 释放IPF的AD */
+    /* ????IPF??AD */
     ADS_DL_FreeIpfUsedAd1();
     ADS_DL_FreeIpfUsedAd0();
 
@@ -1402,7 +1402,7 @@ VOS_UINT32 ADS_DL_RcvCcpuResetStartInd(VOS_VOID)
                       sizeof(ADS_IPF_AD_RECORD_STRU));
     }
 
-    /* 释放信号量，使得调用API任务继续运行 */
+    /* ????????????????????API???????????? */
     VOS_SmV(ADS_GetDLResetSem());
 
     ADS_TRACE_HIGH("proc reset msg: leave.\n");
@@ -1422,10 +1422,10 @@ VOS_UINT32 ADS_DL_RcvCcpuResetEndInd(
                   0x00,
                   sizeof(ADS_IPF_RD_RECORD_STRU));
 
-    /* 复位IPF */
+    /* ????IPF */
     mdrv_ipf_reinit_dlreg();
 
-    /* 重新初始化ADQ */
+    /* ??????????ADQ */
     /*lint -e571*/
     VOS_SpinLockIntLock(&(g_stAdsCtx.stAdsIpfCtx.stAdqSpinLock), ulLockLevel);
     /*lint +e571*/
@@ -1459,7 +1459,7 @@ VOS_UINT32 ADS_DL_RcvTafMsg(MsgBlock* pMsg)
 
 VOS_UINT32 ADS_DL_RcvCdsMsg(MsgBlock *pMsg)
 {
-    /* 暂时没有要处理的消息，如果收到消息可能有错误 */
+    /* ???????????????????????????????????????????? */
     return VOS_ERR;
 }
 
@@ -1492,7 +1492,7 @@ VOS_UINT32 ADS_DL_RcvAdsDlMsg(MsgBlock *pMsg)
     switch(pstMsg->ulMsgName)
     {
         case ID_ADS_CCPU_RESET_START_IND:
-            /* 等待IPF将下行数据搬空，ADS_DL再复位，等待时长1秒 */
+            /* ????IPF????????????????ADS_DL????????????????1?? */
             ADS_StartTimer(TI_ADS_DL_CCORE_RESET_DELAY, ADS_DL_GET_CCORE_RESET_DELAY_TIMER_LEN());
             break;
 
@@ -1520,22 +1520,22 @@ VOS_VOID ADS_DL_ProcMsg(MsgBlock* pMsg)
         return;
     }
 
-    /* 消息的分发处理 */
+    /* ?????????????? */
     switch ( pMsg->ulSenderPid )
     {
-        /* 来自APS的消息 */
+        /* ????APS?????? */
         case I0_WUEPS_PID_TAF:
         case I1_WUEPS_PID_TAF:
         case I2_WUEPS_PID_TAF:
             ADS_DL_RcvTafMsg(pMsg);
             return;
 
-        /* 来自CDS的消息 */
+        /* ????CDS?????? */
         case UEPS_PID_CDS:
             ADS_DL_RcvCdsMsg(pMsg);
             return;
 
-        /* 来自ADS DL的消息 */
+        /* ????ADS DL?????? */
         case ACPU_PID_ADS_DL:
             ADS_DL_RcvAdsDlMsg(pMsg);
             return;

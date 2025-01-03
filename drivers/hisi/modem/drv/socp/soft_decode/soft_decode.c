@@ -48,7 +48,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 **************************************************************************** */
 #include <linux/module.h>
 #include <mdrv.h>
@@ -67,29 +67,29 @@
 
 #define  THIS_MODU mod_soft_dec
 /* ****************************************************************************
-  2 全局变量定义
+  2 ????????????
 **************************************************************************** */
-/* 自旋锁，用来作OM数据接收的临界资源保护 */
+/* ??????????????OM?????????????????????? */
 spinlock_t             g_stScmSoftDecodeDataRcvSpinLock;
 
-/* HDLC控制结构 */
+/* HDLC???????? */
 OM_HDLC_STRU             g_stScmHdlcSoftDecodeEntity;
 
-/* SCM数据接收数据缓冲区 */
+/* SCM?????????????????? */
 s8                 g_aucSCMDataRcvBuffer[SCM_DATA_RCV_PKT_SIZE];
 
-/* SCM数据接收任务控制结构 */
+/* SCM???????????????????? */
 SCM_DATA_RCV_CTRL_STRU   g_stSCMDataRcvTaskCtrlInfo;
 
 SCM_SOFTDECODE_INFO_STRU   g_stScmSoftDecodeInfo;
 
 /*****************************************************************************
-  3 外部引用声明
+  3 ????????????
 *****************************************************************************/
 extern void diag_save_soft_decode_info(void);
 extern void CPM_LogicRcvReg(CPM_LOGIC_PORT_ENUM_UINT32 enLogicPort, CPM_RCV_FUNC pRcvFunc);
 /*****************************************************************************
-  4 函数实现
+  4 ????????
 *****************************************************************************/
 
 
@@ -171,7 +171,7 @@ u32 SCM_SoftDecodeAcpuRcvData(
         }
         else if (HDLC_NOT_HDLC_FRAME == ulResult)
         {
-            /*不是完整分帧,继续HDLC解封装*/
+            /*????????????,????HDLC??????*/
         }
         else
         {
@@ -185,7 +185,7 @@ u32 SCM_SoftDecodeAcpuRcvData(
 
 u32 SCM_SoftDecodeCfgHdlcInit(OM_HDLC_STRU *pstHdlc)
 {
-    /* 申请用于HDLC解封装的缓存 */
+    /* ????????HDLC???????????? */
     pstHdlc->pucDecapBuff    = (u8 *)osl_malloc(SCM_DATA_RCV_PKT_SIZE);
 
     if (NULL == pstHdlc->pucDecapBuff)
@@ -195,10 +195,10 @@ u32 SCM_SoftDecodeCfgHdlcInit(OM_HDLC_STRU *pstHdlc)
         return ERR_MSP_FAILURE;
     }
 
-    /* HDLC解封装缓存长度赋值 */
+    /* HDLC?????????????????? */
     pstHdlc->ulDecapBuffSize = SCM_DATA_RCV_PKT_SIZE;
 
-    /* 初始化HDLC解封装控制上下文 */
+    /* ??????HDLC???????????????? */
     diag_HdlcInit(pstHdlc);
 
     return BSP_OK;
@@ -275,7 +275,7 @@ int SCM_SoftDecodeCfgRcvSelfTask(void* para)
 
             diag_PTR(EN_DIAG_PTR_SCM_RCVDATA, 0, 0, 0);
 
-            /* 调用HDLC解封装函数 */
+            /* ????HDLC?????????? */
             if (BSP_OK != SCM_SoftDecodeAcpuRcvData(&g_stScmHdlcSoftDecodeEntity,
                                                     (u8 *)g_stSCMDataRcvTaskCtrlInfo.pucBuffer,
                                                     (u32)lReadLen))
@@ -313,7 +313,7 @@ int SCM_SoftDecodeCfgRcvTaskInit(void)
 
     osl_sem_init(0, &(g_stSCMDataRcvTaskCtrlInfo.SmID));
 
-    /* 注册OM配置数据接收自处理任务 */
+    /* ????OM?????????????????????? */
     ulRslt = (u32)osl_task_init("soft_dec", 76, 8096,
     	(OSL_TASK_FUNC)SCM_SoftDecodeCfgRcvSelfTask, NULL, &task_id);
     if (ulRslt )
@@ -384,7 +384,7 @@ EXPORT_SYMBOL(SCM_SoftDecodeInfoShow);
 
 #define    DIAG_LOG_PATH       MODEM_LOG_ROOT"/drv/DIAG/"
 
-/*软解码*************************************************************************/
+/*??????*************************************************************************/
 void diag_save_soft_decode_info(void)
 {
     u32  pFile;
@@ -393,7 +393,7 @@ void diag_save_soft_decode_info(void)
     char *FilePath = DIAG_LOG_PATH"DIAG_SoftDecode.bin";
     char aucInfo[32];
 
-    /* 如果DIAG目录不存在则先创建目录 */
+    /* ????DIAG?????????????????????? */
     if (BSP_OK != bsp_access(DirPath, 0))
     {
         if (BSP_OK != bsp_mkdir(DirPath, 0755))
@@ -486,7 +486,7 @@ u32 diag_fill_soft_header(u32 pFile)
 
     ulValue = bsp_get_slice_value();
 
-    /* 当前的slice */
+    /* ??????slice */
     ret = (u32)bsp_write(pFile, (s8 *)&ulValue, sizeof(ulValue));
     if(ret != sizeof(ulValue))
     {

@@ -76,8 +76,8 @@
 *****************************************************************************/
 
 /*****************************************************************************
- Function Name   : PTR : Process Trace Record (流程跟踪记录)
- Description     : 跟踪整个处理流程
+ Function Name   : PTR : Process Trace Record (????????????)
+ Description     : ????????????????
 *****************************************************************************/
 DIAG_PTR_INFO_STRU g_stPtrInfo = {0};
 
@@ -108,7 +108,7 @@ void DIAG_DebugPTR(void)
     s8 *DirPath = DIAG_LOG_PATH;
     s8 *FilePath = DIAG_LOG_PATH"DIAG_PTR.bin";
 
-    /* 如果DIAG目录不存在则先创建目录 */
+    /* ????DIAG?????????????????????? */
     if (BSP_OK != bsp_access(DirPath, RFILE_RDONLY))
     {
         if (BSP_OK != bsp_mkdir(DirPath, 0775))
@@ -133,7 +133,7 @@ void DIAG_DebugPTR(void)
         return ;
     }
 
-    /* 打点信息长度 */
+    /* ???????????? */
     ulValue = DIAG_DEBUG_SIZE_FLAG | sizeof(g_stPtrInfo);
     ret = bsp_write((u32)pFile, (s8 *)&ulValue, sizeof(ulValue));
     if(ret != sizeof(ulValue))
@@ -141,7 +141,7 @@ void DIAG_DebugPTR(void)
         diag_error("write sizeof g_stPtrInfo failed.\n");
     }
 
-    /* 再写入打点信息 */
+    /* ?????????????? */
     ret = bsp_write((u32)pFile, (s8 *)&g_stPtrInfo, sizeof(g_stPtrInfo));
     if(ret != sizeof(g_stPtrInfo))
     {
@@ -262,7 +262,7 @@ u32 DIAG_SystemDebugFileHeader(u32 pFile)
 
     ulValue = bsp_get_slice_value();
 
-    /* 当前的slice */
+    /* ??????slice */
     ret = (u32)bsp_write(pFile, (s8 *)&ulValue, sizeof(ulValue));
     if(ret != sizeof(ulValue))
     {
@@ -304,7 +304,7 @@ void diag_ThroughputSave(DIAG_THRPUT_ID_ENUM enChn, u32 bytes)
     scm_SpinLockIntLock(&g_stDiagThroughputSpinLock, ulLockLevel);
     if(slice >= g_astThroughput[enChn].ulSlice)
     {
-        /* 每次统计吞吐率最少间隔5秒以上 */
+        /* ??????????????????????5?????? */
         if((slice - g_astThroughput[enChn].ulSlice) > DIAG_THRPUT_DEBUG_LEN)
         {
             ptr = g_astThroughput[enChn].ulPtr;
@@ -328,7 +328,7 @@ void diag_ThroughputSave(DIAG_THRPUT_ID_ENUM enChn, u32 bytes)
             g_astThroughput[enChn].ulBytes = 0;
         }
     }
-    else    /* 如果反转则清零，重新统计 */
+    else    /* ???????????????????????? */
     {
         g_astThroughput[enChn].ulSlice = slice;
         g_astThroughput[enChn].ulBytes = 0;
@@ -373,7 +373,7 @@ void DIAG_Throughput(void)
     char *FilePath = DIAG_LOG_PATH"DIAG_Throughput.bin";
     char   aucInfo[DIAG_DEBUG_INFO_LEN];
 
-    /* 如果DIAG目录不存在则先创建目录 */
+    /* ????DIAG?????????????????????? */
     if (BSP_OK != bsp_access(DirPath, 0))
     {
         if (BSP_OK != bsp_mkdir(DirPath, 0755))
@@ -429,10 +429,10 @@ void DIAG_Throughput(void)
 }
 EXPORT_SYMBOL(DIAG_Throughput);
 
-/*目的端丢包定时上报*************************************************************************/
+/*??????????????????*************************************************************************/
 DIAG_MNTN_DST_INFO_STRU g_ind_dst_mntn_info = {};
 u32              g_ulSendUSBStartSlice = 0;
-/*复位维测信息记录*/
+/*????????????????*/
 void diag_reset_dst_mntn_info(void)
 {
     memset_s(&g_ind_dst_mntn_info, sizeof(g_ind_dst_mntn_info), 0, sizeof(g_ind_dst_mntn_info));

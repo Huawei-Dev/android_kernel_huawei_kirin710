@@ -61,7 +61,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 宏定义
+  1 ??????
 *****************************************************************************/
 #define MST_NAME_MAX_LEN        (32)
 #define NOC_BUS_NAME_MAX_LEN    (16)
@@ -70,17 +70,17 @@ extern "C" {
 
 #define NOC_MAX_OFFSET   (0x3c)
 
-#define NOC_RESET_GUC_MODID       0x70000009    /* GUC_BBP_TCM、GUC_BBP_DDR、UPACC触发noc异常modid */
-#define NOC_RESET_NXP_MODID       0xcb000001    /* NXP触发noc异常modid */
-#define NOC_RESET_BBP_DMA0_MODID  0xcb000002    /* BBP_DMA_0触发noc异常modid */
-#define NOC_RESET_BBP_DMA1_MODID  0xcb000003    /* BBP_DMA_1触发noc异常modid */
-#define NOC_RESET_HARQ_MODID      0xcb000004    /* HARQ_L、HARQ_H触发noc异常modid */
-#define NOC_RESET_CPHY_MODID      0xd0000001    /* BBE16_C触发noc异常modid */
-#define NOC_RESET_GUL2_MODID      0x31000000    /* CICOM、HDLC触发noc异常modid */
+#define NOC_RESET_GUC_MODID       0x70000009    /* GUC_BBP_TCM??GUC_BBP_DDR??UPACC????noc????modid */
+#define NOC_RESET_NXP_MODID       0xcb000001    /* NXP????noc????modid */
+#define NOC_RESET_BBP_DMA0_MODID  0xcb000002    /* BBP_DMA_0????noc????modid */
+#define NOC_RESET_BBP_DMA1_MODID  0xcb000003    /* BBP_DMA_1????noc????modid */
+#define NOC_RESET_HARQ_MODID      0xcb000004    /* HARQ_L??HARQ_H????noc????modid */
+#define NOC_RESET_CPHY_MODID      0xd0000001    /* BBE16_C????noc????modid */
+#define NOC_RESET_GUL2_MODID      0x31000000    /* CICOM??HDLC????noc????modid */
 #define NOC_RESET_MODID_ERR       0xffffffff
 
 /*****************************************************************************
-  2 枚举定义
+  2 ????????
 *****************************************************************************/
 enum
 {
@@ -94,39 +94,39 @@ enum
     NOC_AP_RESET  = 0x1
 };
 
-/* noc test module id注册，如需注册，请添加 */
+/* noc test module id?????????????????????? */
 typedef enum noc_test_modid_e
 {
     NOC_IDLE_MODID        = 0x00,
-    NOC_RSRACC_MODID      = 0x01,   /* RSRACC触发noc异常 */
-    NOC_EDMA0_MODID       = 0x02,   /* EDMA0触发noc异常  */
-    NOC_EDMA1_MODID       = 0x03,   /* EDMA1触发noc异常  */
-    NOC_NXP_MODID         = 0x04,   /* EDMA1触发noc异常  */
-    NOC_BBPDMA0_MODID     = 0x05,   /* BBP DMA TCM触发noc异常  */
-    NOC_BBPDMA1_MODID     = 0x06,   /* BBP DMA DDR触发noc异常  */
-    NOC_CBBE16_MODID      = 0x07,   /* CBBE16触发noc异常  */
-    NOC_BBPMST0_MODID     = 0x08,   /* GUC_BBP_TCM触发noc异常  */
-    NOC_BBPMST1_MODID     = 0x09,   /* GUC_BBP_DDR触发noc异常  */
-    NOC_DMAC_MODID        = 0x0A,   /* SOCP触发noc异常  */
+    NOC_RSRACC_MODID      = 0x01,   /* RSRACC????noc???? */
+    NOC_EDMA0_MODID       = 0x02,   /* EDMA0????noc????  */
+    NOC_EDMA1_MODID       = 0x03,   /* EDMA1????noc????  */
+    NOC_NXP_MODID         = 0x04,   /* EDMA1????noc????  */
+    NOC_BBPDMA0_MODID     = 0x05,   /* BBP DMA TCM????noc????  */
+    NOC_BBPDMA1_MODID     = 0x06,   /* BBP DMA DDR????noc????  */
+    NOC_CBBE16_MODID      = 0x07,   /* CBBE16????noc????  */
+    NOC_BBPMST0_MODID     = 0x08,   /* GUC_BBP_TCM????noc????  */
+    NOC_BBPMST1_MODID     = 0x09,   /* GUC_BBP_DDR????noc????  */
+    NOC_DMAC_MODID        = 0x0A,   /* SOCP????noc????  */
 
     NOC_MODID_BUTT        = 0x0B
 }NOC_TEST_MODID_E;
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 typedef struct
 {
-    u32 enable;                 /*noc异常告警功能使能标示，0, 去使能;  1, 使能*/
-    u32 reset_enable;           /*noc异常信息解析后是否复位，0, 不复位;  1, 复位*/
+    u32 enable;                 /*noc??????????????????????0, ??????;  1, ????*/
+    u32 reset_enable;           /*noc????????????????????????0, ??????;  1, ????*/
 }noc_err_probe_nv_cfg;
 
 typedef struct
 {
-    u32    total          :16;  /*触发noc的总次数，范围:0x1-0xffff*/
-    u32    max_record_num :8;   /*noc dump可记录的最大条数，acore为固定值5，ccore为固定值10*/
-    u32    offset         :8;   /*当前noc err在noc dump中的偏移位置，acore为0x0-0x4，ccore为0x0-0x9*/
+    u32    total          :16;  /*????noc??????????????:0x1-0xffff*/
+    u32    max_record_num :8;   /*noc dump??????????????????acore????????5??ccore????????10*/
+    u32    offset         :8;   /*????noc err??noc dump??????????????acore??0x0-0x4??ccore??0x0-0x9*/
 }noc_record_num_stru;
 
 typedef struct
@@ -183,7 +183,7 @@ typedef struct
     enum noc_test_modid_e modid;
     enum noc_test_mode_e test_mode;
     osl_sem_id noc_test_sem;
-    bool noc_exc_flag;  /* 正常触发noc异常标志 */
+    bool noc_exc_flag;  /* ????????noc???????? */
 }noc_err_test_stru;
 
 typedef struct
@@ -205,7 +205,7 @@ extern noc_err_probe_nv_cfg g_noc_err_probe_nv_cfg;
 extern bsp_noc_hook_func g_NocTestFunc;
 
 /*****************************************************************************
-  3 函数声明
+  3 ????????
 *****************************************************************************/
 #ifdef CONFIG_NOC
 s32 bsp_noc_check_test_mode(void);
@@ -258,7 +258,7 @@ static inline u32 bsp_dsp_check_pd_idle_state(enum bsp_dsp_type_e etype){return 
 
 
 /*****************************************************************************
-  4 错误码声明
+  4 ??????????
 *****************************************************************************/
 
 

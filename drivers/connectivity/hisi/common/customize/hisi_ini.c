@@ -24,7 +24,7 @@
  */
 #define CUST_COMP_NODE             "hi1102,customize"
 #define PROC_NAME_INI_FILE_NAME    "ini_file_name"
-#define CUST_PATH_INI_CONN             "/data/vendor/cust_conn/ini_cfg"     /*某运营商在不同产品的差异配置*/
+#define CUST_PATH_INI_CONN             "/data/vendor/cust_conn/ini_cfg"     /*????????????????????????????*/
 /* mutex for open ini file */
 struct mutex        file_mutex;
 int8 g_ini_file_name[INI_FILE_PATH_LEN] = {0};

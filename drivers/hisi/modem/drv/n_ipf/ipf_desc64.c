@@ -181,7 +181,7 @@ unsigned int ipf64_get_ulbd_num(void)
 {
 	HI_IPF_CH0_BDQ_DEPTH_T dq_depth;
 	
-	/* 计算空闲BD数量 */
+	/* ????????????BD?????? */
 		dq_depth.u32 = ipf_readl(HI_IPF64_CH0_BDQ_DEPTH_OFFSET);
 		return (unsigned int)(IPF_ULBD_DESC_SIZE - dq_depth.bits.ul_bdq_depth);
 }
@@ -200,7 +200,7 @@ void ipf64_config_bd(unsigned int u32Num, IPF_CONFIG_ULPARAM_S* pstUlParam)
 	unsigned int u32BD;
     unsigned int i;
 	
-	/* è¯»å‡ºBDå†™æŒ‡é’ˆ,å°†u32BdqWpträ½œä¸ºä¸´æ—¶å†™æŒ‡é’ˆä½¿ç”¨ */
+	/* ?????????????BD??????????????????????,???????u32BdqWptr???????????????????????????????????????????????????????????? */
     bdq_wptr.u32 = ipf_readl(HI_IPF64_CH0_BDQ_WPTR_OFFSET);
     u32BD = bdq_wptr.bits.ul_bdq_wptr;
     for(i = 0; i < u32Num; i++)
@@ -213,7 +213,7 @@ void ipf64_config_bd(unsigned int u32Num, IPF_CONFIG_ULPARAM_S* pstUlParam)
 
 	g_ipf_ctx.status->cfg_bd_cnt += u32Num;
 
-    /* æ›´æ–°BDå†™æŒ‡é’ˆ*/
+    /* ??????????????BD??????????????????????*/
     ipf_writel(u32BD, HI_IPF64_CH0_BDQ_WPTR_OFFSET);
 }
 
@@ -265,7 +265,7 @@ void ipf64_get_dlrd(unsigned int* pu32Num, IPF_RD_DESC_S *pstRd)
     unsigned int u32CdqRptr;
     HI_IPF_CH1_RDQ_DEPTH_T dq_depth;
 
-    /* 读取RD深度 */
+    /* ??????RD?????? */
     dq_depth.u32 = ipf_readl(HI_IPF64_CH1_RDQ_DEPTH_OFFSET);
     u32RdqDepth = dq_depth.bits.dl_rdq_depth;
 
@@ -287,7 +287,7 @@ void ipf64_get_dlrd(unsigned int* pu32Num, IPF_RD_DESC_S *pstRd)
     */
         g_ipf_ctx.desc->rd_h2s(&pstRd[i], g_ipf_ctx.dl_info.pstIpfRDQ, u32RdqRptr);
         if(ipf_enable == g_ipf_ctx.desc->cd_en_get(g_ipf_ctx.dl_info.pstIpfRDQ, u32RdqRptr)){
-            /* 更新CD读指针 */
+            /* ??????CD????????? */
             u32CdqRptr = ((unsigned long)SHD_DDR_P2V((void *)pstRd[i].InPtr) - (unsigned 
             long)g_ipf_ctx.dl_info.pstIpfCDQ)/(unsigned long)sizeof(ipf64_cd_s);//lint !e712
 
@@ -299,7 +299,7 @@ void ipf64_get_dlrd(unsigned int* pu32Num, IPF_RD_DESC_S *pstRd)
             *(g_ipf_ctx.dl_info.u32IpfCdRptr) = u32CdqRptr;
         }
         ipf_waking_pkt_pick((void *)pstRd[i].OutPtr, (size_t)pstRd[i].u16PktLen);
-        /* 更新RD读指针 */
+        /* ??????RD????????? */
         u32RdqRptr = ((u32RdqRptr+1) < IPF_DLRD_DESC_SIZE)?(u32RdqRptr+1):0;
         pstRd[i].u16PktLen > (g_ipf_ctx.status->ad_thred)? g_ipf_ctx.status->get_rd_cnt[IPF_AD_1]++:\
                                                        g_ipf_ctx.status->get_rd_cnt[IPF_AD_0]++;
@@ -318,7 +318,7 @@ unsigned int ipf64_get_dlrd_num(void)
 {
     HI_IPF_CH1_RDQ_DEPTH_T dq_depth;
 
-    /* 读取RD深度 */
+    /* ??????RD?????? */
     dq_depth.u32 = ipf_readl(HI_IPF64_CH1_RDQ_DEPTH_OFFSET);
 	g_ipf_ctx.status->get_rd_num_times++;
     return dq_depth.bits.dl_rdq_depth;

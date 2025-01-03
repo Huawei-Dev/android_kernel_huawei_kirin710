@@ -97,7 +97,7 @@ char *wakelock_name[]={
     "TDS",
     "SI",               /*pam*/
     "USIM",             /*oam*/
-    "DSPPOWERON",       /*v8r1 ccore 提供给GUTL DSP作为c核上电初始化投票用*/
+    "DSPPOWERON",       /*v8r1 ccore ??????GUTL DSP????c??????????????????*/
     "RESET",
     "PS_G2",
     "FTM_2",
@@ -138,7 +138,7 @@ void pm_om_wakeup_stat(void)
 		g_pmom_debug.stat.waket_min = delta_slice;
 	}
 
-	/* 32768hz，转换成秒
+	/* 32768hz??????????
 	delta_slice /= TIME_SLICE_FREQ;*/
 	g_pmom_debug.stat.wrs_flag = 1;
 	pmom_print("[C SR]pm om wakeup\n");
@@ -206,7 +206,7 @@ u32 pm_om_feature_on(void)
 	return 0;
 }
 
-/* pmom在mbb/phone共代码, 都需要实现. pm_wakeup_ccore在phone需要在pmom模块实现,mbb上在pm模块实现 */
+/* pmom??mbb/phone??????, ??????????. pm_wakeup_ccore??phone??????pmom????????,mbb????pm???????? */
 s32 pm_wakeup_ccore(enum debug_wake_type type)
 {
 	u32 channel_id = (ICC_CHN_IFC << 16) | IFC_RECV_FUNC_WAKEUP;
@@ -237,7 +237,7 @@ static s32 pm_wakeup_icc_msg(u32 id , u32 len, void* context)
     u32 ret = 0;
     struct debug_pm_s read_data = {0};
 
-	/* 不可以通过icc发送非法长度的消息过来(包括长度为0) */
+	/* ??????????icc??????????????????????(??????????0) */
 	if(len != (u32)sizeof(read_data))
 	{
 		pmom_pr_err("icc packet len(%d) != sizeof(struct debug_pm_s)(%d)\n", len, (u32)sizeof(read_data));
@@ -288,7 +288,7 @@ static inline void print_dpm_device_info(void)
 
         device_info++;
     }
-    count += snprintf_s(print_buf+count,(size_t)(print_buf_size-count),(size_t)(print_buf_size-count-1),"\n");/* [false alarm]:屏蔽Fortify */
+    count += snprintf_s(print_buf+count,(size_t)(print_buf_size-count),(size_t)(print_buf_size-count-1),"\n");/* [false alarm]:????Fortify */
 
     printk(KERN_ERR"%s",print_buf);
 }
@@ -408,7 +408,7 @@ int cp_pm_notify(struct notifier_block *nb, unsigned long event, void *dummy)
 	{
 		if(!g_pmom_debug.cdrx_dump_addr)
 		{
-			/*获取DUMP 低功耗共享内存地址*/
+			/*????DUMP ??????????????????*/
 			dump_base = (char *)bsp_dump_get_field_addr(DUMP_CP_DRX);
 			if(NULL == dump_base)
 			{
@@ -421,7 +421,7 @@ int cp_pm_notify(struct notifier_block *nb, unsigned long event, void *dummy)
 	}
 	if ((event == PM_POST_SUSPEND)&&(g_pmom_debug.cdrx_dump_addr))
 	{
-		/*此处用于增加CCPU的打印信息函数*/
+		/*????????????CCPU??????????????*/
 		print_ccpu_lowpower_info();
         print_m3_lopower_info();
 	}
@@ -435,7 +435,7 @@ void pm_wakeup_init(void)
 
 	wakeup_source_init(&g_pmom_debug.wakelock_debug, "cp_pm_wakeup");
 
-	/* 即使注册icc失败(有错误打印),只影响调测,不影响功能 */
+	/* ????????icc????(??????????),??????????,?????????? */
 	(void)bsp_icc_event_register(ICC_CHN_IFC << 16 | IFC_RECV_FUNC_WAKEUP, \
 		(read_cb_func)pm_wakeup_icc_msg, NULL, NULL, NULL);
 	(void)bsp_icc_event_register(ICC_CHN_MCORE_ACORE << 16 | MCORE_ACORE_FUNC_WAKEUP, \
@@ -446,7 +446,7 @@ void pm_wakeup_init(void)
 
 	if(!g_pmom_debug.cdrx_dump_addr)
 	{
-    	/*获取DUMP 低功耗共享内存地址*/
+    	/*????DUMP ??????????????????*/
 		dump_base = (char *)bsp_dump_get_field_addr(DUMP_CP_DRX);
 		if(NULL == dump_base)
 		{
@@ -485,7 +485,7 @@ void pm_om_help(void)
 
 /* supress pclint of list_for_each_entry */
 /*lint -save -e144 -e413 -e613 -e826 -e838*/
-/* 通知其他核开启log功能 */
+/* ??????????????log???? */
 void pm_om_notify_other_core(pm_om_icc_data_type data)
 {
 	s32 ret;
@@ -495,7 +495,7 @@ void pm_om_notify_other_core(pm_om_icc_data_type data)
 	if(g_pmom_debug.ctrl == NULL)
 		return;
 	ctrl = g_pmom_debug.ctrl;
-	list_for_each_entry(pm_info, &(ctrl->pm_info.list), entry) /* [false alarm]:屏蔽Fortify错误 */
+	list_for_each_entry(pm_info, &(ctrl->pm_info.list), entry) /* [false alarm]:????Fortify???? */
 	{
 		if (pm_info && pm_info->cb_func)
 		{
@@ -511,7 +511,7 @@ void pm_om_notify_other_core(pm_om_icc_data_type data)
 		goto icc_send_fail;
 	}
 
-	/* TODO:  等M3开启后打开 */
+	/* TODO:  ??M3?????????? */
 	return;
 
 icc_send_fail:

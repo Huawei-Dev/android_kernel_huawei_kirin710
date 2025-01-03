@@ -460,7 +460,7 @@ u32 nv_cust_analyze(xnv_sec *sec_file)
         {
             src_item->priority = item->priority;
         }
-        /*修改resume属性*/
+        /*????resume????*/
         if((src_item->resum == NV_NOT_RESUME) && (item->has_resume == NV_HAS_RESUME) && (item->resume_value == NV_IS_RESUME))
         {
             src_item->resum = NV_IS_RESUME;
@@ -634,7 +634,7 @@ void nv_cust_help(void)
                                         g_nv_bcust_ctrl.dload_head.xnv.off,
                                             g_nv_bcust_ctrl.dload_head.xnv.len);
 
-    /* xnv.map和xnv.bin head */
+    /* xnv.map??xnv.bin head */
     nv_printf("g_nv_bcust_ctrl.xnv_ctrl.mmap: magic_num = 0x%x, offset = 0x%x, len = 0x%x.\n",
                                 g_nv_bcust_ctrl.xnv_ctrl.mmap.magic_num,
                                         g_nv_bcust_ctrl.xnv_ctrl.mmap.off,
@@ -709,7 +709,7 @@ u32 nv_upgrade_modemnv(u32 prdt_id)
     }
     else
     {
-        /* xnv必须有效，防止把错误遗漏过去 */
+        /* xnv???????????????????????????? */
         nv_record("Customize Modem: xnv file isn't exist, failed!\n");
         ret = BSP_ERR_NV_CUST_NOXNV_ERR;
     }
@@ -774,7 +774,7 @@ u32 nv_upgrade_custnv(u32 prdt_id)
     }
     else
     {
-        /* xnv必须有效，暂时不支持xnv不存在的情况，防止把错误遗漏过去 */
+        /* xnv????????????????????xnv???????????????????????????????? */
         nv_record("Customize Cust: xnv file isn't exist, failed!\n");
         ret = BSP_ERR_NV_CUST_NOXNV_ERR;
         goto out;

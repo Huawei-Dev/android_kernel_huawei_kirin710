@@ -55,20 +55,20 @@ extern "C"
 #endif /* __cplusplus */
 
 /**
- * 调用安全函数支持的命令ID
+ * ??????????????????????ID
  */
 typedef enum FUNC_SEC_CMD_ID {
     FUNC_CMD_ID_MIN = 0x800,
-    FUNC_ICC_CHANNEL_RESET = FUNC_CMD_ID_MIN,    /* ICC通道复位 */
-    FUNC_ICC_MSG_SWITCH_ON,                 /* 允许ICC往modem发送消息 */
-    FUNC_ICC_MSG_SWITCH_OFF,                /* 禁止ICC往modem发送消息 */
-    FUNC_SEC_DUMP_CHANNEL_ENABLE,           /*异常场景通道使能传输*/
-    FUNC_EFUSE_READ,                        /* Efuse Read控制命令 */
-    FUNC_EFUSE_WRITE,                       /* Efuse Write控制命令 */
-    FUNC_PM_RESET_NONBOOT,                  /*pm对从核复位*/
-    FUNC_PM_BOOT_NONBOOT,                   /*pm对从核解复位*/
+    FUNC_ICC_CHANNEL_RESET = FUNC_CMD_ID_MIN,    /* ICC???????? */
+    FUNC_ICC_MSG_SWITCH_ON,                 /* ????ICC??modem???????? */
+    FUNC_ICC_MSG_SWITCH_OFF,                /* ????ICC??modem???????? */
+    FUNC_SEC_DUMP_CHANNEL_ENABLE,           /*????????????????????*/
+    FUNC_EFUSE_READ,                        /* Efuse Read???????? */
+    FUNC_EFUSE_WRITE,                       /* Efuse Write???????? */
+    FUNC_PM_RESET_NONBOOT,                  /*pm??????????*/
+    FUNC_PM_BOOT_NONBOOT,                   /*pm????????????*/
     FUNC_PM_TEST_SECBOOT,                   /*just for test*/
-	FUNC_CMD_ID_MIN_BUTTOM                  /* 请在此之前添加 */
+	FUNC_CMD_ID_MIN_BUTTOM                  /* ?????????????? */
 
 }FUNC_CMD_ID;
 

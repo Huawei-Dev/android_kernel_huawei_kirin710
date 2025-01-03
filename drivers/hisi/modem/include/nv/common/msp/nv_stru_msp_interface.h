@@ -58,9 +58,9 @@ extern "C" {
 
 #include "vos.h"
 
-/****************guc_phy，暂时放在这里等待tf AT命令 star**********************/
+/****************guc_phy??????????????????tf AT???? star**********************/
 typedef enum{
-    /*guc_phy，暂时放在这里等待tf AT命令 star*/
+    /*guc_phy??????????????????tf AT???? star*/
     en_NV_Item_WG_RF_MAIN_BAND           = 10000,  //NAS_NVIM_WG_RF_MAIN_BAND_STRU
     en_NV_Item_W_RF_DIV_BAND             = 10001,  //UCOM_NV_W_RF_DIV_BAND_STRU
     en_NV_Item_DCXO_C_TRIM               = 10023,  //dcxo for ap nv same as ccore_nv_id_guc_phy.h
@@ -68,7 +68,7 @@ typedef enum{
     en_NV_Item_DCXO_C2_FIX               = 10071,  //dcxo for ap nv same as ccore_nv_id_guc_phy.h
     en_NV_Item_TRI_MODE_ENABLE           = 10073,  //UCOM_NV_TRI_MODE_ENABLE_STRU
     en_NV_Item_TRI_MODE_FEM_PROFILE_ID   = 10074,  //UCOM_NV_TRI_MODE_FEM_PROFILE_ID_STRU
-    /*guc_phy，暂时放在这里等待tf AT命令 end*/
+    /*guc_phy??????????????????tf AT???? end*/
 }NV_ID_MSP_TAF_ENUM;
 
 typedef struct
@@ -79,10 +79,10 @@ typedef struct
 }NV_WG_RF_MAIN_BAND_STRU;
 
 /*****************************************************************************
- 结构名    : UCOM_NV_W_RF_DIV_BAND_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 是否支持分集
+ ??????    : UCOM_NV_W_RF_DIV_BAND_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ????????????
 *****************************************************************************/
 typedef struct
 {
@@ -91,42 +91,42 @@ typedef struct
 }UCOM_NV_W_RF_DIV_BAND_STRU;
 
 /*****************************************************************************
- 结构名    : UCOM_NV_SAR_BACKOFF_TEST_MODE_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 降SAR测试模式
+ ??????    : UCOM_NV_SAR_BACKOFF_TEST_MODE_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ??SAR????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT16                          uhwSarBackoffTestModeFlg;               /* 降SAR测试模式 */
+    VOS_UINT16                          uhwSarBackoffTestModeFlg;               /* ??SAR???????? */
 }UCOM_NV_SAR_BACKOFF_TEST_MODE_STRU;
 
 /*****************************************************************************
- 结构名    : UCOM_NV_TRI_MODE_ENABLE_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 全网通特性使能开关(0:关闭 1:打开)
+ ??????    : UCOM_NV_TRI_MODE_ENABLE_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ??????????????????(0:???? 1:????)
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT16                              uhwEnable;                          /* 全网通特性开关 */
+    VOS_UINT16                              uhwEnable;                          /* ?????????????? */
     VOS_UINT16                              uhwReserved;
 }UCOM_NV_TRI_MODE_ENABLE_STRU;
 
 /*****************************************************************************
- 结构名    : UCOM_NV_TRI_MODE_FEM_PROFILE_ID_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 指示使用全网通场景Profile Id的NV项
+ ??????    : UCOM_NV_TRI_MODE_FEM_PROFILE_ID_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ??????????????????Profile Id??NV??
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                              uwProfileId;                        /* 根据使用场景，控制前端器件的上下电（ABB，TCXO，RF）以及RF通道的控制。
-                                                                                   由AT命令下发配置。默认值为0。取值范围0-7。 */
-    VOS_UINT32                              auwReserved[3];                     /* 保留，将来扩展使用 */
+    VOS_UINT32                              uwProfileId;                        /* ????????????????????????????????????ABB??TCXO??RF??????RF????????????
+                                                                                   ??AT??????????????????????0??????????0-7?? */
+    VOS_UINT32                              auwReserved[3];                     /* ?????????????????? */
 }UCOM_NV_TRI_MODE_FEM_PROFILE_ID_STRU;
 
-/****************guc_phy，暂时放在这里等待tf AT命令 end**********************/
+/****************guc_phy??????????????????tf AT???? end**********************/
 
 #ifdef __cplusplus
 #if __cplusplus

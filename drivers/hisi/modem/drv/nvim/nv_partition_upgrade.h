@@ -58,37 +58,37 @@ extern "C" {
 
 typedef struct _nv_file_map_s
 {
-    u32 magic_num;                      /*file valid flag*//*标识文件   0x766e(nv): 有*/
+    u32 magic_num;                      /*file valid flag*//*????????   0x766e(nv): ??*/
     u32 off;                            /*file offset in flash*/
     u32 len;                            /*length of the data in this section */
 }nv_file_map_s;
 
-/*****************************NV非压缩文件描述**************************************************/
+/*****************************NV??????????????**************************************************/
 typedef struct _xnv_map_file_s
 {
-    nv_file_map_s stXnvFile;           /*xnv.xml文件信息*/
-    nv_file_map_s stCustFile;          /*cust.xml文件信息*/
-    nv_file_map_s stMapFile;           /*xnv.xml map文件信息*/
+    nv_file_map_s stXnvFile;           /*xnv.xml????????*/
+    nv_file_map_s stCustFile;          /*cust.xml????????*/
+    nv_file_map_s stMapFile;           /*xnv.xml map????????*/
 }xnv_map_file_s;
 
 
-/*NV升级包包头结构*/
+/*NV??????????????*/
 typedef struct _nv_dload_packet_head_s
 {
-    nv_file_map_s nv_bin;               /*nv.bin文件信息*/
-    nv_file_map_s xnv_xml[2];           /*双卡xnv.xml文件信息*/
-    nv_file_map_s cust_xml[2];          /*双卡cust.xml文件信息*/
-    nv_file_map_s xnv_map[2];           /*双卡xnv.xml map文件信息*/
-    u32 ulSimNumEx;                     /*NV支持的总modem数量减2*/
-    xnv_map_file_s xnv_file[0];         /*除双卡外所支持的卡的信息，ulSimNumEx -2个*/
+    nv_file_map_s nv_bin;               /*nv.bin????????*/
+    nv_file_map_s xnv_xml[2];           /*????xnv.xml????????*/
+    nv_file_map_s cust_xml[2];          /*????cust.xml????????*/
+    nv_file_map_s xnv_map[2];           /*????xnv.xml map????????*/
+    u32 ulSimNumEx;                     /*NV????????modem??????2*/
+    xnv_map_file_s xnv_file[0];         /*??????????????????????????ulSimNumEx -2??*/
 }nv_dload_packet_head_s;
 
 
-/*****************************NV压缩文件描述**************************************************/
+/*****************************NV????????????**************************************************/
 
 #define XNV_SEC_MAX                 (0x100000)
 /*************************************************************************************/
-/*                              XNV MAP文件格式                                      */
+/*                              XNV MAP????????                                      */
 /*************************************************************************************/
 /*   |-------------------|          |------------|
      |    magic num      |          | product_id |
@@ -114,14 +114,14 @@ typedef struct _nv_dload_packet_head_s
      | product_map[n]    |          | prdt_map[n]|
      |-------------------|          |------------|
 Description:
-1. magic num为 ；
-2. product num 标识了定制的总产品数量；
-3. 随后是n个product info(n为定制产品数量), 定义了定制产品索引表的偏移信息，指向对应产品的product_map;
-   info中的偏移是相对于xnv.map文件的偏移；
-4. 随后是n个product map(n为定制产品数量)，定义了定制nv数据的偏移信息；
-5. product map中的magic num为0x766e;
-6. 一个定制产品的map可能分为n个class段，n个cate段, n个product段(n>=0)，每个段都有独立的偏移信息；
-   map中的偏移是相对于xnv.bin文件的偏移；
+1. magic num?? ??
+2. product num ????????????????????????
+3. ??????n??product info(n??????????????), ??????????????????????????????????????????????product_map;
+   info????????????????xnv.map????????????
+4. ??????n??product map(n??????????????)????????????nv????????????????
+5. product map????magic num??0x766e;
+6. ??????????????map????????n??class????n??cate??, n??product??(n>=0)????????????????????????????
+   map????????????????xnv.bin????????????
 *************************************************************************************/
 
 typedef struct _xnv_sec_info{
@@ -145,8 +145,8 @@ typedef struct _xnv_prdt_map{
 
 typedef struct _xnv_prdt_info{
     u32             prdt_id;                    /*product id */
-    u32             map_data_offset;            /*标识product id对应xnv_prdt_info数据偏移 */
-    u32             map_data_len;               /*标识product id对应xnv_prdt_info数据长度 */
+    u32             map_data_offset;            /*????product id????xnv_prdt_info???????? */
+    u32             map_data_len;               /*????product id????xnv_prdt_info???????? */
 }xnv_prdt_info;
 
 /* CAUTION! product info is variable, can't get product map from member of this struct. */
@@ -160,7 +160,7 @@ typedef struct _xnv_map_file{
 
 
 /*************************************************************************************/
-/*                              XNV BIN文件格式                                      */
+/*                              XNV BIN????????                                      */
 /*************************************************************************************/
 /*               |--------------------------------------------------------|
                  |magic_num| seclist offset| seclist num| prdt stru offset|
@@ -176,11 +176,11 @@ typedef struct _xnv_map_file{
                  |                      product_struct                    |
                  |--------------------------------------------------------|
 Description:
-1. section list也是一个数组，数组的维度从section list... ；
-2. cust.map, cust.bin文件格式和xnv格式完全相同；
-3. product structure的作用和数据结构不关心;
+1. section list??????????????????????????section list... ??
+2. cust.map, cust.bin??????????xnv??????????????
+3. product structure??????????????????????;
 
-                 |******************* section list文件结构 ***************|
+                 |******************* section list???????? ***************|
                  
                  |--------------------------------------------------------|
                  |                      section list[0]                   |
@@ -193,7 +193,7 @@ Description:
                  |                      section list[n]                   |
                  |--------------------------------------------------------|
 
-                 |******************* section data文件结构 ***************|
+                 |******************* section data???????? ***************|
 
                  |--------------------------------------------------------|
                  |      file name[64]       |  nv_num   |   reserved[2]   |
@@ -207,7 +207,7 @@ Description:
                  |                      xnv_item[n]                       |
                  |--------------------------------------------------------|
 
-                 |*******************   xnv item 文件结构  ***************|
+                 |*******************   xnv item ????????  ***************|
 
                  |--------------------------------------------------------|
                  |    magic_num   |   id     |   length    |  modem_num   |
@@ -276,7 +276,7 @@ typedef struct _xnv_bin_file{
 }xnv_bin_file;
 
 /*************************************************************************************/
-/*                              NV 升级包格式                                        */
+/*                              NV ??????????                                        */
 /*************************************************************************************/
 /*                         |--------------|
                            |   header     |
@@ -292,19 +292,19 @@ typedef struct _xnv_bin_file{
                            |   cust.bin   |
                            |--------------|
 Description:
-1. cust.map, cust.bin文件为可选，不一定存在；
-2. cust.map, cust.bin文件格式和xnv格式完全相同；
+1. cust.map, cust.bin????????????????????????
+2. cust.map, cust.bin??????????xnv??????????????
 3. 
 */
 /*************************************************************************************/
 typedef struct _nv_dload_head
 {
-    nv_file_map_s   nv_bin;          /*nv.bin文件信息*/
-    nv_file_map_s   xnv_map;         /*双卡cust.xml文件信息*/
-    nv_file_map_s   xnv;             /*双卡xnv.xml文件信息*/
-    nv_file_map_s   cust_map;        /*双卡xnv.xml map文件信息*/
-    nv_file_map_s   cust;            /*双卡xnv.xml map文件信息*/
-    u32             reserved[16];    /*NV支持的总modem数量减2*/
+    nv_file_map_s   nv_bin;          /*nv.bin????????*/
+    nv_file_map_s   xnv_map;         /*????cust.xml????????*/
+    nv_file_map_s   xnv;             /*????xnv.xml????????*/
+    nv_file_map_s   cust_map;        /*????xnv.xml map????????*/
+    nv_file_map_s   cust;            /*????xnv.xml map????????*/
+    u32             reserved[16];    /*NV????????modem??????2*/
 }nv_dload_head;
 
 typedef struct _nv_dload_tail

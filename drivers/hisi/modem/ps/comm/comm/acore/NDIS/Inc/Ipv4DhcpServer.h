@@ -66,12 +66,12 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #ifndef NDIS_RELEASE
 
@@ -101,10 +101,10 @@ extern "C" {
 #define IP_NDIS_ASSERT_RTN(exp,ret)        ((VOS_VOID)0)
 #endif
 
-/*取结构成员的偏移地址*/
+/*????????????????????*/
 #define IP_OFFSETOF(TYPE,MEMBER)      ((VOS_UINT32)&(((TYPE*)0)->MEMBER))
 
-/* 定义网络字节与主机字节序转换*/
+/* ????????????????????????????*/
 #if (VOS_BYTE_ORDER == VOS_BIG_ENDIAN)
 
 #define IP_NTOHL(x)                  (x)
@@ -132,7 +132,7 @@ extern "C" {
 
 
 
-/*针对当前打印进行宏定义*/
+/*??????????????????????*/
 #ifndef NDIS_RELEASE
 #define IP_INFO_LOG(STRING)                              PS_PRINTF("%s,%d,%s \r\n",__FILE__,__LINE__,STRING)
 #define IP_ERROR_LOG(STRING)                             PS_PRINTF("%s,%d,%s \r\n",__FILE__,__LINE__,STRING)
@@ -147,13 +147,13 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
-/*UDP 协议头长度*/
+/*UDP ??????????*/
 #define IP_UDP_HDR_LEN                                (8)
 
-/*IPV4 DHCP数据包定义*/
+/*IPV4 DHCP??????????*/
 
 /* IPV4 DHCP Pkt Hostname Length*/
 #define IPV4_DHCP_SERVER_HOST_NAME_LEN                (64)
@@ -161,7 +161,7 @@ extern "C" {
 /* IPV4 DHCP Pkt Filename Length*/
 #define IPV4_DHCP_FILE_NAME_LEN                       (128)
 
-/* IP Address Lease Time 单位为s  */
+/* IP Address Lease Time ??????s  */
 #define IPV4_DHCP_LEASE_TIME                          (g_ulLeaseTime)
 
 /*  Renewal (T1) Time Value*/
@@ -170,43 +170,43 @@ extern "C" {
 /* Rebinding (T2) Time Value */
 #define IPV4_DHCP_T2                                  ((IPV4_DHCP_LEASE_TIME * 7) / 8)
 
-/* DHCP协议option的起始偏移 */
+/* DHCP????option?????????? */
 #define IPV4_DHCP_OPTION_OFFSET                       (240)
 
-/*DHCP Option 每一项头所占的长度*/
+/*DHCP Option ??????????????????*/
 #define IP_DHCPV4_OPTION_ITEM_HDR_LEN                 (2)
 
-/* dhcp 报文头cookie字段长度 */
+/* dhcp ??????cookie???????? */
 #define IPV4_DHCP_HEAD_COOKIE_LEN                     (4)
 
-/*DHCP协议单元中硬件地址长度*/
+/*DHCP??????????????????????*/
 #define IPV4_DHCP_HARDWARE_LEN                        (16)
 
-/* DHCP 报文类型*/
+/* DHCP ????????*/
 #define IPV4_DHCP_OPERATION_REQUEST                   (1)
 #define IPV4_DHCP_OPERATION_REPLY                     (2)
 
-/* 以太网硬件类型 */
+/* ?????????????? */
 #define IPV4_DHCP_ETHERNET_HTYPE                      (1)
 
-/* dhcp 报文IP Address Lease Time 长度 */
+/* dhcp ????IP Address Lease Time ???? */
 #define IPV4_DHCP_OPTION_LEASE_TIME_LEN               (4)
 
-/*DHCP 报文中Your IP Addr Offset*/
+/*DHCP ??????Your IP Addr Offset*/
 #define IPV4_DHCP_HEAD_YIADDR_OFFSET                  (16)
 
-/*dhcp msg type类型长度*/
+/*dhcp msg type????????*/
 #define IPV4_DHCP_OPTION_MSG_TYPE_LEN                 (1)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
- 结构名    : IPV4_DHCP_ADDR_STATUS_ENUM
- 协议表格  : 定义IPV4 DHCP 地址的状态
- ASN.1描述 :
- 结构说明  :
+ ??????    : IPV4_DHCP_ADDR_STATUS_ENUM
+ ????????  : ????IPV4 DHCP ??????????
+ ASN.1???? :
+ ????????  :
 *****************************************************************************/
 typedef enum
 {
@@ -218,10 +218,10 @@ typedef enum
 typedef VOS_UINT32  IPV4_DHCP_ADDR_STATUS_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : IP_CAST_TYPE_ENUM
- 协议表格  :
- ASN.1描述 :
- 枚举说明  : 发送方式
+ ??????    : IP_CAST_TYPE_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  : ????????
 *****************************************************************************/
 enum IP_CAST_TYPE_ENUM
 {
@@ -232,36 +232,36 @@ enum IP_CAST_TYPE_ENUM
 typedef VOS_UINT8 IP_CAST_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : IPV4_DHCP_OPTION_TYPE_ENUM
- 协议表格  :
- ASN.1描述 :
- 枚举说明  :  IPV4 DHCP options类型
+ ??????    : IPV4_DHCP_OPTION_TYPE_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  :  IPV4 DHCP options????
 *****************************************************************************/
 enum IPV4_DHCP_OPTION_TYPE_ENUM
 {
-    IPV4_DHCP_OPTION_PAD_OPTIOIN        = 0,                                    /* padding用于字对齐*/
-    IPV4_DHCP_OPTION_SUBNET_MASK        = 1,                                    /* 子网掩码 */
-    IPV4_DHCP_OPTION_ROUTER_IP          = 3,                                    /* 默认网关 */
+    IPV4_DHCP_OPTION_PAD_OPTIOIN        = 0,                                    /* padding??????????*/
+    IPV4_DHCP_OPTION_SUBNET_MASK        = 1,                                    /* ???????? */
+    IPV4_DHCP_OPTION_ROUTER_IP          = 3,                                    /* ???????? */
     IPV4_DHCP_OPTION_DOMAIN_NAME_SERVER = 6,                                    /* DNS */
     IPV4_DHCP_OPTION_NETBIOS_NAME_SERVER = 44,                                   /* WINS NAME Server*/
     IPV4_DHCP_OPTION_REQUEST_IP_ADDR    = 50,                                   /* Request IP Address*/
-    IPV4_DHCP_OPTION_LEASE_TIME         = 51,                                   /* 租期 */
-    IPV4_DHCP_OPTION_MSG_TYPE           = 53,                                   /* 报文类型 */
+    IPV4_DHCP_OPTION_LEASE_TIME         = 51,                                   /* ???? */
+    IPV4_DHCP_OPTION_MSG_TYPE           = 53,                                   /* ???????? */
     IPV4_DHCP_OPTION_SERVER_IP          = 54,                                   /* Server Identifier */
     IPV4_DHCP_OPTION_REQUEST_LIST       = 55,                                   /* request parameter list */
     IPV4_DHCP_OPTION_T1                 = 58,                                   /* Rebinding (T1) Time Value */
     IPV4_DHCP_OPTION_T2                 = 59,                                   /* Rebinding (T2) Time Value */
     IPV4_DHCP_OPTION_RAPID_COMMIT       = 80,                                   /* rapid commit */
-    IPV4_DHCP_OPTION_END_OPTION         = 255,                                  /* option结束标记*/
+    IPV4_DHCP_OPTION_END_OPTION         = 255,                                  /* option????????*/
     IPV4_DHCP_OPTION_BUTT
 };
 
 typedef VOS_UINT8 IPV4_DHCP_OPTION_TYPE_ENUM_UINT8;
 /*****************************************************************************
- 枚举名    : IPV4_DHCP_MSG_ENUM
- 协议表格  :
- ASN.1描述 :
- 枚举说明  : IPV4 DHCP 报文消息类型，协议规定RFC2131
+ ??????    : IPV4_DHCP_MSG_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  : IPV4 DHCP ??????????????????????RFC2131
 *****************************************************************************/
 enum IPV4_DHCP_MSG_ENUM
 {
@@ -279,23 +279,23 @@ enum IPV4_DHCP_MSG_ENUM
 typedef VOS_UINT32  IPV4_DHCP_MSG_ENUM_UINT32;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
-/*针对网络字节序，设置为1字节对齐*/
+/*??????????????????????1????????*/
 #if (VOS_OS_VER != VOS_WIN32)
 #pragma pack(1)
 #else
@@ -303,20 +303,20 @@ typedef VOS_UINT32  IPV4_DHCP_MSG_ENUM_UINT32;
 #endif
 
 /*****************************************************************************
- 结构名    : IPV4_UDPIPFAKEHDR_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 用于计算UDP CRC
+ ??????    : IPV4_UDPIPFAKEHDR_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ????????UDP CRC
 *****************************************************************************/
 typedef struct
 {
     /*Fake Hdr*/
-    VOS_UINT8                           aucRec0[8];                             /*全部为0不影响CRC计算，为了同IP头大小保持相同*/
-    IPV4_ADDR_ITEM_UN                   unSrcIP;                                /*源IP地址*/
-    IPV4_ADDR_ITEM_UN                   unDstIP;                                /*目的IP地址*/
-    VOS_UINT8                           ucAll0;                                 /*全部为0*/
-    VOS_UINT8                           ucProtocol;                             /*IP首部的协议字段*/
-    VOS_UINT16                          usLength;                               /*整个UDP长度，不包括伪首部长度*/
+    VOS_UINT8                           aucRec0[8];                             /*??????0??????CRC????????????IP??????????????*/
+    IPV4_ADDR_ITEM_UN                   unSrcIP;                                /*??IP????*/
+    IPV4_ADDR_ITEM_UN                   unDstIP;                                /*????IP????*/
+    VOS_UINT8                           ucAll0;                                 /*??????0*/
+    VOS_UINT8                           ucProtocol;                             /*IP??????????????*/
+    VOS_UINT16                          usLength;                               /*????UDP??????????????????????*/
 
     /*Udp Hdr*/
     VOS_UINT16                          usSrcPort;                              /* source port */
@@ -327,27 +327,27 @@ typedef struct
 }IPV4_UDPIPFAKEHDR_STRU;
 
 /*****************************************************************************
- 结构名    : IPV4_DHCPSERVER_PROTOCL_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : DHCPV4协议结构体
+ ??????    : IPV4_DHCPSERVER_PROTOCL_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : DHCPV4??????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8                           ucOP;                                   /*报文类型，1：客户端请求报文，2：服务器响应报文*/
-    VOS_UINT8                           ucHardwareType;                         /*硬件类型，1：以太网*/
-    VOS_UINT8                           ucHardwareLength;                       /*硬件地址长度*/
-    VOS_UINT8                           ucHops;                                 /*经过的中继数目*/
-    VOS_UINT32                          ulTransactionID;                        /*用户选取的随机数，使服务器的回复与用户的报文相关联*/
-    VOS_UINT16                          usSeconds;                              /*客户端在开始DHCP请求后的逝去的秒数*/
-    VOS_UINT16                          usFlags;                                /*只有标志字段的最高位才有意义，其余的位均被置为0，最高位0：服务器以单播形式发送响应报文，最高位1：服务器以广播形式发送响应报文*/
-    IPV4_ADDR_ITEM_UN                   unClientIPAddr;                         /*客户端的IP地址*/
-    IPV4_ADDR_ITEM_UN                   unYourIPAddr;                           /*服务器分配给客户端的IP地址*/
-    IPV4_ADDR_ITEM_UN                   unNextServerIPAddr;                     /*服务器的IP地址*/
-    IPV4_ADDR_ITEM_UN                   unRelayIPAddr;                          /*中继的IP地址*/
-    VOS_UINT8                           aucClientHardwardAddr[IPV4_DHCP_HARDWARE_LEN]; /*客户端的MAC地址*/
-    VOS_UINT8                           aucServerHostName[IPV4_DHCP_SERVER_HOST_NAME_LEN];/*服务器名字*/
-    VOS_UINT8                           aucFileName[IPV4_DHCP_FILE_NAME_LEN];     /*客户端的启动配置文件名*/
+    VOS_UINT8                           ucOP;                                   /*??????????1??????????????????2????????????????*/
+    VOS_UINT8                           ucHardwareType;                         /*??????????1????????*/
+    VOS_UINT8                           ucHardwareLength;                       /*????????????*/
+    VOS_UINT8                           ucHops;                                 /*??????????????*/
+    VOS_UINT32                          ulTransactionID;                        /*??????????????????????????????????????????????????*/
+    VOS_UINT16                          usSeconds;                              /*????????????DHCP??????????????????*/
+    VOS_UINT16                          usFlags;                                /*??????????????????????????????????????????????0????????0??????????????????????????????????????1??????????????????????????????*/
+    IPV4_ADDR_ITEM_UN                   unClientIPAddr;                         /*????????IP????*/
+    IPV4_ADDR_ITEM_UN                   unYourIPAddr;                           /*????????????????????IP????*/
+    IPV4_ADDR_ITEM_UN                   unNextServerIPAddr;                     /*????????IP????*/
+    IPV4_ADDR_ITEM_UN                   unRelayIPAddr;                          /*??????IP????*/
+    VOS_UINT8                           aucClientHardwardAddr[IPV4_DHCP_HARDWARE_LEN]; /*????????MAC????*/
+    VOS_UINT8                           aucServerHostName[IPV4_DHCP_SERVER_HOST_NAME_LEN];/*??????????*/
+    VOS_UINT8                           aucFileName[IPV4_DHCP_FILE_NAME_LEN];     /*??????????????????????*/
     VOS_UINT8                           aucMagicCookie[IPV4_DHCP_HEAD_COOKIE_LEN];/* MAGIC COOKIE */
 }IPV4_DHCP_PROTOCL_STRU;
 
@@ -357,10 +357,10 @@ typedef struct
 #pragma pack(pop)
 #endif
 /*****************************************************************************
- 结构名    : IPV4_DHCP_ANALYSE_RESULT_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 解析DHCP包结果
+ ??????    : IPV4_DHCP_ANALYSE_RESULT_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ????DHCP??????
 *****************************************************************************/
 typedef struct
 {
@@ -382,10 +382,10 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名    : IPV4_DHCP_OPTION_ITEM_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : IPV4 DHCP Option结构体
+ ??????    : IPV4_DHCP_OPTION_ITEM_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : IPV4 DHCP Option??????
 *****************************************************************************/
 typedef struct
 {
@@ -395,10 +395,10 @@ typedef struct
 }IPV4_DHCP_OPTION_ITEM_STRU;
 
 /*****************************************************************************
- 结构名    : IPV4_DHCP_STAT_INFO_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : IPV4 DHCP 统计信息
+ ??????    : IPV4_DHCP_STAT_INFO_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : IPV4 DHCP ????????
 *****************************************************************************/
 typedef struct
 {
@@ -419,15 +419,15 @@ typedef struct
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 extern IPV4_DHCP_STAT_INFO_STRU   g_stDhcpStatStru;
@@ -450,7 +450,7 @@ extern VOS_UINT32  g_ulLeaseTime;
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern VOS_VOID IPV4_DHCP_ProcDhcpPkt(VOS_UINT8  *pucIpPkt, VOS_UINT8 ucRabId,VOS_UINT32 ulPktMemLen);
 extern NDIS_IPV4_INFO_STRU * IPV4_DHCP_FindIPV4Entity(VOS_UINT8 ucExRabId);

@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 /*lint -e322*/
 #include <asm/atomic.h>
@@ -32,7 +32,7 @@ extern "C" {
 /*lint +e322*/
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 typedef atomic_t                oal_atomic;
@@ -56,7 +56,7 @@ typedef struct _oal_spin_lock_stru_
             .lock = __SPIN_LOCK_UNLOCKED(x)}
 #endif
 
-/* 函数指针，用来指向需要自旋锁保护的的函数 */
+/* ???????????????????????????????????????? */
 typedef oal_uint32              (*oal_irqlocked_func)(oal_void *);
 
 typedef rwlock_t                oal_rwlock_stru;
@@ -66,7 +66,7 @@ typedef struct timer_list              oal_timer_list_stru;
 typedef struct tasklet_struct       oal_tasklet_stru;
 typedef oal_void                    (*oal_defer_func)(oal_uint);
 
-/* tasklet声明 */
+/* tasklet???? */
 #define OAL_DECLARE_TASK    DECLARE_TASKLET
 
 typedef wait_queue_t         oal_wait_queue_stru;
@@ -106,17 +106,17 @@ typedef wait_queue_head_t    oal_wait_queue_head_stru;
 
 #define OAL_WAIT_QUEUE_INIT_HEAD(_pst_wq)   init_waitqueue_head(_pst_wq)
 
-/* 获取毫秒级时间戳*/
+/* ????????????????*/
 #define OAL_TIME_GET_STAMP_MS() jiffies_to_msecs(jiffies)
 
-/* 获取高精度毫秒时间戳,精度1ms*/
+/* ????????????????????,????1ms*/
 #define OAL_TIME_GET_HIGH_PRECISION_MS()  oal_get_time_stamp_from_timeval()
 
 #define OAL_ENABLE_CYCLE_COUNT()
 #define OAL_DISABLE_CYCLE_COUNT()
 #define OAL_GET_CYCLE_COUNT() 0
 
-/* 寄存器反转模块运行时间计算 */
+/* ?????????????????????????? */
 #define OAL_TIME_CALC_RUNTIME(_ul_start, _ul_end)   ((((OAL_TIME_US_MAX_LEN) / HZ) * 1000) + ((OAL_TIME_US_MAX_LEN) % HZ) * (1000 / HZ) - (_ul_start) + (_ul_end))
 
 #define OAL_TIME_JIFFY    jiffies
@@ -138,7 +138,7 @@ typedef void (*oal_timer_func)(oal_uint);
 
 typedef oal_uint32 (*oal_module_func_t)(oal_void);
 
-/* 模块入口 */
+/* ???????? */
 #define oal_module_init(_module_name)   module_init(_module_name)
 
 #define oal_module_license(_license_name) MODULE_LICENSE(_license_name)
@@ -147,36 +147,36 @@ typedef oal_uint32 (*oal_module_func_t)(oal_void);
 
 #define OAL_S_IRUGO         S_IRUGO
 
-/* 模块出口 */
+/* ???????? */
 #define oal_module_exit(_module_name)   module_exit(_module_name)
 
-/* 模块符号导出 */
+/* ???????????? */
 #define oal_module_symbol(_symbol)      EXPORT_SYMBOL(_symbol)
 #define OAL_MODULE_DEVICE_TABLE(_type, _name) MODULE_DEVICE_TABLE(_type, _name)
 
 #define oal_smp_call_function_single(core, task, info, wait) smp_call_function_single(core, task, info, wait)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  4 全局变量声明
-*****************************************************************************/
-
-
-/*****************************************************************************
-  5 消息头定义
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  6 ????????
+*****************************************************************************/
+
+
+/*****************************************************************************
+  7 STRUCT????
 *****************************************************************************/
 typedef struct proc_dir_entry       oal_proc_dir_entry_stru;
 
@@ -204,17 +204,17 @@ typedef struct _oal_task_lock_stru_
 }oal_task_lock_stru;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 OAL_STATIC OAL_INLINE oal_void  oal_spin_lock_init(oal_spin_lock_stru *pst_lock)

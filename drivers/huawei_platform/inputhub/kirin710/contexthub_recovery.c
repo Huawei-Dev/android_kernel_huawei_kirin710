@@ -451,7 +451,7 @@ static int sh_savebuf2fs(char* logpath, char* filename, void* buf, u32 len, u32 
 out1:
 	filp_close(fp, NULL);
 #ifdef CONFIG_HISI_BB
-	/*根据权限要求，hisi_logs目录及子目录群组调整为root-system */
+	/*??????????????hisi_logs??????????????????????root-system */
 	ret = (int)bbox_chown((const char __user*)path, ROOT_UID, SYSTEM_GID, false);
 	if (ret) {
 	    hwlog_err("[%s], chown %s uid [%d] gid [%d] failed err [%d]!\n", __func__, path, ROOT_UID, SYSTEM_GID, ret);

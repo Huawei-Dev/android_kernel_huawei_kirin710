@@ -48,7 +48,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 **************************************************************************** */
 #include <mdrv.h>
 #include <bsp_print.h>
@@ -61,7 +61,7 @@
 
 #define  THIS_MODU mod_soft_dec
 
-/* 解码目的通道回调函数 */
+/* ???????????????????? */
 SCM_DECODERDESTFUCN         g_astSCMDecoderCbFunc[SOCP_DECODER_DST_CB_BUTT]={NULL, NULL, NULL};
 
 
@@ -107,14 +107,14 @@ void SCM_RcvDataDispatch(
     OM_HDLC_STRU                       *pstHdlcCtrl,
     u8                           ucDataType)
 {
-    /* TL数据 */
+    /* TL???? */
     if (SCM_DATA_TYPE_TL == ucDataType)
     {
         if (NULL != g_astSCMDecoderCbFunc[SOCP_DECODER_DST_CB_TL_OM])
         {
             diag_PTR(EN_DIAG_PTR_SCM_DISPATCH, 0, 0, 0);
 
-            /* TL不需要DATATYPE字段，回调时删除 */
+            /* TL??????DATATYPE???????????????? */
             g_astSCMDecoderCbFunc[SOCP_DECODER_DST_CB_TL_OM](SOCP_DECODER_DST_LOM,
                                                     pstHdlcCtrl->pucDecapBuff + sizeof(SOCP_DATA_TYPE_ENUM_UIN8),
                                                     pstHdlcCtrl->ulInfoLen - sizeof(SOCP_DATA_TYPE_ENUM_UIN8),

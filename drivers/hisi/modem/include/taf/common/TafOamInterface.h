@@ -50,7 +50,7 @@
 #define __TAFOAMINTERFACE_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "v_msg.h"
 #include "TafAppMma.h"
@@ -67,7 +67,7 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define SAR_ANTSTATE_IND                            0x1111
 
@@ -77,17 +77,17 @@ extern "C" {
 #define    COMM_LOG_PORT_VCOM               CPM_OM_PORT_TYPE_VCOM
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 enum TAF_OAM_MSG_TYPE_ENUM
@@ -96,17 +96,17 @@ enum TAF_OAM_MSG_TYPE_ENUM
     OAM_MMA_PHONE_MODE_SET_REQ          = 0x00,                                 /* _H2ASN_MsgChoice MN_APP_PHONE_MODE_SET_REQ_STRU */
     OAM_MMA_PHONE_LOADDEFAULT_REQ       = 0x01,                                 /* _H2ASN_MsgChoice MN_APP_PHONE_LOADDEFAULT_REQ_STRU */
 
-    /* taf和stk交互消息定义移至NasStkInterface.h */
+    /* taf??stk????????????????NasStkInterface.h */
 
-    /* TAF  -> OAM(VC) 请求OAM的语音端口，无需回复消息 */
+    /* TAF  -> OAM(VC) ????OAM???????????????????????? */
     TAF_OAM_SET_TRANS_PORT_REQ          = 0x0f,                                 /* _H2ASN_MsgChoice MN_APP_CS_SET_TRANS_PORT_MSG_STRU */
 
-    /* taf和stk交互消息定义移至NasStkInterface.h */
+    /* taf??stk????????????????NasStkInterface.h */
 
-    /* PHONE -> SPY/DIAG/OM OAM_MMA_PHONE_MODE_SET_REQ的回复消息 */
+    /* PHONE -> SPY/DIAG/OM OAM_MMA_PHONE_MODE_SET_REQ?????????? */
     TAF_OAM_PHONE_EVENT_IND             = 0x11,                                 /* _H2ASN_MsgChoice MN_APP_PHONE_EVENT_INFO_STRU */
 
-    /* PHONE -> SPY/DIAG/OM OAM_MMA_PHONE_LOADDEFAULT_REQ的回复消息 */
+    /* PHONE -> SPY/DIAG/OM OAM_MMA_PHONE_LOADDEFAULT_REQ?????????? */
     TAF_OAM_PHONE_SET_CNF               = 0x12,                                 /* _H2ASN_MsgChoice MN_APP_PHONE_SET_CNF_STRU */
 
     TAF_STK_USSD_DCS_DECODE_HOOK        = 0xAAA0,                               /* _H2ASN_MsgChoice SSA_USSD_DCS_DECODE_HOOK_STRU */
@@ -114,17 +114,17 @@ enum TAF_OAM_MSG_TYPE_ENUM
     MMA_EVT_OM_SDT_CONNECTED_IND        = 0xAAAA,
 
 
-    /* OAM->MMA, TRACE 配置消息 */
+    /* OAM->MMA, TRACE ???????? */
     OAM_MMA_TRACE_CONFIG_REQ            = 0xAAAB,
 
     MMA_OAM_TRACE_CONFIG_CNF,
 
     TAF_OAM_UNSOLICITED_RPT_INFO_IND,                                       /* _H2ASN_MsgChoice TAF_OAM_UNSOLICITED_RPT_INFO_STRU */
 
-    /* VC  -> OAM 勾出VC模块需要挂断电话时的异常情况 */
+    /* VC  -> OAM ????VC???????????????????????????? */
     TAF_OAM_LOG_END_CALL_REQ,                                               /* _H2ASN_MsgChoice TAF_OAM_LOG_END_CALL_REQ_STRU */
 
-    /* TAF  -> OAM 紧急呼叫状态消息，无需回复消息 */
+    /* TAF  -> OAM ?????????????????????????????? */
     TAF_OAM_EMERGENCY_CALL_STATUS_NOTIFY    = 0xBBB0,                               /* _H2ASN_MsgChoice TAF_OAM_EMERGENCY_CALL_STATUS_STRU */
 
     TAF_OAM_MSG_TYPE_BUTT
@@ -180,8 +180,8 @@ typedef VOS_UINT8 TAF_APS_USER_CONN_STATUS_ENUM_UINT8;
 
 enum TAF_OAM_SDT_CONNECT_STATUS_ENUM
 {
-    TAF_OAM_SDT_CONNECT_STATUS_CONNECTED,                                       /* SDT和单板已连接 */
-    TAF_OAM_SDT_CONNECT_STATUS_DISCONNECTED,                                    /* SDT和单板断开连接 */
+    TAF_OAM_SDT_CONNECT_STATUS_CONNECTED,                                       /* SDT???????????? */
+    TAF_OAM_SDT_CONNECT_STATUS_DISCONNECTED,                                    /* SDT?????????????? */
     TAF_OAM_SDT_CONNECT_STATUS_BUTT
 };
 typedef VOS_UINT8 TAF_OAM_SDT_CONNECT_STATUS_ENUM_UINT8;
@@ -189,8 +189,8 @@ typedef VOS_UINT8 TAF_OAM_SDT_CONNECT_STATUS_ENUM_UINT8;
 
 enum TAF_OAM_PC_RECUR_CFG_ENUM
 {
-    TAF_OAM_PC_RECUR_CFG_ENABLE,                                                /* 使能发送PC回放消息 */
-    TAF_OAM_PC_RECUR_CFG_DISABLE,                                               /* 去使能发送PC回放消息 */
+    TAF_OAM_PC_RECUR_CFG_ENABLE,                                                /* ????????PC???????? */
+    TAF_OAM_PC_RECUR_CFG_DISABLE,                                               /* ??????????PC???????? */
     TAF_OAM_PC_RECUR_CFG_BUTT
 };
 typedef VOS_UINT8 TAF_OAM_PC_RECUR_CFG_ENUM_UINT8;
@@ -199,8 +199,8 @@ typedef VOS_UINT8 TAF_OAM_PC_RECUR_CFG_ENUM_UINT8;
 
 enum TAF_OAM_EMERGENCY_CALL_STATUS_ENUM
 {
-    TAF_OAM_EMERGENCY_CALL_START,                                               /* 发起紧急呼叫 */
-    TAF_OAM_EMERGENCY_CALL_END,                                                 /* 紧急呼叫结束 */
+    TAF_OAM_EMERGENCY_CALL_START,                                               /* ???????????? */
+    TAF_OAM_EMERGENCY_CALL_END,                                                 /* ???????????? */
     TAF_OAM_EMERGENCY_CALL_STATUS_BUTT
 };
 typedef VOS_UINT8 TAF_OAM_EMERGENCY_CALL_STATUS_ENUM_UINT8;
@@ -208,36 +208,36 @@ typedef VOS_UINT8 TAF_OAM_EMERGENCY_CALL_STATUS_ENUM_UINT8;
 
 enum OM_HSIC_PORT_STATUS_ENUM
 {
-    OM_HSIC_PORT_STATUS_OFF      = 0,       /* HSIC与GU的OM口未关联上 */
-    OM_HSIC_PORT_STATUS_ON,                 /* HSIC与GU的OM口已关联上 */
+    OM_HSIC_PORT_STATUS_OFF      = 0,       /* HSIC??GU??OM?????????? */
+    OM_HSIC_PORT_STATUS_ON,                 /* HSIC??GU??OM?????????? */
     OM_HSIC_PORT_STATUS_BUTT
 };
 typedef VOS_UINT32 OM_HSIC_PORT_STATUS_ENUM_UINT32;
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT16                         usPrimId;                                /* 消息名 */
-    VOS_UINT16                         usReserve;                               /* 保留 */
-    VOS_UINT32                         ulStatus;                                /* 命令类型 */
-    VOS_UINT32                         ulPort;                                  /* 端口号 */
+    VOS_UINT16                         usPrimId;                                /* ?????? */
+    VOS_UINT16                         usReserve;                               /* ???? */
+    VOS_UINT32                         ulStatus;                                /* ???????? */
+    VOS_UINT32                         ulPort;                                  /* ?????? */
 }MN_APP_CS_SET_TRANS_PORT_MSG_STRU;
 
 /*****************************************************************************
- 结构名    : MN_APP_PHONE_MODE_SET_REQ_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : STK/SPY发给MMA关机请求
+ ??????    : MN_APP_PHONE_MODE_SET_REQ_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : STK/SPY????MMA????????
 *****************************************************************************/
 typedef struct
 {
@@ -250,10 +250,10 @@ typedef struct
 } MN_APP_PHONE_MODE_SET_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : MN_APP_PHONE_LOADDEFAULT_REQ_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : STK/SPY发给MMA恢复出厂设置请求
+ ??????    : MN_APP_PHONE_LOADDEFAULT_REQ_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : STK/SPY????MMA????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -265,10 +265,10 @@ typedef struct
 }MN_APP_PHONE_LOADDEFAULT_REQ_STRU;
 
 /*****************************************************************************
- 结构名    : MN_APP_PHONE_EVENT_INFO_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : PHONE 发给STK 业务
+ ??????    : MN_APP_PHONE_EVENT_INFO_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : PHONE ????STK ????
 *****************************************************************************/
 typedef struct
 {
@@ -278,10 +278,10 @@ typedef struct
 }MN_APP_PHONE_EVENT_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : MN_APP_PHONE_SET_CNF_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : PHONE 发给STK 业务
+ ??????    : MN_APP_PHONE_SET_CNF_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : PHONE ????STK ????
 *****************************************************************************/
 typedef struct
 {
@@ -298,29 +298,29 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名    : MN_APP_SAR_ANTENSTATUS_MSG_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : OAM发给TAF的ANTEN事件结构
+ ??????    : MN_APP_SAR_ANTENSTATUS_MSG_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : OAM????TAF??ANTEN????????
 *****************************************************************************/
 typedef struct
 {
     VOS_MSG_HEADER
     VOS_UINT32                          ulMsgId;
-    VOS_UINT32                          ulAntenStatus; /* 天线状态上报给Taf */
+    VOS_UINT32                          ulAntenStatus; /* ??????????????Taf */
 } MN_APP_SAR_ANTENSTATUS_MSG_STRU;
 
 /*****************************************************************************
- 结构名    : MN_APP_SAR_INFO_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 发给DSP的Reduction事件结构
+ ??????    : MN_APP_SAR_INFO_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ????DSP??Reduction????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                  ulSarType;      /* 上报操作类型 */
-    VOS_UINT32                  ulAntenStatus;  /* 天线状态 */
-    VOS_UINT32                  ulSarReduction; /* 降sar等级 */
+    VOS_UINT32                  ulSarType;      /* ???????????? */
+    VOS_UINT32                  ulAntenStatus;  /* ???????? */
+    VOS_UINT32                  ulSarReduction; /* ??sar???? */
 }MN_APP_SAR_INFO_STRU;
 
 
@@ -335,9 +335,9 @@ typedef struct
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                          ulMsgId;            /* 原语ID*/
+    VOS_UINT32                          ulMsgId;            /* ????ID*/
 
-    TAF_OAM_TRACE_CFG_STRU              stTraceCfg;         /* TRACE配置信息 */
+    TAF_OAM_TRACE_CFG_STRU              stTraceCfg;         /* TRACE???????? */
 }TAF_OAM_TRACE_CFG_IND_STRU;
 
 
@@ -381,17 +381,17 @@ typedef struct
 typedef VOS_INT (*pSockRecv)(VOS_UINT8 uPortNo, VOS_UINT8* pData, VOS_UINT16 uslength);
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern TAF_APS_USER_CONN_STATUS_ENUM_UINT8 TAF_APS_GetUserConnStatus(VOS_VOID);
 

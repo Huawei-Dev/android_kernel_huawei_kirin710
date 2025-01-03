@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oam_main.h"
 #include "oam_log.h"
@@ -27,37 +27,37 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
-/* OAM模块统一使用的全局操作变量上下文，包括OAM其他子模块全局上下文 */
+/* OAM??????????????????????????????????????OAM???????????????????? */
 oam_mng_ctx_stru    g_st_oam_mng_ctx;
 
-/* 打印类型函数定义 */
+/* ???????????????? */
 OAL_STATIC oal_print_func g_pa_oam_print_type_func[OAM_OUTPUT_TYPE_BUTT]=
 {
-    oam_print_to_console,   /* OAM_OUTPUT_TYPE_CONSOLE 控制台输出 */
-    oam_print_to_file,      /* OAM_OUTPUT_TYPE_FS 写到文件系统 */
-    oam_print_to_sdt,       /* OAM_OUTPUT_TYPE_SDT 输出到SDT,上报字符串不宜大于2048 */
+    oam_print_to_console,   /* OAM_OUTPUT_TYPE_CONSOLE ?????????? */
+    oam_print_to_file,      /* OAM_OUTPUT_TYPE_FS ???????????? */
+    oam_print_to_sdt,       /* OAM_OUTPUT_TYPE_SDT ??????SDT,??????????????????2048 */
 };
 
-/* 用于和SDT工具交互的全局变量 */
+/* ??????SDT?????????????????? */
 oam_sdt_func_hook_stru          g_st_oam_sdt_func_hook;
 oam_wal_func_hook_stru          g_st_oam_wal_func_hook;
 oam_sdt_stat_info_stru          g_st_sdt_stat_info;
 
 oal_uint8 g_auc_bcast_addr[WLAN_MAC_ADDR_LEN] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-#ifdef _PRE_DEBUG_MODE  /* 调试特性默认开关状态 */
+#ifdef _PRE_DEBUG_MODE  /* ???????????????????? */
 oal_uint32          g_aul_debug_feature_switch[OAM_DEBUG_TYPE_BUTT] =
 {
     OAL_SWITCH_OFF,   /* OAM_DEBUG_TYPE_ECHO_REG */
 };
 #endif
 
-/* 特性列表 */
+/* ???????? */
 oam_software_feature_stru   gst_oam_feature_list[OAM_SOFTWARE_FEATURE_BUTT] =
 {
-    /*特性宏ID                  特性名缩写*/
+    /*??????ID                  ??????????*/
     /* 0 */
     {OAM_SF_SCAN,               "scan"},
     {OAM_SF_AUTH,               "auth"},
@@ -162,7 +162,7 @@ oam_software_feature_stru   gst_oam_feature_list[OAM_SOFTWARE_FEATURE_BUTT] =
 };
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_uint32  oam_print(oal_int8 *pc_string)
@@ -203,7 +203,7 @@ oal_uint32   oam_print_to_file(oal_int8 *pc_string)
 {
 #ifdef _PRE_WIFI_DMT
 
-    oal_file_stru            *f_file_ret;                                 /* 用于保存写文件后的返回值 */
+    oal_file_stru            *f_file_ret;                                 /* ???????????????????????? */
     oal_file_stru            *f_event_file;
     oal_int32                 l_rslt;
 
@@ -262,7 +262,7 @@ oal_uint32 oam_print_to_sdt(oal_int8 *pc_string)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 上报sdt字符串以'0'结束 */
+    /* ????sdt????????'0'???? */
     us_strlen = (oal_uint16)OAL_STRLEN(pc_string);
 
     us_strlen = (us_strlen > OAM_REPORT_MAX_STRING_LEN) ? OAM_REPORT_MAX_STRING_LEN : us_strlen;
@@ -273,11 +273,11 @@ oal_uint32 oam_print_to_sdt(oal_int8 *pc_string)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* COPY打印的内容 */
+    /* COPY?????????? */
     oal_memset(oal_netbuf_data(pst_skb), 0, us_strlen);
     oal_memcopy(oal_netbuf_data(pst_skb), pc_string, (oal_uint32)us_strlen);
 
-    /* 下发至sdt接收队列，若队列满则串口输出 */
+    /* ??????sdt???????????????????????????? */
     ul_ret = oam_report_data2sdt(pst_skb, OAM_DATA_TYPE_STRING, OAM_PRIMID_TYPE_OUTPUT_CONTENT);
 
     return ul_ret;
@@ -306,10 +306,10 @@ oal_uint32 oam_upload_log_to_sdt(oal_int8 *pc_string)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* COPY打印的内容 */
+    /* COPY?????????? */
     oal_memcopy(oal_netbuf_data(pst_skb), pc_string, OAL_SIZEOF(oam_log_info_stru));
 
-    /* 下发至sdt接收队列，若队列满则串口输出 */
+    /* ??????sdt???????????????????????????? */
     ul_ret = oam_report_data2sdt(pst_skb, OAM_DATA_TYPE_LOG, OAM_PRIMID_TYPE_OUTPUT_CONTENT);
 
     return ul_ret;
@@ -333,10 +333,10 @@ oal_uint32 oam_upload_device_log_to_sdt(oal_uint8 *pc_string, oal_uint16 len)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* COPY打印的内容 */
+    /* COPY?????????? */
     oal_memcopy(oal_netbuf_data(pst_skb), pc_string, len);
 
-    /* 下发至sdt接收队列，若队列满则串口输出 */
+    /* ??????sdt???????????????????????????? */
     ul_ret = oam_report_data2sdt(pst_skb, OAM_DATA_TYPE_DEVICE_LOG, OAM_PRIMID_TYPE_OUTPUT_CONTENT);
 
     return ul_ret;
@@ -373,7 +373,7 @@ oal_int32 oam_rx_post_action_function(oal_uint8 stype,
         return OAL_SUCC;
     }
 
-    /* 调用OAM接口*/
+    /* ????OAM????*/
     oam_send_device_data2sdt(puc_data, (oal_uint16)pst_hcc_netbuf->len);
 
     oal_netbuf_free(pst_hcc_netbuf->pst_netbuf);
@@ -436,7 +436,7 @@ oal_uint32  oam_set_file_path(oal_int8 *pc_file_path, oal_uint32 ul_length)
     puc_file_path = DmtStub_GetDebugFilePath();
     oal_memcopy(g_st_oam_mng_ctx.ac_file_path, puc_file_path, strlen(puc_file_path));
 
-    /* 以下操作是为了将上一次的日志文件清空 */
+    /* ???????????????????????????????????? */
     f_event_file = oal_file_open_rw(g_st_oam_mng_ctx.ac_file_path);
 	if (OAL_FILE_FAIL == f_event_file)
     {
@@ -488,11 +488,11 @@ oal_void  oam_dump_buff_by_hex(oal_uint8 *puc_buff, oal_int32 l_len, oal_int32 l
 
 OAL_STATIC oal_void oam_drv_func_hook_init(oal_void)
 {
-    /* sdt侧对外钩子函数初始化 */
+    /* sdt???????????????????? */
     g_st_oam_sdt_func_hook.p_sdt_report_data_func       = OAL_PTR_NULL;
     g_st_oam_sdt_func_hook.p_sdt_get_wq_len_func        = OAL_PTR_NULL;
 
-    /* wal侧对外钩子函数初始化 */
+    /* wal???????????????????? */
     g_st_oam_wal_func_hook.p_wal_recv_cfg_data_func     = OAL_PTR_NULL;
     g_st_oam_wal_func_hook.p_wal_recv_mem_data_func     = OAL_PTR_NULL;
     g_st_oam_wal_func_hook.p_wal_recv_reg_data_func     = OAL_PTR_NULL;
@@ -526,12 +526,12 @@ oal_uint32  oam_filter_data2sdt(oam_data_type_enum_uint8 en_type)
     else if ((g_st_sdt_stat_info.ul_wq_len >= WLAN_SDT_MSG_FLT_HIGH_THD)
               && (g_st_sdt_stat_info.ul_wq_len < WLAN_SDT_MSG_QUEUE_MAX_LEN))
     {
-        /* 消息队列达到过滤上限，过滤非日志消息 */
+        /* ???????????????????????????????????? */
         g_st_sdt_stat_info.en_filter_switch = OAL_TRUE;
-        return ((oal_uint8)OAM_DATA_TYPE_LOG == en_type) ? OAM_FLT_PASS : OAM_FLT_DROP;/* [false alarm]:返回值为布尔值0或者1，不影响*/
+        return ((oal_uint8)OAM_DATA_TYPE_LOG == en_type) ? OAM_FLT_PASS : OAM_FLT_DROP;/* [false alarm]:??????????????0????1????????*/
     }
 
-    /* 消息队列满全部过滤 */
+    /* ?????????????????? */
     return OAM_FLT_DROP;
 }
 
@@ -558,7 +558,7 @@ oal_uint32 oam_report_data2sdt(oal_netbuf_stru *pst_netbuf,
                                oam_data_type_enum_uint8 en_type,
                                oam_primid_type_enum_uint8 en_prim)
 {
-    /* 判断sdt发送消息队列是否已满，若满输出至串口 */
+    /* ????sdt???????????????????????????????????? */
     if (OAL_LIKELY(OAL_PTR_NULL != g_st_oam_sdt_func_hook.p_sdt_get_wq_len_func))
     {
         g_st_sdt_stat_info.ul_wq_len = (oal_uint32)g_st_oam_sdt_func_hook.p_sdt_get_wq_len_func();
@@ -570,7 +570,7 @@ oal_uint32 oam_report_data2sdt(oal_netbuf_stru *pst_netbuf,
         oal_mem_sdt_netbuf_free(pst_netbuf, OAL_TRUE);
         //oal_netbuf_free(pst_netbuf);
 
-        /* Note: 目前上层函数仅仅使用该返回值打印warning信息而已*/
+        /* Note: ????????????????????????????????warning????????*/
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
         if(0 != ((g_st_sdt_stat_info.ul_filter_cnt) % OAM_DATA2SDT_FAIL_COUNT))
         {
@@ -594,7 +594,7 @@ oal_uint32 oam_report_data2sdt(oal_netbuf_stru *pst_netbuf,
 
 oal_void oam_sdt_func_fook_unregister(oal_void)
 {
-    /* 函数指针赋值 */
+    /* ???????????? */
     g_st_oam_sdt_func_hook.p_sdt_report_data_func           = OAL_PTR_NULL;
     g_st_oam_sdt_func_hook.p_sdt_get_wq_len_func            = OAL_PTR_NULL;
 }
@@ -602,7 +602,7 @@ oal_void oam_sdt_func_fook_unregister(oal_void)
 
 oal_void oam_wal_func_fook_unregister(oal_void)
 {
-    /* 函数指针赋值 */
+    /* ???????????? */
     g_st_oam_wal_func_hook.p_wal_recv_cfg_data_func         = OAL_PTR_NULL;
     g_st_oam_wal_func_hook.p_wal_recv_global_var_func       = OAL_PTR_NULL;
     g_st_oam_wal_func_hook.p_wal_recv_mem_data_func         = OAL_PTR_NULL;
@@ -613,7 +613,7 @@ oal_int32  oam_main_init(oal_void)
 {
     oal_uint32 ul_rslt;
 
-    /* 初始化可维可测试FILE路径 */
+    /* ????????????????FILE???? */
     ul_rslt = oam_set_file_path(WLAN_OAM_FILE_PATH, (OAL_STRLEN(WLAN_OAM_FILE_PATH) + 1));
     if (OAL_SUCC != ul_rslt)
     {
@@ -622,7 +622,7 @@ oal_int32  oam_main_init(oal_void)
         return -OAL_EFAIL;
     }
 
-    /* 初始化可维可测输出方式 */
+    /* ?????????????????????? */
     ul_rslt = oam_set_output_type(OAM_OUTPUT_TYPE_SDT);
     if (OAL_SUCC != ul_rslt)
     {
@@ -631,7 +631,7 @@ oal_int32  oam_main_init(oal_void)
         return -OAL_EFAIL;
     }
 
-    /* 完成LOG模块的初始化操作 */
+    /* ????LOG???????????????? */
     ul_rslt = oam_log_init();
     if (OAL_SUCC != ul_rslt)
     {
@@ -640,7 +640,7 @@ oal_int32  oam_main_init(oal_void)
         return -OAL_EFAIL;
     }
 
-    /* 完成EVENT模块的初始化操作 */
+    /* ????EVENT???????????????? */
     ul_rslt = oam_event_init();
     if (OAL_SUCC != ul_rslt)
     {
@@ -649,11 +649,11 @@ oal_int32  oam_main_init(oal_void)
         return -OAL_EFAIL;
     }
 
-    /* 初始化5115timer，用于代码中获取高精度时间戳 */
+    /* ??????5115timer???????????????????????????? */
     oal_5115timer_init();
 
 #ifdef _PRE_PROFILING_MODE
-    /* 完成PROFILING模块的初始化操作 */
+    /* ????PROFILING???????????????? */
     ul_rslt = oam_profiling_init();
     if (OAL_SUCC != ul_rslt)
     {
@@ -663,15 +663,15 @@ oal_int32  oam_main_init(oal_void)
     }
 #endif
 
-    /* 初始化oam模块的钩子函数 */
+    /* ??????oam?????????????? */
     oam_drv_func_hook_init();
 
-    /* 统计模块初始化 */
+    /* ?????????????? */
     oam_statistics_init();
 
-/*TBD，待命令触发定制化初始操作*/
+/*TBD??????????????????????????*/
 #if 0
-    /* 从配置文件中获取配置信息，保存到OAM内部结构中 */
+    /* ????????????????????????????????OAM?????????? */
     for (ul_counter= 0; ul_counter < OM_MODULEID_BUTT; ul_counter++)
     {
         if (OAL_PTR_NULL != g_oam_customize.customize_init[ul_counter])
@@ -688,7 +688,7 @@ oal_int32  oam_main_init(oal_void)
 #if ((_PRE_OS_VERSION_RAW != _PRE_OS_VERSION) && (_PRE_OS_VERSION_WIN32_RAW != _PRE_OS_VERSION))
         /* ??netlink */
  #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
-    /* 所用的端口号在系统中已被占用，02无法使用这个接口，需要修改 TBD */
+    /* ??????????????????????????????02?????????????????????????? TBD */
         ul_rslt = oam_netlink_kernel_create();
         if (OAL_SUCC != ul_rslt)
         {
@@ -709,18 +709,18 @@ oal_int32  oam_main_init(oal_void)
 oal_void  oam_main_exit(oal_void)
 {
 
-    /* 初始化5115timer，用于代码中获取高精度时间戳 */
+    /* ??????5115timer???????????????????????????? */
     oal_5115timer_exit();
 
 #ifdef _PRE_WLAN_DFT_REG
     oam_reg_exit();
 #endif
-    /* 去注册全局变量读写总接口 */
+    /* ???????????????????????? */
 
-    /* 卸载成功后，输出打印 */
+    /* ???????????????????? */
 #if ((_PRE_OS_VERSION_RAW != _PRE_OS_VERSION) && (_PRE_OS_VERSION_WIN32_RAW != _PRE_OS_VERSION))
     #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
-       /* 所用的端口号在系统中已被占用，02无法使用这个接口，需要修改 TBD */
+       /* ??????????????????????????????02?????????????????????????? TBD */
 
         oam_netlink_kernel_release();
     #endif

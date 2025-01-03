@@ -73,7 +73,7 @@ extern "C"
 
 #define AT_BER_UNKNOWN                          (99)
 
-/*主线现在支持140个频段大于128扩展为256个最大频段支持*/
+/*????????????140??????????128??????256??????????????*/
 #define AT_FEATURE_LTE_MAX_SUPPORT_BAND         (256)
 
 enum
@@ -116,7 +116,7 @@ typedef struct
 {
     VOS_UINT32 ulSrcError;   /* USIM,NAS...
  */
-    VOS_UINT32 ulATError;    /* AT错误码
+    VOS_UINT32 ulATError;    /* AT??????
  */
 }AT_ERROR_CODE_TABLE_STRU;
 
@@ -152,7 +152,7 @@ extern VOS_VOID CmdErrProc(VOS_UINT8 ucClientId, VOS_UINT32 ulErrCode, VOS_UINT1
 extern VOS_UINT32 atSetSdloadCnf(VOS_UINT8 ucClientId,VOS_VOID *pMsgBlock);
 
 
-/* AT模块给FTM 模块发送消息
+/* AT??????FTM ????????????
  */
 extern VOS_UINT32 atSendFtmDataMsg(VOS_UINT32 TaskId, VOS_UINT32 MsgId, VOS_UINT32 ulClientId, VOS_VOID* pData, VOS_UINT32 uLen);
 

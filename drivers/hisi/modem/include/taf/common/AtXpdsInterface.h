@@ -58,13 +58,13 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "PsTypeDef.h"
 #include "AtMnInterface.h"
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
@@ -74,12 +74,12 @@ extern "C" {
 #define AT_XPDS_MEID_DATA_LEN                               (7)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum AT_XPDS_MSG_TYPE_ENUM
 {
-    /* 消息名称 */                      /* 消息ID */        /* 备注, 生成ASN */
+    /* ???????? */                      /* ????ID */        /* ????, ????ASN */
 
     ID_AT_XPDS_GPS_START_REQ               = 0x0001, /* _H2ASN_MsgChoice AT_XPDS_GPS_START_REQ_STRU */
     ID_XPDS_AT_GPS_START_CNF               = 0x0002, /* _H2ASN_MsgChoice XPDS_AT_RESULT_CNF_STRU */
@@ -128,7 +128,7 @@ enum AT_XPDS_MSG_TYPE_ENUM
     ID_XPDS_AT_GPS_OM_TEST_START_REQ       = 0x300c, /* _H2ASN_MsgChoice XPDS_AT_GPS_OM_TEST_START_REQ_STRU */
     ID_XPDS_AT_GPS_OM_TEST_STOP_REQ        = 0x300d, /* _H2ASN_MsgChoice XPDS_AT_GPS_OM_TEST_STOP_REQ_STRU */
 
-    /* 最后一条消息 */
+    /* ???????????? */
     ID_AT_XPDS_MSG_TYPE_BUTT
 
 };
@@ -137,13 +137,13 @@ typedef VOS_UINT32 AT_XPDS_MSG_TYPE_ENUM_UINT32;
 
 enum XPDS_AT_RESULT_ENUM
 {
-    /* 与AT模块对应的标准错误码 */
-    XPDS_AT_RESULT_NO_ERROR                      = 0x000000,                     /* 消息处理正常 */
-    XPDS_AT_RESULT_ERROR,                                                        /* 消息处理出错 */
+    /* ??AT???????????????????? */
+    XPDS_AT_RESULT_NO_ERROR                      = 0x000000,                     /* ???????????? */
+    XPDS_AT_RESULT_ERROR,                                                        /* ???????????? */
     XPDS_AT_RESULT_INCORRECT_PARAMETERS,
     XPDS_AT_RESULT_OPTION_TIMEOUT,
 
-    /* 预留对应AT标准命令错误码 */
+    /* ????????AT?????????????? */
 
     XPDS_AT_RESULT_BUTT
 };
@@ -282,8 +282,8 @@ typedef VOS_UINT8 AT_XPDS_GPS_NI_REQ_REPLY_RESULT_ENUM_UINT8;
 enum AT_XPDS_GPS_NI_REQ_REJECT_TYPE_ENUM
 {
     AT_XPDS_GPS_NI_REQ_REJECT_TYPE_INVALID                  = 0,
-    AT_XPDS_GPS_NI_REQ_REJECT_TYPE_TIMER_OUT                = 1,   /* GPS应答第三方定位请求超时 */
-    AT_XPDS_GPS_NI_REQ_REJECT_TYPE_USER_DENIED              = 2,   /* 用户拒绝第三方定位请求 */
+    AT_XPDS_GPS_NI_REQ_REJECT_TYPE_TIMER_OUT                = 1,   /* GPS?????????????????????? */
+    AT_XPDS_GPS_NI_REQ_REJECT_TYPE_USER_DENIED              = 2,   /* ?????????????????????? */
 
     AT_XPDS_GPS_RESP_NI_REQ_REJECT_TYPE_ENUM_BUTT           = 0x11
 };
@@ -381,16 +381,16 @@ enum TAF_XPDS_GPS_START_MODE_ENUM
 typedef VOS_UINT8 TAF_XPDS_GPS_START_MODE_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 typedef struct
@@ -398,7 +398,7 @@ typedef struct
     VOS_MSG_HEADER
     AT_XPDS_MSG_TYPE_ENUM_UINT32        enMsgId;
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT8                           aucContent[4];                          /* 消息内容 */
+    VOS_UINT8                           aucContent[4];                          /* ???????? */
 } AT_XPDS_MSG_STRU;
 
 
@@ -407,7 +407,7 @@ typedef struct
     VOS_MSG_HEADER
     AT_XPDS_MSG_TYPE_ENUM_UINT32        enMsgId;
     AT_APPCTRL_STRU                     stAppCtrl;
-    XPDS_AT_RESULT_ENUM_UINT32          enResult;      /* 操作结果 */
+    XPDS_AT_RESULT_ENUM_UINT32          enResult;      /* ???????? */
 }XPDS_AT_RESULT_CNF_STRU;
 
 
@@ -421,7 +421,7 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           aucReserved[4]; /* 保留位 */
+    VOS_UINT8                           aucReserved[4]; /* ?????? */
 }AT_XPDS_RESERVE_STRU;
 
 /** ****************************************************************************
@@ -564,7 +564,7 @@ typedef struct
     AT_XPDS_MSG_TYPE_ENUM_UINT32                            enMsgId;
     AT_APPCTRL_STRU                                         stAppCtrl;
     AT_XPDS_GPS_NI_REQ_REPLY_RESULT_ENUM_UINT8              enReplyResult;       /**< 0: reject, 1: accept */
-    AT_XPDS_GPS_NI_REQ_REJECT_TYPE_ENUM_UINT8               enRejReason;         /* 1:用户未应答; 2:用户拒绝定位请求 */
+    AT_XPDS_GPS_NI_REQ_REJECT_TYPE_ENUM_UINT8               enRejReason;         /* 1:??????????; 2:???????????????? */
     VOS_UINT8                                               aucReserved[2];      /**< padding */
 } AT_XPDS_GPS_REPLY_NI_RSP_STRU;
 
@@ -725,7 +725,7 @@ typedef struct
 /** ****************************************************************************
  * Name        : AT_XPDS_GPS_SYS_TIME_STRU
  *
- * Description : 系统时间数据结构
+ * Description : ????????????????
  *******************************************************************************/
 typedef struct
 {
@@ -744,7 +744,7 @@ typedef struct
 /** ****************************************************************************
  * Name        : TAF_MSG_CDMA_GPS_POSITION_ERROR_STRU
  *
- * Description : GPS位置error参数
+ * Description : GPS????error????
  *******************************************************************************/
 typedef struct
 {
@@ -763,7 +763,7 @@ typedef struct
 /** ****************************************************************************
  * Name        : AT_XPDS_GPS_POS_INFO_STRU
  *
- * Description : GPS Module计算出的位置信息数据结构
+ * Description : GPS Module????????????????????????
  *******************************************************************************/
 typedef struct
 {
@@ -801,7 +801,7 @@ typedef struct
 /** ****************************************************************************
  * Name        : AT_XPDS_GPS_POS_INFO_RSP_STRU
  *
- * Description : GPS Module计算出的位置信息数据结构
+ * Description : GPS Module????????????????????????
  *******************************************************************************/
 typedef struct
 {
@@ -849,7 +849,7 @@ typedef struct
     VOS_MSG_HEADER
     AT_XPDS_MSG_TYPE_ENUM_UINT32                            enMsgId;
     AT_APPCTRL_STRU                                         stAppCtrl;
-    VOS_UINT32                                              ulData;/* 默认1 */
+    VOS_UINT32                                              ulData;/* ????1 */
 }XPDS_AT_GPS_CANCEL_IND_STRU;
 
 typedef struct
@@ -964,7 +964,7 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulDeleteFlag;                            /* 1:删除辅助数据 */
+    VOS_UINT32                          ulDeleteFlag;                            /* 1:???????????? */
 } XPDS_AT_GPS_DEL_ASSIST_DATA_IND_STRU;
 
 
@@ -973,7 +973,7 @@ typedef struct
     VOS_MSG_HEADER
     AT_XPDS_MSG_TYPE_ENUM_UINT32        enMsgId;
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT32                          ulStartCode;                            /* 0:默认开启 */
+    VOS_UINT32                          ulStartCode;                            /* 0:???????? */
 } XPDS_AT_GPS_NI_CP_START_STRU;
 
 
@@ -982,7 +982,7 @@ typedef struct
     VOS_MSG_HEADER
     AT_XPDS_MSG_TYPE_ENUM_UINT32        enMsgId;
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT32                          ulStartCode;                            /* 0:默认开启 */
+    VOS_UINT32                          ulStartCode;                            /* 0:???????? */
 } XPDS_AT_GPS_NI_CP_STOP_STRU;
 
 
@@ -1015,14 +1015,14 @@ typedef struct
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 /*****************************************************************************
-  H2ASN顶级消息结构定义
+  H2ASN????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -1042,7 +1042,7 @@ typedef struct
 }AtXpdsInterface_MSG;
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 

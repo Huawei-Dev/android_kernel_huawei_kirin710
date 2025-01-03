@@ -63,7 +63,7 @@ struct dump_info {
 	void *p;		/*dump region phy/virtual address */
 	loff_t size;		/*dump region size */
 };
-/*保存fastboot传递过来的异常区地址信息*/
+/*????fastboot????????????????????????*/
 static phys_addr_t g_memdump_addr;
 static phys_addr_t g_memdump_end;
 static unsigned int g_memdump_size;

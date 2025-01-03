@@ -59,11 +59,11 @@ extern "C" {
 
 typedef enum
 {
-    /* sys list 暂时放在这里 star*/
+    /* sys list ???????????? star*/
     NV_Item_XO_TEMP_SENSOR_TABLE       = 10016, //=en_NV_Item_XO_TEMP_SENSOR_TABLE
     NV_Item_PA_TEMP_SENSOR_TABLE       = 10015, //=en_NV_Item_PA_TEMP_SENSOR_TABLE
     NV_Item_RF_ANT_DETECT              = 18010, //=en_NV_Item_RF_ANT_DETECT
-    /* sys list 暂时放在这里 end*/
+    /* sys list ???????????? end*/
     
     NV_ID_MSP_FLASH_LESS_MID_THRED     = 0xD007, //53255,NV_ID_FLASH_LESS_MID_THRED_STRU
     EN_NV_ID_AGENT_FLAG                = 0xD01D, //53277,NV_ITEM_AGENT_FLAG_STRU

@@ -9,19 +9,19 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oam_config.h"
 #include "oal_aes.h"
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 oam_customize_stru g_oam_customize;
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 oal_void  oam_register_init_hook(oam_msg_moduleid_enum_uint8 en_moduleid,  p_oam_customize_init_func p_func)
 {
@@ -35,7 +35,7 @@ oal_int32  oam_cfg_get_one_item(
                                            oal_int8   *pc_key,
                                           oal_int32   *pl_val)
 {
-    /*****************************配置文件内容格式*****************************/
+    /*****************************????????????????*****************************/
     /*                              [section]                                 */
     /*                              key=val                                   */
     /**************************************************************************/
@@ -43,13 +43,13 @@ oal_int32  oam_cfg_get_one_item(
     oal_int8        *pc_section_addr;
     oal_int8        *pc_key_addr;
     oal_int8        *pc_val_addr;
-    oal_int8        *pc_equal_sign_addr;    /* 等号的地址 */
+    oal_int8        *pc_equal_sign_addr;    /* ?????????? */
     oal_int8        *pc_tmp;
     oal_uint8        uc_key_len;
-    oal_int8         ac_val[OAM_CFG_VAL_MAX_LEN] = {0};  /* 暂存配置项的值 */
+    oal_int8         ac_val[OAM_CFG_VAL_MAX_LEN] = {0};  /* ?????????????? */
     oal_uint8        uc_index = 0;
 
-    /* 查找section在配置文件中的位置 */
+    /* ????section?????????????????? */
     pc_section_addr = oal_strstr(pc_cfg_data_buf, pc_section);
     if (OAL_PTR_NULL == pc_section_addr)
     {
@@ -57,7 +57,7 @@ oal_int32  oam_cfg_get_one_item(
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 从section所在位置开始查找配置项对应的字符串 */
+    /* ??section?????????????????????????????????? */
     pc_key_addr = oal_strstr(pc_section_addr, pc_key);
     if (OAL_PTR_NULL == pc_key_addr)
     {
@@ -65,11 +65,11 @@ oal_int32  oam_cfg_get_one_item(
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 查找配置项的值 */
+    /* ?????????????? */
     uc_key_len  = (oal_uint8)OAL_STRLEN(pc_key);
 
-    /* 检查key后面是否紧接着'=',如果不是的话，那当前要查找的key有可能是另一个
-       key的前缀，需要继续往后查找
+    /* ????key??????????????'=',????????????????????????????key??????????????
+       key????????????????????????
     */
     pc_equal_sign_addr = pc_key_addr + uc_key_len;
     while (*(pc_equal_sign_addr) != '=')
@@ -84,7 +84,7 @@ oal_int32  oam_cfg_get_one_item(
         pc_equal_sign_addr = pc_key_addr + uc_key_len;
     }
 
-    /* 检查val是否存在 */
+    /* ????val???????? */
     pc_val_addr = pc_equal_sign_addr + OAM_CFG_EQUAL_SIGN_LEN;
     if ((*(pc_val_addr) == '\n') || (*(pc_val_addr) == '\0'))
     {
@@ -97,7 +97,7 @@ oal_int32  oam_cfg_get_one_item(
         uc_index++;
     }
 
-    /* 获取出来的有可能不是10进制的数，需要switch-case一下 TBD */
+    /* ????????????????????10??????????????switch-case???? TBD */
     *pl_val = oal_atoi(ac_val);
 
     return OAL_SUCC;
@@ -142,7 +142,7 @@ oal_uint32  oam_cfg_decrypt_all_item(
     oal_uint8      *puc_cipher_tmp;
     oal_uint8      *puc_plain_tmp;
 
-    /* AES加密块的大小是16字节，如果密文长度不是16的倍数，则不能正确解密 */
+    /* AES??????????????16??????????????????????16?????????????????????? */
     if (0 != (ul_cipher_len % OAL_AES_BLOCK_SIZE))
     {
         OAL_IO_PRINT("oam_cfg_decrypt_all_item::ciphertext length invalid!\n");
