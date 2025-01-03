@@ -46,7 +46,6 @@
 #if defined(CONFIG_HW_SLUB_DF) || defined(CONFIG_HW_SLUB_SANITIZE)
 #include <chipset_common/security/upload_double_free.h>
 #endif
-#include <chipset_common/security/check_root.h>
 
 #ifdef CONFIG_HW_SLUB_DF
 static void set_harden_double_free_check_flags(bool status);
@@ -4037,9 +4036,6 @@ err:
 	pr_err("ptr = %pK, page = %pK, n = %lu\n", ptr, page, n);
 	pr_err("page_addr = %pK, kmem_cache = %pK, size = %d, object= %lu, red_left_pad = %d",
 			page_address(page), s, s->size, object_size, s->red_left_pad);
-
-	/* record trace log for stp */
-	stp_save_trace_log(STP_NAME_USERCOPY);
 
 	BUG();
 }

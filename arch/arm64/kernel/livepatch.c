@@ -29,7 +29,6 @@
 #include <asm/insn.h>
 #include <asm-generic/sections.h>
 #include <asm/ptrace.h>
-#include <chipset_common/security/root_scan.h>
 #include <asm/livepatch-hhee.h>
 #ifdef CONFIG_TEE_KERNEL_MEASUREMENT_API
 #include <../../../../drivers/hisi/tzdriver/ca_antiroot/rootagent.h>
@@ -222,10 +221,6 @@ void arch_klp_free_func(struct klp_object *obj, struct klp_func *limit)
 }
 void  arch_klp_code_modify_prepare(void)
 {
-#ifdef CONFIG_HW_ROOT_SCAN
-    (void) root_scan_pause(D_RSOPID_KCODE,NULL);
-#endif
-
 #ifdef CONFIG_TEE_KERNEL_MEASUREMENT_API
     (void) pause_measurement();
 #endif
@@ -236,10 +231,6 @@ void  arch_klp_code_modify_post_process(void)
 {
 #ifdef CONFIG_TEE_KERNEL_MEASUREMENT_API
     (void)resume_measurement();
-#endif
-
-#ifdef CONFIG_HW_ROOT_SCAN
-    (void)root_scan_resume(D_RSOPID_KCODE,NULL);
 #endif
 
     return;
