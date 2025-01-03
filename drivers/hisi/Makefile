@@ -48,7 +48,6 @@ obj-$(CONFIG_OAE_FW_PATCH) += oae_fw_patch/
 obj-$(CONFIG_LOGGER_EXTEND) += log/
 obj-$(CONFIG_HW_ZEROHUNG) += hwzerohung/
 obj-$(CONFIG_HW_FDLEAK) += hwfdleak/
-obj-$(CONFIG_HUAWEI_DUBAI) += dubai/
 obj-$(CONFIG_HUAWEI_DSM)        += dsm/
 obj-$(CONFIG_HW_CPULOAD_NOTI) += cpuload/
 obj-$(CONFIG_HISI_BOOTDEVICE)   += bootdevice/

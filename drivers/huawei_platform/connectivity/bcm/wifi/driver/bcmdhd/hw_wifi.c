@@ -23,10 +23,6 @@
 #include "LLT_wifi.h"
 #include <log/log_usertype.h>
 
-#ifdef CONFIG_HUAWEI_DUBAI
-#include <huawei_platform/log/hwlog_kernel.h>
-#endif
-
 #ifdef CONFIG_HW_WLANFTY_STATUS
 #include <dhd.h>
 int wlanfty_status_value = 0;
@@ -384,44 +380,19 @@ static void parse_ipv4_packet(struct sk_buff *skb)
 	if (iph->protocol == IPPROTO_UDP){
 		uh = (struct udphdr *)(skb->data + iphdr_len);
 		HW_PRINT_HI("receive UDP packet, src port:%d, dst port:%d.\n", ntohs(uh->source), ntohs(uh->dest));
-#ifdef CONFIG_HUAWEI_DUBAI
-		if (BETA_USER == get_logusertype_flag()) {
-			HWDUBAI_LOGE("DUBAI_TAG_PACKET_WAKEUP_UDP_V4", "port=%d", ntohs(uh->dest));
-		}
-#endif
 		wlan_send_nl_event(skb->dev, ntohs(uh->dest));
-	}else if(iph->protocol == IPPROTO_TCP){
+	} else if (iph->protocol == IPPROTO_TCP){
 		th = (struct tcphdr *)(skb->data + iphdr_len);
 		HW_PRINT_HI("receive TCP packet, src port:%d, dst port:%d.\n", ntohs(th->source), ntohs(th->dest));
-#ifdef CONFIG_HUAWEI_DUBAI
-		if (BETA_USER == get_logusertype_flag()) {
-			HWDUBAI_LOGE("DUBAI_TAG_PACKET_WAKEUP_TCP_V4", "port=%d", ntohs(th->dest));
-		}
-#endif
 		wlan_send_nl_event(skb->dev, ntohs(th->dest));
-	}else if(iph->protocol == IPPROTO_ICMP){
+	} else if (iph->protocol == IPPROTO_ICMP){
 		icmph = (struct icmphdr *)(skb->data + iphdr_len);
 		HW_PRINT_HI("receive ICMP packet, type(%d):%s, code:%d.\n", icmph->type,
 			((icmph->type == 0)?"ping reply":((icmph->type == 8)?"ping request":"other icmp pkt")), icmph->code);
-#ifdef CONFIG_HUAWEI_DUBAI
-		if (BETA_USER == get_logusertype_flag()) {
-			HWDUBAI_LOGE("DUBAI_TAG_PACKET_WAKEUP", "protocol=%d", (int32_t)iph->protocol);
-		}
-#endif
-	}else if(iph->protocol == IPPROTO_IGMP){
+	} else if (iph->protocol == IPPROTO_IGMP){
 		HW_PRINT_HI("receive IGMP packet.\n");
-#ifdef CONFIG_HUAWEI_DUBAI
-		if (BETA_USER == get_logusertype_flag()) {
-			HWDUBAI_LOGE("DUBAI_TAG_PACKET_WAKEUP", "protocol=%d", (int32_t)iph->protocol);
-		}
-#endif
-	}else{
+	} else {
 		HW_PRINT_HI("receive other IPv4 packet.\n");
-#ifdef CONFIG_HUAWEI_DUBAI
-		if (BETA_USER == get_logusertype_flag()) {
-			HWDUBAI_LOGE("DUBAI_TAG_PACKET_WAKEUP", "protocol=%d", (int32_t)iph->protocol);
-		}
-#endif
 	}
 
 	return;
@@ -577,11 +548,6 @@ static void parse_ipv6_packet(struct sk_buff *skb)
 			HW_PRINT_HI("ipv6 icmpv6 type: %d \n", icmpv6_type);
 		}
 	}
-#ifdef CONFIG_HUAWEI_DUBAI
-	if (BETA_USER == get_logusertype_flag()) {
-		HWDUBAI_LOGE("DUBAI_TAG_PACKET_WAKEUP", "protocol=%d", IPPROTO_IPV6);
-	}
-#endif
 
     /*
 	*This code may cause crash, so it should be closed  temporarily

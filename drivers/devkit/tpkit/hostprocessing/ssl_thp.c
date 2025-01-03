@@ -16,10 +16,6 @@
 #include <linux/time.h>
 #include <linux/syscalls.h>
 
-#ifdef CONFIG_HUAWEI_DUBAI
-#include <huawei_platform/log/hwlog_kernel.h>
-#endif
-
 #ifndef TRUE
 #define TRUE (1)
 #endif
@@ -1021,10 +1017,7 @@ static int thp_ssl_resume(struct thp_device *tdev)
 		if (ret)
 			THP_LOG_ERR("%s: thp_ssl_get_active_idle_timer failed\n",
 				__func__);
-#ifdef CONFIG_HUAWEI_DUBAI
-		HWDUBAI_LOGE("DUBAI_TAG_TP_DURATION", "active=%d dozing=%d",
-					active_time, dozing_time);
-#endif
+
 		THP_LOG_INFO("%s TS_GESTURE_MODE or tp_ud enable ,so reset\n",
 			__func__);
 		gpio_set_value(tdev->gpios->rst_gpio, GPIO_LOW);
