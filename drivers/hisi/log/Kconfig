@@ -35,12 +35,5 @@ config HWLOG_KERNEL
           user to send log to remote server by net.
 endif # if LOGGER_EXTEND
 
-config HIVIEW_SELINUX
-	bool "hiview selinux support"
-	depends on SECURITY && SECURITY_SELINUX
-	default n
-	---help---
-	  Say Y here to enable log switch feature support. This allows
-	  user to collect selinux log to hiview.
 endmenu
 
