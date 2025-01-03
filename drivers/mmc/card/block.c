@@ -71,9 +71,6 @@
 #endif
 
 #include "hisi_partition.h"
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-#include "mmc_health_diag.h"
-#endif
 
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 #include <linux/mmc/dsm_sdcard.h>
@@ -1348,9 +1345,6 @@ static int card_busy_detect(struct mmc_card *card, unsigned int timeout_ms,
 				pr_err("%s: SD card stuck in programming state!"\
 					" %s %s\n", mmc_hostname(card->host),
 					req->rq_disk->disk_name, __func__);
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-				mmc_diag_sd_health_status(req->rq_disk,MMC_BLK_STUCK_IN_PRG_ERR);
-#endif
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 				if(!dsm_client_ocuppy(sdcard_dclient))
 				{
@@ -2535,21 +2529,9 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
 #ifdef CONFIG_MMC_SIMULATE_MAX_SPEED
 	unsigned long waitfor = jiffies;
 #endif
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-	unsigned long long time1 = 0;
-	unsigned int rq_byte=0;
-#endif
 	if (!rqc && !mq->mqrq_prev->req)
 		return 0;
 
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-	if(!strncmp(current->comm,"mmcqd/1",strlen("mmcqd/1")))
-	{
-		mmc_trigger_ro_check(rqc,md->disk,md->read_only);
-		time1 = sched_clock();
-		rq_byte = mmc_calculate_ioworkload_and_rwspeed(time1,rqc,md->disk);
-	}
-#endif
 	if (rqc)
 		reqs = mmc_blk_prep_packed_list(mq, rqc);
 
@@ -2589,12 +2571,6 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
 		type = rq_data_dir(req) == READ ? MMC_BLK_READ : MMC_BLK_WRITE;
 		mmc_queue_bounce_post(mq_rq);
 
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-		if(mmc_card_sd(card))
-		{
-		mmc_diag_sd_health_status(md->disk,mmc_get_rw_status(status));
-		}
-#endif
 		switch (status) {
 		case MMC_BLK_SUCCESS:
 		case MMC_BLK_PARTIAL:
@@ -2729,12 +2705,6 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
 		}
 	} while (ret);
 
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-	if(!strncmp(current->comm,"mmcqd/1",strlen("mmcqd/1")))
-	{
-		mmc_calculate_rw_size(time1,rq_byte,rqc);
-	}
-#endif
 	return 1;
 
  cmd_abort:
@@ -3418,12 +3388,6 @@ static int mmc_blk_probe(struct mmc_card *card)
 		goto out;
 
 	dev_set_drvdata(&card->dev, md);
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-	if(mmc_card_sd(card))
-	{
-		mmc_clear_report_info();
-	}
-#endif
 
 #ifdef CONFIG_MMC_BLOCK_DEFERRED_RESUME
 	if (mmc_card_support_deferred_resume(card)) {
@@ -3458,13 +3422,6 @@ static int mmc_blk_probe(struct mmc_card *card)
 		pm_runtime_set_active(&card->dev);
 		pm_runtime_enable(&card->dev);
 	}
-
-#ifdef CONFIG_HW_SD_HEALTH_DETECT
-	if(mmc_card_sd(card))
-	{
-		mmc_report_info_set();
-	}
-#endif
 
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	if (MMC_TYPE_SD == card->type)

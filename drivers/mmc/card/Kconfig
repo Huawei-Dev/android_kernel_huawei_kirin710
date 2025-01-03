@@ -106,13 +106,6 @@ config MMC_FFU_SAMSUNG45
 	  Field firmware updates (FFU) enables features enhancment
 	  in the field.
 
-config HW_SD_HEALTH_DETECT
-	bool "SD HEALTH DIAG SUPPORT"
-	default y
-	help
-	  This is an option to diag sd health status.
-
-
 config HW_SYSTEM_HW_WR_PROTECT
 	bool "emmc hardware write protection function of system/cust partitions."
 	depends on HW_SYSTEM_WR_PROTECT
