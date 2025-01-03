@@ -72,7 +72,7 @@ config TEE_CFC
 	select PID_IN_CONTEXTIDR
 	select TEE_CFC_ABI
 	depends on ((!CORESIGHT) && (!CORESIGHT_SOURCE_ETM4X) && (!CORESIGHT_LINK_AND_SINK_TMC) && (!CONFIG_CORESIGHT_SINK_TPIU) && (!CONFIG_CORESIGHT_SINK_ETBV10) && (!CONFIG_CORESIGHT_LINKS_AND_SINKS) && (!CONFIG_HISI_CORESIGHT_TRACE))
-	default y
+	default n
 	help
 	  Code in TZDriver in a continuous text section and use smc call
 	  to let TEEOS protect these code using DMSS. CoreSight based control
