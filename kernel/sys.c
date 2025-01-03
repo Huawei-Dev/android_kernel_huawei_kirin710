@@ -70,10 +70,6 @@
 #include <cpu_netlink/cpu_netlink.h>
 #endif
 
-#ifdef CONFIG_HUAWEI_PROC_CHECK_ROOT
-#include <chipset_common/security/check_root.h>
-#endif
-
 #ifndef SET_UNALIGN_CTL
 # define SET_UNALIGN_CTL(a, b)	(-EINVAL)
 #endif
@@ -384,11 +380,6 @@ SYSCALL_DEFINE2(setregid, gid_t, rgid, gid_t, egid)
 		new->sgid = new->egid;
 	new->fsgid = new->egid;
 
-#ifdef CONFIG_HUAWEI_PROC_CHECK_ROOT
-	if (!new->gid.val && (checkroot_setresgid(old->gid.val)))
-		goto error;
-#endif
-
 	return commit_creds(new);
 
 error:
@@ -425,11 +416,6 @@ SYSCALL_DEFINE1(setgid, gid_t, gid)
 		new->egid = new->fsgid = kgid;
 	else
 		goto error;
-
-#ifdef CONFIG_HUAWEI_PROC_CHECK_ROOT
-	if (!gid && (checkroot_setgid(old->gid.val)))
-		goto error;
-#endif
 
 	return commit_creds(new);
 
@@ -535,11 +521,6 @@ SYSCALL_DEFINE2(setreuid, uid_t, ruid, uid_t, euid)
 	if (retval < 0)
 		goto error;
 
-#ifdef CONFIG_HUAWEI_PROC_CHECK_ROOT
-	if (!new->uid.val && (checkroot_setresuid(old->uid.val)))
-		goto error;
-#endif
-
 	return commit_creds(new);
 
 error:
@@ -592,11 +573,6 @@ SYSCALL_DEFINE1(setuid, uid_t, uid)
 	retval = security_task_fix_setuid(new, old, LSM_SETID_ID);
 	if (retval < 0)
 		goto error;
-
-#ifdef CONFIG_HUAWEI_PROC_CHECK_ROOT
-	if (!uid && (checkroot_setuid(old->uid.val)))
-		goto error;
-#endif
 
 	return commit_creds(new);
 
@@ -668,10 +644,6 @@ SYSCALL_DEFINE3(setresuid, uid_t, ruid, uid_t, euid, uid_t, suid)
 	if (retval < 0)
 		goto error;
 
-#ifdef CONFIG_HUAWEI_PROC_CHECK_ROOT
-	if (!new->uid.val && (checkroot_setresuid(old->uid.val)))
-		goto error;
-#endif
 	return commit_creds(new);
 
 error:
@@ -745,11 +717,6 @@ SYSCALL_DEFINE3(setresgid, gid_t, rgid, gid_t, egid, gid_t, sgid)
 	if (sgid != (gid_t) -1)
 		new->sgid = ksgid;
 	new->fsgid = new->egid;
-
-#ifdef CONFIG_HUAWEI_PROC_CHECK_ROOT
-	if (!new->gid.val && (checkroot_setresgid(old->gid.val)))
-		goto error;
-#endif
 
 	return commit_creds(new);
 
