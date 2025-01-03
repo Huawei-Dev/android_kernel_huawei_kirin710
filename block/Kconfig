@@ -151,11 +151,6 @@ config HISI_PARTITION
         bool "hisi partition"
         default n
 
-config HW_SYSTEM_WR_PROTECT
-	bool "write protection function of system partitions."
-	depends on BLOCK
-	default n
-
 menu "Partition Types"
 
 source "block/partitions/Kconfig"

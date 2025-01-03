@@ -73,10 +73,6 @@ struct kmem_cache *blk_requestq_cachep;
  */
 static struct workqueue_struct *kblockd_workqueue;
 
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-#include <linux/mmc/hw_write_protect.h>
-#endif
-
 static void blk_clear_congested(struct request_list *rl, int sync)
 {
 #ifdef CONFIG_CGROUP_WRITEBACK
@@ -2112,20 +2108,6 @@ blk_qc_t generic_make_request(struct bio *bio)
 #ifdef CONFIG_HISI_BLK
 	if(unlikely(hisi_blk_generic_make_request_check(bio)))
 		goto out;
-#endif
-
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-	if (likely(bio_has_data(bio))) {
-		unsigned int count;
-
-		if (unlikely(bio->bi_opf & REQ_OP_WRITE_SAME))
-			count = bdev_logical_block_size(bio->bi_bdev) >> 9;
-		else
-			count = bio_sectors(bio);
-
-		if (unlikely(should_trap_this_bio(bio->bi_opf, bio, count)))
-			goto out;
-	}
 #endif
 
 	if (unlikely(!generic_make_request_checks(bio)))
