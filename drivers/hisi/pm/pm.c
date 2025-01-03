@@ -27,10 +27,6 @@
 #include <linux/mfd/hisi_pmic.h>
 #include "hisi_lpregs.h"
 
-#include <chipset_common/dubai/dubai.h>
-
-
-
 #include <soc_gpio_interface.h>
 
 #define POWER_STATE_TYPE_SYS_SUSPEND	3
@@ -55,7 +51,6 @@
 #define LITTLE_CLUSTER		(0x0)
 
 #define PMU_WRITE_SR_TICK(offset, pos)	hisi_pmic_reg_write(offset, pos)
-
 
 static void __iomem *g_bbpdrx1_base;
 static void __iomem *sysctrl_base;

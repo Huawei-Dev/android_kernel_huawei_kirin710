@@ -22,9 +22,6 @@
 #define coul_core_warn(fmt, args...) do { printk(KERN_WARNING"[hisi_coul_core]" fmt, ## args); } while (0)
 #define coul_core_err(fmt, args...)  do { printk(KERN_ERR   "[hisi_coul_core]" fmt, ## args); } while (0)
 #endif
-#ifdef CONFIG_HUAWEI_DUBAI
-#include <huawei_platform/log/hwlog_kernel.h>
-#endif
 #include "securec.h"
 #ifdef CONFIG_HISI_ASW
 #include "../asw/asw_protect.h"
@@ -10430,15 +10427,6 @@ static void clear_big_current_10min(void)
 	}
 }
 
-#ifdef CONFIG_HUAWEI_DUBAI
-static void report_battery_adjust(int delta_ocv, int delta_soc, int delta_uah, int sleep_cc)
-{
-    if (delta_ocv != 0) {
-        HWDUBAI_LOGE("DUBAI_TAG_BATTERY_ADJUST", "delta_soc=%d delta_uah=%d sleep_uah=%d", delta_soc, delta_uah, sleep_cc);
-    }
-}
-#endif
-
 static int save_multi_ocv_and_level(struct smartstar_coul_device *di)
 {
 	int cc = 0;
@@ -10714,19 +10702,13 @@ static int hisi_coul_resume(struct platform_device *pdev)
     int sr_sleep_time = 0;
     int old_soc = 0;
     int sleep_cc = 0;
-#ifdef CONFIG_HUAWEI_DUBAI
-    int pre_ocv = 0;
-    int delta_soc = 0;
-#endif
+
     if(NULL == di)
     {
         coul_core_info("[%s]di is null\n",__FUNCTION__);
         return 0;
     }
     coul_core_info("%s:+\n",__func__);
-#ifdef CONFIG_HUAWEI_DUBAI
-    pre_ocv = di->batt_ocv;
-#endif
     current_sec = di->coul_dev_ops->get_coul_time();
     update_battery_temperature(di, TEMPERATURE_INIT_STATUS);
     sr_sleep_time = current_sec - di->sr_suspend_time;
@@ -10789,10 +10771,7 @@ static int hisi_coul_resume(struct platform_device *pdev)
 
     di->soc_limit_flag = 1;
 	di->resume_cc = di->coul_dev_ops->calculate_cc_uah();
-#ifdef CONFIG_HUAWEI_DUBAI
-    delta_soc = old_soc - di->batt_soc;
-    report_battery_adjust(pre_ocv - di->batt_ocv, delta_soc, delta_soc * di->batt_fcc / 100, sleep_cc);
-#endif
+
     if ((LOW_TEMP_OPT_OPEN == low_temp_opt_flag) && (di->batt_temp < 50))
         di->soc_work_interval = CALCULATE_SOC_MS/4;
     else

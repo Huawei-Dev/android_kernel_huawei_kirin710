@@ -18,11 +18,7 @@
 #include <linux/types.h>
 #include <trace/events/power.h>
 
-#ifdef CONFIG_HUAWEI_DUBAI
-#include <huawei_platform/log/hwlog_kernel.h>
-#endif
-
-#if (defined CONFIG_HUAWEI_SLEEPLOG) || (defined CONFIG_HUAWEI_DUBAI)
+#ifdef CONFIG_HUAWEI_SLEEPLOG
 #include <linux/proc_fs.h>
 #endif
 
@@ -284,34 +280,6 @@ int wake_unlockAll(unsigned int msec)
     return 0;
 }
 EXPORT_SYMBOL_GPL(wake_unlockAll);
-
-#ifdef CONFIG_HUAWEI_DUBAI
-int wakeup_source_getlastingname(char *ws_namelist, int size, int count)
-{
-	struct wakeup_source *ws = NULL;
-	int tmp = 0;
-	int srcuidx;
-
-	if ((!ws_namelist) || (size <= 0)) {
-		return -EINVAL;
-	}
-
-	srcuidx = srcu_read_lock(&wakeup_srcu);
-	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
-		if (ws->lasting == 1) {
-			if (tmp >= count) {
-				break;
-			}
-			strncpy(ws_namelist + size * tmp, ws->name, size - 1);
-			tmp++;
-		}
-	}
-	srcu_read_unlock(&wakeup_srcu, srcuidx);
-
-	return tmp;
-}
-EXPORT_SYMBOL_GPL(wakeup_source_getlastingname);
-#endif
 
 /**
  * wakeup_source_remove - Remove given object from the wakeup sources list.
@@ -727,9 +695,6 @@ void __pm_stay_awake(struct wakeup_source *ws)
 	wakeup_source_report_event(ws);
 	del_timer(&ws->timer);
 	ws->timer_expires = 0;
-#ifdef CONFIG_HUAWEI_DUBAI
-	ws->lasting = 1;
-#endif
 	spin_unlock_irqrestore(&ws->lock, flags);
 }
 EXPORT_SYMBOL_GPL(__pm_stay_awake);
@@ -1035,9 +1000,6 @@ void pm_print_active_wakeup_sources(void)
 	if (!active && last_activity_ws) {
 		pr_info("last active wakeup source: %s\n",
 			last_activity_ws->name);
-#ifdef CONFIG_HUAWEI_DUBAI
-		HWDUBAI_LOGE("DUBAI_TAG_FREEZING_FAILED", "name=%s", last_activity_ws->name);
-#endif
 	}
 	srcu_read_unlock(&wakeup_srcu, srcuidx);
 }
@@ -1334,14 +1296,12 @@ static int __init wakeup_sources_debugfs_init(void)
 
 postcore_initcall(wakeup_sources_debugfs_init);
 
-#if (defined CONFIG_HUAWEI_SLEEPLOG) || (defined CONFIG_HUAWEI_DUBAI)
+#ifdef CONFIG_HUAWEI_SLEEPLOG
 static int __init wakeup_sources_proc_init(void)
 {
 	proc_create("wakeup_sources", S_IRUGO,
 			(struct proc_dir_entry *)NULL, &wakeup_sources_stats_fops);
 	return 0;
 }
-/*lint -e528 -esym(528,*)*/
 late_initcall(wakeup_sources_proc_init);
-/*lint -e528 +esym(528,*)*/
 #endif

@@ -75,9 +75,6 @@ struct wakeup_source {
 	unsigned long		wakeup_count;
 	bool			active:1;
 	bool			autosleep_enabled:1;
-#ifdef CONFIG_HUAWEI_DUBAI
-	bool            lasting:1;
-#endif
 	u8				lock_timeout;
 };
 
@@ -214,8 +211,5 @@ extern int wakeup_source_set(char *name, u8 lock_timeout);
 extern int wake_unlockByName(char *name);
 extern int wakeup_source_set_all(u8 lock_timeout);
 extern int wake_unlockAll(unsigned int msec);
-#ifdef CONFIG_HUAWEI_DUBAI
-extern int wakeup_source_getlastingname(char *ws_namelist, int size, int count);
-#endif
 
 #endif /* _LINUX_PM_WAKEUP_H */

@@ -23,10 +23,6 @@
 #include "lcdkit_panel.h"
 #include "lcdkit_backlight_ic_common.h"
 
-
-
-#include <chipset_common/dubai/dubai.h>
-
 /* default pwm clk */
 #define DEFAULT_PWM_CLK_RATE	(114 * 1000000L)
 static char __iomem *hisifd_blpwm_base;
