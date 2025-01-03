@@ -4273,12 +4273,6 @@ CONFIG_HISI_TIMEKEEPER=y
 CONFIG_TLB_CONFLICT_WORKAROUND=y
 
 #
-# Hisi lowmem killer
-#
-# CONFIG_HISI_LOWMEM is not set
-# CONFIG_HISI_LOWMEM_DBG is not set
-
-#
 # Hisi lpm3_debug options
 #
 CONFIG_HISI_HHEE=y
