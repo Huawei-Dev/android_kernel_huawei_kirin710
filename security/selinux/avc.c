@@ -30,7 +30,6 @@
 #include <linux/audit.h>
 #include <linux/ipv6.h>
 #include <net/ipv6.h>
-#include <chipset_common/hiview_selinux/hiview_selinux.h>
 #include "avc.h"
 #include "avc_ss.h"
 #include "classmap.h"
@@ -716,10 +715,6 @@ static void avc_audit_pre_callback(struct audit_buffer *ab, void *a)
 	avc_dump_av(ab, ad->selinux_audit_data->tclass,
 			ad->selinux_audit_data->audited);
 	audit_log_format(ab, " for ");
-
-#ifdef CONFIG_HUAWEI_SELINUX_DSM
-	selinux_dsm_process(ab, a, ad->selinux_audit_data->denied);
-#endif
 }
 
 /**
@@ -762,22 +757,6 @@ static u32 get_sdcard_sid(struct common_audit_data *cad)
 	return 0;
 }
 
-#ifdef CONFIG_HIVIEW_SELINUX
-static int check_class_request(u16 tclass, u32 requested)
-{
-	if (((tclass == SECCLASS_DIR) && /* DIR */
-	    (requested == DIR__SEARCH || requested == DIR__GETATTR ||
-	     requested == DIR__READ || requested == DIR__WRITE)) ||
-	    ((tclass == SECCLASS_FILE) && /* FILE */
-	    (requested == FILE__READ || requested == FILE__GETATTR ||
-	     requested == FILE__WRITE)) ||
-	    (tclass == SECCLASS_FILESYSTEM && requested == FILESYSTEM__GETATTR)) {
-		return 1;
-	}
-	return 0;
-}
-#endif
-
 /* This is the slow part of avc audit with big stack footprint */
 noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 		u32 requested, u32 audited, u32 denied, int result,
@@ -818,18 +797,9 @@ noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 	if (!sdcard_sid && a->selinux_audit_data->tclass== SECCLASS_FILESYSTEM)
 		sdcard_sid = get_sdcard_sid(a);
 
-#ifdef CONFIG_HIVIEW_SELINUX
-	if ((sdcard_sid && (tsid == sdcard_sid)) ||
-	     a->selinux_audit_data->tclass== SECCLASS_FILESYSTEM) {
-		//check tclass & requested
-		ret = check_class_request(tclass, requested);
-		if (ret == 0)
-			ret = hw_hiview_selinux_avc_audit(a);
-	}
-#else
 	if (sdcard_sid && (tsid == sdcard_sid))
 		ret = 1;
-#endif
+
 	if (ret == 0)
 		common_lsm_audit(a, avc_audit_pre_callback, avc_audit_post_callback);
 
