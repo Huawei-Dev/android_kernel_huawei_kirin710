@@ -248,7 +248,7 @@ unsigned int ipf32_get_dlrd_num(void)
 {
     HI_IPF_CH1_DQ_DEPTH_T dq_depth;
 
-    /* 读取RD深度 */
+    /* ??????RD?????? */
     dq_depth.u32 = ipf_readl(HI_IPF32_CH1_DQ_DEPTH_OFFSET);
 	g_ipf_ctx.status->get_rd_num_times++;
     return dq_depth.bits.dl_rdq_depth;

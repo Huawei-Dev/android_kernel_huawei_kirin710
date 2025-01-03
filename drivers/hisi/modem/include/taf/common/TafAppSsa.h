@@ -62,11 +62,11 @@ extern "C"{
 #pragma pack(4)
 
 /* USSD */
-#define AT_USSD_NON_TRAN_MODE               0    /* 非透传:单板支持编解码 */
-#define AT_USSD_TRAN_MODE                   1    /* 透传:  单板不编解码，只是透传，由后台来编解码 */
+#define AT_USSD_NON_TRAN_MODE               0    /* ??????:?????????????? */
+#define AT_USSD_TRAN_MODE                   1    /* ????:  ?????????????????????????????????????? */
 
 /*************************Operation Code************************/
-/* 参考24080协议4.5 allocation of local values to operations */
+/* ????24080????4.5 allocation of local values to operations */
 
 
 enum TAF_SS_OPERATION_ENUM
@@ -76,10 +76,10 @@ enum TAF_SS_OPERATION_ENUM
     TAF_SS_ACTIVATESS                   =  12,
     TAF_SS_DEACTIVATESS                 =  13,
     TAF_SS_INTERROGATESS                =  14,
-    TAF_SS_PROCESS_USS_DATA             =  19,                                  /* MS->NETWORK 仅回退协议版本时使用 */
-    TAF_SS_PROCESS_USS_REQ              =  59,                                  /* MS->NETWORK FACILITY或REGISTER消息操作类型 */
-    TAF_SS_USS_REQ                      =  60,                                  /* NETWORK->MS FACILITY或REGISTER消息操作类型，要求用户确认 */
-    TAF_SS_USS_NOTIFY                   =  61,                                  /* NETWORK->MS FACILITY或REGISTER消息操作类型，不要求用户确认 */
+    TAF_SS_PROCESS_USS_DATA             =  19,                                  /* MS->NETWORK ???????????????????? */
+    TAF_SS_PROCESS_USS_REQ              =  59,                                  /* MS->NETWORK FACILITY??REGISTER???????????? */
+    TAF_SS_USS_REQ                      =  60,                                  /* NETWORK->MS FACILITY??REGISTER?????????????????????????? */
+    TAF_SS_USS_NOTIFY                   =  61,                                  /* NETWORK->MS FACILITY??REGISTER???????????????????????????? */
     TAF_SS_REGISTERPASSWORD             =  17,
     TAF_SS_GETPASSWORD                  =  18,
     TAF_SS_ERASECC_ENTRY                =  77,
@@ -90,7 +90,7 @@ typedef VOS_UINT8 TAF_SS_OPERATION_ENUM_UINT8;
 /***************************************************************/
 
 /************************Component ID tag**********************/
-/*目前用不到*/
+/*??????????*/
 typedef     TAF_UINT8           TAF_SS_MSGTYPE;
 #define     TAF_SS_MSG_TYPE_FACILITY                           0x3a
 #define     TAF_SS_MSG_TYPE_REGISTER                           0x3b
@@ -105,15 +105,15 @@ typedef     TAF_UINT8           TAF_SS_COMPONENTTYPE;
 #define     TAF_SS_COMPONENT_TYPE_REJECT                       0xA4
 /***************************************************************/
 
-/**********************SS-Status定义****************************/
+/**********************SS-Status????****************************/
 typedef     TAF_UINT8           TAF_SS_STATUS;
 #define     TAF_SS_QUIESCENT_STATUS_MASK                       0x08
 #define     TAF_SS_PROVISIONED_STATUS_MASK                     0x04
 #define     TAF_SS_REGISTERED_STATUS_MASK                      0x02
 #define     TAF_SS_ACTIVE_STATUS_MASK                          0x01
-/**********************SS-Status定义结束************************/
+/**********************SS-Status????????************************/
 
-/********************defaultPriority定义****************************/
+/********************defaultPriority????****************************/
 typedef     TAF_UINT8           TAF_DEFAULT_PRIORITY;
 #define     TAF_SS_PRIORITY_LEVELA                             0x06
 #define     TAF_SS_PRIORITY_LEVELB                             0x05
@@ -122,7 +122,7 @@ typedef     TAF_UINT8           TAF_DEFAULT_PRIORITY;
 #define     TAF_SS_PRIORITY_LEVEL2                             0x02
 #define     TAF_SS_PRIORITY_LEVEL3                             0x03
 #define     TAF_SS_PRIORITY_LEVEL4                             0x04
-/********************defaultPriority定义结束****************************/
+/********************defaultPriority????????****************************/
 
 /********************AlertingPattern***********************************/
 typedef     TAF_UINT8           TAF_SS_ALERTINGPATTERN;
@@ -139,58 +139,58 @@ typedef     TAF_UINT8           TAF_SS_ALERTINGPATTERN;
 
 typedef      TAF_UINT16         TAF_SS_ERROR;
 
-/*******************SS-Code的定义**************************/
+/*******************SS-Code??????**************************/
 typedef     TAF_UINT8           TAF_SS_CODE;
-#define     TAF_SS_CODE_MASK                                (0xf0)              /* 用于识别补充业务类别，如呼叫闭锁业务高4bit为9， */
+#define     TAF_SS_CODE_MASK                                (0xf0)              /* ??????????????????????????????????????4bit??9?? */
 
-#define     TAF_ALL_SS_CODE                                 0x00    /*所有的补充业务*/
+#define     TAF_ALL_SS_CODE                                 0x00    /*??????????????*/
 
-#define     TAF_CLIP_SS_CODE                                0x11    /*主叫线路识别显示*/
-#define     TAF_CLIR_SS_CODE                                0x12    /*主叫线路识别限制*/
-#define     TAF_COLP_SS_CODE                                0x13    /*被叫识别显示*/
-#define     TAF_COLR_SS_CODE                                0x14    /*被叫识别限制*/
-#define     TAF_MCI_SS_CODE                                 0x15    /*恶意呼叫识别*/
-#define     TAF_ALL_NAME_IDENTIFICATION_SS_CODE             0x18    /*主叫姓名识别显示*/
-#define     TAF_CNAP_SS_CODE                                0x19    /*主叫姓名识别显示*/
+#define     TAF_CLIP_SS_CODE                                0x11    /*????????????????*/
+#define     TAF_CLIR_SS_CODE                                0x12    /*????????????????*/
+#define     TAF_COLP_SS_CODE                                0x13    /*????????????*/
+#define     TAF_COLR_SS_CODE                                0x14    /*????????????*/
+#define     TAF_MCI_SS_CODE                                 0x15    /*????????????*/
+#define     TAF_ALL_NAME_IDENTIFICATION_SS_CODE             0x18    /*????????????????*/
+#define     TAF_CNAP_SS_CODE                                0x19    /*????????????????*/
 
-#define     TAF_ALL_FORWARDING_SS_CODE                      0x20    /*所有转移*/
-#define     TAF_CFU_SS_CODE                                 0x21    /*无条件呼叫前转*/
-#define     TAF_ALL_COND_FORWARDING_SS_CODE                 0x28    /*有条件呼叫前转*/
-#define     TAF_CFB_SS_CODE                                 0x29    /*遇忙呼叫前转*/
-#define     TAF_CFNRY_SS_CODE                               0x2A    /*无应答呼叫前转*/
-#define     TAF_CFNRC_SS_CODE                               0x2B    /*无法到达呼叫前转*/
-#define     TAF_CD_SS_CODE                                  0x24    /*呼叫偏转*/
+#define     TAF_ALL_FORWARDING_SS_CODE                      0x20    /*????????*/
+#define     TAF_CFU_SS_CODE                                 0x21    /*??????????????*/
+#define     TAF_ALL_COND_FORWARDING_SS_CODE                 0x28    /*??????????????*/
+#define     TAF_CFB_SS_CODE                                 0x29    /*????????????*/
+#define     TAF_CFNRY_SS_CODE                               0x2A    /*??????????????*/
+#define     TAF_CFNRC_SS_CODE                               0x2B    /*????????????????*/
+#define     TAF_CD_SS_CODE                                  0x24    /*????????*/
 
-#define     TAF_ECT_SS_CODE                                 0x31    /*显式呼叫转移*/
-#define     TAF_MAH_SS_CODE                                 0x32    /*移动访问捕获*/
+#define     TAF_ECT_SS_CODE                                 0x31    /*????????????*/
+#define     TAF_MAH_SS_CODE                                 0x32    /*????????????*/
 
-#define     TAF_CW_SS_CODE                                  0x41    /*呼叫等待*/
-#define     TAF_HOLD_SS_CODE                                0x42    /*呼叫保持*/
-#define     TAF_CCBS_A_SS_CODE                              0x43    /*遇忙呼叫完成，发起方*/
-#define     TAF_CCBS_B_SS_CODE                              0x44    /*遇忙呼叫完成，目的方*/
-#define     TAF_MC_SS_CODE                                  0x45    /*多呼*/
+#define     TAF_CW_SS_CODE                                  0x41    /*????????*/
+#define     TAF_HOLD_SS_CODE                                0x42    /*????????*/
+#define     TAF_CCBS_A_SS_CODE                              0x43    /*????????????????????*/
+#define     TAF_CCBS_B_SS_CODE                              0x44    /*????????????????????*/
+#define     TAF_MC_SS_CODE                                  0x45    /*????*/
 
-#define     TAF_MULTIPTY_SS_CODE                            0x51    /*多方通话*/
+#define     TAF_MULTIPTY_SS_CODE                            0x51    /*????????*/
 
-#define     TAF_CUG_SS_CODE                                 0x61    /*闭合用户群*/
+#define     TAF_CUG_SS_CODE                                 0x61    /*??????????*/
 
-#define     TAF_AOCI_SS_CODE                                0x71    /*计费通知(信息)*/
-#define     TAF_AOCC_SS_CODE                                0x72    /*计费通知(计费)*/
+#define     TAF_AOCI_SS_CODE                                0x71    /*????????(????)*/
+#define     TAF_AOCC_SS_CODE                                0x72    /*????????(????)*/
 
-#define     TAF_UUS1_SS_CODE                                0x81    /*用户对用户信令1*/
-#define     TAF_UUS2_SS_CODE                                0x82    /*用户对用户信令2*/
-#define     TAF_UUS3_SS_CODE                                0x83    /*用户对用户信令3*/
+#define     TAF_UUS1_SS_CODE                                0x81    /*??????????????1*/
+#define     TAF_UUS2_SS_CODE                                0x82    /*??????????????2*/
+#define     TAF_UUS3_SS_CODE                                0x83    /*??????????????3*/
 
-#define     TAF_ALL_BARRING_SS_CODE                         0x90    /*所有呼叫禁止*/
+#define     TAF_ALL_BARRING_SS_CODE                         0x90    /*????????????*/
 #define     TAF_BARRING_OF_OUTGOING_CALLS_SS_CODE           0x91
-#define     TAF_BAOC_SS_CODE                                0x92    /*禁止所有出局呼叫*/
-#define     TAF_BOIC_SS_CODE                                0x93    /*禁止国际出局呼叫*/
-#define     TAF_BOICEXHC_SS_CODE                            0x94    /*禁止所有除归属国PLMN外的国际出局呼叫*/
+#define     TAF_BAOC_SS_CODE                                0x92    /*????????????????*/
+#define     TAF_BOIC_SS_CODE                                0x93    /*????????????????*/
+#define     TAF_BOICEXHC_SS_CODE                            0x94    /*????????????????PLMN????????????????*/
 #define     TAF_BARRING_OF_INCOMING_CALLS_SS_CODE           0x99
-#define     TAF_BAIC_SS_CODE                                0x9A    /*禁止所有入局呼叫*/
-#define     TAF_BICROAM_SS_CODE                             0x9B    /*漫游时，禁止入局呼叫*/
+#define     TAF_BAIC_SS_CODE                                0x9A    /*????????????????*/
+#define     TAF_BICROAM_SS_CODE                             0x9B    /*????????????????????*/
 
-#define     TAF_ALL_PLMN_SPECIFIC_SS_CODE                   0xF0    /*所有PLMNd定义的SS-CODE*/
+#define     TAF_ALL_PLMN_SPECIFIC_SS_CODE                   0xF0    /*????PLMNd??????SS-CODE*/
 #define     TAF_PLMN_SPECIFIC_1_SS_CODE                     0xF1
 #define     TAF_PLMN_SPECIFIC_2_SS_CODE                     0xF2
 #define     TAF_PLMN_SPECIFIC_3_SS_CODE                     0xF3
@@ -206,18 +206,18 @@ typedef     TAF_UINT8           TAF_SS_CODE;
 #define     TAF_PLMN_SPECIFIC_D_SS_CODE                     0xFD
 #define     TAF_PLMN_SPECIFIC_E_SS_CODE                     0xFE
 #define     TAF_PLMN_SPECIFIC_F_SS_CODE                     0xFF
-#define     TAF_EMLPP_SS_CODE                               0xA1    /*增强型多级优先和抢占*/
+#define     TAF_EMLPP_SS_CODE                               0xA1    /*????????????????????*/
 
 
 typedef      TAF_UINT16         TAF_SS_PROBLEM;
 
 
 
-/*********************BasicService定义**************************/
+/*********************BasicService????**************************/
 typedef     TAF_UINT8           TAF_BASIC_SERVICE_TYPE;
 #define     TAF_SS_BEARER_SERVICE                           0x02
 #define     TAF_SS_TELE_SERVICE                             0x03
-/****************Teleservice Codes定义***************************/
+/****************Teleservice Codes????***************************/
 typedef     TAF_UINT8           TAF_BASIC_SERVICE_CODE;
 #define     TAF_ALL_TELESERVICES_TSCODE                     0x00
 
@@ -319,7 +319,7 @@ typedef     TAF_UINT8           TAF_BASIC_SERVICE_CODE;
 #define     TAF_PLMN_SPECIFICBS_F_BSCODE                    0xDF
 
 
-/********************forwardingoptions的定义***************************/
+/********************forwardingoptions??????***************************/
 typedef     TAF_UINT8           TAF_SS_FORWARDINGOPTIONS;
 #define     TAF_SS_NOTIFICATION_TO_FORWARDING_PARTY         0x80
 #define     TAF_SS_REDERECTINT_PRESENTATION                 0x40
@@ -329,7 +329,7 @@ typedef     TAF_UINT8           TAF_SS_FORWARDINGOPTIONS;
 #define     TAF_SS_FWDREASON_MS_NOREPLY                     0x04
 #define     TAF_SS_FWDREASON_MS_UNCONDITION                 0x06
 
-/********************一些参数限定的范围********************************/
+/********************??????????????????********************************/
 #define     TAF_SS_MAX_FORWARDED_TO_NUM_LEN                        40
 #define     TAF_SS_MAX_ENCODE_FWD_TO_NUM_LEN                       20
 #define     TAF_SS_MAX_FORWARDED_TO_SUBADDRESS_LEN                 20
@@ -350,43 +350,43 @@ typedef     TAF_UINT8           TAF_SS_FORWARDINGOPTIONS;
 #define     TAF_SS_MAX_USSD_CHAR_HEX_FORMAT                        (TAF_SS_MAX_USS_CHAR * 2)
 
 
-/********************SS错误原因值*************************************/
-/*补充业务错误码*/
-#define TAF_ERR_SS_ILLEGAL_SUBSCRIBER               (TAF_ERR_SS_BASE + 9)   /*非法签约用户*/
-#define TAF_ERR_SS_BEARERSERVICE_NOT_PROVISIONED    (TAF_ERR_SS_BASE + 10)   /*承载业务未提供*/
-#define TAF_ERR_SS_TELESERVICE_NOT_PROVISIONED      (TAF_ERR_SS_BASE + 11)   /*电信业务未提供*/
-#define TAF_ERR_SS_ILLEGAL_EQUIPMENT                (TAF_ERR_SS_BASE + 12)   /*非法设备*/
-#define TAF_ERR_SS_CALL_BARRED                      (TAF_ERR_SS_BASE + 13)   /*呼叫无关签约用户控制过程被禁止*/
-#define TAF_ERR_SS_ILLEGALSS_OPERATION              (TAF_ERR_SS_BASE + 16)   /*非法补充业务操作*/
-#define TAF_ERR_SS_ERROR_STATUS                     (TAF_ERR_SS_BASE + 17)   /*网络侧状态错误*/
-#define TAF_ERR_SS_NOT_AVAILABLE                    (TAF_ERR_SS_BASE + 18)   /*操作不可用*/
-#define TAF_ERR_SS_SUBSCRIPTION_VIOLATION           (TAF_ERR_SS_BASE + 19)   /*违反签约规定*/
-#define TAF_ERR_SS_INCOMPATIBILITY                  (TAF_ERR_SS_BASE + 20)  /*操作不兼容*/
-#define TAF_ERR_SS_ABSENT_SUBSCRIBER                (TAF_ERR_SS_BASE + 27)  /*签约用户已经激活detach业务或系统缺乏条件*/
-#define TAF_ERR_SS_SYSTEM_FAILURE                   (TAF_ERR_SS_BASE + 34)  /*系统故障*/
-#define TAF_ERR_SS_DATA_MISSING                     (TAF_ERR_SS_BASE + 35)  /*可选项数据缺失*/
-#define TAF_ERR_SS_UNEXPECTED_DATA_VALUE            (TAF_ERR_SS_BASE + 36)  /*参数值有误*/
-#define TAF_ERR_SS_PW_REGISTRATION_FAILURE          (TAF_ERR_SS_BASE + 37)  /*密码注册失败*/
-#define TAF_ERR_SS_NEGATIVE_PASSWORD_CHECK          (TAF_ERR_SS_BASE + 38)  /*密码错误*/
-#define TAF_ERR_SS_NUMBER_OF_PW_ATTEMPTS_VIOLATION  (TAF_ERR_SS_BASE + 43)  /*密码尝试次数超过上限*/
-#define TAF_ERR_SS_UNKNOWN_ALPHABET                 (TAF_ERR_SS_BASE + 71)  /*USSD字符编码不支持*/
-#define TAF_ERR_SS_USSD_BUSY                        (TAF_ERR_SS_BASE + 72)  /*当前无法进行USSD操作*/
-#define TAF_ERR_SS_NO_PASSWORD                      (TAF_ERR_SS_BASE + 73)      /* 无操作要求的密码 */
+/********************SS??????????*************************************/
+/*??????????????*/
+#define TAF_ERR_SS_ILLEGAL_SUBSCRIBER               (TAF_ERR_SS_BASE + 9)   /*????????????*/
+#define TAF_ERR_SS_BEARERSERVICE_NOT_PROVISIONED    (TAF_ERR_SS_BASE + 10)   /*??????????????*/
+#define TAF_ERR_SS_TELESERVICE_NOT_PROVISIONED      (TAF_ERR_SS_BASE + 11)   /*??????????????*/
+#define TAF_ERR_SS_ILLEGAL_EQUIPMENT                (TAF_ERR_SS_BASE + 12)   /*????????*/
+#define TAF_ERR_SS_CALL_BARRED                      (TAF_ERR_SS_BASE + 13)   /*??????????????????????????????*/
+#define TAF_ERR_SS_ILLEGALSS_OPERATION              (TAF_ERR_SS_BASE + 16)   /*????????????????*/
+#define TAF_ERR_SS_ERROR_STATUS                     (TAF_ERR_SS_BASE + 17)   /*??????????????*/
+#define TAF_ERR_SS_NOT_AVAILABLE                    (TAF_ERR_SS_BASE + 18)   /*??????????*/
+#define TAF_ERR_SS_SUBSCRIPTION_VIOLATION           (TAF_ERR_SS_BASE + 19)   /*????????????*/
+#define TAF_ERR_SS_INCOMPATIBILITY                  (TAF_ERR_SS_BASE + 20)  /*??????????*/
+#define TAF_ERR_SS_ABSENT_SUBSCRIBER                (TAF_ERR_SS_BASE + 27)  /*????????????????detach??????????????????*/
+#define TAF_ERR_SS_SYSTEM_FAILURE                   (TAF_ERR_SS_BASE + 34)  /*????????*/
+#define TAF_ERR_SS_DATA_MISSING                     (TAF_ERR_SS_BASE + 35)  /*??????????????*/
+#define TAF_ERR_SS_UNEXPECTED_DATA_VALUE            (TAF_ERR_SS_BASE + 36)  /*??????????*/
+#define TAF_ERR_SS_PW_REGISTRATION_FAILURE          (TAF_ERR_SS_BASE + 37)  /*????????????*/
+#define TAF_ERR_SS_NEGATIVE_PASSWORD_CHECK          (TAF_ERR_SS_BASE + 38)  /*????????*/
+#define TAF_ERR_SS_NUMBER_OF_PW_ATTEMPTS_VIOLATION  (TAF_ERR_SS_BASE + 43)  /*????????????????????*/
+#define TAF_ERR_SS_UNKNOWN_ALPHABET                 (TAF_ERR_SS_BASE + 71)  /*USSD??????????????*/
+#define TAF_ERR_SS_USSD_BUSY                        (TAF_ERR_SS_BASE + 72)  /*????????????USSD????*/
+#define TAF_ERR_SS_NO_PASSWORD                      (TAF_ERR_SS_BASE + 73)      /* ???????????????? */
 
-#define TAF_ERR_IMSA_USSD_BUSY                      (TAF_ERR_SS_IMSA_BASE + 1)  /*当前无法进行USSD操作*/
-#define TAF_ERR_IMSA_SRVCCING_BUFF_MSG              (TAF_ERR_SS_IMSA_BASE + 2)  /*SRVCC过程中的USSD缓存,在SRVCC成功后通过此原因通知*/
-#define TAF_ERR_IMSA_INTERUPT_BY_SRVCC_SUCC         (TAF_ERR_SS_IMSA_BASE + 3)  /*SRVCC成功打断当前USSD流程*/
-#define TAF_ERR_IMSA_WAIT_NET_TIMEOUT               (TAF_ERR_SS_IMSA_BASE + 4)  /*等待网侧定时器超时*/
-#define TAF_ERR_IMSA_WAIT_APP_TIMEOUT               (TAF_ERR_SS_IMSA_BASE + 5)  /*等待APP定时器超时*/
-#define TAF_ERR_IMSA_SRVCCING_BUFF_MSG_FAIL         (TAF_ERR_SS_IMSA_BASE + 7)  /*SRVCC过程中缓存USSD消息失败*/
-#define TAF_ERR_IMSA_SRVCC_ABNORMAL                 (TAF_ERR_SS_IMSA_BASE + 8)  /* SRVCC异常，例如关机等 */
-#define TAF_ERR_IMSA_SRVCC_ABNORMAL_DEREG           (TAF_ERR_SS_IMSA_BASE + 9)  /* SRVCC过程中出现DEREG */
-
-
-#define TAF_ERR_IMSA_USSD_UNSPECIFIC                (TAF_ERR_SS_IMSA_BASE + 100)  /*当前USSD错误不详*/
+#define TAF_ERR_IMSA_USSD_BUSY                      (TAF_ERR_SS_IMSA_BASE + 1)  /*????????????USSD????*/
+#define TAF_ERR_IMSA_SRVCCING_BUFF_MSG              (TAF_ERR_SS_IMSA_BASE + 2)  /*SRVCC????????USSD????,??SRVCC????????????????????*/
+#define TAF_ERR_IMSA_INTERUPT_BY_SRVCC_SUCC         (TAF_ERR_SS_IMSA_BASE + 3)  /*SRVCC????????????USSD????*/
+#define TAF_ERR_IMSA_WAIT_NET_TIMEOUT               (TAF_ERR_SS_IMSA_BASE + 4)  /*??????????????????*/
+#define TAF_ERR_IMSA_WAIT_APP_TIMEOUT               (TAF_ERR_SS_IMSA_BASE + 5)  /*????APP??????????*/
+#define TAF_ERR_IMSA_SRVCCING_BUFF_MSG_FAIL         (TAF_ERR_SS_IMSA_BASE + 7)  /*SRVCC??????????USSD????????*/
+#define TAF_ERR_IMSA_SRVCC_ABNORMAL                 (TAF_ERR_SS_IMSA_BASE + 8)  /* SRVCC???????????????? */
+#define TAF_ERR_IMSA_SRVCC_ABNORMAL_DEREG           (TAF_ERR_SS_IMSA_BASE + 9)  /* SRVCC??????????DEREG */
 
 
-/********Ivoke和return result的参数 begin*****************************/
+#define TAF_ERR_IMSA_USSD_UNSPECIFIC                (TAF_ERR_SS_IMSA_BASE + 100)  /*????USSD????????*/
+
+
+/********Ivoke??return result?????? begin*****************************/
 typedef     TAF_UINT8       TAF_SS_CCBSINDEX;
 typedef     TAF_UINT8       TAF_SS_NOREPLYCONDITIONTIME;
 typedef     TAF_UINT8       TAF_SS_DEFAULTPRIORITY;
@@ -401,9 +401,9 @@ typedef     TAF_UINT8       TAF_SS_CAUSE;
 
 enum TAF_SSA_SIGNALLING_TYPE_ENUM
 {
-    /* 基于GSM，UTRAN或LTE信令发送 */
+    /* ????GSM??UTRAN??LTE???????? */
     TAF_SSA_SIGNALLING_TYPE_NAS_SIGNALLING,
-    /* 基于SIP信令发送 */
+    /* ????SIP???????? */
     TAF_SSA_SIGNALLING_TYPE_CS_OVER_IP,
 
     TAF_SSA_SIGNALLING_TYPE_BUTT
@@ -412,7 +412,7 @@ typedef VOS_UINT8 TAF_SSA_SIGNALLING_TYPE_ENUM_UINT8;
 
 typedef struct
 {
-    TAF_UINT8   ucStatus;        /* 1: NV有效标志位，0：无效 */
+    TAF_UINT8   ucStatus;        /* 1: NV????????????0?????? */
     TAF_UINT8   ucUssdTransMode;
     TAF_UINT8   aucRsv[2];
 }USSD_TRANS_MODE_STRU;
@@ -690,11 +690,11 @@ typedef  struct
     TAF_UINT32                              OP_Password:1;
     TAF_UINT32                              OP_Spare:29;
 
-    /**选择bearerService(SS_BEARER_SERVICE:0)还是teleService(SS_TELE_SERVICE1)**/
+    /**????bearerService(SS_BEARER_SERVICE:0)????teleService(SS_TELE_SERVICE1)**/
     TAF_SS_CODE                             SsCode;
     VOS_UINT8                               aucReserved1[3];
     TAF_SS_BASIC_SERVICE_STRU               BsService;
-    TAF_UINT8                               aucPassword[TAF_SS_MAX_PASSWORD_LEN];                 /* 指示Clck密码 */
+    TAF_UINT8                               aucPassword[TAF_SS_MAX_PASSWORD_LEN];                 /* ????Clck???? */
 }TAF_SS_ERASESS_REQ_STRU;
 
 
@@ -740,7 +740,7 @@ typedef struct
     TAF_UINT8                               aucPwdStr[TAF_SS_MAX_PASSWORD_LEN];
 }TAF_SS_GETPWD_RSP_STRU;
 
-/*8. SS-TAF  forwardCheckSS-Indication 无参数*/
+/*8. SS-TAF  forwardCheckSS-Indication ??????*/
 
 typedef       TAF_UINT8           TAF_SS_DATA_CODING_SCHEME;
 #define       TAF_SS_7bit_LANGUAGE_UNSPECIFIED         0x0f
@@ -827,7 +827,7 @@ typedef struct
 
 }TAF_SS_UNPARSE_PARA_STRU;
 
-/********Invoke和return result的参数 end*****************************/
+/********Invoke??return result?????? end*****************************/
 
 typedef     TAF_UINT8                      TAF_SS_EVENT;
 #define     TAF_SS_EVT_ERROR                                0
@@ -848,7 +848,7 @@ typedef     TAF_UINT8                      TAF_SS_EVENT;
 
 
 
-/*呼叫无关事件上报参数*/
+/*????????????????????*/
 typedef struct
 {
     TAF_UINT32                              OP_Cause:1;
@@ -915,8 +915,8 @@ typedef struct
     TAF_SS_UNPARSE_PARA_STRU                UnParsePara;
 }TAF_SS_CALL_INDEPENDENT_EVENT_STRU;
 
-/*****************定义TAF提供给APP/AT的操作接口函数********************/
-/*RegisterSS操作*/
+/*****************????TAF??????APP/AT??????????????********************/
+/*RegisterSS????*/
 /*lint -esym(752,TAF_RegisterSSReq)*/
 TAF_UINT32 TAF_RegisterSSReq(
     MN_CLIENT_ID_T                      ClientId,
@@ -924,13 +924,13 @@ TAF_UINT32 TAF_RegisterSSReq(
     TAF_SS_REGISTERSS_REQ_STRU         *para
 );
 
-/*EraseSS操作*/
+/*EraseSS????*/
 /*lint -esym(752,TAF_EraseSSReq)*/
 TAF_UINT32 TAF_EraseSSReq(MN_CLIENT_ID_T                                 ClientId,
                           MN_OPERATION_ID_T                                        OpId,
                           TAF_SS_ERASESS_REQ_STRU                      *pPara);
 
-/*ActivateSS操作*/
+/*ActivateSS????*/
 /*lint -esym(752,TAF_ActivateSSReq)*/
 TAF_UINT32 TAF_ActivateSSReq(
     MN_CLIENT_ID_T                      ClientId,
@@ -938,42 +938,42 @@ TAF_UINT32 TAF_ActivateSSReq(
     TAF_SS_ACTIVATESS_REQ_STRU         *pPara
 );
 
-/*DeactivateSS操作*/
+/*DeactivateSS????*/
 /*lint -esym(752,TAF_DeactivateSSReq)*/
 TAF_UINT32 TAF_DeactivateSSReq(MN_CLIENT_ID_T                             ClientId,
                               MN_OPERATION_ID_T                                    OpId,
                               TAF_SS_DEACTIVATESS_REQ_STRU             *pPara);
 
-/*InterrogateSS操作*/
+/*InterrogateSS????*/
 /*lint -esym(752,TAF_InterrogateSSReq)*/
 TAF_UINT32 TAF_InterrogateSSReq(MN_CLIENT_ID_T                           ClientId,
                                 MN_OPERATION_ID_T                                  OpId,
                                 TAF_SS_INTERROGATESS_REQ_STRU          *pPara);
 
-/*RegisterPassword操作*/
+/*RegisterPassword????*/
 /*lint -esym(752,TAF_RegisterPasswordReq)*/
 TAF_UINT32 TAF_RegisterPasswordReq(MN_CLIENT_ID_T                        ClientId,
                                    MN_OPERATION_ID_T                               OpId,
                                    TAF_SS_REGPWD_REQ_STRU              *pPara);
 
-/* 删除GetPassword操作函数TAF_GetPasswordRsp外部引用 */
+/* ????GetPassword????????TAF_GetPasswordRsp???????? */
 
 
-/*ProcessUnstructuredSS-Request操作*/
+/*ProcessUnstructuredSS-Request????*/
 /*lint -esym(752,TAF_ProcessUnstructuredSSReq)*/
 TAF_UINT32 TAF_ProcessUnstructuredSSReq(MN_CLIENT_ID_T                   ClientId,
                                         MN_OPERATION_ID_T                          OpId,
                                         TAF_SS_PROCESS_USS_REQ_STRU    *pPara);
 
 
-/*EraseCCEntry操作*/
+/*EraseCCEntry????*/
 /*lint -esym(752,TAF_EraseCCEntryReq)*/
 TAF_UINT32 TAF_EraseCCEntryReq(MN_CLIENT_ID_T                            ClientId,
                                MN_OPERATION_ID_T                                   OpId,
                                TAF_SS_ERASECC_ENTRY_REQ_STRU           *pPara);
 
 
-/*ReleaseComplete操作,释放当前操作占用的链路*/
+/*ReleaseComplete????,??????????????????????*/
 /*lint -esym(752,TAF_SsReleaseComplete)*/
 TAF_UINT32 TAF_SsReleaseComplete(MN_CLIENT_ID_T                                  ClientId,
                          MN_OPERATION_ID_T                                         OpId);

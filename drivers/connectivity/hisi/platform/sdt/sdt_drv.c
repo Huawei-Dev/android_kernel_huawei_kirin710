@@ -7,7 +7,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_mem.h"
 #include "sdt_drv.h"
@@ -18,7 +18,7 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_SDT_DRV_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 sdt_drv_mng_stru           g_st_sdt_drv_mng_entry;
 oam_sdt_func_hook_stru     g_st_sdt_drv_func_hook;
@@ -32,7 +32,7 @@ oal_netbuf_stru            *g_pst_copy_netbuf = NULL;
 oal_nlmsghdr_stru          *g_pst_nlhdr = NULL;
 #endif
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 OAL_STATIC oal_uint32  sdt_drv_netlink_send(oal_netbuf_stru *pst_netbuf, oal_uint32  ul_len);
 
@@ -121,10 +121,10 @@ OAL_STATIC OAL_INLINE oal_void  sdt_drv_add_pkt_head(
     oal_netbuf_push(pst_netbuf, WLAN_SDT_SKB_HEADROOM_LEN);
     oal_netbuf_put(pst_netbuf, WLAN_SDT_SKB_TAILROOM_LEN);
 
-    /* SDT收到的消息数目加1 */
+    /* SDT????????????????1 */
     g_st_sdt_drv_mng_entry.us_sn_num++;
 
-    /* 为数据头的每一个成员赋值 */
+    /* ???????????????????????? */
     pst_pkt_hdr = (sdt_drv_pkt_hdr_stru *)oal_netbuf_data(pst_netbuf);
 
     pst_pkt_hdr->uc_data_start_flg = SDT_DRV_PKT_START_FLG;
@@ -140,7 +140,7 @@ OAL_STATIC OAL_INLINE oal_void  sdt_drv_add_pkt_head(
     pst_pkt_hdr->uc_sequence_num_low_byte   = SDT_DRV_GET_LOW_BYTE(us_tmp_data);
     pst_pkt_hdr->uc_sequence_num_high_byte  = SDT_DRV_GET_HIGH_BYTE(us_tmp_data);
 
-    /* 为数据尾赋值0x7e */
+    /* ????????????0x7e */
     puc_pkt_tail = (oal_uint8 *)pst_pkt_hdr + OAL_NETBUF_LEN(pst_netbuf);
     puc_pkt_tail--;
    *puc_pkt_tail = SDT_DRV_PKT_END_FLG;
@@ -150,10 +150,10 @@ OAL_STATIC OAL_INLINE oal_void  sdt_drv_add_pkt_head(
 
 OAL_STATIC OAL_INLINE oal_int32  sdt_drv_report_data2app(oal_netbuf_stru *pst_netbuf, oam_data_type_enum_uint8 en_type, oam_primid_type_enum_uint8 en_prim)
 {
-    /* 由上层调用接口判断指针非空 */
+    /* ?????????????????????????? */
     oal_int32       l_ret;
 
-    /*如果是device log 则不需要加pkt 包头*/
+    /*??????device log ??????????pkt ????*/
     if (OAM_DATA_TYPE_DEVICE_LOG != en_type)
     {
         sdt_drv_add_pkt_head(pst_netbuf, en_type, en_prim);
@@ -194,7 +194,7 @@ oal_int32  sdt_drv_send_data_to_wifi(oal_uint8  *puc_param, oal_int32  l_len)
     }
     i_len = (oal_int)l_len > 300 ? (oal_int)l_len: 300;
 
-    /* 接收消息不用填充头，直接使用 */
+    /* ???????????????????????????? */
     pst_netbuf = oal_mem_sdt_netbuf_alloc((oal_uint16)i_len, OAL_TRUE);
     if (OAL_PTR_NULL == pst_netbuf)
     {
@@ -276,9 +276,9 @@ oal_uint32  sdt_drv_netlink_send(oal_netbuf_stru *pst_netbuf, oal_uint32  ul_len
     oal_uint32                  ul_nlmsg_len;
     oal_int32                   l_unicast_bytes  = 0;
 
-    /* 由上层保证参数非空 */
+    /* ?????????????????? */
 
-    /* 如果没有与app建立连接，则直接返回，每500次打印一次提示信息 */
+    /* ??????????app????????????????????????500?????????????????? */
     if (0 == g_st_sdt_drv_mng_entry.ul_usepid)
     {
         if (0 == (oal_atomic_read(&g_st_sdt_drv_mng_entry.ul_unconnect_cnt) % SDT_DRV_REPORT_NO_CONNECT_FREQUENCE))
@@ -296,7 +296,7 @@ oal_uint32  sdt_drv_netlink_send(oal_netbuf_stru *pst_netbuf, oal_uint32  ul_len
 #if ((_PRE_TARGET_PRODUCT_TYPE_5610DMB == _PRE_CONFIG_TARGET_PRODUCT)\
     ||(_PRE_TARGET_PRODUCT_TYPE_VSPM310DMB == _PRE_CONFIG_TARGET_PRODUCT)\
     ||(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT))
-    // 数据包分析
+    // ??????????
     p_sdt_hdr =  (sdt_drv_pkt_hdr_stru*)oal_netbuf_data(pst_netbuf);
     if (OAM_DATA_TYPE_LOG == p_sdt_hdr->en_msg_type || OAM_DATA_TYPE_OTA == p_sdt_hdr->en_msg_type)
     {
@@ -351,7 +351,7 @@ oal_uint32  sdt_drv_netlink_send(oal_netbuf_stru *pst_netbuf, oal_uint32  ul_len
     }
 #endif
 
-   /* 填写netlink消息头 */
+   /* ????netlink?????? */
     ul_nlmsg_len = OAL_NLMSG_SPACE(ul_len);
     pst_copy_netbuf = oal_netbuf_alloc(ul_nlmsg_len, 0, WLAN_MEM_NETBUF_ALIGN);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_copy_netbuf))
@@ -399,7 +399,7 @@ oal_void  sdt_drv_netlink_recv(oal_netbuf_stru  *pst_netbuf)
     if (OAL_NETBUF_LEN(pst_netbuf) >= OAL_NLMSG_SPACE(0))
     {
         pst_nlhdr = oal_nlmsg_hdr((OAL_CONST oal_netbuf_stru *)pst_netbuf);
-        /* 对报文长度进行检查 */
+        /* ?????????????????? */
         if (!OAL_NLMSG_OK(pst_nlhdr, OAL_NETBUF_LEN(pst_netbuf)))
         {
             OAL_IO_PRINT("[ERROR]invaild netlink buff data packge data len = :%u,skb_buff data len = %u\n",
@@ -407,7 +407,7 @@ oal_void  sdt_drv_netlink_recv(oal_netbuf_stru  *pst_netbuf)
             return;
         }
         ul_len   = OAL_NLMSG_PAYLOAD(pst_nlhdr, 0);
-        /* 后续需要拷贝OAL_SIZEOF(st_msg_hdr)故判断之 */
+        /* ????????????OAL_SIZEOF(st_msg_hdr)???????? */
         if(ul_len <= DATA_BUF_LEN && ul_len >= (oal_uint32)OAL_SIZEOF(st_msg_hdr))
         {
             oal_memcopy((oal_void *)g_st_sdt_drv_mng_entry.puc_data,
@@ -520,13 +520,13 @@ oal_int32  sdt_drv_main_init(oal_void)
     oal_spin_lock_init(&g_st_sdt_drv_mng_entry.st_spin_lock);
     oal_netbuf_list_head_init(&g_st_sdt_drv_mng_entry.rx_wifi_dbg_seq);
 
-    /* sdt模块钩子函数初始化 */
+    /* sdt?????????????????? */
     sdt_drv_func_hook_init();
 
-    /* 将sdt钩子函数注册至oam模块 */
+    /* ??sdt??????????????oam???? */
     oam_sdt_func_fook_register(&g_st_sdt_drv_func_hook);
 
-    /* sdt正常加载之后将输出方式置为OAM_OUTPUT_TYPE_SDT */
+    /* sdt??????????????????????????OAM_OUTPUT_TYPE_SDT */
     if (OAL_SUCC != oam_set_output_type(OAM_OUTPUT_TYPE_SDT))
     {
         OAL_IO_PRINT("oam set output type fail!");

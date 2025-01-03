@@ -50,7 +50,7 @@
 #define __GUNAS_ERRNO_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #ifdef __cplusplus
 #if __cplusplus
@@ -62,11 +62,11 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum NAS_REBOOT_MOD_ID_ENUM
@@ -80,22 +80,22 @@ enum NAS_REBOOT_MOD_ID_ENUM
     NAS_REBOOT_MOD_ID_XSD     = 0X64000000,
     NAS_REBOOT_MOD_ID_HSD     = 0X65000000,
 
-    NAS_REBOOT_MOD_ID_RILD    = 0x66000000, /*RILD发起单独复位下DRV调用*/
-    NAS_REBOOT_MOD_ID_RESET   = 0x67000000, /*单独复位失败情况下DRV调用*/
+    NAS_REBOOT_MOD_ID_RILD    = 0x66000000, /*RILD??????????????DRV????*/
+    NAS_REBOOT_MOD_ID_RESET   = 0x67000000, /*??????????????????DRV????*/
 
     NAS_REBOOT_MOD_ID_MEM     = 0x68000000,
 
-    NAS_REBOOT_MOD_ID_USER    = 0x69000000, /* 用户主动发起的整机复位 */
+    NAS_REBOOT_MOD_ID_USER    = 0x69000000, /* ?????????????????????? */
 
     NAS_REBOOT_MOD_ID_MMA     = 0x6A000000,
 
-    NAS_REBOOT_MOD_ID_MTA     = 0x6B000000, /* CDMA Modem Switch失败, 进行Modem复位 */
+    NAS_REBOOT_MOD_ID_MTA     = 0x6B000000, /* CDMA Modem Switch????, ????Modem???? */
 
-    NAS_REBOOT_MOD_ID_MULTI   = 0x6C000000, /* multi触发的复位 */
+    NAS_REBOOT_MOD_ID_MULTI   = 0x6C000000, /* multi?????????? */
 
-    NAS_REBOOT_MOD_ID_DSM     = 0x6D000000, /* DSM触发的复位 */
+    NAS_REBOOT_MOD_ID_DSM     = 0x6D000000, /* DSM?????????? */
 
-    NAS_REBOOT_MOD_ID_NRSM    = 0x6E000000, /* NRSM触发的复位 */
+    NAS_REBOOT_MOD_ID_NRSM    = 0x6E000000, /* NRSM?????????? */
 
     NAS_REBOOT_MOD_ID_BUTT    = 0X6FFFFFFF
 };

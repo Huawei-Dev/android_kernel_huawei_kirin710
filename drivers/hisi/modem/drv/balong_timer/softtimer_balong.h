@@ -53,7 +53,7 @@
 #include <bsp_hardtimer.h>
 #include <osl_irq.h>
 /*lint -e{652,760}*/
-/*∫Í∂®“Â*/
+/*??????*/
 #ifndef OK
 #define OK 0
 #endif

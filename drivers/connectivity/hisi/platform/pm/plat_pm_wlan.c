@@ -110,7 +110,7 @@ oal_void wlan_pm_init_device_ready(struct wlan_pm_s    *pst_wlan_pm)
 
 oal_uint32 wlan_pm_wait_device_ready(struct wlan_pm_s    *pst_wlan_pm)
 {
-    /* 等待host下半部初始化完成 */
+    /* ????host???????????????? */
     return oal_wait_for_completion_timeout(&pst_wlan_pm->st_device_ready, (oal_uint32)OAL_MSECS_TO_JIFFIES(HOST_WAIT_BOTTOM_INIT_TIMEOUT));
 }
 
@@ -177,9 +177,9 @@ struct wlan_pm_s*  wlan_pm_init(oal_void)
     pst_wlan_pm->pst_sdio->pst_pm_callback = &gst_wlan_pm_callback;
 
     pst_wlan_pm->ul_wlan_pm_enable          = OAL_FALSE;
-    pst_wlan_pm->ul_apmode_allow_pm_flag    = OAL_TRUE;  /* 默认允许下电 */
+    pst_wlan_pm->ul_apmode_allow_pm_flag    = OAL_TRUE;  /* ???????????? */
 
-    /*work queue初始化*/
+    /*work queue??????*/
     pst_wlan_pm->pst_pm_wq = oal_create_singlethread_workqueue("wlan_pm_wq");
     if (!pst_wlan_pm->pst_pm_wq)
     {
@@ -192,10 +192,10 @@ struct wlan_pm_s*  wlan_pm_init(oal_void)
     OAL_INIT_WORK(&pst_wlan_pm->st_sleep_work,  wlan_pm_sleep_work);
     OAL_INIT_WORK(&pst_wlan_pm->st_freq_adjust_work,  wlan_pm_freq_adjust_work);
 
-    /*初始化芯片自检work*/
+    /*??????????????work*/
     OAL_INIT_WORK(&pst_wlan_pm->st_ram_reg_test_work,  wlan_device_mem_check_work);
 
-    /*sleep timer初始化*/
+    /*sleep timer??????*/
     init_timer(&pst_wlan_pm->st_watchdog_timer);
     pst_wlan_pm->st_watchdog_timer.data        = (unsigned long)pst_wlan_pm;
     pst_wlan_pm->st_watchdog_timer.function    = (void *)wlan_pm_wdg_timeout;
@@ -204,7 +204,7 @@ struct wlan_pm_s*  wlan_pm_init(oal_void)
     pst_wlan_pm->ul_packet_cnt                 = 0;
 
 
-    /*sleep timer初始化*/
+    /*sleep timer??????*/
     init_timer(&pst_wlan_pm->st_deepsleep_delay_timer);
     pst_wlan_pm->st_deepsleep_delay_timer.data        = (unsigned long)pst_wlan_pm;
     pst_wlan_pm->st_deepsleep_delay_timer.function    = (void *)wlan_pm_deepsleep_delay_timeout_02;
@@ -383,7 +383,7 @@ oal_int32 wlan_pm_open(oal_void)
             return OAL_FAIL;
         }
 
-        /* 如果校准下发成功则等待device ready；否则继续打开wifi */
+        /* ??????????????????????device ready??????????????wifi */
         if (OAL_SUCC == g_pst_custom_process_func.p_custom_cali_func())
         {
             if(0 == wlan_pm_wait_device_ready(pm_data->pst_wlan_pm_info))
@@ -412,7 +412,7 @@ oal_int32 wlan_pm_open(oal_void)
 
     frw_timer_sys_start();
 
-    /*将timeout值恢复为默认值，并启动定时器*/
+    /*??timeout????????????????????????????*/
     wlan_pm_set_timeout(WLAN_SLEEP_DEFAULT_CHECK_CNT);
 
     mutex_unlock(&pm_data->host_mutex);
@@ -836,7 +836,7 @@ wakeup_fail:
     DECLARE_DFT_TRACE_KEY_INFO("wlan_wakeup_fail",OAL_DFT_TRACE_FAIL);
     uc_wakeup_err_count++;
 
-    /* pm唤醒失败超出门限，启动dfr流程 */
+    /* pm??????????????????????dfr???? */
     if (WLAN_WAKEUP_FAIL_MAX_TIMES < uc_wakeup_err_count)
     {
         OAM_ERROR_LOG1(0, OAM_SF_PWR,"Now ready to enter DFR process after [%d]times wlan_wakeup_fail!", uc_wakeup_err_count);
@@ -889,7 +889,7 @@ oal_uint  wlan_pm_open_bcpu(oal_void)
         return OAL_FAIL;
     }
 
-     /*通过sdio配置命令，解复位BCPU*/
+     /*????sdio????????????????BCPU*/
     OAM_WARNING_LOG0(0, OAM_SF_PWR,"sdio open BCPU");
 
     hcc_tx_transfer_lock(hcc_get_default_handler());
@@ -917,7 +917,7 @@ oal_uint  wlan_pm_open_bcpu(oal_void)
     ul_ret = oal_sdio_send_msg(pst_wlan_pm->pst_sdio, H2D_MSG_RESET_BCPU);
     if(OAL_SUCC == ul_ret)
     {
-        /*等待device执行命令*/
+        /*????device????????*/
         up(&pst_wlan_pm->pst_sdio->gpio_rx_sema);
         ul_ret =  oal_wait_for_completion_timeout(&pst_wlan_pm->st_open_bcpu_done, (oal_uint32)OAL_MSECS_TO_JIFFIES(WLAN_OPEN_BCPU_WAIT_TIMEOUT));
         if(0 == ul_ret)
@@ -1039,7 +1039,7 @@ int32 wlan_pm_close_done_callback(void *data)
 
     OAM_WARNING_LOG0(0, OAM_SF_PWR,"wlan_pm_close_done_callback !");
 
-    /*关闭RX通道，防止SDIO RX thread继续访问SDIO*/
+    /*????RX??????????SDIO RX thread????????SDIO*/
     oal_disable_sdio_state(oal_get_sdio_default_handler(), OAL_SDIO_RX);
 
     pst_wlan_pm->ul_close_done_callback++;
@@ -1119,7 +1119,7 @@ void wlan_pm_sleep_work(oal_work_stru *pst_worker)
         return ;
    }
 
-   /*协议栈回调获取是否pause低功耗*/
+   /*??????????????????pause??????*/
    if(pst_wlan_pm->st_wifi_srv_handler.p_wifi_srv_get_pm_pause_func)
    {
        ul_wifi_pause_pm = pst_wlan_pm->st_wifi_srv_handler.p_wifi_srv_get_pm_pause_func();
@@ -1211,7 +1211,7 @@ void wlan_pm_sleep_work(oal_work_stru *pst_worker)
 
    pst_wlan_pm->ul_sleep_stage = SLEEP_CMD_SND;
 
-   /*继续持锁500ms, 防止系统频繁进入退出PM*/
+   /*????????500ms, ????????????????????PM*/
    oal_wake_lock(&pst_wlan_pm->st_deepsleep_wakelock);
    mod_timer(&pst_wlan_pm->st_deepsleep_delay_timer, jiffies + msecs_to_jiffies(WLAN_WAKELOCK_HOLD_TIME));
 
@@ -1235,7 +1235,7 @@ fail_sleep:
     wlan_pm_feed_wdg();
     hcc_tx_transfer_unlock(hcc_get_default_handler());
 
-    /* pm唤醒失败超出门限，启动dfr流程 */
+    /* pm??????????????????????dfr???? */
     if (WLAN_WAKEUP_FAIL_MAX_TIMES < uc_fail_sleep_count)
     {
         OAM_ERROR_LOG1(0, OAM_SF_PWR,"Now ready to enter DFR process after [%d]times wlan_sleep_fail!", uc_fail_sleep_count);
@@ -1391,7 +1391,7 @@ void wlan_pm_wdg_timeout(struct wlan_pm_s *pm_data)
     }
 #endif
 
-    /*和调频共用一个timer，低功耗关闭时timer不会停*/
+    /*??????????????timer??????????????timer??????*/
     if(pm_data->ul_wlan_pm_enable)
     {
 		if(0 == pm_data->ul_packet_cnt)
@@ -1405,7 +1405,7 @@ void wlan_pm_wdg_timeout(struct wlan_pm_s *pm_data)
                 }
                 else
                 {
-                    /*提交了sleep work后，定时器不重启，避免重复提交sleep work*/
+                    /*??????sleep work??????????????????????????????sleep work*/
                     pm_data->ul_sleep_work_submit++;
                     return;
                 }
@@ -1504,7 +1504,7 @@ oal_int32 wlan_pm_poweroff_cmd(oal_void)
     ret =  oal_sdio_send_msg(pst_wlan_pm->pst_sdio,H2D_MSG_PM_WLAN_OFF);
     if(OAL_SUCC == ret)
     {
-        /*等待device执行命令*/
+        /*????device????????*/
         msleep(20);
         if(0==board_get_wlan_wkup_gpio_val())
         {
@@ -1569,7 +1569,7 @@ oal_int32 wlan_pm_shutdown_bcpu_cmd(oal_void)
     ret =  oal_sdio_send_msg(pst_wlan_pm->pst_sdio,H2D_MSG_PM_BCPU_OFF);
     if(OAL_SUCC == ret)
     {
-        /*等待device执行命令*/
+        /*????device????????*/
         ul_ret = oal_wait_for_completion_timeout(&pst_wlan_pm->st_close_bcpu_done, (oal_uint32)OAL_MSECS_TO_JIFFIES(WLAN_POWEROFF_ACK_WAIT_TIMEOUT));
         if(0 == ul_ret)
         {

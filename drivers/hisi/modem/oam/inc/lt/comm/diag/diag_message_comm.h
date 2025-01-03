@@ -82,20 +82,20 @@ extern "C" {
   5 struct
 *****************************************************************************/
 
-/* 诊断消息层为上层提供的参数结构 */
+/* ?????????????????????????????? */
 typedef struct
 {
-    DIAG_SSID_TYPE_U32          ulSSId;         /* 数据产生的CPU ID */
-    DIAG_MESSAGE_TYPE_U32       ulMsgType;      /* 所属组件 */
-    DIAG_MODE_TYPE_U32          ulMode;         /* 模式 */
-    DIAG_MSG_SUB_TYPE_U32       ulSubType;      /* 子类型，DIAG_MSG_SUB_TYPE_U32 */
-    DIAG_DIRECTION_TYPE_U32     ulDirection;    /* 上报消息的方向 */
+    DIAG_SSID_TYPE_U32          ulSSId;         /* ??????????CPU ID */
+    DIAG_MESSAGE_TYPE_U32       ulMsgType;      /* ???????? */
+    DIAG_MODE_TYPE_U32          ulMode;         /* ???? */
+    DIAG_MSG_SUB_TYPE_U32       ulSubType;      /* ????????DIAG_MSG_SUB_TYPE_U32 */
+    DIAG_DIRECTION_TYPE_U32     ulDirection;    /* ?????????????? */
     VOS_UINT32                  ulModemid;
-    VOS_UINT32                  ulMsgId;        /* 低16位有效 */
+    VOS_UINT32                  ulMsgId;        /* ??16?????? */
     VOS_UINT32                  ulTransId;      /* TransId */
 } MSP_DIAG_CNF_INFO_STRU;
 
-/* cnf 类型消息头 */
+/* cnf ?????????? */
 typedef struct
 {
     DIAG_SRV_SOCP_HEADER_STRU       socp_header;

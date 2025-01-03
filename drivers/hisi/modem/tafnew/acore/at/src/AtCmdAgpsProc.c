@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AtCmdAgpsProc.h"
 #include "ATCmdProc.h"
@@ -56,17 +56,17 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_AT_CMD_AGPS_PROC_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 VOS_UINT32 At_SetEpduPara(VOS_UINT8 ucIndex)
@@ -75,7 +75,7 @@ VOS_UINT32 At_SetEpduPara(VOS_UINT8 ucIndex)
     VOS_UINT32                          ulRst;
     VOS_UINT16                          usEpduLen;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_EPDU_PARA_NUM != gucAtParaIndex)
     {
         return AT_CME_INCORRECT_PARAMETERS;
@@ -91,8 +91,8 @@ VOS_UINT32 At_SetEpduPara(VOS_UINT8 ucIndex)
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* gastAtParaList[8].ulParaValue表示total值； gastAtParaList[9].ulParaValue表示index值
-       如果total值小于index值直接返回
+    /* gastAtParaList[8].ulParaValue????total???? gastAtParaList[9].ulParaValue????index??
+       ????total??????index??????????
     */
     if (gastAtParaList[8].ulParaValue < gastAtParaList[9].ulParaValue)
     {
@@ -101,7 +101,7 @@ VOS_UINT32 At_SetEpduPara(VOS_UINT8 ucIndex)
 
     usEpduLen = 0;
 
-    /* AT发送至MTA的消息结构赋值 */
+    /* AT??????MTA?????????????? */
     TAF_MEM_SET_S(&stAtCmd, sizeof(stAtCmd), 0x00, sizeof(AT_MTA_EPDU_SET_REQ_STRU));
     stAtCmd.usTransactionId     = (VOS_UINT16)gastAtParaList[0].ulParaValue;
     stAtCmd.ucMsgBodyType       = (VOS_UINT8)gastAtParaList[1].ulParaValue;
@@ -132,7 +132,7 @@ VOS_UINT32 At_SetEpduPara(VOS_UINT8 ucIndex)
         TAF_MEM_CPY_S(stAtCmd.aucEpduContent, AT_MTA_EPDU_CONTENT_LENGTH_MAX, gastAtParaList[10].aucPara, usEpduLen);
     }
 
-    /* 发送消息给C核处理 */
+    /* ??????????C?????? */
     ulRst = AT_FillAndSndAppReqMsg(gastAtClientTab[ucIndex].usClientId,
                                    gastAtClientTab[ucIndex].opId,
                                    ID_AT_MTA_EPDU_SET_REQ,
@@ -163,20 +163,20 @@ VOS_UINT32 AT_RcvMtaEpduDataInd(
     VOS_UINT16                          usLength;
     VOS_UINT8                           ucIndex;
 
-    /* 初始化 */
+    /* ?????? */
     pstRcvMsg               = (AT_MTA_MSG_STRU *)pMsg;
     pstMtaAtEpduDataInd     = (MTA_AT_EPDU_DATA_IND_STRU *)pstRcvMsg->aucContent;
     ucIndex                 = 0;
     usLength                = 0;
 
-    /* 通过ClientId获取ucIndex */
+    /* ????ClientId????ucIndex */
     if ( AT_FAILURE == At_ClientIdToUserId(pstRcvMsg->stAppCtrl.usClientId, &ucIndex) )
     {
         AT_WARN_LOG("AT_RcvMtaEpduDataInd: WARNING:AT INDEX NOT FOUND!");
         return VOS_ERR;
     }
 
-    /* 打印^EPDUR: */
+    /* ????^EPDUR: */
     /* transaction_id, msg_type, common_info_valid_flg, end_flag, id*/
     usLength += (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                        (VOS_CHAR *)pgucAtSndCodeAddr,
@@ -196,7 +196,7 @@ VOS_UINT32 AT_RcvMtaEpduDataInd(
     {
         pucName = (VOS_UINT8 *)PS_MEM_ALLOC(WUEPS_PID_AT, pstMtaAtEpduDataInd->ucNameLength + 1);
 
-        /* 分配内存失败，直接返回 */
+        /* ?????????????????????? */
         if (VOS_NULL_PTR == pucName)
         {
             AT_ERR_LOG("AT_RcvMtaEpduDataInd: name, Alloc mem fail");
@@ -260,13 +260,13 @@ VOS_UINT32 AT_RcvMtaEpduSetCnf(
     VOS_UINT8                           ucIndex;
     VOS_UINT32                          ulResult;
 
-    /* 初始化 */
+    /* ?????? */
     pstRcvMsg             = (AT_MTA_MSG_STRU *)pMsg;
     pstEpduSetCnf         = (MTA_AT_EPDU_SET_CNF_STRU *)pstRcvMsg->aucContent;
     ucIndex               = 0;
     ulResult              = AT_ERROR;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstRcvMsg->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvMtaEpduSetCnf : WARNING:AT INDEX NOT FOUND!");
@@ -279,17 +279,17 @@ VOS_UINT32 AT_RcvMtaEpduSetCnf(
         return VOS_ERR;
     }
 
-    /* 当前AT是否在等待该命令返回 */
+    /* ????AT???????????????????? */
     if (AT_CMD_EPDU_SET != gastAtClientTab[ucIndex].CmdCurrentOpt)
     {
         AT_WARN_LOG("AT_RcvMtaEpduSetCnf : Current Option is not AT_CMD_EPDU_SET.");
         return VOS_ERR;
     }
 
-    /* 复位AT状态 */
+    /* ????AT???? */
     AT_STOP_TIMER_CMD_READY(ucIndex);
 
-    /* 格式化命令返回 */
+    /* ?????????????? */
     gstAtSendData.usBufLen = 0;
 
     if (MTA_AT_RESULT_NO_ERROR == pstEpduSetCnf->enResult)

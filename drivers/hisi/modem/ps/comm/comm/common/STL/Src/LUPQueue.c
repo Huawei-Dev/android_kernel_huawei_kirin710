@@ -182,7 +182,7 @@ VOS_UINT32 LUP_BatchDeQue(LUP_QUEUE_STRU *pstQue, VOS_VOID **ppBuf,VOS_UINT32 *p
     VOS_UINT32    ulCnt;
     VOS_UINT32    ulLoop;
 
-    /*入参指针不为空判定*/
+    /*??????????????????*/
     if(VOS_NULL_PTR == pstQue)
     {
         return  PS_PTR_NULL;
@@ -196,7 +196,7 @@ VOS_UINT32 LUP_BatchDeQue(LUP_QUEUE_STRU *pstQue, VOS_VOID **ppBuf,VOS_UINT32 *p
         return  PS_PTR_NULL;
     }
 
-    /*要求批量出队的数据个数不为0*/
+    /*??????????????????????????0*/
     if (0 == *pulNum)
     {
         return PS_PARA_ERR;
@@ -209,7 +209,7 @@ VOS_UINT32 LUP_BatchDeQue(LUP_QUEUE_STRU *pstQue, VOS_VOID **ppBuf,VOS_UINT32 *p
         return  PS_QUE_EMPTY;
     }
 
-    /*对于队列的个数和要求的个数，取最小值*/
+    /*????????????????????????????????????*/
     if (ulCnt > *pulNum)
     {
         ulCnt = *pulNum;
@@ -305,7 +305,7 @@ VOS_UINT32 LUP_EnQuetoHead(LUP_QUEUE_STRU *pstQue, VOS_VOID *pNode, VOS_VOID** p
     }
     if (PS_TRUE == LUP_IsQueFull(pstQue))
     {
-        /*移除尾节点*/
+        /*??????????*/
         *ppTailNode = pstQue->pBuff[pstQue->ulTail];
         pstQue->ulTail = TTF_MOD_SUB(pstQue->ulTail, 1, pstQue->ulMaxNum);
     }

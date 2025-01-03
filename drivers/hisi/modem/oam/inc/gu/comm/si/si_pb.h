@@ -57,7 +57,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "siapppb.h"
@@ -81,16 +81,16 @@ extern "C" {
 #if (FEATURE_ON == FEATURE_PHONE_SC)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define SI_PB_XDN_SPACE            (60000)
 #define SI_PB_XDN_SUPPORT_NUM      (1000)
 
-#define SI_PB_ADNMAX            10 /*最多支持ADN电话本个数*/
+#define SI_PB_ADNMAX            10 /*????????ADN??????????*/
 #define SI_PB_ANRMAX            3
-#define SI_PB_MAX_NUMBER        7  /*最多支持电话本个数*/
-#define SI_PB_MAX_XDN           16 /*初始化时支持的电话本总数*/
-#define SI_PB_ANR_MAX           3  /*ANR文件的个数*/
+#define SI_PB_MAX_NUMBER        7  /*??????????????????*/
+#define SI_PB_MAX_XDN           16 /*????????????????????????*/
+#define SI_PB_ANR_MAX           3  /*ANR??????????*/
 
 #define SI_PB_FILE_NOT_EXIST   0
 #define SI_PB_FILE_EXIST       1
@@ -129,14 +129,14 @@ extern "C" {
 #define SIM_EFADN               0x6F3A
 #define EFSDN                   0x6F49
 
-#define EFEXT1                  0x6F4A      /* 用于ADN文件 */
-#define EFEXT2                  0x6F4B      /* 用于FDN文件 */
-#define EFEXT3                  0x6F4C      /* 用于SDN文件 */
-#define EFEXT4_USIM             0x6F55      /* 用于BDN文件 */
-#define EFEXT4_SIM              0x6F4E      /* 用于BDN文件 */
-#define EFEXT5                  0x6F4E      /* 仅存在于USIM卡中的MSISDN文件 */
-#define EFEXT6                  0x6FC8      /* 用于MBDN文件 */
-#define EFEXT7                  0x6FCC      /* 用于CFIS文件 */
+#define EFEXT1                  0x6F4A      /* ????ADN???? */
+#define EFEXT2                  0x6F4B      /* ????FDN???? */
+#define EFEXT3                  0x6F4C      /* ????SDN???? */
+#define EFEXT4_USIM             0x6F55      /* ????BDN???? */
+#define EFEXT4_SIM              0x6F4E      /* ????BDN???? */
+#define EFEXT5                  0x6F4E      /* ????????USIM??????MSISDN???? */
+#define EFEXT6                  0x6FC8      /* ????MBDN???? */
+#define EFEXT7                  0x6FCC      /* ????CFIS???? */
 
 #if  ((OSA_CPU_ACPU == VOS_OSA_CPU) || (VOS_OS_VER == VOS_WIN32))
 #define PB_GEN_LOG_MODULE(Level)       (DIAG_GEN_LOG_MODULE(MODEM_ID_0, DIAG_MODE_COMM, Level))
@@ -194,21 +194,21 @@ extern "C" {
 #endif
 
 /*******************************************************************************
-  3 枚举定义
+  3 ????????
 *******************************************************************************/
 
 
 enum SI_PB_INIT_STEP_ENUM
 {
-    PB_INIT_PB_STATUS = 0,      /*初始化各个电话本的激活状态*/
-    PB_INIT_XDN_SPACE,          /*初始化XDN空间*/
-    PB_INIT_EXT_SPACE,          /*初始化EXT空间*/
-    PB_INIT_XDN_CONTENT,        /*初始化XDN内容*/
-    PB_INIT_EXT_CONTENT,        /*初始化EXT内容*/
-    PB_INIT_XDN_SEARCH,         /* 查找XDN记录 */
-    PB_INIT_XDN_CONTENT2,       /* 根据查找的结果来初始化XDN文件的内容 */
-    PB_INIT_INFO_APP,           /*回调上报*/
-    PB_INIT_FINISHED,           /*初始化结束*/
+    PB_INIT_PB_STATUS = 0,      /*??????????????????????????*/
+    PB_INIT_XDN_SPACE,          /*??????XDN????*/
+    PB_INIT_EXT_SPACE,          /*??????EXT????*/
+    PB_INIT_XDN_CONTENT,        /*??????XDN????*/
+    PB_INIT_EXT_CONTENT,        /*??????EXT????*/
+    PB_INIT_XDN_SEARCH,         /* ????XDN???? */
+    PB_INIT_XDN_CONTENT2,       /* ??????????????????????XDN?????????? */
+    PB_INIT_INFO_APP,           /*????????*/
+    PB_INIT_FINISHED,           /*??????????*/
     PB_INIT_BUTT
 };
 typedef VOS_UINT32  SI_PB_INIT_STEP_ENUM_UINT32;
@@ -239,7 +239,7 @@ enum SI_PB_FILE_TYPE_ENUM
 };
 typedef VOS_UINT32 SI_PB_FILE_TYPE_ENUM_UINT32;
 
-/* 这里的定义要与SI_PB_STORAGE_SM待的定义保持一致 */
+/* ??????????????SI_PB_STORAGE_SM???????????????? */
 enum SI_PB_TYPE_ENUM
 {
     PB_ADN            = 1,
@@ -277,9 +277,9 @@ typedef VOS_UINT32 SI_PB_SEND_REQ_STATUS_ENUM_UINT32;
 
 enum SI_PB_INIT_STATE_ENUM
 {
-    PB_NOT_INITIALISED = 0,                       /*未初始化完成*/
-    PB_INITIALISED     = 1,                       /*已初始化完成*/
-    PB_FILE_NOT_EXIST  = 2,                       /*电话本文件不存在*/
+    PB_NOT_INITIALISED = 0,                       /*????????????*/
+    PB_INITIALISED     = 1,                       /*????????????*/
+    PB_FILE_NOT_EXIST  = 2,                       /*????????????????*/
     PB_INIT_STATE_BUTT
 };
 typedef VOS_UINT8  SI_PB_INIT_STATE_ENUM_UINT8;
@@ -322,15 +322,15 @@ enum SI_PB_INIT_STATUS_ENUM
 typedef VOS_UINT32 SI_PB_INIT_STATUS_ENUM_UNIT32;
 
 /*****************************************************************************
-  4 STRUCT定义
+  4 STRUCT????
 *****************************************************************************/
 
-/*读取号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;                   /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;                   /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
@@ -338,58 +338,58 @@ typedef struct
     VOS_UINT16                  usIndex2;
 } SI_PB_READ_REQ_STRU;
 
-/*查询号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;                   /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;                   /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
 }SI_PB_QUERY_REQ_STRU;
 
-/*设置号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;        /* 消息名     */
-    VOS_UINT16                  usClient;         /*客户端ID*/
+    VOS_UINT32                  ulMsgName;        /* ??????     */
+    VOS_UINT16                  usClient;         /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
 } SI_PB_SET_REQ_STRU;
 
-/*添加号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;                   /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;                   /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
     SI_PB_RECORD_STRU           stRecord;
 }SI_PB_ADD_REP_STRU;
 
-/*更改号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;              /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;              /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
     SI_PB_RECORD_STRU           Record;
 }SI_PB_MODIFY_REP_STRU;
 
-/*删除号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /*消息名*/
-    VOS_UINT16                  usClient;           /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /*??????*/
+    VOS_UINT16                  usClient;           /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
@@ -397,30 +397,30 @@ typedef struct
     VOS_UINT16                  usReserved;
 }SI_PB_DELETE_REQ_STRU;
 
-/*更新号码文件请求消息结构*/
+/*????????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;       /* 消息名 */
-    VOS_UINT32                  ulFileNumber;     /*更新文件个数*/
+    VOS_UINT32                  ulMsgName;       /* ?????? */
+    VOS_UINT32                  ulFileNumber;     /*????????????*/
     SI_PB_REFRESH_ENUM_UNIT32   enRefreshType;
     VOS_UINT16                  pusFile[SI_PB_MAX_XDN];
 }SI_PB_REFRESH_REQ_STRU;
 
-/*查找姓名请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名 */
-    VOS_UINT16                  usClient;           /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ?????? */
+    VOS_UINT16                  usClient;           /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
-    VOS_UINT8                   ucLength;           /* 要匹配字段的长度 */
-    VOS_UINT8                   aucContent[243];    /* 要匹配的字段内容 */
+    VOS_UINT8                   ucLength;           /* ???????????????? */
+    VOS_UINT8                   aucContent[243];    /* ???????????????? */
 }SI_PB_SEARCH_REQ_STRU;
 
-/*EXT控制信息*/
+/*EXT????????*/
 typedef struct
 {
     VOS_UINT16                     usExtFlag;
@@ -431,7 +431,7 @@ typedef struct
     VOS_UINT8                      *pExtContent;
 }SI_EXT_CONTENT_STRU;
 
-/*电话本信息*/
+/*??????????*/
 typedef struct
 {
     SI_PB_TYPE_ENUM_UINT32         enPBType;
@@ -442,14 +442,14 @@ typedef struct
     VOS_UINT8                      ucNameLen;
     VOS_UINT8                      ucNumberLen;
     SI_PB_INIT_STATE_ENUM_UINT8    enInitialState;
-    VOS_UINT32                     ulExtInfoNum;            /* 对应的EXT文件控制信息编号 */
+    VOS_UINT32                     ulExtInfoNum;            /* ??????EXT???????????????? */
     VOS_UINT8*                     pIndex;
     VOS_UINT32                     ulContentSize;
     VOS_UINT8*                     pContent;
 }SI_PB_CONTENT_STRU;
 
 
-/*补充电话本信息*/
+/*??????????????*/
 typedef struct
 {
     SI_PB_ACTIVE_STATE_ENUM_UINT32 enActiveStatus;
@@ -463,7 +463,7 @@ typedef struct
     VOS_UINT8                      *pContent;
 }SI_ANR_CONTENT_STRU;
 
-/*Email电话本信息*/
+/*Email??????????*/
 typedef struct
 {
     SI_PB_ACTIVE_STATE_ENUM_UINT32 enActiveStatus;
@@ -477,7 +477,7 @@ typedef struct
     VOS_UINT8                      *pContent;
 }SI_EML_CONTENT_STRU;
 
-/*IAP文件信息*/
+/*IAP????????*/
 typedef struct
 {
     VOS_UINT16                     usTotalNum;
@@ -487,17 +487,17 @@ typedef struct
     VOS_UINT8                      *pIAPContent;
 }SI_IAP_CONTENT_STRU;
 
-/*复合电话本请求信息存储*/
+/*??????????????????????*/
 typedef struct
 {
     VOS_UINT16                  usANRExtIndex[SI_PB_ANR_MAX+1];
-    VOS_UINT8                   aucANRContent[SI_PB_ANR_MAX][SI_PB_ANR_LEN+3];/*ANR文件最长为17，不超过20*/
+    VOS_UINT8                   aucANRContent[SI_PB_ANR_MAX][SI_PB_ANR_LEN+3];/*ANR??????????17????????20*/
     VOS_UINT8                   aucANRExtContent[SI_PB_ANR_MAX][SI_PB_EXT_LEN+3];
     VOS_UINT8                   aucEMLContent[SI_PB_EMAIL_MAX_LEN];
     VOS_UINT8                   aucIAPContent[20];
 }SI_SPB_REQ_UINT_STRU;
 
-/*外部请求信息存储*/
+/*????????????????*/
 typedef struct
 {
     SI_PB_CNF_ENUM_UINT32       enPBEventType;
@@ -516,7 +516,7 @@ typedef struct
     VOS_UINT8                   aucEXTContent[SI_PB_EXT_LEN+1];
 }SI_PB_REQ_UINT_STRU;
 
-/*ADN、FDN、BDN或MSISDN信息存储*/
+/*ADN??FDN??BDN??MSISDN????????*/
 typedef struct
 {
     VOS_UINT16                  usFileID;
@@ -526,29 +526,29 @@ typedef struct
     VOS_UINT8                   aucRsv[3];
 }SI_PB_XDN_INFO_STRU;
 
-/*ANR信息存储*/
+/*ANR????????*/
 typedef struct
 {
     SI_PB_FILE_TYPE_ENUM_UINT32 enANRType;
-    VOS_UINT32                  ulANRTagNum;/*ANR的Tag在A9Tag中的位置，根据此位置，
-                                            结合IAP文件确定ANR和ADN记录对应关系*/
+    VOS_UINT32                  ulANRTagNum;/*ANR??Tag??A9Tag??????????????????????
+                                            ????IAP????????ANR??ADN????????????*/
     VOS_UINT16                  usANRFileID;
     VOS_UINT8                   ucRecordNum;
     VOS_UINT8                   ucRecordLen;
 }SI_PB_ANR_INFO_STRU;
 
-/*EMAIL信息存储*/
+/*EMAIL????????*/
 typedef struct
 {
     SI_PB_FILE_TYPE_ENUM_UINT32 enEMLType;
-    VOS_UINT32                  ulEMLTagNum;/*Email的Tag在A9Tag中的位置，根据此位置，
-                                            结合IAP文件确定Email和ADN记录对应关系*/
+    VOS_UINT32                  ulEMLTagNum;/*Email??Tag??A9Tag??????????????????????
+                                            ????IAP????????Email??ADN????????????*/
     VOS_UINT16                  usEMLFileID;
     VOS_UINT8                   ucRecordNum;
     VOS_UINT8                   ucRecordLen;
 }SI_PB_EML_INFO_STRU;
 
-/*IAP信息存储，见31.102第94页*/
+/*IAP????????????31.102??94??*/
 typedef struct
 {
     VOS_UINT16                  usIAPFileID;
@@ -556,14 +556,14 @@ typedef struct
     VOS_UINT8                   ucRecordLen;
 }SI_PB_IAP_INFO_STRU;
 
-/*UID信息存储*/
+/*UID????????*/
 typedef struct
 {
     VOS_UINT16                  usFileID;
     VOS_UINT16                  usRsv;
 }SI_PB_UID_INFO_STRU;
 
-/*PBC信息存储，用于3G重同步*/
+/*PBC??????????????3G??????*/
 typedef struct
 {
     VOS_UINT16   usFileID;
@@ -577,17 +577,17 @@ typedef struct
     VOS_UINT8  aucRecord[258];
 }SI_PB_PBC_UPDATE_STRU;
 
-/*电话本SEARCH控制信息*/
+/*??????SEARCH????????*/
 typedef struct
 {
-    VOS_UINT16  usReadOffset;       /* 以SEARCH方式得到的要初始化记录的偏移量 */
-    VOS_UINT16  usReadNum;          /* 以SEARCH方式得到的要初始的记录数 */
-    VOS_UINT16  usEfId;             /* 以SEARCH方式处理的当前文件ID */
+    VOS_UINT16  usReadOffset;       /* ??SEARCH?????????????????????????????? */
+    VOS_UINT16  usReadNum;          /* ??SEARCH???????????????????????? */
+    VOS_UINT16  usEfId;             /* ??SEARCH??????????????????ID */
     VOS_UINT16  usRsv;
-    VOS_UINT8   aucReadString[256]; /* 以SEARCH方式得到的要初始化的记录 */
+    VOS_UINT8   aucReadString[256]; /* ??SEARCH???????????????????????? */
 }SI_PB_SEARCH_CTRL_STRU;
 
-/*电话本控制信息*/
+/*??????????????*/
 typedef struct
 {
 
@@ -603,7 +603,7 @@ typedef struct
     SI_PB_UID_INFO_STRU            astUIDInfo[SI_PB_ADNMAX];
     SI_PB_PBC_INFO_STRU            astPBCInfo[SI_PB_ADNMAX];
     VOS_UINT32                     ulPSCValue;
-    VOS_UINT32                     ulTotalUsed;/*复合电话本使用的总记录数*/
+    VOS_UINT32                     ulTotalUsed;/*????????????????????????*/
     SI_PB_STORATE_TYPE             enPBCurType;
     VOS_UINT16                     usCCValue;
     VOS_UINT16                     usPUIDValue;
@@ -642,29 +642,29 @@ typedef VOS_UINT32  (*PPBREQ)(SI_PIH_CARD_SLOT_ENUM_UINT32 enSlotId);
 
 typedef struct
 {
-    VOS_UINT32                  ulMsgType;        /*处理消息类型*/
-    PPBPROC                     pProcFun;        /*对应处理函数*/
+    VOS_UINT32                  ulMsgType;        /*????????????*/
+    PPBPROC                     pProcFun;        /*????????????*/
 }SI_PB_PROC_LIST_STRU;
 
 typedef struct
 {
-    VOS_UINT32                 ulMsgType;        /*处理消息类型*/
-    PPBREQ                     pReqFun;         /*消息分发函数*/
-    PPBINITPROC                pInitProcFun;        /*对应处理函数*/
+    VOS_UINT32                 ulMsgType;        /*????????????*/
+    PPBREQ                     pReqFun;         /*????????????*/
+    PPBINITPROC                pInitProcFun;        /*????????????*/
 }SI_PB_INIT_LIST_STRU;
 
-/*Ccpu发送的同步全局变量的消息*/
+/*Ccpu????????????????????????*/
 typedef struct
 {
     VOS_UINT32                 ulIndexAddr;
     VOS_UINT32                 ulContentAddr;
 }SI_PB_CONTENT_PTR_STRU;
 
-/*Ccpu发送的当前电话本设置的消息*/
+/*Ccpu??????????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名 */
+    VOS_UINT32                  ulMsgName;          /* ?????? */
     SI_PB_STORATE_TYPE          enPBCurType;
 }SI_PB_SETPB_IND_STRU;
 
@@ -672,18 +672,18 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                  usEfId;         /* 文件ID */
-    VOS_UINT8                   ucRecordNum;    /* 文件记录号，二进制文件填0 */
-    VOS_UINT8                   ucRsv;          /* 保留 */
+    VOS_UINT16                  usEfId;         /* ????ID */
+    VOS_UINT8                   ucRecordNum;    /* ????????????????????????0 */
+    VOS_UINT8                   ucRsv;          /* ???? */
 }SI_PB_GETFILE_INFO_STRU;
 
 typedef struct
 {
-    VOS_UINT16                  usEfId;         /* 文件ID */
-    VOS_UINT8                   ucRecordNum;    /* 文件记录号，二进制文件填0 */
-    VOS_UINT8                   ucRsv;          /* 保留 */
-    VOS_UINT32                  ulEfLen ;       /* 更新数据长度 */
-    VOS_UINT8                   *pucEfContent;  /* 更新数据内容 */
+    VOS_UINT16                  usEfId;         /* ????ID */
+    VOS_UINT8                   ucRecordNum;    /* ????????????????????????0 */
+    VOS_UINT8                   ucRsv;          /* ???? */
+    VOS_UINT32                  ulEfLen ;       /* ???????????? */
+    VOS_UINT8                   *pucEfContent;  /* ???????????? */
 }SI_PB_SETFILE_INFO_STRU;
 
 typedef struct
@@ -696,7 +696,7 @@ typedef struct
 }SI_PB_SPBDATA_STRU;
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 extern SI_PB_CONTENT_STRU       gastPBContent[USIMM_SLOT_SIZE][SI_PB_MAX_NUMBER];
 
@@ -720,7 +720,7 @@ extern VOS_UINT32               gulExtRecord[USIMM_SLOT_SIZE];
 
 
 /*****************************************************************************
-  6 函数声明
+  6 ????????
 *****************************************************************************/
 extern VOS_VOID SI_PB_BcdToAscii(VOS_UINT8 ucBcdNumLen,VOS_UINT8 *pucBcdNum, VOS_UINT8 *pucAsciiNum, VOS_UINT8 *pucLen);
 
@@ -820,16 +820,16 @@ extern VOS_VOID SI_PB_ClearPBContent(SI_PIH_CARD_SLOT_ENUM_UINT32 enSlotId, VOS_
 #else /* (FEATURE_ON == FEATURE_PHONE_SC) */
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define SI_PB_XDN_SPACE            (60000)
 #define SI_PB_XDN_SUPPORT_NUM      (1000)
 
-#define SI_PB_ADNMAX            10 /*最多支持ADN电话本个数*/
+#define SI_PB_ADNMAX            10 /*????????ADN??????????*/
 #define SI_PB_ANRMAX            3
-#define SI_PB_MAX_NUMBER        7  /*最多支持电话本个数*/
-#define SI_PB_MAX_XDN           16 /*初始化时支持的电话本总数*/
-#define SI_PB_ANR_MAX           3  /*ANR文件的个数*/
+#define SI_PB_MAX_NUMBER        7  /*??????????????????*/
+#define SI_PB_MAX_XDN           16 /*????????????????????????*/
+#define SI_PB_ANR_MAX           3  /*ANR??????????*/
 
 #define SI_PB_FILE_NOT_EXIST   0
 #define SI_PB_FILE_EXIST       1
@@ -868,14 +868,14 @@ extern VOS_VOID SI_PB_ClearPBContent(SI_PIH_CARD_SLOT_ENUM_UINT32 enSlotId, VOS_
 #define SIM_EFADN               0x6F3A
 #define EFSDN                   0x6F49
 
-#define EFEXT1                  0x6F4A      /* 用于ADN文件 */
-#define EFEXT2                  0x6F4B      /* 用于FDN文件 */
-#define EFEXT3                  0x6F4C      /* 用于SDN文件 */
-#define EFEXT4_USIM             0x6F55      /* 用于BDN文件 */
-#define EFEXT4_SIM              0x6F4E      /* 用于BDN文件 */
-#define EFEXT5                  0x6F4E      /* 仅存在于USIM卡中的MSISDN文件 */
-#define EFEXT6                  0x6FC8      /* 用于MBDN文件 */
-#define EFEXT7                  0x6FCC      /* 用于CFIS文件 */
+#define EFEXT1                  0x6F4A      /* ????ADN???? */
+#define EFEXT2                  0x6F4B      /* ????FDN???? */
+#define EFEXT3                  0x6F4C      /* ????SDN???? */
+#define EFEXT4_USIM             0x6F55      /* ????BDN???? */
+#define EFEXT4_SIM              0x6F4E      /* ????BDN???? */
+#define EFEXT5                  0x6F4E      /* ????????USIM??????MSISDN???? */
+#define EFEXT6                  0x6FC8      /* ????MBDN???? */
+#define EFEXT7                  0x6FCC      /* ????CFIS???? */
 
 #if(OSA_CPU_ACPU == VOS_OSA_CPU)
 #define PB_GEN_LOG_MODULE(Level)       (DIAG_GEN_LOG_MODULE(MODEM_ID_0, DIAG_MODE_COMM, Level))
@@ -914,39 +914,39 @@ extern VOS_VOID SI_PB_ClearPBContent(SI_PIH_CARD_SLOT_ENUM_UINT32 enSlotId, VOS_
 #endif
 
 /*******************************************************************************
-  3 枚举定义
+  3 ????????
 *******************************************************************************/
 
 
 enum SI_PB_INIT_STEP_ENUM
 {
-    PB_INIT_PB_STATUS = 0,      /*初始化各个电话本的激活状态*/
-    PB_INIT_EFPBR,              /*初始化PBR内容*/
-    PB_INIT_XDN_SPACE,          /*初始化XDN空间*/
-    PB_INIT_ANR_SPACE,          /*初始化ANR空间*/
-    PB_INIT_EML_SPACE,          /*初始化Email空间*/
-    PB_INIT_IAP_SPACE,          /*初始化IAP空间*/
-    PB_INIT_EXT_SPACE,          /*初始化EXT空间*/
-    PB_INIT_IAP_CONTENT,        /*初始化IAP中Email记录和AND记录的对应关系*/
-    PB_INIT_EML_CONTENT,        /*初始化Email内容*/
-    PB_INIT_ANR_CONTENT,        /*初始化ANR内容*/
-    PB_INIT_EXTR_CONTENT,       /*初始化ANR EXT内容*/
-    PB_INIT_XDN_CONTENT,        /*初始化XDN内容*/
-    PB_INIT_EXT_CONTENT,        /*初始化EXT内容*/
-    PB_INIT_PBC_CONTENT,        /* 初始化PBC内容 */
-    PB_INIT_IAP_SEARCH,         /* 查找IAP记录 */
-    PB_INIT_IAP_CONTENT2,       /* 根据查找的结果来初始化IAP文件的内容 */
-    PB_INIT_EML_SEARCH,         /* 查找EMAIL记录 */
-    PB_INIT_EML_CONTENT2,       /* 根据查找的结果来初始化EMAIL文件的内容 */
-    PB_INIT_ANR_SEARCH,         /* 查找ANR记录 */
-    PB_INIT_ANR_CONTENT2,       /* 根据查找的结果来初始化ANR文件的内容 */
-    PB_INIT_XDN_SEARCH,         /* 查找XDN记录 */
-    PB_INIT_XDN_CONTENT2,       /* 根据查找的结果来初始化XDN文件的内容 */
-    PB_INIT_PBC_SEARCH,         /* 查找PBC记录 */
-    PB_INIT_PBC_CONTENT2,       /* 根据查找的结果来初始化PBC文件的内容 */
-    PB_INIT_SYNCH,              /*3G电话本同步*/
-    PB_INIT_INFO_APP,           /*回调上报*/
-    PB_INIT_FINISHED,           /*初始化结束*/
+    PB_INIT_PB_STATUS = 0,      /*??????????????????????????*/
+    PB_INIT_EFPBR,              /*??????PBR????*/
+    PB_INIT_XDN_SPACE,          /*??????XDN????*/
+    PB_INIT_ANR_SPACE,          /*??????ANR????*/
+    PB_INIT_EML_SPACE,          /*??????Email????*/
+    PB_INIT_IAP_SPACE,          /*??????IAP????*/
+    PB_INIT_EXT_SPACE,          /*??????EXT????*/
+    PB_INIT_IAP_CONTENT,        /*??????IAP??Email??????AND??????????????*/
+    PB_INIT_EML_CONTENT,        /*??????Email????*/
+    PB_INIT_ANR_CONTENT,        /*??????ANR????*/
+    PB_INIT_EXTR_CONTENT,       /*??????ANR EXT????*/
+    PB_INIT_XDN_CONTENT,        /*??????XDN????*/
+    PB_INIT_EXT_CONTENT,        /*??????EXT????*/
+    PB_INIT_PBC_CONTENT,        /* ??????PBC???? */
+    PB_INIT_IAP_SEARCH,         /* ????IAP???? */
+    PB_INIT_IAP_CONTENT2,       /* ??????????????????????IAP?????????? */
+    PB_INIT_EML_SEARCH,         /* ????EMAIL???? */
+    PB_INIT_EML_CONTENT2,       /* ??????????????????????EMAIL?????????? */
+    PB_INIT_ANR_SEARCH,         /* ????ANR???? */
+    PB_INIT_ANR_CONTENT2,       /* ??????????????????????ANR?????????? */
+    PB_INIT_XDN_SEARCH,         /* ????XDN???? */
+    PB_INIT_XDN_CONTENT2,       /* ??????????????????????XDN?????????? */
+    PB_INIT_PBC_SEARCH,         /* ????PBC???? */
+    PB_INIT_PBC_CONTENT2,       /* ??????????????????????PBC?????????? */
+    PB_INIT_SYNCH,              /*3G??????????*/
+    PB_INIT_INFO_APP,           /*????????*/
+    PB_INIT_FINISHED,           /*??????????*/
     PB_INIT_BUTT
 };
 typedef VOS_UINT32  SI_PB_INIT_STEP_ENUM_UINT32;
@@ -977,7 +977,7 @@ enum SI_PB_FILE_TYPE_ENUM
 };
 typedef VOS_UINT32 SI_PB_FILE_TYPE_ENUM_UINT32;
 
-/* 这里的定义要与SI_PB_STORAGE_SM待的定义保持一致 */
+/* ??????????????SI_PB_STORAGE_SM???????????????? */
 enum SI_PB_TYPE_ENUM
 {
     PB_ADN            = 1,
@@ -1015,9 +1015,9 @@ typedef VOS_UINT32 SI_PB_SEND_REQ_STATUS_ENUM_UINT32;
 
 enum SI_PB_INIT_STATE_ENUM
 {
-    PB_NOT_INITIALISED = 0,                       /*未初始化完成*/
-    PB_INITIALISED     = 1,                       /*已初始化完成*/
-    PB_FILE_NOT_EXIST  = 2,                       /*电话本文件不存在*/
+    PB_NOT_INITIALISED = 0,                       /*????????????*/
+    PB_INITIALISED     = 1,                       /*????????????*/
+    PB_FILE_NOT_EXIST  = 2,                       /*????????????????*/
     PB_INIT_STATE_BUTT
 };
 typedef VOS_UINT8  SI_PB_INIT_STATE_ENUM_UINT8;
@@ -1059,15 +1059,15 @@ enum SI_PB_INIT_STATUS_ENUM
 typedef VOS_UINT32 SI_PB_INIT_STATUS_ENUM_UNIT32;
 
 /*****************************************************************************
-  4 STRUCT定义
+  4 STRUCT????
 *****************************************************************************/
 
-/*读取号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;                   /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;                   /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
@@ -1075,58 +1075,58 @@ typedef struct
     VOS_UINT16                  usIndex2;
 } SI_PB_READ_REQ_STRU;
 
-/*查询号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;                   /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;                   /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
 }SI_PB_QUERY_REQ_STRU;
 
-/*设置号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;        /* 消息名     */
-    VOS_UINT16                  usClient;         /*客户端ID*/
+    VOS_UINT32                  ulMsgName;        /* ??????     */
+    VOS_UINT16                  usClient;         /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
 } SI_PB_SET_REQ_STRU;
 
-/*添加号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;                   /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;                   /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
     SI_PB_RECORD_STRU           stRecord;
 }SI_PB_ADD_REP_STRU;
 
-/*更改号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名   */
-    VOS_UINT16                  usClient;              /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ??????   */
+    VOS_UINT16                  usClient;              /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
     SI_PB_RECORD_STRU           Record;
 }SI_PB_MODIFY_REP_STRU;
 
-/*删除号码请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /*消息名*/
-    VOS_UINT16                  usClient;           /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /*??????*/
+    VOS_UINT16                  usClient;           /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
@@ -1134,30 +1134,30 @@ typedef struct
     VOS_UINT16                  usReserved;
 }SI_PB_DELETE_REQ_STRU;
 
-/*更新号码文件请求消息结构*/
+/*????????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;       /* 消息名 */
-    VOS_UINT32                  ulFileNumber;     /*更新文件个数*/
+    VOS_UINT32                  ulMsgName;       /* ?????? */
+    VOS_UINT32                  ulFileNumber;     /*????????????*/
     SI_PB_REFRESH_ENUM_UNIT32   enRefreshType;
     VOS_UINT16                  pusFile[SI_PB_MAX_XDN];
 }SI_PB_REFRESH_REQ_STRU;
 
-/*查找姓名请求消息结构*/
+/*????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名 */
-    VOS_UINT16                  usClient;           /*客户端ID*/
+    VOS_UINT32                  ulMsgName;          /* ?????? */
+    VOS_UINT16                  usClient;           /*??????ID*/
     VOS_UINT8                   ucOpID;
     VOS_UINT8                   ucRsv;
     SI_PB_STORATE_TYPE          ulStorage;
-    VOS_UINT8                   ucLength;           /* 要匹配字段的长度 */
-    VOS_UINT8                   aucContent[243];    /* 要匹配的字段内容 */
+    VOS_UINT8                   ucLength;           /* ???????????????? */
+    VOS_UINT8                   aucContent[243];    /* ???????????????? */
 }SI_PB_SEARCH_REQ_STRU;
 
-/*EXT控制信息*/
+/*EXT????????*/
 typedef struct
 {
     VOS_UINT16                     usExtFlag;
@@ -1168,7 +1168,7 @@ typedef struct
     VOS_UINT8                      *pExtContent;
 }SI_EXT_CONTENT_STRU;
 
-/*电话本信息*/
+/*??????????*/
 typedef struct
 {
     SI_PB_TYPE_ENUM_UINT32         enPBType;
@@ -1179,14 +1179,14 @@ typedef struct
     VOS_UINT8                      ucNameLen;
     VOS_UINT8                      ucNumberLen;
     SI_PB_INIT_STATE_ENUM_UINT8    enInitialState;
-    VOS_UINT32                     ulExtInfoNum;            /* 对应的EXT文件控制信息编号 */
+    VOS_UINT32                     ulExtInfoNum;            /* ??????EXT???????????????? */
     VOS_UINT8*                     pIndex;
     VOS_UINT32                     ulContentSize;
     VOS_UINT8*                     pContent;
 }SI_PB_CONTENT_STRU;
 
 
-/*补充电话本信息*/
+/*??????????????*/
 typedef struct
 {
     SI_PB_ACTIVE_STATE_ENUM_UINT32 enActiveStatus;
@@ -1200,7 +1200,7 @@ typedef struct
     VOS_UINT8                      *pContent;
 }SI_ANR_CONTENT_STRU;
 
-/*Email电话本信息*/
+/*Email??????????*/
 typedef struct
 {
     SI_PB_ACTIVE_STATE_ENUM_UINT32 enActiveStatus;
@@ -1214,7 +1214,7 @@ typedef struct
     VOS_UINT8                      *pContent;
 }SI_EML_CONTENT_STRU;
 
-/*IAP文件信息*/
+/*IAP????????*/
 typedef struct
 {
     VOS_UINT16                     usTotalNum;
@@ -1224,17 +1224,17 @@ typedef struct
     VOS_UINT8                      *pIAPContent;
 }SI_IAP_CONTENT_STRU;
 
-/*复合电话本请求信息存储*/
+/*??????????????????????*/
 typedef struct
 {
     VOS_UINT16                  usANRExtIndex[SI_PB_ANR_MAX+1];
-    VOS_UINT8                   aucANRContent[SI_PB_ANR_MAX][SI_PB_ANR_LEN+3];/*ANR文件最长为17，不超过20*/
+    VOS_UINT8                   aucANRContent[SI_PB_ANR_MAX][SI_PB_ANR_LEN+3];/*ANR??????????17????????20*/
     VOS_UINT8                   aucANRExtContent[SI_PB_ANR_MAX][SI_PB_EXT_LEN+3];
     VOS_UINT8                   aucEMLContent[SI_PB_EMAIL_MAX_LEN];
     VOS_UINT8                   aucIAPContent[20];
 }SI_SPB_REQ_UINT_STRU;
 
-/*外部请求信息存储*/
+/*????????????????*/
 typedef struct
 {
     SI_PB_CNF_ENUM_UINT32       enPBEventType;
@@ -1253,7 +1253,7 @@ typedef struct
     VOS_UINT8                   aucEXTContent[SI_PB_EXT_LEN+1];
 }SI_PB_REQ_UINT_STRU;
 
-/*ADN、FDN、BDN或MSISDN信息存储*/
+/*ADN??FDN??BDN??MSISDN????????*/
 typedef struct
 {
     VOS_UINT16                  usFileID;
@@ -1263,29 +1263,29 @@ typedef struct
     VOS_UINT8                   aucRsv[3];
 }SI_PB_XDN_INFO_STRU;
 
-/*ANR信息存储*/
+/*ANR????????*/
 typedef struct
 {
     SI_PB_FILE_TYPE_ENUM_UINT32 enANRType;
-    VOS_UINT32                  ulANRTagNum;/*ANR的Tag在A9Tag中的位置，根据此位置，
-                                            结合IAP文件确定ANR和ADN记录对应关系*/
+    VOS_UINT32                  ulANRTagNum;/*ANR??Tag??A9Tag??????????????????????
+                                            ????IAP????????ANR??ADN????????????*/
     VOS_UINT16                  usANRFileID;
     VOS_UINT8                   ucRecordNum;
     VOS_UINT8                   ucRecordLen;
 }SI_PB_ANR_INFO_STRU;
 
-/*EMAIL信息存储*/
+/*EMAIL????????*/
 typedef struct
 {
     SI_PB_FILE_TYPE_ENUM_UINT32 enEMLType;
-    VOS_UINT32                  ulEMLTagNum;/*Email的Tag在A9Tag中的位置，根据此位置，
-                                            结合IAP文件确定Email和ADN记录对应关系*/
+    VOS_UINT32                  ulEMLTagNum;/*Email??Tag??A9Tag??????????????????????
+                                            ????IAP????????Email??ADN????????????*/
     VOS_UINT16                  usEMLFileID;
     VOS_UINT8                   ucRecordNum;
     VOS_UINT8                   ucRecordLen;
 }SI_PB_EML_INFO_STRU;
 
-/*IAP信息存储，见31.102第94页*/
+/*IAP????????????31.102??94??*/
 typedef struct
 {
     VOS_UINT16                  usIAPFileID;
@@ -1293,14 +1293,14 @@ typedef struct
     VOS_UINT8                   ucRecordLen;
 }SI_PB_IAP_INFO_STRU;
 
-/*UID信息存储*/
+/*UID????????*/
 typedef struct
 {
     VOS_UINT16                  usFileID;
     VOS_UINT16                  usRsv;
 }SI_PB_UID_INFO_STRU;
 
-/*PBC信息存储，用于3G重同步*/
+/*PBC??????????????3G??????*/
 typedef struct
 {
     VOS_UINT16   usFileID;
@@ -1314,17 +1314,17 @@ typedef struct
     VOS_UINT8  aucRecord[258];
 }SI_PB_PBC_UPDATE_STRU;
 
-/*电话本SEARCH控制信息*/
+/*??????SEARCH????????*/
 typedef struct
 {
-    VOS_UINT16  usReadOffset;       /* 以SEARCH方式得到的要初始化记录的偏移量 */
-    VOS_UINT16  usReadNum;          /* 以SEARCH方式得到的要初始的记录数 */
-    VOS_UINT16  usEfId;             /* 以SEARCH方式处理的当前文件ID */
+    VOS_UINT16  usReadOffset;       /* ??SEARCH?????????????????????????????? */
+    VOS_UINT16  usReadNum;          /* ??SEARCH???????????????????????? */
+    VOS_UINT16  usEfId;             /* ??SEARCH??????????????????ID */
     VOS_UINT16  usRsv;
-    VOS_UINT8   aucReadString[256]; /* 以SEARCH方式得到的要初始化的记录 */
+    VOS_UINT8   aucReadString[256]; /* ??SEARCH???????????????????????? */
 }SI_PB_SEARCH_CTRL_STRU;
 
-/*电话本控制信息*/
+/*??????????????*/
 typedef struct
 {
 
@@ -1340,7 +1340,7 @@ typedef struct
     SI_PB_UID_INFO_STRU            astUIDInfo[SI_PB_ADNMAX];
     SI_PB_PBC_INFO_STRU            astPBCInfo[SI_PB_ADNMAX];
     VOS_UINT32                     ulPSCValue;
-    VOS_UINT32                     ulTotalUsed;/*复合电话本使用的总记录数*/
+    VOS_UINT32                     ulTotalUsed;/*????????????????????????*/
     SI_PB_STORATE_TYPE             enPBCurType;
     VOS_UINT16                     usCCValue;
     VOS_UINT16                     usPUIDValue;
@@ -1379,18 +1379,18 @@ typedef VOS_UINT32  (*PPBREQ)(VOS_VOID);
 
 typedef struct
 {
-    VOS_UINT32                  ulMsgType;        /*处理消息类型*/
-    PPBPROC                     pProcFun;        /*对应处理函数*/
+    VOS_UINT32                  ulMsgType;        /*????????????*/
+    PPBPROC                     pProcFun;        /*????????????*/
 }SI_PB_PROC_LIST_STRU;
 
 typedef struct
 {
-    VOS_UINT32                 ulMsgType;        /*处理消息类型*/
-    PPBREQ                     pReqFun;         /*消息分发函数*/
-    PPBINITPROC                pInitProcFun;        /*对应处理函数*/
+    VOS_UINT32                 ulMsgType;        /*????????????*/
+    PPBREQ                     pReqFun;         /*????????????*/
+    PPBINITPROC                pInitProcFun;        /*????????????*/
 }SI_PB_INIT_LIST_STRU;
 
-/*Ccpu发送的同步全局变量的消息*/
+/*Ccpu????????????????????????*/
 typedef struct
 {
     VOS_UINT32                 ulIndexAddr;
@@ -1400,7 +1400,7 @@ typedef struct
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名 */
+    VOS_UINT32                  ulMsgName;          /* ?????? */
     SI_PB_CONTROL_STRU          stPBCtrlInfo;
     SI_PB_CTRL_INFO_ST          stPBConfigInfo;
     SI_PB_CONTENT_STRU          astPBContent[SI_PB_MAX_NUMBER];
@@ -1417,11 +1417,11 @@ typedef struct
     VOS_UINT32                  ulIAPContentAddr;
 }SI_PB_UPDATEGLOBAL_IND_STRU;
 
-/*Ccpu发送的当前电话本设置的消息*/
+/*Ccpu??????????????????????????*/
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                  ulMsgName;          /* 消息名 */
+    VOS_UINT32                  ulMsgName;          /* ?????? */
     SI_PB_STORATE_TYPE          enPBCurType;
 }SI_PB_SETPB_IND_STRU;
 
@@ -1429,18 +1429,18 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                  usEfId;         /* 文件ID */
-    VOS_UINT8                   ucRecordNum;    /* 文件记录号，二进制文件填0 */
-    VOS_UINT8                   ucRsv;          /* 保留 */
+    VOS_UINT16                  usEfId;         /* ????ID */
+    VOS_UINT8                   ucRecordNum;    /* ????????????????????????0 */
+    VOS_UINT8                   ucRsv;          /* ???? */
 }SI_PB_GETFILE_INFO_STRU;
 
 typedef struct
 {
-    VOS_UINT16                  usEfId;         /* 文件ID */
-    VOS_UINT8                   ucRecordNum;    /* 文件记录号，二进制文件填0 */
-    VOS_UINT8                   ucRsv;          /* 保留 */
-    VOS_UINT32                  ulEfLen ;       /* 更新数据长度 */
-    VOS_UINT8                   *pucEfContent;  /* 更新数据内容 */
+    VOS_UINT16                  usEfId;         /* ????ID */
+    VOS_UINT8                   ucRecordNum;    /* ????????????????????????0 */
+    VOS_UINT8                   ucRsv;          /* ???? */
+    VOS_UINT32                  ulEfLen ;       /* ???????????? */
+    VOS_UINT8                   *pucEfContent;  /* ???????????? */
 }SI_PB_SETFILE_INFO_STRU;
 
 typedef struct
@@ -1453,7 +1453,7 @@ typedef struct
 }SI_PB_SPBDATA_STRU;
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 extern SI_PB_CONTENT_STRU       gastPBContent[SI_PB_MAX_NUMBER];
 
@@ -1489,7 +1489,7 @@ extern VOS_UINT8                gucPBCStatus;
 
 
 /*****************************************************************************
-  6 函数声明
+  6 ????????
 *****************************************************************************/
 #if (OSA_CPU_ACPU == VOS_OSA_CPU)
 extern VOS_VOID SI_PB_BcdToAscii(VOS_UINT8 ucBcdNumLen,VOS_UINT8 *pucBcdNum, VOS_UINT8 *pucAsciiNum, VOS_UINT8 *pucLen);

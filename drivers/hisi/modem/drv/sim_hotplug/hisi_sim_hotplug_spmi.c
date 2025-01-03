@@ -513,7 +513,7 @@ static int sim_read_pmu_dts(struct hisi_sim_hotplug_info *info, struct device_no
     }
     info->pmu_ldo12_vset_value = pmu_ldo12_vset_value;
 
-    /*Ϊ\C1\CB\C7\F8\B7\D6v4\BA\CDv4֮ǰ\B5İ汾\A3\ACĬ\C8\CF\C5\E4\D6\C3Ϊ1\A3\ACv4\B7\D6֧\D2Ժ\F3\D3\C9\D6ն˶\A8\D6\C6DTS,\B8\F9\BE\DDDTSʵ\BC\CA\C7\E9\BF\F6\B8\B3ֵ*/
+    /*??\C1\CB\C7\F8\B7\D6v4\BA\CDv4????\B5?????\A3\AC??\C8\CF\C5\E4\D6\C3??1\A3\ACv4\B7\D6??\D2??\F3\D3\C9\D6????\A8\D6\C6DTS,\B8\F9\BE\DDDTS??\BC\CA\C7\E9\BF\F6\B8\B3??*/
     ret = of_property_read_u32(np, "pmu_ldo12_pull_down", &pmu_ldo12_pull_down);
     if (ret < 0)
     {
@@ -525,7 +525,7 @@ static int sim_read_pmu_dts(struct hisi_sim_hotplug_info *info, struct device_no
         LOGI("read pmu_ldo12_pull_down use dts value 0x%x\n",pmu_ldo12_pull_down);
         info->pmu_ldo12_pull_down = pmu_ldo12_pull_down;
     }
-    /*\D7\EE\BA\F3һ\B8\F6\B7\D6֧\BF\C9\C4ܶ\C1\B2\BB\B5\BD\B6\D4Ӧ\B5\C4dts\A3\AC\B2\BB\C5ж\CFret\A3\AC\C4\DC\D7ߵ\BD\D7\EE\BA\F3˵\C3\F7ǰ\C3\E6\D2Ѿ\AD\B7\B5\BBسɹ\A6*/
+    /*\D7\EE\BA\F3??\B8\F6\B7\D6??\BF\C9\C4??\C1\B2\BB\B5\BD\B6\D4??\B5\C4dts\A3\AC\B2\BB\C5??\CFret\A3\AC\C4\DC\D7??\BD\D7\EE\BA\F3??\C3\F7??\C3\E6\D2??\AD\B7\B5\BB????\A6*/
     LOGI("pmu_status1_address: 0x%02X, pmu_irq_address: 0x%02X, pmu_irq_mask_address: 0x%02X, "
             "pmu_sim_ctrl_address: 0x%02X, pmu_sim_deb_ctrl_address: 0x%02X\n",
             pmu_status1_address, pmu_irq_address, pmu_irq_mask_address, pmu_sim_ctrl_address, pmu_sim_deb_ctrl_address);

@@ -59,13 +59,13 @@
 #define hds_debug(fmt,...)	
 
 
-/*错误码定义*/
-#define HDS_CMD_ERROR          (0x00abcd00 + 0x1)  /*cmdid未注册错误码*/
-#define HDS_PRINT_SW_ERR       (0x00abcd00 + 0x2)  /*工具未连接或print开关关闭或打印级别错误*/
-#define HDS_PRINT_RE_SUCC      (0x00abcd00 + 0x3)  /*print数据上报成功标志*/
-#define HDS_TRANS_SW_ERR       (0x00abcd00 + 0x4)  /*工具未连接或trans开关关闭错误码*/
-#define HDS_TRANS_RE_SUCC      (0x00abcd00 + 0x5)  /*trans数据上报成功标志*/
-#define HDS_TRANS_CFG_OFF      (0x00abcd00 + 0x6)  /*trans数据上报功能关闭*/
+/*??????????*/
+#define HDS_CMD_ERROR          (0x00abcd00 + 0x1)  /*cmdid????????????*/
+#define HDS_PRINT_SW_ERR       (0x00abcd00 + 0x2)  /*????????????print??????????????????????*/
+#define HDS_PRINT_RE_SUCC      (0x00abcd00 + 0x3)  /*print????????????????*/
+#define HDS_TRANS_SW_ERR       (0x00abcd00 + 0x4)  /*????????????trans??????????????*/
+#define HDS_TRANS_RE_SUCC      (0x00abcd00 + 0x5)  /*trans????????????????*/
+#define HDS_TRANS_CFG_OFF      (0x00abcd00 + 0x6)  /*trans????????????????*/
 #define HDS_PRINT_RECURSION    (0x00abcd00 + 0x7)
 #define BSP_HDS_CMD_NUM_MAX    (50)
 #define HDS_GET_MSG_DATA_CFG(pstReq, pData, pReqData) \
@@ -86,13 +86,13 @@ typedef struct
 
 typedef struct
 {
-    u32         ulSSId;         /* 数据产生的CPU ID */
-    u32         ulMsgType;      /* 所属组件 */
-    u32         ulMode;         /* 模式 */
-    u32         ulSubType;      /* 子类型，DIAG_MSG_SUB_TYPE_U32 */
-    u32         ulDirection;    /* 上报消息的方向 */
+    u32         ulSSId;         /* ??????????CPU ID */
+    u32         ulMsgType;      /* ???????? */
+    u32         ulMode;         /* ???? */
+    u32         ulSubType;      /* ????????DIAG_MSG_SUB_TYPE_U32 */
+    u32         ulDirection;    /* ?????????????? */
     u32         ulModemid;
-    u32         ulMsgId;        /* 低16位有效 */
+    u32         ulMsgId;        /* ??16?????? */
     u32         ulTransId;      /* TransId */
 }hds_cnf_stru;
 

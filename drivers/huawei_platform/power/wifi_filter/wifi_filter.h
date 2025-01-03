@@ -6,9 +6,9 @@
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
 typedef struct {
-    unsigned short protocol;    //协议类型
-    unsigned short port;  //目的端口号
-    unsigned int filter_cnt;    //过滤报文数
+    unsigned short protocol;    //????????
+    unsigned short port;  //??????????
+    unsigned int filter_cnt;    //??????????
 //    unsigned int uid;
 } hw_wifi_filter_item;
 
@@ -21,7 +21,7 @@ struct hw_wlan_filter_ops{
 
 
 /******************************************************************************
-   2 函数声明
+   2 ????????
 ******************************************************************************/
 /*---------driver----------*/
 int hw_register_wlan_filter(struct hw_wlan_filter_ops *ops);

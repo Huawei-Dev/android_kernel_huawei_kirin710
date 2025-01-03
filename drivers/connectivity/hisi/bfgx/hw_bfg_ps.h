@@ -42,7 +42,7 @@
 /* FIXME: it depends on device's rule, it's 46+5 now,
  *        and should be modified if it's changed in device end.
 */
-#define NOBT_FRAME_EXTRA_SPACE      (6)         /* 预留6字节余量 */
+#define NOBT_FRAME_EXTRA_SPACE      (6)         /* ????6???????? */
 #define MAX_NOBT_FRAME_LEN          (52 + NOBT_FRAME_EXTRA_SPACE)/* FGNI max frame len */
 #define MAX_LAST_WORD_FRAME_LEN     (114 + NOBT_FRAME_EXTRA_SPACE)/* FGNI max frame len */
 
@@ -100,7 +100,7 @@
 #define MASK_RST_DEVICE             ('0')
 #define CLEAR_EXCEPTION_CNT         ('0')
 
-/*BFGX正常通信使用3M波特率，host唤醒device时使用115200波特率，单红外时使用921600波特率*/
+/*BFGX????????????3M????????host????device??????115200????????????????????921600??????*/
 //#define DEFAULT_BAUD_RATE           (3000000)
 #define DEFAULT_BAUD_RATE           (5000000)
 #define WKUP_DEV_BAUD_RATE          (115200)
@@ -187,33 +187,33 @@
 
 enum TTY_COMPLETE_TYPE_ENUM
 {
-    TTY_LDISC_UNINSTALL    = 0,   /* 通知octty关闭uart */
-    TTY_LDISC_INSTALL      = 1,   /* 通知octty打开uart */
-    TTY_LDISC_RECONFIG     = 2,   /* 通知octty修改uart的配置参数，波特率和流控 */
+    TTY_LDISC_UNINSTALL    = 0,   /* ????octty????uart */
+    TTY_LDISC_INSTALL      = 1,   /* ????octty????uart */
+    TTY_LDISC_RECONFIG     = 2,   /* ????octty????uart???????????????????????? */
 
     TTY_LDISC_TYPE_BUTT,
 };
 
 enum BFGN_DATA_MSG_TYPE_ENUM
 {
-    SYS_MSG             = 0x00, /* 系统串口消息 */
-    BT_MSG              = 0x01, /* BT串口消息 */
-    GNSS_First_MSG      = 0x02, /* GNSS串口消息，第一个分段消息 */
-    GNSS_Common_MSG     = 0x03, /* GNSS串口消息，中间分段消息 */
-    GNSS_Last_MSG       = 0x04, /* GNSS串口消息，最后一个分段消息 */
-    FM_FIRST_MSG        = 0x05, /* FM串口消息，第一个分段消息 */
-    FM_COMMON_MSG       = 0x06, /* FM串口消息，中间分段消息 */
-    FM_LAST_MSG         = 0x07, /* FM串口消息，最后一个分段消息 */
-    IR_FIRST_MSG        = 0x08, /* 红外串口消息，第一个分段消息 */
-    IR_COMMON_MSG       = 0x09, /* 红外串口消息，中间分段消息 */
-    IR_LAST_MSG         = 0x0A, /* 红外串口消息，最后一个分段消息 */
-    NFC_First_MSG       = 0x0B, /* NFC串口消息，第一个分段消息 */
-    NFC_Common_MSG      = 0x0C, /* NFC串口消息，中间分段消息 */
-    NFC_Last_MSG        = 0x0D, /* NFC串口消息，最后一个分段消息 */
-    OML_MSG             = 0x0E, /* 可维可测消息 */
-    MEM_DUMP_SIZE       = 0x0f, /* bfgx异常时，要dump的mem长度消息 */
-    MEM_DUMP            = 0x10, /* bfgx异常时，内存dump消息 */
-    WIFI_MEM_DUMP       = 0x11, /* UART READ WIFI MEM，内存dump消息 */
+    SYS_MSG             = 0x00, /* ???????????? */
+    BT_MSG              = 0x01, /* BT???????? */
+    GNSS_First_MSG      = 0x02, /* GNSS???????????????????????? */
+    GNSS_Common_MSG     = 0x03, /* GNSS?????????????????????? */
+    GNSS_Last_MSG       = 0x04, /* GNSS?????????????????????????? */
+    FM_FIRST_MSG        = 0x05, /* FM???????????????????????? */
+    FM_COMMON_MSG       = 0x06, /* FM?????????????????????? */
+    FM_LAST_MSG         = 0x07, /* FM?????????????????????????? */
+    IR_FIRST_MSG        = 0x08, /* ???????????????????????????? */
+    IR_COMMON_MSG       = 0x09, /* ?????????????????????????? */
+    IR_LAST_MSG         = 0x0A, /* ?????????????????????????????? */
+    NFC_First_MSG       = 0x0B, /* NFC???????????????????????? */
+    NFC_Common_MSG      = 0x0C, /* NFC?????????????????????? */
+    NFC_Last_MSG        = 0x0D, /* NFC?????????????????????????? */
+    OML_MSG             = 0x0E, /* ???????????? */
+    MEM_DUMP_SIZE       = 0x0f, /* bfgx??????????dump??mem???????? */
+    MEM_DUMP            = 0x10, /* bfgx????????????dump???? */
+    WIFI_MEM_DUMP       = 0x11, /* UART READ WIFI MEM??????dump???? */
 
     MSG_BUTT,
 };
@@ -232,10 +232,10 @@ enum platform_event_enum
     SYS_CFG_CLOSE_NFC                  = 7,
     SYS_CFG_OPEN_IR                    = 8,
     SYS_CFG_CLOSE_IR                   = 9,
-    SYS_CFG_OPEN_WIFI                  = 0xa,     /* host通过uart打开WCPU */
-    SYS_CFG_CLOSE_WIFI                 = 0xb,     /* host通过uart关闭WCPU */
-    SYS_CFG_READ_STACK                 = 0xc,     /* host通过uart读栈 */
-    SYS_CFG_QUERY_RF_TEMP              = 0xd,     /* host通过uart查询rf温度 */
+    SYS_CFG_OPEN_WIFI                  = 0xa,     /* host????uart????WCPU */
+    SYS_CFG_CLOSE_WIFI                 = 0xb,     /* host????uart????WCPU */
+    SYS_CFG_READ_STACK                 = 0xc,     /* host????uart???? */
+    SYS_CFG_QUERY_RF_TEMP              = 0xd,     /* host????uart????rf???? */
     SYS_CFG_ALLOWDEV_SLP               = 0xe,     /* host allow device sleep */
     SYS_CFG_DISALLOW_SLP               = 0xf,     /* host disallow device sleep */
 	SYS_CFG_SHUTDOWN_SLP               = 0x10,    /* shutdown bcpu */
@@ -249,16 +249,16 @@ enum platform_event_enum
 	SYS_CFG_NFC_DISABLE_PM             = 0x18,    /* disable NFC dev lowpower feature */
 
 	SYS_CFG_DEV_PANIC                  = 0x19,    /* cause device into exception */
-	SYS_CFG_DUMP_RESET_WCPU            = 0x1a,    /* host通过uart不掉电复位WCPU */
+	SYS_CFG_DUMP_RESET_WCPU            = 0x1a,    /* host????uart??????????WCPU */
 
     SYS_CFG_HALT_WCPU                  = 0x1b,    /* halt WCPU */
-    SYS_CFG_READ_WLAN_PUB_REG          = 0x1c,    /* 读取wcpu的公共寄存器 */
-    SYS_CFG_READ_WLAN_PRIV_REG         = 0x1d,    /* 读取wcpu的私有寄存器 */
-    SYS_CFG_READ_WLAN_MEM              = 0x1e,    /* 读取wcpu的mem */
-    SYS_CFG_EXCEP_RESET_WCPU           = 0x1f,    /* wifi DFR WCPU复位 */
+    SYS_CFG_READ_WLAN_PUB_REG          = 0x1c,    /* ????wcpu???????????? */
+    SYS_CFG_READ_WLAN_PRIV_REG         = 0x1d,    /* ????wcpu???????????? */
+    SYS_CFG_READ_WLAN_MEM              = 0x1e,    /* ????wcpu??mem */
+    SYS_CFG_EXCEP_RESET_WCPU           = 0x1f,    /* wifi DFR WCPU???? */
 
-    SYS_CFG_SET_UART_LOOP_HANDLER      = 0x20,    /* 设置device侧uart环回处理函数 */
-    SYS_CFG_SET_UART_LOOP_FINISH       = 0x21,    /* UART环回test ok，恢复gnss消息处理函数 */
+    SYS_CFG_SET_UART_LOOP_HANDLER      = 0x20,    /* ????device??uart???????????? */
+    SYS_CFG_SET_UART_LOOP_FINISH       = 0x21,    /* UART????test ok??????gnss???????????? */
 
     PL_EVT_BUTT
 };
@@ -266,33 +266,33 @@ enum platform_event_enum
 /* below is rx sys content define from device */
 enum SYS_INF_MSG_VALUE_ENUM
 {
-    SYS_INF_PF_INIT                 =  0x00,        /* 平台软件初始化完成 */
-    SYS_INF_BT_INIT                 =  0x01,        /* BT软件初始化完成 */
-    SYS_INF_GNSS_INIT               =  0x02,        /* GNSS软件初始化完成 */
-    SYS_INF_FM_INIT                 =  0x03,        /* FM软件初始化完成 */
-    SYS_INF_BT_DISABLE              =  0x04,        /* BT禁能 */
-    SYS_INF_GNSS_DISABLE            =  0x05,        /* GNSS禁能 */
-    SYS_INF_FM_DISABLE              =  0x06,        /* FM禁能 */
-    SYS_INF_BT_EXIT                 =  0x07,        /* BT退出 */
-    SYS_INF_GNSS_EXIT               =  0x08,        /* GNSS退出 */
-    SYS_INF_FM_EXIT                 =  0x09,        /* FM退出 */
-    SYS_INF_GNSS_WAIT_DOWNLOAD      =  0x0A,        /* 等待GNSS代码下载 */
-    SYS_INF_GNSS_DOWNLOAD_COMPLETE  =  0x0B,        /* GNSS代码下载完毕 */
-    SYS_INF_BFG_HEART_BEAT          =  0x0C,        /* 心跳信号 */
-    SYS_INF_DEV_AGREE_HOST_SLP      =  0x0D,        /* device回复host可睡 */
-    SYS_INF_DEV_NOAGREE_HOST_SLP    =  0x0E,        /* device回复host不可睡 */
-    SYS_INF_WIFI_OPEN               =  0x0F,        /* WCPU上电完成 */
-    SYS_INF_IR_INIT                 =  0x10,        /* IR软件初始化完成 */
-    SYS_INF_IR_EXIT                 =  0x11,        /* IR退出 */
-    SYS_INF_NFC_INIT                =  0x12,        /* NFC软件初始化完成 */
-    SYS_INF_NFC_EXIT                =  0x13,        /* NFC退出 */
-    SYS_INF_WIFI_CLOSE              =  0x14,        /* WCPU下电完成*/
-    SYS_INF_RF_TEMP_NORMAL          =  0x15,        /* RF温度正常*/
-    SYS_INF_RF_TEMP_OVERHEAT        =  0x16,        /* RF温度过热*/
-    SYS_INF_MEM_DUMP_COMPLETE       =  0x17,        /* bfgx异常时，MEM DUMP已完成 */
-    SYS_INF_WIFI_MEM_DUMP_COMPLETE  =  0X18,        /* bfgx异常时，MEM DUMP已完成 */
+    SYS_INF_PF_INIT                 =  0x00,        /* ?????????????????? */
+    SYS_INF_BT_INIT                 =  0x01,        /* BT?????????????? */
+    SYS_INF_GNSS_INIT               =  0x02,        /* GNSS?????????????? */
+    SYS_INF_FM_INIT                 =  0x03,        /* FM?????????????? */
+    SYS_INF_BT_DISABLE              =  0x04,        /* BT???? */
+    SYS_INF_GNSS_DISABLE            =  0x05,        /* GNSS???? */
+    SYS_INF_FM_DISABLE              =  0x06,        /* FM???? */
+    SYS_INF_BT_EXIT                 =  0x07,        /* BT???? */
+    SYS_INF_GNSS_EXIT               =  0x08,        /* GNSS???? */
+    SYS_INF_FM_EXIT                 =  0x09,        /* FM???? */
+    SYS_INF_GNSS_WAIT_DOWNLOAD      =  0x0A,        /* ????GNSS???????? */
+    SYS_INF_GNSS_DOWNLOAD_COMPLETE  =  0x0B,        /* GNSS???????????? */
+    SYS_INF_BFG_HEART_BEAT          =  0x0C,        /* ???????? */
+    SYS_INF_DEV_AGREE_HOST_SLP      =  0x0D,        /* device????host???? */
+    SYS_INF_DEV_NOAGREE_HOST_SLP    =  0x0E,        /* device????host?????? */
+    SYS_INF_WIFI_OPEN               =  0x0F,        /* WCPU???????? */
+    SYS_INF_IR_INIT                 =  0x10,        /* IR?????????????? */
+    SYS_INF_IR_EXIT                 =  0x11,        /* IR???? */
+    SYS_INF_NFC_INIT                =  0x12,        /* NFC?????????????? */
+    SYS_INF_NFC_EXIT                =  0x13,        /* NFC???? */
+    SYS_INF_WIFI_CLOSE              =  0x14,        /* WCPU????????*/
+    SYS_INF_RF_TEMP_NORMAL          =  0x15,        /* RF????????*/
+    SYS_INF_RF_TEMP_OVERHEAT        =  0x16,        /* RF????????*/
+    SYS_INF_MEM_DUMP_COMPLETE       =  0x17,        /* bfgx????????MEM DUMP?????? */
+    SYS_INF_WIFI_MEM_DUMP_COMPLETE  =  0X18,        /* bfgx????????MEM DUMP?????? */
     SYS_INF_UART_HALT_WCPU          =  0x19,        /* uart halt wcpu ok*/
-    SYS_INF_UART_LOOP_SET_DONE      =  0x1a,        /* device 设置uart环回ok */
+    SYS_INF_UART_LOOP_SET_DONE      =  0x1a,        /* device ????uart????ok */
 
     /* NOTES: add sysmsg type before this, do NOT modify the following */
     SYS_INF_HB_TIMESTAMP_LEASTVAL   =  0x80,        /* take 128~255 as device heart beat time stamp */
@@ -381,7 +381,7 @@ struct st_bfgx_data
     struct sk_buff_head rx_queue;
     struct completion wait_opened;
     struct completion wait_closed;
-    struct bfgx_sepreted_rx_st sepreted_rx;  /* bfgx分包接收数据结构 */
+    struct bfgx_sepreted_rx_st sepreted_rx;  /* bfgx???????????????? */
     wait_queue_head_t rx_wait;               /* wait queue for rx packet */
     atomic_t subsys_state;
 };

@@ -48,7 +48,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "product_config.h"
 #include "Fc.h"
@@ -70,25 +70,25 @@
 #include "FcACore.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_ACORE_FLOW_CTRL_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
-/* A核流控配置实体 */
+/* A?????????????? */
 ACORE_FC_CFG_NV_STRU                    g_stFcAcoreCfg;
 
-/* 网桥速率统计使用的变量 */
+/* ?????????????????????? */
 FC_BRIDGE_RATE_STRU                     g_stFcBridgeRate;
 
-/* CDS流控使用的全局变量，FC IdRAB映射关系 */
+/* CDS????????????????????FC IdRAB???????? */
 
 FC_RAB_MAPPING_INFO_SET_STRU            g_astFcRabMappingInfoSet[MODEM_ID_BUTT];
 
-/* CPU流控使用，包括平滑次数，定时器 */
+/* CPU?????????????????????????????? */
 FC_CPU_CTRL_STRU                        g_stFcCpuACtrl;
 
 FC_CPU_DRV_ASSEM_CONFIG_PARA_STRU       g_stCpuDriverAssePara =
@@ -98,7 +98,7 @@ FC_CPU_DRV_ASSEM_CONFIG_PARA_STRU       g_stCpuDriverAssePara =
     5,
     0,
     {
-    /* cpuload, PC驱动组包时延，UE驱动TX组包个数, UE驱动TX时延，UE驱动RX组包个数，UE驱动RX组包时延，保留域 */
+    /* cpuload, PC??????????????UE????TX????????, UE????TX??????UE????RX??????????UE????RX???????????????? */
         {
             85,{20, 40, 10, 10, 10, 56, {0, 0}}
         },
@@ -117,7 +117,7 @@ FC_CPU_DRV_ASSEM_CONFIG_PARA_STRU       g_stCpuDriverAssePara =
     }
 };
 
-/* 驱动组包参数实体结构 */
+/* ???????????????????? */
 FC_CPU_DRV_ASSEM_PARA_ENTITY_STRU  g_stDrvAssemParaEntity = {0, 0, 0, 0, 0, {0, 0, 0, 0}, {100, {0, 0, 0, 0, 0, 0, {0, 0}}}, VOS_NULL_PTR, VOS_NULL_PTR};
 
 VOS_SPINLOCK                       g_stFcMemSpinLock;
@@ -181,7 +181,7 @@ STATIC VOS_UINT32  FC_GPRS_DownProcess( VOS_VOID );
 STATIC VOS_UINT32  FC_GPRS_UpProcess( VOS_VOID );
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -202,7 +202,7 @@ STATIC VOS_UINT32  FC_BRIDGE_GetRate( VOS_VOID )
 
 STATIC VOS_UINT32  FC_RmRateJudge( VOS_VOID )
 {
-    /* 如果网桥速率超过门限，则认为是速率高引起CPU高 */
+    /* ????????????????????????????????????????CPU?? */
     if (g_stFcBridgeRate.ulRate > g_stFcAcoreCfg.stFcCfgCpuA.ulRmRateThreshold)
     {
         return VOS_TRUE;
@@ -214,7 +214,7 @@ STATIC VOS_UINT32  FC_RmRateJudge( VOS_VOID )
 
 VOS_UINT32 FC_ACORE_RegDrvAssemFunc(FC_ACORE_DRV_ASSEMBLE_PARA_FUNC pFcDrvSetAssemParaFuncUe, FC_ACORE_DRV_ASSEMBLE_PARA_FUNC pFcDrvSetAssemParaFuncPc)
 {
-    /* ADS接口已经删除，后续启用该功能时寻找适合的接口 */
+    /* ADS???????????????????????????????????????????? */
     
     /*FC_ADS_DRV_ASSEM_STRU stFcAdsAssemEntity;
 
@@ -272,7 +272,7 @@ STATIC VOS_VOID FC_DrvAssemInit(VOS_VOID)
 
     ulRst = GUCTTF_NV_Read(MODEM_ID_0, en_NV_Item_FC_ACPU_DRV_ASSEMBLE_PARA, &stCpuDrvAssemPara, (VOS_UINT32)sizeof(FC_CPU_DRV_ASSEM_PARA_NV_STRU));
 
-    /* NV如果读取失败使用默认值 */
+    /* NV?????????????????????? */
     if (NV_OK != ulRst)
     {
         FC_LOG(PS_PRINT_ERROR, "FC_DrvAssemInit Read NV fail!\n");
@@ -284,29 +284,29 @@ STATIC VOS_VOID FC_DrvAssemInit(VOS_VOID)
     g_stDrvAssemParaEntity.ulCurLev                 = FC_ACPU_DRV_ASSEM_LEV_1;
     g_stDrvAssemParaEntity.ucSetDrvFailCnt          = 0;
 
-    /* NV的长度与结构体的长度定义不一样只拷NV的部分 */
+    /* NV??????????????????????????????????NV?????? */
     PSACORE_MEM_CPY(&g_stCpuDriverAssePara, (VOS_UINT32)sizeof(FC_CPU_DRV_ASSEM_PARA_NV_STRU), &stCpuDrvAssemPara, (VOS_UINT32)sizeof(FC_CPU_DRV_ASSEM_PARA_NV_STRU));
 }
 
 
 STATIC VOS_VOID FC_JudgeAssemSmoothFactor(FC_CPU_DRV_ASSEM_PARA_STRU *pstDrvAssemPara)
 {
-    /* 平滑系数计算，连续多次超过才做出调整 */
+    /* ???????????????????????????????????? */
     if (g_stDrvAssemParaEntity.stCurAssemPara.ulCpuLoad > pstDrvAssemPara->ulCpuLoad)
     {
-        /* 下调档位平滑 */
+        /* ???????????? */
         g_stDrvAssemParaEntity.ucSmoothCntDown++;
         g_stDrvAssemParaEntity.ucSmoothCntUp = 0;
     }
     else if (g_stDrvAssemParaEntity.stCurAssemPara.ulCpuLoad < pstDrvAssemPara->ulCpuLoad)
     {
-        /* 上调档位平滑 */
+        /* ???????????? */
         g_stDrvAssemParaEntity.ucSmoothCntUp++;
         g_stDrvAssemParaEntity.ucSmoothCntDown = 0;
     }
     else
     {
-        /* 如果需要调整档已经与当前相同，平滑系数清零 */
+        /* ?????????????????????????????????????????? */
         g_stDrvAssemParaEntity.ucSmoothCntUp    = 0;
         g_stDrvAssemParaEntity.ucSmoothCntDown  = 0;
     }
@@ -330,12 +330,12 @@ STATIC FC_CPU_DRV_ASSEM_PARA_STRU* FC_GetCurrentAssemPara(VOS_UINT32 ulAssemLev)
 {
     FC_CPU_DRV_ASSEM_PARA_STRU *pstDrvAssemPara;
 
-    /* 向上调整一步调到位 */
+    /* ?????????????????? */
     if (g_stDrvAssemParaEntity.ucSmoothCntUp >= g_stCpuDriverAssePara.ucSmoothCntUpLev)
     {
         g_stDrvAssemParaEntity.ulCurLev = ulAssemLev;
     }
-    /* 向下调整一个档位一个档位调整 */
+    /* ???????????????????????????? */
     else if (g_stDrvAssemParaEntity.ucSmoothCntDown >= g_stCpuDriverAssePara.ucSmoothCntDownLev)
     {
         if (g_stDrvAssemParaEntity.ulCurLev < (FC_ACPU_DRV_ASSEM_LEV_BUTT - 1))
@@ -381,16 +381,16 @@ VOS_UINT32  FC_MNTN_TraceDrvAssemPara(FC_DRV_ASSEM_PARA_STRU *pstDrvAssenPara)
 
 STATIC VOS_VOID FC_DoJudgeDrvAssem(FC_CPU_DRV_ASSEM_PARA_STRU *pstDrvAssemPara)
 {
-    /* 使能开关打开 */
+    /* ???????????? */
     if (FC_ACPU_DRV_ASSEM_PC_ON_MASK == (FC_ACPU_DRV_ASSEM_PC_ON_MASK & g_stCpuDriverAssePara.ucEnableMask))
     {
         if (VOS_NULL_PTR != g_stDrvAssemParaEntity.pDrvSetAssemParaFuncPc)
         {
-            /* 调用回调函数调整驱动组包参数，这里调整PC侧组包方案 */
+            /* ??????????????????????????????????????PC?????????? */
             if (VOS_OK != g_stDrvAssemParaEntity.pDrvSetAssemParaFuncPc(&(pstDrvAssemPara->stDrvAssemPara)))
             {
                 FC_LOG(PS_PRINT_ERROR, "Set Driver Assemble parameter fail!\n");
-                /* 设置失败计数 */
+                /* ???????????? */
                 g_stDrvAssemParaEntity.ucSetDrvFailCnt++;
 
                 return;
@@ -398,17 +398,17 @@ STATIC VOS_VOID FC_DoJudgeDrvAssem(FC_CPU_DRV_ASSEM_PARA_STRU *pstDrvAssemPara)
         }
     }
 
-    /* 组包系数清零 */
+    /* ???????????? */
     g_stDrvAssemParaEntity.ucSmoothCntUp    = 0;
     g_stDrvAssemParaEntity.ucSmoothCntDown  = 0;
 
-    /* 设置失败次数清零 */
+    /* ???????????????? */
     g_stDrvAssemParaEntity.ucSetDrvFailCnt  = 0;
 
-    /* 保存当前档位信息 */
+    /* ???????????????? */
     PSACORE_MEM_CPY(&g_stDrvAssemParaEntity.stCurAssemPara, (VOS_UINT32)sizeof(FC_CPU_DRV_ASSEM_PARA_STRU), pstDrvAssemPara, (VOS_UINT32)sizeof(FC_CPU_DRV_ASSEM_PARA_STRU));
 
-    /* 可维可测 */
+    /* ???????? */
     FC_MNTN_TraceDrvAssemPara(&(pstDrvAssemPara->stDrvAssemPara));
 
 }
@@ -421,7 +421,7 @@ STATIC VOS_VOID FC_JudgeDrvAssemAction(VOS_UINT32 ulAssemLev)
 
     pstDrvAssemPara = FC_GetCurrentAssemPara(ulAssemLev);
 
-    /* 超过平滑系数的水线之后再做出调整 */
+    /* ???????????????????????????????? */
     if ( VOS_NULL_PTR != pstDrvAssemPara)
     {
         FC_DoJudgeDrvAssem(pstDrvAssemPara);
@@ -433,7 +433,7 @@ VOS_VOID FC_JudgeDrvToMaxPara(VOS_VOID)
 {
     FC_CPU_DRV_ASSEM_PARA_STRU *pstDrvAssemPara;
 
-    /* 直接调整到最大档位 */
+    /* ?????????????????? */
     g_stDrvAssemParaEntity.ulCurLev = FC_ACPU_DRV_ASSEM_LEV_1;
 
     pstDrvAssemPara =  FC_GetCpuDrvAssemPara(FC_ACPU_DRV_ASSEM_LEV_1);
@@ -448,7 +448,7 @@ STATIC FC_CPU_DRV_ASSEM_PARA_STRU* FC_SelectDrvAssemParaRule(VOS_UINT32 ulCpuLoa
     FC_CPU_DRV_ASSEM_PARA_STRU      *pstCpuDrvAssemPara     = VOS_NULL_PTR;
     VOS_INT                          i;
 
-    /* 选出当前需要调整档位 */
+    /* ???????????????????? */
     for (i = 0; i < FC_ACPU_DRV_ASSEM_LEV_BUTT; i++)
     {
         pstCpuDrvAssemPara = &g_stCpuDriverAssePara.stCpuDrvAssemPara[i];
@@ -469,10 +469,10 @@ STATIC FC_CPU_DRV_ASSEM_PARA_STRU* FC_SelectDrvAssemParaRule(VOS_UINT32 ulCpuLoa
 STATIC VOS_VOID FC_JudgeDrvAssemPara(VOS_UINT32 ulCpuLoad)
 {
     FC_CPU_DRV_ASSEM_PARA_STRU *pstDrvAssemPara;
-    /* 默认最高档 */
+    /* ?????????? */
     VOS_UINT32                  ulAssemLev       = FC_ACPU_DRV_ASSEM_LEV_1;
 
-    /* 使能开关未打开时，不再继续下面步骤 */
+    /* ?????????????????????????????????? */
     if (0 == g_stCpuDriverAssePara.ucEnableMask)
     {
         return;
@@ -485,7 +485,7 @@ STATIC VOS_VOID FC_JudgeDrvAssemPara(VOS_UINT32 ulCpuLoad)
         return;
     }
 
-    /* 根据CPU负载情况选择对应档位 */
+    /* ????CPU???????????????????? */
     pstDrvAssemPara = FC_SelectDrvAssemParaRule(ulCpuLoad, &ulAssemLev);
 
     if (VOS_NULL_PTR == pstDrvAssemPara)
@@ -495,10 +495,10 @@ STATIC VOS_VOID FC_JudgeDrvAssemPara(VOS_UINT32 ulCpuLoad)
         return;
     }
 
-    /* 根据当前档位计算平滑因子 */
+    /* ???????????????????????? */
     FC_JudgeAssemSmoothFactor(pstDrvAssemPara);
 
-    /* 对驱动做出调整 */
+    /* ?????????????? */
     FC_JudgeDrvAssemAction(ulAssemLev);
 }
 
@@ -506,8 +506,8 @@ STATIC VOS_VOID FC_JudgeDrvAssemPara(VOS_UINT32 ulCpuLoad)
 STATIC VOS_UINT32  FC_PsRateJudge( VOS_VOID )
 {
     /*
-    STICK形态判断空口速率
-    E5形态判断网桥速率
+    STICK????????????????
+    E5????????????????
     */
     return (FC_RmRateJudge());
 }
@@ -516,8 +516,8 @@ STATIC VOS_UINT32  FC_PsRateJudge( VOS_VOID )
 
 STATIC VOS_VOID  FC_GetPsRate( VOS_UINT32 *pulUlRate, VOS_UINT32 *pulDlRate )
 {
-    /* E5形态下，获取网桥速率 */
-   /* 网桥上，上下行速率都赋值成网桥速率 */
+    /* E5???????????????????? */
+   /* ?????????????????????????????????? */
    *pulUlRate   = FC_BRIDGE_GetRate();
    *pulDlRate   = *pulUlRate;
 }
@@ -540,15 +540,15 @@ VOS_UINT32 FC_CPUA_UpJudge
         return VOS_FALSE;
     }
 
-    /* 已经达到CPU流控的最高级别，不用再进一步流控 */
+    /* ????????CPU???????????????????????????????? */
     if (pstFcPolicy->enHighestPri <= pstFcPolicy->enDonePri)
     {
         return VOS_FALSE;
     }
 
 
-    /* 是否进行平滑和速率判断  */
-    /* 如果已经开始进行CPU流控，则继续进行流控，不再进行平滑和速率的判断 */
+    /* ??????????????????????  */
+    /* ????????????????CPU?????????????????????????????????????????????? */
     if ( FC_PRI_NULL != pstFcPolicy->enDonePri )
     {
         return VOS_TRUE;
@@ -570,7 +570,7 @@ VOS_UINT32 FC_CPUA_UpJudge
     g_stFcCpuACtrl.ulSmoothTimerLen  = 0;
 
 
-    /* 数传速率是否是CPU高的原因 */
+    /* ??????????????CPU???????? */
     ulResult    = FC_PsRateJudge();
     if (VOS_FALSE == ulResult)
     {
@@ -609,25 +609,25 @@ VOS_VOID FC_CPUA_RcvCpuLoad(VOS_UINT32  ulCpuLoad)
     VOS_UINT32                          ulDlRate;
 
 
-    /* 通过CPU LOAD调整驱动组包参数，不受CPU流控开关控制 */
+    /* ????CPU LOAD??????????????????????CPU???????????? */
     FC_JudgeDrvAssemPara(ulCpuLoad);
 
 
-    /* 参数检查 */
+    /* ???????? */
     if ( FC_POLICY_MASK_CPU_A != (FC_POLICY_MASK_CPU_A & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* CPU流控未使能 */
+        /* CPU?????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_CPU_ProcessLoad, INFO, CPU FlowCtrl is disabled %d\n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return;
     }
 
-    /* 输出可维可测 */
+    /* ???????????? */
     FC_MNTN_TraceCpuLoad(ID_FC_MNTN_CPU_A_CPULOAD, ulCpuLoad);
 
     if ( 100 < ulCpuLoad )
     {
-        /* 参数非法 */
+        /* ???????? */
         FC_LOG1(PS_PRINT_WARNING, "FC_CPU_ProcessLoad, WARNING, Invalid Cpu Load %d\n",
                 (VOS_INT32)ulCpuLoad);
         return;
@@ -637,7 +637,7 @@ VOS_VOID FC_CPUA_RcvCpuLoad(VOS_UINT32  ulCpuLoad)
     pstFcCfgCpu = &(g_stFcAcoreCfg.stFcCfgCpuA);
     pstFcPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CPU_A_MODEM_0);
 
-    /* 是否要进行CPU流控 */
+    /* ??????????CPU???? */
     ulStartCtrl = FC_CPUA_UpJudge(ulCpuLoad, pstFcCfgCpu, pstFcPolicy);
     if (VOS_TRUE == ulStartCtrl)
     {
@@ -647,7 +647,7 @@ VOS_VOID FC_CPUA_RcvCpuLoad(VOS_UINT32  ulCpuLoad)
     }
 
 
-    /* 进行CPU解流控判决 */
+    /* ????CPU?????????? */
     ulStartCtrl = FC_CPUA_DownJudge(ulCpuLoad, pstFcCfgCpu, pstFcPolicy);
     if ( VOS_TRUE ==  ulStartCtrl )
     {
@@ -673,7 +673,7 @@ VOS_UINT32  FC_CPUA_StopFcAttempt( VOS_UINT32 ulParam1, VOS_UINT32 ulParam2 )
     }
 
 
-    /*如果定时器已经开启，则不需要再次启动*/
+    /*????????????????????????????????????*/
     if (VOS_NULL_PTR == g_stFcCpuACtrl.pstStopAttemptTHandle)
     {
         if ( VOS_OK != VOS_StartRelTimer(&g_stFcCpuACtrl.pstStopAttemptTHandle,
@@ -703,12 +703,12 @@ STATIC VOS_UINT32  FC_CPUA_UpProcess( VOS_VOID )
     FC_POLICY_STRU                     *pFcPolicy;
 
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pFcPolicy   = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CPU_A_MODEM_0);
     FC_POLICY_Up(pFcPolicy);
 
 
-    /* 已经是当前策略的最高级别了，执行回调函数 */
+    /* ???????????????????????????????????????? */
     if (pFcPolicy->enDonePri == pFcPolicy->enHighestPri)
     {
         if (VOS_NULL_PTR != pFcPolicy->pPostFunc)
@@ -727,7 +727,7 @@ STATIC VOS_UINT32  FC_CPUA_DownProcess( VOS_VOID )
     FC_POLICY_STRU                      *pPolicy;
 
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CPU_A_MODEM_0);
     FC_POLICY_Down(pPolicy);
 
@@ -746,8 +746,8 @@ STATIC VOS_UINT32  FC_CPUA_StopFlowCtrl( VOS_VOID )
     pstFcPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CPU_A_MODEM_0);
 
 
-    /* 当前CPU小于解流控门限值,解流控 */
-    /*lint --e(685) FEATURE_ACPU_STAT没打开ulCpuLoad为0所以第一个判断恒成立 */
+    /* ????CPU????????????????,?????? */
+    /*lint --e(685) FEATURE_ACPU_STAT??????ulCpuLoad??0???????????????????? */
     if ( (ulCpuLoad <= pstFcCfgCpu->ulCpuUnderLoadVal)
          && (FC_PRI_NULL < pstFcPolicy->enDonePri) )
     {
@@ -761,7 +761,7 @@ STATIC VOS_UINT32  FC_CPUA_StopFlowCtrl( VOS_VOID )
 
 STATIC VOS_UINT32  FC_CPUA_Init( VOS_VOID )
 {
-    /* 增加使用宏开关判断是否注册回调函数 */
+    /* ?????????????????????????????????? */
 
     PSACORE_MEM_SET(&g_stFcBridgeRate, (VOS_UINT32)sizeof(FC_BRIDGE_RATE_STRU), 0, (VOS_UINT32)sizeof(FC_BRIDGE_RATE_STRU));
     PSACORE_MEM_SET(&g_stFcCpuACtrl, (VOS_UINT32)sizeof(g_stFcCpuACtrl), 0, (VOS_UINT32)sizeof(g_stFcCpuACtrl));
@@ -784,19 +784,19 @@ FC_PRI_ENUM_UINT8  FC_MEM_CalcUpTargetFcPri
     pstMemCfg   = &(g_stFcAcoreCfg.stFcCfgMem);
     enTargetPri = pPolicy->enDonePri;
 
-    /* 内存策略只注册了一个优先级，按照Lev3处理 */
+    /* ????????????????????????????????Lev3???? */
     if (1 == pPolicy->ucPriCnt)
     {
-        /* 计算出目标流控优先级 */
+        /* ???????????????????? */
         if (ulMemValue <= pstMemCfg->astThreshold[FC_MEM_THRESHOLD_LEV_3].ulSetThreshold)
         {
             enTargetPri     = pPolicy->enHighestPri;
         }
     }
-    /* 内存策略只注册了多个优先级 */
+    /* ?????????????????????????? */
     else
     {
-        /* 计算出目标流控优先级 */
+        /* ???????????????????? */
         if (ulMemValue <= pstMemCfg->astThreshold[FC_MEM_THRESHOLD_LEV_4].ulSetThreshold)
         {
             enTargetPri     = FC_PRI_FOR_MEM_LEV_4;
@@ -836,19 +836,19 @@ FC_PRI_ENUM_UINT8  FC_MEM_CalcDownTargetFcPri
     pstMemCfg   = &(g_stFcAcoreCfg.stFcCfgMem);
     enTargetPri = pPolicy->enDonePri;
 
-    /* 内存策略只注册了一个优先级 */
+    /* ?????????????????????????? */
     if (1 == pPolicy->ucPriCnt)
     {
-        /* 计算出目标流控优先级 */
+        /* ???????????????????? */
         if (ulMemValue > pstMemCfg->astThreshold[FC_MEM_THRESHOLD_LEV_3].ulStopThreshold)
         {
             enTargetPri     = FC_PRI_NULL;
         }
     }
-    /* 内存策略只注册了多个优先级 */
+    /* ?????????????????????????? */
     else
     {
-        /* 计算出目标流控优先级 */
+        /* ???????????????????? */
         if (ulMemValue > pstMemCfg->astThreshold[FC_MEM_THRESHOLD_LEV_1].ulStopThreshold)
         {
             enTargetPri     = FC_PRI_NULL;
@@ -885,13 +885,13 @@ STATIC VOS_UINT32  FC_MEM_AdjustPriForUp
     FC_POLICY_STRU                     *pPolicy;
     FC_PRI_ENUM_UINT8                   enTargetPri;
 
-    /* 获取内存流控策略和内存流控配置 */
+    /* ?????????????????????????????? */
     pPolicy         = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_MEM_MODEM_0);
 
-    /* 根据内存情况，重新刷新内存流控目标优先级 */
+    /* ???????????????????????????????????????? */
     enTargetPri     = FC_MEM_CalcUpTargetFcPri(pPolicy, 0);
 
-    /* 目标优先级调整后，进行流控处理调整，符合新的流控优先级 */
+    /* ?????????????????????????????????????????????????????? */
     if (pPolicy->enDonePri < enTargetPri)
     {
         FC_POLICY_UpToTargetPri(pPolicy, enTargetPri);
@@ -923,13 +923,13 @@ STATIC VOS_UINT32  FC_MEM_AdjustPriForDown
     FC_POLICY_STRU                     *pPolicy;
     FC_PRI_ENUM_UINT8                   enTargetPri;
 
-    /* 获取内存流控策略和内存流控配置 */
+    /* ?????????????????????????????? */
     pPolicy         = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_MEM_MODEM_0);
 
-    /* 根据内存情况，重新刷新内存流控目标优先级 */
+    /* ???????????????????????????????????????? */
     enTargetPri     = FC_MEM_CalcDownTargetFcPri(pPolicy, 0);
 
-    /* 目标优先级调整后，进行流控处理调整，符合新的流控优先级 */
+    /* ?????????????????????????????????????????????????????? */
     if (pPolicy->enDonePri < enTargetPri)
     {
         FC_POLICY_UpToTargetPri(pPolicy, enTargetPri);
@@ -1028,10 +1028,10 @@ VOS_VOID FC_MEM_UpProcess( VOS_UINT32 ulMemValue  )
     FC_PRI_ENUM_UINT8                  enTargetPri;
     VOS_ULONG                           ulFlags = 0UL;
 
-    /* 参数检查 */
+    /* ???????? */
     if ( FC_POLICY_MASK_MEM != (FC_POLICY_MASK_MEM & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_MEM_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return;
@@ -1042,16 +1042,16 @@ VOS_VOID FC_MEM_UpProcess( VOS_UINT32 ulMemValue  )
 
     if ((pPolicy->enDonePri < enTargetPri) && (pPolicy->enToPri < enTargetPri))
     {
-        /* 如果在软中断这类不可打断的任务中，就不发流控消息 */
-        /*lint --e(506,774,550,730) 屏蔽dummy未初始化的lint错误 */
-        /*lint --e{550,1072} 屏蔽dummy未访问的lint错误 */
+        /* ???????????????????????????????????????????????? */
+        /*lint --e(506,774,550,730) ????dummy??????????lint???? */
+        /*lint --e{550,1072} ????dummy????????lint???? */
         if (likely(preemptible()))
         {
             VOS_SpinLockIntLock(&g_stFcMemSpinLock, ulFlags);
             pPolicy->enToPri = enTargetPri;
             VOS_SpinUnlockIntUnlock(&g_stFcMemSpinLock , ulFlags);
 
-            /* 消息发送失败会单板复位，不再进行enToPri的恢复 */
+            /* ????????????????????????????????enToPri?????? */
             FC_MEM_SndUpToTargetPriIndMsg(enTargetPri, (VOS_UINT16)ulMemValue);
 
         }
@@ -1067,10 +1067,10 @@ VOS_VOID  FC_MEM_DownProcess( VOS_UINT32 ulMemValue )
     FC_PRI_ENUM_UINT8                  enTargetPri;
     VOS_ULONG                           ulFlags = 0UL;
 
-    /* 参数检查 */
+    /* ???????? */
     if ( FC_POLICY_MASK_MEM != (FC_POLICY_MASK_MEM & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_MEM_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return;
@@ -1081,16 +1081,16 @@ VOS_VOID  FC_MEM_DownProcess( VOS_UINT32 ulMemValue )
 
     if ((pPolicy->enDonePri > enTargetPri) && (pPolicy->enToPri > enTargetPri))
     {
-        /* 如果在软中断这类不可打断的任务中，就不发流控消息 */
-        /*lint --e(506,774,550,730) 屏蔽dummy未初始化的lint错误 */
-        /*lint --e{550,1072} 屏蔽dummy未访问的lint错误 */
+        /* ???????????????????????????????????????????????? */
+        /*lint --e(506,774,550,730) ????dummy??????????lint???? */
+        /*lint --e{550,1072} ????dummy????????lint???? */
         if (likely(preemptible()))
         {
             VOS_SpinLockIntLock(&g_stFcMemSpinLock, ulFlags);
             pPolicy->enToPri = enTargetPri;
             VOS_SpinUnlockIntUnlock(&g_stFcMemSpinLock, ulFlags);
 
-            /* 消息发送失败会单板复位，不再进行enToPri的恢复 */
+            /* ????????????????????????????????enToPri?????? */
             FC_MEM_SndDownToTargetPriIndMsg(enTargetPri, (VOS_UINT16)ulMemValue);
         }
     }
@@ -1104,17 +1104,17 @@ STATIC VOS_UINT32  FC_MEM_Init( VOS_VOID )
 {
     VOS_SpinLockInit(&g_stFcMemSpinLock);
 
-    /* V9R1项目中判断ACPU内存流控使能则注册回调函数，否则不注册 */
-    /* 注册内存回调函数 */
+    /* V9R1??????????ACPU?????????????????????????????????????? */
+    /* ???????????????? */
     if ( (FC_POLICY_MASK(FC_POLICY_ID_MEM) == (FC_POLICY_MASK(FC_POLICY_ID_MEM) & g_stFcAcoreCfg.ulFcEnableMask) ))
     {
-        /* A核内存流控策略初始化 */
+        /* A???????????????????? */
         g_astFcPolicy[FC_POLICY_ID_MEM].pAdjustForUpFunc    = FC_MEM_AdjustPriForUp;
         g_astFcPolicy[FC_POLICY_ID_MEM].pAdjustForDownFunc  = FC_MEM_AdjustPriForDown;
     }
     else
     {
-         /* A核内存流控策略初始化 */
+         /* A???????????????????? */
         g_astFcPolicy[FC_POLICY_ID_MEM].pAdjustForUpFunc    = VOS_NULL_PTR;
         g_astFcPolicy[FC_POLICY_ID_MEM].pAdjustForDownFunc  = VOS_NULL_PTR;
     }
@@ -1129,17 +1129,17 @@ STATIC VOS_UINT32  FC_CST_UpProcess( VOS_UINT8 ucRabId )
     FC_POLICY_STRU                     *pPolicy;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_CST != (FC_POLICY_MASK_CST & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_CST_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
     }
 
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CST_MODEM_0);
     FC_POLICY_UpToTargetPri(pPolicy, pPolicy->enHighestPri);
 
@@ -1156,17 +1156,17 @@ STATIC VOS_UINT32  FC_CST_DownProcess( VOS_UINT8 ucRabId )
     FC_POLICY_STRU                     *pPolicy;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_CST != (FC_POLICY_MASK_CST & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_CST_DownProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
     }
 
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CST_MODEM_0);
     FC_POLICY_DownToTargetPri(pPolicy, FC_PRI_NULL);
 
@@ -1189,7 +1189,7 @@ STATIC FC_RAB_MAPPING_INFO_STRU  *FC_CDS_GetFcInfo( VOS_UINT8 ucRabId, MODEM_ID_
     pstFcRabMappingInfoSet  = &g_astFcRabMappingInfoSet[enModemId];
     ulRabMask               = (VOS_UINT32)(1UL << ucRabId);
 
-    /*====================================*//* 遍历所有映射关系，如果找到包含指定RAB_ID的映射关系，则退出 */
+    /*====================================*//* ??????????????????????????????????RAB_ID?????????????????? */
     for (enFcId = 0; enFcId < pstFcRabMappingInfoSet->enFcIdCnt; enFcId++)
     {
         pstFcRabMappingInfo = &(pstFcRabMappingInfoSet->astFcRabMappingInfo[enFcId]);
@@ -1228,14 +1228,14 @@ VOS_UINT32  FC_CDS_DelFcId( FC_ID_ENUM_UINT8 enFcId, MODEM_ID_ENUM_UINT16 enMode
         return VOS_ERR;
     }
 
-    /* 将后面的映射关系拷贝过来，保持数组连续性 */
+    /* ???????????????????????????????????????? */
     for (enShiftFcId = (FC_PRI_ENUM_UINT8)(enFcIdNum + 1); enShiftFcId < pstFcRabMappingInfoSet->enFcIdCnt; enShiftFcId++)
     {
         pstFcRabMappingInfo   = &(pstFcRabMappingInfoSet->astFcRabMappingInfo[enShiftFcId]);
         PSACORE_MEM_CPY((pstFcRabMappingInfo - 1), (VOS_UINT32)sizeof(FC_RAB_MAPPING_INFO_STRU), pstFcRabMappingInfo, (VOS_UINT32)sizeof(FC_RAB_MAPPING_INFO_STRU));
     }
 
-    /* 最后一个映射关系无法被拷贝覆盖，所以需要手动清除 */
+    /* ???????????????????????????????????????????????? */
     PSACORE_MEM_SET(&(pstFcRabMappingInfoSet->astFcRabMappingInfo[enShiftFcId - 1]), (VOS_UINT32)sizeof(FC_RAB_MAPPING_INFO_STRU), 0, (VOS_UINT32)sizeof(FC_RAB_MAPPING_INFO_STRU));
     pstFcRabMappingInfoSet->enFcIdCnt--;
 
@@ -1261,7 +1261,7 @@ VOS_UINT32  FC_CDS_AddRab(FC_ID_ENUM_UINT8 enFcId, VOS_UINT8 ucRabId, MODEM_ID_E
         return VOS_ERR;
     }
 
-    /*====================================*//* 遍历该FC的流控信息，如果找到包含指定RAB_ID的Fc Id，则退出 */
+    /*====================================*//* ??????FC????????????????????????????RAB_ID??Fc Id???????? */
     for (enFcIdNum = 0; enFcIdNum < pstFcRabMappingInfoSet->enFcIdCnt; enFcIdNum++)
     {
         pstFcRabMappingInfo = &(pstFcRabMappingInfoSet->astFcRabMappingInfo[enFcIdNum]);
@@ -1284,7 +1284,7 @@ VOS_UINT32  FC_CDS_AddRab(FC_ID_ENUM_UINT8 enFcId, VOS_UINT8 ucRabId, MODEM_ID_E
         return VOS_ERR;
     }
 
-    /*====================================*//* 如果是新的FC Id，则添加该Fc Id和RAB ID */
+    /*====================================*//* ??????????FC Id??????????Fc Id??RAB ID */
     pstFcRabMappingInfo = &(pstFcRabMappingInfoSet->astFcRabMappingInfo[pstFcRabMappingInfoSet->enFcIdCnt]);
     pstFcRabMappingInfo->enFcId             = enFcId;
     pstFcRabMappingInfo->ulIncludeRabMask   = ulRabMask;
@@ -1303,14 +1303,14 @@ VOS_UINT32  FC_CDS_DelRab( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemId )
     VOS_UINT32                          ulRabMask;
 
 
-    /*====================================*//* 通过Rab Id来查找该Rab Id所在的FC实体 */
+    /*====================================*//* ????Rab Id????????Rab Id??????FC???? */
     pstFcRabMappingInfo                 = FC_CDS_GetFcInfo(ucRabId, enModemId);
     if (VOS_NULL_PTR == pstFcRabMappingInfo)
     {
         return VOS_ERR;
     }
 
-    /* 清除该RabId的信息，如果该Fc上已经不存在不需要流控的RabId，则进行流控 */
+    /* ??????RabId??????????????Fc????????????????????????RabId???????????? */
     ulRabMask       = (VOS_UINT32)(1UL << ucRabId);
 
     pstFcRabMappingInfo->ulIncludeRabMask  &= (~ulRabMask);
@@ -1324,7 +1324,7 @@ VOS_UINT32  FC_CDS_DelRab( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemId )
         }
     }
 
-    /* 如果删除了RabId后，该FC上没有其它信息，则删除该FC ID对应的信息 */
+    /* ??????????RabId??????FC????????????????????????FC ID?????????? */
     if (0 == pstFcRabMappingInfo->ulIncludeRabMask)
     {
         FC_CDS_DelFcId(pstFcRabMappingInfo->enFcId, enModemId);
@@ -1349,10 +1349,10 @@ VOS_UINT32  FC_CDS_UpProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemId 
     FC_RAB_MAPPING_INFO_STRU               *pstFcRabMappingInfo;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_CDS != (FC_POLICY_MASK_CDS & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_CST_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
@@ -1364,7 +1364,7 @@ VOS_UINT32  FC_CDS_UpProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemId 
         return VOS_ERR;
     }
 
-    /*====================================*//* 通过RAB id来查找 Client流控实体 */
+    /*====================================*//* ????RAB id?????? Client???????? */
     pstFcRabMappingInfo         = FC_CDS_GetFcInfo(ucRabId, enModemId);
     if (VOS_NULL_PTR == pstFcRabMappingInfo)
     {
@@ -1372,7 +1372,7 @@ VOS_UINT32  FC_CDS_UpProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemId 
     }
 
 
-    /*====================================*//* 如果该Fc流控实体已经流控，则无需处理，直接返回 */
+    /*====================================*//* ??????Fc?????????????????????????????????????? */
     if (0 == pstFcRabMappingInfo->ulNoFcRabMask)
     {
         return VOS_OK;
@@ -1380,7 +1380,7 @@ VOS_UINT32  FC_CDS_UpProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemId 
 
 
     /*====================================*/
-    /* 去除该FC对应的没有流控的RAB掩码，如果为0，表明所有RAB都要求流控，该FC进行流控 */
+    /* ??????FC????????????????RAB????????????0??????????RAB??????????????FC???????? */
     pstFcRabMappingInfo->ulNoFcRabMask   &= (~((VOS_UINT32)1 << ucRabId));
     if (0 == pstFcRabMappingInfo->ulNoFcRabMask)
     {
@@ -1397,10 +1397,10 @@ VOS_UINT32  FC_CDS_DownProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemI
     FC_RAB_MAPPING_INFO_STRU                  *pstFcRabMappingInfo;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_CDS != (FC_POLICY_MASK_CDS & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_CDS_DownProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
@@ -1413,7 +1413,7 @@ VOS_UINT32  FC_CDS_DownProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemI
         return VOS_ERR;
     }
 
-    /*====================================*//* 通过RAB id来查找 FC实体 */
+    /*====================================*//* ????RAB id?????? FC???? */
     pstFcRabMappingInfo                 = FC_CDS_GetFcInfo(ucRabId, enModemId);
     if (VOS_NULL_PTR == pstFcRabMappingInfo)
     {
@@ -1422,7 +1422,7 @@ VOS_UINT32  FC_CDS_DownProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemI
 
 
     /*====================================*/
-    /* 如果该FC实体已经解除流控，则无需处理，直接返回 */
+    /* ??????FC?????????????????????????????????????? */
     if (0 != pstFcRabMappingInfo->ulNoFcRabMask)
     {
         pstFcRabMappingInfo->ulNoFcRabMask   |= ((VOS_UINT32)1 << ucRabId);
@@ -1431,7 +1431,7 @@ VOS_UINT32  FC_CDS_DownProcess( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16 enModemI
 
 
     /*====================================*/
-    /* 增加v对应的没有流控的RAB掩码，如果为0，则该FC实体s需要进行解流控 */
+    /* ????v????????????????RAB????????????0??????FC????s?????????????? */
     pstFcRabMappingInfo->ulNoFcRabMask   |= ((VOS_UINT32)1 << ucRabId);
     (VOS_VOID)FC_POINT_ClrFc(FC_POLICY_MASK_CDS, pstFcRabMappingInfo->enFcId);
 
@@ -1472,17 +1472,17 @@ STATIC VOS_UINT32  FC_GPRS_UpProcess( VOS_VOID )
     FC_POLICY_STRU                      *pPolicy;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_GPRS != (FC_POLICY_MASK_GPRS & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_GPRS_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
     }
 
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_GPRS_MODEM_0);
     FC_POLICY_UpToTargetPri(pPolicy, pPolicy->enHighestPri);
 
@@ -1522,16 +1522,16 @@ STATIC VOS_UINT32  FC_GPRS_DownProcess( VOS_VOID )
     FC_POLICY_STRU                      *pPolicy;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_GPRS != (FC_POLICY_MASK_GPRS & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_GPRS_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
     }
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_GPRS_MODEM_0);
     FC_POLICY_DownToTargetPri(pPolicy, FC_PRI_NULL);
 
@@ -1544,17 +1544,17 @@ STATIC VOS_UINT32  FC_CDMA_UpProcess( VOS_VOID )
     FC_POLICY_STRU                      *pPolicy;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_CDMA != (FC_POLICY_MASK_CDMA & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_CDMA_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
     }
 
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CDMA_MODEM_0);
     FC_POLICY_UpToTargetPri(pPolicy, pPolicy->enHighestPri);
 
@@ -1567,16 +1567,16 @@ STATIC VOS_UINT32  FC_CDMA_DownProcess( VOS_VOID )
     FC_POLICY_STRU                      *pPolicy;
 
 
-    /*====================================*//* 使能检查 */
+    /*====================================*//* ???????? */
     if ( FC_POLICY_MASK_CDMA != (FC_POLICY_MASK_CDMA & g_stFcAcoreCfg.ulFcEnableMask) )
     {
-        /* 内存流控未使能 */
+        /* ?????????????? */
         FC_LOG1(PS_PRINT_INFO, "FC_CDMA_UpProcess, INFO, MEM FlowCtrl is disabled %d \n",
                 (VOS_INT32)g_stFcAcoreCfg.ulFcEnableMask);
         return VOS_OK;
     }
 
-    /* 获取CPU流控策略实体，并调用通用流控策略 */
+    /* ????CPU???????????????????????????????? */
     pPolicy = FC_POLICY_Get(FC_PRIVATE_POLICY_ID_CDMA_MODEM_0);
     FC_POLICY_DownToTargetPri(pPolicy, FC_PRI_NULL);
 
@@ -1589,7 +1589,7 @@ VOS_VOID  FC_ChannelMapCreate(FC_ID_ENUM_UINT8 enFcId, VOS_UINT8 ucRabId, MODEM_
     VOS_UINT32                          ulResult;
 
 
-    /* 参数检查，RabId范围为[5,15] */
+    /* ??????????RabId??????[5,15] */
     if ( (FC_UE_MIN_RAB_ID > ucRabId) || (FC_UE_MAX_RAB_ID < ucRabId) )
     {
         FC_LOG1(PS_PRINT_WARNING, "FC_ChannelMapCreate RabId Is Invalid %d\n", ucRabId);
@@ -1602,7 +1602,7 @@ VOS_VOID  FC_ChannelMapCreate(FC_ID_ENUM_UINT8 enFcId, VOS_UINT8 ucRabId, MODEM_
         return;
     }
 
-    /* 发送消息 */
+    /* ???????? */
     pstMsg = (FC_ADD_RAB_FCID_MAP_IND_STRU *)(VOS_UINT_PTR)VOS_AllocMsg(UEPS_PID_FLOWCTRL_A, \
                                    (VOS_UINT32)sizeof(FC_ADD_RAB_FCID_MAP_IND_STRU) - VOS_MSG_HEAD_LENGTH);
 
@@ -1636,7 +1636,7 @@ VOS_VOID  FC_ChannelMapDelete( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16  enModemI
     VOS_UINT32                          ulResult;
 
 
-    /* 参数检查，RabId范围为[5,15] */
+    /* ??????????RabId??????[5,15] */
     if ( (FC_UE_MIN_RAB_ID > ucRabId) || (FC_UE_MAX_RAB_ID < ucRabId) )
     {
         FC_LOG1(PS_PRINT_WARNING, "FC_ChannelMapDelete RabId Is Invalid %d\n", ucRabId);
@@ -1649,7 +1649,7 @@ VOS_VOID  FC_ChannelMapDelete( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16  enModemI
         return;
     }
 
-    /* 发送消息 */
+    /* ???????? */
     pstMsg = (FC_DEL_RAB_FCID_MAP_IND_STRU *)(VOS_UINT_PTR)VOS_AllocMsg(UEPS_PID_FLOWCTRL_A, \
                                     (VOS_UINT32)sizeof(FC_DEL_RAB_FCID_MAP_IND_STRU) - VOS_MSG_HEAD_LENGTH);
 
@@ -1678,7 +1678,7 @@ VOS_VOID  FC_ChannelMapDelete( VOS_UINT8 ucRabId, MODEM_ID_ENUM_UINT16  enModemI
 
 STATIC VOS_UINT32  FC_RcvCstMsg( MsgBlock * pMsg )
 {
-    /*lint --e(826) 屏蔽宏里面从UINT8指针转成UINT32指针时产生的告警 */
+    /*lint --e(826) ????????????UINT8????????UINT32???????????????? */
     switch ( FC_GET_MSG_NAME32(pMsg) )
     {
         case ID_CST_FC_SET_FLOWCTRL_REQ:
@@ -1700,7 +1700,7 @@ STATIC VOS_UINT32  FC_RcvCstMsg( MsgBlock * pMsg )
 
 STATIC VOS_UINT32  FC_RcvCdsMsg( MsgBlock * pMsg )
 {
-    /*lint --e(826) 屏蔽宏里面从UINT8指针转成UINT32指针时产生的告警 */
+    /*lint --e(826) ????????????UINT8????????UINT32???????????????? */
     switch ( FC_GET_MSG_NAME32(pMsg) )
     {
         case ID_CDS_FC_STOP_CHANNEL_IND:
@@ -1750,7 +1750,7 @@ STATIC VOS_UINT32  FC_ACORE_RcvTimerMsg(REL_TIMER_MSG *pTimerMsg)
 
 VOS_UINT32  FC_ACORE_RcvIntraMsg( MsgBlock * pMsg )
 {
-    /*lint --e(826) 屏蔽宏里面从UINT8指针转成UINT16指针时产生的告警 */
+    /*lint --e(826) ????????????UINT8????????UINT16???????????????? */
     switch( FC_GET_MSG_NAME16(pMsg) )
     {
         case ID_FC_REG_POINT_IND:
@@ -1904,7 +1904,7 @@ STATIC VOS_UINT32  FC_ACORE_CFG_CheckMemParam( FC_CFG_MEM_STRU *pstFcCfgMem )
 
     for ( ulThresholdLoop = 0 ; ulThresholdLoop < pstFcCfgMem->ulThresholdCnt ; ulThresholdLoop++ )
     {
-        /* 内存流控设置的是空闲值 */
+        /* ?????????????????????? */
         if ( pstFcCfgMem->astThreshold[ulThresholdLoop].ulSetThreshold
              > pstFcCfgMem->astThreshold[ulThresholdLoop].ulStopThreshold )
         {
@@ -1923,8 +1923,8 @@ STATIC VOS_UINT32  FC_ACORE_CFG_CheckMemParam( FC_CFG_MEM_STRU *pstFcCfgMem )
 
 VOS_UINT32  FC_ACORE_CFG_CheckParam( ACORE_FC_CFG_NV_STRU *pstAcoreFcCfg )
 {
-    /* 设计约束，A核需要判断是否因为速传引起CPU占用率高，第一次CPU占用率
-       超标时才启动计算速传速率，所以至少需要2次 */
+    /* ??????????A??????????????????????????CPU????????????????CPU??????
+       ??????????????????????????????????????2?? */
     if (2 > pstAcoreFcCfg->stFcCfgCpuA.ulSmoothTimerLen)
     {
         FC_LOG1(PS_PRINT_WARNING, "FC_CFG_CheckParam, WARNING, CPUA flow ctrl ulSmoothTimerLen is %d!\n",
@@ -1958,7 +1958,7 @@ VOS_VOID FC_ACORE_CFG_Init(VOS_VOID)
     ulResult = GUCTTF_NV_Read(MODEM_ID_0, en_NV_Item_Acore_Flow_Ctrl_Config,\
                    &g_stFcAcoreCfg, sizeof(ACORE_FC_CFG_NV_STRU));
 
-    /* 将A核FC NV项的开关状态映射到FC模块的总状态 */
+    /* ??A??FC NV??????????????????FC???????????? */
     ulFcEnableMask  = g_stFcAcoreCfg.ulFcEnableMask;
     g_stFcAcoreCfg.ulFcEnableMask   = 0;
     g_stFcAcoreCfg.ulFcEnableMask   |= ((1 == FC_ACORE_GetEnableMask(ulFcEnableMask, FC_ACORE_MEM_ENABLE_MASK))?(FC_POLICY_MASK(FC_POLICY_ID_MEM)):(0));
@@ -1966,7 +1966,7 @@ VOS_VOID FC_ACORE_CFG_Init(VOS_VOID)
     g_stFcAcoreCfg.ulFcEnableMask   |= ((1 == FC_ACORE_GetEnableMask(ulFcEnableMask, FC_ACORE_CDS_ENABLE_MASK))?(FC_POLICY_MASK(FC_POLICY_ID_CDS)):(0));
     g_stFcAcoreCfg.ulFcEnableMask   |= ((1 == FC_ACORE_GetEnableMask(ulFcEnableMask, FC_ACORE_CST_ENABLE_MASK))?(FC_POLICY_MASK(FC_POLICY_ID_CST)):(0));
 
-    /* C核独立使用的流控功能默认打开 */
+    /* C???????????????????????????? */
     g_stFcAcoreCfg.ulFcEnableMask |= FC_POLICY_MASK_GPRS;
     g_stFcAcoreCfg.ulFcEnableMask |= FC_POLICY_MASK_TMP;
     g_stFcAcoreCfg.ulFcEnableMask |= FC_POLICY_MASK_CPU_C;
@@ -1989,7 +1989,7 @@ VOS_VOID FC_ACORE_CFG_Init(VOS_VOID)
     {
         FC_LOG(PS_PRINT_ERROR, "FC_CommInit, ERROR, Check NV parameter fail!\n");
 
-        /* 当前的NV值有错，设置默认值返回成功 */
+        /* ??????NV?????????????????????????? */
         (VOS_VOID)FC_ACORE_CFG_SetDefaultValue(&g_stFcAcoreCfg);
     }
 
@@ -2011,7 +2011,7 @@ VOS_UINT32  FC_ACORE_Init( VOS_VOID )
         return VOS_ERR;
     }
 
-    /* 流控配置项初始化 */
+    /* ???????????????? */
     FC_ACORE_CFG_Init();
 
     ulResult    = FC_CPUA_Init();
@@ -2029,14 +2029,14 @@ VOS_UINT32  FC_ACORE_Init( VOS_VOID )
 
     FC_DrvAssemInit();
 
-    /* 创建信号量，用于C核单独复位时，通知底软FcACore的回调事务已完成 */
+    /* ????????????????C??????????????????????FcACore???????????????? */
     if ( VOS_OK != VOS_SmBCreate(ucSmName, 0, VOS_SEMA4_FIFO, (VOS_SEM *)&g_ulFcACoreCResetDoneSem) )
     {
         FC_LOG(PS_PRINT_ERROR,"FC_ACORE_Init, Create Sem Fail\n");
         return VOS_ERR;
     }
 
-    /* 注册回调函数到底软C核复位接口中 */
+    /* ??????????????????C???????????? */
     iRet    = mdrv_sysboot_register_reset_notify ("TTF_FcACore", FC_ACORE_CResetCallback, 0, FC_ACORE_CRESET_CALLBACK_PRIOR);
 
     if ( VOS_OK != iRet )

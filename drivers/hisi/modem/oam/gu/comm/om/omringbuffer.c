@@ -64,7 +64,7 @@
 #define OM_MIN(x, y)             (((x) < (y)) ? (x) : (y))
 
 #define OM_RING_BUFF_EX_MAX_LEN  (1024*8)
-#define OM_MAX_RING_BUFFER_NUM   (48)  /* Error logÐÂÔö32*/
+#define OM_MAX_RING_BUFFER_NUM   (48)  /* Error log????32*/
 
 VOS_UINT8 g_ucOMBufferOccupiedFlag[OM_MAX_RING_BUFFER_NUM] = {0};
 OM_RING   g_stOMControlBlock[OM_MAX_RING_BUFFER_NUM];
@@ -448,7 +448,7 @@ VOS_BOOL OM_RingBufferIsFull( OM_RING_ID ringId )
 {
     int n = ringId->pToBuf - ringId->pFromBuf + 1;
 
-    return ((n == 0) || (n == ringId->bufSize)); /* [false alarm]: ÆÁ±ÎFortify ´íÎó */
+    return ((n == 0) || (n == ringId->bufSize)); /* [false alarm]: ????Fortify ???? */
 }
 
 

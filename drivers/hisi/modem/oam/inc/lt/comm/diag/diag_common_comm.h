@@ -77,7 +77,7 @@ extern "C" {
 #define diag_error(fmt,...)    mdrv_err("<%s %d>"fmt, __FUNCTION__, __LINE__,##__VA_ARGS__)
 #define diag_info(fmt, ...)    mdrv_info(fmt, ##__VA_ARGS__)
 
-/* debug定时器时长 */
+/* debug?????????? */
 #define DIAG_DEBUG_TIMER_LEN                            (5*1000)
 #define DIAG_HIDP_DEBUG_TIMER_LEN                       (31*1000)
 
@@ -107,8 +107,8 @@ enum
 
 enum DIAG_CONNECT_CMD_ENUM
 {
-    DIAG_CONNECT_CMD,       /* 连接命令 */
-    DIAG_DISCONNECT_CMD,    /* 断开连接命令 */
+    DIAG_CONNECT_CMD,       /* ???????? */
+    DIAG_DISCONNECT_CMD,    /* ???????????? */
     DIAG_CONNECT_CMD_BUTT
 };
 typedef VOS_UINT32 DIAG_CONNECT_CMD_ENUM_U32;
@@ -117,7 +117,7 @@ typedef VOS_UINT32 DIAG_CONNECT_CMD_ENUM_U32;
    5 STRUCT
 *****************************************************************************/
 
-/* 此结构体与OSA的MsgBlock对应，不能随意修改 */
+/* ??????????OSA??MsgBlock?????????????????? */
 #pragma pack(1)
 typedef struct
 {
@@ -132,7 +132,7 @@ typedef struct
 #pragma pack()
 
 
-/* 只带结果的通用回复结构 */
+/* ?????????????????????? */
 typedef struct
 {
     VOS_UINT32  ulAuid;
@@ -151,30 +151,30 @@ typedef struct
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32              ulMsgId;           /* 消息名 */
-    VOS_UINT32              ulLen;             /* 数据长度 */
-    VOS_UINT8               resv[12];       /* 数据其实地址*/
-    VOS_UINT8               pContext[0];       /* 数据其实地址*/ /*lint !e43 */
+    VOS_UINT32              ulMsgId;           /* ?????? */
+    VOS_UINT32              ulLen;             /* ???????? */
+    VOS_UINT8               resv[12];       /* ????????????*/
+    VOS_UINT8               pContext[0];       /* ????????????*/ /*lint !e43 */
 }DIAG_PS_MSG_STRU;
 
 /* ======================================================================== */
 /* DIAG dump */
 
 #define DIAG_DUMP_LEN 	    (0x2000)
-#define DIAG_DUMP_MSG_LEN   (0x400)     /* 消息缓存1K/(4*4)=64条 */
-#define DIAG_DUMP_DF_LEN    (0x800)     /* 码流缓存2K */
+#define DIAG_DUMP_MSG_LEN   (0x400)     /* ????????1K/(4*4)=64?? */
+#define DIAG_DUMP_DF_LEN    (0x800)     /* ????????2K */
 
 typedef struct
 {
     VOS_CHAR *      pcDumpAddr;
 
-    VOS_CHAR *      pcMsgAddr;          /* message起始地址 */
-    VOS_UINT32      ulMsgLen;           /* message空间长度 */
-    VOS_UINT32      ulMsgCur;           /* message空间当前指针 */
+    VOS_CHAR *      pcMsgAddr;          /* message???????? */
+    VOS_UINT32      ulMsgLen;           /* message???????? */
+    VOS_UINT32      ulMsgCur;           /* message???????????? */
 
-    VOS_CHAR *      pcDFAddr;           /* data flow起始地址 */
-    VOS_UINT32      ulDFLen;            /* data flow空间长度 */
-    VOS_UINT32      ulDFCur;            /* data flow空间当前指针 */
+    VOS_CHAR *      pcDFAddr;           /* data flow???????? */
+    VOS_UINT32      ulDFLen;            /* data flow???????? */
+    VOS_UINT32      ulDFCur;            /* data flow???????????? */
 }DIAG_DUMP_INFO_STRU;
 
 

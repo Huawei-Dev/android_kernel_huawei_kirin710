@@ -47,7 +47,7 @@
  */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -71,15 +71,15 @@ extern print_report_hook g_bsp_print_hook;
 #define NEW_MATCH	((u32)0)
 #define BSP_PRINT_BUF_LEN (256)
 /*****************************************************************************
-* 函 数 名	: mdrv_print
+* ?? ?? ??	: mdrv_print
 *
-* 功能描述	: print
+* ????????	: print
 *
-* 输入参数	: u32 modid: module's id, BSP_LOG_LEVEL level: print level, char *fmt: string
+* ????????	: u32 modid: module's id, BSP_LOG_LEVEL level: print level, char *fmt: string
 *
-* 输出参数	:
+* ????????	:
 *
-* 返 回 值	:
+* ?? ?? ??	:
 *****************************************************************************/
 /*lint -save -e530 -e830*/
 void mdrv_print(unsigned int level, char *fmt, ...)
@@ -97,7 +97,7 @@ void mdrv_print(unsigned int level, char *fmt, ...)
 	if(g_print_sys_level.con_level >= level)
 		(void)printk(KERN_ERR"%s", print_buffer);
 
-//级别大于logbuf的级别时，会上报到HIDS
+//????????logbuf??????????????????HIDS
 	if(g_print_sys_level.logbuf_level < level)
 		return ;
 

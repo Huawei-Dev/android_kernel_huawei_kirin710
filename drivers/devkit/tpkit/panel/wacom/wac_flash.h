@@ -126,7 +126,7 @@ typedef struct{
 	u16 ubl_ver;
 	u16 protect;
 	u16 ubl_type;
-} UBL_STATUS;//IC ÀïÃæµÄ
+} UBL_STATUS;//IC ??????
 
 typedef struct{
 	u16 process;

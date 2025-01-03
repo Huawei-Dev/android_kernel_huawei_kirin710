@@ -50,7 +50,7 @@
 #define __ADSDOWNLINK_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "AdsIntraMsg.h"
@@ -67,7 +67,7 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 #define ADS_DL_ERROR_PACKET_NUM_THRESHOLD           (VOS_NULL_DWORD/100)
@@ -96,13 +96,13 @@ extern "C" {
                 ADS_IMM_MEM_CB(pstImmZc)->aulPriv[0] = ((ADS_IMM_MEM_CB(pstImmZc)->aulPriv[0]) << 16) | ((pstRdDesc)->u16UsrField1);\
             } while(0)
 
-/* 从IPF Result获取IP包类型 */
+/* ??IPF Result????IP?????? */
 #define ADS_DL_GET_IPTYPE_FROM_IPF_RESULT(usRslt)   ((ADS_PKT_TYPE_ENUM_UINT8)(((ADS_DL_IPF_RESULT_STRU *)&(usRslt))->usIpType))
 
-/* 从IPF Result获取Beared ID */
+/* ??IPF Result????Beared ID */
 #define ADS_DL_GET_BEAREDID_FROM_IPF_RESULT(usRslt) ((ADS_PKT_TYPE_ENUM_UINT8)(((ADS_DL_IPF_RESULT_STRU *)&(usRslt))->usBearedId))
 
-/* RD的user field 1，高1byte为Modem id，低1byte为Rab Id */
+/* RD??user field 1????1byte??Modem id????1byte??Rab Id */
 #define ADS_DL_GET_IPF_RESULT_FORM_IMM(pstImmZc)    ((VOS_UINT16)(((ADS_IMM_MEM_CB(pstImmZc)->aulPriv[0]) & 0xFFFF0000) >> 16))
 #define ADS_DL_GET_MODEMID_FROM_IMM(pstImmZc)       ((VOS_UINT32)(((ADS_IMM_MEM_CB(pstImmZc)->aulPriv[0]) & 0x0000FF00) >> 8))
 #define ADS_DL_GET_RABID_FROM_IMM(pstImmZc)         ((VOS_UINT32)((ADS_IMM_MEM_CB(pstImmZc)->aulPriv[0]) & 0x000000FF))
@@ -117,7 +117,7 @@ extern "C" {
 #define ADS_DL_GET_IPF_RD_DESC_OUT_PTR(pstRdDesc)   ((pstRdDesc)->OutPtr)
 #endif
 
-/* 下行内存cache invalidate (map) */
+/* ????????cache invalidate (map) */
 /*lint -emacro({717}, ADS_IPF_DL_MEM_MAP)*/
 #define ADS_IPF_DL_MEM_MAP(pstImmZc, ulLen)\
             do\
@@ -128,7 +128,7 @@ extern "C" {
                 }\
             } while(0)
 
-/* 下行内存cache invalidate (unmap) */
+/* ????????cache invalidate (unmap) */
 /*lint -emacro({717}, ADS_IPF_DL_MEM_UNMAP)*/
 #define ADS_IPF_DL_MEM_UNMAP(pstImmZc, ulLen)\
             do\
@@ -140,11 +140,11 @@ extern "C" {
             } while(0)
 
 
-/* 封装OSA申请消息接口 */
+/* ????OSA???????????? */
 #define ADS_DL_ALLOC_MSG_WITH_HDR(ulMsgLen)\
             PS_ALLOC_MSG_WITH_HEADER_LEN(ACPU_PID_ADS_DL, (ulMsgLen))
 
-/* 封装OSA消息头 */
+/* ????OSA?????? */
 #define ADS_DL_CFG_MSG_HDR(pstMsg, ulRecvPid, ulMsgId)\
             ((MSG_HEADER_STRU *)(pstMsg))->ulSenderCpuId   = VOS_LOCAL_CPUID;\
             ((MSG_HEADER_STRU *)(pstMsg))->ulSenderPid     = ACPU_PID_ADS_DL;\
@@ -152,23 +152,23 @@ extern "C" {
             ((MSG_HEADER_STRU *)(pstMsg))->ulReceiverPid   = (ulRecvPid);\
             ((MSG_HEADER_STRU *)(pstMsg))->ulMsgName       = (ulMsgId)
 
-/* 封装OSA消息头(ADS内部消息) */
+/* ????OSA??????(ADS????????) */
 #define ADS_DL_CFG_INTRA_MSG_HDR(pstMsg, ulMsgId)\
             ADS_DL_CFG_MSG_HDR(pstMsg, ACPU_PID_ADS_DL, ulMsgId)
 
-/* 封装OSA消息头(CDS内部消息) */
+/* ????OSA??????(CDS????????) */
 #define ADS_DL_CFG_CDS_MSG_HDR(pstMsg, ulMsgId)\
             ADS_DL_CFG_MSG_HDR(pstMsg, UEPS_PID_CDS, ulMsgId)
 
-/* 获取OSA消息内容 */
+/* ????OSA???????? */
 #define ADS_DL_GET_MSG_ENTITY(pstMsg)\
             ((VOS_VOID *)&(((MSG_HEADER_STRU *)(pstMsg))->ulMsgName))
 
-/* 获取OSA消息长度 */
+/* ????OSA???????? */
 #define ADS_DL_GET_MSG_LENGTH(pstMsg)\
             (((MSG_HEADER_STRU *)(pstMsg))->ulLength)
 
-/* 封装OSA发送消息接口 */
+/* ????OSA???????????? */
 /*lint -emacro({717}, ADS_DL_SEND_MSG)*/
 #define ADS_DL_SEND_MSG(pstMsg)\
             do\
@@ -181,26 +181,26 @@ extern "C" {
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  5 消息头定义
-*****************************************************************************/
-
-
-/*****************************************************************************
-  6 消息定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  6 ????????
+*****************************************************************************/
+
+
+/*****************************************************************************
+  7 STRUCT????
 *****************************************************************************/
 
 
@@ -220,8 +220,8 @@ typedef struct
 } ADS_DL_IPF_RESULT_STRU;
 
 /*****************************************************************************
- 结构名称  : ADS_IMM_MEM_CB_STRU
- 结构说明  : ADS下行IMM私有结构
+ ????????  : ADS_IMM_MEM_CB_STRU
+ ????????  : ADS????IMM????????
 *****************************************************************************/
 typedef struct
 {
@@ -237,17 +237,17 @@ typedef struct
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 VOS_VOID ADS_DL_ProcMsg(MsgBlock* pMsg);

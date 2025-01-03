@@ -62,7 +62,7 @@
 
 
 /**************************************************************************
-  OTHERS定义
+  OTHERS????
 **************************************************************************/
 #define dump_debug(fmt, ...)    (bsp_debug("<%s> "fmt, __FUNCTION__, ##__VA_ARGS__))
 #define dump_warning(fmt, ...)  (bsp_wrn("<%s> "fmt, __FUNCTION__, ##__VA_ARGS__))
@@ -79,7 +79,7 @@ enum EDITION_KIND dump_get_edition_type(void);
 void dump_config_init(void);
 s32 dump_check_reset_timestamp(u32 modid);
 
-/*modem ap flag 定义*/
+/*modem ap flag ????*/
 #define DUMP_INIT_FLAG_CONFIG                 (0x5B5B0000)
 #define DUMP_INIT_FLAG_BASEINFO               (0x5B5B0001)
 #define DUMP_INIT_FLAG_SAVETASK               (0x5B5B0002)

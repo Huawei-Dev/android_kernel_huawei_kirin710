@@ -218,7 +218,7 @@ u32 nv_debug_init(void)
 
 bool nv_debug_is_reset(void)
 {
-    /* MBB产品默认不复位 */
+    /* MBB?????????????? */
     if(NV_PRODUCT_MBB == nv_debug_product())
     {
         nv_printf("mbb product don't reset system! %d\n",g_nv_debug_cfg.reset);
@@ -232,7 +232,7 @@ bool nv_debug_is_reset(void)
             return true;
         }
 
-        /* 手机产品产线上不复位 */
+        /* ???????????????????? */
         if(NV_MODE_FACTORY == g_nv_ctrl.nv_self_ctrl.ulResumeMode)
         {
             nv_printf("phone product don't reset system in factory! %d\n",g_nv_ctrl.nv_self_ctrl.ulResumeMode);
@@ -240,7 +240,7 @@ bool nv_debug_is_reset(void)
         }
         else
         {
-            /* 手机beta阶段复位，商用阶段不复位 */
+            /* ????beta???????????????????????? */
             if(EDITION_USER == bbox_check_edition())
             {
                 nv_printf("phone product don't reset system in user! \n");
@@ -404,11 +404,11 @@ u32 nv_debug_store_file(char * src)
     return NV_OK;
 }
 /*****************************************************************************
- 函 数 名  : nv_debug_switch
- 功能描述  : nv debug功能开关
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : 无
+ ?? ?? ??  : nv_debug_switch
+ ????????  : nv debug????????
+ ????????  : void
+ ????????  : ??
+ ?? ?? ??  : ??
 *****************************************************************************/
 u32 nv_debug_switch(debug_ctrl_union_t debug_switch, u32 type)
 {
@@ -447,11 +447,11 @@ u32 nv_debug_switch(debug_ctrl_union_t debug_switch, u32 type)
     return NV_OK;
 }
 /*****************************************************************************
- 函 数 名  : nv_debug_record
- 功能描述  : 对读写操作过程记录打点时间
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : 无
+ ?? ?? ??  : nv_debug_record
+ ????????  : ??????????????????????????
+ ????????  : void
+ ????????  : ??
+ ?? ?? ??  : ??
 *****************************************************************************/
 void nv_debug_record(u32 current_state)
 {
@@ -500,11 +500,11 @@ void nv_debug_record(u32 current_state)
     return;
 }
 /*****************************************************************************
- 函 数 名  : nv_debug_print_dump_queue
- 功能描述  : 打印dump队列中的信息
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : 无
+ ?? ?? ??  : nv_debug_print_dump_queue
+ ????????  : ????dump????????????
+ ????????  : void
+ ????????  : ??
+ ?? ?? ??  : ??
 *****************************************************************************/
 void nv_debug_print_dump_queue(void)
 {
@@ -556,11 +556,11 @@ void nv_debug_print_dump_queue(void)
     return;
 }
 /*****************************************************************************
- 函 数 名  : nv_debug_record_delta_time
- 功能描述  : 记录操作最大时间
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : 无
+ ?? ?? ??  : nv_debug_record_delta_time
+ ????????  : ????????????????
+ ????????  : void
+ ????????  : ??
+ ?? ?? ??  : ??
 *****************************************************************************/
 void nv_debug_record_delta_time(u32 type, u32 start, u32 end)
 {
@@ -795,7 +795,7 @@ void nv_debug(u32 type,u32 reseverd1,u32 reserved2,u32 reserved3,u32 reserved4)
 }
 
 
-/*系统启动log记录接口，保存到 NV_LOG_PATH 中，大小限定在 NV_LOG_MAX_SIZE*/
+/*????????log???????????????? NV_LOG_PATH ?????????????? NV_LOG_MAX_SIZE*/
 void nv_record(char* fmt,...)
 {
     char   buffer[256];
@@ -868,13 +868,13 @@ void nv_get_current_sys_time(struct rtc_time *tm)
         nv_error_printf("invalid date/time\n");
         return;
     }
-    /*获取到的时间为格林威治时间，转换为北京时间*/
+    /*??????????????????????????????????????????*/
     tm->tm_hour+=8;
     return;
 }
 /*****************************************************************************
  Prototype       : nv_debug_is_bak_resume_nv
- Description     : 检测nv是否为备份恢复nv
+ Description     : ????nv??????????????nv
  Return Value    : NONE
 *****************************************************************************/
  void nv_debug_is_bak_resume_nv(u32 itemid)
@@ -903,7 +903,7 @@ void nv_get_current_sys_time(struct rtc_time *tm)
 
 /*****************************************************************************
  Prototype       : nv_debug_chk_invalid_type
- Description     : 检查文件是否是测试桩定义的文件
+ Description     : ??????????????????????????????
  Return Value    : NONE
 *****************************************************************************/
 u32 nv_debug_chk_invalid_type(const s8 * path, u32 invalid_type)
@@ -922,7 +922,7 @@ u32 nv_debug_chk_invalid_type(const s8 * path, u32 invalid_type)
 
 /*****************************************************************************
  Prototype       : nv_debug_set_invalid_type
- Description     : 设置测试桩定义的文件的名字和属性
+ Description     : ????????????????????????????????
  Return Value    : NONE
 *************************************************************************/
 void nv_debug_set_invalid_type(const s8 * path, u32 invalid_type)
@@ -934,7 +934,7 @@ void nv_debug_set_invalid_type(const s8 * path, u32 invalid_type)
 
 /*****************************************************************************
  Prototype       : nv_debug_set_invalid_type
- Description     : 清除测试桩定义的文件的名字和属性
+ Description     : ????????????????????????????????
  Return Value    : NONE
 *************************************************************************/
 void nv_debug_clear_invalid_type(void)

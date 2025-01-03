@@ -59,19 +59,19 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum SPY_DATA_DOWNGRADE_RESULT_ENUM
@@ -100,8 +100,8 @@ typedef VOS_UINT32 SPY_TEMPROTECT_SWITCH_STATE_ENUM_UINT32;
 
 
 /*****************************************************************************
- 枚举名    : TEMPPRT_AT_MSG_ID_ENUM
- 结构说明  : SPY与AT消息接口枚举
+ ??????    : TEMPPRT_AT_MSG_ID_ENUM
+ ????????  : SPY??AT????????????
 *****************************************************************************/
 enum TEMPPRT_AT_MSG_ID_ENUM
 {
@@ -118,11 +118,11 @@ typedef VOS_UINT32 TEMPPRT_AT_MSG_ID_ENUM_UINT32;
 
 enum SLEEP_SYSTEM_STATE_ENUM
 {
-    SLEEP_NORMAL_STATE = 0,                             /* 正常状态 */
-    SLEEP_MASTER_TEMP_LP_STATE,                         /* 主模低功耗状态(暂态) */
-    SLEEP_MASTER_LP_STATE,                              /* 主模低功耗状态 */
-    SLEEP_TEMP_NORMAL_STATE,                            /* 正常状态(暂态) */
-    SLEEP_SLAVE_LP_STATE,                               /* 从模低功耗状态 */
+    SLEEP_NORMAL_STATE = 0,                             /* ???????? */
+    SLEEP_MASTER_TEMP_LP_STATE,                         /* ??????????????(????) */
+    SLEEP_MASTER_LP_STATE,                              /* ?????????????? */
+    SLEEP_TEMP_NORMAL_STATE,                            /* ????????(????) */
+    SLEEP_SLAVE_LP_STATE,                               /* ?????????????? */
     SLEEP_STATE_BUTT
 };
 typedef VOS_UINT32 SLEEP_SYSTEM_STATE_ENUM_UINT32;
@@ -130,38 +130,38 @@ typedef VOS_UINT32 SLEEP_SYSTEM_STATE_ENUM_UINT32;
 
 enum SLEEP_BBE16_SYSTEM_STATE_ENUM
 {
-    SLEEP_BBE16_NORMAL_STATE = 0,                       /* 正常状态 */
-    SLEEP_BBE16_MASTER_HALT_STATE,                      /* 主模HALT状态 */
-    SLEEP_BBE16_MASTER_LP_STATE,                        /* 主模低功耗状态 */
-    SLEEP_BBE16_MASTER_WAKE_STATE,                      /* 主模唤醒状态 */
-    SLEEP_BBE16_MASTER_TEMP_NORMAL_STATE,               /* 主模正常状态(暂态) */
-    SLEEP_BBE16_SLAVE_HALT_STATE,                       /* 从模HALT状态 */
-    SLEEP_BBE16_SLAVE_LP_STATE,                         /* 从模低功耗状态 */
-    SLEEP_BBE16_SLAVE_WAKE_STATE,                       /* 从模唤醒状态 */
-    SLEEP_BBE16_SLAVE_TEMP_NORMAL_STATE,                /* 从模正常状态(暂态) */
+    SLEEP_BBE16_NORMAL_STATE = 0,                       /* ???????? */
+    SLEEP_BBE16_MASTER_HALT_STATE,                      /* ????HALT???? */
+    SLEEP_BBE16_MASTER_LP_STATE,                        /* ?????????????? */
+    SLEEP_BBE16_MASTER_WAKE_STATE,                      /* ???????????? */
+    SLEEP_BBE16_MASTER_TEMP_NORMAL_STATE,               /* ????????????(????) */
+    SLEEP_BBE16_SLAVE_HALT_STATE,                       /* ????HALT???? */
+    SLEEP_BBE16_SLAVE_LP_STATE,                         /* ?????????????? */
+    SLEEP_BBE16_SLAVE_WAKE_STATE,                       /* ???????????? */
+    SLEEP_BBE16_SLAVE_TEMP_NORMAL_STATE,                /* ????????????(????) */
     SLEEP_BBE16_STATE_BUTT
 };
 typedef VOS_UINT32 SLEEP_BBE16_SYSTEM_STATE_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    :SLEEP_MSG_ID_ENUM_UINT32
- 协议表格  :
- ASN.1描述 :
- 枚举说明  :SLEEP消息ID枚举
+ ??????    :SLEEP_MSG_ID_ENUM_UINT32
+ ????????  :
+ ASN.1???? :
+ ????????  :SLEEP????ID????
 *****************************************************************************/
 enum SLEEP_MSG_ID_ENUM
 {
-    ID_SLEEP_NOTIFY_STATUS_IND = 0,                         /* 进入从模低功耗，通知注册PID */
+    ID_SLEEP_NOTIFY_STATUS_IND = 0,                         /* ????????????????????????PID */
 
     ID_SLEEP_MSG_ID_BUTT
 };
 typedef VOS_UINT32 SLEEP_MSG_ID_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    :SLEEP_LOWPOWER_STATE_ENUM_UINT32
- 协议表格  :
- ASN.1描述 :
- 枚举说明  :低功耗开关状态
+ ??????    :SLEEP_LOWPOWER_STATE_ENUM_UINT32
+ ????????  :
+ ASN.1???? :
+ ????????  :??????????????
 *****************************************************************************/
 enum SLEEP_LOWPOWER_STATE_ENUM
 {
@@ -180,32 +180,32 @@ enum OM_PCV_CHANNEL_EUNM
 };
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 typedef SPY_DATA_DOWNGRADE_RESULT_ENUM_UINT32 (*SPY_DOWNGRADE_PROC_FUNC)(VOS_VOID);
 typedef SPY_DATA_UPGRADE_RESULT_ENUM_UINT32 (*SPY_UPGRADE_PROC_FUNC)(VOS_VOID);
 typedef VOS_VOID (*SPY_RESTORE_PROC_FUNC)(VOS_VOID);
 
 /*****************************************************************************
- 结构名    : TEMP_PROTECT_EVENT_AT_IND_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : SPY给AT上报的消息结构
+ ??????    : TEMP_PROTECT_EVENT_AT_IND_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : SPY??AT??????????????
 *****************************************************************************/
 typedef struct
 {
@@ -221,23 +221,23 @@ typedef struct
     VOS_MSG_HEADER                                          /* ulSenderPid: WUEPS_PID_SLEEP */
     SLEEP_MSG_ID_ENUM_UINT32            enMsgId;
     VOS_RATMODE_ENUM_UINT32             enRatMode;
-    SLEEP_SYSTEM_STATE_ENUM_UINT32      enState;            /* 目前固定填写SLEEP_SLAVE_LP_STATE */
+    SLEEP_SYSTEM_STATE_ENUM_UINT32      enState;            /* ????????????SLEEP_SLAVE_LP_STATE */
     SLEEP_LOWPOWER_STATE_ENUM_UINT32    enLPState;
 } SLEEP_NOTIFY_STATUS_MSG_STRU;
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 extern VOS_VOID Spy_DownGradeRegister(SPY_DOWNGRADE_PROC_FUNC pFnDowngradeProcFunc);

@@ -77,13 +77,13 @@ extern "C" {
 #else
 #define SERVICE_HEAD_SID(pData)         ((VOS_UINT32)(((DIAG_SERVICE_HEAD_STRU *)pData)->sid8b))
 #define DIAG_4G_FRAME_HEAD_LEN          (sizeof(DIAG_SERVICE_HEAD_STRU))
-#define DIAG_SERVICE_HEAD_VER(pData)    ((((DIAG_SERVICE_HEAD_STRU *)pData)->sid8b)&0xF0)//sid8b在5G中为sid4b ver4b 取
+#define DIAG_SERVICE_HEAD_VER(pData)    ((((DIAG_SERVICE_HEAD_STRU *)pData)->sid8b)&0xF0)//sid8b??5G????sid4b ver4b ??
 #endif
 
 /* DIAG_SERVICE_HEAD_STRU:sessionid8b */
-#define MSP_SERVICE_SESSION_ID        (0x1) /* 标识Service与Client之间的连接,固定为1*/
+#define MSP_SERVICE_SESSION_ID        (0x1) /* ????Service??Client??????????,??????1*/
 
-/* DIAG二级三级头的长度 */
+/* DIAG???????????????? */
 #define DIAG_MESSAGE_DATA_HEADER_LEN  (sizeof(DIAG_SERVICE_HEAD_STRU)   \
                                      + sizeof(DIAG_MSG_INFO_STRU)       \
                                      + sizeof(MSP_DIAG_DATA_REQ_STRU))
@@ -91,28 +91,28 @@ extern "C" {
 /*****************************************************************************
   3 Enum
 *****************************************************************************/
-/* ==============服务层头结构枚举值定义==================================== */
+/* ==============??????????????????????==================================== */
 
 /* DIAG_SERVICE_HEAD_STRU:ssid4b */
 enum DIAG_SSID_TYPE
 {
 #ifdef DIAG_SYSTEM_5G
-    DIAG_SSID_DEFAULT       = 0x0,  /* 0x00：未指定（仅下发REQ使用，表示由UE确定分发目标，CNF和IND不能使用该值） */
-    DIAG_SSID_APP_CPU       = 0x1,  /* 0x01：A-CPU */
-    DIAG_SSID_MODEM_CPU     = 0x2,  /* 0x02：2G/3G/4.5G子系统C-CPU（底软、PS使用） */
-    DIAG_SSID_TLDSP_BBE_NX  = 0x3,  /* 0x03：BBE NX（TL DSP使用） */
-    DIAG_SSID_BBP_DEBUG     = 0x4,  /* 0x04：2G/3G/4.5G BBP Debug   //原来是LTE BBP */
-    DIAG_SSID_GUC_BBE_NX    = 0x5,  /* 0x05：BBE NX（GUC DSP SDR使用）  //因GUC PHY与TL PHY没有融合，仍需单独分配 */
+    DIAG_SSID_DEFAULT       = 0x0,  /* 0x00????????????????REQ????????????UE??????????????CNF??IND?????????????? */
+    DIAG_SSID_APP_CPU       = 0x1,  /* 0x01??A-CPU */
+    DIAG_SSID_MODEM_CPU     = 0x2,  /* 0x02??2G/3G/4.5G??????C-CPU????????PS?????? */
+    DIAG_SSID_TLDSP_BBE_NX  = 0x3,  /* 0x03??BBE NX??TL DSP?????? */
+    DIAG_SSID_BBP_DEBUG     = 0x4,  /* 0x04??2G/3G/4.5G BBP Debug   //??????LTE BBP */
+    DIAG_SSID_GUC_BBE_NX    = 0x5,  /* 0x05??BBE NX??GUC DSP SDR??????  //??GUC PHY??TL PHY?????????????????????? */
     DIAG_SSID_HIFI          = 0x6,
-    DIAG_SSID_LTE_V_DSP     = 0x7,  /* 0x07：LTE-V DSP（预留）//原来是TDS DSP */
+    DIAG_SSID_LTE_V_DSP     = 0x7,  /* 0x07??LTE-V DSP????????//??????TDS DSP */
     DIAG_SSID_RESERVE0      = 0x8,
     DIAG_SSID_MCU           = 0x9,
-    DIAG_SSID_TEE           = 0xA,  /* 0x0A：TEE        //原来是GPU */
-    DIAG_SSID_RESERVE1      = 0xB,  /* 0x0B：保留       //原来是GUX BBP */
+    DIAG_SSID_TEE           = 0xA,  /* 0x0A??TEE        //??????GPU */
+    DIAG_SSID_RESERVE1      = 0xB,  /* 0x0B??????       //??????GUX BBP */
     DIAG_SSID_IOM3          = 0xC,
     DIAG_SSID_EASYRF0       = 0xD,
     DIAG_SSID_X_DSP         = 0xE,
-    DIAG_SSID_GUC_L1C       = 0xE,  /* 0x0E：2G/3G/4.5G子系统C-CPU（GUC L1C使用）   //因GUC L1C没有通过C核MSP进行OAM数据上报，仍需单独分配 */
+    DIAG_SSID_GUC_L1C       = 0xE,  /* 0x0E??2G/3G/4.5G??????C-CPU??GUC L1C??????   //??GUC L1C????????C??MSP????OAM?????????????????????? */
     DIAG_SSID_RESERVE2      = 0xF,
     DIAG_SSID_5G_CCPU       = 0x10,
     DIAG_SSID_L2HAC         = 0x11,
@@ -212,10 +212,10 @@ enum DIAG_FRAME_VER_TYPE
 /*****************************************************************************
   5 struct
 *****************************************************************************/
-/* ==============帧结构描述================================================ */
+/* ==============??????????================================================ */
 
 #ifdef DIAG_SYSTEM_5G
-/* 描述 :5G 一级头: service头 */
+/* ???? :5G ??????: service?? */
 typedef struct
 {
     VOS_UINT32    sid4b       :4;   /* service id, value:DIAG_SID_TYPE */
@@ -234,7 +234,7 @@ typedef struct
     VOS_UINT8     aucTimeStamp[4];
 }DIAG_SERVICE_HEAD_STRU;
 #else
-/* 描述 :4G 一级头: service头 */
+/* ???? :4G ??????: service?? */
 typedef struct
 {
     VOS_UINT32    sid8b       :8;   /* service id, value:DIAG_SID_TYPE */
@@ -252,7 +252,7 @@ typedef struct
 }DIAG_SERVICE_HEAD_STRU;
 #endif
 
-/* 描述 :二级头: DIAG消息头 */
+/* ???? :??????: DIAG?????? */
 typedef struct
 {
     VOS_UINT32    cmdid19b:19;
@@ -261,12 +261,12 @@ typedef struct
     VOS_UINT32    pri4b   :4;
 } MSP_DIAG_STID_STRU;
 
-/* 描述 :三级头: 工具软件信息头，用于REQ/CNF消息 */
+/* ???? :??????: ????????????????????REQ/CNF???? */
 typedef struct
 {
-    VOS_UINT32 ulAuid;         /* 原AUID*/
-    VOS_UINT32 ulSn;           /* HSO分发，插件命令管理*/
-    VOS_UINT8  ucData[0];      /* 参数的数据*/  /*lint !e43 */
+    VOS_UINT32 ulAuid;         /* ??AUID*/
+    VOS_UINT32 ulSn;           /* HSO??????????????????*/
+    VOS_UINT8  ucData[0];      /* ??????????*/  /*lint !e43 */
 } MSP_DIAG_DATA_REQ_STRU;
 
 typedef MSP_DIAG_DATA_REQ_STRU MSP_DIAG_DATA_CNF_STRU;
@@ -275,22 +275,22 @@ typedef struct
 {
     union
     {
-        VOS_UINT32          ulID;           /* 结构化ID */
+        VOS_UINT32          ulID;           /* ??????ID */
         MSP_DIAG_STID_STRU  stID;
     };
 
-    VOS_UINT32          ulDataSize;     /* ucData的长度 */
+    VOS_UINT32          ulDataSize;     /* ucData?????? */
     VOS_UINT8           aucData[0];     /*lint !e43 */
 }DIAG_MSG_INFO_STRU;
 
-/* 描述 :整体帧结构 */
+/* ???? :?????????? */
 typedef struct
 {
     DIAG_SERVICE_HEAD_STRU      stService;
 
     union
     {
-        VOS_UINT32          ulCmdId;           /* 结构化ID */
+        VOS_UINT32          ulCmdId;           /* ??????ID */
         MSP_DIAG_STID_STRU  stID;
     };
 

@@ -50,7 +50,7 @@
 #define _AT_CMD_PROC_H_
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "AtCtx.h"
 #include "siapppb.h"
@@ -95,13 +95,13 @@ extern "C" {
 
 #pragma pack(4)
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-#define AT_USBCOM_DISABLED              (0)                                     /* 串口去使能状态(suspend/disable)*/
-#define AT_USBCOM_ENABLED               (1)                                     /* 串口使能状态(resume/enable)*/
+#define AT_USBCOM_DISABLED              (0)                                     /* ??????????????(suspend/disable)*/
+#define AT_USBCOM_ENABLED               (1)                                     /* ????????????(resume/enable)*/
 #define AT_CC_CALSS_TYPE_INVALID       (255)
 
-/* AT模块允许一次最大输入的XML码流长度 */
+/* AT??????????????????????XML???????? */
 #define AT_XML_MAX_LEN               (1024)
 
 #define AT_CUSD_M_NETWORK_TIMEOUT       (5)
@@ -117,11 +117,11 @@ extern "C" {
 #define AT_PB_81CODE_HEADER_LEN         (3)
 #define AT_PB_82CODE_HEADER_LEN         (4)
 
- /* 81编码用第8到第15bit进行编码，即0hhh hhhh hXXX XXXX */
+ /* 81????????8????15bit????????????0hhh hhhh hXXX XXXX */
 #define AT_PB_81_CODE_BASE_POINTER      (0x7f80)
-/* GSM7Bit 编码的范围是0~127 */
+/* GSM7Bit ????????????0~127 */
 #define AT_PB_GSM7_CODE_MAX_VALUE       (0x7f)
-/* GSM7Bit 编码的第8bit必须为0 */
+/* GSM7Bit ????????8bit??????0 */
 #define AT_PB_CODE_NO8_BIT              (0x80)
 
 #define AT_AP_NVIM_XML_RPT_SRV_URL_LEN  (127)
@@ -131,10 +131,10 @@ extern "C" {
 
 #define AT_ANTEN_LEV_MAX_NUM            (6)
 
-#define AT_HEX_LEN_OF_ULONG_TYPE            (8)                                 /* Unsigned long类型对应十六进制数的位数 */
-#define AT_ROAM_FEATURE_OFF_NOCHANGE        (2)                                 /* at^syscfg roam在漫游特性未激活情况为不改变 */
-#define AT_SYSCFGEX_PARA_NUM                (7)                                 /* at^syscfgex设置命令的参数个数 */
-#define AT_SYSCFGEX_RAT_MODE_STR_LEN        (2)                                 /* at^syscfgex查询上报接入模式字符串长度，如接入模式为G,上报01字符串长度为2 */
+#define AT_HEX_LEN_OF_ULONG_TYPE            (8)                                 /* Unsigned long???????????????????????? */
+#define AT_ROAM_FEATURE_OFF_NOCHANGE        (2)                                 /* at^syscfg roam???????????????????????????? */
+#define AT_SYSCFGEX_PARA_NUM                (7)                                 /* at^syscfgex?????????????????? */
+#define AT_SYSCFGEX_RAT_MODE_STR_LEN        (2)                                 /* at^syscfgex????????????????????????????????????????G,????01????????????2 */
 #define AT_SYSCFGEX_RAT_NO_CHANGE_HEX_VALUE (0x99)
 #define AT_NETSCAN_PARA_MAX_NUM         (4)
 #define AT_NETSCAN_PARA_MIN_NUM         (2)
@@ -142,9 +142,9 @@ extern "C" {
 #define AT_NETSCAN_POWER_PARA_MIN_LEN   (3)
 #define AT_NETSCAN_POWER_MIN_VALUE      (-110)
 #define AT_NETSCAN_POWER_MAX_VALUE      (-47)
-#define AT_NETSCAN_LTE_POWER_MIN_VALUE  (-125)              /* 对于LTE其RSRP可以下探到-125dbm */
+#define AT_NETSCAN_LTE_POWER_MIN_VALUE  (-125)              /* ????LTE??RSRP??????????-125dbm */
 #define AT_ALL_GU_BAND                  (0x3FFFFFFF)
-#define AT_NETSCAN_PSC_MAX_VALUE        (511)               /* PSC的最大有效值为511 */
+#define AT_NETSCAN_PSC_MAX_VALUE        (511)               /* PSC??????????????511 */
 #define TAF_SERIAL_NUM_LEN              (16)
 
 #define TAF_SERIAL_NUM_NV_LEN           (TAF_SERIAL_NUM_LEN + 4)
@@ -156,9 +156,9 @@ extern "C" {
 #define AT_INVALID_INDEX                (65535)
 #define AT_AP_SPEED_STRLEN              (16)
 
-#define AT_MAX_CREATION_TIME_LEN        (31)  /* 系统编译时间 */
+#define AT_MAX_CREATION_TIME_LEN        (31)  /* ???????????? */
 
-/* AT^DISLOG操作输入255为切换PCUI服务到DIAG服务, 0为打开DIAG口, 1为关闭DIAG口  */
+/* AT^DISLOG????????255??????PCUI??????DIAG????, 0??????DIAG??, 1??????DIAG??  */
 #define AT_DISLOG_PCUI_TO_DIAG          (255)
 #define AT_DISLOG_DIAG_OPEN             (0)
 #define AT_DISLOG_DIAG_CLOSE            (1)
@@ -169,20 +169,20 @@ extern "C" {
 
 
 #if (FEATURE_ON == FEATURE_SECURITY_SHELL)
-/* AT^SHELL操作输入 , 0为WIFI使用SHELL口, 1为关闭SHELL口 , 2为打开SHELL口 */
+/* AT^SHELL???????? , 0??WIFI????SHELL??, 1??????SHELL?? , 2??????SHELL?? */
 #define AT_SHELL_WIFI_USE               (0)
 #define AT_SHELL_CLOSE                  (1)
 #define AT_SHELL_OPEN                   (2)
 
-/* SHELL口密码校验错误最大次数 */
+/* SHELL?????????????????????? */
 #define AT_SHELL_PWD_VERIFY_MAX_TIMES   (3)
 #endif
 
 #define AT_USB_ENABLE_EVENT             (3)
 #define AT_USB_SUSPEND_EVENT            (5)
 
-#define AT_MCC_LENGTH                   (3)                                     /* MCC长度 */
-#define AT_MCC_PLUS_COMMA_LENGTH        (4)                                     /* MCC加逗号长度 */
+#define AT_MCC_LENGTH                   (3)                                     /* MCC???? */
+#define AT_MCC_PLUS_COMMA_LENGTH        (4)                                     /* MCC?????????? */
 
 #define AT_UART_MODE_ASHELL             (0)
 #define AT_UART_MODE_CSHELL             (1)
@@ -191,7 +191,7 @@ extern "C" {
 #define AT_HOUR_TO_MINUTES              (60)
 #define AT_DAY_TO_HOURS                 (24)
 #define PRE_SECOND_TO_TICK              (100)
-#define TICK_TO_MAX_SECOND              (42949672)   /* VOS_GetTick最大能够计数的时间，单位:s */
+#define TICK_TO_MAX_SECOND              (42949672)   /* VOS_GetTick????????????????????????:s */
 
 
 #if (TAF_BYTE_ORDER == TAF_BIG_ENDIAN)
@@ -224,16 +224,16 @@ extern "C" {
 #define AT_UNICODE2VALUE(x)    ((x) = ((((x) & 0x00ff) << 8) | (((x) & 0xff00) >> 8)))
 
 #define AT_CMD_BUF_LEN                          12040
-#define AT_CLIENT_NULL                          0         /*未使用状态*/
-#define AT_CLIENT_USED                          1         /*占有状态*/
+#define AT_CLIENT_NULL                          0         /*??????????*/
+#define AT_CLIENT_USED                          1         /*????????*/
 
-#define AT_UNICODE_SMS_MAX_LENGTH               140       /*短消息UNICODE码最大长度*/
-#define AT_ASCII_SMS_MAX_LENGTH                 160       /*短消息ASCII码最大长度*/
-#define AT_SMS_MAX_LENGTH                       160       /*短消息内容最大长度*/
+#define AT_UNICODE_SMS_MAX_LENGTH               140       /*??????UNICODE??????????*/
+#define AT_ASCII_SMS_MAX_LENGTH                 160       /*??????ASCII??????????*/
+#define AT_SMS_MAX_LENGTH                       160       /*??????????????????*/
 #define AT_SMS_SEG_MAX_LENGTH                   800
 #define AT_COM_BUFF_LEN                        1600
-#define AT_MODEM_USER_DLCI                      64        /*usbmodem数传使用的链路号*/
-#define AT_CALL_MAX_NUM                         7         /* 最多呼叫数目 */
+#define AT_MODEM_USER_DLCI                      64        /*usbmodem????????????????*/
+#define AT_CALL_MAX_NUM                         7         /* ???????????? */
 #define AT_SMS_RP_ADDRESS_MAX_LEN               12
 
 #define AT_PB_NAME_MAX_LENGTH                   AT_MSG_MAX_TPDU_LEN
@@ -243,20 +243,20 @@ extern "C" {
 #define AT_PCVOICE_DATA_BIT                     (16)
 #define AT_PCVOICE_FRAME_PERIOD                 (20)
 
-/*DTMF相关*/
+/*DTMF????*/
 #define AT_DTMF_START                           (1)
 #define AT_DTMF_STOP                            (0)
 #define AT_VTS_DEFAULT_DTMF_LENGTH              (65)
 #define AT_DTMF_DEFAULT_DTMF_LENGTH             (60000)
 
-#define AT_DTMF_MIN_DTMF_OFF_LENGTH             (10)                            /* osa能启动最小精度的定时器为10ms */
+#define AT_DTMF_MIN_DTMF_OFF_LENGTH             (10)                            /* osa????????????????????????10ms */
 
 #define AT_QUICK_START_DISABLE    0x00000000
 #define AT_QUICK_START_ENABLE     0x01000101
 
-#define AT_CNMR_QRY_GAS_NMR_DATA        (1)         /* ^cnmr查询2g的nmr 数据*/
-#define AT_CNMR_QRY_WAS_NMR_DATA        (2)         /* ^cnmr查询3g的nmr 数据*/
-#define AT_CNMR_QRY_LTE_NMR_DATA        (3)         /* ^cnmr查询4g的nmr 数据*/
+#define AT_CNMR_QRY_GAS_NMR_DATA        (1)         /* ^cnmr????2g??nmr ????*/
+#define AT_CNMR_QRY_WAS_NMR_DATA        (2)         /* ^cnmr????3g??nmr ????*/
+#define AT_CNMR_QRY_LTE_NMR_DATA        (3)         /* ^cnmr????4g??nmr ????*/
 
 #define AT_CTRL_Z                       (0x1A)      /* CTRL-Z */
 #define AT_ESC                          (0x1B)      /* ESC */
@@ -314,7 +314,7 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 /*23040 9.2.3.3 bit no 3 and 4 of the first octet of SMS SUBMIT*/
 #define AT_GET_MSG_TP_VPF( ucVpf, ucFo)                     (ucVpf = (ucFo & 0x18) >> 3)
 
-/* 将设置和查询时间缩短，特殊命令另外设置时间 */
+/* ?????????????????????????????????????????? */
 #define AT_SET_CFUN_TIME   (155000)
 #define AT_SET_PARA_TIME   (30000) /*<==A32D12591*/
 #define AT_QRY_PARA_TIME   (30000) /*<==A32D12429*/
@@ -323,8 +323,8 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 
 #define AT_SET_CGLA_PARA_TIME   (90000)
 
-/* 解决2G语音和短信并发重传过程中AT命令提前结束问题: 75000 -> 105000 */
-/* 解决DCM 461-0701-0202 461-0701-0203重传过程中AT命令提前结束问题 */
+/* ????2G????????????????????????AT????????????????: 75000 -> 105000 */
+/* ????DCM 461-0701-0202 461-0701-0203??????????AT???????????????? */
 #define AT_SMS_SET_PARA_TIME   (105000) /*<==A32D12591*/
 
 #if (FEATURE_IMS == FEATURE_ON)
@@ -342,25 +342,25 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 #endif
 
 
-/* 将PDP激活和断开时AT起的TIMER的时长拉长 */
-#define AT_ACT_PDP_TIME    (362000)    /* 362 秒, APS是360秒, 3380是30秒一次共5次150秒 */
-#define AT_DETACT_PDP_TIME (50000)     /* 50秒, APS是48秒, 3390是8秒一次共5次40秒 */
-#define AT_MOD_PDP_TIME    (170000)    /* 170秒, APS是168秒, 3381是8秒一共5次40秒 */
+/* ??PDP????????????AT????TIMER?????????? */
+#define AT_ACT_PDP_TIME    (362000)    /* 362 ??, APS??360??, 3380??30????????5??150?? */
+#define AT_DETACT_PDP_TIME (50000)     /* 50??, APS??48??, 3390??8????????5??40?? */
+#define AT_MOD_PDP_TIME    (170000)    /* 170??, APS??168??, 3381??8??????5??40?? */
 
 #define AT_NOT_SET_TIME  0
 
-#define AT_COPS_SPEC_SRCH_TIME                             (120000)             /* COPS指定搜网时间 */
-#define AT_COPS_LIST_SRCH_TIME                             (240000)             /* COPS列表搜网时间 */
-#define AT_COPS_LIST_ABORT_TIME                            (15000)              /* COPS列表搜打断时间, 定15S是因为MMA的保护时长为10S */
+#define AT_COPS_SPEC_SRCH_TIME                             (120000)             /* COPS???????????? */
+#define AT_COPS_LIST_SRCH_TIME                             (240000)             /* COPS???????????? */
+#define AT_COPS_LIST_ABORT_TIME                            (15000)              /* COPS??????????????, ??15S??????MMA????????????10S */
 
 
-#define AT_CSG_LIST_SRCH_TIME                             (220000)             /* CSG列表搜网时间 */
-#define AT_CSG_LIST_ABORT_TIME                            (15000)             /* CSG列表搜打断时间, 定15S是因为MMA的保护时长为10S */
+#define AT_CSG_LIST_SRCH_TIME                             (220000)             /* CSG???????????? */
+#define AT_CSG_LIST_ABORT_TIME                            (15000)             /* CSG??????????????, ??15S??????MMA????????????10S */
 
-#define AT_CSG_SPEC_SRCH_TIME                             (120000)             /* CSG指定搜网时间 */
+#define AT_CSG_SPEC_SRCH_TIME                             (120000)             /* CSG???????????? */
 
-/* 定义AT模块等待SYSCFG/SYSCFGEX的回复时间定时器*/
-#define AT_SYSCFG_SET_PARA_TIME                             (144*1000)            /* iteration 13修改为该时长为100S */
+/* ????AT????????SYSCFG/SYSCFGEX????????????????*/
+#define AT_SYSCFG_SET_PARA_TIME                             (144*1000)            /* iteration 13??????????????100S */
 
 
 #define AT_NETSCAN_SET_PARA_TIME                            (120000)
@@ -373,7 +373,7 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 
 #define AT_CGATT_SET_PARA_TIME                             (240000)
 
-/* 补充业务启动150s定时器，at的保护定时器需要比ss启动的保护定时器长定位160s */
+/* ????????????150s????????at??????????????????ss??????????????????????160s */
 #define AT_SET_SS_PARA_TIME             (160000)
 #define AT_QRY_SS_PARA_TIME             (160000)
 
@@ -381,8 +381,8 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 #define AT_QRY_VC_PARA_TIME             (10000)
 #define AT_SET_CALL_PARA_TIME           (100000)
 
-#define AT_PPP_PROTOCOL_REL_TIME  5000   /*等待PPP回应AT_PPP_PROTOCOL_REL_IND_MSG的保护定时器时长*/
-#define AT_HOLD_CMD_TIMER_LEN   (360000)    /*处理AT缓存命令的定时器时长，设置为最长AT处理定时器360000*/
+#define AT_PPP_PROTOCOL_REL_TIME  5000   /*????PPP????AT_PPP_PROTOCOL_REL_IND_MSG????????????????*/
+#define AT_HOLD_CMD_TIMER_LEN   (360000)    /*????AT????????????????????????????????AT??????????360000*/
 
 #define AT_AUTH_PUBKEY_PROTECT_TIMER_LEN    (3000)
 
@@ -392,34 +392,34 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 
 #define AT_BCD_REVERSE(x)   (TAF_UINT8)((((x) << 4) & 0xf0) + (((x) >> 4) & 0x0f))
 
-/*PPP拨号时，若拨号命令中未指定CID(如*99#拨号命令)，则默认使用如下CID*/
+/*PPP??????????????????????????CID(??*99#????????)????????????????CID*/
 #define AT_DIAL_DEFAULT_CID         1
 
 #define AT_INVALID_TZ_VALUE         0x7F
 
 
 
-/* AT命令允许设置的地址最大长度 */
+/* AT?????????????????????????? */
 #define AT_NDIS_ADDR_PARA_LEN           (15)
 #define AT_NDIS_IPV4_ADDR_PARA_LEN      (15)
 #define AT_NDIS_IPV6_ADDR_PARA_LEN      (63)
 
-#define AT_SERVICE_CS_PS                        (2)     /*PS、CS业务都使能 */
+#define AT_SERVICE_CS_PS                        (2)     /*PS??CS?????????? */
 #define AT_DEVICE_STATE_FROM_COFIGFILE          (0)     /*0:MDM+DIAG+PCUI*/
 #define AT_DEVICE_STATE_FROM_UE                 (4372)  /*4372:CDROM/MDM+NDIS+DIAG+PCUI+CDROM+SD+BT*/
-#define AT_CUSTOMIZE_ITEM_DEFAULT_VAL_CHANGED   (2)     /*定制项被修改,不为可配置需求文档默认值*/
-#define AT_CUSTOMIZE_ITEM_DEFAULT_VAL_UNCHANGE  (0)     /*定制项未修改,为可配置需求文档默认值*/
-#define AT_HSUPA_ENABLE_STATE                   (1)     /*en_NV_Item_WAS_RadioAccess_Capa NV项中HSUPA为使能状态*/
-#define AT_HSUPA_DISABLE_STATE                  (0)     /*en_NV_Item_WAS_RadioAccess_Capa NV项中HSUPA为未使能状态*/
-#define AT_HSDPA_ENABLE_STATE                   (1)     /*en_NV_Item_WAS_RadioAccess_Capa NV项中HSDPA为使能状态*/
-#define AT_HSDPA_DISABLE_STATE                  (0)     /*en_NV_Item_WAS_RadioAccess_Capa NV项中HSDPA为未使能状态*/
-#define AT_HSDSCH_PHY_CATEGORY_DEFAULT_VAL      (10)     /*en_NV_Item_WAS_RadioAccess_Capa NV项中HSDPA能力等级默认值*/
-#define AT_PS_PTL_VER_R7                        (4)     /*en_NV_Item_WAS_RadioAccess_Capa NV项中Access Stratum Release Indicator*/
+#define AT_CUSTOMIZE_ITEM_DEFAULT_VAL_CHANGED   (2)     /*????????????,????????????????????????*/
+#define AT_CUSTOMIZE_ITEM_DEFAULT_VAL_UNCHANGE  (0)     /*????????????,??????????????????????*/
+#define AT_HSUPA_ENABLE_STATE                   (1)     /*en_NV_Item_WAS_RadioAccess_Capa NV????HSUPA??????????*/
+#define AT_HSUPA_DISABLE_STATE                  (0)     /*en_NV_Item_WAS_RadioAccess_Capa NV????HSUPA????????????*/
+#define AT_HSDPA_ENABLE_STATE                   (1)     /*en_NV_Item_WAS_RadioAccess_Capa NV????HSDPA??????????*/
+#define AT_HSDPA_DISABLE_STATE                  (0)     /*en_NV_Item_WAS_RadioAccess_Capa NV????HSDPA????????????*/
+#define AT_HSDSCH_PHY_CATEGORY_DEFAULT_VAL      (10)     /*en_NV_Item_WAS_RadioAccess_Capa NV????HSDPA??????????????*/
+#define AT_PS_PTL_VER_R7                        (4)     /*en_NV_Item_WAS_RadioAccess_Capa NV????Access Stratum Release Indicator*/
 
-#define AT_SIM_LOCK_MNC_NUM_DEFAULT_VAL         (0xaa)     /*en_NV_Item_CustomizeSimLockPlmnInfo NV项中mnc num的默认值*/
-#define AT_SIM_LOCK_PLMN_RANGE_DEFAULT_VAL      (0xAAU)  /*en_NV_Item_CustomizeSimLockPlmnInfo NV中range_begin和range_end的默认值*/
-#define AT_SIM_LOCK_MAXTIMES_DEFAULT_VAL        (10)    /*en_NV_Item_CustomizeSimLockMaxTimes NV中LockMaxTimes的默认值*/
-#define AT_GPRS_ACT_TIMER_LEN_DEFAULT_VAL       (0)     /*en_NV_Item_GPRS_ActiveTimerLength NV项默认值为20s,单位:秒*/
+#define AT_SIM_LOCK_MNC_NUM_DEFAULT_VAL         (0xaa)     /*en_NV_Item_CustomizeSimLockPlmnInfo NV????mnc num????????*/
+#define AT_SIM_LOCK_PLMN_RANGE_DEFAULT_VAL      (0xAAU)  /*en_NV_Item_CustomizeSimLockPlmnInfo NV??range_begin??range_end????????*/
+#define AT_SIM_LOCK_MAXTIMES_DEFAULT_VAL        (10)    /*en_NV_Item_CustomizeSimLockMaxTimes NV??LockMaxTimes????????*/
+#define AT_GPRS_ACT_TIMER_LEN_DEFAULT_VAL       (0)     /*en_NV_Item_GPRS_ActiveTimerLength NV??????????20s,????:??*/
 #define AT_HSDSCH_PHY_CATEGORY_6                (6)     /*WAS_HSDSCH_PHY_CATEGORY_6*/
 #define AT_HSDSCH_PHY_CATEGORY_8                (8)     /*WAS_HSDSCH_PHY_CATEGORY_8*/
 #define AT_HSDSCH_PHY_CATEGORY_10               (10)
@@ -441,7 +441,7 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 #define AT_SRC_NOT_SUPPORT_HSUPA                (1)
 #define AT_SRC_ALL_SUPPORT                      (2)
 
-/*用于设置号码类型的扩展位，由于底层解码函数统一剥离了ext位，在上报时统一加上*/
+/*????????????????????????????????????????????????????ext????????????????????*/
 #define AT_NUMBER_TYPE_EXT                      (0x80)
 
 
@@ -457,24 +457,24 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 #define AT_MMI_TEST_FLAG_LEN            (4)
 #define AT_MMI_TEST_FLAG_SUCC           "ST P"
 
-#define AT_HUK_PARA_LEN                                     (32)        /* ^HUK命令参数长度 */
-#define AT_FACAUTHPUBKEY_PARA_LEN                           (1040)      /* ^FACAUTHPUBKEY命令公钥参数长度 */
-#define AT_FACAUTHPUBKEY_SIGN_PARA_LEN                      (64)        /* ^FACAUTHPUBKEY命令公钥签名参数长度 */
-#define AT_RSA_CIPHERTEXT_PARA_LEN                          (512)       /* RSA密文参数长度 */
-#define AT_SIMLOCKDATAWRITE_PARA_LEN                        (1032)      /* 锁网锁卡改制命令参数结构体长度 */
-#define AT_PERSONALIZATION_CODE_LEN                         (8)         /* 锁网锁卡通用锁网号段长度 */
-#define AT_PERSONALIZATION_CODE_LEN_EX                      (10)        /* 扩展后锁网锁卡通用锁网号段长度 */
-#define AT_PERSONALIZATION_CP_CODE_LEN                      (10)        /* 锁网锁卡CP类型锁网号段长度 */
-#define AT_PERSONALIZATION_NET_CODE_LEN                     (6)         /* 锁网锁卡NET类型锁网号段长度 */
-#define AT_PERSONALIZATION_NET_CODE_BCD_LEN                 (3)         /* 锁网锁卡NET类型锁网号段BCD编码的长度 */
-#define AT_PERSONALIZATION_SUBNET_CODE_BCD_LEN              (4)         /* 锁网锁卡NETSUB类型锁网号段BCD编码的长度 */
-#define AT_PERSONALIZATION_SP_CODE_BCD_LEN                  (4)         /* 锁网锁卡SP类型锁网号段BCD编码的长度 */
-#define AT_PERSONALIZATION_CP_CODE_BCD_LEN                  (5)         /* 锁网锁卡CP类型锁网号段BCD编码的长度 */
-#define AT_PERSONALIZATION_CODE_FOURTH_CHAR_INDEX           (3)         /* 锁网锁卡号段第四个字符的索引 */
-#define AT_NVWRSECCTRL_PARA_SECTYPE_LEN                     (1)         /* ^NVWRSECCTRL安全控制类型参数长度 */
+#define AT_HUK_PARA_LEN                                     (32)        /* ^HUK???????????? */
+#define AT_FACAUTHPUBKEY_PARA_LEN                           (1040)      /* ^FACAUTHPUBKEY???????????????? */
+#define AT_FACAUTHPUBKEY_SIGN_PARA_LEN                      (64)        /* ^FACAUTHPUBKEY???????????????????? */
+#define AT_RSA_CIPHERTEXT_PARA_LEN                          (512)       /* RSA???????????? */
+#define AT_SIMLOCKDATAWRITE_PARA_LEN                        (1032)      /* ?????????????????????????????? */
+#define AT_PERSONALIZATION_CODE_LEN                         (8)         /* ???????????????????????? */
+#define AT_PERSONALIZATION_CODE_LEN_EX                      (10)        /* ?????????????????????????????? */
+#define AT_PERSONALIZATION_CP_CODE_LEN                      (10)        /* ????????CP???????????????? */
+#define AT_PERSONALIZATION_NET_CODE_LEN                     (6)         /* ????????NET???????????????? */
+#define AT_PERSONALIZATION_NET_CODE_BCD_LEN                 (3)         /* ????????NET????????????BCD?????????? */
+#define AT_PERSONALIZATION_SUBNET_CODE_BCD_LEN              (4)         /* ????????NETSUB????????????BCD?????????? */
+#define AT_PERSONALIZATION_SP_CODE_BCD_LEN                  (4)         /* ????????SP????????????BCD?????????? */
+#define AT_PERSONALIZATION_CP_CODE_BCD_LEN                  (5)         /* ????????CP????????????BCD?????????? */
+#define AT_PERSONALIZATION_CODE_FOURTH_CHAR_INDEX           (3)         /* ???????????????????????????? */
+#define AT_NVWRSECCTRL_PARA_SECTYPE_LEN                     (1)         /* ^NVWRSECCTRL???????????????????? */
 
-#define AT_APSEC_CMD_MAX_LEN            (553)       /* "AT^APSEC=<SP_request>"(9+544) 命令最大长度 */
-#define AT_APSEC_CMD_MIN_LEN            (21)        /* "AT^APSEC=<SP_request>"(9+12)  命令最小长度 */
+#define AT_APSEC_CMD_MAX_LEN            (553)       /* "AT^APSEC=<SP_request>"(9+544) ???????????? */
+#define AT_APSEC_CMD_MIN_LEN            (21)        /* "AT^APSEC=<SP_request>"(9+12)  ???????????? */
 
 #define AT_BODYSARWCDMA_MAX_PARA_NUM                        (16)
 #define AT_BODYSARWCDMA_MAX_PARA_GROUP_NUM                  (8)
@@ -494,13 +494,13 @@ typedef TAF_UINT8   AT_MSG_DELETE_ENUM_U8;
 #define AT_GSM_GPRS_BAND_OFFSET                             (0)
 #define AT_GSM_EDGE_BAND_OFFSET                             (16)
 
-#define  AT_CERSSI_MAX_TIMER_INTERVAL   (20)           // 信号质量上报的最长间隔时间20S
+#define  AT_CERSSI_MAX_TIMER_INTERVAL   (20)           // ??????????????????????????20S
 
 
-/* 输入数据不足3的倍数时 输出字符后面填充'='号 */
+/* ????????????3???????? ????????????????'='?? */
 #define         AT_BASE64_PADDING      '='
 
-/* 添加接入技术平衡和acting plmn文件ID宏 */
+/* ??????????????????acting plmn????ID?? */
 #define USIMM_ATT_RAT_BALANCING_FID     (0x4F36)
 #define USIMM_ATT_ACTING_PLMN_FID       (0x4F34)
 
@@ -516,11 +516,11 @@ enum B64ReultType{
     b64Result_CODE_ERROR
 };
 
-#define  AT_RSFR_RSFW_NAME_LEN      7           /* 目前NAME只支持(VERSION/SIMLOCK/vSIM) */
-#define  AT_RSFR_RSFW_SUBNAME_LEN   7           /* SUBNAME长度不超过7 */
+#define  AT_RSFR_RSFW_NAME_LEN      7           /* ????NAME??????(VERSION/SIMLOCK/vSIM) */
+#define  AT_RSFR_RSFW_SUBNAME_LEN   7           /* SUBNAME??????????7 */
 
 /* (TAF_PH_SIMLOCK_PLMN_STR_LEN*2+1)*TAF_MAX_SIM_LOCK_RANGE_NUM = 340 */
-/* SIMLOCK的字符串最大340个字符，编码后也不会超过1024 */
+/* SIMLOCK????????????340????????????????????????1024 */
 #define  AT_RSFR_RSFW_MAX_LEN       1024
 
 extern VOS_UINT32  At_SimlockPlmnNumToAscii(
@@ -530,10 +530,10 @@ extern VOS_UINT32  At_SimlockPlmnNumToAscii(
 );
 
 
-/* RNIC网卡名称最大长度 */
+/* RNIC???????????????? */
 #define AT_RMNET_NAME_MAX_LENGTH        (8)
 
-/* 多实例后最多支持三个RNIC网卡*/
+/* ????????????????????RNIC????*/
 #define AT_RMNET_MAX_COUNT              (3)
 
 #define AT_CFREQLOCK_PARA_NUM_MIN       (1)
@@ -579,11 +579,11 @@ typedef VOS_UINT8 AT_COEX_PARA_TYPE;
 #define AT_COEX_PARA_RX_END_MIN                 0
 #define AT_COEX_PARA_RX_END_MAX                 65535
 
-/* 封装OSA申请消息接口 */
+/* ????OSA???????????? */
 #define AT_ALLOC_MSG_WITH_HDR(msg_len)\
             PS_ALLOC_MSG_WITH_HEADER_LEN(WUEPS_PID_AT, (msg_len))
 
-/* 封装OSA消息头 */
+/* ????OSA?????? */
 #define AT_CFG_MSG_HDR(msg, rcv_pid, msg_id)\
             ((MSG_HEADER_STRU *)(msg))->ulSenderCpuId   = VOS_LOCAL_CPUID;\
             ((MSG_HEADER_STRU *)(msg))->ulSenderPid     = WUEPS_PID_AT;\
@@ -591,32 +591,32 @@ typedef VOS_UINT8 AT_COEX_PARA_TYPE;
             ((MSG_HEADER_STRU *)(msg))->ulReceiverPid   = (rcv_pid);\
             ((MSG_HEADER_STRU *)(msg))->ulMsgName       = (msg_id)
 
-/* 封装OSA消息头(AT内部消息) */
+/* ????OSA??????(AT????????) */
 #define AT_CFG_INTRA_MSG_HDR(msg, msg_id)\
             AT_CFG_MSG_HDR(msg, WUEPS_PID_AT, msg_id)
 
-/* 封装OSA消息头(RNIC消息) */
+/* ????OSA??????(RNIC????) */
 #define AT_CFG_RNIC_MSG_HDR(msg, msg_id)\
             AT_CFG_MSG_HDR(msg, ACPU_PID_RNIC, msg_id)
 
-/* 封装OSA消息头(NDIS消息) */
+/* ????OSA??????(NDIS????) */
 #define AT_CFG_NDIS_MSG_HDR(msg, msg_id)\
             AT_CFG_MSG_HDR(msg, PS_PID_APP_NDIS, msg_id)
 
-/* 获取OSA消息内容 */
+/* ????OSA???????? */
 #define AT_GET_MSG_ENTITY(msg)\
             ((VOS_VOID *)&(((MSG_HEADER_STRU *)(msg))->ulMsgName))
 
-/* 获取OSA消息长度 */
+/* ????OSA???????? */
 #define AT_GET_MSG_LENGTH(msg)\
             (((MSG_HEADER_STRU *)(msg))->ulLength)
 
-/* 封装OSA消息初始化消息内容接口 */
+/* ????OSA?????????????????????? */
 #define AT_CLR_MSG_ENTITY(pstMsg)\
             TAF_MEM_SET_S(AT_GET_MSG_ENTITY(pstMsg), AT_GET_MSG_LENGTH(pstMsg),\
                   0x00, AT_GET_MSG_LENGTH(pstMsg));
 
-/* 封装OSA发送消息接口 */
+/* ????OSA???????????? */
 #define AT_SEND_MSG(msg)\
             if (VOS_OK != PS_SEND_MSG(WUEPS_PID_AT, msg))\
             {\
@@ -642,11 +642,11 @@ typedef VOS_UINT8 AT_COEX_PARA_TYPE;
 #define AT_BODY_SAR_GBAND_EDGE_1800_MASK   (0x00040000)
 #define AT_BODY_SAR_GBAND_EDGE_1900_MASK   (0x00080000)
 
-#define AT_SPY_TEMP_THRESHOLD_PARA_CHANGE      1                                /* 需要更新该参数 */
-#define AT_SPY_TEMP_THRESHOLD_PARA_UNCHANGE    0                                /* 无需更新该参数*/
+#define AT_SPY_TEMP_THRESHOLD_PARA_CHANGE      1                                /* ?????????????? */
+#define AT_SPY_TEMP_THRESHOLD_PARA_UNCHANGE    0                                /* ??????????????*/
 
 #if (FEATURE_ON == FEATURE_LTE)
-#define AT_UE_LTE_CATEGORY_NUM_MAX      (18)                                    /* LTE下支持的最大category数量 */
+#define AT_UE_LTE_CATEGORY_NUM_MAX      (18)                                    /* LTE????????????category???? */
 #define AT_GetLteUeDlCategoryIndex()    (g_stAtDlRateCategory.ucLteUeDlCategory)
 #define AT_GetLteUeUlCategoryIndex()    (g_stAtDlRateCategory.ucLteUeUlCategory)
 #endif
@@ -655,13 +655,13 @@ typedef VOS_UINT8 AT_COEX_PARA_TYPE;
 #define AT_GET_INTERNAL_TIMEOUT_RSLT_FUNC_TBL_SIZE()      (AT_ARRAY_SIZE(g_astAtInterTimeoutResultTab))
 
 /*******************************************************************************
-  3 枚举定义
+  3 ????????
 *******************************************************************************/
-/*物理端口最大个数*/
+/*????????????????*/
 #define AT_PHY_PORT_MAX                 (AT_PORT_BUTT)
 
 
-/*提供给OM查询发送数据的函数接口*/
+/*??????OM??????????????????????*/
 
 extern CBTCPM_RCV_FUNC                  g_apAtPortDataRcvFuncTab[AT_PHY_PORT_MAX];
 
@@ -677,9 +677,9 @@ enum AT_CLI_VALIDITY_ENUM
 typedef VOS_UINT8 AT_CLI_VALIDITY_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : AT_VOICE_DOMAIN_TYPE_ENUM
- 协议表格  :
- 枚举说明  : 优选域类型
+ ??????    : AT_VOICE_DOMAIN_TYPE_ENUM
+ ????????  :
+ ????????  : ??????????
 *****************************************************************************/
 enum AT_VOICE_DOMAIN_TYPE_ENUM
 {
@@ -693,10 +693,10 @@ typedef VOS_UINT32 AT_VOICE_DOMAIN_TYPE_ENUM_UINT32;
 
 
 /*****************************************************************************
- 枚举名    : AT_TEMPPRT_STATUS_IND_ENUM
- 结构说明  :
-             0: AT_TEMPPRT_STATUS_IND_DISABLE  温保状态上报NV项关闭
-             1: AT_TEMPPRT_STATUS_IND_ENABLE   温保状态上报NV项开启
+ ??????    : AT_TEMPPRT_STATUS_IND_ENUM
+ ????????  :
+             0: AT_TEMPPRT_STATUS_IND_DISABLE  ????????????NV??????
+             1: AT_TEMPPRT_STATUS_IND_ENABLE   ????????????NV??????
 *****************************************************************************/
 enum AT_TEMPPRT_STATUS_IND_ENUM
 {
@@ -707,11 +707,11 @@ enum AT_TEMPPRT_STATUS_IND_ENUM
 typedef VOS_UINT32 AT_TEMPPRT_STATUS_IND_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名    : AT_RSIM_STATUS_ENUM
- 结构说明  : ^RSIM 命令查询结果列表
-             0: 没有任何卡接触上；
-             1: 已经接触上SIM/USIM/UIM；
-             2:SIM/USIM/UIM繁忙需要等待；
+ ??????    : AT_RSIM_STATUS_ENUM
+ ????????  : ^RSIM ????????????????
+             0: ??????????????????
+             1: ??????????SIM/USIM/UIM??
+             2:SIM/USIM/UIM??????????????
 *****************************************************************************/
 enum AT_RSIM_STATUS_ENUM
 {
@@ -723,9 +723,9 @@ enum AT_RSIM_STATUS_ENUM
 typedef VOS_UINT8  AT_RSIM_STATUS_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : AT_PHYNUM_TYPE_ENUM_UINT32
- 协议表格  :
- 枚举说明  : 物理号类型
+ ??????    : AT_PHYNUM_TYPE_ENUM_UINT32
+ ????????  :
+ ????????  : ??????????
 *****************************************************************************/
 enum AT_PHYNUM_TYPE_ENUM
 {
@@ -739,7 +739,7 @@ enum AT_PHYNUM_TYPE_ENUM
 };
 typedef VOS_UINT32 AT_PHYNUM_TYPE_ENUM_UINT32;
 
-/*SMS version PHASE2版本 SMS PHASE2+版本*/
+/*SMS version PHASE2???? SMS PHASE2+????*/
 enum AT_CSMS_MSG_VERSION_ENUM
 {
     AT_CSMS_MSG_VERSION_PHASE2,
@@ -750,8 +750,8 @@ typedef TAF_UINT8 AT_CSMS_MSG_VERSION_ENUM_U8;
 /* AT TIMER ID list*/
 enum AT_TIMER_TYPE_ENUM
 {
-    AT_CMD_PROCESS_TYPE       = 0x0000,                                         /* 和命令相关的计时器，在处理AT命令时使用 */
-    AT_INTERNAL_PROCESS_TYPE  = 0x0100                                          /* AT内部处理的计时器，不在和命令条件相关 */
+    AT_CMD_PROCESS_TYPE       = 0x0000,                                         /* ??????????????????????????AT?????????? */
+    AT_INTERNAL_PROCESS_TYPE  = 0x0100                                          /* AT???????????????????????????????????? */
 };
 
 enum AT_CLCC_MODE_ENUM
@@ -782,9 +782,9 @@ typedef TAF_UINT8 AT_CPAS_STATUS_ENUM_U8;
 
 enum AT_WIFI_MODE_ENUM
 {
-    AT_WIFI_MODE_ONLY_PA                = 0x00,                                 /* WIFI只支持PA模式 */
-    AT_WIFI_MODE_ONLY_NOPA              = 0x01,                                 /* WIFI只支持NO PA模式 */
-    AT_WIFI_MODE_PA_NOPA                = 0x02,                                 /* WIFI同时支持PA模式和NO PA模式 */
+    AT_WIFI_MODE_ONLY_PA                = 0x00,                                 /* WIFI??????PA???? */
+    AT_WIFI_MODE_ONLY_NOPA              = 0x01,                                 /* WIFI??????NO PA???? */
+    AT_WIFI_MODE_PA_NOPA                = 0x02,                                 /* WIFI????????PA??????NO PA???? */
 
     AT_WIFI_MODE_BUTT                   = 0xFF
 };
@@ -1109,7 +1109,7 @@ typedef enum
     AT_CMD_CGMTU,
 
 
-    /*装备 快速校准 end */
+    /*???? ???????? end */
 
 /*  AT_CMD_FCHAN, */
 /*  AT_CMD_FTXON, */
@@ -1120,7 +1120,7 @@ typedef enum
 /*  AT_CMD_FLNA, */
 /*  AT_CMD_FRSSI, */
 
-    /*非信令综测start */
+    /*??????????start */
     AT_CMD_SRXPOW,
     AT_CMD_SMS_BEGAIN,
     AT_CMD_CSMS,
@@ -1424,7 +1424,7 @@ typedef enum
 #endif
 
 
-    /* GU模AT命令和公共命令的索引ID最大值，新增命令ID时要添加到此ID前 */
+    /* GU??AT????????????????????ID????????????????ID????????????ID?? */
 
     AT_CMD_CIMSROAMINGSTUB,
     AT_CMD_CREDIALSTUB,
@@ -1504,7 +1504,7 @@ typedef enum
     AT_CMD_CLOCINFO,
     AT_CMD_CSID,
 
-    /* 移出CDMA编译开关 */
+    /* ????CDMA???????? */
 
     AT_CMD_CSIDLIST,
     AT_CMD_ECCALL,
@@ -1906,7 +1906,7 @@ typedef enum
     AT_CMD_CLIR_SET,
     AT_CMD_CLIR_READ,
     AT_CMD_CLCC_SET,
-    /* AT+CAPS命令实体的设置参数状态 */
+    /* AT+CAPS?????????????????????? */
     AT_CMD_CPAS_SET,
 
     AT_CMD_COPS_SET_AUTOMATIC,
@@ -2011,7 +2011,7 @@ typedef enum
     AT_CMD_AUTHDATA_READ,
 
 
-    /* 异步消息实现增加的操作标记 */
+    /* ?????????????????????????? */
     AT_CMD_D_GPRS_SET,
     AT_CMD_NDISCONN_SET,
     AT_CMD_DSFLOWCLR_SET,
@@ -2135,22 +2135,22 @@ typedef enum
     AT_CMD_CMMS_SET,
     AT_CMD_CMMS_READ,
 
-    AT_CMD_CMSTUB_SET,                                                          /* 标示命令^CMSTUB设置操作 */
-    AT_CMD_DLOADINFO_READ,                                                      /* 标示命令^DLOADINFO查询操作 */
-    AT_CMD_AUTHORITYVER_READ,                                                   /* 标示命令^AUTHORITYVER查询操作 */
-    AT_CMD_AUTHORITYID_READ,                                                    /* 标示命令^AUTHORITYID查询操作 */
-    AT_CMD_GODLOAD_SET,                                                         /* 标示命令^GODLOAD设置操作 */
-    AT_CMD_SDLOAD_SET,                                                          /* 标示命令^SDLOAD设置操作 */
+    AT_CMD_CMSTUB_SET,                                                          /* ????????^CMSTUB???????? */
+    AT_CMD_DLOADINFO_READ,                                                      /* ????????^DLOADINFO???????? */
+    AT_CMD_AUTHORITYVER_READ,                                                   /* ????????^AUTHORITYVER???????? */
+    AT_CMD_AUTHORITYID_READ,                                                    /* ????????^AUTHORITYID???????? */
+    AT_CMD_GODLOAD_SET,                                                         /* ????????^GODLOAD???????? */
+    AT_CMD_SDLOAD_SET,                                                          /* ????????^SDLOAD???????? */
 
-    AT_CMD_HWNATQRY_READ,                                                       /* 标示命令^HWNATQRY查询操作 */
-    AT_CMD_FLASHINFO_READ,                                                      /* 标示命令^FLASHINFO查询操作 */
-    AT_CMD_AUTHVER_READ,                                                        /* 标示命令^AUTHVER查询操作 */
+    AT_CMD_HWNATQRY_READ,                                                       /* ????????^HWNATQRY???????? */
+    AT_CMD_FLASHINFO_READ,                                                      /* ????????^FLASHINFO???????? */
+    AT_CMD_AUTHVER_READ,                                                        /* ????????^AUTHVER???????? */
 
-    AT_CMD_CDUR_READ,                                                           /* 标示命令^CDUR查询操作 */
-    AT_CMD_PFVER_READ,                                                          /* 标示命令^PFVER查询操作 */
-    AT_CMD_DLOADVER_READ,                                                       /* 标示命令^DLOADVER查询操作 */
-    AT_CMD_CPULOAD_READ,                                                        /* 标示命令^CPULOAD查询操作 */
-    AT_CMD_MFREELOCKSIZE_READ,                                                  /* 标示命令^MFREELOCKSIZE查询操作 */
+    AT_CMD_CDUR_READ,                                                           /* ????????^CDUR???????? */
+    AT_CMD_PFVER_READ,                                                          /* ????????^PFVER???????? */
+    AT_CMD_DLOADVER_READ,                                                       /* ????????^DLOADVER???????? */
+    AT_CMD_CPULOAD_READ,                                                        /* ????????^CPULOAD???????? */
+    AT_CMD_MFREELOCKSIZE_READ,                                                  /* ????????^MFREELOCKSIZE???????? */
 
     AT_CMD_MEMINFO_READ,
 
@@ -2158,10 +2158,10 @@ typedef enum
     AT_CMD_CLVL_SET,
     AT_CMD_VMSET_SET,
     AT_CMD_F_SET,
-    AT_CMD_VMSET_READ,                                                          /* AT^VMSET命令实体查询状态 */
-    AT_CMD_CVOICE_READ,                                                         /* AT^CVOICE命令实体查询状态 */
-    AT_CMD_DDSETEX_SET,                                                         /* AT^DDSETEX命令实体设置状态 */
-    AT_CMD_DDSETEX_READ,                                                        /* AT^DDSETEX命令实体查询状态 */
+    AT_CMD_VMSET_READ,                                                          /* AT^VMSET???????????????? */
+    AT_CMD_CVOICE_READ,                                                         /* AT^CVOICE???????????????? */
+    AT_CMD_DDSETEX_SET,                                                         /* AT^DDSETEX???????????????? */
+    AT_CMD_DDSETEX_READ,                                                        /* AT^DDSETEX???????????????? */
     AT_CMD_NVRESTORE_READ,
     AT_CMD_NVRSTSTTS_READ,
     AT_CMD_CVOICE_SET,
@@ -2209,16 +2209,16 @@ typedef enum
     AT_CMD_SET_TMODE,
     AT_CMD_SET_FTXON,
     AT_CMD_SET_FRXON,
-    AT_CMD_SET_FWAVE,                                                           /* 标示命令^FWAVE设置操作 */
+    AT_CMD_SET_FWAVE,                                                           /* ????????^FWAVE???????? */
     AT_CMD_QUERY_RSSI,
     AT_CMD_SET_RXDIV,
     AT_CMD_SET_RXPRI,
     AT_CMD_SS_DEACTIVE_CCBS,
     AT_CMD_SS_INTERROGATE_CCBS,
     AT_CMD_CSQLVLEXT_SET,
-    AT_CMD_CSQLVL_SET,                                                          /* 标示命令^CSQLVL设置操作 */
-    AT_CMD_APPDMVER_READ,                                                       /* 标示命令^APPDMVER查询操作 */
-    AT_CMD_APBATLVL_READ,                                                       /* 标示命令^APBATLVL查询操作 */
+    AT_CMD_CSQLVL_SET,                                                          /* ????????^CSQLVL???????? */
+    AT_CMD_APPDMVER_READ,                                                       /* ????????^APPDMVER???????? */
+    AT_CMD_APBATLVL_READ,                                                       /* ????????^APBATLVL???????? */
     AT_CMD_MSID_READ,
     AT_CMD_CWAS_QUERY,
     AT_CMD_CGAS_QUERY,
@@ -2316,7 +2316,7 @@ typedef enum
 
     AT_CMD_FRSSI_READ,
 
-    /*非信令综测start */
+    /*??????????start */
     AT_CMD_SRXPOW_SET,
     AT_CMD_SRXPOW_READ,
 
@@ -2328,12 +2328,12 @@ typedef enum
 
     AT_CMD_CESQ_SET,
 
-    //非信令综测end
+    //??????????end
     AT_CMD_ADC_SET,
     AT_CMD_FASTDORM_SET,
     AT_CMD_FASTDORM_READ,
-    AT_CMD_APTHROUGH_PUT_READ,                                                  /* 标示命令^APTHROUGHPUT查询操作 */
-    AT_CMD_APDIALMODE_READ,                                                     /* 标示命令^APDIALMODE查询操作 */
+    AT_CMD_APTHROUGH_PUT_READ,                                                  /* ????????^APTHROUGHPUT???????? */
+    AT_CMD_APDIALMODE_READ,                                                     /* ????????^APDIALMODE???????? */
 
     AT_CMD_CCPUMEMINFO_QRY,
 
@@ -2357,7 +2357,7 @@ typedef enum
     AT_CMD_TCHRENABLE_TEST,
     AT_CMD_RSFR_VERSION_QRY,
 
-    AT_CMD_MAXLCKTMS_SET,                                                       /* 标示命令^MAXLCKTMS设置操作 */
+    AT_CMD_MAXLCKTMS_SET,                                                       /* ????????^MAXLCKTMS???????? */
 
     AT_CMD_HUK_SET,
     AT_CMD_FACAUTHPUBKEY_SET,
@@ -2549,7 +2549,7 @@ typedef enum
 
     AT_CMD_CQOSPRI_SET,
 
-    /*下移到 FEATURE_UE_MODE_CDMA 宏中*/
+    /*?????? FEATURE_UE_MODE_CDMA ????*/
 #if (FEATURE_ON == FEATURE_LTE)
     AT_CMD_FRSTATUS_SET,
 #endif
@@ -2949,7 +2949,7 @@ typedef enum
 
     AT_CMD_LTEATTACHINFO_QRY,
 
-    /* GU模AT命令和公共命令的当前处理ID，新增命令处理ID时要添加到此ID前 */
+    /* GU??AT????????????????????????ID??????????????ID????????????ID?? */
     AT_CMD_COMM_CURRENT_OPT,
 
     AT_CMD_INVALID,
@@ -3204,14 +3204,14 @@ typedef TAF_UINT8 AT_D_GPRS_ACTIVE_TYPE;
 #define AT_IP_ACTIVE_TE_NOT_PPP_MT_NOT_PPP_TYPE            2
 
 typedef TAF_UINT8 AT_DATA_DOMAIN_TYPE;
-#define AT_DATA_CS_DOMAIN                  0       /*CS域*/
-#define AT_DATA_PS_DOMAIN                  1       /*PS域*/
+#define AT_DATA_CS_DOMAIN                  0       /*CS??*/
+#define AT_DATA_PS_DOMAIN                  1       /*PS??*/
 
 typedef TAF_UINT8 AT_SMT_BUFFER_STATE;
 #define AT_SMT_BUFFER_EMPTY                0
 #define AT_SMT_BUFFER_USED                 1
 
-/*需要快速处理命令在At_QuickHandleCmd中aucQuickCmd数组中的位置定义，*/
+/*??????????????????At_QuickHandleCmd??aucQuickCmd??????????????????*/
 #define AT_QUICK_HANDLE_SYSINFO_CMD            0
 #define AT_QUICK_HANDLE_COPS_QRY_CMD           1
 #define AT_QUICK_HANDLE_COPS_SET_FORMAT_2_CMD  2
@@ -3223,9 +3223,9 @@ typedef TAF_UINT8 AT_SMT_BUFFER_STATE;
 
 typedef enum
 {
-    AT_COM_CMD_SUB_PROC_CONTINUE = 0,        /* 继续后续命令的处理 */
-    AT_COM_CMD_SUB_PROC_ABORT,               /* 终止后续命令的处理 */
-    AT_COM_CMD_SUB_PROC_FINISH,              /* 结束所有命令的处理 */
+    AT_COM_CMD_SUB_PROC_CONTINUE = 0,        /* ?????????????????? */
+    AT_COM_CMD_SUB_PROC_ABORT,               /* ?????????????????? */
+    AT_COM_CMD_SUB_PROC_FINISH,              /* ?????????????????? */
 
     AT_COM_CMD_SUB_PROC_BUTT
 }AT_COMBINE_CMD_SUBSEQUENT_PROCESS_ENUM;
@@ -3235,7 +3235,7 @@ typedef enum AT_NVIM_PARA_ENUM
 {
     AT_NVIM_CPMS_TYPE = 0,
 
-    AT_NVIM_BUTT_TYPE                   /* 结束 */
+    AT_NVIM_BUTT_TYPE                   /* ???? */
 }AT_NVIM_PARA_ENUM;
 
 
@@ -3245,103 +3245,103 @@ typedef enum AT_NVIM_PARA_ENUM
 
 
 /*****************************************************************************
- 枚举名    : AT_CUSTOMIZE_ITEM_DEFAULT_VAL_ENUM
- 协议表格  :
- 枚举说明  : AT设置命令^CDSFLT设置定制项为默认值
+ ??????    : AT_CUSTOMIZE_ITEM_DEFAULT_VAL_ENUM
+ ????????  :
+ ????????  : AT????????^CDSFLT??????????????????
 *****************************************************************************/
 enum AT_CUSTOMIZE_ITEM_DEFAULT_VAL_ENUM
 {
-    AT_CUSTOMIZE_ITEM_DEFAULT_VALUE_FROM_CFGFILE = 0,      /*定制项默认值为可配置需求文档中的值*/
-    AT_CUSTOMIZE_ITEM_DEFAULT_VALUE_FROM_UE,               /*定制项中的值为单板自定义的默认值*/
+    AT_CUSTOMIZE_ITEM_DEFAULT_VALUE_FROM_CFGFILE = 0,      /*??????????????????????????????????*/
+    AT_CUSTOMIZE_ITEM_DEFAULT_VALUE_FROM_UE,               /*????????????????????????????????*/
     AT_CUSTOMIZE_ITEM_DEFAULT_VALUE_BUTT
 };
 typedef VOS_UINT8  AT_CUSTOMIZE_ITEM_DFLT_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : AT_SD_OPRT_ENUM_UINT32
- 协议表格  :
- 枚举说明  : SD卡操作类型
+ ??????    : AT_SD_OPRT_ENUM_UINT32
+ ????????  :
+ ????????  : SD??????????
 *****************************************************************************/
 enum AT_SD_OPRT_ENUM
 {
-    AT_SD_OPRT_FORMAT = 0,      /* 格式化SD卡内容 */
-    AT_SD_OPRT_ERASE,           /* 擦除SD卡内容 */
-    AT_SD_OPRT_WRITE,           /* 写数据到SD卡的指定地址中 */
-    AT_SD_OPRT_READ,            /* 读取SD卡指定地址的内容 */
-    AT_SD_OPRT_QUERY_STATUS,    /* 查询SD卡操作状态 */
+    AT_SD_OPRT_FORMAT = 0,      /* ??????SD?????? */
+    AT_SD_OPRT_ERASE,           /* ????SD?????? */
+    AT_SD_OPRT_WRITE,           /* ????????SD?????????????? */
+    AT_SD_OPRT_READ,            /* ????SD???????????????? */
+    AT_SD_OPRT_QUERY_STATUS,    /* ????SD?????????? */
     AT_SD_OPRT_BUTT
 };
 typedef VOS_UINT32 AT_SD_OPRT_ENUM_UINT32;
 
 
 /*****************************************************************************
- 枚举名    : AT_SD_OPRT_RSLT_ENUM_UINT8
- 协议表格  :
- 枚举说明  : SD卡操作结果
+ ??????    : AT_SD_OPRT_RSLT_ENUM_UINT8
+ ????????  :
+ ????????  : SD??????????
 *****************************************************************************/
 enum AT_SD_OPRT_RSLT_ENUM
 {
-    AT_SD_OPRT_RSLT_FINISH = 0,     /* 上一次 SD操作已完成 */
-    AT_SD_OPRT_RSLT_NOT_FINISH,     /* 上一个SD操作在进行中 */
-    AT_SD_OPRT_RSLT_ERR,            /* 上一个SD操作发生错误*/
+    AT_SD_OPRT_RSLT_FINISH = 0,     /* ?????? SD?????????? */
+    AT_SD_OPRT_RSLT_NOT_FINISH,     /* ??????SD???????????? */
+    AT_SD_OPRT_RSLT_ERR,            /* ??????SD????????????*/
     AT_SD_OPRT_RSLT_BUTT,
 };
 typedef VOS_UINT8 AT_SD_OPRT_RSLT_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : AT_SD_STATUS_ENUM_UINT8
- 协议表格  :
- 枚举说明  : SD卡在位状态
+ ??????    : AT_SD_STATUS_ENUM_UINT8
+ ????????  :
+ ????????  : SD??????????
 *****************************************************************************/
 enum AT_SD_EXIST_STATUS_ENUM
 {
-    AT_SD_STATUS_NOT_EXIST = 0,     /* SD不在位 */
-    AT_SD_STATUS_EXIST,             /* SD在位 */
+    AT_SD_STATUS_NOT_EXIST = 0,     /* SD?????? */
+    AT_SD_STATUS_EXIST,             /* SD???? */
     AT_SD_STATUS_BUTT,
 };
 typedef VOS_UINT8 AT_SD_EXIST_STATUS_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : AT_SD_ERR_ENUM_UINT32
- 协议表格  :
- 枚举说明  : SD卡操作错误码
+ ??????    : AT_SD_ERR_ENUM_UINT32
+ ????????  :
+ ????????  : SD????????????
 *****************************************************************************/
 enum AT_SD_ERR_ENUM
 {
-    AT_SD_ERR_CRAD_NOT_EXIST = 0,      /* 表示SD卡不在位 */
-    AT_SD_ERR_INIT_FAILED,             /* 表示SD卡初始化失败 */
-    AT_SD_ERR_OPRT_NOT_ALLOWED,        /* 操作不允许 */
-    AT_SD_ERR_ADDR_ERR,                /* 表示<address>地址非法 */
-    AT_SD_ERR_OTHER_ERR,               /* 其他未知错误 */
+    AT_SD_ERR_CRAD_NOT_EXIST = 0,      /* ????SD???????? */
+    AT_SD_ERR_INIT_FAILED,             /* ????SD???????????? */
+    AT_SD_ERR_OPRT_NOT_ALLOWED,        /* ?????????? */
+    AT_SD_ERR_ADDR_ERR,                /* ????<address>???????? */
+    AT_SD_ERR_OTHER_ERR,               /* ???????????? */
     AT_SD_ERR_BUTT
 };
 typedef VOS_UINT32 AT_SD_ERR_ENUM_UINT32;
 
 
 /*****************************************************************************
- 枚举名    : AT_SIMLOCK_OPRT_ENUM_UINT8
- 协议表格  :
- 枚举说明  : SD卡操作类型
+ ??????    : AT_SIMLOCK_OPRT_ENUM_UINT8
+ ????????  :
+ ????????  : SD??????????
 *****************************************************************************/
 enum AT_SIMLOCK_OPRT_ENUM
 {
-    AT_SIMLOCK_OPRT_UNLOCK = 0,         /* Simlock 解锁操作 */
-    AT_SIMLOCK_OPRT_SET_PLMN_INFO,      /* 设置锁卡号段 */
-    AT_SIMLOCK_OPRT_QRY_STATUS,              /* 查询当前的锁卡状态 */
+    AT_SIMLOCK_OPRT_UNLOCK = 0,         /* Simlock ???????? */
+    AT_SIMLOCK_OPRT_SET_PLMN_INFO,      /* ???????????? */
+    AT_SIMLOCK_OPRT_QRY_STATUS,              /* ?????????????????? */
     AT_SIMLOCK_OPRT_BUTT
 };
 typedef VOS_UINT8 AT_SIMLOCK_OPRT_ENUM_UINT8;
 
 
 /*****************************************************************************
- 结构名    : AT_NV_WCDMA_RRC_CONVERT_TBL_STRU
- 结构说明  : Rrc版本结构体
+ ??????    : AT_NV_WCDMA_RRC_CONVERT_TBL_STRU
+ ????????  : Rrc??????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8  ucSrcWcdmaRRC;                               /* 版本号 */
-    VOS_UINT8  ucDestHSDPA;                                 /* 是否支持DPA */
-    VOS_UINT8  ucDestHSUPA;                                 /* 是否支持UPA */
+    VOS_UINT8  ucSrcWcdmaRRC;                               /* ?????? */
+    VOS_UINT8  ucDestHSDPA;                                 /* ????????DPA */
+    VOS_UINT8  ucDestHSUPA;                                 /* ????????UPA */
 } AT_NV_WCDMA_RRC_CONVERT_TBL_STRU;
 
 
@@ -3374,7 +3374,7 @@ typedef TAF_UINT8 AT_SAT_ENVELOPE_TYPE;
 #define AT_SAT_ENVELOPE_EVENT       0xD6
 #define AT_SAT_ENVELOPE_TIMER       0xD7
 
-/* NV项en_NV_Resume_Flag的有效值:0和1 */
+/* NV??en_NV_Resume_Flag????????:0??1 */
 #define AT_NV_RESUME_SUCC               (0)
 #define AT_NV_RESUME_FAIL               (1)
 
@@ -3385,7 +3385,7 @@ typedef TAF_UINT8 AT_SAT_ENVELOPE_TYPE;
 #define AT_DIALMODE_DUAL       (2)
 #define AT_DIALMODE_ABNORMAL   (3)
 
-/*下载类型，正常模式为0， 强制下载为1*/
+/*????????????????????0?? ??????????1*/
 #define AT_NOM_LOAD      (0)
 #define AT_FORC_LOAD     (1)
 
@@ -3396,7 +3396,7 @@ typedef TAF_UINT8 AT_SAT_ENVELOPE_TYPE;
 #define AT_NV_RESTORE_RUNNING      0x5A5A55AA
 
 
-#define AT_SIMLOCK_MAX_ERROR_TIMES  (3)  /* Simlock解锁最大失败次数 */
+#define AT_SIMLOCK_MAX_ERROR_TIMES  (3)  /* Simlock???????????????? */
 
 #define TAF_SW_VER_INFO_LEN         (31)
 #define TAF_ISO_VER_INFO_LEN        (50)
@@ -3405,40 +3405,40 @@ typedef TAF_UINT8 AT_SAT_ENVELOPE_TYPE;
 #define TAF_FLASH_INFO_LEN          (100)
 #define TAF_NET_MODE_LEN            (10)
 
-/*WIFI打开模式*/
+/*WIFI????????*/
 #define AT_WIFI_START_NORMAL         (0)
 #define AT_WIFI_START_TEST           (1)
-/*WIFI 的模式*/
+/*WIFI ??????*/
 #define AT_WIFI_SUPPORT_MODE_CW      (0)
 #define AT_WIFI_SUPPORT_MODE_A       (1)
 #define AT_WIFI_SUPPORT_MODE_B       (2)
 #define AT_WIFI_SUPPORT_MODE_G       (3)
 #define AT_WIFI_SUPPORT_MODE_N       (4)
 
-/*WIFI带宽*/
+/*WIFI????*/
 #define AT_WIFI_BAND_20M             (0)
 #define AT_WIFI_BAND_40M             (1)
 
-/*WIFI发射机接收机模式*/
+/*WIFI????????????????*/
 #define AT_WIFI_TX_MODE              (17)
 #define AT_WIFI_RX_MODE              (18)
 
-/*WIFI发射机状态*/
+/*WIFI??????????*/
 #define AT_WIFI_TX_ON                 (1)
 #define AT_WIFI_TX_OFF                (0)
 
-/*WIFI接收机状态*/
+/*WIFI??????????*/
 #define AT_WIFI_RX_ON                 (1)
 #define AT_WIFI_RX_OFF                (0)
 
-/*WIFI功率的上下限*/
+/*WIFI????????????*/
 #define AT_WIFI_POWER_MIN             (-15)
 #define AT_WIFI_POWER_MAX             (30)
 
 #define AT_FEATURE_EXIST              (1)
 #define AT_FEATURE_MAX                (15)
 
-/* AP-Modem 中，目前规格支持最大3个HSIC AT通道 */
+/* AP-Modem ????????????????????3??HSIC AT???? */
 #define AT_HSIC_AT_CHANNEL_INDEX_ONE    (0)
 #define AT_HSIC_AT_CHANNEL_INDEX_TWO    (1)
 #define AT_HSIC_AT_CHANNEL_INDEX_THREE  (2)
@@ -3446,11 +3446,11 @@ typedef TAF_UINT8 AT_SAT_ENVELOPE_TYPE;
 
 #define AT_HSIC_AT_CHANNEL_MAX          (4)
 
-/* 供RIL使用的AT通道个数 */
+/* ??RIL??????AT???????? */
 #define AT_HSIC_AT_FOR_RIL_MAX          (2)
 
 #if (FEATURE_ON == FEATURE_VCOM_EXT)
-/* APPVCOM 最后 11 个端口为非AT 口*/
+/* APPVCOM ???? 11 ??????????AT ??*/
 #define AT_VCOM_AT_CHANNEL_MAX          (APP_VCOM_DEV_INDEX_BUTT - 11)
 #else
 #define AT_VCOM_AT_CHANNEL_MAX          (APP_VCOM_DEV_INDEX_BUTT)
@@ -3497,17 +3497,17 @@ typedef TAF_UINT32 (*pAtQueryParaFunc)(TAF_UINT8 ucIndex);
 typedef TAF_UINT32 (*pAtAppCBF)(TAF_UINT8 ucIndex,TAF_UINT8 ucType,TAF_UINT8* pData,TAF_UINT16 usLen);
 
 
-/* DIAG口是否打开的枚举结构  */
+/* DIAG????????????????????  */
 enum  AT_DIAG_OPEN_FLAG_ENUM
 {
-    AT_DIAG_OPEN_FLAG_OPEN,             /* 0 为打开 */
-    AT_DIAG_OPEN_FLAG_CLOSE,            /* 1 为关闭 */
+    AT_DIAG_OPEN_FLAG_OPEN,             /* 0 ?????? */
+    AT_DIAG_OPEN_FLAG_CLOSE,            /* 1 ?????? */
     AT_DIAG_OPEN_FLAG_BUTT
 };
 typedef  VOS_UINT32  AT_DIAG_OPEN_FLAG_ENUM_U32;
 
 #if (FEATURE_ON == FEATURE_SECURITY_SHELL)
-/*  SHELL口是否打开的枚举结构  */
+/*  SHELL????????????????????  */
 enum  AT_SHELL_OPEN_FLAG_ENUM
 {
     AT_SHELL_OPEN_FLAG_WIFI,
@@ -3518,13 +3518,13 @@ enum  AT_SHELL_OPEN_FLAG_ENUM
 typedef  VOS_UINT32  AT_SHELL_OPEN_FLAG_ENUM_U32;
 #endif
 
-/* 保存在NV中的权限密码的结构 */
-#define AT_DISLOG_PWD_LEN               (16)                /*  DISLOG操作权限的密码长度  */
+/* ??????NV?????????????????? */
+#define AT_DISLOG_PWD_LEN               (16)                /*  DISLOG??????????????????  */
 
 #define AT_SETZ_LEN                     (16)
 
 
-/* 0 使能SD卡; 1 禁止SD卡 */
+/* 0 ????SD??; 1 ????SD?? */
 enum AT_SD_ENABLE_FLAG_ENUM
 {
     AT_SD_ENABLE_FLAG_ENABLE,
@@ -3534,9 +3534,9 @@ enum AT_SD_ENABLE_FLAG_ENUM
 
 enum  AT_CLCK_MODE_ENUM
 {
-    AT_CLCK_MODE_UNLOCK,                /* 0 去激活 */
-    AT_CLCK_MODE_LOCK,                  /* 1 激活 */
-    AT_CLCK_MODE_QUERY_STATUS,          /* 2 查询 */
+    AT_CLCK_MODE_UNLOCK,                /* 0 ?????? */
+    AT_CLCK_MODE_LOCK,                  /* 1 ???? */
+    AT_CLCK_MODE_QUERY_STATUS,          /* 2 ???? */
     AT_CLCK_MODE_BUTT
 };
 typedef  VOS_UINT32  AT_CLCK_MODE_ENUM_U32;
@@ -3545,17 +3545,17 @@ typedef  VOS_UINT32  AT_CLCK_MODE_ENUM_U32;
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
-/*模块名＋意义＋HEADER */
+/*??????????????HEADER */
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 /* A CONVERSION_TABLE is an array mapping 7 or 8 bit values to 16 bit values. */
 typedef struct
@@ -3568,50 +3568,50 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulInfoAvailableFlg;                     /* 当前记录是否有效 */
-    VOS_INT16                           shwGammaReal;                           /* 反射系数实部 */
-    VOS_INT16                           shwGammaImag;                           /* 反射系数虚部 */
-    VOS_UINT16                          ushwGammaAmpUc0;                        /* 驻波检测场景0反射系数幅度 */
-    VOS_UINT16                          ushwGammaAmpUc1;                        /* 驻波检测场景1反射系数幅度 */
-    VOS_UINT16                          ushwGammaAmpUc2;                        /* 驻波检测场景2反射系数幅度 */
-    VOS_UINT16                          ushwGammaAntCoarseTune;                 /* 粗调格点位置 */
-    VOS_UINT32                          ulwFomcoarseTune;                       /* 粗调FOM值 */
-    VOS_UINT16                          ushwCltAlgState;                        /* 闭环算法收敛状态 */
-    VOS_UINT16                          ushwCltDetectCount;                     /* 闭环收敛总步数 */
+    VOS_UINT32                          ulInfoAvailableFlg;                     /* ???????????????? */
+    VOS_INT16                           shwGammaReal;                           /* ???????????? */
+    VOS_INT16                           shwGammaImag;                           /* ???????????? */
+    VOS_UINT16                          ushwGammaAmpUc0;                        /* ????????????0???????????? */
+    VOS_UINT16                          ushwGammaAmpUc1;                        /* ????????????1???????????? */
+    VOS_UINT16                          ushwGammaAmpUc2;                        /* ????????????2???????????? */
+    VOS_UINT16                          ushwGammaAntCoarseTune;                 /* ???????????? */
+    VOS_UINT32                          ulwFomcoarseTune;                       /* ????FOM?? */
+    VOS_UINT16                          ushwCltAlgState;                        /* ???????????????? */
+    VOS_UINT16                          ushwCltDetectCount;                     /* ?????????????? */
     VOS_UINT16                          ushwDac0;                               /* DAC0 */
     VOS_UINT16                          ushwDac1;                               /* DAC1 */
     VOS_UINT16                          ushwDac2;                               /* DAC2 */
     VOS_UINT16                          ushwDac3;                               /* DAC3 */
 }AT_TX_CLT_INFO_STRU;
 
-/* AT归一化控制结构，用于记录当前使用哪个DSP及当前的TMODE值*/
+/* AT????????????????????????????????????DSP????????TMODE??*/
 typedef struct
 {
     VOS_BOOL                            bDspLoadFlag;
-    TAF_UINT8                           ucIndex;          /*AT设置命令的Index值*/
+    TAF_UINT8                           ucIndex;          /*AT??????????Index??*/
     TAF_PH_TMODE_ENUM_UINT8             ucCurrentTMode;
     AT_DEVICE_CMD_RAT_MODE_ENUM_UINT8   ucDeviceRatMode;
     AT_DEVICE_CMD_BAND_ENUM_UINT8       ucDeviceAtBand;
     AT_DSP_BAND_ARFCN_STRU              stDspBandArfcn;
-    /*AT^FDAC设置的FDAC值和AT^FWAVE设置的power值表示的含义相同，取后设置的值*/
-    VOS_BOOL                            bFdacFlag;       /* FDAC是否有效*/
-    VOS_UINT16                          usFDAC;          /* 对应W下AGC,G下TxVpa*/
-    VOS_UINT16                          usRxDiv;         /* 分集配置*/
-    VOS_UINT16                          usRxPri;         /* 主集配置*/
-    VOS_UINT16                          usOrigBand;      /* 记录格式转换后的主集或分集配置*/
-    AT_DSP_RF_ON_OFF_ENUM_UINT8         ucRxOnOff;       /* Rx on off值*/
-    VOS_UINT8                           ucPaLevel;       /* 发射机的PA等级*/
-    VOS_UINT8                           ucLnaLevel;      /* 接收机LNA等级*/
-    VOS_UINT8                           ucPriOrDiv;      /* 当前是主集配置还是分集配置*/
-    AT_DSP_RF_ON_OFF_ENUM_UINT8         ucTxOnOff;       /* Tx On off值*/
-    VOS_UINT8                           ucRxonOrTxon;    /* 记录最近一次执行的是打开接收机(RXON=1)操作还是打开发射机(TXON=1)操作*/
-    AT_DSP_RF_ON_OFF_ENUM_UINT8         ucTempRxorTxOnOff; /* 临时记录Rx 或 Tx on off值*/
+    /*AT^FDAC??????FDAC????AT^FWAVE??????power??????????????????????????????*/
+    VOS_BOOL                            bFdacFlag;       /* FDAC????????*/
+    VOS_UINT16                          usFDAC;          /* ????W??AGC,G??TxVpa*/
+    VOS_UINT16                          usRxDiv;         /* ????????*/
+    VOS_UINT16                          usRxPri;         /* ????????*/
+    VOS_UINT16                          usOrigBand;      /* ??????????????????????????????*/
+    AT_DSP_RF_ON_OFF_ENUM_UINT8         ucRxOnOff;       /* Rx on off??*/
+    VOS_UINT8                           ucPaLevel;       /* ????????PA????*/
+    VOS_UINT8                           ucLnaLevel;      /* ??????LNA????*/
+    VOS_UINT8                           ucPriOrDiv;      /* ??????????????????????????*/
+    AT_DSP_RF_ON_OFF_ENUM_UINT8         ucTxOnOff;       /* Tx On off??*/
+    VOS_UINT8                           ucRxonOrTxon;    /* ??????????????????????????????(RXON=1)??????????????????(TXON=1)????*/
+    AT_DSP_RF_ON_OFF_ENUM_UINT8         ucTempRxorTxOnOff; /* ????????Rx ?? Tx on off??*/
 
-    AT_DSP_CLT_ENABLE_ENUM_UINT8        enCltEnableFlg;  /* 天线闭环调谐使能标志 */
-    VOS_BOOL                            bPowerFlag;      /* Power是否有效*/
-    VOS_UINT16                          usPower;         /* AT^FWAVE设置的功率值*/
-    VOS_UINT16                          usTxMode;        /* AT^FWAVE设置的<type>值转换为发送给物理层的值(该变量只在G物理层使用):
-                                                                   <type>为0，代表连续波形，usTxMode置为1；<type>为其他值，usTxMode置为0 */
+    AT_DSP_CLT_ENABLE_ENUM_UINT8        enCltEnableFlg;  /* ???????????????????? */
+    VOS_BOOL                            bPowerFlag;      /* Power????????*/
+    VOS_UINT16                          usPower;         /* AT^FWAVE????????????*/
+    VOS_UINT16                          usTxMode;        /* AT^FWAVE??????<type>????????????????????????(??????????G??????????):
+                                                                   <type>??0????????????????usTxMode????1??<type>??????????usTxMode????0 */
     AT_DCXOTEMPCOMP_ENABLE_ENUM_UINT8   enDcxoTempCompEnableFlg;
     VOS_UINT8                           aucReserved[7];
 
@@ -3622,15 +3622,15 @@ typedef struct
 typedef struct
 {
     MN_MSG_ASCII_ADDR_STRU              stAsciiAddr;                            /*<oa/da>[,<tooa/toda>*/
-    TAF_UINT8                           aucBuffer[AT_SMS_SEG_MAX_LENGTH];       /*开始是SMSC的地址，之后是TPDU*/
+    TAF_UINT8                           aucBuffer[AT_SMS_SEG_MAX_LENGTH];       /*??????SMSC??????????????TPDU*/
     TAF_BOOL                            bWaitForNvStorageStatus;
     TAF_BOOL                            bWaitForUsimStorageStatus;
     TAF_BOOL                            bWaitForCpmsSetRsp;
-    TAF_UINT8                           ucCnmaType;                             /*记录+CNMA[=<n>中的<n>*/
-    TAF_UINT8                           ucPduLen;                               /*TPDU的字节数，不包括SMSC地址的字节数*/
+    TAF_UINT8                           ucCnmaType;                             /*????+CNMA[=<n>????<n>*/
+    TAF_UINT8                           ucPduLen;                               /*TPDU????????????????SMSC????????????*/
     MN_MSG_COMMAND_TYPE_ENUM_U8         CommandType;
-    TAF_UINT8                           ucMessageNumber;                        /*[1,3]或者绝对编号*/
-    TAF_UINT8                           ucMessageNumberType;                    /*编号类型：绝对或者相对*/
+    TAF_UINT8                           ucMessageNumber;                        /*[1,3]????????????*/
+    TAF_UINT8                           ucMessageNumberType;                    /*??????????????????????*/
     MN_MSG_STATUS_TYPE_ENUM_U8          SmState;
     MN_MSG_MEM_STORE_ENUM_U8            enSmMemStore;
     TAF_UINT8                           ucMsgDeleteTypes;
@@ -3652,27 +3652,27 @@ typedef struct
 
 typedef struct
 {
-    MN_CLIENT_ID_T          usClientId;                                         /* 指示当前用户的 */
-    MN_OPERATION_ID_T       opId;                                               /* Operation ID, 标识本次操作 */
-    TAF_UINT8               ucUsed;                                             /* 指示当前索引是否已被使用 */
+    MN_CLIENT_ID_T          usClientId;                                         /* ?????????????? */
+    MN_OPERATION_ID_T       opId;                                               /* Operation ID, ???????????? */
+    TAF_UINT8               ucUsed;                                             /* ???????????????????????? */
 
-    AT_USER_TYPE            UserType;                                           /* 指示当前用户类型 */
-    TAF_UINT8               ucPortType;                                         /* 指示当前端口类型 */
-    AT_PORT_NO              ucPortNo;                                           /* 指示当前USB COM串口号 */
-    TAF_UINT8               ucDlci;                                             /* 指示当前链路号 */
-    AT_MODE_TYPE            Mode;                                               /* 指示当前命令模式，只针对MUX和APP */
-    AT_DATA_MODE_TYPE       DataMode;                                           /* 指示当前数据模式，只针对MUX和APP */
-    TAF_UINT8               ModemStatus;                                        /* Modem 状态 */
-    AT_IND_MODE_TYPE        IndMode;                                            /* 指示当前命令模式，只针对MUX和APP */
-    AT_DATA_STATE_TYPE      DataState;                                          /* 指示当前数据模式，只针对MUX和APP */
+    AT_USER_TYPE            UserType;                                           /* ???????????????? */
+    TAF_UINT8               ucPortType;                                         /* ???????????????? */
+    AT_PORT_NO              ucPortNo;                                           /* ????????USB COM?????? */
+    TAF_UINT8               ucDlci;                                             /* ?????????????? */
+    AT_MODE_TYPE            Mode;                                               /* ????????????????????????MUX??APP */
+    AT_DATA_MODE_TYPE       DataMode;                                           /* ????????????????????????MUX??APP */
+    TAF_UINT8               ModemStatus;                                        /* Modem ???? */
+    AT_IND_MODE_TYPE        IndMode;                                            /* ????????????????????????MUX??APP */
+    AT_DATA_STATE_TYPE      DataState;                                          /* ????????????????????????MUX??APP */
 
     TAF_UINT8               ucCsRabId;
     TAF_UINT8               ucExPsRabId;
     TAF_UINT8               ucCid;
 
-    AT_CMD_CURRENT_OPT_ENUM CmdCurrentOpt;                                      /* 指示当前用户的命令操作类型 */
+    AT_CMD_CURRENT_OPT_ENUM CmdCurrentOpt;                                      /* ?????????????????????????? */
 
-    /* ulCause没有使用点，删除 */
+    /* ulCause???????????????? */
     VOS_UINT8               aucReserved1[4];
 
     pAtAppCBF               pAppCallBack;
@@ -3681,16 +3681,16 @@ typedef struct
 
     TAF_UINT16              usPppId;
 
-    TAF_UINT16              usSmsTxtLen;                                        /* 指示当前短信文本长度 */
-    TAF_UINT16              usAsyRtnNum;                                        /* 指示当前挂起命令个数 */
+    TAF_UINT16              usSmsTxtLen;                                        /* ???????????????????? */
+    TAF_UINT16              usAsyRtnNum;                                        /* ???????????????????? */
 
     VOS_UINT8               ucIfaceId;
     VOS_UINT8               aucReserved[1];
 
-    HTIMER                  hTimer;                                             /* 对应的定时器 */
+    HTIMER                  hTimer;                                             /* ???????????? */
     TAF_UINT32              ulTemp;
 
-    AT_CMD_INDEX_ENUM       CmdIndex;                                           /* 指示当前用户的命令索引 */
+    AT_CMD_INDEX_ENUM       CmdIndex;                                           /* ?????????????????????? */
 
     AT_SMS_STRU             AtSmsData;
 } AT_CLIENT_MANAGE_STRU;
@@ -3698,8 +3698,8 @@ typedef struct
 
 typedef struct
 {
-    TAF_UINT8   aucBuffer[AT_CMD_MAX_LEN + 20];    /* 用来放置解析出的参数字符串 */
-    TAF_UINT16  usBufLen;                      /* 用来标识参数字符串长度 */
+    TAF_UINT8   aucBuffer[AT_CMD_MAX_LEN + 20];    /* ?????????????????????????? */
+    TAF_UINT16  usBufLen;                      /* ?????????????????????? */
 }AT_SEND_DATA_BUFFER_STRU;
 
 typedef struct
@@ -3724,8 +3724,8 @@ typedef struct
 
 typedef TAF_INT (*USB_SERIAL_SEND_DATA)
 (
-    TAF_UINT8 *pData,               /*数据指针*/
-    TAF_UINT16 usLen                /*数据长度*/
+    TAF_UINT8 *pData,               /*????????*/
+    TAF_UINT16 usLen                /*????????*/
 );
 
 #define AT_MSG_BUFFER_USED                                  1
@@ -3740,39 +3740,39 @@ typedef struct
 }AT_PS_MODEM_DATA_IND_STRU;
 
 
-/*Taf_DefCsAutoAnswerInfo函数的参数类型*/
-typedef TAF_UINT32 TAF_CS_AUTO_ANSWER_INFO; /* 设置CS域自动应答时间，单位为秒，
-                                               如果是0，表示不支持自动应答 */
+/*Taf_DefCsAutoAnswerInfo??????????????*/
+typedef TAF_UINT32 TAF_CS_AUTO_ANSWER_INFO; /* ????CS??????????????????????????
+                                               ??????0???????????????????? */
 
 
 typedef struct
 {
-    TAF_UINT16  usUsed;                                       /*已使用记录数 */
-    TAF_UINT16  usTotal;                                      /* 最大记录数 */
-    TAF_UINT16  usNameMaxLen;                                 /* 姓名最大长度 */
-    TAF_UINT16  usNumMaxLen;                                  /* 号码最大长度 */
-    TAF_UINT16  usAnrNumLen;                                  /*  ANR号码最大长度 */
-    TAF_UINT16  usEmailLen;                                   /*  Email最大长度 */
+    TAF_UINT16  usUsed;                                       /*???????????? */
+    TAF_UINT16  usTotal;                                      /* ?????????? */
+    TAF_UINT16  usNameMaxLen;                                 /* ???????????? */
+    TAF_UINT16  usNumMaxLen;                                  /* ???????????? */
+    TAF_UINT16  usAnrNumLen;                                  /*  ANR???????????? */
+    TAF_UINT16  usEmailLen;                                   /*  Email???????? */
 }AT_PB_INFO_STRU;
 
 
 typedef MN_CALL_NUM_TYPE_ENUM_U8 AT_CSTA_NUM_TYPE_ENUM_U8;
 
-/* USB设备形态NV项的结构体 */
+/* USB????????NV?????????? */
 typedef struct
 {
-    TAF_UINT32  ulStatus;     /* 1: NV有效标志位，0：无效 */
-    TAF_UINT32  ulValue;      /* 设备形态index */
-    TAF_UINT32  ulReserve1;   /* 保留 */
-    TAF_UINT32  ulReserve2;   /* 保留 */
+    TAF_UINT32  ulStatus;     /* 1: NV????????????0?????? */
+    TAF_UINT32  ulValue;      /* ????????index */
+    TAF_UINT32  ulReserve1;   /* ???? */
+    TAF_UINT32  ulReserve2;   /* ???? */
 }AT_USB_ENUM_STATUS_STRU;
 
 /*****************************************************************************
- 结构名    : AT_WIFI_SSID_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : en_NV_Item_WIFI_KEY NV项对应的结构，
-             用于保存wifi 安全信息
+ ??????    : AT_WIFI_SSID_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : en_NV_Item_WIFI_KEY NV??????????????
+             ????????wifi ????????
 *****************************************************************************/
 typedef struct
 {
@@ -3799,16 +3799,16 @@ typedef struct
 }AT_WIFI_SEC_STRU;
 
 
-/* 设备形态的个数:A1,A2,A,B,D,E,1,2,3,4,5,6,16 */
+/* ??????????????:A1,A2,A,B,D,E,1,2,3,4,5,6,16 */
 #define AT_SETPORT_DEV_LEN              (21)
 
-/* 设备形态对应表长度 */
+/* ?????????????????? */
 #define AT_SETPORT_DEV_MAP_LEN          (AT_SETPORT_DEV_LEN + 1)
 
-/* 设备形态最多17个组合 */
+/* ????????????17?????? */
 #define AT_SETPORT_PARA_MAX_LEN 17
 
-/* 设备形态组合参数最大字符数，最多17个设备形态，最大2个字符，16个逗号 */
+/* ????????????????????????????????17????????????????2????????16?????? */
 #define AT_SETPORT_PARA_MAX_CHAR_LEN ((17*2) + 16)
 
 
@@ -3851,57 +3851,57 @@ typedef struct
     VOS_UINT8   aucAtDispPara[15];
 }AT_SET_PORT_PARA_MAP_STRU;
 
-/* AT组合命令解析相关数据结构 */
+/* AT???????????????????????? */
 
-/* 组合命令相关规格的定义(仅是目前根据需求所定的规格) */
-#define AT_COMBINE_MAX_SEMICOLON    40   /* 一个AT码流中最多支持40个分号(refer to Q) */
-#define AT_COMBINE_MAX_COMBINE_CMD  40   /* 一个AT码流最多可分解为40个组合命令(refer to Q) */
-#define AT_COMBINE_MAX_LEN          545  /* 一条组合命令最多包含545个字节(refer to Q) */
-#define AT_COMBINE_MAX_SUB_CMD      40   /* 一条组合命令最多可分解为40个独立AT命令(refer to Q) */
-#define AT_INDEPENDENT_CMD_MAX_LEN  545  /* 一条组合命令中所分解的独立AT命令最长为545个字节(refer to Q) */
+/* ??????????????????????(??????????????????????????) */
+#define AT_COMBINE_MAX_SEMICOLON    40   /* ????AT??????????????40??????(refer to Q) */
+#define AT_COMBINE_MAX_COMBINE_CMD  40   /* ????AT????????????????40??????????(refer to Q) */
+#define AT_COMBINE_MAX_LEN          545  /* ????????????????????545??????(refer to Q) */
+#define AT_COMBINE_MAX_SUB_CMD      40   /* ????????????????????????40??????AT????(refer to Q) */
+#define AT_INDEPENDENT_CMD_MAX_LEN  545  /* ??????????????????????????AT??????????545??????(refer to Q) */
 
-/* 解析AT组合命令中的';'号所使用的结构体 */
+/* ????AT????????????';'???????????????? */
 typedef struct
 {
-    VOS_UINT32  ulCount;                                    /* AT组合命令中';'号出现的次数 */
-    VOS_UINT16  ausSCPosition[AT_COMBINE_MAX_SEMICOLON];    /* AT组合命令中';'号出现的位置(数组索引) */
+    VOS_UINT32  ulCount;                                    /* AT??????????';'???????????? */
+    VOS_UINT16  ausSCPosition[AT_COMBINE_MAX_SEMICOLON];    /* AT??????????';'????????????(????????) */
 }AT_COMBINE_CMD_SEMICOLON_PARSE_STRU;
 
 
 
 typedef struct
 {
-    VOS_UINT32  ulCount;                                    /* AT码流被分号所分隔的组合命令个数 */
+    VOS_UINT32  ulCount;                                    /* AT?????????????????????????????? */
     struct
     {
         VOS_UINT32  ulLen;
         VOS_UINT8   aucCombineCmd[AT_COMBINE_MAX_LEN];
         VOS_UINT8   aucReserved[3];
     }stCombineCmd[AT_COMBINE_MAX_COMBINE_CMD];
-}AT_COMBINE_CMD_SPLIT_STRU;   /* 根据分号进行AT码流的分隔，将AT码流分隔为若干个组合AT命令 */
+}AT_COMBINE_CMD_SPLIT_STRU;   /* ????????????AT??????????????AT????????????????????AT???? */
 
 
 typedef struct
 {
-    VOS_UINT32      ulTotalCnt;                             /* 独立AT命令的个数 */
-    VOS_UINT32      ulProcCnt;                              /* 已经处理完毕的独立AT命令个数 */
+    VOS_UINT32      ulTotalCnt;                             /* ????AT?????????? */
+    VOS_UINT32      ulProcCnt;                              /* ??????????????????AT???????? */
     struct
     {
         VOS_UINT32  ulLen;
         VOS_UINT8   aucATCmd[AT_INDEPENDENT_CMD_MAX_LEN];
-        VOS_UINT8   aucReserved[3];                         /*四字节对齐*/
+        VOS_UINT8   aucReserved[3];                         /*??????????*/
     }stATCmd[AT_COMBINE_MAX_SUB_CMD];
-}AT_COMBINE_CMD_PARSE_RSLT_STRU;    /* 组合AT命令解析结果 */
+}AT_COMBINE_CMD_PARSE_RSLT_STRU;    /* ????AT???????????? */
 
 
 typedef struct
 {
-    TAF_UINT32          ulBuffLen;                     /* 缓存码流的长度 */
-    TAF_UINT8           aucDataBuff[AT_COM_BUFF_LEN];  /* 缓存码流 */
-}AT_DATA_STREAM_BUFFER_STRU;           /* AT码流缓存结构体 */
+    TAF_UINT32          ulBuffLen;                     /* ?????????????? */
+    TAF_UINT8           aucDataBuff[AT_COM_BUFF_LEN];  /* ???????? */
+}AT_DATA_STREAM_BUFFER_STRU;           /* AT?????????????? */
 
 /* begin V7R1 PhaseI Modify */
-/*lint -e958 -e959 修改人:l60609;原因:64bit*/
+/*lint -e958 -e959 ??????:l60609;????:64bit*/
 typedef struct
 {
     MN_PH_SYS_MODE_EX_ENUM_U8           enSysMode;
@@ -3913,7 +3913,7 @@ typedef struct
     MN_PH_SUB_SYS_MODE_EX_ENUM_U8       enSubSysMode;
     VOS_CHAR                           *pcStrSubSysModeName ;
 }AT_PH_SUB_SYS_MODE_TBL_STRU;
-/*lint +e958 +e959 修改人:l60609;原因:64bit*/
+/*lint +e958 +e959 ??????:l60609;????:64bit*/
 
 /* end V7R1 PhaseI Modify */
 
@@ -3944,13 +3944,13 @@ enum AT_PTL_VER_TYPE_ENUM
 typedef VOS_UINT8 AT_PTL_VER_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : AT_DPACAT_CATEGORY_TYPE_ENUM
- 结构说明  : DPACAT命令参数HSDPA速率等级
-                           0: 支持速率等级3.6M
-                           1: 支持速率等级7.2M
-                           2: 支持速率等级1.8M
-                           3: 支持速率等级14.4M
-                           4: 支持速率等级21M
+ ??????    : AT_DPACAT_CATEGORY_TYPE_ENUM
+ ????????  : DPACAT????????HSDPA????????
+                           0: ????????????3.6M
+                           1: ????????????7.2M
+                           2: ????????????1.8M
+                           3: ????????????14.4M
+                           4: ????????????21M
 *****************************************************************************/
 enum AT_DPACAT_CATEGORY_TYPE_ENUM
 {
@@ -3966,11 +3966,11 @@ typedef VOS_UINT32 AT_DPACAT_CATEGORY_TYPE_ENUM_U32;
 
 typedef struct
 {
-    PS_BOOL_ENUM_UINT8                  enHSDSCHSupport;                        /* 是否支持enHSDSCHSupport的标志                */
-    VOS_UINT8                           ucHSDSCHPhyCategory;                    /* R6版本支持HS-DSCH物理层的类型标志                  */
-    PS_BOOL_ENUM_UINT8                  enMacEhsSupport;                        /* 是否支持增强的HSDPA的标志                */
-    VOS_UINT8                           ucHSDSCHPhyCategoryExt;                 /* R6版本及以上版本支持HS-DSCH物理层的类型标志    */
-    PS_BOOL_ENUM_UINT8                  enMultiCellSupport;                     /* 是否支持 Multi cell support,如果支持MultiCell,Ex2存在 */
+    PS_BOOL_ENUM_UINT8                  enHSDSCHSupport;                        /* ????????enHSDSCHSupport??????                */
+    VOS_UINT8                           ucHSDSCHPhyCategory;                    /* R6????????HS-DSCH????????????????                  */
+    PS_BOOL_ENUM_UINT8                  enMacEhsSupport;                        /* ??????????????HSDPA??????                */
+    VOS_UINT8                           ucHSDSCHPhyCategoryExt;                 /* R6??????????????????HS-DSCH????????????????    */
+    PS_BOOL_ENUM_UINT8                  enMultiCellSupport;                     /* ???????? Multi cell support,????????MultiCell,Ex2???? */
 
 }AT_DPACAT_PARA_STRU;
 
@@ -3978,67 +3978,67 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulHspaStatus;                           /* 0表示未激活,那么DPA和UPA都支持;1表示激活 */
+    VOS_UINT32                          ulHspaStatus;                           /* 0??????????,????DPA??UPA??????;1???????? */
 
-    VOS_UINT8                           aucRsv1[4];                             /* RF 能力信息                                  */
+    VOS_UINT8                           aucRsv1[4];                             /* RF ????????                                  */
 
-    PS_BOOL_ENUM_UINT8                  enSupportPwrBoosting;                   /* 16QAM特性相关，是否支持E-DPCCH Power Boosting*/
-    PS_BOOL_ENUM_UINT8                  enSf4Support;                           /* 是否支持ul dpcch 使用 slotFormat4 */
+    PS_BOOL_ENUM_UINT8                  enSupportPwrBoosting;                   /* 16QAM??????????????????E-DPCCH Power Boosting*/
+    PS_BOOL_ENUM_UINT8                  enSf4Support;                           /* ????????ul dpcch ???? slotFormat4 */
 
     VOS_UINT8                           aucRsv2[1];                             /* ENUMERATED  OPTIONAL                         */
     AT_PTL_VER_TYPE_ENUM_UINT8          enAsRelIndicator;                       /* Access Stratum Release Indicator             */
 
-    PS_BOOL_ENUM_UINT8                  enHSDSCHSupport;                        /* 是否支持enHSDSCHSupport的标志                */
-    VOS_UINT8                           ucHSDSCHPhyCategory;                    /* 支持HS-DSCH物理层的类型标志                  */
+    PS_BOOL_ENUM_UINT8                  enHSDSCHSupport;                        /* ????????enHSDSCHSupport??????                */
+    VOS_UINT8                           ucHSDSCHPhyCategory;                    /* ????HS-DSCH????????????????                  */
 
     PS_BOOL_ENUM_UINT8                  enMacEhsSupport;
     VOS_UINT8                           ucHSDSCHPhyCategoryExt;
-    PS_BOOL_ENUM_UINT8                  enMultiCellSupport;                     /* 是否支持 Multi cell support,如果支持MultiCell,Ex2存在 */
+    PS_BOOL_ENUM_UINT8                  enMultiCellSupport;                     /* ???????? Multi cell support,????????MultiCell,Ex2???? */
     VOS_UINT8                           ucHSDSCHPhyCategoryExt2;                /* HS-DSCH physical layer category extension 2 */
 
     PS_BOOL_ENUM_UINT8                  enCellSpecTxDiversityForDc;             /*  This IE is optionally present if Dual-Cell HSDPA is supported. Otherwise it is not needed.
                                                                                     The IE is not needed in the INTER RAT HANDOVER INFO message. Otherwise, it is optional*/
-    VOS_UINT8                           aucRsv3[1];                             /* 留作以后扩展HS-DSCH physical layer category extension 3 */
+    VOS_UINT8                           aucRsv3[1];                             /* ????????????HS-DSCH physical layer category extension 3 */
 
-    PS_BOOL_ENUM_UINT8                  enEDCHSupport;                          /* 是否支持EDCH的标志                           */
-    VOS_UINT8                           ucEDCHPhyCategory;                      /* 支持UPA的等级                                */
-    PS_BOOL_ENUM_UINT8                  enSuppUl16QAM;                          /* 是否支持上行16QAM，当支持时ucEDCHPhyCategoryExt才有效 */
-    VOS_UINT8                           ucEDCHPhyCategoryExt;                   /* 上行单载波支持16QAM时，填写7 */
-    PS_BOOL_ENUM_UINT8                  enSuppEDpdchInterpolationFormula;       /* 16QAM特性相关，是否支持E-DPDCH power interpolation formula */
-    PS_BOOL_ENUM_UINT8                  enSuppHsdpaInFach;                      /* 支持CELL_FACH下HS-DSCH的接收 */
-    PS_BOOL_ENUM_UINT8                  enSuppHsdpaInPch;                       /* 支持CELL_PCH或URA_PCH下HS-DSCH的接收 */
+    PS_BOOL_ENUM_UINT8                  enEDCHSupport;                          /* ????????EDCH??????                           */
+    VOS_UINT8                           ucEDCHPhyCategory;                      /* ????UPA??????                                */
+    PS_BOOL_ENUM_UINT8                  enSuppUl16QAM;                          /* ????????????16QAM??????????ucEDCHPhyCategoryExt?????? */
+    VOS_UINT8                           ucEDCHPhyCategoryExt;                   /* ??????????????16QAM????????7 */
+    PS_BOOL_ENUM_UINT8                  enSuppEDpdchInterpolationFormula;       /* 16QAM??????????????????E-DPDCH power interpolation formula */
+    PS_BOOL_ENUM_UINT8                  enSuppHsdpaInFach;                      /* ????CELL_FACH??HS-DSCH?????? */
+    PS_BOOL_ENUM_UINT8                  enSuppHsdpaInPch;                       /* ????CELL_PCH??URA_PCH??HS-DSCH?????? */
 
-    PS_BOOL_ENUM_UINT8                  enMacIsSupport;                         /* 是否支持MAC_I/MAC_Is */
+    PS_BOOL_ENUM_UINT8                  enMacIsSupport;                         /* ????????MAC_I/MAC_Is */
 
-    PS_BOOL_ENUM_UINT8                  enFDPCHSupport;                         /* 是否支持FDPCH的标志                          */
+    PS_BOOL_ENUM_UINT8                  enFDPCHSupport;                         /* ????????FDPCH??????                          */
 
-    PS_BOOL_ENUM_UINT8                  enHsscchLessSupport;                    /* 是否支持 hsscchlessHsdschOperation           */
-    PS_BOOL_ENUM_UINT8                  enUlDpcchDtxSupport;                    /* 是否支持 discontinuousDpcchTransmission      */
+    PS_BOOL_ENUM_UINT8                  enHsscchLessSupport;                    /* ???????? hsscchlessHsdschOperation           */
+    PS_BOOL_ENUM_UINT8                  enUlDpcchDtxSupport;                    /* ???????? discontinuousDpcchTransmission      */
 
-    PS_BOOL_ENUM_UINT8                  enAdjFreqMeasWithoutCmprMode;           /* 是否支持 Adjacent Frequency measurements without compressed mode */
+    PS_BOOL_ENUM_UINT8                  enAdjFreqMeasWithoutCmprMode;           /* ???????? Adjacent Frequency measurements without compressed mode */
 
-    PS_BOOL_ENUM_UINT8                  enMimoSingleStreamStrict;               /* 是否限制只能使用单流MIMO */
-    PS_BOOL_ENUM_UINT8                  enMimoWithDlTxDiversity;                /* R9特性，在MIMO激活时，下行控制信道是否允许使用分集 */
+    PS_BOOL_ENUM_UINT8                  enMimoSingleStreamStrict;               /* ????????????????????MIMO */
+    PS_BOOL_ENUM_UINT8                  enMimoWithDlTxDiversity;                /* R9????????MIMO???????????????????????????????????? */
 
-    /* V7r1 双模增加NV项 LTE能力 */
-    PS_BOOL_ENUM_UINT8                  enSptAbsPriBasedReselInUtra;            /* 支持UTRA中的优先级重选，默认为0，1为支持，0为不支持 */
+    /* V7r1 ????????NV?? LTE???? */
+    PS_BOOL_ENUM_UINT8                  enSptAbsPriBasedReselInUtra;            /* ????UTRA??????????????????????0??1????????0???????? */
 
     VOS_UINT8                           ucHSDSCHPhyCategoryExt3;                /* HS-DSCH physical layer category extension 3 */
-    PS_BOOL_ENUM_UINT8                  enDcMimoSupport;                        /* 是否支持DC+MIMO */
-    PS_BOOL_ENUM_UINT8                  enSuppCommEDCH;                         /* E-RACH新增特性 */
+    PS_BOOL_ENUM_UINT8                  enDcMimoSupport;                        /* ????????DC+MIMO */
+    PS_BOOL_ENUM_UINT8                  enSuppCommEDCH;                         /* E-RACH???????? */
 
-    PS_BOOL_ENUM_UINT8                  enDcUpaSupport;                         /* 是否支持DC UPA的标志 */
+    PS_BOOL_ENUM_UINT8                  enDcUpaSupport;                         /* ????????DC UPA?????? */
     VOS_UINT8                           ucEDCHPhyCategoryExt2;                  /* EDCH  category extension 2*/
-    PS_BOOL_ENUM_UINT8                  enEdpdchGainFactorFlg;                  /* E-DPDCH功率回退因子使能标志位 */
+    PS_BOOL_ENUM_UINT8                  enEdpdchGainFactorFlg;                  /* E-DPDCH?????????????????????? */
     VOS_UINT8                           aucRsv4[7];
 }AT_NVIM_UE_CAPA_STRU;
 
 
 enum AT_NVWR_SEC_TYPE_ENUM
 {
-    AT_NVWR_SEC_TYPE_OFF = 0,                                                   /* 安全控制关闭 */
-    AT_NVWR_SEC_TYPE_ON,                                                        /* 安全控制开启 */
-    AT_NVWR_SEC_TYPE_BLACKLIST,                                                 /* 安全控制黑名单模式 */
+    AT_NVWR_SEC_TYPE_OFF = 0,                                                   /* ???????????? */
+    AT_NVWR_SEC_TYPE_ON,                                                        /* ???????????? */
+    AT_NVWR_SEC_TYPE_BLACKLIST,                                                 /* ?????????????????? */
     AT_NVWR_SEC_TYPE_BUTT
 };
 typedef VOS_UINT8 AT_NVWR_SEC_TYPE_ENUM_UINT8;
@@ -4047,14 +4047,14 @@ typedef VOS_UINT8 AT_NVWR_SEC_TYPE_ENUM_UINT8;
 
 enum AT_SYSCFGEX_RAT_TYPE_ENUM
 {
-    AT_SYSCFGEX_RAT_AUTO = 0,              /* 接入技术为自动模式 */
-    AT_SYSCFGEX_RAT_GSM,                   /* GSM接入技术 */
-    AT_SYSCFGEX_RAT_WCDMA,                 /* WCDMA接入技术 */
-    AT_SYSCFGEX_RAT_LTE,                   /* LTE接入技术 */
-    AT_SYSCFGEX_RAT_1X,                    /* 1X接入技术 */
-    AT_SYSCFGEX_RAT_DO   = 7,              /* DO接入技术 */
-    AT_SYSCFGEX_RAT_NR   = 8,              /* NR接入技术 */
-    AT_SYSCFGEX_RAT_NO_CHANGE = 99,        /* 接入技术无变化 */
+    AT_SYSCFGEX_RAT_AUTO = 0,              /* ?????????????????? */
+    AT_SYSCFGEX_RAT_GSM,                   /* GSM???????? */
+    AT_SYSCFGEX_RAT_WCDMA,                 /* WCDMA???????? */
+    AT_SYSCFGEX_RAT_LTE,                   /* LTE???????? */
+    AT_SYSCFGEX_RAT_1X,                    /* 1X???????? */
+    AT_SYSCFGEX_RAT_DO   = 7,              /* DO???????? */
+    AT_SYSCFGEX_RAT_NR   = 8,              /* NR???????? */
+    AT_SYSCFGEX_RAT_NO_CHANGE = 99,        /* ?????????????? */
     AT_SYSCFGEX_RAT_BUTT
 };
 typedef VOS_UINT8 AT_SYSCFGEX_RAT_TYPE_ENUM_UINT8;
@@ -4062,21 +4062,21 @@ typedef VOS_UINT8 AT_SYSCFGEX_RAT_TYPE_ENUM_UINT8;
 
 typedef struct
 {
-    VOS_UINT8                           ucRatOrderNum;                          /* syscfgex中设置的acqoder中的指示接入技术的个数 */
-    AT_SYSCFGEX_RAT_TYPE_ENUM_UINT8     aenRatOrder[TAF_PH_MAX_SUPPORT_RAT_NUM];/* at^syscfgex中设置的acqoder接入优先级 */
+    VOS_UINT8                           ucRatOrderNum;                          /* syscfgex????????acqoder?????????????????????? */
+    AT_SYSCFGEX_RAT_TYPE_ENUM_UINT8     aenRatOrder[TAF_PH_MAX_SUPPORT_RAT_NUM];/* at^syscfgex????????acqoder?????????? */
     VOS_UINT8                           aucRsv;
 }AT_SYSCFGEX_RAT_ORDER_STRU;
 
 
 enum AT_SYSCFG_RAT_TYPE_ENUM
 {
-    AT_SYSCFG_RAT_AUTO          = 2,                                                /* 接入技术为自动模式 */
-    AT_SYSCFG_RAT_1X            = 3,                                                /* 1X 模式 */
-    AT_SYSCFG_RAT_HRPD          = 4,                                                /* HRDP 模式 */
-    AT_SYSCFG_RAT_1X_AND_HRPD   = 8,                                                /* 1X&HRPD 模式 */
-    AT_SYSCFG_RAT_GSM           = 13,                                               /* GGSM接入技术 */
-    AT_SYSCFG_RAT_WCDMA         = 14,                                               /* WCDMA接入技术 */
-    AT_SYSCFG_RAT_NO_CHANGE     = 16,                                               /* 接入技术无变化 */
+    AT_SYSCFG_RAT_AUTO          = 2,                                                /* ?????????????????? */
+    AT_SYSCFG_RAT_1X            = 3,                                                /* 1X ???? */
+    AT_SYSCFG_RAT_HRPD          = 4,                                                /* HRDP ???? */
+    AT_SYSCFG_RAT_1X_AND_HRPD   = 8,                                                /* 1X&HRPD ???? */
+    AT_SYSCFG_RAT_GSM           = 13,                                               /* GGSM???????? */
+    AT_SYSCFG_RAT_WCDMA         = 14,                                               /* WCDMA???????? */
+    AT_SYSCFG_RAT_NO_CHANGE     = 16,                                               /* ?????????????? */
     AT_SYSCFG_RAT_BUTT
 };
 typedef VOS_UINT8 AT_SYSCFG_RAT_TYPE_ENUM_UINT8;
@@ -4084,10 +4084,10 @@ typedef VOS_UINT8 AT_SYSCFG_RAT_TYPE_ENUM_UINT8;
 
 enum AT_SYSCFG_RAT_PRIO_ENUM
 {
-    AT_SYSCFG_RAT_PRIO_AUTO = 0,                                                /* 接入优先级参数为自动 */
-    AT_SYSCFG_RAT_PRIO_GSM,                                                     /* 接入优先级参数为GSM优先  */
-    AT_SYSCFG_RAT_PRIO_WCDMA,                                                   /* 接入优先级参数为WCDMA优先 */
-    AT_SYSCFG_RAT_PRIO_NO_CHANGE,                                               /* 接入优先级为不改变 */
+    AT_SYSCFG_RAT_PRIO_AUTO = 0,                                                /* ???????????????????? */
+    AT_SYSCFG_RAT_PRIO_GSM,                                                     /* ????????????????GSM????  */
+    AT_SYSCFG_RAT_PRIO_WCDMA,                                                   /* ????????????????WCDMA???? */
+    AT_SYSCFG_RAT_PRIO_NO_CHANGE,                                               /* ?????????????????? */
     AT_SYSCFG_RAT_PRIO_BUTT
 };
 typedef VOS_UINT8 AT_SYSCFG_RAT_PRIO_ENUM_UINT8;
@@ -4109,10 +4109,10 @@ typedef VOS_UINT32 AT_FREQLOCK_MODE_TYPE_ENUM_UINT32;
 
 enum AT_FREQLOCK_BAND_TYPE_ENUM
 {
-    AT_FREQLOCK_BAND_TYPE_GSM_850   = 0,                                                /* GSM频段850 */
-    AT_FREQLOCK_BAND_TYPE_GSM_900   = 1,                                                /* GSM频段900 */
-    AT_FREQLOCK_BAND_TYPE_GSM_1800  = 2,                                                /* GSM频段1800 */
-    AT_FREQLOCK_BAND_TYPE_GSM_1900  = 3,                                                /* GSM频段1900 */
+    AT_FREQLOCK_BAND_TYPE_GSM_850   = 0,                                                /* GSM????850 */
+    AT_FREQLOCK_BAND_TYPE_GSM_900   = 1,                                                /* GSM????900 */
+    AT_FREQLOCK_BAND_TYPE_GSM_1800  = 2,                                                /* GSM????1800 */
+    AT_FREQLOCK_BAND_TYPE_GSM_1900  = 3,                                                /* GSM????1900 */
     AT_FREQLOCK_BAND_TYPE_BUTT
 };
 typedef VOS_UINT32 AT_FREQLOCK_BAND_TYPE_ENUM_UINT32;
@@ -4123,8 +4123,8 @@ typedef VOS_UINT32 AT_FREQLOCK_BAND_TYPE_ENUM_UINT32;
 typedef VOS_UINT32 (*MN_PS_EVT_FUNC)(VOS_UINT8 ucIndex, VOS_VOID *pEvtInfo);
 
 /*****************************************************************************
- 结构名    : AT_PS_EVT_FUNC_TBL_STRU
- 结构说明  : PS域事件处理函数表结构
+ ??????    : AT_PS_EVT_FUNC_TBL_STRU
+ ????????  : PS????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -4136,8 +4136,8 @@ typedef struct
 #if (FEATURE_ON == FEATURE_SECURITY_SHELL)
 typedef struct
 {
-    VOS_UINT8                           ucShellPwdCheckFlag;                    /* VOS_TRUE:密码已校验，VOS_FALSE:密码未校验*/
-    VOS_UINT8                           ucErrTimes;                             /* 记录密码输入错误的次数 */
+    VOS_UINT8                           ucShellPwdCheckFlag;                    /* VOS_TRUE:????????????VOS_FALSE:??????????*/
+    VOS_UINT8                           ucErrTimes;                             /* ?????????????????????? */
     VOS_UINT8                           aucRsv[2];
 }AT_SP_WORD_CTX_STRU;
 #endif
@@ -4145,16 +4145,16 @@ typedef struct
 
 typedef struct
 {
-    /* 鉴权公钥码流(未做half-byte解析) */
+    /* ????????????(????half-byte????) */
     VOS_UINT8                           aucPubKey[AT_FACAUTHPUBKEY_PARA_LEN];
-    /* 鉴权公钥SSK签名码流(未做half-byte解析) */
+    /* ????????SSK????????(????half-byte????) */
     VOS_UINT8                           aucPubKeySign[AT_FACAUTHPUBKEY_SIGN_PARA_LEN];
 }AT_FACAUTHPUBKEY_SET_REQ_STRU;
 
 
 typedef struct
 {
-    /* 结构体码流, 包含该锁网锁卡类型的包括状态, 锁网号段, CK, UK等所有信息(未做half-byte解析) */
+    /* ??????????, ????????????????????????????, ????????, CK, UK??????????(????half-byte????) */
     VOS_UINT8       aucCategoryData[AT_SIMLOCKDATAWRITE_PARA_LEN];
 }AT_SIMLOCKDATAWRITE_SET_REQ_STRU;
 
@@ -4166,9 +4166,9 @@ typedef struct
 
 typedef struct
 {
-    AT_WCDMA_BAND_SET_UN        unWcdmaBand;                    /* 记录W频段信息 */
+    AT_WCDMA_BAND_SET_UN        unWcdmaBand;                    /* ????W???????? */
     VOS_UINT32                  ulRsv;
-    AT_GSM_BAND_SET_UN          unGsmBand;                      /* 记录G频段信息 */
+    AT_GSM_BAND_SET_UN          unGsmBand;                      /* ????G???????? */
 }AT_NV_WG_RF_MAIN_BAND_STRU;
 
 #define AT_NVIM_BODYSARGSM_MAX_PARA_GROUP_NUM       (8)
@@ -4176,33 +4176,33 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                   ucParaNum;                                      /* 设置命令参数组数 */
-    VOS_UINT8                   ucRsv[3];                                       /* 保留位 */
-    VOS_INT16                   asPower[AT_NVIM_BODYSARGSM_MAX_PARA_GROUP_NUM];      /* G频段功率门限值 */
-    VOS_UINT32                  aulBand[AT_NVIM_BODYSARGSM_MAX_PARA_GROUP_NUM];      /* G频段位域 */
+    VOS_UINT8                   ucParaNum;                                      /* ???????????????? */
+    VOS_UINT8                   ucRsv[3];                                       /* ?????? */
+    VOS_INT16                   asPower[AT_NVIM_BODYSARGSM_MAX_PARA_GROUP_NUM];      /* G?????????????? */
+    VOS_UINT32                  aulBand[AT_NVIM_BODYSARGSM_MAX_PARA_GROUP_NUM];      /* G???????? */
 }AT_BODYSARGSM_SET_PARA_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                   ucParaNum;                                      /* 设置命令参数组数 */
-    VOS_UINT8                   ucRsv[3];                                       /* 保留位 */
-    VOS_INT16                   asPower[AT_BODYSARWCDMA_MAX_PARA_GROUP_NUM];    /* W频段功率门限值 */
-    VOS_UINT32                  aulBand[AT_BODYSARWCDMA_MAX_PARA_GROUP_NUM];    /* W频段位域 */
+    VOS_UINT8                   ucParaNum;                                      /* ???????????????? */
+    VOS_UINT8                   ucRsv[3];                                       /* ?????? */
+    VOS_INT16                   asPower[AT_BODYSARWCDMA_MAX_PARA_GROUP_NUM];    /* W?????????????? */
+    VOS_UINT32                  aulBand[AT_BODYSARWCDMA_MAX_PARA_GROUP_NUM];    /* W???????? */
 }AT_BODYSARWCDMA_SET_PARA_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                              ulProfileId;                        /* 根据使用场景，控制前端器件的上下电（ABB，TCXO，RF）以及RF通道的控制。
-                                                                                   由AT命令下发配置。默认值为0。取值范围0-7。 */
-    VOS_UINT32                              ulReserved[3];                     /* 保留，将来扩展使用 */
+    VOS_UINT32                              ulProfileId;                        /* ????????????????????????????????????ABB??TCXO??RF??????RF????????????
+                                                                                   ??AT??????????????????????0??????????0-7?? */
+    VOS_UINT32                              ulReserved[3];                     /* ?????????????????? */
 }NAS_NV_TRI_MODE_FEM_PROFILE_ID_STRU;
 
 
 typedef struct
 {
-    VOS_UINT16                              usEnable;                           /* 全网通特性开关 */
+    VOS_UINT16                              usEnable;                           /* ?????????????? */
     VOS_UINT16                              usReserved;
 }NAS_NV_TRI_MODE_ENABLE_STRU;
 
@@ -4227,19 +4227,19 @@ typedef struct
 
 enum AT_IMS_CTRL_MSG_RECEIVE_MODULE_ENUM
 {
-    AT_IMS_CTRL_MSG_RECEIVE_MODULE_NON_IMSA                 = 0,                /* 非IMS业务 */
-    AT_IMS_CTRL_MSG_RECEIVE_MODULE_IMSA                     = 1,                /* IMS业务 */
+    AT_IMS_CTRL_MSG_RECEIVE_MODULE_NON_IMSA                 = 0,                /* ??IMS???? */
+    AT_IMS_CTRL_MSG_RECEIVE_MODULE_IMSA                     = 1,                /* IMS???? */
     AT_IMS_CTRL_MSG_RECEIVE_MODULE_BUTT
 };
 typedef VOS_UINT8 AT_IMS_CTRL_MSG_RECEIVE_MODULE_ENUM_UINT8;
 
-/* 删除解析AT^EOPLMN命令后存储参数的结构体AT_EOPLMN_SET_REQ_STRU */
+/* ????????AT^EOPLMN??????????????????????AT_EOPLMN_SET_REQ_STRU */
 
 
 typedef struct
 {
-    VOS_CHAR                           *acStrDlSpeed;                           /* 理论最大下行速率 */
-    VOS_CHAR                           *acStrUlSpeed;                           /* 理论最大上行速率 */
+    VOS_CHAR                           *acStrDlSpeed;                           /* ???????????????? */
+    VOS_CHAR                           *acStrUlSpeed;                           /* ???????????????? */
 }AT_DISPLAY_RATE_PAIR_STRU;
 
 
@@ -4267,7 +4267,7 @@ typedef struct
     VOS_UINT8                           aucReserve[7];
 }AT_SIMLOCK_WRITE_EX_PARA_STRU;
 
-/*消息处理函数指针*/
+/*????????????????*/
 typedef VOS_VOID (*AT_PS_INTERNAL_TIMEOUT_FUNC)(\
     REL_TIMER_MSG                       *pMsg);
 
@@ -4279,7 +4279,7 @@ typedef struct
 }AT_PS_INTERNAL_TIMEOUT_RESULT_STRU;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
@@ -4290,13 +4290,13 @@ extern AT_PB_CONVERSION_TABLE_STRU  g_astGsm7extToUnicode[AT_PB_GSM7EXT_MAX_NUM]
 
 extern AT_CMD_FORMAT_TYPE                   gucAtCmdFmtType;
 extern pAtChkFuncType                       pgAtCheckFunc;
-extern AT_V_TYPE                            gucAtVType;            /* 指示命令返回码类型 */
+extern AT_V_TYPE                            gucAtVType;            /* ?????????????????? */
 extern AT_CSCS_TYPE                         gucAtCscsType;
 extern AT_CLIENT_MANAGE_STRU                gastAtClientTab[AT_MAX_CLIENT_NUM];
-extern TAF_UINT8                            gaucAtCrLf[];               /*回车换行*/
-extern const TAF_UINT8                      gaucAtCmeErrorStr[];        /*错误提示字串*/
-extern const TAF_UINT8                      gaucAtCmsErrorStr[];        /*错误提示字串*/
-extern const TAF_UINT8                      gaucAtTooManyParaStr[];     /*参数太多提示字串*/
+extern TAF_UINT8                            gaucAtCrLf[];               /*????????*/
+extern const TAF_UINT8                      gaucAtCmeErrorStr[];        /*????????????*/
+extern const TAF_UINT8                      gaucAtCmsErrorStr[];        /*????????????*/
+extern const TAF_UINT8                      gaucAtTooManyParaStr[];     /*????????????????*/
 extern AT_SEND_DATA_BUFFER_STRU             gstAtSendData;
 extern AT_SEND_DATA_BUFFER_STRU             gstAtCombineSendData[];
 extern const AT_SMS_CMD_TAB_STRU            gastAtSmsCmdTab[];
@@ -4341,7 +4341,7 @@ extern AT_SP_WORD_CTX_STRU                  g_stSpWordCtx;
 #endif
 
 #if(2 <= MULTI_MODEM_NUMBER)
-/* AT与编译两次的PID对应表  */
+/* AT????????????PID??????  */
 extern AT_MODEM_PID_TAB_STRU                   g_astAtModemPidTab[];
 #endif
 
@@ -4349,12 +4349,12 @@ extern AT_MODEM_PID_TAB_STRU                   g_astAtModemPidTab[];
 extern AT_MTA_BODY_SAR_STATE_ENUM_UINT16       g_enAtBodySarState;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  8 OTHERS定义
+  8 OTHERS????
 *****************************************************************************/
 extern VOS_UINT32 At_ProcSimLockPara(
     VOS_UINT8                           ucIndex,
@@ -4466,7 +4466,7 @@ extern TAF_VOID     At_PbMsgProc(MsgBlock* pMsg);
 extern TAF_VOID     At_TAFPbMsgProc(TAF_UINT8* pData,TAF_UINT16 usLen);
 
 
-/*************各端口初始化函数****************/
+/*************????????????????****************/
 extern VOS_UINT32 At_UsbModemRelInd(
     VOS_UINT8                           ucPortType,
     VOS_UINT8                           ucDlci
@@ -4850,7 +4850,7 @@ extern VOS_UINT32   At_QrySD(VOS_UINT8 ucIndex );
 extern VOS_UINT32   At_QryGPIOPL(VOS_UINT8 ucIndex );
 extern VOS_UINT32   At_QryVersion(VOS_UINT8 ucIndex );
 
-/*新增的hspa AT命令设置函数*/
+/*??????hspa AT????????????*/
 extern TAF_UINT32   At_SetRRCVersion(TAF_UINT8 ucIndex);
 extern TAF_UINT32   At_SetCSNR(TAF_UINT8 ucIndex);
 extern TAF_UINT32   At_SetFreqLock(TAF_UINT8 ucIndex);
@@ -4936,7 +4936,7 @@ extern TAF_UINT32   At_SetCmgsSegmentPara(TAF_UINT8 ucIndex);
 
 extern VOS_UINT32   AT_SetVertime ( VOS_UINT8 ucIndex );
 
-/*内部设置和查询NV项命令*/
+/*??????????????NV??????*/
 #if ( VOS_WIN32 == VOS_OS_VER )
 extern VOS_UINT32   AT_SetNvimPara(VOS_UINT8 ucIndex);
 
@@ -4961,7 +4961,7 @@ extern TAF_UINT32 AT_SetSIMPara(TAF_UINT8 ucIndex);
 
 
 extern VOS_UINT32 AT_RefreshUSIMPara(VOS_UINT8 ucIndex);
-/* AT_SetSTKParaStub无调用点，删除 */
+/* AT_SetSTKParaStub?????????????? */
 
 extern VOS_UINT32   AT_SetTinTypeStub( VOS_UINT8 ucIndex );
 extern  VOS_UINT32  AT_SetPsBearIsrFlgStub( VOS_UINT8 ucIndex );
@@ -4988,7 +4988,7 @@ extern VOS_UINT32 AT_SetImsVoiceMMEnableStub(VOS_UINT8 ucIndex);
 extern VOS_UINT32 AT_SetCmdImsUssdStub(VOS_UINT8 ucIndex);
 #endif
 
-/*测试用PDP打桩命令*/
+/*??????PDP????????*/
 extern VOS_UINT32 At_SetNdisAddPara(TAF_UINT8 ucIndex);
 extern VOS_UINT32 At_SetDnsPrim(VOS_UINT8 ucIndex);
 extern VOS_UINT32 At_SetDnsSnd(VOS_UINT8 ucIndex);
@@ -5033,7 +5033,7 @@ extern VOS_UINT32 AT_SetRscpCfgPara ( VOS_UINT8 ucIndex );
 extern VOS_UINT32 AT_SetEcioCfgPara ( VOS_UINT8 ucIndex );
 extern VOS_UINT32  AT_QryRscpCfgPara ( VOS_UINT8 ucIndex );
 extern VOS_UINT32  AT_QryEcioCfgPara ( VOS_UINT8 ucIndex );
-/* 删除AT_QryCellRoamPara */
+/* ????AT_QryCellRoamPara */
 
 extern VOS_UINT32 AT_QryPdprofmodPara(VOS_UINT8 ucIndex);
 
@@ -5172,7 +5172,7 @@ extern VOS_UINT32  At_QryFlnaPara(VOS_UINT8 ucIndex);
 extern VOS_UINT32  At_QryFRxonPara(VOS_UINT8 ucIndex);
 extern TAF_UINT32   AT_QryAlsPara(TAF_UINT8 ucIndex);
 extern TAF_UINT32   AT_SetAlsPara(TAF_UINT8 ucIndex);
-/*新增的AT命令查询函数*/
+/*??????AT????????????*/
 extern TAF_UINT32   At_QryRRCVersion(TAF_UINT8 ucIndex);
 extern TAF_UINT32   At_QryCSNR(TAF_UINT8 ucIndex);
 extern TAF_UINT32   At_QryFreqLock(TAF_UINT8 ucIndex);
@@ -5699,8 +5699,8 @@ extern VOS_UINT32   GetU2diagDefaultValue(VOS_VOID);
 extern VOS_VOID     MMA_CardType(VOS_CHAR *pcDest);
 TAF_UINT32          At_GetBandPara(TAF_UINT8 *nptr,TAF_UINT16 usLen,TAF_USER_SET_PREF_BAND64 * pStBand);
 
-/*为了规避Linux后台二次拨号失败问题，需采取规避方案，规避方案中，底软需新增一个判断是否
-  为LINUX操作系统的API*/
+/*????????Linux????????????????????????????????????????????????????????????????????????
+  ??LINUX??????????API*/
 extern VOS_INT      GetLinuxSysType(VOS_VOID);
 
 extern VOS_VOID     CheckCurrentModemStatus(VOS_INT status);
@@ -5795,14 +5795,14 @@ extern  TAF_UINT32  At_PrintTimeZoneInfo(
 );
 
 /*****************************************************************************
- 函 数 名  : AT_PrintTimeZoneInfoNoAdjustment
- 功能描述  : 显示当前时区信息(网络时区信息)
- 输入参数  : pstMmInfo - MM INFO结构指针
-             pDst      - 显示数据地址
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : AT_PrintTimeZoneInfoNoAdjustment
+ ????????  : ????????????????(????????????)
+ ????????  : pstMmInfo - MM INFO????????
+             pDst      - ????????????
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 AT_PrintTimeZoneInfoNoAdjustment(
     TAF_AT_COMM_TIME_STRU              *pstMmInfo,
@@ -5823,7 +5823,7 @@ extern  VOS_UINT32 MN_PH_QryApHplmn(
     VOS_UINT32                          *pulMnc
 );
 
-/* 无调用点，多实例项目删除 */
+/* ???????????????????????? */
 extern AT_CMD_ANTENNA_LEVEL_ENUM_UINT8 AT_CalculateAntennaLevel(
     VOS_INT16                           sRscp,
     VOS_INT16                           sEcio
@@ -5920,26 +5920,26 @@ extern VOS_BOOL AT_CheckDockName(
     VOS_UINT16                          usLen
 );
 /*****************************************************************************
- 函 数 名  : AT_GetRateDisplayIndexForGsm
- 功能描述  : 获取GSM模式下行能力等级在速率显示表中的索引
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : AT_GetRateDisplayIndexForGsm
+ ????????  : ????GSM????????????????????????????????????
+ ????????  : ??
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 AT_GetRateDisplayIndexForGsm(
     TAF_AGENT_SYS_MODE_STRU            *pstSysMode
 );
 
 /*****************************************************************************
- 函 数 名  : AT_GetRateDisplayIndexForWcdma
- 功能描述  : 获取WCDMA模式下行能力等级在速率显示表中的索引
- 输入参数  : pstDlRateCategory - UE下行能力
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : AT_GetRateDisplayIndexForWcdma
+ ????????  : ????WCDMA????????????????????????????????????
+ ????????  : pstDlRateCategory - UE????????
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 AT_GetRateDisplayIndexForWcdma(
     AT_DOWNLINK_RATE_CATEGORY_STRU     *pstDlRateCategory
@@ -6052,7 +6052,7 @@ VOS_UINT32 At_TestTmodePara(VOS_UINT8 ucIndex);
 
 VOS_UINT32 At_TestFdacPara(VOS_UINT8 ucIndex);
 
-/* 此函数在 AtCmdMsgProc.c 中 */
+/* ???????? AtCmdMsgProc.c ?? */
 VOS_UINT32 AT_SetGlobalFchan(VOS_UINT8 ucRatMode);
 
 VOS_UINT32 AT_ProcTestError(VOS_UINT8 ucIndex);
@@ -6112,7 +6112,7 @@ extern VOS_UINT32 atQrySfeaturePara(VOS_UINT8 ucClientId);
 extern VOS_UINT32 atSetFWAVEPara(VOS_UINT8 ucClientId);
 
 
-/*非信令综测start */
+/*??????????start */
 extern VOS_UINT32 atQryDLoadVer(VOS_UINT8 ucClientId);
 extern VOS_UINT32 atQryDLoadVerCnf(VOS_UINT8 ucClientId, VOS_VOID *pMsgBlock);
 
@@ -6263,10 +6263,10 @@ extern VOS_UINT32 At_RegisterExPrivateCmdTable(VOS_VOID);
 
 extern VOS_VOID At_InitUsimStatus(VOS_VOID);
 
-/* 接收L4A的CNF，IND消息，并查找对应函数进行处理 */
+/* ????L4A??CNF??IND???????????????????????????? */
 VOS_UINT32 at_L4aCnfProc(MsgBlock* pMsgBlockTmp);
 
-/* AT处理LTE装备FTM回复消息入口 */
+/* AT????LTE????FTM???????????? */
 VOS_UINT32 At_FtmEventMsgProc(VOS_VOID *pMsg);
 
 VOS_UINT32 At_TestCgatt(VOS_UINT8 ucIndex);
@@ -6423,13 +6423,13 @@ VOS_UINT32 AT_QryLogNvePara(VOS_UINT8 ucIndex);
 VOS_UINT32 AT_SetLogSavePara(VOS_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : AT_QryCPsErrPara
- 功能描述  : 查询PS域呼叫错误码
- 输入参数  : ucIndex --- 用户索引
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : AT_QryCPsErrPara
+ ????????  : ????PS????????????
+ ????????  : ucIndex --- ????????
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 AT_QryCPsErrPara(VOS_UINT8 ucIndex);
 
@@ -6448,25 +6448,25 @@ extern VOS_UINT32 AT_SetCISAPara(
     VOS_UINT16                          usCommandLength);
 
 /*****************************************************************************
- 函 数 名  : AT_QryCmutPara
- 功能描述  : ^CMUT=<n> 查询静音状态
- 输入参数  : ucIndex --- 用户索引
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : AT_QryCmutPara
+ ????????  : ^CMUT=<n> ????????????
+ ????????  : ucIndex --- ????????
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 AT_SetCmutPara(VOS_UINT8 ucIndex);
 
 
 /*****************************************************************************
- 函 数 名  : AT_QryCmutPara
- 功能描述  : ^CMUT? 查询静音状态
- 输入参数  : ucIndex --- 用户索引
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : AT_QryCmutPara
+ ????????  : ^CMUT? ????????????
+ ????????  : ucIndex --- ????????
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 AT_QryCmutPara(VOS_UINT8 ucIndex);
 
@@ -6482,38 +6482,38 @@ VOS_UINT32 AT_SetSimlockUnlockPara( VOS_UINT8 ucIndex );
 #endif
 
 /*****************************************************************************
- 函 数 名  : AT_SetApdsPara
- 功能描述  : ^APDS=<dial_string>,<sub_string>,<I>,<G>,<call_type>设置命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_SetApdsPara
+ ????????  : ^APDS=<dial_string>,<sub_string>,<I>,<G>,<call_type>????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 *****************************************************************************/
 VOS_UINT32 AT_SetApdsPara(VOS_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : AT_SetClprPara
- 功能描述  : ^CLPR=<call_id>设置命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_SetClprPara
+ ????????  : ^CLPR=<call_id>????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 *****************************************************************************/
 VOS_UINT32 AT_SetClprPara(VOS_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : AT_TestClprPara
- 功能描述  : 设置命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_TestClprPara
+ ????????  : ????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 *****************************************************************************/
 VOS_UINT32 AT_TestClprPara(VOS_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : AT_QryCCsErrPara
- 功能描述  : ^CCSERR设置命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_QryCCsErrPara
+ ????????  : ^CCSERR????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 *****************************************************************************/
 VOS_UINT32 AT_QryCCsErrPara(VOS_UINT8 ucIndex);
 
@@ -6563,21 +6563,21 @@ VOS_UINT32 At_QryMmPlmnInfoPara(VOS_UINT8 ucIndex);
 VOS_UINT32 At_QryEonsUcs2Para(VOS_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : At_QryPlmnPara
- 功能描述  : 查询PLMN的mcc mnc
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : AT_ERROR或AT_WAIT_ASYNC_RETURN
+ ?? ?? ??  : At_QryPlmnPara
+ ????????  : ????PLMN??mcc mnc
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : AT_ERROR??AT_WAIT_ASYNC_RETURN
 
 *****************************************************************************/
 VOS_UINT32 At_QryPlmnPara(VOS_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : At_QryXlemaPara
- 功能描述  : 查询^XLEMA的处理
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : AT_ERROR或AT_OK
+ ?? ?? ??  : At_QryXlemaPara
+ ????????  : ????^XLEMA??????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : AT_ERROR??AT_OK
 *****************************************************************************/
 VOS_UINT32 At_QryXlemaPara(VOS_UINT8 ucIndex);
 
@@ -6620,11 +6620,11 @@ VOS_UINT32 AT_RcvTempprtStatusInd(VOS_VOID *pMsg);
 
 
 /*****************************************************************************
- 函 数 名  : At_QryIMEIVerifyPara
- 功能描述  : 查询IMEI安全校验的结果
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : AT_ERROR或AT_WAIT_ASYNC_RETURN
+ ?? ?? ??  : At_QryIMEIVerifyPara
+ ????????  : ????IMEI??????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : AT_ERROR??AT_WAIT_ASYNC_RETURN
 
 *****************************************************************************/
 VOS_UINT32 At_QryIMEIVerifyPara(VOS_UINT8 ucIndex);
@@ -6711,40 +6711,40 @@ VOS_UINT32 AT_QryClccPara(VOS_UINT8 ucIndex);
 
 #if (FEATURE_ON == FEATURE_IMS)
 /*****************************************************************************
- 函 数 名  : AT_QryCiregPara
- 功能描述  : +CIREG?查询命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_QryCiregPara
+ ????????  : +CIREG?????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 *****************************************************************************/
 VOS_UINT32 AT_QryCiregPara(VOS_UINT8 ucIndex);
 
 
 /*****************************************************************************
- 函 数 名  : AT_QryCirepPara
- 功能描述  : +CIREP?查询命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_QryCirepPara
+ ????????  : +CIREP?????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 *****************************************************************************/
 VOS_UINT32 AT_QryCirepPara(VOS_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : AT_SetCiregPara
- 功能描述  : +CIREG=<n>设置命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_SetCiregPara
+ ????????  : +CIREG=<n>????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 
 *****************************************************************************/
 TAF_UINT32 AT_SetCiregPara(TAF_UINT8 ucIndex);
 
 /*****************************************************************************
- 函 数 名  : AT_SetCirepPara
- 功能描述  : +CIREP=<reporting>设置命令处理函数
- 输入参数  : VOS_UINT8 ucIndex
- 输出参数  : 无
- 返 回 值  : VOS_UINT32
+ ?? ?? ??  : AT_SetCirepPara
+ ????????  : +CIREP=<reporting>????????????????
+ ????????  : VOS_UINT8 ucIndex
+ ????????  : ??
+ ?? ?? ??  : VOS_UINT32
 
 *****************************************************************************/
 TAF_UINT32 AT_SetCirepPara(TAF_UINT8 ucIndex);
@@ -6913,7 +6913,7 @@ extern VOS_UINT32 AT_HandleApXsmsWriteCmd(VOS_UINT8 ucIndex, VOS_UINT8 *pucData,
 
 extern VOS_UINT32 AT_SetCrmPara(VOS_UINT8 ucIndex);
 
-/* 移到 FEATURE_UE_MODE_CDMA 宏中 */
+/* ???? FEATURE_UE_MODE_CDMA ???? */
 
 extern VOS_UINT32 AT_SetCBurstDTMFPara(VOS_UINT8 ucIndex);
 

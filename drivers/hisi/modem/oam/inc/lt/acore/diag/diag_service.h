@@ -66,8 +66,8 @@ extern "C" {
 #include "msp_service.h"
 #include "diag_service_comm.h"
 
-#pragma pack(push)//保存对齐状态
-#pragma pack(4)//强制4字节对齐
+#pragma pack(push)//????????????
+#pragma pack(4)//????4????????
 
 /*****************************************************************************
   2 macro
@@ -89,8 +89,8 @@ extern "C" {
 
 typedef struct
 {
-    SOCP_CODER_SRC_ENUM_U32         ulIndChannelID;    /* 编码源通道ID，固定配置 */
-    SOCP_CODER_SRC_ENUM_U32         ulCnfChannelID;    /* 编码源通道ID，固定配置 */
+    SOCP_CODER_SRC_ENUM_U32         ulIndChannelID;    /* ??????????ID?????????? */
+    SOCP_CODER_SRC_ENUM_U32         ulCnfChannelID;    /* ??????????ID?????????? */
 
 }DIAG_SRV_CTRL;
 
@@ -121,7 +121,7 @@ VOS_UINT32 diag_ServicePacketResetData(DIAG_MSG_REPORT_HEAD_STRU *pData);
 VOS_VOID DIAG_DebugDFR(VOS_VOID);
 
 
-#pragma pack(pop) //恢复对齐方式
+#pragma pack(pop) //????????????
 
 #ifdef __cplusplus
     #if __cplusplus

@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "frw_ext_if.h"
@@ -24,12 +24,12 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_WAL_LINUX_EVENT_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -50,11 +50,11 @@ oal_int32 wal_cfg80211_start_req(oal_net_device_stru    *pst_net_dev,
          return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 填写 msg 消息头*/
+    /* ???? msg ??????*/
     st_write_msg.en_wid = en_wid;
     st_write_msg.us_len = us_len;
 
-    /* 填写 msg 消息体 */
+    /* ???? msg ?????? */
     if(WAL_MSG_WRITE_MAX_LEN < us_len)
     {
         OAM_ERROR_LOG2(0, OAM_SF_SCAN, "{wal_cfg80211_start_req::us_len %d > WAL_MSG_WRITE_MAX_LEN %d err!}\r\n", us_len, WAL_MSG_WRITE_MAX_LEN);
@@ -63,7 +63,7 @@ oal_int32 wal_cfg80211_start_req(oal_net_device_stru    *pst_net_dev,
     oal_memcopy(st_write_msg.auc_value, ps_param, us_len);
 
     /***************************************************************************
-           抛事件到wal层处理
+           ????????wal??????
     ***************************************************************************/
     l_ret = wal_send_cfg_event(pst_net_dev,
                            WAL_MSG_TYPE_WRITE,
@@ -79,7 +79,7 @@ oal_int32 wal_cfg80211_start_req(oal_net_device_stru    *pst_net_dev,
 
     if(en_need_rsp && (OAL_PTR_NULL != pst_rsp_msg))
     {
-        /* 读取返回的错误码 */
+        /* ???????????????? */
         ul_err_code = wal_check_and_release_msg_resp(pst_rsp_msg);
         if(OAL_SUCC != ul_err_code)
         {
@@ -104,7 +104,7 @@ oal_uint32  wal_cfg80211_start_scan(oal_net_device_stru *pst_net_dev, mac_cfg802
          return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 此处申请hmac层释放 */
+    /* ????????hmac?????? */
     pst_mac_cfg80211_scan_param = (mac_cfg80211_scan_param_stru *)OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, OAL_SIZEOF(mac_cfg80211_scan_param_stru), OAL_FALSE);
     if (NULL == pst_mac_cfg80211_scan_param)
     {
@@ -114,12 +114,12 @@ oal_uint32  wal_cfg80211_start_scan(oal_net_device_stru *pst_net_dev, mac_cfg802
 
     oal_memcopy(pst_mac_cfg80211_scan_param, pst_scan_param, OAL_SIZEOF(mac_cfg80211_scan_param_stru));
 
-    /* TBD gong: 1.传的是指针的指针, 2.sizeof指针  */
+    /* TBD gong: 1.????????????????, 2.sizeof????  */
     ul_ret = (oal_uint32)wal_cfg80211_start_req(pst_net_dev, &pst_mac_cfg80211_scan_param,
                                     OAL_SIZEOF(pst_mac_cfg80211_scan_param), WLAN_CFGID_CFG80211_START_SCAN, OAL_FALSE);
     if(OAL_SUCC != ul_ret)
     {
-        /* 下发扫描失败，释放 */
+        /* ?????????????????? */
         OAL_MEM_FREE(pst_mac_cfg80211_scan_param, OAL_TRUE);
         return ul_ret;
     }
@@ -136,7 +136,7 @@ oal_uint32  wal_cfg80211_start_sched_scan(oal_net_device_stru *pst_net_dev, mac_
     mac_pno_scan_stru      *pst_pno_scan_params;
     oal_int32               l_ret = 0;
 
-    /* 申请pno调度扫描参数，此处申请hmac层释放 */
+    /* ????pno??????????????????????hmac?????? */
     pst_pno_scan_params = (mac_pno_scan_stru *)OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, OAL_SIZEOF(mac_pno_scan_stru), OAL_FALSE);
     if (OAL_PTR_NULL == pst_pno_scan_params)
     {
@@ -148,15 +148,15 @@ oal_uint32  wal_cfg80211_start_sched_scan(oal_net_device_stru *pst_net_dev, mac_
 
 
     OAL_MEMZERO(&st_write_msg, OAL_SIZEOF(st_write_msg));
-    /* 填写 msg 消息头*/
+    /* ???? msg ??????*/
     st_write_msg.en_wid = WLAN_CFGID_CFG80211_START_SCHED_SCAN;
     st_write_msg.us_len = OAL_SIZEOF(pst_pno_scan_params);
 
-    /* 填写 msg 消息体 */
+    /* ???? msg ?????? */
     oal_memcopy(st_write_msg.auc_value, &pst_pno_scan_params, OAL_SIZEOF(pst_pno_scan_params));
 
     /***************************************************************************
-           抛事件到wal层处理
+           ????????wal??????
     ***************************************************************************/
     l_ret = wal_send_cfg_event(pst_net_dev,
                            WAL_MSG_TYPE_WRITE,
@@ -174,7 +174,7 @@ oal_uint32  wal_cfg80211_start_sched_scan(oal_net_device_stru *pst_net_dev, mac_
 
     if((OAL_PTR_NULL != pst_rsp_msg))
     {
-        /* 读取返回的错误码 */
+        /* ???????????????? */
         ul_err_code = wal_check_and_release_msg_resp(pst_rsp_msg);
         if(OAL_SUCC != ul_err_code)
         {
@@ -200,8 +200,8 @@ oal_int32  wal_cfg80211_start_connect(oal_net_device_stru *pst_net_dev, mac_cfg8
 
 oal_int32  wal_cfg80211_start_disconnect(oal_net_device_stru *pst_net_dev, mac_cfg_kick_user_param_stru *pst_disconnect_param)
 {
-    /* 注意 由于消息未真正处理就直接返回，导致WPA_SUPPLICANT继续下发消息，在驱动侧等到处理时被异常唤醒，导致后续下发的消息误以为操作失败，
-       目前将去关联事件修改为等待消息处理结束后再上报，最后一个入参由OAL_FALSE改为OAL_TRUE */
+    /* ???? ??????????????????????????????????WPA_SUPPLICANT??????????????????????????????????????????????????????????????????????????????
+       ??????????????????????????????????????????????????????????????OAL_FALSE????OAL_TRUE */
     return wal_cfg80211_start_req(pst_net_dev, pst_disconnect_param, OAL_SIZEOF(mac_cfg_kick_user_param_stru), WLAN_CFGID_KICK_USER, OAL_TRUE);
 }
 #ifdef _PRE_WLAN_FEATURE_HILINK

@@ -100,7 +100,7 @@ VOS_UINT32 diag_PsConnect(VOS_UINT8 * pData)
 
 VOS_VOID diag_ConnReset(VOS_VOID)
 {
-    /* 规避老的hids在建链时候下发disconnect命令，不能将开机log配置清除 */
+    /* ????????hids??????????????disconnect????????????????log???????? */
     if(DIAG_IS_POLOG_ON)
     {
         g_ulDiagCfgInfo = DIAG_CFG_INIT | DIAG_CFG_POWERONLOG;
@@ -120,7 +120,7 @@ VOS_UINT32 diag_PsDisconnect(VOS_UINT8 * pData)
 }
 /*****************************************************************************
  Function Name   : diag_PsMsgInit
- Description     : MSP ps部分初始化
+ Description     : MSP ps??????????
  Input           : None
  Output          : None
  Return          : None
@@ -131,17 +131,17 @@ VOS_VOID diag_PsMsgInit(VOS_VOID)
 {
     VOS_UINT32 ulRet;
 
-    /* 创建节点保护信号量 Diag Trans Ps */
+    /* ?????????????????? Diag Trans Ps */
     ulRet = VOS_SmBCreate("DTP", 1, VOS_SEMA4_FIFO,&g_stPSTransHead.TransSem);
     if(VOS_OK != ulRet)
     {
         diag_error("VOS_SmBCreate failed.\n");
     }
 
-    /* 初始化请求链表 */
+    /* ?????????????? */
     blist_head_init(&g_stPSTransHead.TransHead);
 
-    /*注册message消息回调*/
+    /*????message????????*/
     DIAG_MsgProcReg(DIAG_MSG_TYPE_PS,diagPsTransProcEntry);
 
     ulRet = diag_ConnMgrSendFuncReg(DIAG_CONN_ID_ACPU_PS, g_DiagPsCtrl.ulChannelNum, &g_DiagPsCtrl.ulChannelId, diag_PsConnMgr);
@@ -159,10 +159,10 @@ VOS_VOID DIAG_ShowTransList(VOS_VOID)
 
     diag_crit("PS trans header 0x%pK, 0x%pK.\n", g_stPSTransHead.TransHead.next, g_stPSTransHead.TransHead.prev);
 
-    /*添加信号量保护*/
+    /*??????????????*/
     (VOS_VOID)VOS_SmP(g_stPSTransHead.TransSem,0);
 
-    /* 在链表中查找每个子命令结点*/
+    /* ??????????????????????????*/
     blist_for_each(me, &g_stPSTransHead.TransHead)
     {
         diag_crit("header 0x%pK, 0x%pK.\n", me->next, me->prev);

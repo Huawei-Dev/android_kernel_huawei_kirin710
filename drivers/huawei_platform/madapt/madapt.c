@@ -123,15 +123,15 @@ struct madapt_item_ato_hdr_type {
     unsigned int     feature_index; //index
     unsigned int     nv_item_number; //nvid
     unsigned int     nv_modem_id;
-    unsigned int     nv_item_byte_start; //字节偏移开始位置
-    unsigned int     nv_item_byte_length; //长度
-    unsigned int     nv_ato_bit_pos; // BIT位，如果为全0XFFFFFFFF，说明不是BIT类型，忽略
+    unsigned int     nv_item_byte_start; //????????????????
+    unsigned int     nv_item_byte_length; //????
+    unsigned int     nv_ato_bit_pos; // BIT????????????0XFFFFFFFF??????????BIT??????????
 };
 struct madapt_item_ato_hdr_bit_type {
     unsigned int     nv_item_number; //nvid
     unsigned int     nv_modem_id;
-    unsigned int     nv_item_byte_start; //字节偏移开始位置
-    unsigned int     nv_item_byte_length; //长度
+    unsigned int     nv_item_byte_start; //????????????????
+    unsigned int     nv_item_byte_length; //????
     unsigned char    nv_bit_value[MADAPT_BIT_LENGTH_SIZE+1];
 };
 
@@ -312,7 +312,7 @@ static int madapt_parse_and_writeatonv(char *ptr, int len)
     if(NULL == ptr){
         return BSP_ERR_MADAPT_NV_HDR_CHECK_ERR;
     }
-    //NV最大不超过2048字节
+    //NV??????????2048????
     nv_buffer = (char *)vmalloc(MADAPT_MAX_NV_LENGTH_SIZE*sizeof(char));
     if (NULL == nv_buffer) {
         hwlog_err("madapt_parse_and_writeatonv_new, vmalloc error\n");
@@ -321,9 +321,9 @@ static int madapt_parse_and_writeatonv(char *ptr, int len)
     do {
         nv_header.feature_index
             = ((struct madapt_item_ato_hdr_type *)ptr)->feature_index;
-        //文件结束标志位
+        //??????????????
         if (MADAPT_FILE_END_FLAG == nv_header.feature_index) {
-            //调用kernel的函数写入NV
+            //????kernel??????????NV
             if(lastNV!=0xFFFFFFFF){
                 ret = mdrv_nv_writeex(
                     MADAPT_MODEMID_CONVERT(nv_header.nv_modem_id),
@@ -339,7 +339,7 @@ static int madapt_parse_and_writeatonv(char *ptr, int len)
             hwlog_err("madapt_parse_and_writeatonv, find nv file end flag.\n");
             break;
         }
-        //得到要修改的nv相关信息
+        //????????????nv????????
         nv_header.nv_item_number
                     = ((struct madapt_item_ato_hdr_type *)ptr)->nv_item_number;
         nv_header.nv_modem_id
@@ -367,7 +367,7 @@ static int madapt_parse_and_writeatonv(char *ptr, int len)
              return BSP_ERR_MADAPT_NV_HDR_CHECK_ERR;
         }
 
-        //最后一个NV特性的长度和文件剩余长度不符
+        //????????NV????????????????????????????
         if(len<(sizeof(struct madapt_item_ato_hdr_type)+nv_item_size)){
             hwlog_err("Maybe file is broken\n");
             vfree(nv_buffer);
@@ -378,7 +378,7 @@ static int madapt_parse_and_writeatonv(char *ptr, int len)
         {
            // hwlog_err("lastNV = %x,nv_item_length=%d\n",lastNV,nv_item_length);
             if(lastNV!=0xFFFFFFFF){
-                //调用kernel的函数写入NV
+                //????kernel??????????NV
                 ret = mdrv_nv_writeex(
                     MADAPT_MODEMID_CONVERT(nv_header.nv_modem_id),
                                 lastNV,
@@ -393,19 +393,19 @@ static int madapt_parse_and_writeatonv(char *ptr, int len)
             memset(nv_buffer,'\0',MADAPT_MAX_NV_LENGTH_SIZE);
             ret = mdrv_nv_get_length(nv_header.nv_item_number,&nv_item_length);
 	    /*AR000AD08A sunjun/00290209 20180807 begin*/
-	    //是否存在这个NV，如果不存在就continue
+	    //????????????NV??????????????continue
 	    if (BSP_ERR_MADAPT_NO_THIS_NV == ret){
 	        hwlog_err("read curNV = %x,not exist, goto next\n",nv_header.nv_item_number);
 		lastNV = 0xFFFFFFFF;
 		goto NEXT_NV_PTR;
 	    }
 	    /*AR000AD08A sunjun/00290209 20180807 end*/
-            //起始位加上修改字节的长度要小于该NV的总长度
+            //????????????????????????????????NV????????
             if(nv_header.nv_item_byte_start<MADAPT_MAX_NV_LENGTH_SIZE
                     &&(nv_header.nv_item_byte_start+nv_item_size)<=nv_item_length
                     && nv_item_length<MADAPT_MAX_NV_LENGTH_SIZE
                     && ret==0){
-                //调用kernel的函数读取NV
+                //????kernel??????????NV
                 ret = mdrv_nv_readex(
                     MADAPT_MODEMID_CONVERT(nv_header.nv_modem_id),
                                 nv_header.nv_item_number,

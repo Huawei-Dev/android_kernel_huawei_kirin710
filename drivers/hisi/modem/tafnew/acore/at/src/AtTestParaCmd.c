@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-   1 头文件包含
+   1 ??????????
 *****************************************************************************/
 
 #include "AtCheckFunc.h"
@@ -170,7 +170,7 @@ VOS_UINT32 At_TestCgcmod(VOS_UINT8 ucIndex)
 {
 
 
-    /* CGEQNEG的测试命令和CGCMODE的返回值相同，使用相同的函数 */
+    /* CGEQNEG????????????CGCMODE???????????????????????????? */
    return At_TestCgeqnegPara(ucIndex);
 
 
@@ -179,7 +179,7 @@ VOS_UINT32 At_TestCgcmod(VOS_UINT8 ucIndex)
 
 VOS_UINT32 At_TestCgpaddr(VOS_UINT8 ucIndex)
 {
-    /* 执行命令操作 */
+    /* ???????????? */
     if ( VOS_OK != TAF_PS_GetPdpContextInfo(WUEPS_PID_AT,
                                             AT_PS_BuildExClientId(gastAtClientTab[ucIndex].usClientId),
                                             0) )
@@ -304,7 +304,7 @@ VOS_UINT32 AT_TestChrgEnablePara(VOS_UINT8 ucIndex)
     VOS_INT32                           lChargeEnable = 0;
 
     lChargeEnable = mdrv_misc_get_charge_state(); /* BSP_TBAT_CHRStGet()) */
-    /* 只有TRUE/FLASE的返回值是有效的 */
+    /* ????TRUE/FLASE???????????????? */
     if((lChargeEnable == TRUE)||( lChargeEnable == FALSE))
     {
         gstAtSendData.usBufLen = (TAF_UINT16)At_sprintf(AT_CMD_MAX_LEN,
@@ -340,7 +340,7 @@ VOS_UINT32 AT_TestCmutPara(VOS_UINT8 ucIndex)
 
 
 
-/* 如下函数并非此项目中新增, 只是从AtExtendCmd.c文件中移动到此文件而已 */
+/* ????????????????????????, ??????AtExtendCmd.c?????????????????????? */
 
 
 VOS_UINT32 At_TestVtsPara(VOS_UINT8 ucIndex)
@@ -497,7 +497,7 @@ VOS_UINT32 AT_TestCnmaPara(VOS_UINT8 ucIndex)
 
     pstSmsCtx = AT_GetModemSmsCtxAddrFromClientId(ucIndex);
 
-    if(AT_CMGF_MSG_FORMAT_PDU == pstSmsCtx->enCmgfMsgFormat)    /* TEXT方式参数检查 */
+    if(AT_CMGF_MSG_FORMAT_PDU == pstSmsCtx->enCmgfMsgFormat)    /* TEXT???????????? */
     {
         gstAtSendData.usBufLen = (TAF_UINT16)VOS_sprintf_s((TAF_CHAR*)pgucAtSndCodeAddr,
                                           AT_CMD_MAX_LEN + 20 - 3,
@@ -567,7 +567,7 @@ VOS_UINT32 AT_TestCpmsPara(VOS_UINT8 ucIndex)
 
 VOS_UINT32 AT_TestCsgIdSearchPara(VOS_UINT8 ucIndex)
 {
-    /* 核间通信最大缓存4K,需要分段查询分段上报结果 */
+    /* ????????????????4K,???????????????????????? */
     TAF_MMA_PLMN_LIST_PARA_STRU         stPlmnListPara;
 
     stPlmnListPara.usQryNum    = TAF_MMA_MAX_CSG_ID_LIST_NUM;
@@ -575,10 +575,10 @@ VOS_UINT32 AT_TestCsgIdSearchPara(VOS_UINT8 ucIndex)
 
     if (VOS_TRUE == TAF_MMA_CsgListSearchReq(WUEPS_PID_AT, gastAtClientTab[ucIndex].usClientId, 0, &stPlmnListPara))
     {
-        /* 设置当前操作类型 */
+        /* ???????????????? */
         gastAtClientTab[ucIndex].CmdCurrentOpt = AT_CMD_CSG_LIST_SEARCH;
 
-        /* 返回命令处理挂起状态 */
+        /* ???????????????????? */
         return AT_WAIT_ASYNC_RETURN;
     }
 
@@ -601,10 +601,10 @@ VOS_UINT32 At_TestCopsPara(TAF_UINT8 ucIndex)
 
     if (VOS_TRUE == Taf_PhonePlmnList(WUEPS_PID_AT, gastAtClientTab[ucIndex].usClientId, 0, &stPlmnListPara))
     {
-        /* 设置当前操作类型 */
+        /* ???????????????? */
         gastAtClientTab[ucIndex].CmdCurrentOpt = AT_CMD_COPS_TEST;
 
-        /* 返回命令处理挂起状态 */
+        /* ???????????????????? */
         return AT_WAIT_ASYNC_RETURN;
     }
     else
@@ -622,7 +622,7 @@ VOS_UINT32 At_TestCpolPara(VOS_UINT8 ucIndex)
 
     AT_MODEM_NET_CTX_STRU              *pstNetCtx = VOS_NULL_PTR;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_TEST_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_ERROR;
@@ -637,7 +637,7 @@ VOS_UINT32 At_TestCpolPara(VOS_UINT8 ucIndex)
 
     if (VOS_TRUE == ulRst)
     {
-        /* 设置AT模块实体的状态为等待异步返回 */
+        /* ????AT???????????????????????????? */
         gastAtClientTab[ucIndex].CmdCurrentOpt = AT_CMD_CPOL_TEST;
 
         return AT_WAIT_ASYNC_RETURN;
@@ -650,8 +650,8 @@ VOS_UINT32 At_TestCpolPara(VOS_UINT8 ucIndex)
 VOS_UINT32 At_TestCgeqnegPara(VOS_UINT8 ucIndex)
 {
 
-    /*CGEQNEG的测试命令和CGACT的查询命令的功能类似,都要获取当前各CID的激活
-    情况,向TAF查询当前各CID的激活情况*/
+    /*CGEQNEG????????????CGACT????????????????????,??????????????CID??????
+    ????,??TAF??????????CID??????????*/
     if ( VOS_OK != TAF_PS_GetPdpContextState(WUEPS_PID_AT,
                                              AT_PS_BuildExClientId(gastAtClientTab[ucIndex].usClientId),
                                              0) )
@@ -659,11 +659,11 @@ VOS_UINT32 At_TestCgeqnegPara(VOS_UINT8 ucIndex)
         return AT_ERROR;
     }
 
-    /* 设置当前操作类型 */
+    /* ???????????????? */
     gastAtClientTab[ucIndex].CmdCurrentOpt = AT_CMD_CGEQNEG_TEST;
-    return AT_WAIT_ASYNC_RETURN;    /* 返回命令处理挂起状态 */
+    return AT_WAIT_ASYNC_RETURN;    /* ???????????????????? */
 
-    /*接下来到TAF事件上报的地方,获取当前哪些CID被激活,并打印当前哪些CID被激活.*/
+    /*????????TAF??????????????,????????????CID??????,??????????????CID??????.*/
 
 
 }
@@ -743,7 +743,7 @@ VOS_UINT32 At_TestCgdnsPara(VOS_UINT8 ucIndex)
 
 
 
-    /* CGDNS的测试命令和CGCMODE的返回值相同，使用相同的函数 */
+    /* CGDNS????????????CGCMODE???????????????????????????? */
     return At_TestCgeqnegPara(ucIndex);
 
 }
@@ -796,13 +796,13 @@ VOS_UINT32 AT_TestNCellMonitorPara(VOS_UINT8 ucIndex)
 
 VOS_UINT32 AT_TestRefclkfreqPara(VOS_UINT8 ucIndex)
 {
-    /* 通道检查 */
+    /* ???????? */
     if (VOS_FALSE == AT_IsApPort(ucIndex))
     {
         return AT_ERROR;
     }
 
-    /* 打印输出^REFCLKFREQ支持的参数设置范围 */
+    /* ????????^REFCLKFREQ?????????????????? */
     gstAtSendData.usBufLen = (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                                    (VOS_CHAR*)pgucAtSndCodeAddr,
                                                    (VOS_CHAR*)pgucAtSndCodeAddr,
@@ -901,7 +901,7 @@ VOS_UINT32 AT_TestClDbDomainStatusPara(
     VOS_UINT8                           ucIndex
 )
 {
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_TEST_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_ERROR;

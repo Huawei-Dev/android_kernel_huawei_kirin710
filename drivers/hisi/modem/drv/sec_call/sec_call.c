@@ -62,11 +62,11 @@ typedef enum SVC_SECBOOT_CMD_ID SECBOOT_CMD_ID;
 
 /******************************************************************************
 Function:       TEEK_init
-Description:    TEEK初始化
+Description:    TEEK??????
 Input:          session
                 context
 Output:         none
-Return:         0: OK  其他: ERROR码
+Return:         0: OK  ????: ERROR??
 ******************************************************************************/
 static int TEEK_init(TEEC_Session *session, TEEC_Context *context)
 {
@@ -115,14 +115,14 @@ static int TEEK_init(TEEC_Session *session, TEEC_Context *context)
 
 /******************************************************************************
 Function:        TEEK_cmd_session
-Description:     传入命令到安全OS
+Description:     ??????????????OS
 Input:
-        cmd_id      - 传送给安全OS的cmd_id
-        func_cmd    - 调用函数命令字
-        param       - 函数入参
+        cmd_id      - ??????????OS??cmd_id
+        func_cmd    - ??????????????
+        param       - ????????
 
 Output:          none
-Return:          0: OK  其他: ERROR码
+Return:          0: OK  ????: ERROR??
 ******************************************************************************/
 static int TEEK_cmd_session(TEEC_Session   *session,
                             SECBOOT_CMD_ID cmd_id,

@@ -47,7 +47,7 @@
 */
 
 /******************************************************************************
-   1 头文件包含
+   1 ??????????
 ******************************************************************************/
 
 #include "RnicEntity.h"
@@ -61,25 +61,25 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 
 #define THIS_FILE_ID PS_FILE_ID_RNIC_ENTITY_C
 
 /******************************************************************************
-   2 外部函数变量声明
+   2 ????????????????
 ******************************************************************************/
 
 /******************************************************************************
-   3 私有定义
+   3 ????????
 ******************************************************************************/
 
 /******************************************************************************
-   4 全局变量定义
+   4 ????????????
 *****************************************************************************/
 
 /******************************************************************************
-   5 函数实现
+   5 ????????
 ******************************************************************************/
 
 
@@ -125,7 +125,7 @@ VOS_UINT32 RNIC_SendCdsImsDataReq(
 {
     RNIC_CDS_IMS_DATA_REQ_STRU         *pstSndMsg = VOS_NULL_PTR;
 
-    /* 内存分配 */
+    /* ???????? */
     pstSndMsg = (RNIC_CDS_IMS_DATA_REQ_STRU *)PS_ALLOC_MSG_WITH_HEADER_LEN(ACPU_PID_RNIC,
                                     sizeof(RNIC_CDS_IMS_DATA_REQ_STRU) - 4 + pstImmZc->len);
 
@@ -134,14 +134,14 @@ VOS_UINT32 RNIC_SendCdsImsDataReq(
         return VOS_ERR;
     }
 
-    /* 填充消息头 */
+    /* ?????????? */
     pstSndMsg->ulSenderCpuId            = VOS_LOCAL_CPUID;
     pstSndMsg->ulSenderPid              = ACPU_PID_RNIC;
     pstSndMsg->ulReceiverCpuId          = VOS_LOCAL_CPUID;
     pstSndMsg->ulReceiverPid            = UEPS_PID_CDS;
     pstSndMsg->ulMsgId                  = ID_RNIC_CDS_IMS_DATA_REQ;
 
-    /* 填充消息 */
+    /* ???????? */
     pstSndMsg->usModemId                = pstIfaceCtx->stPsIfaceInfo.enModemId;
 
     if (RNIC_RMNET_R_IS_EMC_BEAR(pstIfaceCtx->enRmNetId))
@@ -157,7 +157,7 @@ VOS_UINT32 RNIC_SendCdsImsDataReq(
 
     TAF_MEM_CPY_S(pstSndMsg->aucData, pstImmZc->len, pstImmZc->data, pstImmZc->len);
 
-    /* 发送消息 */
+    /* ???????? */
     if (VOS_OK != PS_SEND_MSG(ACPU_PID_RNIC, pstSndMsg))
     {
         return VOS_ERR;
@@ -193,7 +193,7 @@ VOS_VOID RNIC_TrigImsDataProcEvent(RNIC_DEV_ID_ENUM_UINT8 enRmNetId)
 {
     RNIC_IMS_DATA_PROC_IND_STRU         *pstSndMsg = VOS_NULL_PTR;
 
-    /* 内存分配 */
+    /* ???????? */
     pstSndMsg = (RNIC_IMS_DATA_PROC_IND_STRU *)PS_ALLOC_MSG_WITH_HEADER_LEN(ACPU_PID_RNIC,
                                     sizeof(RNIC_IMS_DATA_PROC_IND_STRU));
 
@@ -203,7 +203,7 @@ VOS_VOID RNIC_TrigImsDataProcEvent(RNIC_DEV_ID_ENUM_UINT8 enRmNetId)
         return;
     }
 
-    /* 填充消息头 */
+    /* ?????????? */
     pstSndMsg->ulSenderCpuId            = VOS_LOCAL_CPUID;
     pstSndMsg->ulSenderPid              = ACPU_PID_RNIC;
     pstSndMsg->ulReceiverCpuId          = VOS_LOCAL_CPUID;
@@ -211,7 +211,7 @@ VOS_VOID RNIC_TrigImsDataProcEvent(RNIC_DEV_ID_ENUM_UINT8 enRmNetId)
     pstSndMsg->enMsgId                  = ID_RNIC_IMS_DATA_PROC_IND;
     pstSndMsg->enRmNetId                = enRmNetId;
 
-    /* 发送消息 */
+    /* ???????? */
     if (VOS_OK != PS_SEND_MSG(ACPU_PID_RNIC, pstSndMsg))
     {
         RNIC_ERROR_LOG(ACPU_PID_RNIC, "RNIC_TrigImsDataProcEvent: Send msg failed!");
@@ -263,7 +263,7 @@ VOS_UINT32 RNIC_RecvVoWifiDlData(
     VOS_UINT8                           ucIpType;
     VOS_UINT8                           ucIpFamily;
 
-    /* 分配A核内存 */
+    /* ????A?????? */
     pstImmZc = IMM_ZcStaticAlloc(pstImsDataInd->usDataLen + IMM_MAC_HEADER_RES_LEN);
     if (VOS_NULL_PTR == pstImmZc)
     {
@@ -273,12 +273,12 @@ VOS_UINT32 RNIC_RecvVoWifiDlData(
 
     IMM_ZcReserve(pstImmZc, IMM_MAC_HEADER_RES_LEN);
 
-    /* 拷贝IP数据包 */
+    /* ????IP?????? */
     TAF_MEM_CPY_S(pstImmZc->data, pstImsDataInd->usDataLen, pstImsDataInd->aucData, pstImsDataInd->usDataLen);
 
     IMM_ZcPut(pstImmZc, pstImsDataInd->usDataLen);
 
-    /* 获取IP version */
+    /* ????IP version */
     ucIpType = ((RNIC_IPFIXHDR_STRU *)(pstImsDataInd->aucData))->ucIpVer;
     if (RNIC_IPV4_VERSION == ucIpType)
     {

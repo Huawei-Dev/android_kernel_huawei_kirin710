@@ -58,15 +58,15 @@ extern "C"
 #include "mdrv_timer_common.h"
 typedef enum
 {
-	ACORE_SOFTTIMER_ID			,	/*A core 唤醒源软timer id                lixiaojie*/
-	ACORE_WDT_TIMER_ID			,	/*A CORE看门狗                           yangqiang*/
-	TIME_STAMP_ID				,	/*P531上使用，A core C CORE M3时间戳,在fastboot阶段使能 ，V7R2使用BBP时间戳lixiaojie*/
-	ACORE_SOFTTIMER_NOWAKE_ID	,	/*A core 非唤醒源软timer                 lixiaojie*/
-	ACORE_SYSTEM_TIMER_ID		,	/*A CORE系统时钟                        luting*/
-	ACORE_SOURCE_TIMER_ID		,	/*A CORE 事件源                        luting */
+	ACORE_SOFTTIMER_ID			,	/*A core ????????timer id                lixiaojie*/
+	ACORE_WDT_TIMER_ID			,	/*A CORE??????                           yangqiang*/
+	TIME_STAMP_ID				,	/*P531????????A core C CORE M3??????,??fastboot???????? ??V7R2????BBP??????lixiaojie*/
+	ACORE_SOFTTIMER_NOWAKE_ID	,	/*A core ??????????timer                 lixiaojie*/
+	ACORE_SYSTEM_TIMER_ID		,	/*A CORE????????                        luting*/
+	ACORE_SOURCE_TIMER_ID		,	/*A CORE ??????                        luting */
 	TIMER_ACPU_CPUVIEW_ID		,	/*A CORE CPU VIEW                      duxiaopeng*/
-	TIMER_ACPU_OSA_ID			,	/*A CORE软件定时                        cuijunqiang*/
-	TIMER_ACPU_OM_TCXO_ID		,	/*解决vos timer频繁唤醒, xucheng    */
+	TIMER_ACPU_OSA_ID			,	/*A CORE????????                        cuijunqiang*/
+	TIMER_ACPU_OM_TCXO_ID		,	/*????vos timer????????, xucheng    */
 	TIMER_HIFI1_ID		,
 	TIMER_HIFI2_ID		,
 	TIMER_HRTIMER_ID		,

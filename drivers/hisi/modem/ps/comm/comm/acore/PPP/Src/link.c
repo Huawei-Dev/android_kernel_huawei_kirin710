@@ -30,7 +30,7 @@
  */
 
 /******************************************************************************
-   头文件包含
+   ??????????
 ******************************************************************************/
 #include "PPP/Inc/ppp_public.h"
 #include "PPP/Inc/layer.h"
@@ -53,15 +53,15 @@
 
 
 /*****************************************************************************
-   1 协议栈打印打点方式下的.C文件宏定义
+   1 ??????????????????????.C??????????
 *****************************************************************************/
-/*lint -e767  原因简述: 打点日志文件宏ID定义 */
+/*lint -e767  ????????: ??????????????ID???? */
 #define    THIS_FILE_ID        PS_FILE_ID_LINK_C
 /*lint +e767   */
 
 
 /******************************************************************************
-   2 外部函数变量声明
+   2 ????????????????
 ******************************************************************************/
 extern PPP_ZC_STRU *ipv4_Input(struct link *l, PPP_ZC_STRU *bp);
 
@@ -71,14 +71,14 @@ void ParentLayerDown (void *p, struct fsm *fsm);
 void ParentLayerFinish (void *p, struct fsm *fsm);
 
 /*****************************************************************************
-   3 私有定义
+   3 ????????
 *****************************************************************************/
 #define PROTO_IN  1                       /* third arg to link_ProtocolRecord */
 #define PROTO_OUT 2
 
 
 /*****************************************************************************
-   4 全局变量定义
+   4 ????????????
 *****************************************************************************/
 struct link*            pgPppLink = VOS_NULL_PTR;
 
@@ -130,7 +130,7 @@ struct  fsm_parent  parent = {
              };
 
 /******************************************************************************
-   5 函数实现
+   5 ????????
 ******************************************************************************/
 void link_SequenceQueue(struct link *l)
 {
@@ -167,11 +167,11 @@ void link_EmptyStack(struct link *l)
 
 /*****************************************************************************
  Prototype      : ipv4_Input
- Description    : 对于TE发送来的数据报文，如果对应的link中是处于网络阶段并且状
-                  态为open，转发此报文到GGSN。
+ Description    : ????TE????????????????????????????link??????????????????????
+                  ????open??????????????GGSN??
 
  Input          : ---
- Output         : ---返回指向mbuf的指针
+ Output         : ---????????mbuf??????
  Return Value   : ---
  Calls          : ---
  Called By      : ---
@@ -186,7 +186,7 @@ PPP_ZC_STRU *ipv4_Input(/*struct bundle *bundle, */struct link *l, PPP_ZC_STRU *
     if(l->phase == PHASE_NETWORK
         &&l->ipcp.fsm.state == ST_OPENED)
     {
-        /*将上行数据发往协议栈，IP模式下递交给CDS的是IP报文，因此协议类型填IPV4 */
+        /*??????????????????????IP????????????CDS????IP????????????????????IPV4 */
         PPP_SendPulledData((VOS_UINT16)PPP_LINK_TO_ID(l), bp, ETH_IPV4_PROTO);
     }
     else
@@ -230,17 +230,17 @@ VOS_VOID PPP_InitSecureData(VOS_UINT8 ucPppId)
 
     pstPppLink = PPP_LINK(ucPppId);
 
-    /* 清除chap鉴权保存的信息 */
+    /* ????chap?????????????? */
     PSACORE_MEM_SET(&(pstPppLink->chap.challenge), (VOS_SIZE_T)sizeof(pstPppLink->chap.challenge),
         0, (VOS_SIZE_T)sizeof(pstPppLink->chap.challenge));
     PSACORE_MEM_SET(&(pstPppLink->chap.RecordData), (VOS_SIZE_T)sizeof(pstPppLink->chap.RecordData),
         0, (VOS_SIZE_T)sizeof(pstPppLink->chap.RecordData));
 
-    /* 清除pap鉴权保存的信息 */
+    /* ????pap?????????????? */
     PSACORE_MEM_SET(&(pstPppLink->pap.RecordData), (VOS_SIZE_T)sizeof(pstPppLink->pap.RecordData),
         0, (VOS_SIZE_T)sizeof(pstPppLink->pap.RecordData));
 
-    /* 清除鉴权保存的用户名密码信息 */
+    /* ???????????????????????????? */
     PSACORE_MEM_SET(&(pstPppLink->auth), (VOS_SIZE_T)sizeof(pstPppLink->auth),
         0, (VOS_SIZE_T)sizeof(pstPppLink->auth));
 
@@ -265,7 +265,7 @@ VOS_VOID link_Init(struct link *l)
     PSACORE_MEM_SET(l->proto_out, sizeof l->proto_out, '\0', sizeof l->proto_out);
     link_EmptyStack(l);
 
-    /*依次压入PPP协议的各个处理层*/
+    /*????????PPP????????????????*/
     link_Stack(l, &asynclayer);
     link_Stack(l, &hdlclayer);
     link_Stack(l, &acflayer);
@@ -278,7 +278,7 @@ VOS_VOID link_Init(struct link *l)
     async_Init(&(l->async));
     hdlc_Init(&(l->hdlc),&(l->lcp));
 
-    /*参数const struct fsm_parent * parent不能为空*/
+    /*????const struct fsm_parent * parent????????*/
     lcp_Init(&(l->lcp), l, &parent);
     ipcp_Init(&(l->ipcp), l, &parent);
     pap_Init(&(l->pap));
@@ -290,7 +290,7 @@ void link_PushPacket(struct link *l, struct ppp_mbuf *bp, VOS_INT32 pri, VOS_UIN
     PPP_ID                  usPppId     = (PPP_ID)(PPP_LINK_TO_ID(l));
     PPP_HDLC_CONFIG_STRU   *pstHdlcConfig;
 
-    /* 把PPP协商包作为可维可测信息,IP包不做可维可测维护*/
+    /* ??PPP??????????????????????,IP??????????????????*/
     if (PROTO_IP != proto)
     {
         Ppp_MBufFrameMntnInfo(bp, proto, PPP_SEND_OUT_PROTOCOL_FRAME);
@@ -323,7 +323,7 @@ VOS_VOID PPP_HDLC_ProcIpModeUlData
     VOS_UINT32          f;
     struct ppp_mbuf    *bp;
 
-    /* 把PPP协商包作为可维可测信息,IP包不做可维可测维护*/
+    /* ??PPP??????????????????????,IP??????????????????*/
     if (PROTO_IP != usProto)
     {
         Ppp_TtfMemFrameMntnInfo(pstMem, usProto, PPP_RECV_IN_PROTOCOL_FRAME);
@@ -338,7 +338,7 @@ VOS_VOID PPP_HDLC_ProcIpModeUlData
         }
     }
 
-    /* 如果是不支持的协议，向对端发送REJ帧 */
+    /* ??????????????????????????????REJ?? */
     if (VOS_NULL_PTR != pstMem)
     {
         bp = ppp_m_get_from_ttfmem(pstMem);
@@ -381,7 +381,7 @@ VOS_VOID PPP_HDLC_ProcPppModeUlData
     PPP_ZC_STRU *pstMem
 )
 {
-    /* PPP模式下发送的是PPP报文，因此协议类型填0 */
+    /* PPP??????????????PPP????????????????????0 */
     PPP_SendPulledData(usPppId, pstMem, 0);
     return;
 }
@@ -389,7 +389,7 @@ VOS_VOID PPP_HDLC_ProcPppModeUlData
 
 VOS_VOID PPP_HDLC_ProcDlData(VOS_UINT16 usPppId, PPP_ZC_STRU *pstMem)
 {
-    /* 调用AT模块下行数据接收接口 */
+    /* ????AT???????????????????? */
     AT_SendZcDataToModem(usPppId, pstMem);
 
     return;
@@ -402,7 +402,7 @@ VOS_UINT32 PPP_SendPulledData(VOS_UINT16 usPppId,  PPP_ZC_STRU *pstImmZc, VOS_UI
     VOS_UINT8                          ucRabId = PPP_INVALID_RABID;
 
  
-    /* 通过usPppId，寻找到usRabId */
+    /* ????usPppId????????usRabId */
     if ( !PPP_PPPID_TO_RAB(usPppId, &ucRabId) )
     {
         g_PppDataQCtrl.stStat.ulUplinkDropCnt++;
@@ -415,7 +415,7 @@ VOS_UINT32 PPP_SendPulledData(VOS_UINT16 usPppId,  PPP_ZC_STRU *pstImmZc, VOS_UI
     }
 
 
-    /* 数据发送给ADS，如果失败由ADS释放内存 */
+    /* ??????????ADS????????????ADS???????? */
     if ( VOS_OK != ADS_UL_SendPacket(pstImmZc, ucRabId) )
     {
         g_PppDataQCtrl.stStat.ulUplinkDropCnt++;
@@ -439,7 +439,7 @@ VOS_UINT32 PPP_SendPushedData(VOS_UINT16 usPppId, VOS_UINT8 *pucDataBuf, VOS_UIN
 
     while ( 0 < usRemainLen)
     {
-        /* 零拷贝内存有最大限制，超限分多次发送 */
+        /* ???????????????????????????????????? */
         if ( PPP_ZC_MAX_DATA_LEN < usRemainLen)
         {
             pstMem       = PPP_MemCopyAlloc(pucRemainDataBuf, PPP_ZC_MAX_DATA_LEN, PPP_ZC_DL_RESERVE_LEN);

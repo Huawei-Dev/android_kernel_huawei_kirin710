@@ -158,8 +158,8 @@ void rfile_MntnDotRecord(u32 line)
 }
 
 
-/* 查看输入的路径是否可访问，如不能访问则创建此目录 */
-/* 本函数为递归调用函数 */
+/* ???????????????????????????????????????????????? */
+/* ???????????????????? */
 s32 __AccessCreate(char *pathtmp, s32 mode, u32 count)
 {
     char *p;
@@ -179,7 +179,7 @@ s32 __AccessCreate(char *pathtmp, s32 mode, u32 count)
 
     if(ret != 0)
     {
-        /* 路径中不包含'/'，返还失败 */
+        /* ????????????'/'?????????? */
         p = strrchr(pathtmp, '/');
         if(NULL == p)
         {
@@ -188,10 +188,10 @@ s32 __AccessCreate(char *pathtmp, s32 mode, u32 count)
             return -1;
         }
 
-        /* 已经不是根目录下的文件夹，判断上一级目录是否存在 */
+        /* ???????????????????????????????????????????????? */
         if(p != pathtmp)
         {
-            /* 查看上一级目录是否存在，如果不存在则创建此目录 */
+            /* ?????????????????????????????????????????????? */
             *p = '\0';
 		// cppcheck-suppress *
             ret = __AccessCreate(pathtmp, mode, count + 1);
@@ -200,7 +200,7 @@ s32 __AccessCreate(char *pathtmp, s32 mode, u32 count)
                 return -1;
             }
 
-            /* 创建当前目录 */
+            /* ???????????? */
             *p = '/';
         }
 
@@ -358,11 +358,11 @@ s32 bsp_open(const s8 *path, s32 flags, s32 mode)
 
     memcpy_s(pathtmp,256, (char *)path, strlen(path));
 
-    /* 路径中包含'/'并且不在根目录，则检查当前目录是否存在，不存在则创建目录 */
+    /* ??????????'/'???????????????????????????????????????????????????????? */
     p = strrchr(pathtmp, '/');
     if((NULL != p) && (p != pathtmp))
     {
-        /* 查看上一级目录是否存在，如果不存在则创建此目录 */
+        /* ?????????????????????????????????????????????? */
         *p = '\0';
         ret = AccessCreate(pathtmp, mode);
         if(ret)
@@ -714,7 +714,7 @@ s32 bsp_access(s8 *path, s32 mode)
 
 void rfile_TransStat(struct rfile_stat_stru *pstRfileStat, struct kstat *pRfileKstat)
 {
-    /* 兼容 32位和64位 */
+    /* ???? 32????64?? */
     pstRfileStat->ino               = (u64)pRfileKstat->ino          ;
     pstRfileStat->dev               = (u32)pRfileKstat->dev          ;
     pstRfileStat->mode              = (u16)pRfileKstat->mode         ;
@@ -795,7 +795,7 @@ void rfile_IccSend(void *pdata, u32 len, u32 ulId)
 
         if(ICC_INVALID_NO_FIFO_SPACE == ret)
         {
-            /* buffer满，延时后重发 */
+            /* buffer?????????????? */
             RFILE_SLEEP(50);
             continue;
         }
@@ -853,17 +853,17 @@ s32 rfile_AcoreOpenReq(struct bsp_rfile_open_req *pstRfileReq, u32 ulId)
 
     pcName[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(pcName,ulNameLen, (char*)pstRfileReq->aucData, (unsigned long)ulNameLen); /* [false alarm]: 屏蔽Fortify错误 */
+    strncat_s(pcName,ulNameLen, (char*)pstRfileReq->aucData, (unsigned long)ulNameLen); /* [false alarm]: ????Fortify???? */
 
 #ifdef RFILE_AUTO_MKDIR
 
     memcpy_s(pathtmp,256, pcName, ulNameLen);/*lint !e713 */
 
-    /* 路径中包含'/'并且不在根目录，则检查当前目录是否存在，不存在则创建目录 */
+    /* ??????????'/'???????????????????????????????????????????????????????? */
     p = strrchr(pathtmp, '/');
     if((NULL != p) && (p != pathtmp))
     {
-        /* 查看上一级目录是否存在，如果不存在则创建此目录 */
+        /* ?????????????????????????????????????????????? */
         *p = '\0';
         ret = AccessCreate(pathtmp, pstRfileReq->mode);
         if(ret)
@@ -987,7 +987,7 @@ s32 rfile_AcoreReadReq(struct bsp_rfile_read_req *pstRfileReq, u32 ulId)
 
     pstRfileCnf->Size = bsp_read(pstRfileReq->fd, (s8*)pstRfileCnf->aucData, pstRfileReq->ulSize);
 
-    /* 由C核请求的地方保证读取的数据长度不超过ICC最大长度限制 */
+    /* ??C????????????????????????????????????ICC???????????? */
 
     rfile_IccSend(pstRfileCnf, ulLen, ulId);
 
@@ -1070,7 +1070,7 @@ s32 rfile_AcoreRemoveReq(struct bsp_rfile_remove_req *pstRfileReq, u32 ulId)
 
     pcPath[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(pcPath,ulPathLen, (char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: 屏蔽Fortify错误 */
+    strncat_s(pcPath,ulPathLen, (char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: ????Fortify???? */
 
     RFILE_LPM_PRINT_PATH(EN_RFILE_OP_REMOVE, pcPath);
 
@@ -1119,7 +1119,7 @@ s32 rfile_AcoreMkdirReq(struct bsp_rfile_mkdir_req *pstRfileReq, u32 ulId)
 
     pcPath[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(pcPath, ulPathLen,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: 屏蔽Fortify错误 */
+    strncat_s(pcPath, ulPathLen,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: ????Fortify???? */
 
     RFILE_LPM_PRINT_PATH(EN_RFILE_OP_MKDIR, pcPath);
 
@@ -1174,7 +1174,7 @@ s32 rfile_AcoreRmdirReq(struct bsp_rfile_rmdir_req *pstRfileReq, u32 ulId)
 
     pcPath[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(pcPath,ulPathLen ,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: 屏蔽Fortify错误 */
+    strncat_s(pcPath,ulPathLen ,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: ????Fortify???? */
 
     RFILE_LPM_PRINT_PATH(EN_RFILE_OP_RMDIR, pcPath);
 
@@ -1219,7 +1219,7 @@ s32 rfile_AcoreOpendirReq(struct bsp_rfile_opendir_req *pstRfileReq, u32 ulId)
 
     pcPath[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(pcPath, ulPathLen,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: 屏蔽Fortify错误 */
+    strncat_s(pcPath, ulPathLen,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: ????Fortify???? */
 
     RFILE_LPM_PRINT_PATH(EN_RFILE_OP_OPENDIR, pcPath);
 
@@ -1330,7 +1330,7 @@ s32 rfile_AcoreStatReq(struct bsp_rfile_stat_req *pstRfileReq, u32 ulId)
 
     pcPath[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(pcPath,ulPathLen ,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: 屏蔽Fortify错误 */
+    strncat_s(pcPath,ulPathLen ,(char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: ????Fortify???? */
 
     RFILE_LPM_PRINT_PATH(EN_RFILE_OP_STAT, pcPath);
 
@@ -1390,10 +1390,10 @@ s32 rfile_AcoreRenameReq(struct bsp_rfile_rename_req *pstRfileReq, u32 ulId)
 
     oldname[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(oldname,uloldnamelen ,(char*)pstRfileReq->aucData, (unsigned long)uloldnamelen); /* [false alarm]: 屏蔽Fortify错误 */   
+    strncat_s(oldname,uloldnamelen ,(char*)pstRfileReq->aucData, (unsigned long)uloldnamelen); /* [false alarm]: ????Fortify???? */   
     newname[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(newname,ulnewnamelen ,(char*)(pstRfileReq->aucData + uloldnamelen ), (unsigned long)ulnewnamelen); /* [false alarm]: 屏蔽Fortify错误 */  
+    strncat_s(newname,ulnewnamelen ,(char*)(pstRfileReq->aucData + uloldnamelen ), (unsigned long)ulnewnamelen); /* [false alarm]: ????Fortify???? */  
 
     RFILE_LPM_PRINT_PATH(EN_RFILE_OP_RENAME, newname);
 
@@ -1439,7 +1439,7 @@ s32 rfile_AcoreAccessReq(struct bsp_rfile_access_req *pstRfileReq, u32 ulId)
 
     pcPath[0] = '\0' ;
     /* coverity[secure_coding] */
-    strncat_s(pcPath,ulPathLen, (char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: 屏蔽Fortify错误 */
+    strncat_s(pcPath,ulPathLen, (char*)pstRfileReq->aucData, (unsigned long)ulPathLen); /* [false alarm]: ????Fortify???? */
 
     RFILE_LPM_PRINT_PATH(EN_RFILE_OP_ACCESS, pcPath);
 
@@ -1482,7 +1482,7 @@ s32 bsp_RfileCallback(u32 channel_id, u32 len, void *context)
         return BSP_ERROR;
     }
 
-    /* 如果rfile未初始化则利用icc的缓存机制保存数据 */
+    /* ????rfile??????????????icc?????????????????? */
     if(EN_RFILE_INIT_FINISH != g_stRfileMain.eInitFlag)
     {
         bsp_wrn("<%s> initflag %d.\n",__FUNCTION__, g_stRfileMain.eInitFlag);
@@ -1630,10 +1630,10 @@ s32 rfile_TaskProc(void* obj)
 
         if(EN_RFILE_INIT_SUSPEND == g_stRfileMain.eInitFlag)
         {
-            /* 置为idle，不再处理新请求 */
+            /* ????idle???????????????? */
             g_stRfileMain.opState = EN_RFILE_IDLE;
 
-            /* 关闭文件，并阻塞单独复位任务完成 */
+            /* ???????????????????????????????? */
             rfile_ResetProc();
             g_stRfileMain.eInitFlag = EN_RFILE_INIT_SUSPEND_WAIT;
             osl_sem_up(&g_stRfileMain.semCloseFps);
@@ -1642,7 +1642,7 @@ s32 rfile_TaskProc(void* obj)
         }
 
         channel_id = RFILE_CCORE_ICC_RD_CHAN;
-        /*未初始化完成或者处于睡眠状态则利用icc缓冲请求数据*/
+        /*??????????????????????????????????icc????????????*/
         if(g_stRfileMain.eInitFlag != EN_RFILE_INIT_FINISH)
         {
             continue;
@@ -1656,18 +1656,18 @@ s32 rfile_TaskProc(void* obj)
             continue;
         }
 
-        /* 读取ICC-C通道，输入的长度是buff的size，返回值是实际读取的数据长度 */
+        /* ????ICC-C??????????????????buff??size???????????????????????????? */
         ret = bsp_icc_read(channel_id, g_stRfileMain.data, RFILE_LEN_MAX);
         if(((u32)ret > RFILE_LEN_MAX) || (ret <= 0))
         {
             bsp_debug("<%s> icc_read %d.\n", __FUNCTION__, ret);
             __pm_relax(&g_stRfileMain.wake_lock);
             g_stRfileMain.opState = EN_RFILE_IDLE;
-            continue;   /* A-C通道没读到数据 */
+            continue;   /* A-C?????????????? */
         }
 
 
-        /* 请求的第一个四字节对应的是 op type */
+        /* ?????????????????????????? op type */
         enOptype = *(u32*)(g_stRfileMain.data);
 
         if(enOptype >= EN_RFILE_OP_BUTT)
@@ -1684,7 +1684,7 @@ s32 rfile_TaskProc(void* obj)
         }
         __pm_relax(&g_stRfileMain.wake_lock);
 
-        /* 处理结束后避免ICC通道中有缓存，再次启动读取 */
+        /* ??????????????ICC?????????????????????????? */
         osl_sem_up(&g_stRfileMain.semTask);
     }
 }
@@ -1702,10 +1702,10 @@ s32 bsp_rfile_reset_cb(DRV_RESET_CB_MOMENT_E eparam, s32 userdata)    /*lint !e8
 
     if(MDRV_RESET_CB_BEFORE == eparam)
     {
-        /* 设置为suspend状态，待close打开的文件、目录后恢复为FINISH状态 */
+        /* ??????suspend????????close????????????????????????FINISH???? */
         g_stRfileMain.eInitFlag = EN_RFILE_INIT_SUSPEND;
 
-        /* 启动任务中的close处理 */
+        /* ????????????close???? */
         osl_sem_up(&g_stRfileMain.semTask);
 
         /* coverity[check_return] */
@@ -1714,9 +1714,9 @@ s32 bsp_rfile_reset_cb(DRV_RESET_CB_MOMENT_E eparam, s32 userdata)    /*lint !e8
 
     if(MDRV_RESET_RESETTING == eparam)
     {
-        /* 此时icc缓存已清空，可以接收复位后的C核rfile请求，设置为finish状态 */
+        /* ????icc????????????????????????????C??rfile????????????finish???? */
         g_stRfileMain.eInitFlag = EN_RFILE_INIT_FINISH;
-		/* 并主动唤醒任务，避免C核启动过程中请求丢失 */
+		/* ????????????????????C???????????????????? */
         osl_sem_up(&g_stRfileMain.semTask);
     }
 

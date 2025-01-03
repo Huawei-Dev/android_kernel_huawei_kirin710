@@ -89,9 +89,9 @@ extern "C" {
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 } DIAG_CMD_GTR_SET_CNF_STRU;
 
 

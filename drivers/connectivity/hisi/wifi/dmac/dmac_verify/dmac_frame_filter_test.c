@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "oam_ext_if.h"
@@ -27,26 +27,26 @@ extern "C" {
 
 #ifdef _PRE_WLAN_CHIP_TEST
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define DMAC_TEST_BROADCAST 1
 #define DMAC_TEST_MULTICAST 2
 #define DMAC_TEST_UNICAST   3
 
 /*****************************************************************************
-  3 内部函数声明
+  3 ????????????
 *****************************************************************************/
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
 oal_uint32  dmac_test_encap_ctl_bmucst(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_buffer, oal_int8 ucbmucst, oal_uint8 *puc_mac)
 {
-    oal_uint8        auc_mcst_addr[6] = {0x01, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c}; /* 组播地址 */
+    oal_uint8        auc_mcst_addr[6] = {0x01, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c}; /* ???????? */
     oal_uint8       *puc_origin       = puc_buffer;
     oal_uint16       us_bar_ctl =0;
     /*************************************************************************/
@@ -60,15 +60,15 @@ oal_uint32  dmac_test_encap_ctl_bmucst(mac_vap_stru *pst_mac_vap, oal_uint8 *puc
     /*************************************************************************/
 
     /*************************************************************************/
-    /*                            设置帧头                                   */
+    /*                            ????????                                   */
     /*************************************************************************/
-    /* 帧控制字段全为0，除了type和subtype */
+    /* ??????????????0??????type??subtype */
     mac_hdr_set_frame_control(puc_buffer, WLAN_PROTOCOL_VERSION| WLAN_FC0_TYPE_CTL| WLAN_FC0_SUBTYPE_BAR);
 
-    /* 设置aid为0 */
+    /* ????aid??0 */
     puc_buffer[2] = (oal_uint16)0x00;
 
-    /* 设置地址1，广播/组播 地址 */
+    /* ????????1??????/???? ???? */
     switch(ucbmucst)
     {
         case DMAC_TEST_BROADCAST:
@@ -92,7 +92,7 @@ oal_uint32  dmac_test_encap_ctl_bmucst(mac_vap_stru *pst_mac_vap, oal_uint8 *puc
         }
     }
 
-    /* 设置地址2为自己的MAC地址 */
+    /* ????????2????????MAC???? */
     oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR2_OFFSET, pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
     /* BAR Control field */
@@ -164,16 +164,16 @@ oal_uint32  dmac_test_encap_ctl_cts_ack(oal_uint8 *puc_buffer, oal_uint8 *puc_ma
     /*************************************************************************/
 
     /*************************************************************************/
-    /*                        设置帧头                                      */
+    /*                        ????????                                      */
     /*************************************************************************/
 
-    /* 帧控制字段全为0，除了type和subtype */
+    /* ??????????????0??????type??subtype */
     mac_hdr_set_frame_control(puc_buffer, WLAN_PROTOCOL_VERSION| WLAN_FC0_TYPE_CTL| us_subtype);
 
-    /* 设置duration为0 */
+    /* ????duration??0 */
     puc_buffer[2] = (oal_uint16)0x00;
 
-    /* 设置地址1 */
+    /* ????????1 */
     oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR1_OFFSET, puc_mac);
 
     puc_buffer += 10;
@@ -214,18 +214,18 @@ oal_uint32  dmac_test_encap_ctl_rts(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_bu
     /*************************************************************************/
 
     /*************************************************************************/
-    /*                        设置帧头                                      */
+    /*                        ????????                                      */
     /*************************************************************************/
-    /* 帧控制字段全为0，除了type和subtype */
+    /* ??????????????0??????type??subtype */
     mac_hdr_set_frame_control(puc_buffer, WLAN_PROTOCOL_VERSION| WLAN_FC0_TYPE_CTL| WLAN_FC0_SUBTYPE_RTS);
 
-    /* 设置aid为0 */
+    /* ????aid??0 */
     puc_buffer[2] = (oal_uint16)0x00;
 
-    /* 设置地址1 */
+    /* ????????1 */
     oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR1_OFFSET, puc_mac);
 
-    /* 设置地址2为自己的MAC地址 */
+    /* ????????2????????MAC???? */
     oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR2_OFFSET, pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
     puc_buffer += MAC_80211_CTL_HEADER_LEN;
@@ -265,7 +265,7 @@ oal_uint32 dmac_test_mgmt_encap_asoc_rsp(
         return us_asoc_rsp_len;
     }
 
-    /* 保存起始地址，方便计算长度*/
+    /* ??????????????????????????*/
     puc_asoc_rsp_original = puc_asoc_rsp;
     /*************************************************************************/
     /*                        Management Frame Format                        */
@@ -278,19 +278,19 @@ oal_uint32 dmac_test_mgmt_encap_asoc_rsp(
     /*************************************************************************/
 
     /*************************************************************************/
-    /*                        设置帧头                                      */
+    /*                        ????????                                      */
     /*************************************************************************/
-    /* 设置 Frame Control field */
+    /* ???? Frame Control field */
     mac_hdr_set_frame_control(puc_asoc_rsp, us_type);
 
-    /* 设置 DA address1: STA MAC地址*/
+    /* ???? DA address1: STA MAC????*/
     oal_set_mac_addr(puc_asoc_rsp + WLAN_HDR_ADDR1_OFFSET, puc_sta_addr);
 
-    /* 设置 SA address2: dot11MACAddress */
+    /* ???? SA address2: dot11MACAddress */
     /* oal_set_mac_addr(puc_asoc_rsp + WLAN_HDR_ADDR2_OFFSET, pst_mac_ap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID); */
     oal_set_mac_addr(puc_asoc_rsp + WLAN_HDR_ADDR2_OFFSET, puc_ta_addr);
 
-    /* 设置 DA address3: AP MAC地址 (BSSID)*/
+    /* ???? DA address3: AP MAC???? (BSSID)*/
     oal_set_mac_addr(puc_asoc_rsp + WLAN_HDR_ADDR3_OFFSET, pst_mac_ap->auc_bssid);
 
     puc_asoc_rsp += MAC_80211_FRAME_LEN;
@@ -301,26 +301,26 @@ oal_uint32 dmac_test_mgmt_encap_asoc_rsp(
     /* puc_buffer[1] = (oal_uint8)OAL_STRLEN(pst_mac_vap->auc_bssid); */
     puc_asoc_rsp[1] = OAL_MAC_ADDR_LEN;
     oal_memcopy(&(puc_asoc_rsp[2]), pst_mac_ap->auc_bssid, puc_asoc_rsp[1]);
-    puc_asoc_rsp += MAC_IE_HDR_LEN + puc_asoc_rsp[1];  /* 偏移buffer指向下一个ie */
+    puc_asoc_rsp += MAC_IE_HDR_LEN + puc_asoc_rsp[1];  /* ????buffer??????????ie */
 #endif
-    /* 设置 capability information field */
+    /* ???? capability information field */
     mac_set_cap_info_ap((oal_void *)pst_mac_ap, puc_asoc_rsp);
     puc_asoc_rsp += MAC_CAP_INFO_LEN;
 
 
-    /* 设置 Status Code */
+    /* ???? Status Code */
     mac_set_status_code_ie(puc_asoc_rsp, MAC_SUCCESSFUL_STATUSCODE);
     puc_asoc_rsp += MAC_STATUS_CODE_LEN;
 
-    /* 设置 Association ID,打桩 */
+    /* ???? Association ID,???? */
     mac_set_aid_ie(puc_asoc_rsp, 0x01);
     puc_asoc_rsp += MAC_AID_LEN;
 
-    /* 设置ie */
+    /* ????ie */
     puc_asoc_rsp[0] = MAC_EID_SSID;
     puc_asoc_rsp[1] = OAL_MAC_ADDR_LEN;
     oal_memcopy(&(puc_asoc_rsp[2]), pst_mac_ap->auc_bssid, puc_asoc_rsp[1]);
-    puc_asoc_rsp += MAC_IE_HDR_LEN + puc_asoc_rsp[1];  /* 偏移buffer指向下一个ie */
+    puc_asoc_rsp += MAC_IE_HDR_LEN + puc_asoc_rsp[1];  /* ????buffer??????????ie */
     us_asoc_rsp_len = (oal_uint32)(puc_asoc_rsp - puc_asoc_rsp_original);
     return us_asoc_rsp_len;
 }
@@ -328,7 +328,7 @@ oal_uint32 dmac_test_mgmt_encap_asoc_rsp(
 
 OAL_STATIC oal_uint16  dmac_test_encap_mgmt_bmcst(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_buffer, oal_int8 ucbmcst)
 {
-    oal_uint8        auc_mcst_addr[6] = {0x01, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc}; /* 组播地址 */
+    oal_uint8        auc_mcst_addr[6] = {0x01, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc}; /* ???????? */
     oal_uint8       *puc_origin       = puc_buffer;
 
     /*************************************************************************/
@@ -342,15 +342,15 @@ OAL_STATIC oal_uint16  dmac_test_encap_mgmt_bmcst(mac_vap_stru *pst_mac_vap, oal
     /*************************************************************************/
 
     /*************************************************************************/
-    /*                              设置帧头                                  */
+    /*                              ????????                                  */
     /*************************************************************************/
-    /* 帧控制字段全为0，除了type和subtype */
+    /* ??????????????0??????type??subtype */
     mac_hdr_set_frame_control(puc_buffer, WLAN_PROTOCOL_VERSION| WLAN_FC0_TYPE_MGT | WLAN_FC0_SUBTYPE_PROBE_REQ);
 
-    /* 设置分片序号为0 */
+    /* ??????????????0 */
     mac_hdr_set_fragment_number(puc_buffer, 0);
 
-    /* 设置地址1，广播地址 */
+    /* ????????1?????????? */
     if(DMAC_TEST_BROADCAST == ucbmcst)
     {
         oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR1_OFFSET, BROADCAST_MACADDR);
@@ -360,10 +360,10 @@ OAL_STATIC oal_uint16  dmac_test_encap_mgmt_bmcst(mac_vap_stru *pst_mac_vap, oal
         oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR1_OFFSET, auc_mcst_addr);
     }
 
-    /* 设置地址2为自己的MAC地址 */
+    /* ????????2????????MAC???? */
     oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR2_OFFSET, pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
-    /* 地址3 bssid */
+    /* ????3 bssid */
     oal_set_mac_addr(puc_buffer + WLAN_HDR_ADDR3_OFFSET, pst_mac_vap->auc_bssid);
 
     puc_buffer += MAC_80211_FRAME_LEN;
@@ -372,7 +372,7 @@ OAL_STATIC oal_uint16  dmac_test_encap_mgmt_bmcst(mac_vap_stru *pst_mac_vap, oal
     /* puc_buffer[1] = (oal_uint8)OAL_STRLEN(pst_mac_vap->auc_bssid); */
     puc_buffer[1] = OAL_MAC_ADDR_LEN;
     oal_memcopy(&(puc_buffer[2]), pst_mac_vap->auc_bssid, puc_buffer[1]);
-    puc_buffer += MAC_IE_HDR_LEN + puc_buffer[1];  /* 偏移buffer指向下一个ie */
+    puc_buffer += MAC_IE_HDR_LEN + puc_buffer[1];  /* ????buffer??????????ie */
 
     return (oal_uint16)(puc_buffer - puc_origin);
 }
@@ -411,24 +411,24 @@ oal_uint32  dmac_test_encap_mgmt_atim(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_
     /*************************************************************************/
 
     /*************************************************************************/
-    /*                        设置帧头                                      */
+    /*                        ????????                                      */
     /*************************************************************************/
-    /* 帧控制字段全为0，除了type和subtype */
+    /* ??????????????0??????type??subtype */
     mac_hdr_set_frame_control(puc_buff, WLAN_PROTOCOL_VERSION| WLAN_FC0_TYPE_MGT | WLAN_FC0_SUBTYPE_ATIM);
 
-    /* 设置分片序号为0 */
+    /* ??????????????0 */
     mac_hdr_set_fragment_number(puc_buff, 0);
 
-    /* 设置地址1*/
+    /* ????????1*/
     oal_set_mac_addr(puc_buff + WLAN_HDR_ADDR1_OFFSET, pst_param->auc_mac_ra);
 
-    /* 设置地址2为自己的MAC地址 */
+    /* ????????2????????MAC???? */
     oal_set_mac_addr(puc_buff + WLAN_HDR_ADDR2_OFFSET, pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
-    /* 地址3 bssid */
+    /* ????3 bssid */
     oal_set_mac_addr(puc_buff + WLAN_HDR_ADDR3_OFFSET, pst_mac_vap->auc_bssid);
 
-    /* frame body 为NULL */
+    /* frame body ??NULL */
     puc_buff += MAC_80211_FRAME_LEN;
 
     return (oal_uint16)(puc_buff - puc_origin);
@@ -485,20 +485,20 @@ oal_uint32  dmac_test_encap_ba(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_buff, o
     /*                                                                       */
     /*************************************************************************/
 
-    /*  打桩设置subtype为BA */
+    /*  ????????subtype??BA */
     mac_hdr_set_frame_control(puc_buff, (oal_uint16)WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_CTL | WLAN_FC0_SUBTYPE_BA);
 
-    /* 设置RA */
+    /* ????RA */
     oal_set_mac_addr(puc_buff + 4, pst_param->auc_mac_ra);
 
-    /* 设置TA ,BA control和BA Info不填*/
+    /* ????TA ,BA control??BA Info????*/
     oal_set_mac_addr(puc_buff + 10, pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
     /* BAR Control field */
     us_ba_ctl = (oal_uint16)(0 << 12);
 
     /* BA Policy is set to Normal Ack */
     us_ba_ctl &= ~BIT0;
-    /* 非multi tid */
+    /* ??multi tid */
     us_ba_ctl &= ~BIT1;
     /* compressed bitmap */
     us_ba_ctl |= BIT2;
@@ -506,7 +506,7 @@ oal_uint32  dmac_test_encap_ba(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_buff, o
     puc_buff[16] = us_ba_ctl & 0xFF;
     puc_buff[17] = (us_ba_ctl >> 8) & 0xFF;
 
-    /* BA info,2+8总共10个字节，不填，默认为0 */
+    /* BA info,2+8????10????????????????????0 */
     return MAC_80211_CTL_HEADER_LEN + 12;
 }
 
@@ -535,13 +535,13 @@ oal_uint32  dmac_test_encap_cf_end_ucst(mac_vap_stru *pst_mac_vap, oal_uint8 *pu
     /*                                                                       */
     /*************************************************************************/
 
-    /*  打桩设置subtype为CF-End */
+    /*  ????????subtype??CF-End */
     mac_hdr_set_frame_control(puc_buff, (oal_uint16)WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_CTL | WLAN_FC0_SUBTYPE_CF_END);
 
-    /* 设置RA */
+    /* ????RA */
     oal_set_mac_addr(puc_buff + 4, pst_param->auc_mac_ra);
 
-    /* 设置TA */
+    /* ????TA */
     oal_set_mac_addr(puc_buff + 10, pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
     return MAC_80211_CTL_HEADER_LEN;

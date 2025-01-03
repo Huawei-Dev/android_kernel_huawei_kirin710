@@ -55,41 +55,41 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "TafTypeDef.h"
 #include "vos.h"
 
 /*****************************************************************************
-  2 常量定义
+  2 ????????
 *****************************************************************************/
-#define APP_VC_MSD_DATA_LEN             (140)                                   /* 单位:btye */
+#define APP_VC_MSD_DATA_LEN             (140)                                   /* ????:btye */
 
 
 
 /*****************************************************************************
-  3类型定义
+  3????????
 *****************************************************************************/
-/* 语音设备：0 手持；1 手持免提；2 车载免提；3 耳机；4 蓝牙；7 超级免提；8 智音通话 */
+/* ??????????0 ??????1 ??????????2 ??????????3 ??????4 ??????7 ??????????8 ???????? */
 enum VC_PHY_DEVICE_MODE_ENUM
 {
-    VC_PHY_DEVICE_MODE_HANDSET,                                                 /* 手持 */
-    VC_PHY_DEVICE_MODE_HANDS_FREE,                                              /* 手持免提 */
-    VC_PHY_DEVICE_MODE_CAR_FREE,                                                /* 车载免提 */
-    VC_PHY_DEVICE_MODE_EARPHONE,                                                /* 耳机 */
-    VC_PHY_DEVICE_MODE_BLUETOOTH,                                               /* 蓝牙 */
-    VC_PHY_DEVICE_MODE_PCVOICE,                                                 /* PC语音模式 */
-    VC_PHY_DEVICE_MODE_HEADPHONE,                                               /* 不带耳机MIC的耳机通话 */
-    VC_PHY_DEVICE_MODE_SUPER_HANDFREE,                                              /* 超级免提 */
-    VC_PHY_DEVICE_MODE_SMART_TALK,                                              /* 智音通话 */
-    VC_PHY_DEVICE_MODEM_USBVOICE,                                               /* USB设备 */
+    VC_PHY_DEVICE_MODE_HANDSET,                                                 /* ???? */
+    VC_PHY_DEVICE_MODE_HANDS_FREE,                                              /* ???????? */
+    VC_PHY_DEVICE_MODE_CAR_FREE,                                                /* ???????? */
+    VC_PHY_DEVICE_MODE_EARPHONE,                                                /* ???? */
+    VC_PHY_DEVICE_MODE_BLUETOOTH,                                               /* ???? */
+    VC_PHY_DEVICE_MODE_PCVOICE,                                                 /* PC???????? */
+    VC_PHY_DEVICE_MODE_HEADPHONE,                                               /* ????????MIC?????????? */
+    VC_PHY_DEVICE_MODE_SUPER_HANDFREE,                                              /* ???????? */
+    VC_PHY_DEVICE_MODE_SMART_TALK,                                              /* ???????? */
+    VC_PHY_DEVICE_MODEM_USBVOICE,                                               /* USB???? */
     VC_PHY_DEVICE_MODE_BUTT                                                     /* invalid value */
 };
 typedef VOS_UINT16  VC_PHY_DEVICE_MODE_ENUM_U16;
 
 /*****************************************************************************
- 枚举名    : APP_VC_VOICE_MODE_ENUM
- 结构说明  : STICK形态下，用户通过^CVOICE私有命令设置的语音模式枚举
+ ??????    : APP_VC_VOICE_MODE_ENUM
+ ????????  : STICK????????????????^CVOICE??????????????????????????
 *****************************************************************************/
 enum APP_VC_VOICE_MODE_ENUM
 {
@@ -102,8 +102,8 @@ enum APP_VC_VOICE_MODE_ENUM
 typedef VOS_UINT16 APP_VC_VOICE_MODE_ENUM_U16;
 
 /*****************************************************************************
- 枚举名    : APP_VC_VOICE_PORT_ENUM
- 结构说明  : 语言输出端口枚举
+ ??????    : APP_VC_VOICE_PORT_ENUM
+ ????????  : ????????????????
 *****************************************************************************/
 enum APP_VC_VOICE_PORT_ENUM
 {
@@ -153,52 +153,52 @@ typedef VOS_UINT8 TAF_VC_TTYMODE_ENUM_UINT8;
 
 enum APP_VC_MSG_ENUM
 {
-    APP_VC_MSG_REQ_SET_VOLUME   = 0,                                            /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 设置音量请求消息 */
-    APP_VC_MSG_REQ_SET_MODE,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 设置通话模式请求消息 */
+    APP_VC_MSG_REQ_SET_VOLUME   = 0,                                            /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????? */
+    APP_VC_MSG_REQ_SET_MODE,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
 
-    APP_VC_MSG_REQ_QRY_MODE,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 查询通话模式请求消息 */
-    APP_VC_MSG_CNF_QRY_MODE,                                                    /* _H2ASN_MsgChoice APP_VC_EVENT_INFO_STRU *//* 查询通话模式回复消息 */
+    APP_VC_MSG_REQ_QRY_MODE,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
+    APP_VC_MSG_CNF_QRY_MODE,                                                    /* _H2ASN_MsgChoice APP_VC_EVENT_INFO_STRU *//* ???????????????????? */
 
-    APP_VC_MSG_REQ_SET_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 设置语音端口请求消息 */
-    APP_VC_MSG_CNF_SET_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_EVENT_INFO_STRU *//* 设置语音端口回复消息 */
+    APP_VC_MSG_REQ_SET_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
+    APP_VC_MSG_CNF_SET_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_EVENT_INFO_STRU *//* ???????????????????? */
 
-    APP_VC_MSG_REQ_QRY_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 查询语音端口请求消息 */
-    APP_VC_MSG_CNF_QRY_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_EVENT_INFO_STRU *//* 查询语音端口回复消息 */
+    APP_VC_MSG_REQ_QRY_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
+    APP_VC_MSG_CNF_QRY_PORT,                                                    /* _H2ASN_MsgChoice APP_VC_EVENT_INFO_STRU *//* ???????????????????? */
 
     APP_VC_MSG_REQ_QRY_VOLUME,                                                  /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU */
     APP_VC_MSG_CNF_QRY_VOLUME,
 
-    APP_VC_MSG_SET_MUTE_STATUS_REQ,                                             /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 设置静音状态请求消息 */
-    APP_VC_MSG_GET_MUTE_STATUS_REQ,                                             /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 获取静音状态请求消息 */
+    APP_VC_MSG_SET_MUTE_STATUS_REQ,                                             /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
+    APP_VC_MSG_GET_MUTE_STATUS_REQ,                                             /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
 
-    APP_VC_MSG_SET_FOREGROUND_REQ,                                              /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 设置前台模式请求消息 */
-    APP_VC_MSG_SET_FOREGROUND_CNF,                                              /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* 设置前台模式回复消息 */
+    APP_VC_MSG_SET_FOREGROUND_REQ,                                              /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
+    APP_VC_MSG_SET_FOREGROUND_CNF,                                              /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* ???????????????????? */
 
-    APP_VC_MSG_SET_BACKGROUND_REQ,                                              /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 设置后台模式请求消息 */
-    APP_VC_MSG_SET_BACKGROUND_CNF,                                              /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* 设置后台模式回复消息 */
+    APP_VC_MSG_SET_BACKGROUND_REQ,                                              /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
+    APP_VC_MSG_SET_BACKGROUND_CNF,                                              /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* ???????????????????? */
 
-    APP_VC_MSG_FOREGROUND_QRY,                                                  /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 模式查询请求消息 */
-    APP_VC_MSG_FOREGROUND_RSP,                                                  /* _H2ASN_MsgChoice APP_VC_QRY_GROUNG_RSP_STRU *//* 模式查询回复消息 */
+    APP_VC_MSG_FOREGROUND_QRY,                                                  /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????? */
+    APP_VC_MSG_FOREGROUND_RSP,                                                  /* _H2ASN_MsgChoice APP_VC_QRY_GROUNG_RSP_STRU *//* ???????????????? */
 
-    APP_VC_MSG_SET_MODEMLOOP_REQ,                                               /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 设置语音环回模式消息 */
+    APP_VC_MSG_SET_MODEMLOOP_REQ,                                               /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ???????????????????? */
 
-    APP_VC_MSG_SET_MSD_REQ,                                                     /* _H2ASN_MsgChoice APP_VC_MSG_SET_MSD_REQ_STRU *//* 设置MSD数据请求 */
-    APP_VC_MSG_SET_MSD_CNF,                                                     /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* 设置MSD数据回复 */
+    APP_VC_MSG_SET_MSD_REQ,                                                     /* _H2ASN_MsgChoice APP_VC_MSG_SET_MSD_REQ_STRU *//* ????MSD???????? */
+    APP_VC_MSG_SET_MSD_CNF,                                                     /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* ????MSD???????? */
 
-    APP_VC_MSG_QRY_MSD_REQ,                                                     /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 查询MSD数据请求 */
-    APP_VC_MSG_QRY_MSD_CNF,                                                     /* _H2ASN_MsgChoice APP_VC_MSG_QRY_MSD_CNF_STRU *//* 查询MSD数据回复 */
+    APP_VC_MSG_QRY_MSD_REQ,                                                     /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ????MSD???????? */
+    APP_VC_MSG_QRY_MSD_CNF,                                                     /* _H2ASN_MsgChoice APP_VC_MSG_QRY_MSD_CNF_STRU *//* ????MSD???????? */
 
-    APP_VC_MSG_SET_ECALL_CFG_REQ,                                               /* _H2ASN_MsgChoice APP_VC_MSG_SET_ECALL_CFG_REQ_STRU *//* 设置ecall配置请求 */
+    APP_VC_MSG_SET_ECALL_CFG_REQ,                                               /* _H2ASN_MsgChoice APP_VC_MSG_SET_ECALL_CFG_REQ_STRU *//* ????ecall???????? */
 
-    APP_VC_MSG_QRY_ECALL_CFG_REQ,                                               /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 查询ecall配置信息请求 */
-    APP_VC_MSG_QRY_ECALL_CFG_CNF,                                               /* _H2ASN_MsgChoice APP_VC_MSG_QRY_ECALL_CFG_CNF_STRU *//* 查询ecall配置信息回复 */
+    APP_VC_MSG_QRY_ECALL_CFG_REQ,                                               /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ????ecall???????????? */
+    APP_VC_MSG_QRY_ECALL_CFG_CNF,                                               /* _H2ASN_MsgChoice APP_VC_MSG_QRY_ECALL_CFG_CNF_STRU *//* ????ecall???????????? */
 
-    APP_VC_MSG_DTMF_DECODER_IND,                                                /* _H2ASN_MsgChoice APP_VC_DTMF_DECODER_IND_STRU *//* DTMF Decoder Ind上报消息 */
+    APP_VC_MSG_DTMF_DECODER_IND,                                                /* _H2ASN_MsgChoice APP_VC_DTMF_DECODER_IND_STRU *//* DTMF Decoder Ind???????? */
 
-    APP_VC_MSG_SET_TTYMODE_REQ,                                                 /* _H2ASN_MsgChoice APP_VC_SET_TTYMODE_REQ_STRU *//* 设置TTY模式请求消息 */
-    APP_VC_MSG_SET_TTYMODE_CNF,                                                 /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* 设置TTY模式回复消息 */
-    APP_VC_MSG_QRY_TTYMODE_REQ,                                                 /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* 查询TTY模式请求消息 */
-    APP_VC_MSG_QRY_TTYMODE_CNF,                                                 /* _H2ASN_MsgChoice APP_VC_QRY_TTYMODE_CNF_STRU *//* 查询TTY模式回复消息 */
+    APP_VC_MSG_SET_TTYMODE_REQ,                                                 /* _H2ASN_MsgChoice APP_VC_SET_TTYMODE_REQ_STRU *//* ????TTY???????????? */
+    APP_VC_MSG_SET_TTYMODE_CNF,                                                 /* _H2ASN_MsgChoice APP_VC_MSG_CNF_ASN_STRU *//* ????TTY???????????? */
+    APP_VC_MSG_QRY_TTYMODE_REQ,                                                 /* _H2ASN_MsgChoice APP_VC_REQ_MSG_ASN_STRU *//* ????TTY???????????? */
+    APP_VC_MSG_QRY_TTYMODE_CNF,                                                 /* _H2ASN_MsgChoice APP_VC_QRY_TTYMODE_CNF_STRU *//* ????TTY???????????? */
 
     APP_VC_MSG_HIFI_RESET_NTF,
 
@@ -228,10 +228,10 @@ typedef VOS_UINT8 APP_VC_START_HIFI_ORIG_ENUM_UINT8;
 
 enum APP_VC_ECALL_TRANS_STATUS_ENUM
 {
-    APP_VC_ECALL_MSD_TRANSMITTING_START     = 0,                                /* 当前MSD数据已经开始发送 */
-    APP_VC_ECALL_MSD_TRANSMITTING_SUCCESS,                                      /* 当前MSD数据已经发送成功 */
-    APP_VC_ECALL_MSD_TRANSMITTING_FAIL,                                         /* 当前MSD数据已经发送失败 */
-    APP_VC_ECALL_PSAP_MSD_REQUIRETRANSMITTING,                                  /* PSAP要求更新MSD数据 */
+    APP_VC_ECALL_MSD_TRANSMITTING_START     = 0,                                /* ????MSD???????????????? */
+    APP_VC_ECALL_MSD_TRANSMITTING_SUCCESS,                                      /* ????MSD???????????????? */
+    APP_VC_ECALL_MSD_TRANSMITTING_FAIL,                                         /* ????MSD???????????????? */
+    APP_VC_ECALL_PSAP_MSD_REQUIRETRANSMITTING,                                  /* PSAP????????MSD???? */
     APP_VC_ECALL_TRANS_STATUS_BUTT
 };
 typedef VOS_UINT8  APP_VC_ECALL_TRANS_STATUS_ENUM_UINT8;
@@ -239,10 +239,10 @@ typedef VOS_UINT8  APP_VC_ECALL_TRANS_STATUS_ENUM_UINT8;
 
 enum APP_VC_ECALL_TRANS_FAIL_CAUSE_ENUM
 {
-    APP_VC_ECALL_CAUSE_WAIT_PSAP_TIME_OUT   = 0,                                /* 等待PSAP的传输指示超时 */
-    APP_VC_ECALL_CAUSE_MSD_TRANSMITTING_TIME_OUT,                               /* MSD数据传输超时 */
-    APP_VC_ECALL_CAUSE_WAIT_AL_ACK_TIME_OUT,                                    /* 等待应用层的确认超时 */
-    APP_VC_ECALL_CAUSE_UNSPECIFIC_ERROR,                                        /* 其他异常错误 */
+    APP_VC_ECALL_CAUSE_WAIT_PSAP_TIME_OUT   = 0,                                /* ????PSAP?????????????? */
+    APP_VC_ECALL_CAUSE_MSD_TRANSMITTING_TIME_OUT,                               /* MSD???????????? */
+    APP_VC_ECALL_CAUSE_WAIT_AL_ACK_TIME_OUT,                                    /* ???????????????????? */
+    APP_VC_ECALL_CAUSE_UNSPECIFIC_ERROR,                                        /* ???????????? */
     APP_VC_ECALL_CAUSE_BUTT
 };
 typedef VOS_UINT8  APP_VC_ECALL_TRANS_FAIL_CAUSE_ENUM_UINT8;
@@ -250,7 +250,7 @@ typedef VOS_UINT8  APP_VC_ECALL_TRANS_FAIL_CAUSE_ENUM_UINT8;
 
 enum APP_VC_ECALL_MSD_MODE_ENUM
 {
-    APP_VC_ECALL_MSD_MODE_TRANSPARENT   = 0,                                    /* 透传模式 */
+    APP_VC_ECALL_MSD_MODE_TRANSPARENT   = 0,                                    /* ???????? */
     APP_VC_ECALL_MSD_MODE_BUTT
 };
 typedef VOS_UINT16  APP_VC_ECALL_MSD_MODE_ENUM_UINT16;
@@ -258,8 +258,8 @@ typedef VOS_UINT16  APP_VC_ECALL_MSD_MODE_ENUM_UINT16;
 
 enum APP_VC_ECALL_VOC_CONFIG_ENUM
 {
-    APP_VC_ECALL_VOC_CONFIG_NOT_ABANDON = 0,                                    /* MSD数据传输过程带语音*/
-    APP_VC_ECALL_VOC_CONFIG_ABANDON,                                            /* MSD数据传输过程不带语音*/
+    APP_VC_ECALL_VOC_CONFIG_NOT_ABANDON = 0,                                    /* MSD??????????????????*/
+    APP_VC_ECALL_VOC_CONFIG_ABANDON,                                            /* MSD????????????????????*/
     APP_VC_ECALL_VOC_CONFIG_BUTT
 };
 typedef VOS_UINT16  APP_VC_ECALL_VOC_CONFIG_ENUM_UINT16;
@@ -269,12 +269,12 @@ typedef VOS_UINT16  APP_VC_ECALL_VOC_CONFIG_ENUM_UINT16;
 typedef struct
 {
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
-    APP_VC_MSG_ENUM_U16                 enMsgName;                              /* _H2ASN_Skip *//* 消息名 */
-    VOS_UINT8                           aucReserve1[2];                         /* 保留 */
+    APP_VC_MSG_ENUM_U16                 enMsgName;                              /* _H2ASN_Skip *//* ?????? */
+    VOS_UINT8                           aucReserve1[2];                         /* ???? */
     MN_CLIENT_ID_T                      clientId;                               /* Client ID */
     MN_OPERATION_ID_T                   opId;                                   /* Operation ID */
-    VOS_UINT8                           aucReserve2;                            /* 保留 */
-    VOS_UINT8                           aucContent[4];                          /* 消息内容 */
+    VOS_UINT8                           aucReserve2;                            /* ???? */
+    VOS_UINT8                           aucContent[4];                          /* ???????? */
 } APP_VC_REQ_MSG_STRU;
 
 
@@ -298,61 +298,61 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucQryRslt;                              /* 查询 success or failure */
+    VOS_UINT8                           ucQryRslt;                              /* ???? success or failure */
     VOS_UINT8                           aucReserved;
-    APP_VC_QRY_GROUND_ENUM_U16          enGround;                               /* 查询结果 */
+    APP_VC_QRY_GROUND_ENUM_U16          enGround;                               /* ???????? */
 }APP_VC_QRY_GROUNG_RSP_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           aucMsdData[APP_VC_MSD_DATA_LEN];        /* MSD数据内容 */
+    VOS_UINT8                           aucMsdData[APP_VC_MSD_DATA_LEN];        /* MSD???????? */
 }APP_VC_MSG_SET_MSD_REQ_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucQryRslt;                              /* 查询结果 */
+    VOS_UINT8                           ucQryRslt;                              /* ???????? */
     VOS_UINT8                           aucReserved[3];
-    VOS_UINT8                           aucMsdData[APP_VC_MSD_DATA_LEN];        /* MSD数据内容 */
+    VOS_UINT8                           aucMsdData[APP_VC_MSD_DATA_LEN];        /* MSD???????? */
 }APP_VC_MSG_QRY_MSD_CNF_STRU;
 
 
 typedef struct
 {
-    APP_VC_ECALL_MSD_MODE_ENUM_UINT16   enMode;                                 /* 数据传送模式 */
-    APP_VC_ECALL_VOC_CONFIG_ENUM_UINT16 enVocConfig;                            /* 传送数据时是否打开声码器 */
+    APP_VC_ECALL_MSD_MODE_ENUM_UINT16   enMode;                                 /* ???????????? */
+    APP_VC_ECALL_VOC_CONFIG_ENUM_UINT16 enVocConfig;                            /* ???????????????????????? */
 }APP_VC_MSG_SET_ECALL_CFG_REQ_STRU;
 
 
 
 typedef struct
 {
-    VOS_UINT8                           ucQryRslt;                              /* 查询结果 */
+    VOS_UINT8                           ucQryRslt;                              /* ???????? */
     VOS_UINT8                           aucReserved[3];
-    APP_VC_ECALL_MSD_MODE_ENUM_UINT16   enMode;                                 /* MSD数据传送模式 */
-    APP_VC_ECALL_VOC_CONFIG_ENUM_UINT16 enVocConfig;                            /* 传送数据时是否打开声码器 */
+    APP_VC_ECALL_MSD_MODE_ENUM_UINT16   enMode;                                 /* MSD???????????? */
+    APP_VC_ECALL_VOC_CONFIG_ENUM_UINT16 enVocConfig;                            /* ???????????????????????? */
 }APP_VC_MSG_QRY_ECALL_CFG_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucRslt;                                  /* 结果 */
+    VOS_UINT8                           ucRslt;                                  /* ???? */
     VOS_UINT8                           aucReserved[3];
 }APP_VC_SET_MSD_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucQryRslt;                              /* 查询 success or failure */
-    TAF_VC_TTYMODE_ENUM_UINT8           enTTYMode;                              /* 查询结果 */
+    VOS_UINT8                           ucQryRslt;                              /* ???? success or failure */
+    TAF_VC_TTYMODE_ENUM_UINT8           enTTYMode;                              /* ???????? */
     VOS_UINT8                           aucReserved[2];
 }APP_VC_QRY_TTYMODE_CNF_STRU;
 
 
 typedef struct
 {
-    TAF_VC_TTYMODE_ENUM_UINT8           enTTYMode;                              /* 设置TTY MODE*/
+    TAF_VC_TTYMODE_ENUM_UINT8           enTTYMode;                              /* ????TTY MODE*/
     VOS_UINT8                           aucReserved[3];
 }APP_VC_SET_TTYMODE_REQ_STRU;
 
@@ -371,17 +371,17 @@ typedef struct
 
 
 /*****************************************************************************
-  4 宏定义
+  4 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 接口函数声明
+  6 ????????????
 *****************************************************************************/
 
 
@@ -434,16 +434,16 @@ extern VOS_UINT32  APP_VC_GetVoiceVolume(
 );
 
 /*****************************************************************************
- 函 数 名  : APP_VC_SetMuteStatus
- 功能描述  : 设置静音状态
- 输入参数  : usClientId   - 客户端ID
-             ucOpId       - 操作码ID
-             enMuteStatus - 静音状态
- 输出参数  : 无
- 返 回 值  : VOS_OK       - 成功
-             VOS_ERR      - 失败
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : APP_VC_SetMuteStatus
+ ????????  : ????????????
+ ????????  : usClientId   - ??????ID
+             ucOpId       - ??????ID
+             enMuteStatus - ????????
+ ????????  : ??
+ ?? ?? ??  : VOS_OK       - ????
+             VOS_ERR      - ????
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32  APP_VC_SetMuteStatus(
     VOS_UINT16                          usClientId,
@@ -453,15 +453,15 @@ VOS_UINT32  APP_VC_SetMuteStatus(
 
 
 /*****************************************************************************
- 函 数 名  : APP_VC_GetMuteStatus
- 功能描述  : 获取静音状态
- 输入参数  : usClientId   - 客户端ID
-             ucOpId       - 操作码ID
- 输出参数  : 无
- 返 回 值  : VOS_OK       - 成功
-             VOS_ERR      - 失败
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : APP_VC_GetMuteStatus
+ ????????  : ????????????
+ ????????  : usClientId   - ??????ID
+             ucOpId       - ??????ID
+ ????????  : ??
+ ?? ?? ??  : VOS_OK       - ????
+             VOS_ERR      - ????
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 APP_VC_GetMuteStatus(
     VOS_UINT16                          usClientId,
@@ -469,16 +469,16 @@ VOS_UINT32 APP_VC_GetMuteStatus(
 );
 
 /*****************************************************************************
- 函 数 名  : APP_VC_SetModemLoop
- 功能描述  : 设置进入或退出语音换回
- 输入参数  : usClientId   - 客户端ID
-             ucOpId       - 操作码ID
-             ucModemLoop  - 进入或退出语音环回状态
- 输出参数  : 无
- 返 回 值  : VOS_OK       - 成功
-             VOS_ERR      - 失败
- 调用函数  :
- 被调函数  :
+ ?? ?? ??  : APP_VC_SetModemLoop
+ ????????  : ??????????????????????
+ ????????  : usClientId   - ??????ID
+             ucOpId       - ??????ID
+             ucModemLoop  - ??????????????????????
+ ????????  : ??
+ ?? ?? ??  : VOS_OK       - ????
+             VOS_ERR      - ????
+ ????????  :
+ ????????  :
 *****************************************************************************/
 VOS_UINT32 APP_VC_SetModemLoop(
     VOS_UINT16                          usClientId,

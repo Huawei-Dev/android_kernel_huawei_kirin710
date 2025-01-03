@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "mac_vap.h"
@@ -27,19 +27,19 @@ extern "C" {
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_MGMT_CLASSIFIER_H
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #if (_PRE_OS_VERSION_RAW == _PRE_OS_VERSION)
 
-#define DMAC_DEFAULT_STA_BEACON_WAIT_TIME     PM_DEFAULT_STA_BEACON_WAIT_TIME    //单位ms
-#define DMAC_DEFAULT_STA_INTER_TBTT_OFFSET    PM_DEFAULT_STA_INTER_TBTT_OFFSET  //单位us
-#define DMAC_DEFAULT_EXT_TBTT_OFFSET          PM_DEFAULT_EXT_TBTT_OFFSET   //单位为ms
+#define DMAC_DEFAULT_STA_BEACON_WAIT_TIME     PM_DEFAULT_STA_BEACON_WAIT_TIME    //????ms
+#define DMAC_DEFAULT_STA_INTER_TBTT_OFFSET    PM_DEFAULT_STA_INTER_TBTT_OFFSET  //????us
+#define DMAC_DEFAULT_EXT_TBTT_OFFSET          PM_DEFAULT_EXT_TBTT_OFFSET   //??????ms
 
 #define DMAC_BEACON_TIMEOUT_FIX_OFFSET        PM_BEACON_TIMEOUT_FIX_OFFSET
 #else
-#define DMAC_DEFAULT_STA_BEACON_WAIT_TIME     5    //单位ms
-#define DMAC_DEFAULT_STA_INTER_TBTT_OFFSET    500  //单位us
-#define DMAC_DEFAULT_EXT_TBTT_OFFSET          6   //单位为ms
+#define DMAC_DEFAULT_STA_BEACON_WAIT_TIME     5    //????ms
+#define DMAC_DEFAULT_STA_INTER_TBTT_OFFSET    500  //????us
+#define DMAC_DEFAULT_EXT_TBTT_OFFSET          6   //??????ms
 
 #define DMAC_BEACON_TIMEOUT_FIX_OFFSET        300
 
@@ -47,42 +47,42 @@ extern "C" {
 #define DMAC_DEFAULT_STA_BCN_TOUT_MAX_CNT     5
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern oal_uint32  dmac_rx_mgmt_classify(
                 frw_event_mem_stru             *pst_event_mem,

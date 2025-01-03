@@ -9,7 +9,7 @@ extern "C" {
 
 #if defined(_PRE_WLAN_FEATURE_PM) || defined(_PRE_WLAN_FEATURE_STA_PM)
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "wlan_spec.h"
@@ -27,16 +27,16 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_MAC_PM_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
-mac_fsm_stru*  mac_fsm_create(oal_void*                 p_oshandle,         /*状态机owner的指针，对低功耗状态机，指向VAP结构*/
-                                const oal_uint8          *p_name,             /*状态机的名字*/
-                                oal_void                 *p_ctx,              /*状态机context*/
-                                oal_uint8                 uc_init_state,      /*初始状态*/
-                                const mac_fsm_state_info *p_state_info,       /*状态机实例指针*/
-                                oal_uint8                 uc_num_states     /*本状态机的状态个数*/
+mac_fsm_stru*  mac_fsm_create(oal_void*                 p_oshandle,         /*??????owner????????????????????????????VAP????*/
+                                const oal_uint8          *p_name,             /*????????????*/
+                                oal_void                 *p_ctx,              /*??????context*/
+                                oal_uint8                 uc_init_state,      /*????????*/
+                                const mac_fsm_state_info *p_state_info,       /*??????????????*/
+                                oal_uint8                 uc_num_states     /*??????????????????*/
 
 )
 {
@@ -50,12 +50,12 @@ mac_fsm_stru*  mac_fsm_create(oal_void*                 p_oshandle,         /*状
        return  OAL_PTR_NULL;
     }
 
-    /*检查状态信息顺序是否和状态定义匹配*/
+    /*??????????????????????????????????*/
     for(ul_loop = 0;ul_loop < uc_num_states;ul_loop++)
     {
         if(p_state_info[ul_loop].state>=MAC_FSM_MAX_STATES||p_state_info[ul_loop].state!=ul_loop)
         {
-            /* OAM日志中不能使用%s*/
+            /* OAM??????????????%s*/
             OAM_ERROR_LOG2(0, OAM_SF_PWR, "{FSM : entry %d has invalid state %d }",ul_loop,p_state_info[ul_loop].state);
             return OAL_PTR_NULL;
         }
@@ -87,7 +87,7 @@ mac_fsm_stru*  mac_fsm_create(oal_void*                 p_oshandle,         /*状
         pst_fsm->uc_name[ul_loop] = '\0';
     }
 
-    /*启动状态机*/
+    /*??????????*/
    if(pst_fsm->p_state_info[pst_fsm->uc_cur_state].mac_fsm_entry)
    {
        pst_fsm->p_state_info[pst_fsm->uc_cur_state].mac_fsm_entry(pst_fsm->p_ctx);
@@ -112,28 +112,28 @@ oal_uint32 mac_fsm_trans_to_state(mac_fsm_stru* p_fsm,oal_uint8 uc_state)
 
     if ((uc_state == MAC_FSM_STATE_NONE) || (uc_state >= MAC_FSM_MAX_STATES)||(uc_state>=p_fsm->uc_num_states))
     {
-        /* OAM日志中不能使用%s*/
+        /* OAM??????????????%s*/
          OAM_ERROR_LOG2(0, OAM_SF_PWR, "FSM:trans to state %d needs to be a valid state cur_state=%d",uc_state,uc_cur_state);
          return OAL_FAIL;
     }
 
     if(uc_state == uc_cur_state)
     {
-        /* OAM日志中不能使用%s*/
+        /* OAM??????????????%s*/
        OAM_WARNING_LOG2(0, OAM_SF_PWR, "FSM :trans to state %d EQUAL to current state %d,nothing to do",uc_state,uc_cur_state);
        return OAL_SUCC;
     }
 
-    /* OAM日志中不能使用%s*/
+    /* OAM??????????????%s*/
     OAM_INFO_LOG2(0, OAM_SF_PWR, "FSM: transition from %d => %d ",p_fsm->p_state_info[uc_cur_state].state,p_fsm->p_state_info[uc_state].state);
 
-    /*调用前一状态的退出函数*/
+    /*??????????????????????*/
     if(p_fsm->p_state_info[p_fsm->uc_cur_state].mac_fsm_exit)
     {
         p_fsm->p_state_info[p_fsm->uc_cur_state].mac_fsm_exit(p_fsm->p_ctx);
     }
 
-    /*调用本状态的进入函数*/
+    /*????????????????????*/
     if(p_fsm->p_state_info[uc_state].mac_fsm_entry)
     {
        p_fsm->p_state_info[uc_state].mac_fsm_entry(p_fsm->p_ctx);
@@ -164,7 +164,7 @@ oal_uint32 mac_fsm_event_dispatch(mac_fsm_stru* p_fsm ,oal_uint16 us_event,
     }
     if(OAL_FAIL == ul_event_handled)
     {
-        /* OAM日志中不能使用%s*/
+        /* OAM??????????????%s*/
          OAM_ERROR_LOG2(0, OAM_SF_PWR, "FSM :mac_fsm_event_dispatch:event[%d] did not handled in state %d",
                         us_event,p_fsm->p_state_info[p_fsm->uc_cur_state].state);
          return OAL_FAIL;
@@ -243,7 +243,7 @@ oal_uint32 mac_pm_arbiter_alloc_id(mac_device_stru* pst_device, oal_uint8* pst_n
         return MAC_PWR_ARBITER_ID_INVALID;
     }
 
-    /*从ul_id_bitmap中从低位开始遍历，找到一个为0的位即为未分配的ID*/
+    /*??ul_id_bitmap????????????????????????????0????????????????ID*/
     for (i=0;i<MAC_PM_ARBITER_MAX_REQUESTORS;i++)
     {
         if (((1<<i) & pst_pm_arbiter->ul_id_bitmap) == 0)
@@ -305,24 +305,24 @@ oal_void mac_pm_arbiter_to_state(mac_device_stru *pst_device, mac_vap_stru *pst_
         return;
     }
 
-    /*投票者本身必然发生了状态切换，清理原状态的bitmap，设置切换状态的bitmap*/
+    /*??????????????????????????????????????????bitmap????????????????bitmap*/
     pst_pm_arbiter->ul_state_bitmap[uc_state_from] &= ~(oal_uint32)(1<<ul_arbiter_id);
 
     pst_pm_arbiter->ul_state_bitmap[uc_state_to] |= (1<<ul_arbiter_id);
 
-    /* OAM日志中不能使用%s*/
+    /* OAM??????????????%s*/
     OAM_INFO_LOG3(pst_device->uc_cfg_vap_id, OAM_SF_PWR, "PM arbiter:%d vote to transmit from state %d to state %d",
                     ul_arbiter_id,uc_state_from,uc_state_to);
 
-    /*工作状态，只要1票,device就必须要切换*/
+    /*??????????????1??,device????????????*/
     if(DEV_PWR_STATE_WORK == uc_state_to)
     {
-        /* TBD:切回work时，防止多次设置硬件寄存器，需要在此过滤一下 */
+        /* TBD:????work???????????????????????????????????????????? */
         en_can_trans = OAL_TRUE;
     }
     else
     {
-        /*如果所有成员都投票了，device进行状态切换*/
+        /*??????????????????????device????????????*/
         for(i=0;i<pst_pm_arbiter->uc_requestor_num;i++)
         {
             if (pst_pm_arbiter->requestor[i].en_arbiter_type != MAC_PWR_ARBITER_TYPE_INVALID)
@@ -340,7 +340,7 @@ oal_void mac_pm_arbiter_to_state(mac_device_stru *pst_device, mac_vap_stru *pst_
     {
        pst_pm_arbiter->uc_prev_state = pst_pm_arbiter->uc_cur_state;
 
-       /*操作hal层接口*/
+       /*????hal??????*/
        if(OAL_SUCC == mac_pm_set_hal_state(pst_device, pst_mac_vap, uc_state_to))
        {
            //OAM_INFO_LOG1(pst_device->uc_cfg_vap_id, OAM_SF_PWR, "PM arbiter:set device to state %d",uc_state_to);
@@ -372,7 +372,7 @@ oal_uint32  mac_pm_wow_prepare_probe_resp(dmac_vap_stru *pst_dmac_vap)
         OAL_NETBUF_NEXT(pst_dmac_vap->pst_wow_probe_resp) = OAL_PTR_NULL;
     }
 
-    /* 封装probe response帧 */
+    /* ????probe response?? */
     pst_dmac_vap->us_wow_probe_resp_len = dmac_mgmt_encap_probe_response(pst_dmac_vap, pst_dmac_vap->pst_wow_probe_resp, &ast_dest_addr[0], OAL_FALSE);
 
     return OAL_SUCC;
@@ -398,7 +398,7 @@ oal_uint32  mac_pm_wow_prepare_null_data(dmac_vap_stru *pst_dmac_vap)
     dmac_user_stru* pst_dmac_user;
 
 
-    /*仅需要为STA模式的VAP准备null data帧，做keep alive*/
+    /*????????STA??????VAP????null data??????keep alive*/
     if (WLAN_VAP_MODE_BSS_STA == pst_dmac_vap->st_vap_base_info.en_vap_mode)
     {
         pst_dmac_user = mac_res_get_dmac_user(pst_dmac_vap->st_vap_base_info.uc_assoc_vap_id);
@@ -409,7 +409,7 @@ oal_uint32  mac_pm_wow_prepare_null_data(dmac_vap_stru *pst_dmac_vap)
 
         if (OAL_PTR_NULL == pst_dmac_vap->pst_wow_null_data)
         {
-            /* 申请net_buff */
+            /* ????net_buff */
             pst_dmac_vap->pst_wow_null_data = OAL_MEM_NETBUF_ALLOC(OAL_NORMAL_NETBUF, WLAN_SHORT_NETBUF_SIZE, OAL_NETBUF_PRIORITY_MID);
             if (OAL_PTR_NULL == pst_dmac_vap->pst_wow_null_data)
             {
@@ -421,16 +421,16 @@ oal_uint32  mac_pm_wow_prepare_null_data(dmac_vap_stru *pst_dmac_vap)
             OAL_NETBUF_NEXT(pst_dmac_vap->pst_wow_null_data) = OAL_PTR_NULL;
         }
 
-        /* 填写帧头,其中from ds为1，to ds为0，因此frame control的第二个字节为02 */
+        /* ????????,????from ds??1??to ds??0??????frame control??????????????02 */
         mac_hdr_set_frame_control(oal_netbuf_header(pst_dmac_vap->pst_wow_null_data), (oal_uint16)(WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_DATA | WLAN_FC0_SUBTYPE_NODATA) | 0x0200);
 
-        /* 设置ADDR1为目的地址 */
+        /* ????ADDR1?????????? */
         oal_set_mac_addr((oal_netbuf_header(pst_dmac_vap->pst_wow_null_data) + 4), pst_dmac_user->st_user_base_info.auc_user_mac_addr);
 
-        /* 设置ADDR2为SA */
+        /* ????ADDR2??SA */
         oal_set_mac_addr((oal_netbuf_header(pst_dmac_vap->pst_wow_null_data) + 10),pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
-        /* 设置ADDR3为BSSID */
+        /* ????ADDR3??BSSID */
         oal_set_mac_addr((oal_netbuf_header(pst_dmac_vap->pst_wow_null_data) + 16), pst_dmac_vap->st_vap_base_info.auc_bssid);
     }
 
@@ -564,7 +564,7 @@ oal_uint32 mac_pm_set_hal_state(mac_device_stru *pst_device, mac_vap_stru *pst_m
     switch(uc_state_to)
     {
         case DEV_PWR_STATE_WORK:
-            /*恢复接收通道和beacon interval配置*/
+            /*??????????????beacon interval????*/
             st_para.bit_set_bcn_interval = OAL_TRUE;
         #ifdef _PRE_WLAN_FEATURE_DBAC
             if (mac_is_dbac_enabled(pst_device))
@@ -573,7 +573,7 @@ oal_uint32 mac_pm_set_hal_state(mac_device_stru *pst_device, mac_vap_stru *pst_m
             }
         #endif
             st_para.ul_idle_bcn_interval = pst_device->ul_beacon_interval;
-            /* 此时ap上层的状态已经转化过来，所以需要prev state判断 */
+            /* ????ap????????????????????????????????prev state???? */
             if (DEV_PWR_STATE_WOW == pst_ap_pm_handler->p_mac_fsm->uc_prev_state)
             {
                 st_wow_en.uc_en = 0;
@@ -592,7 +592,7 @@ oal_uint32 mac_pm_set_hal_state(mac_device_stru *pst_device, mac_vap_stru *pst_m
             mac_pm_set_wow_para(pst_dmac_vap, &st_wow_para, st_wow_en);
             break;
         case DEV_PWR_STATE_IDLE:
-            /*单通道接收,beacon调成AP_IDLE_BCN_INTERVAL*/
+            /*??????????,beacon????AP_IDLE_BCN_INTERVAL*/
             st_para.bit_set_bcn_interval = OAL_TRUE;
         #ifdef _PRE_WLAN_FEATURE_DBAC
             if (mac_is_dbac_enabled(pst_device))

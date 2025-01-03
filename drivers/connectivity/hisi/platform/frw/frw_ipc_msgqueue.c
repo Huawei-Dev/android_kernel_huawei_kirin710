@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "frw_main.h"
 #include "frw_ipc_msgqueue.h"
@@ -18,12 +18,12 @@ extern "C" {
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_FRW_IPC_MSGQUEUE_C
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 OAL_STATIC frw_ipc_msg_callback_stru gst_ipc_msg_callback;
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_uint32  frw_ipc_msg_queue_init(frw_ipc_msg_queue_stru *pst_msg_queue, oal_uint32 ul_queue_len)
@@ -36,7 +36,7 @@ oal_uint32  frw_ipc_msg_queue_init(frw_ipc_msg_queue_stru *pst_msg_queue, oal_ui
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 为发送消息队列分配内存 */
+    /* ?????????????????????? */
     us_queue_size               = (oal_uint16)(OAL_SIZEOF(frw_ipc_msg_dscr_stru) * ul_queue_len);
     pst_msg_queue->pst_dscr     = (frw_ipc_msg_dscr_stru *)OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, us_queue_size, OAL_TRUE);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_msg_queue->pst_dscr))
@@ -45,7 +45,7 @@ oal_uint32  frw_ipc_msg_queue_init(frw_ipc_msg_queue_stru *pst_msg_queue, oal_ui
         return OAL_ERR_CODE_ALLOC_MEM_FAIL;
     }
 
-    /* 结构体变量初始化 */
+    /* ???????????????? */
     pst_msg_queue->ul_head      = 0;
     pst_msg_queue->ul_tail      = 0;
     pst_msg_queue->ul_max_num  = ul_queue_len;
@@ -56,7 +56,7 @@ oal_uint32  frw_ipc_msg_queue_init(frw_ipc_msg_queue_stru *pst_msg_queue, oal_ui
 
 oal_uint32  frw_ipc_msg_queue_destroy(frw_ipc_msg_queue_stru *pst_msg_queue)
 {
-    /* 入参检查 */
+    /* ???????? */
 
     if (OAL_PTR_NULL == pst_msg_queue->pst_dscr)
     {
@@ -90,13 +90,13 @@ oal_uint32  frw_ipc_msg_queue_recv(oal_void *p_arg)
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 队列操作 */
+    /* ???????? */
     do
     {
         ul_head = (pst_ipc_rx_msg_queue->ul_head);
         FRW_IPC_RING_RX_INCR(pst_ipc_rx_msg_queue->ul_head);
 
-        /* 回调ipc_recv() */
+        /* ????ipc_recv() */
         gst_ipc_msg_callback.p_rx_complete_func(pst_ipc_rx_msg_queue->pst_dscr[ul_head].pst_msg_mem);
 
     }while (!FRW_IPC_RING_EMPTY(pst_ipc_rx_msg_queue->ul_head, pst_ipc_rx_msg_queue->ul_tail));
@@ -115,9 +115,9 @@ oal_uint32  frw_ipc_msg_queue_send(frw_ipc_msg_queue_stru *pst_ipc_tx_msg_queue,
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* TBD 锁 */
+    /* TBD ?? */
 
-    /* 判断队列是否满 */
+    /* ?????????????? */
     if (OAL_UNLIKELY(FRW_IPC_RING_FULL(pst_ipc_tx_msg_queue->ul_head,
                       pst_ipc_tx_msg_queue->ul_tail,
                       pst_ipc_tx_msg_queue->ul_max_num)))
@@ -131,7 +131,7 @@ oal_uint32  frw_ipc_msg_queue_send(frw_ipc_msg_queue_stru *pst_ipc_tx_msg_queue,
 
     pst_ipc_tx_msg_queue->pst_dscr[ul_tail].pst_msg_mem = pst_msg_input;
 
-    /* 目标核如果为空闲则启动目标核硬件中断 */
+    /* ???????????????????????????????????? */
     if (FRW_IPC_TX_CTRL_ENABLED == uc_flags)
     {
         oal_irq_trigger(uc_cpuid);
@@ -194,8 +194,8 @@ oal_uint32  frw_ipc_log_recv_alarm(frw_ipc_log_stru *pst_log, oal_uint32 ul_lost
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    pst_log->ul_stats_recv_lost += ul_lost;    /* 丢包数更新 */
-    pst_log->ul_stats_assert++;              /* 告警次数更新 */
+    pst_log->ul_stats_recv_lost += ul_lost;    /* ?????????? */
+    pst_log->ul_stats_assert++;              /* ???????????? */
 
     l_lost      = (oal_int32)pst_log->ul_stats_recv_lost;
     l_assert    = (oal_int32)pst_log->ul_stats_assert;
@@ -218,7 +218,7 @@ oal_uint32  frw_ipc_log_send_alarm(frw_ipc_log_stru *pst_log)
     }
 
     pst_log->ul_stats_send_lost++;
-    pst_log->ul_stats_assert++;         /* 告警次数更新 */
+    pst_log->ul_stats_assert++;         /* ???????????? */
 
     l_lost = (oal_int32)pst_log->ul_stats_send_lost;
 

@@ -45,7 +45,7 @@
 #include "PPP/Inc/link.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_PROTO_C
 
@@ -100,7 +100,7 @@ PPP_ZC_STRU *proto_LayerPull(struct link *l, PPP_ZC_STRU *pstMem,
 
     *pusProto = (VOS_UINT16)cp[0];
 
-    /* 如果协议字段占据2两个字节 */
+    /* ????????????????2???????? */
     if (!(cp[0] & 1))
     {
         ulRst = PPP_MemCutHeadData(&pstMem, cp, 2);

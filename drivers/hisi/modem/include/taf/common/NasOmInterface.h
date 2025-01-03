@@ -55,13 +55,13 @@
 #endif
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
@@ -89,7 +89,7 @@
 #define NAS_OM_EVENT_STK_ACCESS_TECHNOLOGY_CHANGE_LEN       1
 #define NAS_OM_EVENT_STK_NETWORK_SEARCH_MODE_CHANGE_LEN     1
 
-/*OTA相关: 需要与OM确定具体的值*/
+/*OTA????: ??????OM????????????*/
 #define OM_NAS_OTA_REQ    0xC101
 #define NAS_OM_OTA_CNF    0xC102
 #define NAS_OM_OTA_IND    0xC103
@@ -98,20 +98,20 @@
  + sizeof(ucFuncType)     + sizeof(ucReserve)    + sizeof(usLength)*/
 #define NAS_OM_TRANS_MSG_OM_HEADER_LEN    28
 
-#define ID_NAS_OM_TRANS_MSG               0x5001                /* NAS到OM 的透传消息原语 */
+#define ID_NAS_OM_TRANS_MSG               0x5001                /* NAS??OM ?????????????? */
 
 
 
 #define SM_OM_PDP_ACTIVATED               0
 #define SM_OM_PDP_NOT_ACTIVATED           1
 
-/* 双卡双待项目中空口消息与trans消息区分modem0和modem1 */
+/* ????????????????????????trans????????modem0??modem1 */
 #define NAS_OM_FUNCTION_TYPE_MODEM_MASK   (0xc0)
 #define NAS_OM_FUNCTION_TYPE_VALUE_MASK   (0x3f)
 #define NAS_MAX_TIMER_EVENT               (100)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 typedef enum
@@ -150,12 +150,12 @@ typedef enum
     NAS_OM_EVENT_COVERAGE_LOST              = 31,
     NAS_OM_EVENT_SMS_RECEIVE                = 32,
     NAS_OM_EVENT_SMS_SENT                   = 33,
-    /*短消息发送确认    */
+    /*??????????????    */
     NAS_OM_EVENT_SMS_MO_SUCC                = 34,            /*_H2ASN_MsgChoice NAS_OM_SMS_MO_REPORT_STRU*/
     NAS_OM_EVENT_SMS_MO_FAIL                = 35,            /*_H2ASN_MsgChoice NAS_OM_SMS_MO_REPORT_STRU*/
-    /*短消息状态报告    */
+    /*??????????????    */
     NAS_OM_EVENT_SMS_MT_NOTIFY              = 36,
-    /*短消息存储状态报告*/
+    /*??????????????????*/
     NAS_OM_EVENT_SMS_STATICS                = 37,            /*_H2ASN_MsgChoice NAS_OM_SMS_STATICS_STRU*/
     NAS_OM_EVENT_READY_TIMER_START          = 38,
     NAS_OM_EVENT_READY_TIMER_STOP           = 39,
@@ -382,17 +382,17 @@ typedef VOS_UINT8 NAS_OM_MM_LAU_TYPE_ENUM_UINT8;
 
 enum NAS_OM_MMC_STATE_ENUM
 {
-    SWITCH_ON_END                                 = 0,                          /* 上电或重启时，在此状态下等待ATTACH要求   */
-    TRYING_PLMN                                   = 1,                          /* 尝试注册状态                             */
-    WAIT_FOR_PLMN_LIST                            = 2,                          /* 等待搜索PLMN list结果                    */
-    WAIT_FOR_AS_RESULT                            = 3,                          /* 等待指定搜索PLMN或suitable cell结果      */
-    ON_PLMN                                       = 4,                          /* 指示PS域或CS域至少有一个成功注册         */
-    LIMIT_SERVICE                                 = 5,                          /* 此时MS只能提供受限服务                   */
-    WAIT_FOR_PLMNS                                = 6,                          /* 覆盖区丢失后进入此状态                   */
-    NOT_ON_PLMN                                   = 7,                          /* 仅用于手动模式，等待用户选择PLMN         */
-    NULL_STATE                                    = 8,                          /* MMC关机时进入次状态                      */
-    SWITCH_ON_INIT                                = 9,                          /* 在此状态下初始化MM层和AS层               */
-    TC_STATE                                      = 10,                         /* TC测试时迁入此状态                       */
+    SWITCH_ON_END                                 = 0,                          /* ????????????????????????????ATTACH????   */
+    TRYING_PLMN                                   = 1,                          /* ????????????                             */
+    WAIT_FOR_PLMN_LIST                            = 2,                          /* ????????PLMN list????                    */
+    WAIT_FOR_AS_RESULT                            = 3,                          /* ????????????PLMN??suitable cell????      */
+    ON_PLMN                                       = 4,                          /* ????PS????CS????????????????????         */
+    LIMIT_SERVICE                                 = 5,                          /* ????MS????????????????                   */
+    WAIT_FOR_PLMNS                                = 6,                          /* ??????????????????????                   */
+    NOT_ON_PLMN                                   = 7,                          /* ????????????????????????????PLMN         */
+    NULL_STATE                                    = 8,                          /* MMC????????????????                      */
+    SWITCH_ON_INIT                                = 9,                          /* ????????????????MM????AS??               */
+    TC_STATE                                      = 10,                         /* TC????????????????                       */
     SUSPEND                                       = 11,
     MMC_STATE_BUTT
 };
@@ -400,24 +400,24 @@ typedef VOS_UINT8 NAS_OM_MMC_STATE_ENUM_UINT8;
 
 
 
-/*OTA相关*/
+/*OTA????*/
 enum OM_NAS_OTA_SWITCH_ENUM
 {
-    NAS_OTA_SWITCH_OFF   = 0,     /* 停止上报空口消息 */
-    NAS_OTA_SWITCH_ON    = 1      /* 开始上报空口消息 */
+    NAS_OTA_SWITCH_OFF   = 0,     /* ???????????????? */
+    NAS_OTA_SWITCH_ON    = 1      /* ???????????????? */
 };
 typedef VOS_UINT32   NAS_OTA_SWITCH_ENUM_UINT32;
 
 enum NAS_OM_OTA_CNF_RESULT_ENUM
 {
-    NAS_OTA_DIRECTION_UP     = 0,     /* 空口配置方向: 上行(MS-->Network) */
-    NAS_OTA_DIRECTION_DOWN   = 1      /* 空口配置方向: 下行(Network-->MS) */
+    NAS_OTA_DIRECTION_UP     = 0,     /* ????????????: ????(MS-->Network) */
+    NAS_OTA_DIRECTION_DOWN   = 1      /* ????????????: ????(Network-->MS) */
 };
 
 enum NAS_OTA_CNF_ERRCODE_ENUM
 {
-    NAS_OTA_CNF_ERRCODE_NO    = 0,     /* 空口配置成功 */
-    NAS_OTA_CNF_ERRCODE_YES   = 1      /* 空口配置失败 */
+    NAS_OTA_CNF_ERRCODE_NO    = 0,     /* ???????????? */
+    NAS_OTA_CNF_ERRCODE_YES   = 1      /* ???????????? */
 };
 typedef VOS_UINT32   NAS_OTA_CNF_ERRCODE_ENUM_UINT32;
 
@@ -646,8 +646,8 @@ typedef VOS_UINT16 NAS_OTA_MSG_ID_ENUM_UINT16;
 
 
 /*****************************************************************************
- 枚举名    : NAS_OM_REGISTER_STATE_ENUM
- 结构说明  : NAS提供给OM点灯任务的当前注册状态枚举
+ ??????    : NAS_OM_REGISTER_STATE_ENUM
+ ????????  : NAS??????OM??????????????????????????
 *****************************************************************************/
 enum NAS_OM_REGISTER_STATE_ENUM
 {
@@ -661,8 +661,8 @@ enum NAS_OM_REGISTER_STATE_ENUM
 typedef VOS_UINT8 NAS_OM_REGISTER_STATE_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : NAS_OM_SERVICE_TYPE_ENUM
- 结构说明  : NAS提供给OM点灯任务当前进行的业务类型枚举
+ ??????    : NAS_OM_SERVICE_TYPE_ENUM
+ ????????  : NAS??????OM??????????????????????????????
 *****************************************************************************/
 enum NAS_OM_SERVICE_TYPE_ENUM
 {
@@ -676,22 +676,22 @@ enum NAS_OM_SERVICE_TYPE_ENUM
 typedef VOS_UINT8 NAS_OM_SERVICE_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 typedef struct
 {
@@ -711,7 +711,7 @@ typedef struct
 {
     NAS_OM_EVENT_ID_ENUM_UINT16         usEventId;          /*_H2ASN_MsgChoice_Export NAS_OM_EVENT_ID_ENUM_UINT16*/
     VOS_UINT16                          usReserve;
-    VOS_UINT32                          ulModuleId;         /*发送模块PID ，工具根据PID可以屏蔽消息*/
+    VOS_UINT32                          ulModuleId;         /*????????PID ??????????PID????????????*/
     VOS_UINT8                           aucData[4];
 
     /***************************************************************************
@@ -734,18 +734,18 @@ typedef struct
 
 
 
-#define NAS_OM_DATA_PTR_LEN          4                                          /* NAS_OM之间传输数据的指针长度*/
+#define NAS_OM_DATA_PTR_LEN          4                                          /* NAS_OM??????????????????????*/
 
 
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                          ulMsgId;                                /* 原语ID                                   */
+    VOS_UINT32                          ulMsgId;                                /* ????ID                                   */
     VOS_UINT16                          usOriginalId;
     VOS_UINT16                          usTerminalId;
     VOS_UINT32                          ulTimeStamp;
     VOS_UINT32                          ulSN;
-    VOS_UINT8                           aucData[NAS_OM_DATA_PTR_LEN];           /* 传输的消息内容                         */
+    VOS_UINT8                           aucData[NAS_OM_DATA_PTR_LEN];           /* ??????????????                         */
 }ID_NAS_OM_INQUIRE_STRU;
 
 
@@ -759,7 +759,7 @@ typedef struct
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                          ulMsgId;                                /* 原语ID                                   */
+    VOS_UINT32                          ulMsgId;                                /* ????ID                                   */
 
     VOS_UINT16                          usOriginalId;
     VOS_UINT16                          usTerminalId;
@@ -774,7 +774,7 @@ typedef struct
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                          ulMsgId;                                /* 原语ID                                   */
+    VOS_UINT32                          ulMsgId;                                /* ????ID                                   */
 
     VOS_UINT16                          usOriginalId;
     VOS_UINT16                          usTerminalId;
@@ -782,21 +782,21 @@ typedef struct
     VOS_UINT32                          ulSN;
 }NAS_OM_CONFIG_TIMER_REPORT_CNF_STRU;
 
-#define NAS_OM_DATA_OFFSET              12                                      /* usLength下一字节到aucData的偏移*/
+#define NAS_OM_DATA_OFFSET              12                                      /* usLength??????????aucData??????*/
 
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                          ulMsgId;                                /* 原语ID                                   */
+    VOS_UINT32                          ulMsgId;                                /* ????ID                                   */
     VOS_UINT16                          usOriginalId;
     VOS_UINT16                          usTerminalId;
     VOS_UINT32                          ulTimeStamp;
-    VOS_UINT32                          ulSN;                             /* 工具ID，用于支持多工具，由工具定义，UE侧原值返回即可 */
-    VOS_UINT8                           aucData[NAS_OM_DATA_PTR_LEN];                             /* 传输的消息内容                         */
+    VOS_UINT32                          ulSN;                             /* ????ID??????????????????????????????UE?????????????? */
+    VOS_UINT8                           aucData[NAS_OM_DATA_PTR_LEN];                             /* ??????????????                         */
 }ID_NAS_OM_CNF_STRU;
 
 
-/*OTA相关*/
+/*OTA????*/
 typedef struct
 {
     VOS_MSG_HEADER
@@ -807,7 +807,7 @@ typedef struct
     VOS_UINT32                          ulTimeStamp;
     VOS_UINT32                          ulSN;
 
-    VOS_UINT32                          ulOnOff;                                /* 0 - 停止上报 1 - 开始上报 */
+    VOS_UINT32                          ulOnOff;                                /* 0 - ???????? 1 - ???????? */
 }OM_NAS_OTA_REQ_STRUCT;
 
 
@@ -821,7 +821,7 @@ typedef struct
     VOS_UINT32                          ulTimeStamp;
     VOS_UINT32                          ulSN;
 
-    VOS_UINT32                          ulErrCode;                              /* 传输的消息内容 */
+    VOS_UINT32                          ulErrCode;                              /* ?????????????? */
 }NAS_OM_OTA_CNF_STRUCT;
 
 typedef struct
@@ -858,21 +858,21 @@ typedef struct
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT16                          usPrimId;                               /* 原语ID                                   */
-    VOS_UINT16                          usToolsId;                              /* 工具ID，用于支持多工具，由工具定义，UE侧原值返回即可 */
-    VOS_UINT8                           aucData[NAS_OM_DATA_PTR_LEN];                             /* 传输的消息内容                         */
+    VOS_UINT16                          usPrimId;                               /* ????ID                                   */
+    VOS_UINT16                          usToolsId;                              /* ????ID??????????????????????????????UE?????????????? */
+    VOS_UINT8                           aucData[NAS_OM_DATA_PTR_LEN];                             /* ??????????????                         */
 }ID_NAS_OM_CONFIG_TIMER_REPORT_STRU;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern VOS_VOID NAS_EventReport(
     VOS_UINT32                          ulPid,

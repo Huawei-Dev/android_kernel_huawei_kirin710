@@ -70,11 +70,11 @@
 #include "diag_api.h"
 #include "diag_debug.h"
 
-/******************************0x10015101 时间戳心跳结构体****************************************/
+/******************************0x10015101 ????????????????****************************************/
 typedef struct
 {
     VOS_UINT32 ulLowTimeStamp;
-	VOS_UINT32 ulHighTimeStamp;    /* 高32bit时间戳*/
+	VOS_UINT32 ulHighTimeStamp;    /* ??32bit??????*/
 } DIAG_IND_HIGH_TS_STRU;
 
 typedef struct

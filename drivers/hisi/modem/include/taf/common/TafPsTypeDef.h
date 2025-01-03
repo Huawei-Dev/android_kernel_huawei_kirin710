@@ -52,7 +52,7 @@
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 
@@ -65,9 +65,9 @@ extern "C" {
 
 #pragma pack(4)
 
-/* TAF下数据业务的消息分配范围: 0 ~ 0x1000, 见文件TafMntn.h TAF_MNTN_MSG_ENUM_UINT32
+/* TAF????????????????????????: 0 ~ 0x1000, ??????TafMntn.h TAF_MNTN_MSG_ENUM_UINT32
 
-   DSM与APS数据业务模块间的消息分配范围原则限定: 高8位为base，低8位为消息标识
+   DSM??APS????????????????????????????????????: ??8????base????8????????????
 */
 #define TAF_PS_MSG_ID_MASK                                  (0x1F00)
 
@@ -107,10 +107,10 @@ extern "C" {
 *****************************************************************************/
 #define TAF_PS_PPP_CHAP_RESPONSE_LEN                        (16)
 
-#define TAF_MAX_USERNAME_LEN                                (99)                                    /*AUTHLEN 为100，包含1个字节的Peer-ID Length和99字节的Peer-ID，故此处定义为99*/
-#define TAF_MAX_PASSCODE_LEN                                (99)                                    /*PASSWORDLEN 为100，包含1个字节的Passwd-Length和99字节的Passwd，故此处定义为99*/
+#define TAF_MAX_USERNAME_LEN                                (99)                                    /*AUTHLEN ??100??????1????????Peer-ID Length??99??????Peer-ID??????????????99*/
+#define TAF_MAX_PASSCODE_LEN                                (99)                                    /*PASSWORDLEN ??100??????1????????Passwd-Length??99??????Passwd??????????????99*/
 
-/* UE支持的最大的P-CSCF地址个数 */
+/* UE????????????P-CSCF???????? */
 #define TAF_PCSCF_ADDR_MAX_NUM                              (8)
 
 #define TAF_PS_CAUSE_APS_SECTION_BEGIN                      (0x0000)
@@ -127,7 +127,7 @@ extern "C" {
 #define TAF_PS_CAUSE_PPPC_SECTION_BEGIN                     (0X0900)
 #define TAF_PS_CAUSE_MIP_SECTION_BEGIN                      (0X0A00)
 
-/* 偏移量0X0800已被占用，ril侧将对0 ~ 255的内部原因值往后偏移0X0800 */
+/* ??????0X0800??????????ril??????0 ~ 255????????????????????0X0800 */
 
 #define TAF_PS_CAUSE_EMM_SECTION_BEGIN                      (0X0B00)
 #define TAF_PS_CAUSE_EMM_NW_SECTION_BEGIN                   (0X0C00)
@@ -146,29 +146,29 @@ extern "C" {
 #define TAF_CGACT_DEACT                                     (0)
 #define TAF_CGACT_ACT                                       (1)
 
-/* 目前先放在这里，等后面APS代码删除调整之后，更名 */
+/* ??????????????????????APS?????????????????????? */
 #define TAF_PS_PPP_IP_ADDR_ID                               0x03
 #define TAF_PS_PPP_PRI_DNS_ID                               0x81
 #define TAF_PS_PPP_PRI_NBNS_ID                              0x82
 #define TAF_PS_PPP_SEC_DNS_ID                               0x83
 #define TAF_PS_PPP_SEC_NBNS_ID                              0x84
 
-/*PCO头的长度*/
+/*PCO????????*/
 #define TAF_PS_PCO_CONFIG_HDR_LEN                           (4)
 
-/*IP地址长度*/
+/*IP????????*/
 #define TAF_PS_PPP_IP_ADDR_LEN                              (6)
 
-/*主NBNS地址长度*/
+/*??NBNS????????*/
 #define TAF_PS_PPP_PRI_NBNS_LEN                             (6)
 
-/*主DNS地址长度*/
+/*??DNS????????*/
 #define TAF_PS_PPP_PRI_DNS_LEN                              (6)
 
-/*副NBNS地址长度*/
+/*??NBNS????????*/
 #define TAF_PS_PPP_SEC_NBNS_LEN                             (6)
 
-/*副NBNS地址长度*/
+/*??NBNS????????*/
 #define TAF_PS_PPP_SEC_DNS_LEN                              (6)
 
 /***************************************************************
@@ -200,7 +200,7 @@ AUTH_PAP (RFC 1334)
 #define TAF_PS_PPP_CHAP_RESPONSE_HEAD_OFFSET                (TAF_PS_PPP_CHAP_HEAD_OFFSET + TAF_PS_PPP_CHAP_RESPONSE_SIZE)
 
 /*--------------------------------------------------------------
-   IPCP OPTION长度必须等于6
+   IPCP OPTION????????????6
    OPTION TYPE(1 byte) + OPTION LEN(1 btye) + VALUE(4 bytes)
 --------------------------------------------------------------*/
 #define TAF_PS_PPP_IPCP_OPTION_TYPE_LEN                     1
@@ -215,16 +215,16 @@ AUTH_PAP (RFC 1334)
 #define TAF_PS_PPP_CODE_NAK                                 3
 #define TAF_PS_PPP_CODE_REJ                                 4
 
-#define TAF_PS_INVALID_CID                                  (0xFF)                  /* 无效的CID */
+#define TAF_PS_INVALID_CID                                  (0xFF)                  /* ??????CID */
 
 
 #define TAF_PS_3GPP_QOS_MEANTHROUGH_TOP                     18
 #define TAF_PS_3GPP_QOS_MEANTHROUGH_BESTEFFORT              31
 #define TAF_PS_3GPP_QOS_MEANTHROUGH_BOT                     0
 
-/* 终端可配置需求:2G拨号请求禁止Spare_bit3等参数 */
-#define TAF_PS_2G_BIT3_DISABLE                              0    /*2G拨号时PDP激活消息携带Spare_bit3等参数  */
-#define TAF_PS_2G_BIT3_ENABLE                               1    /*2G拨号时PDP激活请求消息不携带bit3等参数  */
+/* ??????????????:2G????????????Spare_bit3?????? */
+#define TAF_PS_2G_BIT3_DISABLE                              0    /*2G??????PDP????????????Spare_bit3??????  */
+#define TAF_PS_2G_BIT3_ENABLE                               1    /*2G??????PDP??????????????????bit3??????  */
 
 
 #define TAF_PS_PDU_SESSION_ID_MIN                           (5)
@@ -263,9 +263,9 @@ enum TAF_PDP_REQUEST_TYPE_ENUM
 typedef VOS_UINT8 TAF_PDP_REQUEST_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名称: TAF_PDP_AUTH_TYPE_ENUM
+ ????????: TAF_PDP_AUTH_TYPE_ENUM
 
- 枚举说明: 鉴权类型
+ ????????: ????????
 *****************************************************************************/
 enum TAF_PDP_AUTH_TYPE_ENUM
 {
@@ -344,8 +344,8 @@ enum TAF_PDP_IM_CN_SIG_FLAG_ENUM
 typedef VOS_UINT8 TAF_PDP_IM_CN_SIG_FLAG_ENUM_UINT8;
 
 /*****************************************************************************
- 结构名称   : TAF_NV_PDP_NSPLI_ENUM
- 结构说明   :
+ ????????   : TAF_NV_PDP_NSPLI_ENUM
+ ????????   :
 *****************************************************************************/
 enum TAF_NV_PDP_NSPLI_ENUM
 {
@@ -369,23 +369,23 @@ typedef VOS_UINT8 TAF_PDP_NAS_SIG_PRIO_IND_ENUM_UINT8;
 
 enum TAF_PS_RAT_TYPE_ENUM
 {
-    TAF_PS_RAT_TYPE_NULL,          /* 当前未在任何网络上驻留 */
-    TAF_PS_RAT_TYPE_GSM,           /* GSM接入技术 */
-    TAF_PS_RAT_TYPE_WCDMA,         /* WCDMA接入技术 */
-    TAF_PS_RAT_TYPE_LTE,           /* LTE接入技术 */
-    TAF_PS_RAT_TYPE_1X,            /* CDMA-1X接入技术 */
-    TAF_PS_RAT_TYPE_HRPD,          /* CDMA-HRPD接入技术 */
-    TAF_PS_RAT_TYPE_EHRPD,         /* CDMA-EHRPD接入技术 */
-    TAF_PS_RAT_TYPE_NR,            /* NR核心网接入技术 */
-    TAF_PS_RAT_TYPE_BUTT           /* 无效的接入技术 */
+    TAF_PS_RAT_TYPE_NULL,          /* ?????????????????????? */
+    TAF_PS_RAT_TYPE_GSM,           /* GSM???????? */
+    TAF_PS_RAT_TYPE_WCDMA,         /* WCDMA???????? */
+    TAF_PS_RAT_TYPE_LTE,           /* LTE???????? */
+    TAF_PS_RAT_TYPE_1X,            /* CDMA-1X???????? */
+    TAF_PS_RAT_TYPE_HRPD,          /* CDMA-HRPD???????? */
+    TAF_PS_RAT_TYPE_EHRPD,         /* CDMA-EHRPD???????? */
+    TAF_PS_RAT_TYPE_NR,            /* NR?????????????? */
+    TAF_PS_RAT_TYPE_BUTT           /* ?????????????? */
 };
 typedef VOS_UINT32 TAF_PS_RAT_TYPE_ENUM_UINT32;
 
 
 enum TAF_PDP_ANSWER_MODE_ENUM
 {
-    TAF_PDP_ANSWER_MODE_MANUAL             = 0x00,             /* 人工应答方式 */
-    TAF_PDP_ANSWER_MODE_AUTO               = 0x01,             /* 自动应答方式 */
+    TAF_PDP_ANSWER_MODE_MANUAL             = 0x00,             /* ???????????? */
+    TAF_PDP_ANSWER_MODE_AUTO               = 0x01,             /* ???????????? */
 
     TAF_PDP_ANSWER_MODE_BUTT
 };
@@ -394,8 +394,8 @@ typedef VOS_UINT8 TAF_PDP_ANSWER_MODE_ENUM_UINT8;
 
 enum TAF_PDP_ANSWER_TYPE_ENUM
 {
-    TAF_PDP_ANSWER_TYPE_ACCEPT             = 0x00,             /* 接受呼叫 */
-    TAF_PDP_ANSWER_TYPE_REJECT             = 0x01,             /* 拒绝呼叫 */
+    TAF_PDP_ANSWER_TYPE_ACCEPT             = 0x00,             /* ???????? */
+    TAF_PDP_ANSWER_TYPE_REJECT             = 0x01,             /* ???????? */
 
     TAF_PDP_ANSWER_TYPE_BUTT
 };
@@ -405,16 +405,16 @@ typedef VOS_UINT8 TAF_PDP_ANSWER_TYPE_ENUM_UINT8;
 enum TAF_PS_CDATA_DIAL_MODE_ENUM
 {
     TAF_PS_CDATA_DIAL_MODE_ASYNC_CALL   = 0x00,
-    TAF_PS_CDATA_DIAL_MODE_RELAY        = 0x01,                                 /* 数据传输模式中继模式 */
-    TAF_PS_CDATA_DIAL_MODE_NETWORK      = 0x02,                                 /* 数据传输模式网络模式  */
+    TAF_PS_CDATA_DIAL_MODE_RELAY        = 0x01,                                 /* ???????????????????? */
+    TAF_PS_CDATA_DIAL_MODE_NETWORK      = 0x02,                                 /* ????????????????????  */
     TAF_PS_CDATA_DIAL_MODE_BUTT
 };
 typedef VOS_UINT32 TAF_PS_CDATA_DIAL_MODE_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名称: TAF_PDP_DIAL_TYPE_ENUM
+ ????????: TAF_PDP_DIAL_TYPE_ENUM
 
- 枚举说明: 鉴权类型
+ ????????: ????????
 *****************************************************************************/
 enum TAF_PDP_DIAL_TYPE_ENUM
 {
@@ -430,7 +430,7 @@ typedef VOS_UINT8 TAF_PS_PDP_DIAL_TYPE_ENUM_UINT8;
 enum TAF_PS_CAUSE_ENUM
 {
     /*----------------------------------------------------------------------
-       TAF上报的内部原因值, 取值范围[0x0000, 0x007F]
+       TAF????????????????, ????????[0x0000, 0x007F]
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_SUCCESS                                    = (TAF_PS_CAUSE_APS_SECTION_BEGIN + 0),
     TAF_PS_CAUSE_INVALID_PARAMETER                          = (TAF_PS_CAUSE_APS_SECTION_BEGIN + 1),
@@ -494,7 +494,7 @@ enum TAF_PS_CAUSE_ENUM
 
 
     /*----------------------------------------------------------------------
-       TAF上报的SM内部原因值, 取值范围[0x0080, 0x00FF]
+       TAF??????SM??????????, ????????[0x0080, 0x00FF]
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_SM_CONN_ESTABLISH_MAX_TIME_OUT             = (TAF_PS_CAUSE_SM_SECTION_BEGIN + 1),
     TAF_PS_CAUSE_SM_MAX_TIME_OUT                            = (TAF_PS_CAUSE_SM_SECTION_BEGIN + 2),
@@ -549,9 +549,9 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_SM_UNKNOWN                                 = (TAF_PS_CAUSE_SM_SECTION_BEGIN + 127),
 
     /*----------------------------------------------------------------------
-       TAF上报的SM网络原因值, 取值范围[0x0100, 0x01FF]
-       由于3GPP协议已经定义了具体的(E)SM网络原因值, (E)SM上报的取值为协议
-       定义的原因值加上偏移量(0x100)
+       TAF??????SM??????????, ????????[0x0100, 0x01FF]
+       ????3GPP????????????????????(E)SM??????????, (E)SM????????????????
+       ??????????????????????(0x100)
        (1) SM Cause : Refer to TS 24.008 section 10.5.6.6
        (2) ESM Cause: Refer to TS 24.301 section 9.9.4.4
     *---------------------------------------------------------------------*/
@@ -608,7 +608,7 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_SM_NW_APN_RESTRICTION_INCOMPATIBLE         = (TAF_PS_CAUSE_SM_NW_SECTION_BEGIN + 112),
 
     /*----------------------------------------------------------------------
-       TAF上报的GMM内部原因值, 取值范围[0x0200, 0x02FF]
+       TAF??????GMM??????????, ????????[0x0200, 0x02FF]
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_GMM_GPRS_NOT_SUPPORT                       = (TAF_PS_CAUSE_GMM_SECTION_BEGIN + 1),
     TAF_PS_CAUSE_GMM_FORBID_LA                              = (TAF_PS_CAUSE_GMM_SECTION_BEGIN + 2),
@@ -631,9 +631,9 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_GMM_UNKNOWN                                = (TAF_PS_CAUSE_GMM_SECTION_BEGIN + 127),
 
     /*----------------------------------------------------------------------
-       TAF上报的GMM网络原因值, 取值范围[0x0300, 0x03FF]
-       由于3GPP协议已经定义了具体的GMM网络原因值, 平台上报的GMM网络原因值
-       取值为协议定义的原因值加上偏移量(0x100)
+       TAF??????GMM??????????, ????????[0x0300, 0x03FF]
+       ????3GPP????????????????????GMM??????????, ??????????GMM??????????
+       ????????????????????????????????(0x100)
        Gmm Cause: Refer to TS 24.008 section 10.5.5.14
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_GMM_NW_IMSI_UNKNOWN_IN_HLR                 = (TAF_PS_CAUSE_GMM_NW_SECTION_BEGIN + 2),
@@ -669,8 +669,8 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_GMM_NW_PROTOCOL_ERROR                      = (TAF_PS_CAUSE_GMM_NW_SECTION_BEGIN + 111),
 
     /*----------------------------------------------------------------------
-       TAF上报的CDMA 1X网络原因值, 取值范围[0x400, 0x04FF]
-       取值为协议定义的原因值加上偏移量(0x400)
+       TAF??????CDMA 1X??????????, ????????[0x400, 0x04FF]
+       ????????????????????????????????(0x400)
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_XCC_OTHER_SERVICE_IN_TCH                   = (TAF_PS_CAUSE_XCC_SECTION_BEGIN + 1),
     TAF_PS_CAUSE_XCC_CCS_NOT_SUPPORT                        = (TAF_PS_CAUSE_XCC_SECTION_BEGIN + 2),
@@ -698,9 +698,9 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_XCC_EMC_CALL_BACK_MODE                     = (TAF_PS_CAUSE_XCC_SECTION_BEGIN + 24),
 
     /*----------------------------------------------------------------------
-       接入层上报原因值对应到PS域，取值范围[0x500, 0x05FF]
-       由于3GPP2协议已经定义了具体的1X网络原因值, 平台上报的1X网络原因值
-       取值为协议定义的原因值加上偏移量(0x500)
+       ??????????????????????PS????????????[0x500, 0x05FF]
+       ????3GPP2????????????????????1X??????????, ??????????1X??????????
+       ????????????????????????????????(0x500)
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_XCC_AS_NO_SERVICE                          = (TAF_PS_CAUSE_XCC_AS_SECTION_BEGIN + 1),
     TAF_PS_CAUSE_XCC_AS_MAX_ACCESS_PROBES                   = (TAF_PS_CAUSE_XCC_AS_SECTION_BEGIN + 2),
@@ -854,10 +854,10 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_MIP_REG_WITH_REDIRECTED_HA                 = (TAF_PS_CAUSE_MIP_SECTION_BEGIN + 143),
     TAF_PS_CAUSE_MIP_HA_TO_HA_BAD_AAA_AUTH                  = (TAF_PS_CAUSE_MIP_SECTION_BEGIN + 144),
 
-    /* MIP协议未定义或者网侧发来的其它原因值 */
+    /* MIP?????????????????????????????????? */
     TAF_PS_CAUSE_MIP_PROTOCOL_UNSPECIFIED                   = (TAF_PS_CAUSE_MIP_SECTION_BEGIN + 255),
 
-    /* TAF APS定义EMM内部拒绝原因值 */
+    /* TAF APS????EMM?????????????? */
     TAF_PS_CAUSE_EMM_NW_BEAR_NOT_SYNC                        = (TAF_PS_CAUSE_EMM_SECTION_BEGIN + 0),
     TAF_PS_CAUSE_EMM_REL_IND                                = (TAF_PS_CAUSE_EMM_SECTION_BEGIN + 1),
     TAF_PS_CAUSE_EMM_AUTH_TIME_OUT                          = (TAF_PS_CAUSE_EMM_SECTION_BEGIN + 2),
@@ -979,9 +979,9 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_WLAN_PDN_ACT_RESULT_THROT_NOT_ALLOWED      = (TAF_PS_CAUSE_WLAN_SECTION_BEGIN + 234),
 
     /*----------------------------------------------------------------------
-       NRSM的内部原因值, 取值范围[0x0000, 0x00FF]
-       方向: NRSM -> TAF
-       说明: UNKNOWN为错误码分段的最后一个错误码
+       NRSM????????????, ????????[0x0000, 0x00FF]
+       ????: NRSM -> TAF
+       ????: UNKNOWN????????????????????????????
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_NRSM_T3580_TIME_OUT                        = (TAF_PS_CAUSE_NRSM_SECTION_BEGIN + 1),
     TAF_PS_CAUSE_NRSM_T3396_ALG_NOT_ALLOWED                 = (TAF_PS_CAUSE_NRSM_SECTION_BEGIN + 2),
@@ -990,9 +990,9 @@ enum TAF_PS_CAUSE_ENUM
     TAF_PS_CAUSE_NRSM_UNKNOWN                               = (TAF_PS_CAUSE_NRSM_SECTION_BEGIN + 255),
 
     /*----------------------------------------------------------------------
-       NRMM的内部原因值, 取值范围[0x0200, 0x02FF]
-       方向: NRMM -> NRSM -> TAF
-       说明: UNKNOWN为错误码分段的最后一个错误码
+       NRMM????????????, ????????[0x0200, 0x02FF]
+       ????: NRMM -> NRSM -> TAF
+       ????: UNKNOWN????????????????????????????
     *---------------------------------------------------------------------*/
     TAF_PS_CAUSE_NRMM_REL_IND                               = (TAF_PS_CAUSE_NRMM_SECTION_BEGIN + 0),
 
@@ -1005,13 +1005,13 @@ typedef VOS_UINT32 TAF_PS_CAUSE_ENUM_UINT32;
 enum TAF_PS_CALL_END_CAUSE_ENUM
 {
     TAF_PS_CALL_END_CAUSE_NORMAL        = 0x00,
-    TAF_PS_CALL_END_CAUSE_FORCE         = 0x01,                                 /* 强制去激活 */
+    TAF_PS_CALL_END_CAUSE_FORCE         = 0x01,                                 /* ?????????? */
 
-    /* 业务场景的去激活原因 */
-    TAF_PS_CALL_END_CAUSE_IPV6_ADDR_ALLOC_FAIL      = 0x10,                     /* IPV6路由公告分配失败 */
-    TAF_PS_CALL_END_CAUSE_IPV6_ADDR_TIME_OUT        = 0x11,                     /* IPV6地址失效 */
-    TAF_PS_CALL_END_CAUSE_PCSCF_ADDR_ALLOC_FAIL     = 0x12,                     /* PCSCF地址不存在 */
-    TAF_PS_CALL_END_CAUSE_LOCAL                     = 0x13,                     /* 本地去激活 */
+    /* ???????????????????? */
+    TAF_PS_CALL_END_CAUSE_IPV6_ADDR_ALLOC_FAIL      = 0x10,                     /* IPV6???????????????? */
+    TAF_PS_CALL_END_CAUSE_IPV6_ADDR_TIME_OUT        = 0x11,                     /* IPV6???????? */
+    TAF_PS_CALL_END_CAUSE_PCSCF_ADDR_ALLOC_FAIL     = 0x12,                     /* PCSCF?????????? */
+    TAF_PS_CALL_END_CAUSE_LOCAL                     = 0x13,                     /* ?????????? */
 
     TAF_PS_CALL_END_CAUSE_CELLULAR2W_HO             = 0x14,
 
@@ -1120,9 +1120,9 @@ typedef struct
 } TAF_PS_AUTH_INFO_STRU;
 
 /*****************************************************************************
- 结构名称  : TAF_PDP_AUTH_CONFIG_INFO_STRU
+ ????????  : TAF_PDP_AUTH_CONFIG_INFO_STRU
 
- 结构说明  : 鉴权配置结构体
+ ????????  : ??????????????
 *****************************************************************************/
 typedef struct
 {
@@ -1131,23 +1131,23 @@ typedef struct
     VOS_UINT32                          bitOpAuthParam      : 1;
     VOS_UINT32                          bitOpSpare          : 29;
 
-    TAF_PDP_AUTH_TYPE_ENUM_UINT8        enAuthType;                                         /* NDISDUP & PPP拨号类型用此参数 */
-    VOS_UINT8                           ucAuthId;                                           /* PPP拨号类型用此参数 */
+    TAF_PDP_AUTH_TYPE_ENUM_UINT8        enAuthType;                                         /* NDISDUP & PPP???????????????? */
+    VOS_UINT8                           ucAuthId;                                           /* PPP???????????????? */
     VOS_UINT8                           aucReserve[2];
-    VOS_UINT8                           aucUserName[TAF_MAX_AUTHDATA_USERNAME_LEN + 1];              /* NDISDUP拨号类型用此参数 */
-    VOS_UINT8                           aucPassWord[TAF_MAX_AUTHDATA_PASSWORD_LEN + 1];              /* NDISDUP拨号类型用此参数 */
+    VOS_UINT8                           aucUserName[TAF_MAX_AUTHDATA_USERNAME_LEN + 1];              /* NDISDUP???????????????? */
+    VOS_UINT8                           aucPassWord[TAF_MAX_AUTHDATA_PASSWORD_LEN + 1];              /* NDISDUP???????????????? */
 
     union
     {
         TAF_PDP_CHAP_PARAM_STRU         stChapParam;
         TAF_PDP_PAP_PARAM_STRU          stPapParam;
-    } unAuthParam;                                                                          /* PPP拨号类型用此参数 */
+    } unAuthParam;                                                                          /* PPP???????????????? */
 }TAF_PDP_AUTH_CONFIG_INFO_STRU;
 
 /*****************************************************************************
- 结构名称: TAF_PDP_APN_STRU
+ ????????: TAF_PDP_APN_STRU
 
- 结构说明: PDP上下文中APN信息
+ ????????: PDP????????APN????
 *****************************************************************************/
 typedef struct
 {
@@ -1215,7 +1215,7 @@ typedef struct
 
 typedef struct
 {
-    TAF_PDP_ADDR_STRU                   stPdpAddr;                              /* 用户设置的静态IP地址 */
+    TAF_PDP_ADDR_STRU                   stPdpAddr;                              /* ??????????????IP???? */
     TAF_PDP_APN_STRU                    stApn;
     TAF_PDP_D_COMP_ENUM_UINT8           enPdpDcomp;
     TAF_PDP_H_COMP_ENUM_UINT8           enPdpHcomp;
@@ -1241,23 +1241,23 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucTrafficClass;                         /*UMTS承载服务优化类型*/
-    VOS_UINT8                           ucDeliverOrder;                         /*SDU队列是否发送UMTS承载*/
-    VOS_UINT8                           ucDeliverErrSdu;                        /*SDU错误是否发送*/
+    VOS_UINT8                           ucTrafficClass;                         /*UMTS????????????????*/
+    VOS_UINT8                           ucDeliverOrder;                         /*SDU????????????UMTS????*/
+    VOS_UINT8                           ucDeliverErrSdu;                        /*SDU????????????*/
     VOS_UINT8                           aucReserved1[1];
-    VOS_UINT16                          usMaxSduSize;                           /*SDU大小最大值*/
+    VOS_UINT16                          usMaxSduSize;                           /*SDU??????????*/
     VOS_UINT8                           aucReserved2[2];
-    VOS_UINT32                          ulMaxBitUl;                             /*上行最大速率 kbits/s*/
-    VOS_UINT32                          ulMaxBitDl;                             /*下行最大速率 kbits/s*/
+    VOS_UINT32                          ulMaxBitUl;                             /*???????????? kbits/s*/
+    VOS_UINT32                          ulMaxBitDl;                             /*???????????? kbits/s*/
     VOS_UINT8                           ucResidualBer;
-    VOS_UINT8                           ucSduErrRatio;                          /*SDU误码率*/
-    VOS_UINT16                          usTransDelay;                           /*传输延时, 单位毫秒*/
-    VOS_UINT8                           ucTraffHandlePrior;                     /*处理UMTS承载的SDU对比其他承载的SDU*/
+    VOS_UINT8                           ucSduErrRatio;                          /*SDU??????*/
+    VOS_UINT16                          usTransDelay;                           /*????????, ????????*/
+    VOS_UINT8                           ucTraffHandlePrior;                     /*????UMTS??????SDU??????????????SDU*/
     VOS_UINT8                           aucReserved3[1];
     VOS_UINT8                           ucSrcStatisticsDescriptor;
     VOS_UINT8                           ucSignallingIndication;
-    VOS_UINT32                          ulGuarantBitUl;                         /*保证上行传输速率 kbits/s*/
-    VOS_UINT32                          ulGuarantBitDl;                         /*保证下行传输速率 kbits/s*/
+    VOS_UINT32                          ulGuarantBitUl;                         /*???????????????? kbits/s*/
+    VOS_UINT32                          ulGuarantBitDl;                         /*???????????????? kbits/s*/
 }TAF_UMTS_QOS_STRU;
 
 
@@ -1312,25 +1312,25 @@ typedef struct
     VOS_UINT16                          usSingleRmtPort;
     VOS_UINT16                          usRmtPortHighLimit;
     VOS_UINT16                          usRmtPortLowLimit;
-    VOS_UINT8                           ucProtocolId;                           /* 协议号 */
+    VOS_UINT8                           ucProtocolId;                           /* ?????? */
     VOS_UINT8                           ucTypeOfService;                        /* TOS */
     VOS_UINT8                           ucTypeOfServiceMask;                    /* TOS Mask */
     VOS_UINT8                           aucReserved[1];
 
-    /* aucRmtIpv4Address[0]为IP地址高字节位
-       aucRmtIpv4Address[3]为低字节位 */
+    /* aucRmtIpv4Address[0]??IP????????????
+       aucRmtIpv4Address[3]?????????? */
     VOS_UINT8                           aucRmtIpv4Address[TAF_IPV4_ADDR_LEN];
 
-    /* aucRmtIpv4Mask[0]为IP地址高字节位 ,
-       aucRmtIpv4Mask[3]为低字节位*/
+    /* aucRmtIpv4Mask[0]??IP???????????? ,
+       aucRmtIpv4Mask[3]??????????*/
     VOS_UINT8                           aucRmtIpv4Mask[TAF_IPV4_ADDR_LEN];
 
-    /* ucRmtIpv6Address[0]为IPv6接口标识高字节位
-       ucRmtIpv6Address[7]为IPv6接口标识低字节位 */
+    /* ucRmtIpv6Address[0]??IPv6????????????????
+       ucRmtIpv6Address[7]??IPv6???????????????? */
     VOS_UINT8                           aucRmtIpv6Address[TAF_IPV6_ADDR_LEN];
 
-    /* ucRmtIpv6Mask[0]为高字节位
-       ucRmtIpv6Mask[7]为低字节位*/
+    /* ucRmtIpv6Mask[0]??????????
+       ucRmtIpv6Mask[7]??????????*/
     VOS_UINT8                           aucRmtIpv6Mask[TAF_IPV6_ADDR_LEN];
 
     VOS_UINT32                          ulFlowLabelType;                        /*FlowLabelType*/
@@ -1345,8 +1345,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulPfNum;                                /* pf个数 */
-    TAF_PDP_PF_STRU                     astPf[TAF_MAX_SDF_PF_NUM];              /* pf表 */
+    VOS_UINT32                          ulPfNum;                                /* pf???? */
+    TAF_PDP_PF_STRU                     astPf[TAF_MAX_SDF_PF_NUM];              /* pf?? */
 }TAF_PDP_TFT_STRU;
 
 
@@ -1358,8 +1358,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucIpv4PcscfAddrNum;                     /* IPV4的P-CSCF地址个数，有效范围[0,8] */
-    VOS_UINT8                           aucRsv[3];                              /* 保留 */
+    VOS_UINT8                           ucIpv4PcscfAddrNum;                     /* IPV4??P-CSCF??????????????????[0,8] */
+    VOS_UINT8                           aucRsv[3];                              /* ???? */
 
     TAF_PDP_IPV4_PCSCF_STRU             astIpv4PcscfAddrList[TAF_PCSCF_ADDR_MAX_NUM];
 } TAF_PDP_IPV4_PCSCF_LIST_STRU;
@@ -1373,8 +1373,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucIpv6PcscfAddrNum;                     /* IPV6的P-CSCF地址个数，有效范围[0,8] */
-    VOS_UINT8                           aucRsv[3];                              /* 保留 */
+    VOS_UINT8                           ucIpv6PcscfAddrNum;                     /* IPV6??P-CSCF??????????????????[0,8] */
+    VOS_UINT8                           aucRsv[3];                              /* ???? */
 
     TAF_PDP_IPV6_PCSCF_STRU             astIpv6PcscfAddrList[TAF_PCSCF_ADDR_MAX_NUM];
 } TAF_PDP_IPV6_PCSCF_LIST_STRU;
@@ -1437,9 +1437,9 @@ typedef struct
     VOS_UINT32                          ulBitO              :1;
     VOS_UINT32                          ulBitRsv            :22;
 
-    VOS_UINT32                          ulMtu;                                  /* MTU大小 */
-    VOS_UINT32                          ulPrefixNum;                            /* IPV6地址前缀个数 */
-    TAF_PDP_IPV6_PREFIX_STRU            astPrefixList[TAF_MAX_PREFIX_NUM_IN_RA];/* IPV6地址前缀数组 */
+    VOS_UINT32                          ulMtu;                                  /* MTU???? */
+    VOS_UINT32                          ulPrefixNum;                            /* IPV6???????????? */
+    TAF_PDP_IPV6_PREFIX_STRU            astPrefixList[TAF_MAX_PREFIX_NUM_IN_RA];/* IPV6???????????? */
 
 } TAF_PDP_IPV6_RA_INFO_STRU;
 
@@ -1500,9 +1500,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucUnit;             /* 单位 */
+    VOS_UINT8                           ucUnit;             /* ???? */
     VOS_UINT8                           ucRsv;
-    VOS_UINT16                          usValue;            /* 数值 */
+    VOS_UINT16                          usValue;            /* ???? */
 }TAF_PS_NR_BIT_RATE_STRU;
 
 

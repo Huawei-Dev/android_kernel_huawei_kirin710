@@ -257,7 +257,7 @@ extern VOS_UINT32 CSD_FidInit(enum VOS_INIT_PHASE_DEFINE enInitPhase);
 
 extern VOS_UINT32 TAF_AGENT_FidInit(enum VOS_INIT_PHASE_DEFINE enPhase);
 
-/* DSP 上移  */
+/* DSP ????  */
 extern VOS_UINT32 UPHY_APM_FidInit ( enum VOS_INIT_PHASE_DEFINE ip );
 extern VOS_UINT32 UPHY_UCOM_WphyFidInit ( enum VOS_INIT_PHASE_DEFINE ip );
 extern VOS_UINT32 UPHY_UCOM_GphyFidInit ( enum VOS_INIT_PHASE_DEFINE ip );
@@ -282,7 +282,7 @@ extern VOS_UINT32 NPHY_STARTUP_FidInit ( enum VOS_INIT_PHASE_DEFINE ip );
 /* 5G ARM NRPHY StartUp */
 extern VOS_UINT32 NRPHY_STARTUP_FidInit ( enum VOS_INIT_PHASE_DEFINE ip );
 
-/* DSP 上移 end */
+/* DSP ???? end */
 
 /* Voice in ACPU start */
 extern VOS_UINT32 VOICE_NormalFidInit(enum VOS_INIT_PHASE_DEFINE enInitPhrase);
@@ -403,13 +403,13 @@ extern VOS_UINT32 NRNOSIG_FidInit(enum VOS_INIT_PHASE_DEFINE ip);
 extern VOS_UINT32 NRCBT_FidInit(enum VOS_INIT_PHASE_DEFINE ip);
 
 /************************* MACRO & TYPE DEFINITION ***************************/
-/* VOS编程模式下的用户模块划分信息 */
+/* VOS???????????????????????????? */
 #if (OSA_CPU_CCPU == VOS_OSA_CPU)
 BEGIN_FID_DEFINITION()
 /* add your FID here, e.g.
   * DEFINE_FID(VOS_FID_APP0)
   * DEFINE_FID(VOS_FID_APPx) */
-    DEFINE_FID(MSP_FID_DIAG_CCPU)   /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(MSP_FID_DIAG_CCPU)   /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(MSP_FID_CHR_CCPU)
     DEFINE_FID(I0_MAPS_USIMM_FID)
     DEFINE_FID(I0_MAPS_SI_FID)
@@ -419,7 +419,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(I0_UEPS_FID_GRM)
     DEFINE_FID(WUEPS_FID_HPA)
     DEFINE_FID(I0_WUEPS_FID_MM)
-    DEFINE_FID(I0_WUEPS_FID_CM)     /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I0_WUEPS_FID_CM)     /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(I0_WUEPS_FID_RABMSM)
     DEFINE_FID(I0_WUEPS_FID_TAF)
     DEFINE_FID(WUEPS_FID_SPY)
@@ -429,7 +429,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(UEPS_FID_CDS)
     DEFINE_FID(UEPS_FID_NDCLIENT)
     DEFINE_FID(I0_UEPS_FID_DC)
-    DEFINE_FID(I0_WUEPS_FID_SLEEP)  /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I0_WUEPS_FID_SLEEP)  /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(I0_WUEPS_FID_AWAKE)
     DEFINE_FID(I0_DSP_FID_APM)
     DEFINE_FID(DSP_FID_UPHY_MNTN)
@@ -440,7 +440,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(I0_DSP_FID_SLEEP)
     DEFINE_FID(I0_DSP_FID_WAKE)
     DEFINE_FID(I0_DSP_FID_IDLE)
-    DEFINE_FID(DSP_FID_RCM)         /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(DSP_FID_RCM)         /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(DSP_FID_STARTUP)
     #if ( FEATURE_ON == FEATURE_EASYRF )
     DEFINE_FID(DSP_FID_RFM)
@@ -452,14 +452,14 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(CCPU_FID_CBT)
     DEFINE_FID(CCPU_FID_PAM_OM)
     DEFINE_FID(UEPS_FID_MTC)
-    DEFINE_FID(I0_UEPS_FID_MSCC)    /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I0_UEPS_FID_MSCC)    /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(UEPS_FID_CSS)
 
     DEFINE_FID(UEPS_FID_RRM)
     DEFINE_FID(I0_UEPS_FID_PB)
     DEFINE_FID(I0_UEPS_FID_WRR)
 #if ( FEATURE_MULTI_MODEM == FEATURE_ON )
-    DEFINE_FID(I1_MAPS_USIMM_FID)  /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I1_MAPS_USIMM_FID)  /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(I1_MAPS_SI_FID)
     DEFINE_FID(I1_WUEPS_FID_SLEEP)
     DEFINE_FID(I1_WUEPS_FID_AWAKE)
@@ -473,7 +473,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(I1_UEPS_FID_GRM)
     DEFINE_FID(I1_DSP_FID_APM)
 #if ( FEATURE_MODEM1_SUPPORT_WCDMA == FEATURE_ON )
-    DEFINE_FID(I1_DSP_FID_WPHY)   /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I1_DSP_FID_WPHY)   /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
 #endif
     DEFINE_FID(I1_DSP_FID_GPHY)
     DEFINE_FID(I1_DSP_FID_GPHYLOW)
@@ -487,7 +487,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(I1_UEPS_FID_WRR)
     DEFINE_FID(I1_UEPS_FID_RM)
     DEFINE_FID(I1_UEPS_FID_RM_DL)
-    DEFINE_FID(I1_UEPS_FID_PB)  /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I1_UEPS_FID_PB)  /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
 #endif
 
 #if ( FEATURE_MODEM1_SUPPORT_LTE == FEATURE_ON )
@@ -503,13 +503,13 @@ BEGIN_FID_DEFINITION()
 #endif
 
 #if (FEATURE_ON == FEATURE_SCI_SWITCH_OPTIMIZE)
-    DEFINE_FID(I2_MAPS_USIMM_FID)/* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I2_MAPS_USIMM_FID)/* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(I2_MAPS_SI_FID)
 #endif
 
 #if ( 3 == MULTI_MODEM_NUMBER )/* three modems */
 #if (FEATURE_OFF == FEATURE_SCI_SWITCH_OPTIMIZE)
-    DEFINE_FID(I2_MAPS_USIMM_FID)/* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I2_MAPS_USIMM_FID)/* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(I2_MAPS_SI_FID)
 #endif
     DEFINE_FID(I2_WUEPS_FID_SLEEP)
@@ -540,7 +540,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(I1_DSP_FID_RTTPREEMPT)
     DEFINE_FID(I1_DSP_FID_RTTONLINE)
 #endif
-    DEFINE_FID(I0_MSP_L4_FID) /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(I0_MSP_L4_FID) /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(I0_MSP_FTM_FID)
     DEFINE_FID(I0_PS_FID_RRC)
     DEFINE_FID(I0_PS_FID_CM)
@@ -552,7 +552,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(I0_PS_FID_IMSVA)
 
 #if (FEATURE_ON == FEATURE_EDA_SUPPORT)
-    DEFINE_FID(PS_FID_EDA) /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(PS_FID_EDA) /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
 #endif
 
 #if (!defined(CHIP_BB_HI6210))
@@ -566,7 +566,7 @@ BEGIN_FID_DEFINITION()
 #endif
 
 #if (FEATURE_ON == FEATURE_UE_MODE_CDMA)
-    DEFINE_FID(UEPS_FID_CAS1X) /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(UEPS_FID_CAS1X) /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(UEPS_FID_CASHRPD)
     DEFINE_FID(MSPS_FID_CTTF_1X_REV)
     DEFINE_FID(MSPS_FID_CTTF_1X_FWD)
@@ -593,7 +593,7 @@ BEGIN_FID_DEFINITION()
 #endif
 
 #ifdef HPA_ITT
-    DEFINE_FID(MAPS_STUB_FID) /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(MAPS_STUB_FID) /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
 #endif  /*HPA_ITT*/
 #if (FEATURE_ON == FEATURE_BASTET)
     DEFINE_FID(UEPS_FID_BASTET)
@@ -621,7 +621,7 @@ BEGIN_FID_DEFINITION()
     DEFINE_FID(ACPU_FID_CBT)
     DEFINE_FID(ACPU_FID_USIMM)
     DEFINE_FID(ACPU_FID_PCVOICE)
-    DEFINE_FID(ACPU_FID_PAM_OM) /* 提醒! 新增FID请按顺序添加到g_aenPsFidModemIdTbl表中 */
+    DEFINE_FID(ACPU_FID_PAM_OM) /* ????! ????FID??????????????g_aenPsFidModemIdTbl???? */
     DEFINE_FID(I0_UEPS_FID_NRMM)
     DEFINE_FID(I0_UEPS_FID_NRCM)
 #endif
@@ -686,7 +686,7 @@ BEGIN_FID_DEFINITION()
  * DEFINE_FID(VOS_FID_APPx) */
     DEFINE_FID(NRCPU_FID_PAM_OM)
     DEFINE_FID(UEPS_FID_NRRC)
-    /*5G用户面 NR CCPU*/
+    /*5G?????? NR CCPU*/
     DEFINE_FID(I0_UEPS_FID_L2MA)
     DEFINE_FID(I0_UEPS_FID_SDAP)
     DEFINE_FID(I0_UEPS_FID_NPDCPRLC_UL)
@@ -706,7 +706,7 @@ END_FID_DEFINITION()
 
 #if (OSA_CPU_L2HAC == VOS_OSA_CPU)
 BEGIN_FID_DEFINITION()
-    /*5G用户面 L2HAC*/
+    /*5G?????? L2HAC*/
     DEFINE_FID(I0_UEPS_FID_NL2_DECODE)
     DEFINE_FID(I0_UEPS_FID_NMACRLC_UL_RT)
     DEFINE_FID(I0_UEPS_FID_NMACRLC_UL_NRT)
@@ -737,9 +737,9 @@ END_FID_DEFINITION()
 #define VOS_PID_BUTT                    (VOS_CPU_ID_16_PID_BUTT)
 #endif
 
-/* 为了和MAPS2000兼容, 暂时转定义下述PID */
+/* ??????MAPS2000????, ??????????????PID */
 #define WUEPS_PID_RRCF                  WUEPS_PID_WRR
-/* GU NAS PID转定义 */
+/* GU NAS PID?????? */
 #define WUEPS_PID_LMM                   PS_PID_MM
 #define WUEPS_PID_ESM                   PS_PID_ESM
 #define PS_PID_APP                      PS_PID_OM

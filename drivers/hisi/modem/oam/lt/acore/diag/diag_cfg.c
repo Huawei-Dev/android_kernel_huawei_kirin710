@@ -105,7 +105,7 @@ VOS_VOID diag_CfgResetAllSwt(VOS_VOID)
     VOS_ULONG    ulLockLevel;
 
 
-    /*清空层间开关状态*/
+    /*????????????????*/
     (VOS_VOID)VOS_MemSet_s(g_ALayerSrcModuleCfg, (VOS_UINT32)sizeof(g_ALayerSrcModuleCfg), 0, (VOS_UINT32)sizeof(g_ALayerSrcModuleCfg));
     (VOS_VOID)VOS_MemSet_s(g_CLayerSrcModuleCfg, (VOS_UINT32)sizeof(g_CLayerSrcModuleCfg), 0, (VOS_UINT32)sizeof(g_CLayerSrcModuleCfg));
     (VOS_VOID)VOS_MemSet_s(g_NrmLayerSrcModuleCfg, (VOS_UINT32)sizeof(g_NrmLayerSrcModuleCfg), 0, (VOS_UINT32)sizeof(g_NrmLayerSrcModuleCfg));
@@ -113,16 +113,16 @@ VOS_VOID diag_CfgResetAllSwt(VOS_VOID)
     (VOS_VOID)VOS_MemSet_s(g_CLayerDstModuleCfg, (VOS_UINT32)sizeof(g_CLayerDstModuleCfg), 0, (VOS_UINT32)sizeof(g_CLayerDstModuleCfg));
     (VOS_VOID)VOS_MemSet_s(g_NrmLayerDstModuleCfg, (VOS_UINT32)sizeof(g_NrmLayerDstModuleCfg), 0, (VOS_UINT32)sizeof(g_NrmLayerDstModuleCfg));
 
-    /* 为兼容原TL任务的EVENT开关机制，默认把所有EVENT子开关都设置为打开 */
+    /* ????????TL??????EVENT????????????????????EVENT?????????????????? */
     (VOS_VOID)VOS_MemSet_s(g_EventModuleCfg, (VOS_UINT32)sizeof(g_EventModuleCfg), 0x1, (VOS_UINT32)sizeof(g_EventModuleCfg));
 
-    /*清空打印开关状态*/
+    /*????????????????*/
     (VOS_VOID)VOS_MemSet_s(g_PrintModuleCfg, (VOS_UINT32)sizeof(g_PrintModuleCfg), 0, (VOS_UINT32)sizeof(g_PrintModuleCfg));
 
-    /*清空打印总开关状态*/
+    /*??????????????????*/
     g_PrintTotalCfg = DIAG_CFG_PRINT_TOTAL_MODULE_SWT_NOT_USE;
 
-    /*清空消息过滤开关状态*/
+    /*????????????????????*/
     (VOS_VOID)VOS_MemSet_s(&g_stMsgCfg, (VOS_UINT32)sizeof(g_stMsgCfg), 0, (VOS_UINT32)sizeof(g_stMsgCfg));
 
     VOS_SpinLockIntLock(&g_DiagLogPktNum.ulPrintLock, ulLockLevel);
@@ -159,12 +159,12 @@ VOS_VOID diag_CfgResetAllSwt(VOS_VOID)
 
 VOS_UINT32 diag_CfgSetGlobalBitValue(VOS_UINT32* pstDiagGlobal,ENUM_DIAG_CFG_BIT_U32 enBit,ENUM_DIAG_CFG_SWT_U8 enSwtich)
 {
-    /*设置为open 1时，需要使用|才能置该bit 为1*/
+    /*??????open 1????????????|????????bit ??1*/
     if(DIAG_CFG_SWT_OPEN == enSwtich)
     {
         *pstDiagGlobal |=  ((VOS_UINT)1 << enBit);
     }
-    /*设置为close 0时，需要使用&才能置该bit 为0*/
+    /*??????close 0????????????&????????bit ??0*/
     else if(DIAG_CFG_SWT_CLOSE == enSwtich)
     {
         *pstDiagGlobal &= ~((VOS_UINT)1 << enBit);
@@ -188,10 +188,10 @@ VOS_UINT32 diag_AirCfgProc (VOS_UINT8* pstReq)
     VOS_UINT32 ulLen;
     DIAG_MSG_A_TRANS_C_STRU *pstInfo;
 
-    /* 开机log上报特性中，在工具下发AirCfg配置时，才打开启动缓存的log上报 */
+    /* ????log??????????????????????AirCfg????????????????????????log???? */
     if(DIAG_IS_POLOG_ON)
     {
-        /* 收到空口开关恢复为正常的开关控制上报 */
+        /* ???????????????????????????????????? */
         g_ulDiagCfgInfo &= (~DIAG_CFG_POWERONLOG);
 
         mdrv_socp_send_data_manager(SOCP_CODER_DST_OM_IND, SOCP_DEST_DSM_ENABLE);
@@ -209,7 +209,7 @@ VOS_UINT32 diag_AirCfgProc (VOS_UINT8* pstReq)
 
     pstAirSwtReq = (DIAG_CMD_LOG_CAT_AIR_REQ_STRU*)(pstReq + DIAG_MESSAGE_DATA_HEADER_LEN);
 
-    /*设置LT空口开关值*/
+    /*????LT??????????*/
     enLSwitch = DIAG_GET_CFG_SWT(pstAirSwtReq->ulSwitch);
     ret = diag_CfgSetGlobalBitValue(&g_ulDiagCfgInfo,DIAG_CFG_LT_AIR_BIT,enLSwitch);
     if(ERR_MSP_SUCCESS == ret)
@@ -246,7 +246,7 @@ VOS_UINT32 diag_CfgSetLayerSwt(DIAG_CMD_LOG_CAT_LAYER_REQ_STRU* pstLayerReq, VOS
         return  ERR_MSP_INVALID_PARAMETER;
     }
 
-    /* 遍历某Category的开关配置项列表，查找对应的配置项进行设置*/
+    /* ??????Category??????????????????????????????????????????*/
     for(j = 0 ; j< ulCfgSize /sizeof(DIAG_CMD_LOG_CAT_LAYER_REQ_STRU);j++)
     {
         enSwitch = DIAG_GET_CFG_SWT((pstLayerReq + j)->ulSwitch);
@@ -320,7 +320,7 @@ VOS_UINT32 diag_LayerCfgProc (VOS_UINT8* pstReq)
 
     pstLayerSwtReq = (DIAG_CMD_LOG_CAT_LAYER_REQ_STRU*)(pstReq + DIAG_MESSAGE_DATA_HEADER_LEN);
 
-    /*设置层间模块开关到全局变量中*/
+    /*????????????????????????????*/
     ret = diag_CfgSetLayerSwt(pstLayerSwtReq, (VOS_UINT32)(pstDiagHead->ulMsgLen - sizeof(MSP_DIAG_DATA_REQ_STRU)));
     if(ERR_MSP_SUCCESS == ret)
     {
@@ -378,7 +378,7 @@ VOS_UINT32 diag_EventCfgProc(VOS_UINT8* pstReq)
 
     enSwitch = (ENUM_DIAG_CFG_SWT_U8)pstEvtSwtReq->ulSwt;
 
-    /* 打开和关闭都是配置固定的模块，只有总开关是打开时才配置到各模块 */
+    /* ?????????????????????????????????????????????????????????????? */
     if(enSwitch)
     {
         for(i = 0; i < pstEvtSwtReq->ulCount; i++)
@@ -420,7 +420,7 @@ VOS_UINT32 diag_CfgSetMsgSwt(DIAG_CMD_LOG_CAT_CFG_REQ_STRU *pstCatCfgReq,VOS_UIN
     VOS_UINT32 ulRst = ERR_MSP_INVALID_PARAMETER;
     DIAG_CFG_LOG_CAT_MSG_CFG_STRU *pstItemCfg =NULL;
 
-    /*参数检查*/
+    /*????????*/
     if((0 == ulCfgSize)||(0 !=ulCfgSize % sizeof(DIAG_CMD_LOG_CAT_CFG_REQ_STRU)))
     {
         DIAG_DEBUG_SDM_FUN(EN_DIAG_DEBUG_MSG_ERR, ulCfgSize, 0, 0);
@@ -430,7 +430,7 @@ VOS_UINT32 diag_CfgSetMsgSwt(DIAG_CMD_LOG_CAT_CFG_REQ_STRU *pstCatCfgReq,VOS_UIN
     for(j = 0 ; j< ulCfgSize /sizeof(DIAG_CMD_LOG_CAT_CFG_REQ_STRU);j++)
     {
 
-        /*仅支持层间消息CATEGORY过滤*/
+        /*??????????????CATEGORY????*/
         if(DIAG_CMD_LOG_CATETORY_LAYER_ID != (pstCatCfgReq + j)->ulCategory)
         {
             DIAG_DEBUG_SDM_FUN(EN_DIAG_DEBUG_MSG_ERR, (pstCatCfgReq + j)->ulCategory, 0, 1);
@@ -439,7 +439,7 @@ VOS_UINT32 diag_CfgSetMsgSwt(DIAG_CMD_LOG_CAT_CFG_REQ_STRU *pstCatCfgReq,VOS_UIN
     }
 
 
-    /* 遍历某Category的开关配置项列表，查找对应的配置项进行设置*/   /* [false alarm]:屏蔽Fortify */
+    /* ??????Category??????????????????????????????????????????*/   /* [false alarm]:????Fortify */
     /* coverity[unreachable] */
     for(j = 0 ; j< ulCfgSize /sizeof(DIAG_CMD_LOG_CAT_CFG_REQ_STRU);j++)
     {
@@ -458,7 +458,7 @@ VOS_UINT32 diag_CfgSetMsgSwt(DIAG_CMD_LOG_CAT_CFG_REQ_STRU *pstCatCfgReq,VOS_UIN
         }
         if(i >= g_stMsgCfg.ulCfgCnt)
         {
-            /*目前仅一次支持DIAG_CFG_CAT_CFG_NUM个消息过滤*/
+            /*??????????????DIAG_CFG_CAT_CFG_NUM??????????*/
             if((g_stMsgCfg.ulCfgCnt < DIAG_CFG_CAT_CFG_NUM))
             {
                 pstItemCfg = g_stMsgCfg.astMsgCfgList + g_stMsgCfg.ulCfgCnt;
@@ -504,7 +504,7 @@ VOS_UINT32 diag_MsgCfgProc(VOS_UINT8* pstReq)
 
     pstCatCfgReq = (DIAG_CMD_LOG_CAT_CFG_REQ_STRU*)(pstReq + DIAG_MESSAGE_DATA_HEADER_LEN);
 
-    /*设置消息过滤开关到全局变量中*/
+    /*????????????????????????????*/
     ret = diag_CfgSetMsgSwt(pstCatCfgReq, (VOS_UINT32)(pstDiagHead->ulMsgLen - sizeof(MSP_DIAG_DATA_REQ_STRU)));
     if(ERR_MSP_SUCCESS == ret)
     {
@@ -539,7 +539,7 @@ VOS_UINT32 diag_CfgSetPrintSwt(DIAG_CMD_LOG_CAT_PRINT_REQ_STRU* pstPrintReq, VOS
         return ERR_MSP_INVALID_PARAMETER;
     }
 
-    /* 工具的LEVEL值转换成MSP本地存储的LEVEL值 */
+    /* ??????LEVEL????????MSP??????????LEVEL?? */
     /*
         TOOL        <->     MSP     <->     PS
         0x40000000  <->     0x40    <->     1 (ERROR);
@@ -550,24 +550,24 @@ VOS_UINT32 diag_CfgSetPrintSwt(DIAG_CMD_LOG_CAT_PRINT_REQ_STRU* pstPrintReq, VOS
 
     if(DIAG_CFG_PRINT_TOTAL_MODULE == pstPrintReq->ulModuleId)
     {
-        /*设置PRINT时首先重置所有模块设置*/
+        /*????PRINT??????????????????????*/
          (VOS_VOID)VOS_MemSet_s(g_PrintModuleCfg,(VOS_UINT32)sizeof(g_PrintModuleCfg),0,sizeof(g_PrintModuleCfg));
 
-        /*设置打印总开关*/
+        /*??????????????*/
         ucLevelFilter = DIAG_GET_PRINT_CFG_SWT(pstPrintReq->ulLevelFilter);
         g_PrintTotalCfg = ucLevelFilter;
     }
     else
     {
-        /* 重置PRINT总开关0xFF模块*/
+        /* ????PRINT??????0xFF????*/
         g_PrintTotalCfg = DIAG_CFG_PRINT_TOTAL_MODULE_SWT_NOT_USE;
 
-        /* 遍历某Category的开关配置项列表，查找对应的配置项进行设置*/
+        /* ??????Category??????????????????????????????????????????*/
         for(j = 0 ; j< ulCfgSize /sizeof(DIAG_CMD_LOG_CAT_PRINT_REQ_STRU);j++)
         {
             if(DIAG_CFG_MODULE_IS_INVALID((VOS_INT32)((pstPrintReq + j)->ulModuleId )))
             {
-                /* TODO:做记录 */
+                /* TODO:?????? */
                 //ret = ERR_MSP_INVALID_PARAMETER;
                 continue;
             }
@@ -605,7 +605,7 @@ VOS_UINT32 diag_PrintCfgProc(VOS_UINT8* pstReq)
 
     pstPrintSwtReq = (DIAG_CMD_LOG_CAT_PRINT_REQ_STRU*)(pstReq + DIAG_MESSAGE_DATA_HEADER_LEN);
 
-    /*设置打印开关到全局变量中*/
+    /*????????????????????????*/
     ret = diag_CfgSetPrintSwt(pstPrintSwtReq, (VOS_UINT32)(pstDiagHead->ulMsgLen - sizeof(MSP_DIAG_DATA_REQ_STRU)));
     if(ERR_MSP_SUCCESS == ret)
     {
@@ -651,12 +651,12 @@ VOS_UINT64 diag_GetFrameTime(VOS_VOID)
 
 /*****************************************************************************
  Function Name   : diag_GetTimeStampInitValue
- Description     : 该函数处理hidis获取单板中TL和Gu的时间戳初始值请求
- Input           : pstReq 待处理数据
+ Description     : ??????????hidis??????????TL??Gu??????????????????
+ Input           : pstReq ??????????
  Output          : None
  Return          : VOS_UINT32
 
-    2.c64416         2014-11-18  适配新的诊断架构
+    2.c64416         2014-11-18  ????????????????
 *****************************************************************************/
 VOS_UINT32 diag_GetTimeStampInitValue(VOS_UINT8* pstReq)
 {
@@ -677,7 +677,7 @@ VOS_UINT32 diag_GetTimeStampInitValue(VOS_UINT8* pstReq)
     timestampCnf.ulTLTimeStampInitValue = diag_GetFrameTime();
     timestampCnf.ulErrcode              = ret;
 
-    /*组包给FW回复*/
+    /*??????FW????*/
     ret = DIAG_MsgReport(&stDiagInfo, &timestampCnf, (VOS_UINT32)sizeof(timestampCnf));
     mdrv_diag_PTR(EN_DIAG_PTR_GET_TIME_STAMP_CNF, 1, pstDiagHead->ulCmdId, ret);
     return (VOS_UINT32)ret;

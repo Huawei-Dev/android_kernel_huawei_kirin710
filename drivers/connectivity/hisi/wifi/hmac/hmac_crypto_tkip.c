@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oam_ext_if.h"
 #include "wlan_spec.h"
@@ -18,13 +18,13 @@ extern "C" {
 #include "hmac_crypto_tkip.h"
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #define     MAX_TKIP_PN_GAP_ERR    1  /* Max. gap in TKIP PN before doing MIC sanity check */
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -207,7 +207,7 @@ OAL_STATIC oal_uint32 hmac_crypto_tkip_michael_mic(oal_uint8 *puc_key,
 
 oal_uint32 hmac_crypto_tkip_enmic(wlan_priv_key_param_stru *pst_key, oal_netbuf_stru *pst_netbuf)
 {
-    oal_uint32                     ul_hdrlen      = 0;/*发送时，ul_pktlen里不含80211mac头*/
+    oal_uint32                     ul_hdrlen      = 0;/*????????ul_pktlen??????80211mac??*/
     oal_uint32                     ul_pktlen      = 0;
     oal_uint32                     ul_ret         = OAL_FAIL;
     oal_uint8                     *puc_mic_tail   = OAL_PTR_NULL;
@@ -221,21 +221,21 @@ oal_uint32 hmac_crypto_tkip_enmic(wlan_priv_key_param_stru *pst_key, oal_netbuf_
         return OAL_ERR_CODE_SECURITY_CHIPER_TYPE;
     }
 
-    /*1.1 计算整个报文的长度，不处理存在多个netbuf的情况*/
+    /*1.1 ??????????????????????????????????netbuf??????*/
     ul_pktlen = OAL_NETBUF_LEN(pst_netbuf);
     if (OAL_PTR_NULL != OAL_NETBUF_NEXT(pst_netbuf))
     {
         return OAL_ERR_CODE_SECURITY_BUFF_NUM;
     }
 
-    /*2.1 在netbuf上增加mic空间*/
+    /*2.1 ??netbuf??????mic????*/
     if (oal_netbuf_tailroom(pst_netbuf) < IEEE80211_WEP_MICLEN)
     {
-        /*2.2 如果原来的netbuf长度不够，需要重新申请*/
+        /*2.2 ??????????netbuf??????????????????????*/
         oal_netbuf_realloc_tailroom(pst_netbuf, IEEE80211_WEP_MICLEN);
     }
 
-    /*3.1 获取mic及密钥 */
+    /*3.1 ????mic?????? */
     puc_mic_tail   = (oal_uint8 *)OAL_NETBUF_TAIL(pst_netbuf);
     puc_tx_mic_key = pst_key->auc_key + WLAN_TEMPORAL_KEY_LENGTH; 
     
@@ -243,14 +243,14 @@ oal_uint32 hmac_crypto_tkip_enmic(wlan_priv_key_param_stru *pst_key, oal_netbuf_
 
     pst_cb    = (mac_tx_ctl_stru *)oal_netbuf_cb(pst_netbuf);
 
-    /*4.1 计算mic */
+    /*4.1 ????mic */
 	ul_ret = hmac_crypto_tkip_michael_mic(puc_tx_mic_key, pst_netbuf, pst_cb->pst_frame_header, ul_hdrlen, ul_pktlen - ul_hdrlen, auc_mic);
     if (OAL_SUCC != ul_ret)
     {
         return ul_ret;
     }
 
-    /*4.1 拷贝mic到帧尾部 */
+    /*4.1 ????mic???????? */
     oal_memcopy(puc_mic_tail, auc_mic, IEEE80211_WEP_MICLEN);
 
     return OAL_SUCC;
@@ -261,7 +261,7 @@ oal_uint32 hmac_crypto_tkip_enmic(wlan_priv_key_param_stru *pst_key, oal_netbuf_
 oal_uint32 hmac_crypto_tkip_demic(wlan_priv_key_param_stru *pst_key, oal_netbuf_stru *pst_netbuf)
 {
     mac_rx_ctl_stru          *pst_cb                              = OAL_PTR_NULL;
-    oal_uint32                ul_hdrlen                           = 0;/*接收时，ul_pktlen里包含80211mac头*/
+    oal_uint32                ul_hdrlen                           = 0;/*????????ul_pktlen??????80211mac??*/
     oal_uint8                *puc_rx_mic_key                      = OAL_PTR_NULL;
     oal_uint32                ul_ret                              = OAL_FAIL;
     oal_uint32                ul_pktlen                           = 0;
@@ -273,30 +273,30 @@ oal_uint32 hmac_crypto_tkip_demic(wlan_priv_key_param_stru *pst_key, oal_netbuf_
         return OAL_ERR_CODE_SECURITY_CHIPER_TYPE;
     }
 
-    /*1.1 计算整个报文的长度，不处理存在多个netbuf的情况*/
+    /*1.1 ??????????????????????????????????netbuf??????*/
     ul_pktlen         = OAL_NETBUF_LEN(pst_netbuf);
     if (OAL_PTR_NULL != oal_netbuf_list_next(pst_netbuf))
     {
         return OAL_ERR_CODE_SECURITY_BUFF_NUM;
     }
 
-    /*2.1 从CB中获取80211头长度*/
+    /*2.1 ??CB??????80211??????*/
     pst_cb    = (mac_rx_ctl_stru *)oal_netbuf_cb(pst_netbuf);
     ul_hdrlen = pst_cb->uc_mac_header_len;
 
-    /*3.1 只处理数据帧*/
+    /*3.1 ????????????*/
 
-    /*4.1 获取解密密钥，接收密钥需要偏移8个字节*/
+    /*4.1 ??????????????????????????????8??????*/
     puc_rx_mic_key = pst_key->auc_key + WLAN_TEMPORAL_KEY_LENGTH + WLAN_MIC_KEY_LENGTH;
 
-    /*5.1 计算mic */
+    /*5.1 ????mic */
 	ul_ret = hmac_crypto_tkip_michael_mic(puc_rx_mic_key, pst_netbuf, (mac_ieee80211_frame_stru *)pst_cb->pul_mac_hdr_start_addr, ul_hdrlen, ul_pktlen - (ul_hdrlen + IEEE80211_WEP_MICLEN), auc_mic);
     if (OAL_SUCC != ul_ret)
     {
         return ul_ret;
     }
 
-    /*6.1 获取对端的mic并跟本地计算的mic进行比较*/
+    /*6.1 ??????????mic??????????????mic????????*/
     oal_netbuf_copydata(pst_netbuf, ul_pktlen - IEEE80211_WEP_MICLEN, (oal_void *)auc_mic_peer, IEEE80211_WEP_MICLEN);
     if (oal_memcmp(auc_mic, auc_mic_peer, IEEE80211_WEP_MICLEN))
     {
@@ -306,7 +306,7 @@ oal_uint32 hmac_crypto_tkip_demic(wlan_priv_key_param_stru *pst_key, oal_netbuf_
         return OAL_ERR_CODE_SECURITY_WRONG_KEY;
     }
 
-   /*7.1 去掉mic尾部*/
+   /*7.1 ????mic????*/
     oal_netbuf_trim(pst_netbuf, IEEE80211_WEP_MICLEN);
     return OAL_SUCC;
 }

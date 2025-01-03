@@ -40,32 +40,32 @@ extern void __iomem *ipc_base;
 #define SOC_IPC_CPU_INT_MASK_EN_ADDR(base, i)         SOC_IPC_CPU_INT_DIS_ADDR(base, i)
 
 
-#define BSP_IPC_CPU_RAW_INT(i)      (SOC_IPC_CPU_RAW_INT_ADDR((BSP_U32)ipc_base, i))    /* CPU_i快速中断原始中断寄存器     */
-#define BSP_IPC_CPU_INT_MASK(i)     (SOC_IPC_CPU_INT_MASK_ADDR((BSP_U32)ipc_base, i))   /* CPU_i快速中断掩码寄存器         */
-#define BSP_IPC_CPU_INT_STAT(i)     (SOC_IPC_CPU_INT_STAT_ADDR((BSP_U32)ipc_base, i))   /* CPU_i屏蔽后的快速中断状态寄存器 */
-#define BSP_IPC_CPU_INT_CLR(i)      (SOC_IPC_CPU_INT_CLR_ADDR((BSP_U32)ipc_base, i))    /* CPU_i快速中断清除寄存器         */
-#define BSP_IPC_INT_MASK_EN(i)      (SOC_IPC_CPU_INT_MASK_EN_ADDR((BSP_U32)ipc_base, i))    /* CPU_i快速中断使能           */
-#define BSP_IPC_INT_MASK_DIS(i)     (SOC_IPC_CPU_INT_MASK_DIS_ADDR((BSP_U32)ipc_base, i))   /* CPU_i快速中断去使能         */
+#define BSP_IPC_CPU_RAW_INT(i)      (SOC_IPC_CPU_RAW_INT_ADDR((BSP_U32)ipc_base, i))    /* CPU_i??????????????????????     */
+#define BSP_IPC_CPU_INT_MASK(i)     (SOC_IPC_CPU_INT_MASK_ADDR((BSP_U32)ipc_base, i))   /* CPU_i??????????????????         */
+#define BSP_IPC_CPU_INT_STAT(i)     (SOC_IPC_CPU_INT_STAT_ADDR((BSP_U32)ipc_base, i))   /* CPU_i?????????????????????????? */
+#define BSP_IPC_CPU_INT_CLR(i)      (SOC_IPC_CPU_INT_CLR_ADDR((BSP_U32)ipc_base, i))    /* CPU_i??????????????????         */
+#define BSP_IPC_INT_MASK_EN(i)      (SOC_IPC_CPU_INT_MASK_EN_ADDR((BSP_U32)ipc_base, i))    /* CPU_i????????????           */
+#define BSP_IPC_INT_MASK_DIS(i)     (SOC_IPC_CPU_INT_MASK_DIS_ADDR((BSP_U32)ipc_base, i))   /* CPU_i??????????????         */
 
-#define BSP_IPC_SEM_RAW_INT(j)      (SOC_IPC_SEM_RAW_INT_ADDR((BSP_U32)ipc_base, j))    /* CPU_j信号量释放原始中断寄存器   */
-#define BSP_IPC_SEM_INT_MASK(j)     (SOC_IPC_SEM_INT_MASK_ADDR((BSP_U32)ipc_base, j))   /* CPU_j信号量释放中断掩码寄存器   */
-#define BSP_IPC_SEM_INT_STAT(j)     (SOC_IPC_SEM_INT_STAT_ADDR((BSP_U32)ipc_base, j))   /* CPU_j信号量释放中断状态寄存器   */
-#define BSP_IPC_SEM_INT_CLR(j)      (SOC_IPC_SEM_INT_CLR_ADDR((BSP_U32)ipc_base, j))    /* CPU_j信号量释放中断清除寄存器   */
-#define BSP_IPC_HS_CTRL(j,k)        (SOC_IPC_HS_CTRL_ADDR((BSP_U32)ipc_base, j, k))     /* CPU_j信号量k请求寄存器      */
-#define BSP_IPC_HS_STAT(j,k)        (SOC_IPC_HS_STAT_ADDR((BSP_U32)ipc_base, j, k))     /* CPU_j信号量k状态寄存器      */
+#define BSP_IPC_SEM_RAW_INT(j)      (SOC_IPC_SEM_RAW_INT_ADDR((BSP_U32)ipc_base, j))    /* CPU_j????????????????????????   */
+#define BSP_IPC_SEM_INT_MASK(j)     (SOC_IPC_SEM_INT_MASK_ADDR((BSP_U32)ipc_base, j))   /* CPU_j????????????????????????   */
+#define BSP_IPC_SEM_INT_STAT(j)     (SOC_IPC_SEM_INT_STAT_ADDR((BSP_U32)ipc_base, j))   /* CPU_j????????????????????????   */
+#define BSP_IPC_SEM_INT_CLR(j)      (SOC_IPC_SEM_INT_CLR_ADDR((BSP_U32)ipc_base, j))    /* CPU_j????????????????????????   */
+#define BSP_IPC_HS_CTRL(j,k)        (SOC_IPC_HS_CTRL_ADDR((BSP_U32)ipc_base, j, k))     /* CPU_j??????k??????????      */
+#define BSP_IPC_HS_STAT(j,k)        (SOC_IPC_HS_STAT_ADDR((BSP_U32)ipc_base, j, k))     /* CPU_j??????k??????????      */
 
-#define BSP_IPC_CPU_RAW_INT_ACPU    (BSP_IPC_CPU_RAW_INT((BSP_U32)IPC_CORE_ACPU))           /* ACPU快速中断原始中断寄存器     */
-#define BSP_IPC_CPU_INT_MASK_ACPU   (BSP_IPC_CPU_INT_MASK((BSP_U32)IPC_CORE_ACPU))          /* ACPU快速中断掩码寄存器         */
-#define BSP_IPC_CPU_INT_STAT_ACPU   (BSP_IPC_CPU_INT_STAT((BSP_U32)IPC_CORE_ACPU))          /* ACPU屏蔽后的快速中断状态寄存器 */
-#define BSP_IPC_CPU_INT_CLR_ACPU    (BSP_IPC_CPU_INT_CLR((BSP_U32)IPC_CORE_ACPU))           /* ACPU快速中断清除寄存器         */
-#define BSP_IPC_CPU_INT_MASK_EN_ACPU    (BSP_IPC_INT_MASK_EN((BSP_U32)IPC_CORE_ACPU))       /* ACPU快速中断使能               */
-#define BSP_IPC_CPU_INT_MASK_DIS_ACPU   (BSP_IPC_INT_MASK_DIS((BSP_U32)IPC_CORE_ACPU))      /* ACPU快速中断去使能             */
+#define BSP_IPC_CPU_RAW_INT_ACPU    (BSP_IPC_CPU_RAW_INT((BSP_U32)IPC_CORE_ACPU))           /* ACPU??????????????????????     */
+#define BSP_IPC_CPU_INT_MASK_ACPU   (BSP_IPC_CPU_INT_MASK((BSP_U32)IPC_CORE_ACPU))          /* ACPU??????????????????         */
+#define BSP_IPC_CPU_INT_STAT_ACPU   (BSP_IPC_CPU_INT_STAT((BSP_U32)IPC_CORE_ACPU))          /* ACPU?????????????????????????? */
+#define BSP_IPC_CPU_INT_CLR_ACPU    (BSP_IPC_CPU_INT_CLR((BSP_U32)IPC_CORE_ACPU))           /* ACPU??????????????????         */
+#define BSP_IPC_CPU_INT_MASK_EN_ACPU    (BSP_IPC_INT_MASK_EN((BSP_U32)IPC_CORE_ACPU))       /* ACPU????????????               */
+#define BSP_IPC_CPU_INT_MASK_DIS_ACPU   (BSP_IPC_INT_MASK_DIS((BSP_U32)IPC_CORE_ACPU))      /* ACPU??????????????             */
 
-#define UCOM_COMM_UINT32_MAX                (0xffffffff)                          /*32bit无符号数最大值*/
+#define UCOM_COMM_UINT32_MAX                (0xffffffff)                          /*32bit??????????????*/
 #define BSP_IPC_MAX_INT_NUM                 (32)                                  /*  */
-#define IPC_MASK                        0xFFFFFF0F       /*用于屏蔽[4:7]bit位*/
+#define IPC_MASK                        0xFFFFFF0F       /*????????[4:7]bit??*/
 
-/*后续需要写到ARM_paxb.h中*/
+/*????????????ARM_paxb.h??*/
 #define INT_LEV_IPC_CPU             (IRQ_IPC0_S)
 #define INT_LEV_IPC_SEM             (IRQ_IPC1_S)
 

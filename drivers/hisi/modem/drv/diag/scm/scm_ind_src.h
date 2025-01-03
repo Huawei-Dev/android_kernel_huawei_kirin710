@@ -50,7 +50,7 @@
 #define _SCM_IND_SRC_H_
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include <mdrv.h>
 #include <mdrv_diag_system.h>
@@ -68,20 +68,20 @@ extern "C"{
 #endif
 #endif
 
-#define SCM_CODE_SRC_BD_NUM         (4*1024)        /* 链式通道BD的个数 */
-#define SCM_CODE_SRC_RD_NUM         (4*1024)        /* 链式通道RD的个数 */
+#define SCM_CODE_SRC_BD_NUM         (4*1024)        /* ????????BD?????? */
+#define SCM_CODE_SRC_RD_NUM         (4*1024)        /* ????????RD?????? */
 
-#define SCM_CODER_SRC_BDSIZE        (sizeof(SOCP_BD_DATA_STRU)*SCM_CODE_SRC_BD_NUM)   /* 链式通道的BD空间 */
-#define SCM_CODER_SRC_RDSIZE        (sizeof(SOCP_RD_DATA_STRU)*SCM_CODE_SRC_RD_NUM)   /* 链式通道的RD空间 */
+#define SCM_CODER_SRC_BDSIZE        (sizeof(SOCP_BD_DATA_STRU)*SCM_CODE_SRC_BD_NUM)   /* ??????????BD???? */
+#define SCM_CODER_SRC_RDSIZE        (sizeof(SOCP_RD_DATA_STRU)*SCM_CODE_SRC_RD_NUM)   /* ??????????RD???? */
 
 #define SCM_HISI_HEADER_MAGIC               (0x48495349) /*HISI*/
 
 #define DIAG_CODER_SRC_IND_BUF_A_SIZE               (1024*1024)
 #define SCM_CODER_SRC_IND_BUFFER_SIZE               (DIAG_CODER_SRC_IND_BUF_A_SIZE)
 
-#define SCM_CODER_SRC_MAX_LEN       (4*1024)        /* 编码通道最大发送数据长度  */
+#define SCM_CODER_SRC_MAX_LEN       (4*1024)        /* ????????????????????????  */
 
-#define SCM_CODER_SRC_RD_THRESHOLD  (0)             /* 编码源通道RD阈值 */
+#define SCM_CODER_SRC_RD_THRESHOLD  (0)             /* ??????????RD???? */
 
 
 #ifdef ENABLE_DIAG_FIX_ADDR
@@ -90,42 +90,42 @@ extern "C"{
 #endif
 #endif
 
-/*4字节对齐*/
+/*4????????*/
 #define ALIGN_DDR_WITH_4BYTE(len)       (((len) + 3)&(~3))
-/*8字节对齐*/
+/*8????????*/
 #define ALIGN_DDR_WITH_8BYTE(len)       (((len) + 7)&(~7))
 
 typedef u32 SCM_CHANNEL_INIT_ENUM_U32;
 
 enum  SCM_CHANNEL_INIT_ENUM
 {
-    SCM_CHANNEL_UNINIT = 0,             /* 未初始化 */
-    SCM_CHANNEL_INIT_SUCC,              /* 初始化成功 */
-    SCM_CHANNEL_MEM_FAIL,               /* 初始化申请内存错误 */
-    SCM_CHANNEL_CFG_FAIL,               /* 初始化通道配置 */
-    SCM_CHANNEL_START_FAIL,             /* 通道开启错误 */
+    SCM_CHANNEL_UNINIT = 0,             /* ???????? */
+    SCM_CHANNEL_INIT_SUCC,              /* ?????????? */
+    SCM_CHANNEL_MEM_FAIL,               /* ?????????????????? */
+    SCM_CHANNEL_CFG_FAIL,               /* ?????????????? */
+    SCM_CHANNEL_START_FAIL,             /* ???????????? */
     SCM_CHANNEL_INIT_BUTT
 };
 
 
 typedef struct
 {
-    SCM_CHANNEL_INIT_ENUM_U32       enInitState;    /* 通道初始化状态，初始化后自动修改 */
-    SOCP_CODER_SRC_ENUM_U32         enChannelID;    /* 编码源通道ID，固定配置 */
-    SOCP_CODER_DST_ENUM_U32         enDstCHID;      /* 编码目的通道ID */
-    SOCP_DATA_TYPE_ENUM_UIN32       enDataType;     /* 数据来源类型 */
-    SOCP_ENCSRC_CHNMODE_ENUM_UIN32  enCHMode;       /* 通道类型 */
-    SOCP_CHAN_PRIORITY_ENUM_UIN32   enCHLevel;      /* 通道优先级 */
-	SOCP_TRANS_ID_EN_ENUM_UINT32    enTransIdEn;    /* SOCP Trans Id使能位 */
-	SOCP_PTR_IMG_EN_ENUM_UINT32     enPtrImgEn;     /* SOCP 指针镜像使能位 */
-    u32                             ulSrcBufLen;    /* 编码源通道数据空间大小 */
-    u32                             ulRDBufLen;     /* 编码源通道RD数据空间大小 */
-    u8                              *pucSrcBuf;     /* 编码源通道数据空间内存指针 */
+    SCM_CHANNEL_INIT_ENUM_U32       enInitState;    /* ???????????????????????????????? */
+    SOCP_CODER_SRC_ENUM_U32         enChannelID;    /* ??????????ID?????????? */
+    SOCP_CODER_DST_ENUM_U32         enDstCHID;      /* ????????????ID */
+    SOCP_DATA_TYPE_ENUM_UIN32       enDataType;     /* ???????????? */
+    SOCP_ENCSRC_CHNMODE_ENUM_UIN32  enCHMode;       /* ???????? */
+    SOCP_CHAN_PRIORITY_ENUM_UIN32   enCHLevel;      /* ?????????? */
+	SOCP_TRANS_ID_EN_ENUM_UINT32    enTransIdEn;    /* SOCP Trans Id?????? */
+	SOCP_PTR_IMG_EN_ENUM_UINT32     enPtrImgEn;     /* SOCP ?????????????? */
+    u32                             ulSrcBufLen;    /* ?????????????????????? */
+    u32                             ulRDBufLen;     /* ??????????RD???????????? */
+    u8                              *pucSrcBuf;     /* ?????????????????????????? */
     u8                              *pucSrcPHY;
-    u8                              *pucRDBuf;      /* 编码源通道RD数据空间内存指针 */
+    u8                              *pucRDBuf;      /* ??????????RD???????????????? */
     u8                              *pucRDPHY;
-    unsigned long                   pRptrImgPhyAddr; /* 编码源通道读指针镜像物理地址 */
-    unsigned long                   pRptrImgVirtAddr;/* 编码源通道读指针镜像虚拟地址 */
+    unsigned long                   pRptrImgPhyAddr; /* ???????????????????????????? */
+    unsigned long                   pRptrImgVirtAddr;/* ???????????????????????????? */
 }SCM_CODER_SRC_CFG_STRU;
 
 u32 scm_init_ind_src_buff(void);

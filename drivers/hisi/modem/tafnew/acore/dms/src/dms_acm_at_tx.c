@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 
 #include "msp_errno.h"
@@ -60,14 +60,14 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 
 #define THIS_FILE_ID                    PS_FILE_ID_DMS_ACM_AT_TX_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 DMS_STATIC_BUF_STRU                     stDmsStaticBufInfo ;
@@ -76,7 +76,7 @@ VOS_UINT8                              *g_aucStaticBuf = NULL;
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -156,12 +156,12 @@ VOS_VOID Dms_StaticBufInit(VOS_VOID)
     }
 
 
-    /*取32字节对齐的地址*/
+    /*??32??????????????*/
     pTemp = g_aucStaticBuf + (32 - ((VOS_ULONG )g_aucStaticBuf%32));
 
     stDmsStaticBufInfo.enBufType      = DMS_BUF_TYP_DYMIC;
 
-    /* 初始化缓冲信息*/
+    /* ??????????????*/
     for (i = 0; i < DMS_LOG_STATIC_BUF_NUM; i++)
     {
         stDmsStaticBufInfo.stBufSta[i].pcuBuf = (VOS_UINT8 *)((VOS_ULONG)i * DMS_LOG_STATIC_ONE_BUF_SIZE + pTemp);
@@ -177,7 +177,7 @@ VOS_UINT8* Dms_GetStaticBuf(VOS_UINT32 ulLen)
     VOS_UINT32 i = 0;
     VOS_UINT32 *buf = NULL;
 
-    /*数据长度超过静态buf最大size，动态申请buf*/
+    /*????????????????buf????size??????????buf*/
     if(ulLen >DMS_LOG_STATIC_ONE_BUF_SIZE )
     {
 
@@ -195,7 +195,7 @@ VOS_UINT8* Dms_GetStaticBuf(VOS_UINT32 ulLen)
         }
     }
 
-    /*极限场景下 如果静态buf用完，申请动态内存使用*/
+    /*?????????? ????????buf??????????????????????*/
     buf = kmalloc(ulLen, GFP_KERNEL|__GFP_DMA);
 
     return (VOS_UINT8* )buf;
@@ -229,7 +229,7 @@ VOS_VOID Dms_FreeStaticBuf( VOS_UINT8 * buf)
         return ;
     }
 
-    /*静态buf释放*/
+    /*????buf????*/
     for (i = 0; i < DMS_LOG_STATIC_BUF_NUM; i++)
     {
         if (stDmsStaticBufInfo.stBufSta[i].pcuBuf == buf)
@@ -239,7 +239,7 @@ VOS_VOID Dms_FreeStaticBuf( VOS_UINT8 * buf)
         }
     }
 
-    /*动态buf释放*/
+    /*????buf????*/
     if(i == DMS_LOG_STATIC_BUF_NUM)
     {
         kfree(buf );

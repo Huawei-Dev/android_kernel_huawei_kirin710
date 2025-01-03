@@ -110,9 +110,9 @@ int hisiap_ringbuffer_read(struct hisiap_ringbuffer_s *q, u8 *element, u32 len)
 
 /*************************************************************************
 Function:		hisiap_is_ringbuffer_full
-Description:	判断ringbuffer是否已经写满；
-Input:		buffer_addr: buffer首地址；
-Return:		0：buffer未满；1：buffer已满；-1: 查询无效；
+Description:	????ringbuffer??????????????
+Input:		buffer_addr: buffer????????
+Return:		0??buffer??????1??buffer??????-1: ??????????
 *************************************************************************/
 int hisiap_is_ringbuffer_full(const void *buffer_addr)
 {

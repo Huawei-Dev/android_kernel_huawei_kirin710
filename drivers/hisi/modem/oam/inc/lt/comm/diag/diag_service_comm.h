@@ -70,11 +70,11 @@ extern "C" {
 /*****************************************************************************
   2 macro
 *****************************************************************************/
-/* 单帧最大长度 */
+/* ???????????? */
 #define DIAG_FRAME_MAX_LEN      (4*1024)
-/* 单消息最大帧个数 */
+/* ???????????????? */
 #define DIAG_FRMAE_MAX_CNT      (16)
-/* 总长度最大值 */
+/* ???????????? */
 #define DIAG_FRAME_SUM_LEN      (DIAG_FRAME_MAX_LEN * DIAG_FRMAE_MAX_CNT)
 
 #define DIAG_SRV_HISI_HEADER_MAGIC                  (0x48495349) /*HISI*/
@@ -92,9 +92,9 @@ do{\
 
 
 
-/*4字节对齐*/
+/*4????????*/
 #define ALIGN_DDR_WITH_4BYTE(len)       (((len) + 3)&(~3))
-/*8字节对齐*/
+/*8????????*/
 #define ALIGN_DDR_WITH_8BYTE(len)       (((len) + 7)&(~7))
 
 /*****************************************************************************
@@ -103,7 +103,7 @@ do{\
 typedef struct
 {
     VOS_UINT32                  ulHisiMagic;   /*"HISI"*/
-    VOS_UINT32                  ulDataLen;      /*数据长度*/
+    VOS_UINT32                  ulDataLen;      /*????????*/
 }DIAG_SRV_SOCP_HEADER_STRU;
 
 typedef struct
@@ -112,15 +112,15 @@ typedef struct
     DIAG_FRAME_INFO_STRU            frame_header;
 }DIAG_SRV_HEADER_STRU;
 
-/* ==============消息应答上报接口参数====================================== */
+/* ==============????????????????????====================================== */
 
 typedef struct
 {
-    VOS_UINT32          ulHeaderSize;   /* 数据头的长度 */
-    VOS_VOID            *pHeaderData;   /* 数据头 */
+    VOS_UINT32          ulHeaderSize;   /* ???????????? */
+    VOS_VOID            *pHeaderData;   /* ?????? */
 
-    VOS_UINT32          ulDataSize;     /* ucData的长度 */
-    VOS_VOID            *pData;         /* 数据 */
+    VOS_UINT32          ulDataSize;     /* ucData?????? */
+    VOS_VOID            *pData;         /* ???? */
 }DIAG_MSG_REPORT_HEAD_STRU;
 
 /* ======================================================================== */

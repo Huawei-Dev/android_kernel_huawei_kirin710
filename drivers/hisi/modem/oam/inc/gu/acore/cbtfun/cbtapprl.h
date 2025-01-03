@@ -52,7 +52,7 @@
 #define __CBT_APPRL_H__
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "cbtrl.h"
 #include "mdrv.h"
@@ -72,21 +72,21 @@ extern VOS_UINT32                       g_ulCbtAcpuDbgFlag;
 
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define CBT_MSG_FIRST_BYTE                  (0x07)
 #define BIT_LEFTMOVE_N(num)                 (0x01 <<( num))
 #define CBT_ACPU_VCOM_CB                    BIT_LEFTMOVE_N(0)
 #define CBT_ACPU_DISPATCH_MSG               BIT_LEFTMOVE_N(1)
 #define CBT_ACPU_USB_CB                     BIT_LEFTMOVE_N(2)
-/* datatype 字段长度 */
+/* datatype ???????? */
 #define CBT_RL_DATATYPE_LEN                 (0x1)
-#define CBT_HDLC_FCS_LEN                    (2)           /* HDLC帧中FCS未转义时的长度(单位: Byte) */
+#define CBT_HDLC_FCS_LEN                    (2)           /* HDLC????FCS??????????????(????: Byte) */
 #define CBT_HDLC_BUF_MAX_LEN                (CBT_MSG_SEGMENT_LEN + CBT_RL_DATATYPE_LEN + CBT_HDLC_FCS_LEN)
 
-/*值为CBT_READ_NV_IND_STRU结构体中，sizeof(ulErrorCode) + sizeof(ulNvId) + sizeof(ulCount)*/
+/*????CBT_READ_NV_IND_STRU??????????sizeof(ulErrorCode) + sizeof(ulNvId) + sizeof(ulCount)*/
 #define CBT_READ_NV_HEAD_SIZE               (12)
-/*长度为NVID的值+NVID长度所占内存长度*/
+/*??????NVID????+NVID????????????????*/
 #define CBT_NV_ITEM_SIZE                    (4)
 #define CBT_IND_RESULT_SIZE                 (4)
 #define CBT_EST_IND_CHIP_ID_SIZE            (4)
@@ -96,7 +96,7 @@ extern VOS_UINT32                       g_ulCbtAcpuDbgFlag;
 #define CBT_END_FRAME                       (1)
 /*#define SEG_MAX_LEN                         (4*1024)*/
 /*#define MAXSEGMENT                          (16)*/
-/*组包后的最大长度*/
+/*????????????????*/
 #define CBT_TOTAL_MSG_MAX_LEN               (20*1024)/*(SEG_MAX_LEN + (SEG_MAX_LEN-CBT_MSG_HEADER_LENGTH)*(MAXSEGMENT-1))*/
 
 #define OM_CBT_SEND_DATA_REQ                (0x030d)
@@ -136,29 +136,29 @@ extern VOS_UINT32                       g_ulCbtAcpuDbgFlag;
 #define OM_APP_C1C2_NV_WRITE_CNF                  0x8031
 
 /*****************************************************************************
-  6 STRUCT定义
+  6 STRUCT????
 *****************************************************************************/
 /*****************************************************************************
-结构名    : CBT_SET_C1C2_VALUE_REQ_STRU
-结构说明  :
+??????    : CBT_SET_C1C2_VALUE_REQ_STRU
+????????  :
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU           stMsgHead;
-    VOS_UINT16                  usMsgId;            /* 消息ID */
+    VOS_UINT16                  usMsgId;            /* ????ID */
     CBT_COMPONENT_MODE_STRU     stCompMode;
     VOS_UINT32                  ulMsgLength;
-    VOS_UINT16                  usC1Value;          /*C1值*/
-    VOS_UINT16                  usC2Value;          /*C2值*/
+    VOS_UINT16                  usC1Value;          /*C1??*/
+    VOS_UINT16                  usC2Value;          /*C2??*/
 }CBT_SET_C1C2_VALUE_REQ_STRU;
 
 /*****************************************************************************
-结构名    : CBT_ESTABLISH_IND_PARA_STRU
-结构说明  :
+??????    : CBT_ESTABLISH_IND_PARA_STRU
+????????  :
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32     ulResult;                            /*返回执行结果*/
+    VOS_UINT32     ulResult;                            /*????????????*/
     VOS_UINT16     usChipId;
     VOS_UINT16     usRsv;
     MSW_VER_INFO_S stswverinfo;
@@ -166,13 +166,13 @@ typedef struct
 }CBT_ESTABLISH_IND_PARA_STRU;
 
 /*****************************************************************************
-结构名    : CBT_ESTABLISH_IND_STRU
-结构说明  :
+??????    : CBT_ESTABLISH_IND_STRU
+????????  :
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU               stMsgHeader;
-    VOS_UINT16                      usMsgId;      /* 消息ID */
+    VOS_UINT16                      usMsgId;      /* ????ID */
     CBT_COMPONENT_MODE_STRU         stCompMode;
     VOS_UINT32                      ulMsgLength;
     CBT_ESTABLISH_IND_PARA_STRU     stMsgData;
@@ -180,22 +180,22 @@ typedef struct
 
 
 /*****************************************************************************
-结构名    : CBT_ESTABLISH_REQ_STRU
-结构说明  :
+??????    : CBT_ESTABLISH_REQ_STRU
+????????  :
 *****************************************************************************/
 typedef struct
 {
     CBT_MSG_HEAD_STRU               stMsgHeader;
-    VOS_UINT16                      usMsgId;      /* 消息ID */
+    VOS_UINT16                      usMsgId;      /* ????ID */
     CBT_COMPONENT_MODE_STRU         stCompMode;
     VOS_UINT32                      ulMsgLength;
-    VOS_UINT32                      ulLinkType;     /* 0表示HDLC,1表示usb */
+    VOS_UINT32                      ulLinkType;     /* 0????HDLC,1????usb */
     VOS_UINT32                      aulRsv[4];
 }CBT_ESTABLISH_REQ_STRU;
 
 /*****************************************************************************
-结构名    : CBT_ESTABLISH_REQ_ATOC_STRU
-结构说明  : A核发给C核的建链消息
+??????    : CBT_ESTABLISH_REQ_ATOC_STRU
+????????  : A??????C????????????
 *****************************************************************************/
 typedef struct
 {
@@ -205,146 +205,146 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32 ulCount;             /*要读取的NV项个数*/
-    VOS_UINT16 ausNvItemId[2];      /*要读取的NV项ID数组，其中个数为ulCount*/
+    VOS_UINT32 ulCount;             /*????????NV??????*/
+    VOS_UINT16 ausNvItemId[2];      /*????????NV??ID????????????????ulCount*/
 }CBT_READ_NV_REQ_STRU;
 
 typedef struct
 {
-    VOS_UINT32 ulErrorCode;        /*返回执行结果*/
-    VOS_UINT32 ulErrNvId;          /*返回出现错误的NVID*/
-    VOS_UINT32 ulCount;            /*返回的NV项个数*/
-    VOS_UINT16 ausNVItemData[2];   /*包括NVID值、NVID内容的长度、NVID的内容*/
+    VOS_UINT32 ulErrorCode;        /*????????????*/
+    VOS_UINT32 ulErrNvId;          /*??????????????NVID*/
+    VOS_UINT32 ulCount;            /*??????NV??????*/
+    VOS_UINT16 ausNVItemData[2];   /*????NVID????NVID????????????NVID??????*/
 }CBT_READ_NV_IND_STRU;
 
 typedef struct
 {
     CBT_MSG_HEAD_STRU           stMsgHead;
-    VOS_UINT16                  usMsgId;      /* 消息ID */
+    VOS_UINT16                  usMsgId;      /* ????ID */
     CBT_COMPONENT_MODE_STRU     stCompMode;
     VOS_UINT32                  ulMsgLength;
 
-    VOS_UINT32                  ulErrorCode;        /*返回执行结果*/
-    VOS_UINT32                  ulErrNvId;          /*返回出现错误的NVID*/
-    VOS_UINT32                  ulCount;            /*返回的NV项个数*/
+    VOS_UINT32                  ulErrorCode;        /*????????????*/
+    VOS_UINT32                  ulErrNvId;          /*??????????????NVID*/
+    VOS_UINT32                  ulCount;            /*??????NV??????*/
 }CBT_READ_NV_CNF_STRU;
 
 /*****************************************************************************
-结构名    : OMRL_CBT_HDLC_ENCODE_MEM_CTRL
-结构说明  : OMRL CBT校准通道HDLC解析控制信息结构(uncache)
+??????    : OMRL_CBT_HDLC_ENCODE_MEM_CTRL
+????????  : OMRL CBT????????HDLC????????????????(uncache)
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8                          *pucBuf;         /* 指向缓冲区虚拟首地址 */
-    VOS_UINT8                          *pucRealBuf;     /* 指向缓冲区实首地址 */
-    VOS_UINT32                          ulBufSize;      /* 保存缓冲区总大小 */
+    VOS_UINT8                          *pucBuf;         /* ???????????????????? */
+    VOS_UINT8                          *pucRealBuf;     /* ?????????????????? */
+    VOS_UINT32                          ulBufSize;      /* ???????????????? */
     VOS_UINT32                          ulRsv;          /* Reserve */
 }CBT_HDLC_ENCODE_MEM_CTRL;
 
 /*****************************************************************************
-结构名    : OM_ACPU_ICC_SEND_FAIL_STRU
-结构说明  : ACPU ICC通道发送失败的可维可测信息记录结构
+??????    : OM_ACPU_ICC_SEND_FAIL_STRU
+????????  : ACPU ICC??????????????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulICCOmSendErrNum;      /*当前发送的错误记录*/
-    VOS_UINT32                          ulICCOmSendErrLen;      /*当前发送的错误总消息长度*/
-    VOS_UINT32                          ulICCOmSendErrSlice;    /*当前发送的错误消息最后一条数据的时间*/
+    VOS_UINT32                          ulICCOmSendErrNum;      /*??????????????????*/
+    VOS_UINT32                          ulICCOmSendErrLen;      /*????????????????????????*/
+    VOS_UINT32                          ulICCOmSendErrSlice;    /*????????????????????????????????????*/
 }CBT_ACPU_ICC_SEND_FAIL_STRU;
 
 /*****************************************************************************
-结构名    : OM_ACPU_ICC_SEND_SUC_STRU
-结构说明  : ACPU ICC通道成功发送的可维可测信息记录结构
+??????    : OM_ACPU_ICC_SEND_SUC_STRU
+????????  : ACPU ICC??????????????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulICCOmSendMsgNum;      /*当前发送的总消息数*/
-    VOS_UINT32                          ulICCOmSendLen;         /*当前发送的总消息长度*/
-    VOS_UINT32                          ulICCOmSendSlice;       /*当前发送的最后一条数据的时间*/
+    VOS_UINT32                          ulICCOmSendMsgNum;      /*??????????????????*/
+    VOS_UINT32                          ulICCOmSendLen;         /*????????????????????*/
+    VOS_UINT32                          ulICCOmSendSlice;       /*????????????????????????????*/
 }CBT_ACPU_ICC_SEND_SUC_STRU;
 
 /*****************************************************************************
-结构名    : OM_MAINTENANCE_INFO_STRU
-结构说明  : OM模块可维可测信息记录结构
+??????    : OM_MAINTENANCE_INFO_STRU
+????????  : OM????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulDataLen; /* 接收或发送数据长度 */
-    VOS_UINT32                          ulNum;     /* 接收或发送数据次数 */
+    VOS_UINT32                          ulDataLen; /* ?????????????????? */
+    VOS_UINT32                          ulNum;     /* ?????????????????? */
 }CBT_MAINTENANCE_INFO_STRU;
 
 /*****************************************************************************
-结构名    : OM_ACPU_PC_UE_RELEASE_INFO_STRU
-结构说明  : OM模块断链操作信息记录结构
+??????    : OM_ACPU_PC_UE_RELEASE_INFO_STRU
+????????  : OM????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulRlsAp2Modem;     /* AP到Modem切换 */
-    VOS_UINT32                          ulRlsModem2Ap;     /* Modem到AP切换 */
-    VOS_UINT32                          ulRlsDrvSuspend;   /* DRV挂起 */
-    VOS_UINT32                          ulRlsPortClose;    /* 端口关闭 */
-    VOS_UINT32                          ulRlsPortSwitch;   /* 端口切换 */
-    VOS_UINT32                          ulSlice;           /* 最后一次收到断链的时间 */
+    VOS_UINT32                          ulRlsAp2Modem;     /* AP??Modem???? */
+    VOS_UINT32                          ulRlsModem2Ap;     /* Modem??AP???? */
+    VOS_UINT32                          ulRlsDrvSuspend;   /* DRV???? */
+    VOS_UINT32                          ulRlsPortClose;    /* ???????? */
+    VOS_UINT32                          ulRlsPortSwitch;   /* ???????? */
+    VOS_UINT32                          ulSlice;           /* ?????????????????????? */
 }CBT_ACPU_PC_UE_RELEASE_INFO_STRU;
 
 /*****************************************************************************
-结构名    : CBT_ACPU_PC_UE_FAIL_STRU
-结构说明  : CBT模块异常接收可维可测信息记录结构
+??????    : CBT_ACPU_PC_UE_FAIL_STRU
+????????  : CBT????????????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    CBT_MAINTENANCE_INFO_STRU           stLostData;         /* 记录丢掉的数据 */
-    VOS_UINT32                          ulFrameDecapErr;    /* 记录发生解帧错误的次数 */
+    CBT_MAINTENANCE_INFO_STRU           stLostData;         /* ?????????????? */
+    VOS_UINT32                          ulFrameDecapErr;    /* ?????????????????????? */
 
-    VOS_UINT16                          usPacketLenErr;     /* 记录发生包长度小于OM_USB_FRAME_LEN错误的次数 */
-    VOS_UINT16                          usLenTooShortErr;   /* 记录发生数据长度小于分段头的错误次数 */
-    VOS_UINT16                          usSegLenErr;        /* 记录发生段长度错误次数 */
-    VOS_UINT16                          usSegNumErr;        /* 记录发生段数目错误次数 */
+    VOS_UINT16                          usPacketLenErr;     /* ??????????????????OM_USB_FRAME_LEN?????????? */
+    VOS_UINT16                          usLenTooShortErr;   /* ???????????????????????????????????? */
+    VOS_UINT16                          usSegLenErr;        /* ?????????????????????? */
+    VOS_UINT16                          usSegNumErr;        /* ?????????????????????? */
 
-    VOS_UINT16                          usDatatypeErr;      /* 记录发生datatype字段错误次数 */
-    VOS_UINT16                          usMsgTooLongErr;    /* 记录发生组包后消息大于8K的错误次数 */
-    VOS_UINT16                          usCpuIdErr;         /* 记录发生CPU id错误次数 */
-    VOS_UINT16                          usNoMemErr;         /* 记录发生空间不足的错误次数 */
+    VOS_UINT16                          usDatatypeErr;      /* ????????datatype???????????? */
+    VOS_UINT16                          usMsgTooLongErr;    /* ??????????????????????8K?????????? */
+    VOS_UINT16                          usCpuIdErr;         /* ????????CPU id???????? */
+    VOS_UINT16                          usNoMemErr;         /* ?????????????????????????? */
 
-    VOS_UINT16                          usDataHeadErr;      /* 记录发生数据帧头部错误次数 */
-    VOS_UINT16                          usMsgLenErr;        /* 记录发生消息长度错误次数 */
-    VOS_UINT16                          usMsgSnErr;         /* 记录发生消息序号错误次数 */
-    VOS_UINT16                          usTransIdErr;       /* 记录发生TransId 序号错误次数 */
-    VOS_UINT16                          usPacketLostErr;    /* 记录发生包丢失的错误次数 */
-    VOS_UINT16                          usTimeStampErr;     /* 记录发生包时间戳的错误次数 */
+    VOS_UINT16                          usDataHeadErr;      /* ?????????????????????????? */
+    VOS_UINT16                          usMsgLenErr;        /* ???????????????????????? */
+    VOS_UINT16                          usMsgSnErr;         /* ???????????????????????? */
+    VOS_UINT16                          usTransIdErr;       /* ????????TransId ???????????? */
+    VOS_UINT16                          usPacketLostErr;    /* ???????????????????????? */
+    VOS_UINT16                          usTimeStampErr;     /* ?????????????????????????? */
 
-    VOS_UINT16                          usLinkDataLenErr;   /* 记录链路消息长度错误的次数 */
-    VOS_UINT16                          usLinkStatusErr;    /* 记录链路关闭时收到消息包的次数 */
-    VOS_UINT16                          usAllocMsg;         /* 记录消息分配失败的次数 */
+    VOS_UINT16                          usLinkDataLenErr;   /* ?????????????????????????? */
+    VOS_UINT16                          usLinkStatusErr;    /* ?????????????????????????????? */
+    VOS_UINT16                          usAllocMsg;         /* ?????????????????????? */
     VOS_UINT16                          usRcv;
 
-    CBT_ACPU_ICC_SEND_FAIL_STRU          stICCSendFailInfo;  /* 记录ACPU成功发送的ICC数据 */
+    CBT_ACPU_ICC_SEND_FAIL_STRU          stICCSendFailInfo;  /* ????ACPU??????????ICC???? */
 }CBT_ACPU_PC_UE_FAIL_STRU;
 
 /*****************************************************************************
-结构名    : CBT_ACPU_PC_UE_SUC_STRU
-结构说明  : CBT模块正常接收可维可测信息记录结构
+??????    : CBT_ACPU_PC_UE_SUC_STRU
+????????  : CBT????????????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    CBT_MAINTENANCE_INFO_STRU            stTotalData;       /* 记录接收到的总数据 */
+    CBT_MAINTENANCE_INFO_STRU            stTotalData;       /* ?????????????????? */
     CBT_MAINTENANCE_INFO_STRU            stHdlcDecapData;
-    CBT_MAINTENANCE_INFO_STRU            stLinkData;        /* 记录收到的链路数据 */
-    CBT_MAINTENANCE_INFO_STRU            stCcpuData;        /* 记录发给CCPU的数据 */
-    CBT_MAINTENANCE_INFO_STRU            stAcpuData;        /* 记录发给ACPU的数据 */
-    CBT_ACPU_ICC_SEND_SUC_STRU           stICCSendSUCInfo;  /* 记录ACPU成功发送的ICC数据 */
-    CBT_MAINTENANCE_INFO_STRU            stRlsData;         /* 记录工具发送的Release数据 */
-    CBT_ACPU_PC_UE_RELEASE_INFO_STRU     stRlsInfo;         /* 记录Release信息 */
+    CBT_MAINTENANCE_INFO_STRU            stLinkData;        /* ?????????????????? */
+    CBT_MAINTENANCE_INFO_STRU            stCcpuData;        /* ????????CCPU?????? */
+    CBT_MAINTENANCE_INFO_STRU            stAcpuData;        /* ????????ACPU?????? */
+    CBT_ACPU_ICC_SEND_SUC_STRU           stICCSendSUCInfo;  /* ????ACPU??????????ICC???? */
+    CBT_MAINTENANCE_INFO_STRU            stRlsData;         /* ??????????????Release???? */
+    CBT_ACPU_PC_UE_RELEASE_INFO_STRU     stRlsInfo;         /* ????Release???? */
 }CBT_ACPU_PC_UE_SUC_STRU;
 
 /*****************************************************************************
-结构名    : CBTRL_MSG_COMBINE_INFO_STRU
-结构说明  : CBTRL模块完成组包需要的信息结构
+??????    : CBTRL_MSG_COMBINE_INFO_STRU
+????????  : CBTRL??????????????????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8                           ucTotalSegNum;      /* 总的分段数 */
-    VOS_UINT8                           ucExpectedSegSn;    /* 组包函数中期望得到的消息包序号 */
+    VOS_UINT8                           ucTotalSegNum;      /* ?????????? */
+    VOS_UINT8                           ucExpectedSegSn;    /* ?????????????????????????????? */
     VOS_UINT16                          usRsv;
 
     VOS_UINT32                          ulTransId;
@@ -352,14 +352,14 @@ typedef struct
     VOS_UINT16                          usTimeStampH;
     VOS_UINT16                          usRsv2;
 
-    VOS_UINT32                          ulTotalMsgLen;      /* 组包函数中组包后消息总的长度 */
-    VOS_UINT32                          ulMoveLen;          /* 组包函数中每放入一消息包后的偏移 */
-    MsgBlock *                          pstWholeMsg;        /*指向组包函数中完整消息包*/
+    VOS_UINT32                          ulTotalMsgLen;      /* ???????????????????????????? */
+    VOS_UINT32                          ulMoveLen;          /* ???????????????????????????????? */
+    MsgBlock *                          pstWholeMsg;        /*????????????????????????*/
 }CBT_MSG_COMBINE_INFO_STRU;
 
 /*****************************************************************************
-结构名    : CBTRL_RCV_CHAN_CTRL_INFO_STRU
-结构说明  : CBTRL模块通道控制信息结构
+??????    : CBTRL_RCV_CHAN_CTRL_INFO_STRU
+????????  : CBTRL????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -372,7 +372,7 @@ typedef struct
 
 
 /*****************************************************************************
-  函数声明
+  ????????
 *****************************************************************************/
 VOS_UINT32 CBT_AcpuInit(VOS_VOID);
 VOS_UINT32 CBT_AcpuSendData(CBT_UNIFORM_MSG_STRU * pstMsg, VOS_UINT16 usMsgLen);

@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 /*lint -e322*/
 #include <linux/slab.h>
@@ -37,7 +37,7 @@ extern "C" {
 #include "oal_util.h"
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 typedef irq_handler_t oal_irq_handler_t;
 
@@ -53,7 +53,7 @@ typedef irq_handler_t oal_irq_handler_t;
 
 #define OAL_HI_TIMER_IRQ_NO                 80            /*5113 : 5   5115:80*/
 
-#define OAL_HI_TIMER_FREE_MODE              0         /* 1101测试新增 */
+#define OAL_HI_TIMER_FREE_MODE              0         /* 1101???????? */
 #define OAL_HI_TIMER_CYCLE_MODE             1
 #define OAL_HI_TIMER_SIZE_32_BIT            1
 #define OAL_HI_TIMER_WRAPPING               0
@@ -64,8 +64,8 @@ typedef irq_handler_t oal_irq_handler_t;
 #define OAL_HI_SC_REG_BASE                  (0x10100000)
 #define OAL_HI_SC_CTRL                      (OAL_HI_SC_REG_BASE + 0x0000)
 
-#define OAL_IRQ_ENABLE                      1  /* 可以中断 */
-#define OAL_IRQ_FORBIDDEN                   0  /* 禁止中断 */
+#define OAL_IRQ_ENABLE                      1  /* ???????? */
+#define OAL_IRQ_FORBIDDEN                   0  /* ???????? */
 
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
 
@@ -114,7 +114,7 @@ typedef irq_handler_t oal_irq_handler_t;
 typedef irqreturn_t                         oal_irqreturn_t;
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 typedef enum
 {
@@ -158,22 +158,22 @@ typedef enum
 typedef oal_uint8 oal_5115irq_enum_uint8;
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 typedef struct cpumask     *oal_cpumask;
 typedef oal_uint32          oal_irq_num;
 
-#define OAL_SA_SHIRQ        IRQF_SHARED       /* 中断类型 */
+#define OAL_SA_SHIRQ        IRQF_SHARED       /* ???????? */
 
 typedef oal_uint32        (*oal_irq_intr_func)(void *);
 typedef oal_int32         (*oal_dbac_isr_func)(int);
@@ -189,24 +189,24 @@ typedef struct
     volatile oal_uint32 ul_timerx_bgload;
     volatile oal_uint32 ul_reserve;
 } oal_hi_timerx_reg_stru;
-/*timer控制寄存器*/
+/*timer??????????*/
 typedef union
 {
     volatile oal_uint32 ul_value;
     struct
     {
-        volatile oal_uint32 ul_oneshot: 1;                 /*选择计数模式 0：回卷计数 1：一次性计数*/
-        volatile oal_uint32 ul_timersize: 1;               /*16bit|32bit计数操作模式 0：16bit 1：32bit*/
-        volatile oal_uint32 ul_timerpre: 2;                /*预分频因子 00：不分频 01：4级分频 10：8级分频 11：未定义，设置相当于分频因子10*/
-        volatile oal_uint32 ul_reserved0: 1;               /*保留位*/
-        volatile oal_uint32 ul_intenable: 1;               /*中断屏蔽位 0：屏蔽 1：不屏蔽*/
-        volatile oal_uint32 ul_timermode: 1;               /*计数模式 0：自由模式 1：周期模式*/
-        volatile oal_uint32 ul_timeren: 1;                 /*定时器使能位 0：禁止 1：使能*/
-        volatile oal_uint32 ul_reserved1: 24;              /*保留位*/
+        volatile oal_uint32 ul_oneshot: 1;                 /*???????????? 0?????????? 1????????????*/
+        volatile oal_uint32 ul_timersize: 1;               /*16bit|32bit???????????? 0??16bit 1??32bit*/
+        volatile oal_uint32 ul_timerpre: 2;                /*?????????? 00???????? 01??4?????? 10??8?????? 11????????????????????????????10*/
+        volatile oal_uint32 ul_reserved0: 1;               /*??????*/
+        volatile oal_uint32 ul_intenable: 1;               /*?????????? 0?????? 1????????*/
+        volatile oal_uint32 ul_timermode: 1;               /*???????? 0?????????? 1??????????*/
+        volatile oal_uint32 ul_timeren: 1;                 /*???????????? 0?????? 1??????*/
+        volatile oal_uint32 ul_reserved1: 24;              /*??????*/
     } bits_stru;
 } oal_hi_timer_control_union;
 
-/*timer2_3寄存器*/
+/*timer2_3??????*/
 typedef struct
 {
     oal_hi_timerx_reg_stru ast_timer[2];
@@ -216,20 +216,20 @@ typedef struct
     oal_hi_timer_control_union  u_timerx_config;
 }oal_hi_timerx_config_stru;
 
-/* PCI驱动相关定义 */
+/* PCI???????????? */
 typedef struct pci_driver       oal_pci_driver_stru;
 typedef struct pci_device_id    oal_pci_device_id_stru;
 typedef struct pci_dev          oal_pci_dev_stru;
 typedef pm_message_t            oal_pm_message_t;
 
-/* 中断设备结构体 */
+/* ?????????????? */
 typedef struct
 {
-    oal_uint32              ul_irq;                  /* 中断号 */
-    oal_int32               l_irq_type;             /* 中断类型标志 */
-    oal_void               *p_drv_arg;              /* 中断处理函数参数 */
-    oal_int8               *pc_name;                /* 中断设备名字 只为界面友好 */
-    oal_irq_intr_func       p_irq_intr_func;        /* 中断处理函数地址 */
+    oal_uint32              ul_irq;                  /* ?????? */
+    oal_int32               l_irq_type;             /* ???????????? */
+    oal_void               *p_drv_arg;              /* ???????????????? */
+    oal_int8               *pc_name;                /* ???????????? ???????????? */
+    oal_irq_intr_func       p_irq_intr_func;        /* ???????????????? */
 }oal_irq_dev_stru;
 
 typedef oal_uint8   oal_hi_timerx_index_enum_uint8;
@@ -244,22 +244,22 @@ typedef enum
 }oal_hi_timerx_index_enum;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 extern oal_hi_timer_reg_stru *g_pst_reg_timer;
 extern oal_uint32 g_aul_irq_save_time[][255];
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 OAL_STATIC OAL_INLINE oal_void  oal_irq_free(oal_irq_dev_stru *st_osdev)
@@ -347,7 +347,7 @@ OAL_STATIC OAL_INLINE oal_int32  oal_request_irq(oal_uint32             ul_irq,
                                                      OAL_CONST oal_int8    *p_name,
                                                      oal_void              *p_dev)
 {
-    /* TBD: 参数3待讨论 */
+    /* TBD: ????3?????? */
 
     return request_irq(ul_irq, p_handler, ul_flags, p_name, p_dev);
 }
@@ -374,7 +374,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_wifi_reg_on_pull_up(oal_int32 wifi_gpio_addr
         OAL_IO_PRINT("wifi_reg_on_pull_up:fail to get wifi gpio!\n");
         return;
     }
-    /*如果已经上过电，则直接返回*/
+    /*??????????????????????????*/
     if (1 == oal_gpio_get_value(wifi_gpio_addr))
     {
         OAL_IO_PRINT("wifi_reg_on_pull_up:WL_REG_ON has been pulled up in wifi_reg_on_pull_up!!!\n");
@@ -393,7 +393,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_wifi_reg_on_pull_down(oal_int32 wifi_gpio_ad
         OAL_IO_PRINT("wifi_reg_on_pull_down:fail to get wifi gpio!\n");
         return;
     }
-    /*如果已经下过电，则直接返回*/
+    /*??????????????????????????*/
     if (0 == oal_gpio_get_value(wifi_gpio_addr))
     {
         OAL_IO_PRINT("wifi_reg_on_pull_down:WL_REG_ON has been pulled down in wifi_reg_on_pull_down!!!\n");
@@ -407,7 +407,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_wifi_reg_on_pull_down(oal_int32 wifi_gpio_ad
 
 OAL_STATIC OAL_INLINE oal_uint32  oal_5115timer_get_10ns(oal_void)
 {
-    /* 02 待后续实现内容 TBD */
+    /* 02 ?????????????? TBD */
     return 1;
 }
 
@@ -415,10 +415,10 @@ OAL_STATIC OAL_INLINE oal_uint32  oal_5115timer_get_10ns(oal_void)
 
 OAL_STATIC OAL_INLINE oal_uint32  oal_5115timer_get_10ns(oal_void)
 {
-#if(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT) //产品采用了该中断的第二个定时器
+#if(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT) //??????????????????????????????
     return g_pst_reg_timer->ast_timer[OAL_5115TIMER_ONE].ul_timerx_value;
 #elif(_PRE_TARGET_PRODUCT_TYPE_E5 == _PRE_CONFIG_TARGET_PRODUCT)
-    /* E5 产品暂无硬件定时器资源 */
+    /* E5 ?????????????????????? */
     return 1;
 #else
     return g_pst_reg_timer->ast_timer[OAL_5115TIMER_SEC].ul_timerx_value;
@@ -438,9 +438,9 @@ OAL_STATIC OAL_INLINE oal_void  oal_irq_save(oal_uint *pui_flags, oal_uint32 ul_
 #ifdef _PRE_DEBUG_MODE
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
 
-    /* 数组最后一个用来保存save时间 */
-    /* 数组最后第二个用来保存save的类型，其他用来保存各类型的最大save - restore的时间*/
-    /* 每次restore的时候需要清空save时间，用来判断有无重复save */
+    /* ????????????????????save???? */
+    /* ??????????????????????save????????????????????????????????save - restore??????*/
+    /* ????restore??????????????save??????????????????????save */
         if (g_aul_irq_save_time[ul_core_id][254] == 0)
         {
             g_aul_irq_save_time[ul_core_id][254] = oal_5115timer_get_10ns();
@@ -448,7 +448,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_irq_save(oal_uint *pui_flags, oal_uint32 ul_
         }
         else
         {
-            /* 重复save */
+            /* ????save */
             OAL_IO_PRINT("\n core %d oal_irq_save[%d] failed, already saved by [%d] \n",ul_core_id, ul_type, g_aul_irq_save_time[ul_core_id][253]);
             oal_dump_stack();
         }
@@ -467,12 +467,12 @@ OAL_STATIC OAL_INLINE oal_void  oal_irq_restore(oal_uint *pui_flags, oal_uint32 
 
     if (g_aul_irq_save_time[ul_core_id][254] != 0)
     {
-        /* restore时，需要判断上次save的type是否相同，不相同为非法 */
+        /* restore????????????????save??type?????????????????????? */
         if ((ul_type < 253) && (g_aul_irq_save_time[ul_core_id][253] == ul_type))
         {
             ul_restore_time = g_aul_irq_save_time[ul_core_id][254] - oal_5115timer_get_10ns();
 
-            /* 记录这个类型的save - restore 最大值 */
+            /* ??????????????save - restore ?????? */
             if (g_aul_irq_save_time[ul_core_id][ul_type] < ul_restore_time)
             {
                 g_aul_irq_save_time[ul_core_id][ul_type] = ul_restore_time;
@@ -480,7 +480,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_irq_restore(oal_uint *pui_flags, oal_uint32 
         }
         else
         {
-            /* restore出错 */
+            /* restore???? */
             OAL_IO_PRINT("\n core %d oal_irq_restore[%d] failed, should be [%d] \n",ul_core_id, ul_type, g_aul_irq_save_time[ul_core_id][253]);
             oal_dump_stack();
         }
@@ -489,7 +489,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_irq_restore(oal_uint *pui_flags, oal_uint32 
     }
     else
     {
-        /* 重复restore */
+        /* ????restore */
         printk("\n core %d oal_irq_restore[%d] failed, already restored \n",ul_core_id, ul_type);
         oal_dump_stack();
     }
@@ -526,32 +526,32 @@ OAL_STATIC OAL_INLINE oal_void  oal_5115timer_init(oal_void)
 
     g_pst_reg_timer = (oal_hi_timer_reg_stru *)ioremap(OAL_HI_TIMER_REG_BASE, sizeof(oal_hi_timer_reg_stru));
 
-    /*读timer控制器*/
-#if(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT) //产品采用了该中断的第二个定时器
+    /*??timer??????*/
+#if(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT) //??????????????????????????????
     u_reg_control.ul_value = g_pst_reg_timer->ast_timer[OAL_5115TIMER_ONE].ul_timerx_control;
 #else
     u_reg_control.ul_value = g_pst_reg_timer->ast_timer[OAL_5115TIMER_SEC].ul_timerx_control;
 #endif
-    /* 计数模式为自由模式 */
+    /* ?????????????????? */
     u_reg_control.bits_stru.ul_timermode = OAL_HI_TIMER_FREE_MODE;
 
-    /*不分频*/
+    /*??????*/
     u_reg_control.bits_stru.ul_timerpre = OAL_HI_TIMER_NO_DIV_FREQ;
 
-    /* 屏蔽中断 */
+    /* ???????? */
     u_reg_control.bits_stru.ul_intenable = OAL_HI_TIMER_INT_CLEAR;
 
-    /*配置为32bit计数操作模式*/
+    /*??????32bit????????????*/
     u_reg_control.bits_stru.ul_timersize = OAL_HI_TIMER_SIZE_32_BIT;
 
-    /*配置为回卷计数*/
+    /*??????????????*/
     u_reg_control.bits_stru.ul_oneshot = OAL_HI_TIMER_WRAPPING;
 
-    /*使能寄存器*/
+    /*??????????*/
     u_reg_control.bits_stru.ul_timeren = OAL_TRUE;       /* HI_TRUE_E */
 
-    /*写回timer控制器*/
-#if(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT) //产品采用了该中断的第二个定时器
+    /*????timer??????*/
+#if(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT) //??????????????????????????????
     g_pst_reg_timer->ast_timer[OAL_5115TIMER_ONE].ul_timerx_control = u_reg_control.ul_value;
 #else
     g_pst_reg_timer->ast_timer[OAL_5115TIMER_SEC].ul_timerx_control = u_reg_control.ul_value;
@@ -594,7 +594,7 @@ OAL_STATIC OAL_INLINE oal_int32 oal_mdrv_timer_stop(oal_uint32 ul_id)
 }
 #endif
 
-/* 创建一个新的被使用资源区 */
+/* ???????????????????????? */
 #define oal_request_mem_region(start, n, name)  request_mem_region(start, n, name)
 #define oal_release_mem_region(start, n)        release_mem_region(start, n)
 

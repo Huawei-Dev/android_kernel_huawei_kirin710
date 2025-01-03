@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "mac_ie.h"
 #include "dmac_mgmt_sta.h"
@@ -32,12 +32,12 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_MGMT_STA_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -62,12 +62,12 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 获取事件、事件头以及事件payload结构体 */
+    /* ????????????????????????payload?????? */
     pst_event               = (frw_event_stru *)pst_event_mem->puc_data;
     pst_event_hdr           = &(pst_event->st_event_hdr);
     pst_reg_params          = (dmac_ctx_sta_asoc_set_edca_reg_stru *)pst_event->auc_event_data;
 
-    /* 获取device结构的信息 */
+    /* ????device?????????? */
     pst_device = mac_res_get_dev(pst_event_hdr->uc_device_id);
     if (OAL_PTR_NULL == pst_device)
     {
@@ -88,12 +88,12 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
 
         
    #if 0
-        /*去使能EDCA*/
+        /*??????EDCA*/
         hal_disable_machw_edca(pst_device->pst_device_stru);
 
         pst_dmac_sta->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.en_dot11QosOptionImplemented = OAL_FALSE;
 
-        /* 设置VO默认参数 */
+        /* ????VO???????? */
         hal_vap_set_machw_aifsn_ac(pst_dmac_sta->pst_hal_vap, WLAN_WME_AC_VO, DMAC_WMM_VO_DEFAULT_DECA_AIFSN);
 
         hal_vap_set_edca_machw_cw(pst_dmac_sta->pst_hal_vap,
@@ -114,7 +114,7 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
     pst_mac_user = mac_res_get_mac_user(pst_dmac_sta->st_vap_base_info.uc_assoc_vap_id);
     if (OAL_PTR_NULL != pst_mac_user)
     {
-        /* User不为空是，针对每一个AC，更新EDCA参数，初始化TS状态 */
+        /* User????????????????????AC??????EDCA????????????TS???? */
         for (uc_wmm_ac_loop = 0; uc_wmm_ac_loop < WLAN_WME_AC_BUTT; uc_wmm_ac_loop++)
         {
             pst_mac_user->st_ts_info[uc_wmm_ac_loop].en_ts_status =
@@ -131,13 +131,13 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
         OAM_ERROR_LOG1(pst_event_hdr->uc_vap_id, OAM_SF_WMM, "{dmac_mgmt_wmm_update_edca_machw_sta::pst_dmac_device[idx=%d] null.}", pst_event_hdr->uc_device_id);
         return OAL_SUCC;
     }
-    /* alg edca opt 生效时, 不配置BEACON中参数 */
+    /* alg edca opt ??????, ??????BEACON?????? */
     if(DMAC_ALG_CCA_OPT_NO_INTF != pst_dmac_device->st_dmac_alg_stat.en_cca_intf_state ||
        OAL_TRUE == pst_dmac_device->st_dmac_alg_stat.en_co_intf_state)
     {
         return OAL_SUCC;
     }
-    /* 更新edca寄存器参数 */
+    /* ????edca?????????? */
     hal_vap_set_machw_aifsn_all_ac(pst_dmac_sta->pst_hal_vap,
                                    (oal_uint8)pst_dmac_sta->st_vap_base_info.pst_mib_info->st_wlan_mib_qap_edac[WLAN_WME_AC_BK].ul_dot11QAPEDCATableAIFSN,
                                    (oal_uint8)pst_dmac_sta->st_vap_base_info.pst_mib_info->st_wlan_mib_qap_edac[WLAN_WME_AC_BE].ul_dot11QAPEDCATableAIFSN,
@@ -152,7 +152,7 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
                                   en_ac_type);
     }
 
-    /* TXOP不使能时,同步AP参数;否则使用配置值 */
+    /* TXOP????????,????AP????;?????????????? */
     if(OAL_FALSE == pst_device->en_txop_enable)
     {
         hal_vap_set_machw_txop_limit_bkbe(pst_dmac_sta->pst_hal_vap,
@@ -164,8 +164,8 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
                                       (oal_uint16)pst_dmac_sta->st_vap_base_info.pst_mib_info->st_wlan_mib_qap_edac[WLAN_WME_AC_VO].ul_dot11QAPEDCATableTXOPLimit,
                                       (oal_uint16)pst_dmac_sta->st_vap_base_info.pst_mib_info->st_wlan_mib_qap_edac[WLAN_WME_AC_VI].ul_dot11QAPEDCATableTXOPLimit);
 
-    /*DTS: 1102 beacon帧中EDCA参数中没有LIFETIME值，STA根据本地mib值更新(mib值为0),
-    注释掉这个配置，按照寄存器配置来生效即可 */
+    /*DTS: 1102 beacon????EDCA??????????LIFETIME????STA????????mib??????(mib????0),
+    ???????????????????????????????????????? */
 
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     hal_vap_set_machw_edca_bkbe_lifetime(pst_dmac_sta->pst_hal_vap,
@@ -188,7 +188,7 @@ OAL_STATIC oal_void  dmac_chan_adjust_bandwidth_sta(mac_vap_stru *pst_mac_vap, w
     en_announced_bandwidth = pst_mac_vap->st_ch_switch_info.en_new_bandwidth;
     *pen_bandwidth = en_curr_bandwidth;
 
-    /* 如果当前带宽模式与新带宽模式相同，则直接返回 */
+    /* ???????????????????????????????????????????? */
     if (en_announced_bandwidth == en_curr_bandwidth)
     {
         return;
@@ -198,11 +198,11 @@ OAL_STATIC oal_void  dmac_chan_adjust_bandwidth_sta(mac_vap_stru *pst_mac_vap, w
     {
         *pen_bandwidth = WLAN_BAND_WIDTH_20M;
     }
-    else   /* 新带宽模式不是20MHz，则STA侧带宽模式需要根据自身能力进行匹配 */
+    else   /* ??????????????20MHz????STA?????????????????????????????????? */
     {
-        /* 使能40MHz */
-        /* (1) 用户开启"40MHz运行"特性(即STA侧 dot11FortyMHzOperationImplemented为true) */
-        /* (2) AP在40MHz运行 */
+        /* ????40MHz */
+        /* (1) ????????"40MHz????"????(??STA?? dot11FortyMHzOperationImplemented??true) */
+        /* (2) AP??40MHz???? */
         if (OAL_TRUE == mac_mib_get_FortyMHzOperationImplemented(pst_mac_vap))
         {
             switch (en_announced_bandwidth)
@@ -225,8 +225,8 @@ OAL_STATIC oal_void  dmac_chan_adjust_bandwidth_sta(mac_vap_stru *pst_mac_vap, w
             }
         }
 
-        /* 使能80MHz */
-        /* (1) 用户支持80MHz带宽(即STA侧 dot11VHTChannelWidthOptionImplemented为0) */
+        /* ????80MHz */
+        /* (1) ????????80MHz????(??STA?? dot11VHTChannelWidthOptionImplemented??0) */
         if (OAL_TRUE == mac_mib_get_VHTOptionImplemented(pst_mac_vap))
         {
             if (WLAN_MIB_VHT_SUPP_WIDTH_80 == mac_mib_get_VHTChannelWidthOptionImplemented(pst_mac_vap))
@@ -265,7 +265,7 @@ oal_void  dmac_chan_multi_select_channel_mac(mac_vap_stru *pst_mac_vap, oal_uint
     OAM_WARNING_LOG3(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_chan_select_channel_mac:: Switching channel to %d! BW %d mode,hal chan is %d.}",
                      uc_channel, en_bandwidth, pst_device->pst_device_stru->uc_current_chan_number);
 
-    /* 更新VAP下的主20MHz信道号、带宽模式、信道索引 */
+    /* ????VAP??????20MHz?????????????????????????? */
     ul_ret = mac_get_channel_idx_from_num(pst_mac_vap->st_channel.en_band, uc_channel, &uc_idx);
     if (OAL_SUCC != ul_ret)
     {
@@ -278,38 +278,38 @@ oal_void  dmac_chan_multi_select_channel_mac(mac_vap_stru *pst_mac_vap, oal_uint
     pst_mac_vap->st_channel.en_bandwidth   = en_bandwidth;
     pst_mac_vap->st_channel.uc_idx         = uc_idx;
 
-    /* 通知算法信道改变 */
+    /* ???????????????? */
     dmac_alg_cfg_channel_notify(pst_mac_vap, CH_BW_CHG_TYPE_MOVE_WORK);
-    /* 通知算法带宽改变 */
+    /* ???????????????? */
     dmac_alg_cfg_bandwidth_notify(pst_mac_vap, CH_BW_CHG_TYPE_MOVE_WORK);
 
 #ifdef _PRE_WLAN_FEATURE_DBAC
     ul_ret = mac_fcs_dbac_state_check(pst_device);
     if ((mac_is_dbac_running(pst_device)) && (MAC_FCS_DBAC_NEED_CLOSE == ul_ret))
     {
-        /* DBAC场景下,切换信道后为同信道,需要关闭DBAC,重新设置2个vap最大带宽 */
+        /* DBAC??????,??????????????????,????????DBAC,????????2??vap???????? */
         dmac_alg_update_dbac_fcs_config(pst_mac_vap);
         dmac_alg_vap_down_notify(pst_mac_vap);
 
         st_channel = pst_mac_vap->st_channel;
         dmac_chan_select_real_channel(pst_device, &st_channel);
-        /* DBAC同信道工作，不需要清除FIFO */
+        /* DBAC??????????????????????FIFO */
         dmac_mgmt_switch_channel(pst_device, &st_channel, OAL_FALSE);
     }
     else if((mac_is_dbac_running(pst_device)) && (MAC_FCS_DBAC_NEED_OPEN == ul_ret))
     {
-        /* DBAC场景下,切换信道后，仍是异信道,只需要更新dbac参数 */
+        /* DBAC??????,??????????????????????,??????????dbac???? */
         dmac_alg_update_dbac_fcs_config(pst_mac_vap);
         if(pst_device->pst_device_stru->uc_current_chan_number == uc_old_chan_number)
         {
-            /* 如果当前时序是wlan时序，则由于wlan信道变化,切换后不能发送报文 */
+            /* ??????????????wlan????????????wlan????????,?????????????????? */
             dmac_vap_pause_tx(pst_mac_vap);
         }
     }
     else if((!mac_is_dbac_running(pst_device)) && (MAC_FCS_DBAC_NEED_OPEN == ul_ret))
     {
-        /* 非DBAC场景下,切换信道后为异信道, 需要启动DBAC */
-        /* wlan vap刚切离信道，需要暂停发送. */
+        /* ??DBAC??????,??????????????????, ????????DBAC */
+        /* wlan vap????????????????????????. */
         dmac_vap_pause_tx(pst_mac_vap);
         dmac_alg_vap_up_notify(pst_mac_vap);
 
@@ -318,15 +318,15 @@ oal_void  dmac_chan_multi_select_channel_mac(mac_vap_stru *pst_mac_vap, oal_uint
 
         if(pst_device->pst_device_stru->uc_current_chan_number == pst_mac_vap->st_channel.uc_chan_number)
         {
-            /* 如果DBAC启动初始化wlan vap，则重新resume wlan vap发送,否则由DBAC做resume vap的动作 */
+            /* ????DBAC??????????wlan vap????????resume wlan vap????,??????DBAC??resume vap?????? */
             mac_vap_resume_tx(pst_mac_vap);
         }
     }
     else
-    /* 其他情况,不存在2个up的vap,DBAC处于关闭状态 */
+    /* ????????,??????2??up??vap,DBAC???????????? */
 #endif
     {
-        /* 遍历device下所有vap */
+        /* ????device??????vap */
         for (uc_vap_idx = 0; uc_vap_idx <pst_device->uc_vap_num; uc_vap_idx++)
         {
             pst_vap = (mac_vap_stru *)mac_res_get_mac_vap(pst_device->auc_vap_id[uc_vap_idx]);
@@ -337,7 +337,7 @@ oal_void  dmac_chan_multi_select_channel_mac(mac_vap_stru *pst_mac_vap, oal_uint
                 continue;
             }
 
-            /* 切换至新信道工作 */
+            /* ???????????????? */
             dmac_chan_select_channel_mac(pst_mac_vap, uc_channel, en_bandwidth);
         }
     }
@@ -351,7 +351,7 @@ oal_void  dmac_chan_sta_switch_channel(mac_vap_stru *pst_mac_vap)
     mac_user_stru                      *pst_mac_user;
     dmac_user_stru                     *pst_dmac_user;
 
-    mac_channel_stru                    st_old_channel;    /* vap所在的信道 */
+    mac_channel_stru                    st_old_channel;    /* vap?????????? */
     mac_scan_req_stru                   st_scan_req_params;
 
     if (WLAN_BAND_WIDTH_BUTT != pst_mac_vap->st_ch_switch_info.en_new_bandwidth)
@@ -360,15 +360,15 @@ oal_void  dmac_chan_sta_switch_channel(mac_vap_stru *pst_mac_vap)
     }
     oal_memcopy(&st_old_channel, &pst_mac_vap->st_channel, OAL_SIZEOF(st_old_channel));
 
-    /* 禁止硬件全部发送直到STA信道切换完毕 */
+    /* ????????????????????STA???????????? */
     dmac_chan_disable_machw_tx(pst_mac_vap);
-    /* 切换信道 */
+    /* ???????? */
     dmac_chan_multi_select_channel_mac(pst_mac_vap, pst_mac_vap->st_ch_switch_info.uc_new_channel, en_new_bandwidth);
 
-    /* 设置该变量，避免STA在信道切换时发生link loss */
+    /* ????????????????STA????????????????link loss */
     //pst_mac_vap->st_ch_switch_info.en_waiting_for_ap           = OAL_TRUE;
 
-    /* STA已切换至新信道， */
+    /* STA???????????????? */
     pst_mac_vap->st_ch_switch_info.en_channel_swt_cnt_zero     = OAL_FALSE;
     pst_mac_vap->st_ch_switch_info.en_waiting_to_shift_channel = OAL_FALSE;
     pst_mac_vap->st_ch_switch_info.en_new_bandwidth            = WLAN_BAND_WIDTH_BUTT;
@@ -381,7 +381,7 @@ oal_void  dmac_chan_sta_switch_channel(mac_vap_stru *pst_mac_vap)
     dmac_switch_complete_notify(pst_mac_vap, OAL_FALSE);
 #endif
 
-    /* 更新user带宽能力通知算法并同步host */
+    /* ????user??????????????????????host */
     mac_vap_get_bandwidth_cap(pst_mac_vap, &en_bwcap_vap);
     pst_mac_user = mac_res_get_mac_user(pst_mac_vap->uc_assoc_vap_id);
     if (pst_mac_user != OAL_PTR_NULL)
@@ -389,13 +389,13 @@ oal_void  dmac_chan_sta_switch_channel(mac_vap_stru *pst_mac_vap)
         mac_vap_get_bandwidth_cap(pst_mac_vap,&en_bwcap_vap);
         mac_user_set_bandwidth_info(pst_mac_user, en_bwcap_vap, en_bwcap_vap);
 
-        /* user级别调用算法改变带宽通知链 */
+        /* user?????????????????????????? */
         dmac_alg_cfg_user_bandwidth_notify(pst_mac_vap, pst_mac_user);
         dmac_config_d2h_user_info_syn(pst_mac_vap, pst_mac_user);
     }
 
 #ifdef _PRE_WLAN_FEATURE_STA_PM
-    /* 信道切换完成按照正常dtim睡眠唤醒 */
+    /* ????????????????????dtim???????? */
     dmac_psm_update_dtime_period(pst_mac_vap,
                                     (oal_uint8)pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.ul_dot11DTIMPeriod,
                                     pst_mac_vap->pst_mib_info->st_wlan_mib_sta_config.ul_dot11BeaconPeriod);
@@ -404,7 +404,7 @@ oal_void  dmac_chan_sta_switch_channel(mac_vap_stru *pst_mac_vap)
 
     dmac_chan_enable_machw_tx(pst_mac_vap);
 
-    /* 切完信道后删除BA，防止切换信道过程中将硬件队列清空导致BA移窗异常 */
+    /* ??????????????BA??????????????????????????????????????BA???????? */
     pst_dmac_user = (dmac_user_stru *)mac_res_get_dmac_user(pst_mac_vap->uc_assoc_vap_id);
     if(OAL_PTR_NULL != pst_dmac_user)
     {
@@ -424,19 +424,19 @@ oal_void  dmac_handle_tbtt_chan_mgmt_sta(dmac_vap_stru *pst_dmac_vap)
         return;
     }
 
-    /* 如果AP发送的CSA IE中的"信道切换计数"为零，则立即切换信道 */
+    /* ????AP??????CSA IE????"????????????"???????????????????? */
     if (OAL_TRUE == pst_mac_vap->st_ch_switch_info.en_channel_swt_cnt_zero)
     {
         dmac_chan_sta_switch_channel(pst_mac_vap);
-        dmac_vap_linkloss_clean(pst_dmac_vap);      //切到新信道,linkloss清零重新开始计数
+        dmac_vap_linkloss_clean(pst_dmac_vap);      //??????????,linkloss????????????????
         OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_2040,"{dmac_handle_tbtt_chan_mgmt_sta::beacon cnt zero to switch channel %d}",
                  pst_mac_vap->st_channel.uc_chan_number);
     }
 #if 0
-    /* 信道切换已经完成。现在新信道上等待接收AP发送的Beacon帧 */
+    /* ??????????????????????????????????????AP??????Beacon?? */
     if (OAL_TRUE == pst_mac_vap->st_ch_switch_info.en_waiting_for_ap)
     {
-        /* 等待一段时间后，在新信道上恢复硬件发送(即便这时AP有可能还没有切换至新信道) */
+        /* ??????????????????????????????????????(????????AP????????????????????????) */
         if (pst_dmac_vap->st_linkloss_info.us_link_loss > WLAN_LINKLOSS_OFFSET_11H)
         {
             pst_mac_vap->st_ch_switch_info.en_waiting_for_ap = OAL_FALSE;
@@ -445,7 +445,7 @@ oal_void  dmac_handle_tbtt_chan_mgmt_sta(dmac_vap_stru *pst_dmac_vap)
         }
     }
 #endif
-    /* 如果AP发送的CSA IE中的"信道切换计数"不为零，则每一次TBTT中断中减一 */
+    /* ????AP??????CSA IE????"????????????"????????????????TBTT?????????? */
     if (pst_mac_vap->st_ch_switch_info.uc_new_ch_swt_cnt > 0)
     {
         pst_mac_vap->st_ch_switch_info.uc_new_ch_swt_cnt--;
@@ -454,7 +454,7 @@ oal_void  dmac_handle_tbtt_chan_mgmt_sta(dmac_vap_stru *pst_dmac_vap)
             if (OAL_TRUE == pst_mac_vap->st_ch_switch_info.en_waiting_to_shift_channel)
             {
                 dmac_chan_sta_switch_channel(pst_mac_vap);
-                dmac_vap_linkloss_clean(pst_dmac_vap);      //切到新信道,linkloss清零重新开始计数
+                dmac_vap_linkloss_clean(pst_dmac_vap);      //??????????,linkloss????????????????
                 OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_2040,"{dmac_handle_tbtt_chan_mgmt_sta::tbtt cnt to switch channel %d}",
                                  pst_mac_vap->st_channel.uc_chan_number);
 
@@ -466,7 +466,7 @@ oal_void  dmac_handle_tbtt_chan_mgmt_sta(dmac_vap_stru *pst_dmac_vap)
 
 oal_uint8  dmac_mgmt_is_active_htsta(mac_vap_stru *pst_mac_vap)
 {
-    //TODO 目前该函数始终返回true, 如有必要在此处加上判断sta是否为活跃ht sta的代码
+    //TODO ??????????????????true, ??????????????????????sta??????????ht sta??????
     return OAL_TRUE;
 }
 
@@ -539,8 +539,8 @@ oal_uint32  dmac_ie_proc_obss_scan_ie(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_
         return OAL_FAIL;
     }
 
-    /* 20/40共存逻辑开启时，判断是否启动obss扫描定时器 */
-    /* STA模式，才需要obss扫描定时器开启定时器 */
+    /* 20/40????????????????????????????obss?????????? */
+    /* STA????????????obss???????????????????? */
     if ((OAL_TRUE == dmac_mgmt_need_obss_scan(pst_mac_vap)) &&
          (OAL_FALSE == pst_dmac_vap->uc_obss_scan_timer_started) )
     {
@@ -571,13 +571,13 @@ oal_uint32 dmac_sta_up_update_ht_params(mac_vap_stru *pst_mac_vap, oal_uint8 *pu
     puc_ie = mac_find_ie(MAC_EID_OBSS_SCAN, puc_payload, us_frame_len);
     if (OAL_PTR_NULL != puc_ie)
     {
-        /* 处理 Overlapping BSS Scan Parameters IE */
+        /* ???? Overlapping BSS Scan Parameters IE */
         dmac_ie_proc_obss_scan_ie(pst_mac_vap, puc_ie);
     }
     else
     {
-        /* 找不到OBSS IE，将OBSS扫描标志置为False，放在else分支而不放在查找OBSS IE之前是为了避免之前已经置为TRUE，
-           实际有OBSS IE，但在查找之前置为FALSE引入其他问题*/
+        /* ??????OBSS IE????OBSS????????????False??????else????????????????OBSS IE??????????????????????????TRUE??
+           ??????OBSS IE??????????????????FALSE????????????*/
         mac_vap_set_peer_obss_scan(pst_mac_vap, OAL_FALSE);
     }
 #endif /* _PRE_WLAN_FEATURE_20_40_80_COEXIST */
@@ -597,7 +597,7 @@ oal_uint32 dmac_sta_up_update_vht_params(mac_vap_stru *pst_mac_vap, oal_uint8 *p
     oal_uint8        *puc_vht_opern_ie;
     oal_uint32        ul_change = MAC_NO_CHANGE;
 
-    /* 支持11ac，才进行后续的处理 */
+    /* ????11ac?????????????????? */
     if (OAL_FALSE == mac_mib_get_VHTOptionImplemented(pst_mac_vap))
     {
         return ul_change;

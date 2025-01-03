@@ -96,12 +96,12 @@ enum {
 
 typedef enum {
 	NO_ERR                = 0,
-	HOWLING_ERR           = 1,     //啸叫问题
-	WIND_NOISE_ERR        = 2,     //风噪问题
-	COEF_DIVERGENCE_ERR   = 3,     //系数发散问题
-	LOW_ACTTIME_RATE      = 4,     //生效时间占比低
-	PROCESS_PATH_ERR      = 5,     //模块通路问题
-	OTD_ERR               = 6,     //芯片杂音
+	HOWLING_ERR           = 1,     //????????
+	WIND_NOISE_ERR        = 2,     //????????
+	COEF_DIVERGENCE_ERR   = 3,     //????????????
+	LOW_ACTTIME_RATE      = 4,     //??????????????
+	PROCESS_PATH_ERR      = 5,     //????????????
+	OTD_ERR               = 6,     //????????
 } ErrorClass;
 
 enum {
@@ -183,7 +183,7 @@ enum APDSP_MSG_ENUM {
 	ID_AP_DSP_ANCTEST_STOP     = 0xDD38,
 	ID_AP_DSP_ANCTEST_STRESS   = 0xDD39,
 	ID_AP_IMGAE_DOWNLOAD       = 0xDD40,
-	ID_AP_DSP_PLL_SWITCH       = 0xDD41, /*PLL切换*/
+	ID_AP_DSP_PLL_SWITCH       = 0xDD41, /*PLL????*/
 	ID_DSP_WAKE_UP_MAD_ISR     = 0xDD42, /*MAD*/
 
 	ID_AP_DSP_HOOK_START       = 0xDD62,

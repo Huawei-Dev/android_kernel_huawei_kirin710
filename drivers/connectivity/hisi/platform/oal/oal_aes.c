@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_aes.h"
 #include "oal_util.h"
@@ -20,7 +20,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 /*lint -e717*/ /*lint -e778*/
 OAL_STATIC OAL_INLINE oal_uint8 oal_byte(OAL_CONST oal_uint32 x, OAL_CONST unsigned n)
@@ -1197,7 +1197,7 @@ OAL_STATIC OAL_CONST oal_uint32 crypto_il_tab[4][256] = {
         f_rl(bo, bi, 3, k); \
     } while (0)
 
-    /* AES解密过程用到的宏 */
+    /* AES???????????????? */
 #define i_rn(bo, bi, n, k)	do {				\
         bo[n] = crypto_it_tab[0][oal_byte(bi[n], 0)] ^          \
             crypto_it_tab[1][oal_byte(bi[(n + 3) & 3], 1)] ^        \
@@ -1228,7 +1228,7 @@ OAL_STATIC OAL_CONST oal_uint32 crypto_il_tab[4][256] = {
     } while (0)
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -1450,7 +1450,7 @@ OAL_STATIC oal_int32  oal_aes_key_setup_encrypt(oal_uint8* in_key, oal_uint32 ke
             break;
 
         case OAL_AES_KEYSIZE_256:
-        default:  //Coverity修改:前面已经限定只有这三种情况了
+        default:  //Coverity????:????????????????????????????
         {
             pst_aes_key->ul_key_enc[4] = oal_le32_to_host(key[4]);
             pst_aes_key->ul_key_enc[5] = oal_le32_to_host(key[5]);
@@ -1524,7 +1524,7 @@ OAL_STATIC OAL_INLINE oal_uint32 oal_crypto_cipher_encrypt_one(oal_aes_key_stru 
 
     if (((oal_uint)dst | (oal_uint)src) & alignmask)
     {
-        /* TBD 如果地址没有4字节对齐，需要修正后进行加密，这里简化处理，直接返回，并报告错误 */
+        /* TBD ????????????4???????????????????????????????????????????????????????????????? */
         return OAL_ERR_CODE_PMF_ALIGN_ERR;
     }
 
@@ -1703,7 +1703,7 @@ OAL_STATIC oal_uint32 oal_crypto_aes_cmac_decrypt(oal_aes_ctx_stru *aes_ctx,
 
     oal_bip_ipn_swap(ipn, mmie->sequence_number);
 
-    /* 重放攻击检测 */
+    /* ???????????? */
     if (0 >= oal_memcmp(ipn, aes_ctx->pn, 6))
     {
         *pul_dot11RSNAStatsCMACReplays += 1;
@@ -1713,7 +1713,7 @@ OAL_STATIC oal_uint32 oal_crypto_aes_cmac_decrypt(oal_aes_ctx_stru *aes_ctx,
     oal_bip_aad(pst_netbuf, aad);
     oal_aes_cmac(&aes_ctx->key, aes_ctx->crypto_buf, aad, pst_netbuf->data + 24, pst_netbuf->len - 24, mic);
 
-    /* 完整性校验 */
+    /* ?????????? */
     if (0 != oal_memcmp(mic, mmie->mic, OAL_SIZEOF(mmie->mic)))
     {
         *pul_dot11RSNAStatsCMACICVErrors += 1;
@@ -1745,10 +1745,10 @@ oal_uint32 oal_crypto_bip_enmic(oal_uint8 uc_igtk_keyid,
     OAL_MEMZERO(&st_aes_ctx, OAL_SIZEOF(st_aes_ctx));
     pst_netbuf->tail = pst_netbuf->data + *pst_frame_len;
 
-    /* 将AES密钥展开 */
+    /* ??AES???????? */
     oal_aes_key_setup_encrypt(pst_igtk_key, OAL_AES_KEYSIZE_128, &st_aes_ctx.key);
 
-    /* 准备PN码 */
+    /* ????PN?? */
     st_aes_ctx.pn[0] = pst_igtk_seq[5];
     st_aes_ctx.pn[1] = pst_igtk_seq[4];
     st_aes_ctx.pn[2] = pst_igtk_seq[3];
@@ -1756,10 +1756,10 @@ oal_uint32 oal_crypto_bip_enmic(oal_uint8 uc_igtk_keyid,
     st_aes_ctx.pn[4] = pst_igtk_seq[1];
     st_aes_ctx.pn[5] = pst_igtk_seq[0];
 
-    /* 准备key index */
+    /* ????key index */
     st_aes_ctx.key_idx = uc_igtk_keyid;
 
-    /* 对帧体进行AES-CMAC加密 */
+    /* ??????????AES-CMAC???? */
     ul_ret = oal_crypto_aes_cmac_encrypt(&st_aes_ctx, pst_netbuf);
     if (OAL_SUCC != ul_ret)
     {
@@ -1784,10 +1784,10 @@ oal_uint32 oal_crypto_bip_demic(oal_uint8 uc_igtk_keyid,
 
     OAL_MEMZERO(&st_aes_ctx, OAL_SIZEOF(st_aes_ctx));
 
-    /* 将AES密钥展开 */
+    /* ??AES???????? */
     oal_aes_key_setup_encrypt(pst_igtk_key, OAL_AES_KEYSIZE_128, &st_aes_ctx.key);
 
-    /* 准备PN码 */
+    /* ????PN?? */
     st_aes_ctx.pn[0] = pst_igtk_seq[5];
     st_aes_ctx.pn[1] = pst_igtk_seq[4];
     st_aes_ctx.pn[2] = pst_igtk_seq[3];
@@ -1795,7 +1795,7 @@ oal_uint32 oal_crypto_bip_demic(oal_uint8 uc_igtk_keyid,
     st_aes_ctx.pn[4] = pst_igtk_seq[1];
     st_aes_ctx.pn[5] = pst_igtk_seq[0];
 
-    /* 将接收到的加密管理帧进行AES-CCM/AES-CMAC解密 */
+    /* ????????????????????????AES-CCM/AES-CMAC???? */
     return oal_crypto_aes_cmac_decrypt(&st_aes_ctx, pst_netbuf, pul_dot11RSNAStatsCMACReplays,pul_dot11RSNAStatsCMACICVErrors);
 
 }

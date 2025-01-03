@@ -10,7 +10,7 @@ extern "C" {
 #ifdef _PRE_WLAN_FEATURE_PROXY_ARP
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_net.h"
 #include "wlan_spec.h"
@@ -24,12 +24,12 @@ extern "C" {
 
 /*lint -e778*/ /*lint -e572*/
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -122,7 +122,7 @@ oal_err_code_enum_uint32 hmac_proxy_add_ipv4(mac_vap_stru *pst_mac_vap, oal_uint
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 查询是否存在 */
+    /* ???????????? */
     en_exist = hmac_proxy_get_mac_by_ipv4(pst_mac_vap, ul_ipv4, auc_mac);
     if (OAL_SUCC == en_exist)
     {
@@ -130,7 +130,7 @@ oal_err_code_enum_uint32 hmac_proxy_add_ipv4(mac_vap_stru *pst_mac_vap, oal_uint
         {
             return OAL_SUCC;
         }
-        /* 如果来自不同的mac，则将前面记录的结点删除，后面流程将新的结点加入 */
+        /* ??????????????mac???????????????????????????????????????????????? */
         hmac_proxy_remove_ipv4(pst_mac_vap, ul_ipv4);
     }
 
@@ -139,7 +139,7 @@ oal_err_code_enum_uint32 hmac_proxy_add_ipv4(mac_vap_stru *pst_mac_vap, oal_uint
         return OAL_ERR_CODE_ARRAY_OVERFLOW;
     }
 
-    /* 申请内存 */
+    /* ???????? */
     pst_hash = OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, OAL_SIZEOF(hmac_proxy_ipv4_hash_stru), OAL_TRUE);
     if (OAL_PTR_NULL == pst_hash)
     {
@@ -147,11 +147,11 @@ oal_err_code_enum_uint32 hmac_proxy_add_ipv4(mac_vap_stru *pst_mac_vap, oal_uint
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 填写 */
+    /* ???? */
     pst_hash->ul_ipv4 = ul_ipv4;
     oal_memcopy(pst_hash->auc_mac, puc_mac, OAL_MAC_ADDR_LEN);
 
-    /* 加入hash表 */
+    /* ????hash?? */
     ul_user_hash_value = HMAC_PROXY_IPV4_HASH(ul_ipv4);
     oal_dlist_add_head(&(pst_hash->st_entry), &(pst_mac_vap->pst_vap_proxyarp->ast_ipv4_head[ul_user_hash_value]));
     pst_mac_vap->pst_vap_proxyarp->uc_ipv4_num++;
@@ -252,7 +252,7 @@ oal_err_code_enum_uint32 hmac_proxy_add_ipv6(mac_vap_stru *pst_mac_vap, oal_in6_
         return OAL_ERR_CODE_PROXY_ND_LEARN_USR_SUCC_COMP;
     }
 
-    /* 查询是否存在,如果存在，看是否来自同一个mac */
+    /* ????????????,??????????????????????????mac */
     en_exist = hmac_proxy_get_mac_by_ipv6(pst_mac_vap, pst_ipv6, auc_mac);
     if (OAL_SUCC == en_exist)
     {
@@ -261,7 +261,7 @@ oal_err_code_enum_uint32 hmac_proxy_add_ipv6(mac_vap_stru *pst_mac_vap, oal_in6_
             return OAL_ERR_CODE_PROXY_ND_LEARN_USR_SUCC_COMP;
         }
 
-        /* 如果来自不同的mac，则将前面记录的结点删除，后面流程将新的结点加入 */
+        /* ??????????????mac???????????????????????????????????????????????? */
         hmac_proxy_remove_ipv6(pst_mac_vap, pst_ipv6);
     }
 
@@ -270,18 +270,18 @@ oal_err_code_enum_uint32 hmac_proxy_add_ipv6(mac_vap_stru *pst_mac_vap, oal_in6_
         return OAL_ERR_CODE_PROXY_ND_LEARN_USR_FAIL_INCOMP;
     }
 
-    /* 申请 */
+    /* ???? */
     pst_hash = OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, OAL_SIZEOF(hmac_proxy_ipv6_hash_stru), OAL_TRUE);
     if (OAL_PTR_NULL == pst_hash)
     {
         return OAL_ERR_CODE_PROXY_ND_LEARN_USR_FAIL_INCOMP;
     }
 
-    /* 填写 */
+    /* ???? */
     pst_hash->st_ipv6 = *pst_ipv6;
     oal_memcopy(pst_hash->auc_mac, puc_mac, OAL_MAC_ADDR_LEN);
 
-    /* 加入hash表 */
+    /* ????hash?? */
     ul_user_hash_value  = 0;
     ul_user_hash_value = HMAC_PROXY_IPV6_HASH(&pst_hash->st_ipv6);
     oal_dlist_add_head(&(pst_hash->st_entry), &pst_mac_vap->pst_vap_proxyarp->ast_ipv6_head[ul_user_hash_value]);
@@ -377,7 +377,7 @@ oal_void hmac_proxy_debug_record(mac_vap_stru *pst_mac_vap, mac_ether_header_str
     pst_vap_proxyarp = pst_mac_vap->pst_vap_proxyarp;
     ul_idx = pst_vap_proxyarp->us_idx_cur % MAC_VAP_USER_HASH_MAX_VALUE;
 
-    /* 记录以太头 */
+    /* ?????????? */
     pst_vap_proxyarp->ast_vap_proxyarp_dbg[ul_idx].st_eth_hdr = *pst_eth_hdr;
     pst_vap_proxyarp->ast_vap_proxyarp_dbg[ul_idx].us_type = us_type;
     pst_vap_proxyarp->ast_vap_proxyarp_dbg[ul_idx].en_rst = en_rst;
@@ -405,7 +405,7 @@ oal_err_code_enum_uint32 hmac_proxy_arp_rcv_req(mac_vap_stru *pst_mac_vap, oal_n
     oal_memcopy(&ul_src_ipv4, pst_arp_hdr->auc_ar_sip, ETH_SENDER_IP_ADDR_LEN);
     oal_memcopy(&ul_tgt_ipv4, pst_arp_hdr->auc_ar_tip, ETH_TARGET_IP_ADDR_LEN);
 
-    /* GARP,进行地址学习 */
+    /* GARP,???????????? */
     if (ul_src_ipv4 == ul_tgt_ipv4)
     {
         //hmac_proxy_learn();
@@ -419,7 +419,7 @@ oal_err_code_enum_uint32 hmac_proxy_arp_rcv_req(mac_vap_stru *pst_mac_vap, oal_n
         return OAL_ERR_CODE_PROXY_ARP_LEARN_USR_COMP;
     }
 
-    /* 将目的地址不是本BSS的ARP REQ过滤掉 */
+    /* ????????????????BSS??ARP REQ?????? */
     en_err = hmac_proxy_get_mac_by_ipv4(pst_mac_vap, ul_tgt_ipv4, auc_tgt_mac);
     if (OAL_SUCC != en_err)
     {
@@ -443,13 +443,13 @@ oal_err_code_enum_uint32 hmac_proxy_arp_rcv_req(mac_vap_stru *pst_mac_vap, oal_n
 #endif
 
 
-    /* 记录一下，用来做后面的打印 */
+    /* ?????????????????????????? */
     st_eth_hdr = *(mac_ether_header_stru *)oal_netbuf_data(pst_netbuff);
 
-    /* 找到用户，使用空口发送 */
+    /* ?????????????????????? */
     if (OAL_SUCC == mac_vap_find_user_by_macaddr(pst_mac_vap, auc_src_mac, &us_usr_idx))
     {
-        /* data指针指向的是以太头 */
+        /* data?????????????????? */
         ul_ret = hmac_tx_lan_to_wlan(pst_mac_vap, pst_netbuff);
         if (OAL_SUCC != ul_ret)
         {
@@ -463,10 +463,10 @@ oal_err_code_enum_uint32 hmac_proxy_arp_rcv_req(mac_vap_stru *pst_mac_vap, oal_n
     }
     else
     {
-        /* 送给网桥，需要pull一下，让data指针指向arp头 */
+        /* ??????????????pull????????data????????arp?? */
         OAL_NETBUF_PROTOCOL(pst_netbuff) = oal_eth_type_trans(pst_netbuff, pst_dev);
 
-        /* 交给网桥*/
+        /* ????????*/
         ul_ret = (oal_uint32)oal_netif_rx(pst_netbuff);
         if (OAL_SUCC != ul_ret)
         {
@@ -498,7 +498,7 @@ oal_err_code_enum_uint32 hmac_proxy_arp_rcv_reply(mac_vap_stru *pst_mac_vap, oal
         return OAL_ERR_CODE_PROXY_ARP_REPLY_MCAST_COMP;
     }
 
-    /* 如果接口上线不发GARP,通过arp reply将arp reply发送端的ip和mac记下来 */
+    /* ????????????????GARP,????arp reply??arp reply????????ip??mac?????? */
     if (OAL_SUCC == mac_vap_find_user_by_macaddr(pst_mac_vap, pst_arp_hdr->auc_ar_sha, &us_usr_idx))
     {
         hmac_proxy_add_ipv4(pst_mac_vap, *(oal_uint32 *)pst_arp_hdr->auc_ar_sip, pst_arp_hdr->auc_ar_sha);
@@ -510,7 +510,7 @@ oal_err_code_enum_uint32 hmac_proxy_arp_rcv_reply(mac_vap_stru *pst_mac_vap, oal
 
 oal_err_code_enum_uint32 hmac_proxy_arp(mac_vap_stru *pst_mac_vap, oal_net_device_stru *pst_dev, oal_netbuf_stru *pst_buf)
 {
-    mac_ether_header_stru       *pst_ether_hdr; /* 以太网头 */
+    mac_ether_header_stru       *pst_ether_hdr; /* ???????? */
     oal_uint32                   ul_arp_hdr_len = 0;
     oal_eth_arphdr_stru         *pst_arp_hdr;
     oal_uint8                    uc_is_mcst = 0;
@@ -521,7 +521,7 @@ oal_err_code_enum_uint32 hmac_proxy_arp(mac_vap_stru *pst_mac_vap, oal_net_devic
 
     ul_arp_hdr_len       = OAL_SIZEOF(oal_eth_arphdr_stru) + OAL_SIZEOF(mac_ether_header_stru);
 
-    /* 此处判断skb中，是否已经有足够的空间保存了eth hdr + arp hdr的信息 */
+    /* ????????skb??????????????????????????????eth hdr + arp hdr?????? */
     if (!oal_pskb_may_pull(pst_buf, ul_arp_hdr_len))
     {
         return OAL_ERR_CODE_PROXY_ARP_INVLD_SKB_INCOMP;
@@ -562,7 +562,7 @@ oal_err_code_enum_uint32 hmac_proxy_nd_learn_from_ns(mac_vap_stru *pst_mac_vap, 
         return OAL_ERR_CODE_PROXY_ND_LEARN_USR_NOTEXIST_COMP;
     }
 
-    /* 检查ipv6的地址已经存在,并且mac地址不相等，则将此帧发送出去，进行DAD检测 */
+    /* ????ipv6??????????????,????mac??????????????????????????????????DAD???? */
     en_err = hmac_proxy_get_mac_by_ipv6(pst_mac_vap, pst_ipv6_src, auc_mac);
     if ((OAL_SUCC == en_err)
         && (oal_memcmp(puc_mac_src, auc_mac, OAL_MAC_ADDR_LEN)))
@@ -594,11 +594,11 @@ oal_err_code_enum_uint32 hmac_proxy_nd_learn_from_ns(mac_vap_stru *pst_mac_vap, 
 
     pst_ipv6 = (oal_ipv6hdr_stru *)oal_netbuf_put(pst_netbuff, OAL_SIZEOF(oal_ipv6hdr_stru));
 
-    /* skb->len加上nd_msg的长度 */
+    /* skb->len????nd_msg?????? */
     oal_netbuf_put(pst_netbuff, (sizeof(oal_nd_msg_stru) - 4) + 8);
     pst_nd = (oal_nd_msg_stru *)(pst_ipv6 + 1);
 
-    /* 1. 填写以太头 */
+    /* 1. ?????????? */
     if (oal_dev_hard_header(pst_netbuff, pst_netbuff->dev, ETHER_TYPE_IPV6, puc_dst_mac,
                                         puc_src_mac, pst_netbuff->len) < 0)
     {
@@ -606,7 +606,7 @@ oal_err_code_enum_uint32 hmac_proxy_nd_learn_from_ns(mac_vap_stru *pst_mac_vap, 
         return OAL_PTR_NULL;
     }
 
-    /* 2. 填写IPV6头 */
+    /* 2. ????IPV6?? */
     *(oal_uint32 *)pst_ipv6 = OAL_HOST2NET_LONG(0x60000000);
     pst_ipv6->payload_len = OAL_HOST2NET_SHORT((sizeof(oal_nd_msg_stru) - 4) + 8);
     pst_ipv6->nexthdr = OAL_IPPROTO_ICMPV6;
@@ -614,12 +614,12 @@ oal_err_code_enum_uint32 hmac_proxy_nd_learn_from_ns(mac_vap_stru *pst_mac_vap, 
     oal_ipv6_addr_copy(&pst_ipv6->daddr, (oal_in6_addr *)puc_dst_ipv6);
     oal_ipv6_addr_copy(&pst_ipv6->saddr, (oal_in6_addr *)puc_src_ipv6);
 
-    /* 3. 填写ICMPV6 邻居发现协议的NA*/
+    /* 3. ????ICMPV6 ??????????????NA*/
     OAL_MEMZERO(&pst_nd->icmph, OAL_SIZEOF(oal_icmp6hdr_stru));
     pst_nd->icmph.icmp6_type = OAL_NDISC_NEIGHBOUR_ADVERTISEMENT;
     pst_nd->icmph.icmp6_solicited = 1;
     oal_ipv6_addr_copy(&pst_nd->target, (oal_in6_addr *)puc_src_ipv6);
-    /* ICMPv6 选项 */
+    /* ICMPv6 ???? */
     pst_nd->opt[0] = OAL_ND_OPT_TARGET_LL_ADDR;
     /*lint -e415*/ /*lint -e416*/
     pst_nd->opt[1] = 1;
@@ -658,7 +658,7 @@ oal_uint8 *hmac_proxy_get_mac_from_opt(oal_uint8 *puc_opt, oal_int32 l_optlen, o
 
         switch (pst_ndopt->nd_opt_type)
         {
-            case OAL_ND_OPT_TARGET_LL_ADDR: /* NA中使用 */
+            case OAL_ND_OPT_TARGET_LL_ADDR: /* NA?????? */
             {
                 if (!en_src)
                 {
@@ -668,8 +668,8 @@ oal_uint8 *hmac_proxy_get_mac_from_opt(oal_uint8 *puc_opt, oal_int32 l_optlen, o
                 break;
             }
 
-            /* 发送者的链路层地址 */
-            case OAL_ND_OPT_SOURCE_LL_ADDR:/* NS中使用 */
+            /* ?????????????????? */
+            case OAL_ND_OPT_SOURCE_LL_ADDR:/* NS?????? */
             {
                 if (en_src)
                 {
@@ -715,13 +715,13 @@ oal_err_code_enum_uint32 hmac_proxy_nd_rcv_ns(mac_vap_stru *pst_mac_vap, oal_net
     l_dst_type          = oal_ipv6_addr_type(&pst_ipv6_hdr->daddr);
     pst_msg             = (oal_nd_msg_stru *)(pst_ipv6_hdr + 1);
 
-    /* DAD检测 */
+    /* DAD???? */
     if ((l_src_type == (oal_int32)OAL_IPV6_ADDR_ANY) && (l_dst_type & (oal_int32)OAL_IPV6_ADDR_MULTICAST))
     {
         return hmac_proxy_nd_learn_from_ns(pst_mac_vap, &pst_msg->target, pst_ether_hdr->auc_ether_shost);
     }
 
-    /* 获取NS的icmpv6选项中携带的mac地址，即此帧发送者的mac地址 */
+    /* ????NS??icmpv6????????????mac????????????????????mac???? */
     pst_src_mac = hmac_proxy_get_mac_from_opt(pst_msg->opt, l_opt_len, OAL_TRUE);
     if (OAL_PTR_NULL == pst_src_mac)
     {
@@ -733,7 +733,7 @@ oal_err_code_enum_uint32 hmac_proxy_nd_rcv_ns(mac_vap_stru *pst_mac_vap, oal_net
         return OAL_ERR_CODE_PROXY_ND_NS_FINDUSR_ERR_COMP;
     }
 
-    /* 构造NA*/
+    /* ????NA*/
     pst_netbuff = hmac_proxy_create_na(pst_dev, ast_dst_mac, pst_src_mac, (oal_uint8 *)&pst_msg->target, (oal_uint8 *)&pst_ipv6_hdr->saddr);
     if (OAL_PTR_NULL == pst_netbuff)
     {
@@ -748,7 +748,7 @@ oal_err_code_enum_uint32 hmac_proxy_nd_rcv_ns(mac_vap_stru *pst_mac_vap, oal_net
 
     st_eth_hdr = *(mac_ether_header_stru *)oal_netbuf_data(pst_netbuff);
 
-    /* 没找到将skb上桥，找到了就直接空口发送 */
+    /* ????????skb?????????????????????????? */
     if (OAL_SUCC == mac_vap_find_user_by_macaddr(pst_mac_vap, pst_src_mac, &us_idx))
     {
         ul_ret = hmac_tx_lan_to_wlan(pst_mac_vap, pst_netbuff);
@@ -809,7 +809,7 @@ oal_err_code_enum_uint32 hmac_proxy_nd_rcv_na(mac_vap_stru *pst_mac_vap, mac_eth
     pst_icmp6           = (oal_icmp6hdr_stru *)(pst_ipv6_hdr + 1);
     pst_nd              = (oal_nd_msg_stru *)pst_icmp6;
 
-    /* S在响应组播ns时不应该置位 */
+    /* S??????????ns???????????? */
     if ((pst_nd->icmph.icmp6_dataun.u_nd_advt.solicited)
     && hmac_proxy_ipv6_addr_is_mcast(&pst_nd->target))
     {
@@ -829,7 +829,7 @@ oal_err_code_enum_uint32 hmac_proxy_nd_rcv_na(mac_vap_stru *pst_mac_vap, mac_eth
 
         return OAL_ERR_CODE_PROXY_ND_NA_MCAST_NOT_LLA_COMP;
     }
-    /* 从NA中学习一下地址 */
+    /* ??NA?????????????? */
     if (OAL_SUCC == mac_vap_find_user_by_macaddr(pst_mac_vap, puc_src_mac, &us_usr_idx))
     {
         en_err = hmac_proxy_add_ipv6(pst_mac_vap, &pst_nd->target, puc_src_mac);
@@ -851,11 +851,11 @@ oal_err_code_enum_uint32 hmac_proxy_nd_rcv_na(mac_vap_stru *pst_mac_vap, mac_eth
 
 oal_err_code_enum_uint32 hmac_proxy_nd(mac_vap_stru *pst_mac_vap, oal_net_device_stru *pst_dev, oal_netbuf_stru *pst_buf)
 {
-    mac_ether_header_stru       *pst_ether_hdr; /* 以太网头 */
+    mac_ether_header_stru       *pst_ether_hdr; /* ???????? */
     oal_ipv6hdr_stru            *pst_ipv6_hdr;
     oal_icmp6hdr_stru           *pst_icmp6;
     oal_uint32                   ul_hdr_len;
-    oal_uint32                   ul_opt_len;         /* icmpv6选项的长度 */
+    oal_uint32                   ul_opt_len;         /* icmpv6?????????? */
     pst_ether_hdr   = (mac_ether_header_stru *)oal_netbuf_data(pst_buf);
     pst_ipv6_hdr    = (oal_ipv6hdr_stru *)(pst_ether_hdr + 1);
     pst_icmp6       = (oal_icmp6hdr_stru *)(pst_ipv6_hdr + 1);
@@ -912,7 +912,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_proxy_is_need_drop(oal_err_code_e
         case OAL_ERR_CODE_PROXY_ND_NS_REPLY_NA2BSS_COMP:
 		case OAL_ERR_CODE_PROXY_ND_NS_REPLY_NA2ETH_COMP:
         case OAL_ERR_CODE_PROXY_ARP_LEARN_USR_NOTEXIST_COMP:
-        case OAL_ERR_CODE_PROXY_ND_LEARN_USR_NOTEXIST_COMP:		/* 此处和A的流程有点不一样,A此处不drop，继续后面的流程 */
+        case OAL_ERR_CODE_PROXY_ND_LEARN_USR_NOTEXIST_COMP:		/* ??????A????????????????,A??????drop???????????????? */
         case OAL_ERR_CODE_PROXY_ND_NA_INVLD_COMP:
         case OAL_ERR_CODE_PROXY_ND_NA_MCAST_NOT_LLA_COMP:
         case OAL_ERR_CODE_PROXY_ND_NA_UNSOLICITED_COMP:
@@ -950,7 +950,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_proxy_is_need_drop(oal_err_code_e
 
 oal_bool_enum_uint8 hmac_proxy_arp_proc(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_buf)
 {
-    mac_ether_header_stru      *pst_ether_hdr; /* 以太网头 */
+    mac_ether_header_stru      *pst_ether_hdr; /* ???????? */
     oal_uint16                  us_ether_type;
     oal_err_code_enum_uint32    en_rst = OAL_SUCC;
     mac_vap_stru               *pst_mac_vap;
@@ -963,7 +963,7 @@ oal_bool_enum_uint8 hmac_proxy_arp_proc(hmac_vap_stru *pst_hmac_vap, oal_netbuf_
     us_ether_type      = pst_ether_hdr->us_ether_type;
 
 #ifdef _PRE_DEBUG_MODE
-    /* 由于netbuff有可能会被释放，所以此处需要先记录一下 */
+    /* ????netbuff?????????????????????????????????????? */
     st_eth_hdr = *pst_ether_hdr;
 #endif
     pst_mac_vap = &pst_hmac_vap->st_vap_base_info;
@@ -1012,7 +1012,7 @@ oal_void hmac_proxy_arp_init(mac_vap_stru *pst_mac_vap)
     }
 
 
-    /* 申请内存 */
+    /* ???????? */
     pst_mac_vap->pst_vap_proxyarp = OAL_MEM_ALLOC(OAL_MEM_POOL_ID_LOCAL, OAL_SIZEOF(mac_vap_proxyarp_stru), OAL_TRUE);
     if (OAL_PTR_NULL == pst_mac_vap->pst_vap_proxyarp)
     {

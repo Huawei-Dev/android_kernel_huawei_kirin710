@@ -70,7 +70,7 @@ extern "C"
 #include <bsp_reset.h>
 #include <bsp_print.h>
 
-/************************** 宏和枚举定义 **************************/
+/************************** ???????????? **************************/
 #define RESET_WAIT_RESP_TIMEOUT          (5000)   /*ms, time of wating for reply from hifi/mcu*/
 #define RESET_WAIT_MODEM_IN_IDLE_TIMEOUT (310)   /*ms, time of wating for reply from modem in idle*/
 #define RESET_WAIT_M3_RESETING_REPLY_TIMEOUT (200)   /*ms, time of wating for reply from modem in idle*/
@@ -89,7 +89,7 @@ extern "C"
 #define RESET_DUMP_MAGIC            (0x54534552)   /* REST */
 
 /*
- * cpreset 主流程关键步骤打点
+ * cpreset ??????????????????
  */
 enum RESET_DUMP_MOD_ID
 {
@@ -153,20 +153,20 @@ enum RESET_TYPE
     RESET_TYPE_RECV_HIFI_MSG_FAIL,
 
     /*add new above,please!!*/
-    RESET_TYPE_FOR_TEST,        /*用于测试*/
+    RESET_TYPE_FOR_TEST,        /*????????*/
     RESET_TYPE_MAX
 } ;
 
 typedef enum _modem_reset
 {
-    MODEM_RESET_DRV_ERR               = DRV_ERRNO_MODEM_RST_FAIL,   /* DRV异常 */
-    MODEM_RESET_NAS_CB_ERR            = NAS_REBOOT_MOD_ID_RESET,    /* NAS回调失败 */
-    MODEM_RESET_LOAD_SEC_IMAGE_ERR    = TEEOS_ERRNO_LOAD_SEC_IMAGE, /* 加载安全镜像失败 */
-    MODEM_RESET_HIFI_CB_ERR           = HIFI_ERRNO_MODEM_RESET,     /* HIFI回调失败 */
-    MODEM_RESET_M3_ERR                = LPM3_ERRNO_MODEM_RESET,     /* M3异常 */
+    MODEM_RESET_DRV_ERR               = DRV_ERRNO_MODEM_RST_FAIL,   /* DRV???? */
+    MODEM_RESET_NAS_CB_ERR            = NAS_REBOOT_MOD_ID_RESET,    /* NAS???????? */
+    MODEM_RESET_LOAD_SEC_IMAGE_ERR    = TEEOS_ERRNO_LOAD_SEC_IMAGE, /* ???????????????? */
+    MODEM_RESET_HIFI_CB_ERR           = HIFI_ERRNO_MODEM_RESET,     /* HIFI???????? */
+    MODEM_RESET_M3_ERR                = LPM3_ERRNO_MODEM_RESET,     /* M3???? */
 }modem_reset_e;
 
-/* 结构体定义 */
+/* ?????????? */
 
 /*Record information of callback functions*/
 struct reset_cb_info
@@ -185,8 +185,8 @@ struct reset_cb_list
 
 struct modem_reset_ctrl
 {
-	u32 boot_mode;            /* 表示ccore启动状态: 正常启动/单独复位后启动 */
-	u32 multicore_msg_switch; /* 核间消息开关: 1, 表示打开; 0表示关闭 */
+	u32 boot_mode;            /* ????ccore????????: ????????/?????????????? */
+	u32 multicore_msg_switch; /* ????????????: 1, ????????; 0???????? */
 	struct task_struct* task;
 	u32 modem_action;
 	spinlock_t action_lock;
@@ -264,7 +264,7 @@ do {                               \
 
 #define reset_stamp(macro_addr)   readl((volatile const void *)macro_addr)
 
-/* 打点时间戳 */
+/* ?????????? */
 static inline void cp_reset_timestamp_dump(enum RESET_DUMP_MOD_ID reset_dumpid)
 {
     if (g_reset_debug.dump_state == (u32)RESET_DUMP_MAGIC)
@@ -272,7 +272,7 @@ static inline void cp_reset_timestamp_dump(enum RESET_DUMP_MOD_ID reset_dumpid)
 }
 
 
-/* 函数声明 */
+/* ???????? */
 struct modem_reset_ctrl *bsp_reset_control_get(void);
 s32 send_sync_msg_to_mcore(u32 reset_info, u32 *ack_val);
 s32 reset_pm_notify(struct notifier_block *notify_block,unsigned long mode, void *unused);

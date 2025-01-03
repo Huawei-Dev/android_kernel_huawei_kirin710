@@ -65,29 +65,29 @@ extern "C"
 
 
 /*****************************************************************************
- 消息定义
+ ????????
 *****************************************************************************/
-#define ID_MSG_AT_BASE  0x500  /* 注意，如果消息ID需要统一分配，则需要调整该基准值*/
+#define ID_MSG_AT_BASE  0x500  /* ??????????????ID????????????????????????????????*/
 
-/* Client 定义*/
+/* Client ????*/
 enum
 {
     EN_AT_FW_CLIENT_ID_AUTO     = 0x00,
-    EN_AT_FW_CLIENT_ID_PCUI1    = 0x01,         /* AT的PC侧应用客户端，如mobile partner
+    EN_AT_FW_CLIENT_ID_PCUI1    = 0x01,         /* AT??PC????????????????mobile partner
  */
-    EN_AT_FW_CLIENT_ID_PCUI2    = 0x02,         /* AT的PC侧应用客户端，如超级终端
+    EN_AT_FW_CLIENT_ID_PCUI2    = 0x02,         /* AT??PC????????????????????????
  */
-    EN_AT_FW_CLIENT_ID_NCMCTRL  = 0x03,         /* 虚拟网口
+    EN_AT_FW_CLIENT_ID_NCMCTRL  = 0x03,         /* ????????
  */
-    EN_AT_FW_CLIENT_ID_EQU      = 0x10,         /* AT的装备客户端
+    EN_AT_FW_CLIENT_ID_EQU      = 0x10,         /* AT????????????
  */
-    EN_AT_FW_CLIENT_ID_PPP      = 0x11,         /* PPP模块客户端
+    EN_AT_FW_CLIENT_ID_PPP      = 0x11,         /* PPP??????????
  */
-    EN_AT_FW_CLIENT_ID_NDIS     = 0x12,         /* NDIS模块客户端
+    EN_AT_FW_CLIENT_ID_NDIS     = 0x12,         /* NDIS??????????
  */
-    EN_AT_FW_CLIENT_ID_DIAG     = 0x20,         /* DIAG模块客户端
+    EN_AT_FW_CLIENT_ID_DIAG     = 0x20,         /* DIAG??????????
  */
-    EN_AT_FW_CLIENT_ID_OM       = 0x21,         /* OM模块客户端
+    EN_AT_FW_CLIENT_ID_OM       = 0x21,         /* OM??????????
  */
     EN_AT_FW_CLIENT_ID_OM_AGENT = 0x22,
     EN_AT_FW_CLIENT_ID_ALL      = 0xFF
@@ -96,9 +96,9 @@ enum
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                   ulMsgId;           /* 消息名 */
-    VOS_UINT32                   ulClientId;        /* 端口号*/
-    VOS_UINT32                   ulLen;             /* 数据长度 */
+    VOS_UINT32                   ulMsgId;           /* ?????? */
+    VOS_UINT32                   ulClientId;        /* ??????*/
+    VOS_UINT32                   ulLen;             /* ???????? */
     VOS_UINT8                    pContext[0];       //lint !e43
 }AT_FW_DATA_MSG_STRU;
 

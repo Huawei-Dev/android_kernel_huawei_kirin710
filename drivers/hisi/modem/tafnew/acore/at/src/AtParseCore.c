@@ -66,23 +66,23 @@
 #define    THIS_FILE_ID        PS_FILE_ID_AT_PARSECORE_C
 
 
-/* 命令表头结点 */
+/* ???????????? */
 HI_LIST_S g_stCmdTblList = {0};
 
-/* 解析过程参数 */
+/* ???????????? */
 AT_PARSECMD_STRU g_stATParseCmd;
 
-/* 参数列表 */
+/* ???????? */
 VOS_UINT8 gucAtParaIndex = 0;
 
 AT_PARSE_PARA_TYPE_STRU gastAtParaList[AT_MAX_PARA_NUMBER];
 
-/* 每个客户端的解析信息 */
+/* ???????????????????? */
 AT_PARSE_CONTEXT_STRU g_stParseContext[AT_MAX_CLIENT_NUM];
 
-/* 由于SMS命令与普通命令格式不一致，用来缓存SMS命令的相应的内容 */
-/* 解决短信命令支持多通道并发命令名被覆盖问题
-   由g_stCmdElement=> g_stCmdElement[AT_MAX_CLIENT_NUM] */
+/* ????SMS??????????????????????????????????SMS???????????????? */
+/* ??????????????????????????????????????????
+   ??g_stCmdElement=> g_stCmdElement[AT_MAX_CLIENT_NUM] */
 AT_PAR_CMD_ELEMENT_STRU g_stCmdElement[AT_MAX_CLIENT_NUM];
 
 
@@ -116,7 +116,7 @@ VOS_UINT32 AT_RegisterCmdTable(const AT_PAR_CMD_ELEMENT_STRU* pstCmdTblEntry, VO
     HI_LIST_S* pCmdTblHeader = NULL;
     AT_PAR_CMDTBL_LIST_STRU* pstCmdTblNode = NULL;/*lint !e830*/
 
-    /* 命令表不为空，且命令个数不为0 */
+    /* ????????????????????????????0 */
     if((NULL == pstCmdTblEntry) || (0 == usCmdNum))
     {
         return ERR_MSP_FAILURE;
@@ -124,7 +124,7 @@ VOS_UINT32 AT_RegisterCmdTable(const AT_PAR_CMD_ELEMENT_STRU* pstCmdTblEntry, VO
 
     pCmdTblHeader = &g_stCmdTblList;
 
-    /* 把新请求的errcodetbl添加到链表中 */
+    /* ??????????errcodetbl???????????? */
     pstCmdTblNode = (AT_PAR_CMDTBL_LIST_STRU *)AT_MALLOC(sizeof(AT_PAR_CMDTBL_LIST_STRU));
     if(NULL == pstCmdTblNode)
     {
@@ -154,7 +154,7 @@ VOS_VOID AT_ClacCmdProc(VOS_VOID)
 
     for(i = 0; i < ulCmdNum; i++)
     {
-        /* 判断是否需要显示 */
+        /* ???????????????? */
         if(0 == (pstCmdElement[i].ulChkFlag & CMD_TBL_CLAC_IS_INVISIBLE))
         {
             gstAtSendData.usBufLen += (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
@@ -166,7 +166,7 @@ VOS_VOID AT_ClacCmdProc(VOS_VOID)
 
     for(i = 0; i < gusAtSmsCmdNum; i++)
     {
-        /* 判断是否需要显示 */
+        /* ???????????????? */
         if(0 == (gastAtSmsCmdTab[i].ulChkFlag & CMD_TBL_CLAC_IS_INVISIBLE))
         {
             gstAtSendData.usBufLen += (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
@@ -181,7 +181,7 @@ VOS_VOID AT_ClacCmdProc(VOS_VOID)
 
     for(i = 0; i < ulCmdNum; i++)
     {
-        /* 判断是否需要显示 */
+        /* ???????????????? */
         if(0 == (pstCmdElement[i].ulChkFlag & CMD_TBL_CLAC_IS_INVISIBLE))
         {
             gstAtSendData.usBufLen += (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
@@ -201,10 +201,10 @@ VOS_UINT8 AT_BlockCmdCheck(VOS_VOID)
     VOS_UINT8 i = 0;
     VOS_UINT8 ucBlockid = AT_MAX_CLIENT_NUM;
 
-    /* 查询所有通道状态 */
+    /* ???????????????? */
     for(i = 0; i < AT_MAX_CLIENT_NUM; i++)
     {
-        /* 如果某通道处于非ready态，则直接返回，不处理 */
+        /* ????????????????ready?????????????????????? */
         if(AT_FW_CLIENT_STATUS_READY != g_stParseContext[i].ucClientStatus)
         {
             return AT_MAX_CLIENT_NUM;
@@ -242,15 +242,15 @@ VOS_VOID AT_CheckProcBlockCmd(VOS_VOID)
     VOS_UINT32 ulRet;
 
 
-    /* 判断是否有缓存的命令 */
+    /* ???????????????????? */
     ucIndex = AT_BlockCmdCheck();
     if(ucIndex < AT_MAX_CLIENT_NUM)
     {
-        /* 发送消息处理缓存命令 */
+        /* ???????????????????? */
         ulRet = At_SendCmdMsg(ucIndex, &ucIndex, sizeof(ucIndex), AT_COMBIN_BLOCK_MSG);
         if(ERR_MSP_SUCCESS != ulRet)
         {
-            /* 由定时器超时去处理 */
+            /* ?????????????????? */
         }
     }
 
@@ -278,19 +278,19 @@ VOS_VOID AT_ParseCmdOver(VOS_UINT8 ucIndex)
     {
         pstCombineCmdInfo->usProcNum++;
     }
-    else    /* 避免被误调用 */
+    else    /* ???????????? */
     {
         pstCombineCmdInfo->usProcNum = pstCombineCmdInfo->usTotalNum;
     }
 
-    /* 判断组合命令是否处理完毕 */
+    /* ???????????????????????? */
     if((pstCombineCmdInfo->usProcNum < pstCombineCmdInfo->usTotalNum))
     {
-        /* 发送消息处理下一条命令 */
+        /* ?????????????????????? */
         ulRet = At_SendCmdMsg(ucIndex, &ucIndex, sizeof(ucIndex), AT_COMBIN_BLOCK_MSG);
         if(ERR_MSP_SUCCESS != ulRet)
         {
-            /* 消息发送失败恢复解析器状态 */
+            /* ?????????????????????????? */
             pClientContext->ucClientStatus = AT_FW_CLIENT_STATUS_READY;
         }
 
@@ -345,7 +345,7 @@ VOS_VOID AT_PendClientProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usLen
 
     else if ( VOS_TRUE == AT_IsAbortCmdStr(ucIndex, pData, usLen) )
     {
-        /* AT打断当前PEND状态的处理 */
+        /* AT????????PEND?????????? */
         AT_AbortCmdProc(ucIndex);
     }
 
@@ -366,7 +366,7 @@ VOS_VOID AT_HoldBlockCmd(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usLen)
 
     pstClientContext = &(g_stParseContext[ucIndex]);
 
-    /* 只支持缓存一条数据，当有新的AT命令字符流则覆盖本通道之前缓存的命令信息 */
+    /* ????????????????????????????AT???????????????????????????????????????? */
     if(NULL != pstClientContext->pBlockCmd)
     {
         AT_FREE(pstClientContext->pBlockCmd);
@@ -387,7 +387,7 @@ VOS_VOID AT_HoldBlockCmd(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usLen)
     ulTimerName |= AT_INTERNAL_PROCESS_TYPE;
     ulTimerName |= (ulTempIndex<<12);
 
-    /* 重启定时器 */
+    /* ?????????? */
     VOS_StopRelTimer(&pstClientContext->hTimer);
 
     AT_StartRelTimer(&pstClientContext->hTimer, AT_HOLD_CMD_TIMER_LEN, ulTimerName, 0, VOS_RELTIMER_NOLOOP);
@@ -403,7 +403,7 @@ VOS_UINT32 AT_ParseCmdIsComb(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usL
 
     pstClientContext = &(g_stParseContext[ucIndex]);
 
-    /* 表示本通道有组合命令正在处理 */
+    /* ???????????????????????????? */
     if(pstClientContext->stCombineCmdInfo.usProcNum < pstClientContext->stCombineCmdInfo.usTotalNum)
     {
         CmdStringFormat(ucIndex, pData, &usLen);
@@ -430,7 +430,7 @@ VOS_UINT32 AT_ParseCmdIsPend(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usL
 
         if (i == ucIndex)
         {
-            /* 本通道处于PEND状态时需要判断是否是STOP或ATH */
+            /* ??????????PEND????????????????????STOP??ATH */
             if (AT_FW_CLIENT_STATUS_PEND == pstClientContext->ucClientStatus)
             {
                 CmdStringFormat(ucIndex, pData, &usLen);
@@ -439,19 +439,19 @@ VOS_UINT32 AT_ParseCmdIsPend(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usL
                 return ERR_MSP_FAILURE;
             }
         }
-        /* 其他通道处于PEND状态或短信状态 */
+        /* ????????????PEND?????????????? */
         else if ((AT_FW_CLIENT_STATUS_PEND == pstClientContext->ucClientStatus)
               || (AT_SMS_MODE == pstClientContext->ucMode))
         {
-            /* 判断本通道以及遍历到的通道是否可以并发 */
+            /* ?????????????????????????????????????? */
             if (VOS_TRUE == AT_IsConcurrentPorts(ucIndex, (VOS_UINT8)i))
             {
-                /* 如果是，则继续遍历通道 */
+                /* ?????????????????????? */
                 continue;
             }
             else
             {
-                /* 如果不是，则缓存该命令 */
+                /* ?????????????????????? */
                 AT_HoldBlockCmd(ucIndex, pData, usLen);
                 return ERR_MSP_FAILURE;
             }
@@ -493,27 +493,27 @@ VOS_VOID AT_DiscardInvalidCharForSms(TAF_UINT8* pData, TAF_UINT16 *pusLen)
         return;
     }
 
-    /*  MAC系统上的MP后台问题:AT+CMGS=**<CR><^z><Z>(或AT+CMGW=**<CR><^z><Z>)
-       为了规避该问题，需要在接收到如上形式的码流后，
-       需要将命令后的无效字符<^z><Z>删去  */
+    /*  MAC????????MP????????:AT+CMGS=**<CR><^z><Z>(??AT+CMGW=**<CR><^z><Z>)
+       ??????????????????????????????????????????????
+       ??????????????????????<^z><Z>????  */
     if ((ucAtS3 == pData[*pusLen - 3]) && ('\x1a' == pData[*pusLen - 2])
         && (('z' == pData[*pusLen - 1]) || ('Z' == pData[*pusLen - 1])))
     {
-        /* 删去结尾的<^z><Z>字符 */
+        /* ??????????<^z><Z>???? */
         *pusLen -= 2;
     }
-    /* MAC系统SFR后台问题: AT+CMGS=<LENGTH><CR><LF><CR>*/
+    /* MAC????SFR????????: AT+CMGS=<LENGTH><CR><LF><CR>*/
     else if ((ucAtS3 == pData[*pusLen - 3])
           && (ucAtS4 == pData[*pusLen - 2])
           && (ucAtS3 == pData[*pusLen - 1]))
     {
-        /* 删去结尾的<LF><CR>字符 */
+        /* ??????????<LF><CR>???? */
         *pusLen -= 2;
     }
-    /* 判断pData码流的结尾是否为<CR><LF>形式 */
+    /* ????pData????????????????<CR><LF>???? */
     else if ((ucAtS3 == pData[*pusLen - 2]) && (ucAtS4 == pData[*pusLen - 1]))
     {
-        /* 删去结尾的<LF>字符 */
+        /* ??????????<LF>???? */
         *pusLen -= 1;
     }
     else
@@ -547,16 +547,16 @@ VOS_UINT32 AT_ParseCmdType( VOS_UINT8 * pData, VOS_UINT16 usLen)
     VOS_UINT8* pDataTmp = pData + 2;
     VOS_UINT32 ulResult = 0;
 
-    /* 调用的地方保证pData不为空 */
+    /* ??????????????pData?????? */
 
     if(usLen < 2)
     {
         return AT_ERROR;
     }
 
-    if(AT_SUCCESS == At_CheckCharA(*pData))   /* 如果是'A'/'a' */
+    if(AT_SUCCESS == At_CheckCharA(*pData))   /* ??????'A'/'a' */
     {
-        if(AT_SUCCESS == At_CheckCharT(*(pData+1)))   /* 如果是'T'/'t' */
+        if(AT_SUCCESS == At_CheckCharT(*(pData+1)))   /* ??????'T'/'t' */
         {
             if(2 == usLen)
             {
@@ -571,34 +571,34 @@ VOS_UINT32 AT_ParseCmdType( VOS_UINT8 * pData, VOS_UINT16 usLen)
                 }
             }
 
-            AT_ResetParseVariable();    /* 重置解释器所用的全局变量 */
+            AT_ResetParseVariable();    /* ???????????????????????? */
 
             pDataTmp = pData + 2;
             usDataTmpLen = usLen - 2;
 
-            /* 非D命令，需要去除命令结尾的';' */
+            /* ??D????????????????????????';' */
             if(AT_SUCCESS != (At_CheckCharD(*pDataTmp)) && (';' == *(pDataTmp+usDataTmpLen-1)))
             {
                 usDataTmpLen--;
             }
 
-            switch(*pDataTmp)      /* 根据第三个字符进行分发 */
+            switch(*pDataTmp)      /* ?????????????????????? */
             {
-            case '^':   /* 扩展命令 */
-            case '+':   /* 扩展命令 */
-            case '$':   /* 扩展命令 */
+            case '^':   /* ???????? */
+            case '+':   /* ???????? */
+            case '$':   /* ???????? */
                 return atParseExtendCmd(pDataTmp, usDataTmpLen);
 
             case 'd':
-            case 'D':   /* D命令 */
+            case 'D':   /* D???? */
 
                 return ParseDCmdPreProc(pDataTmp, usDataTmpLen);
 
             case 's':
-            case 'S':   /* S命令 */
+            case 'S':   /* S???? */
                 return atParseSCmd(pDataTmp, usDataTmpLen);
 
-            default:    /*基本命令 */
+            default:    /*???????? */
                 {
                     ulResult = atParseBasicCmd(pDataTmp, usDataTmpLen);
 
@@ -678,11 +678,11 @@ VOS_UINT32 atMatchCmdName (VOS_UINT8 ucClientId, VOS_UINT32 CmdType)
     AT_PAR_CMDTBL_LIST_STRU* pstCmdNode = NULL;
     VOS_CHAR *pszCmdName = NULL;
 
-    /* 调用的地方保证输入的指针不为空 */
+    /* ?????????????????????????????? */
 
     pCmdTblList = &(g_stCmdTblList);
 
-    /* 全部格式化为大写字符 */
+    /* ???????????????????? */
     if(AT_FAILURE == At_UpString(g_stATParseCmd.stCmdName.aucCmdName,g_stATParseCmd.stCmdName.usCmdNameLen))
     {
         return AT_ERROR;
@@ -692,7 +692,7 @@ VOS_UINT32 atMatchCmdName (VOS_UINT8 ucClientId, VOS_UINT32 CmdType)
 
     if((AT_EXTEND_CMD_TYPE == CmdType) || (AT_BASIC_CMD_TYPE == CmdType))
     {
-        /* 短信命令需要特殊处理 */
+        /* ???????????????????? */
         if(ERR_MSP_SUCCESS == At_MatchSmsCmdName(ucClientId, pszCmdName))
         {
             return ERR_MSP_SUCCESS;
@@ -732,8 +732,8 @@ VOS_UINT32 ParseParam(AT_PAR_CMD_ELEMENT_STRU* pstCmdElement)
     {
         if((NULL != pstCmdElement) && (NULL != pstCmdElement->pszParam))
         {
-            ulParaLen = AT_STRLEN((VOS_CHAR *)pstCmdElement->pszParam);  /* 获取参数脚本长度 */
-            if(AT_SUCCESS != atParsePara((VOS_UINT8*)pstCmdElement->pszParam,(VOS_UINT16)ulParaLen))  /* 参数匹配 */
+            ulParaLen = AT_STRLEN((VOS_CHAR *)pstCmdElement->pszParam);  /* ???????????????? */
+            if(AT_SUCCESS != atParsePara((VOS_UINT8*)pstCmdElement->pszParam,(VOS_UINT16)ulParaLen))  /* ???????? */
             {
                 return AT_CME_INCORRECT_PARAMETERS;
             }
@@ -748,7 +748,7 @@ AT_RRETURN_CODE_ENUM_UINT32 fwCmdTestProc(VOS_UINT8 ucIndex, AT_PAR_CMD_ELEMENT_
 {
     AT_RRETURN_CODE_ENUM_UINT32         ulResult = AT_FAILURE;
 
-    /* 调用的地方保证指针不为空 */
+    /* ???????????????????????? */
 
     if(NULL != pstCmdElement->pfnTestProc)
     {
@@ -758,7 +758,7 @@ AT_RRETURN_CODE_ENUM_UINT32 fwCmdTestProc(VOS_UINT8 ucIndex, AT_PAR_CMD_ELEMENT_
         {
             g_stParseContext[ucIndex].ucClientStatus = AT_FW_CLIENT_STATUS_PEND;
 
-            /* 开定时器 */
+            /* ???????? */
             if(AT_SUCCESS != At_StartTimer(pstCmdElement->ulTestTimeOut, ucIndex))
             {
                 return AT_ERROR;
@@ -796,20 +796,20 @@ AT_RRETURN_CODE_ENUM_UINT32 atCmdDispatch (VOS_UINT8 ucIndex)
     {
     case AT_CMD_OPT_SET_PARA_CMD:
     case AT_CMD_OPT_SET_CMD_NO_PARA:
-        pfnCmdProc = pstCmdElement->pfnSetProc;          /* 设置无参数命令 */
+        pfnCmdProc = pstCmdElement->pfnSetProc;          /* ?????????????? */
         ulTimerLen = pstCmdElement->ulSetTimeOut;
         break;
 
     case AT_CMD_OPT_READ_CMD:
-        pfnCmdProc = pstCmdElement->pfnQryProc;          /* 查询参数 */
+        pfnCmdProc = pstCmdElement->pfnQryProc;          /* ???????? */
         ulTimerLen = pstCmdElement->ulQryTimeOut;
         break;
 
     case AT_CMD_OPT_TEST_CMD:
-        return fwCmdTestProc(ucIndex, pstCmdElement);         /* 测试参数 */
+        return fwCmdTestProc(ucIndex, pstCmdElement);         /* ???????? */
 
     default:
-        return AT_ERROR;                        /* 其它情况，则返回错误 */
+        return AT_ERROR;                        /* ???????????????????? */
     }
 
     if(NULL == pfnCmdProc)
@@ -821,7 +821,7 @@ AT_RRETURN_CODE_ENUM_UINT32 atCmdDispatch (VOS_UINT8 ucIndex)
 
     if(AT_WAIT_ASYNC_RETURN == ulResult)
     {
-        /* 开定时器 */
+        /* ???????? */
         if(AT_SUCCESS != At_StartTimer(ulTimerLen, ucIndex))
         {
             return AT_ERROR;
@@ -849,31 +849,31 @@ VOS_UINT32 LimitedCmdProc(VOS_UINT8 ucClientId, VOS_UINT8 *pData, VOS_UINT16 usL
 
 
 
-    /* 如果E5密码保护受限，则调用查询E5受限条件接口，受限的话返回AT_ERROR，否则返回AT_OK */
+    /* ????E5????????????????????????E5??????????????????????????AT_ERROR??????????AT_OK */
     if(0 == (pstCmdElement->ulChkFlag & CMD_TBL_E5_IS_LOCKED))
     {
-        /* 非AT通道 非WIFI通道, 均不需密码保护 */
+        /* ??AT???? ??WIFI????, ?????????????? */
         if ( (AT_USBCOM_USER != gastAtClientTab[ucClientId].UserType)
           && (AT_SOCK_USER != gastAtClientTab[ucClientId].UserType)
           && (AT_APP_SOCK_USER != gastAtClientTab[ucClientId].UserType))
         {
-            /* 继续进行PIN码保护的检查 */
+            /* ????????PIN???????????? */
         }
         else
         {
             bE5CheckRight = AT_E5CheckRight(ucClientId, pData, usLen);
             if(VOS_TRUE == bE5CheckRight)
             {
-                /* E5已解锁，继续进行PIN码保护的检查 */
+                /* E5????????????????PIN???????????? */
             }
             else
             {
-                return AT_SUCCESS;  /* AT_E5CheckRight 内部已返回上报结果 */
+                return AT_SUCCESS;  /* AT_E5CheckRight ?????????????????? */
             }
         }
     }
 
-    /* 如果是E5 DOCK命令，则直接调用DOCK命令转发接口，返回AT_SUCCESS */
+    /* ??????E5 DOCK????????????????DOCK??????????????????AT_SUCCESS */
     if(pstCmdElement->ulChkFlag & CMD_TBL_IS_E5_DOCK)
     {
         if (AT_USBCOM_USER == gastAtClientTab[ucClientId].UserType)
@@ -881,26 +881,26 @@ VOS_UINT32 LimitedCmdProc(VOS_UINT8 ucClientId, VOS_UINT8 *pData, VOS_UINT16 usL
             ulResult = (AT_RRETURN_CODE_ENUM_UINT32)AT_DockHandleCmd(ucClientId, pData, usLen);
             if(AT_SUCCESS == ulResult)
             {
-                return AT_SUCCESS;  /* 命令内容已转发到E5通道，本通道不返回任何结果 */
+                return AT_SUCCESS;  /* ????????????????E5?????????????????????????? */
             }
             else
             {
-                return AT_ERROR;    /* 处理失败，返回ERROR */
+                return AT_ERROR;    /* ??????????????ERROR */
             }
         }
     }
 
-    /* 如果PIN码保护受限，则调用查询PIN码受限条件接口，受限的话返回AT_ERROR，否则返回AT_OK */
+    /* ????PIN??????????????????????PIN????????????????????????????AT_ERROR??????????AT_OK */
     if(0 == (pstCmdElement->ulChkFlag & CMD_TBL_PIN_IS_LOCKED))
     {
         ulResult = (AT_RRETURN_CODE_ENUM_UINT32)At_CheckUsimStatus((VOS_UINT8*)pstCmdElement->pszCmdName, ucClientId);
         if(AT_SUCCESS == ulResult)
         {
-            /* PIN码已解锁，继续后续的检查处理 */
+            /* PIN???????????????????????????? */
         }
         else
         {
-            return ulResult;    /* 返回具体锁定的原因值 */
+            return ulResult;    /* ???????????????????? */
         }
     }
 
@@ -914,10 +914,10 @@ VOS_UINT32 CmdParseProc(VOS_UINT8 ucClientId, VOS_UINT8 *pData, VOS_UINT16 usLen
     AT_RRETURN_CODE_ENUM_UINT32         ulResult = AT_FAILURE;
     AT_PAR_CMD_ELEMENT_STRU* pstCmdElement = NULL;
 
-    /* 该函数调用处可保证ucClientId的合法性，pDataIn不为空 */
+    /* ??????????????????ucClientId??????????pDataIn?????? */
 
 
-    /* 匹配命令名称 */
+    /* ???????????? */
     ulResult = (AT_RRETURN_CODE_ENUM_UINT32)atMatchCmdName(ucClientId, g_stATParseCmd.ucCmdFmtType);
     if(ERR_MSP_SUCCESS != ulResult)
     {
@@ -932,14 +932,14 @@ VOS_UINT32 CmdParseProc(VOS_UINT8 ucClientId, VOS_UINT8 *pData, VOS_UINT16 usLen
         return AT_ERROR;
     }
 
-    /* 受限命令判断和处理接口，返回失败表示处于受限条件，直接返回错误码 */
+    /* ???????????????????????????????????????????????????????????????? */
     ulResult = (AT_RRETURN_CODE_ENUM_UINT32)LimitedCmdProc(ucClientId, pData, usLen, pstCmdElement);
     if(AT_OK != ulResult)
     {
         return ulResult;
     }
 
-    /* 匹配解析参数 */
+    /* ???????????? */
     ulResult = (AT_RRETURN_CODE_ENUM_UINT32)ParseParam(pstCmdElement);
 
     if(ERR_MSP_SUCCESS != ulResult)
@@ -960,7 +960,7 @@ VOS_UINT32 CmdParseProc(VOS_UINT8 ucClientId, VOS_UINT8 *pData, VOS_UINT16 usLen
         }
     }
 
-    /* 下发的AT命令是否与CL模式下需要保护的AT命令相匹配，匹配的话，直接返回操作不允许 */
+    /* ??????AT??????????CL????????????????AT???????????????????????????????????????? */
     if (VOS_TRUE == At_CheckCurrRatModeIsCL(ucClientId))
     {
         if (VOS_TRUE == atCmdIsSupportedByCLMode(ucClientId))
@@ -994,7 +994,7 @@ VOS_VOID RepeatCmdProc(AT_PARSE_CONTEXT_STRU* pstClientContext)
         ulLen--;
     }
 
-    /* 检查是否是"A/" */
+    /* ??????????"A/" */
     if(3 == ulLen)
     {
         if(AT_SUCCESS == At_CheckCharA(*pData))
@@ -1024,7 +1024,7 @@ VOS_VOID RepeatCmdProc(AT_PARSE_CONTEXT_STRU* pstClientContext)
 
 VOS_VOID SaveRepeatCmd(AT_PARSE_CONTEXT_STRU* pstClientContext, VOS_UINT8 *pData, VOS_UINT16 usLen)
 {
-    /* 保存A/命令缓存 */
+    /* ????A/???????? */
     if(NULL != pstClientContext->pucCmdLine)
     {
         AT_FREE(pstClientContext->pucCmdLine);
@@ -1050,14 +1050,14 @@ VOS_UINT32 ScanDelChar( VOS_UINT8 *pData, VOS_UINT16 *pLen, VOS_UINT8 AtS5)
     VOS_UINT16 usLen     = 0;
     VOS_UINT8  *pWrite   = pData;
     VOS_UINT8  *pRead    = pData;
-    VOS_UINT16 usNum     = 0;    /* 记录逗号的个数 */
+    VOS_UINT16 usNum     = 0;    /* ?????????????? */
 
     if(0 == *pLen)
     {
         return AT_FAILURE;
     }
 
-    /* 输入参数检查 */
+    /* ???????????? */
     while ( usChkLen++ < *pLen )
     {
         if('"' == *pRead)
@@ -1066,7 +1066,7 @@ VOS_UINT32 ScanDelChar( VOS_UINT8 *pData, VOS_UINT16 *pLen, VOS_UINT8 AtS5)
             *pWrite++ = *pRead;
             usLen++;
         }
-        else if((AtS5 == *pRead) && (0 == (usNum%2)))       /*删除上一字符,引号内的删除符不处理*/
+        else if((AtS5 == *pRead) && (0 == (usNum%2)))       /*????????????,????????????????????*/
         {
             if( usLen > 0 )
             {
@@ -1074,7 +1074,7 @@ VOS_UINT32 ScanDelChar( VOS_UINT8 *pData, VOS_UINT16 *pLen, VOS_UINT8 AtS5)
                 usLen--;
             }
         }
-        else                        /*选择有效字符*/
+        else                        /*????????????*/
         {
             *pWrite++ = *pRead;
             usLen++;
@@ -1102,7 +1102,7 @@ VOS_UINT32 ScanCtlChar( VOS_UINT8 *pData, VOS_UINT16 *pLen)
 
     while( usChkLen++ < *pLen )
     {
-        if( 0x20 <= *pRead )   /* 选择有效字符 */
+        if( 0x20 <= *pRead )   /* ???????????? */
         {
             if('"' == *pRead)
             {
@@ -1113,7 +1113,7 @@ VOS_UINT32 ScanCtlChar( VOS_UINT8 *pData, VOS_UINT16 *pLen)
         }
         else
         {
-            if(usNum%2)            /* 双引号内的小于0x20的字符不去除 */
+            if(usNum%2)            /* ??????????????0x20???????????? */
             {
                 *pWrite++ = *pRead;
                 usLen++;
@@ -1145,7 +1145,7 @@ VOS_UINT32 ScanBlankChar( VOS_UINT8 *pData, VOS_UINT16 *pLen)
     }
 
 
-    /* 检查 */
+    /* ???? */
     while( usChkLen++ < *pLen )
     {
         if('=' == *pRead)
@@ -1155,13 +1155,13 @@ VOS_UINT32 ScanBlankChar( VOS_UINT8 *pData, VOS_UINT16 *pLen)
 
         if((' ' == *pRead) && (TRUE != bIsEqual))
         {
-            /* 等号前的空格去除 */
+            /* ???????????????? */
         }
-        else    /* rim逗号前后的空格 */
+        else    /* rim?????????????? */
         {
             if(0x20 != *pRead && ',' != *pRead)
             {
-                /* rim','后空格 */
+                /* rim','?????? */
                 if(bIsColonBack)
                 {
                     pWrite -= usColonBankCnt;
@@ -1176,7 +1176,7 @@ VOS_UINT32 ScanBlankChar( VOS_UINT8 *pData, VOS_UINT16 *pLen)
             }
             else if(',' == *pRead)
             {
-                /* rim','前空格 */
+                /* rim','?????? */
                 pWrite -= usColonBankCnt;
                 usLen  -= usColonBankCnt;
                 usColonBankCnt = 0;
@@ -1217,7 +1217,7 @@ PRIVATE VOS_UINT32 ScanBlankCharAfterEq(IN OUT VOS_UINT8 *pData,IN OUT VOS_UINT1
         return AT_FAILURE;
     }
 
-    /* 检查 */
+    /* ???? */
     while( usChkLen++ < *pLen )
     {
         if('=' == *pRead)
@@ -1228,7 +1228,7 @@ PRIVATE VOS_UINT32 ScanBlankCharAfterEq(IN OUT VOS_UINT8 *pData,IN OUT VOS_UINT1
         {
             if((TRUE != bIsEqual) || (TRUE == bIsEqualNoSp))
             {
-                /* 等号前的字符全部复制，等号后的非空格字符全部复制 */
+                /* ???????????????????????????????????????????????? */
             }
             else
             {
@@ -1262,7 +1262,7 @@ VOS_UINT32 FormatCmdStr (VOS_UINT8 *pData, VOS_UINT16 *pLen, VOS_UINT8 AtS3)
     VOS_UINT32 ulFlg      = 0;
     VOS_UINT16 usLen      = 0;
 
-    /* 保留行结束符之前的字符 */
+    /* ?????????????????????? */
     while ( ulChkS3Len++ < *pLen  )
     {
         if(AtS3 == *pCheck++)
@@ -1272,7 +1272,7 @@ VOS_UINT32 FormatCmdStr (VOS_UINT8 *pData, VOS_UINT16 *pLen, VOS_UINT8 AtS3)
         }
         else
         {
-            /* *pCheck &= 0x7f; */   /* 忽略每个字节的最高bit位 */
+            /* *pCheck &= 0x7f; */   /* ??????????????????bit?? */
             usLen++;
         }
     }
@@ -1337,28 +1337,28 @@ VOS_UINT32 CmdStringFormat(VOS_UINT8 ucClientId, VOS_UINT8 *pData,VOS_UINT16* pu
         return AT_ERROR;
     }
 
-    /* 扫描退格符 */
+    /* ?????????? */
     ulRet = ScanDelChar(pData,pusLen, ucAtS5);
     if(ERR_MSP_SUCCESS != ulRet)
     {
         return AT_CME_INVALID_CHARACTERS_IN_TEXT_STRING;
     }
 
-    /* 扫描控制符 */
+    /* ?????????? */
     ulRet = ScanCtlChar(pData,pusLen);
     if(ERR_MSP_SUCCESS != ulRet)
     {
         return AT_CME_INVALID_CHARACTERS_IN_TEXT_STRING;
     }
 
-    /* 扫描空格符 */
+    /* ?????????? */
     ulRet = ScanBlankChar(pData,pusLen);
     if(ERR_MSP_SUCCESS != ulRet)
     {
         return AT_CME_INVALID_CHARACTERS_IN_TEXT_STRING;
     }
 
-    /* 扫描紧挨着等号后面的空格符 */
+    /* ?????????????????????????? */
     ulRet = ScanBlankCharAfterEq(pData,pusLen);
     if(ERR_MSP_SUCCESS != ulRet)
     {
@@ -1415,15 +1415,15 @@ VOS_UINT32 AnyCharCmdParse(VOS_UINT8* pData, VOS_UINT16 usLen, VOS_UINT8* pName)
     VOS_UINT16 i,j;
     VOS_UINT8  bInQoute = 0;
 
-    VOS_UINT8  aucPara[AT_PARA_MAX_LEN + 1]  = {0};     /* 用来放置解析出的参数字符串 */
-    VOS_UINT16 usParaLen                     = 0;       /* 用来标识参数字符串长度 */
+    VOS_UINT8  aucPara[AT_PARA_MAX_LEN + 1]  = {0};     /* ?????????????????????????? */
+    VOS_UINT16 usParaLen                     = 0;       /* ?????????????????????? */
 
-    AT_ResetParseVariable();    /* 重置解释器所用的全局变量 */
+    AT_ResetParseVariable();    /* ???????????????????????? */
 
-    g_stATParseCmd.ucCmdOptType = AT_CMD_OPT_SET_PARA_CMD;  /* 设置命令操作类型*/
-    g_stATParseCmd.ucCmdFmtType = AT_EXTEND_CMD_TYPE;       /* 设置命令类型*/
+    g_stATParseCmd.ucCmdOptType = AT_CMD_OPT_SET_PARA_CMD;  /* ????????????????*/
+    g_stATParseCmd.ucCmdFmtType = AT_EXTEND_CMD_TYPE;       /* ????????????*/
 
-    g_stATParseCmd.stCmdName.usCmdNameLen = (VOS_UINT16)VOS_StrLen((VOS_CHAR *)pName) - 2;    /* 命令名 ^CPBW 长度*/
+    g_stATParseCmd.stCmdName.usCmdNameLen = (VOS_UINT16)VOS_StrLen((VOS_CHAR *)pName) - 2;    /* ?????? ^CPBW ????*/
 
     TAF_MEM_CPY_S(g_stATParseCmd.stCmdName.aucCmdName, sizeof(g_stATParseCmd.stCmdName.aucCmdName), pName, g_stATParseCmd.stCmdName.usCmdNameLen);
 
@@ -1448,16 +1448,16 @@ VOS_UINT32 AnyCharCmdParse(VOS_UINT8* pData, VOS_UINT16 usLen, VOS_UINT8* pName)
             {
                 if (1 == bInQoute)
                 {
-                    /* 表明该','号是参数的一部分，而非参数分隔符 */
+                    /* ??????','???????????????????????????????? */
                     aucPara[usParaLen] = *pData;
                     usParaLen++;
 
                     continue;
                 }
 
-                bInQoute = 0;      /* 双引号内可能还有双引号，不能再根据第二个双引号认为字符串结束 , 以参数分割符','作为字符串结束符。*/
+                bInQoute = 0;      /* ???????????????????????????????????????????????????????????? , ????????????','??????????????????*/
 
-                /* 处理以下异常 : 在字符串后面，','前面的无效空格 */
+                /* ???????????? : ??????????????','?????????????? */
                 for(j=usParaLen-1; j>0; j--)
                 {
                     if(' ' == aucPara[j])
@@ -1470,7 +1470,7 @@ VOS_UINT32 AnyCharCmdParse(VOS_UINT8* pData, VOS_UINT16 usLen, VOS_UINT8* pName)
                     }
                     else
                     {
-                        return AT_CME_INCORRECT_PARAMETERS;    /* 最后一个双引号后面有其它字符，返回错误 */
+                        return AT_CME_INCORRECT_PARAMETERS;    /* ?????????????????????????????????????? */
                     }
                 }
             }
@@ -1491,7 +1491,7 @@ VOS_UINT32 AnyCharCmdParse(VOS_UINT8* pData, VOS_UINT16 usLen, VOS_UINT8* pName)
         }
         else
         {
-            /* 存储参数到全局变量中 */
+            /* ???????????????????? */
             aucPara[usParaLen] = *pData;
             usParaLen++;
 
@@ -1564,9 +1564,9 @@ VOS_VOID At_ReadyClientCmdProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 u
 
     ulRet = AnyCharCmdProc(pData, &usLen);
 
-    if(AT_SUCCESS == ulRet)     /* 是任意字符参数的命令 */
+    if(AT_SUCCESS == ulRet)     /* ???????????????????? */
     {
-        /* 命令处理 */
+        /* ???????? */
         ulRet = CmdParseProc(ucIndex, pData, usLen);
         if((AT_OK != ulRet) && (AT_WAIT_ASYNC_RETURN != ulRet))
         {
@@ -1577,13 +1577,13 @@ VOS_VOID At_ReadyClientCmdProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 u
 
         return ;
     }
-    else if(AT_FAILURE != ulRet)    /* 是任意字符参数的命令，但参数解析失败 */
+    else if(AT_FAILURE != ulRet)    /* ???????????????????????????????????? */
     {
         At_FormatResultData(ucIndex, ulRet);
 
         return;
     }
-    else    /* 不是任意字符参数的命令 */
+    else    /* ?????????????????????? */
     {
         /* do nothing */
     }
@@ -1596,37 +1596,37 @@ VOS_VOID At_ReadyClientCmdProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 u
         return;
     }
 
-    /* 最短为"AT"两个字符 */
+    /* ??????"AT"???????? */
     if (usLen < 2)
     {
         return;
     }
 
-    /* 根据V3R1要求，前两个字符不是"AT"，不返回任何信息 */
-    if(AT_SUCCESS != At_CheckCharA(*pData))   /* 如果不是'A'/'a' */
+    /* ????V3R1????????????????????"AT"???????????????? */
+    if(AT_SUCCESS != At_CheckCharA(*pData))   /* ????????'A'/'a' */
     {
         return;
     }
 
-    if(AT_SUCCESS != At_CheckCharT(*(pData+1)))   /* 如果不是'T'/'t' */
+    if(AT_SUCCESS != At_CheckCharT(*(pData+1)))   /* ????????'T'/'t' */
     {
         return;
     }
 
-    /* SIMLOCK命令可能有61个参数，特殊处理 */
+    /* SIMLOCK??????????61???????????????? */
     if (AT_SUCCESS == At_ProcSimLockPara(ucIndex, pData, usLen))
     {
         return;
     }
 
-    /* ^DOCK命令后面还有"^"和"="，特殊处理 */
+    /* ^DOCK????????????"^"??"="?????????? */
     if (AT_SUCCESS == AT_HandleDockSetCmd(ucIndex, pData, usLen))
     {
         return;
     }
 
-    /* AP-Modem形态下，产线命令AT^FACAUTHPUBKEY和AT^SIMLOCKDATAWRITE的设置命令，参数已经超过了解析器中
-       参数长度上限512，需要特殊处理*/
+    /* AP-Modem????????????????AT^FACAUTHPUBKEY??AT^SIMLOCKDATAWRITE??????????????????????????????????
+       ????????????512??????????????*/
     if (AT_SUCCESS == At_HandleApModemSpecialCmd(ucIndex, pData, usLen))
     {
         return;
@@ -1634,7 +1634,7 @@ VOS_VOID At_ReadyClientCmdProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 u
 
     ulResult = (AT_RRETURN_CODE_ENUM_UINT32)At_CombineCmdChkProc(ucIndex, pData, usLen);
 
-    /* 返回结果 */
+    /* ???????? */
     if((AT_FAILURE == ulResult) || (AT_SUCCESS == ulResult))
     {
         return ;
@@ -1677,9 +1677,9 @@ VOS_VOID atCmdMsgProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usLen)
             return ;
         }
 
-        gastAtClientTab[ucIndex].usSmsTxtLen = 0;   /* 短信BUFFER清空 */
+        gastAtClientTab[ucIndex].usSmsTxtLen = 0;   /* ????BUFFER???? */
 
-        At_SetMode(ucIndex,AT_CMD_MODE,AT_NORMAL_MODE);         /* 置回命令状态 */
+        At_SetMode(ucIndex,AT_CMD_MODE,AT_NORMAL_MODE);         /* ???????????? */
 
         if (AT_WAIT_ASYNC_RETURN == ulResult)
         {
@@ -1700,22 +1700,22 @@ VOS_VOID atCmdMsgProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usLen)
     }
     else if (AT_XML_MODE == pClientContext->ucMode)
     {
-        /* 调用XML输入处理函数 */
+        /* ????XML???????????? */
         ulResult = (AT_RRETURN_CODE_ENUM_UINT32)At_ProcXmlText(ucIndex, pData, usLen);
 
-        /* 处理成功，输出提示符">" */
+        /* ????????????????????">" */
         if (AT_WAIT_XML_INPUT == ulResult)
         {
             At_FormatResultData(ucIndex,ulResult);
             return;
         }
 
-        /* 清空缓存区 */
-        PS_MEM_FREE(WUEPS_PID_AT, pstAgpsCtx->stXml.pcXmlTextHead);                         /* XML BUFFER清空 */
+        /* ?????????? */
+        PS_MEM_FREE(WUEPS_PID_AT, pstAgpsCtx->stXml.pcXmlTextHead);                         /* XML BUFFER???? */
         pstAgpsCtx->stXml.pcXmlTextHead = VOS_NULL_PTR;
         pstAgpsCtx->stXml.pcXmlTextCur  = VOS_NULL_PTR;
 
-        At_SetMode(ucIndex, AT_CMD_MODE, AT_NORMAL_MODE);                           /* 置回命令状态 */
+        At_SetMode(ucIndex, AT_CMD_MODE, AT_NORMAL_MODE);                           /* ???????????? */
 
         if (AT_WAIT_ASYNC_RETURN == ulResult)
         {
@@ -1738,14 +1738,14 @@ VOS_VOID atCmdMsgProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usLen)
     {
     }
 
-    /* 避免组合命令处理过程中其他通道有命令输入 */
+    /* ???????????????????????????????????????? */
     ulRet = AT_ParseCmdIsComb(ucIndex, pData, usLen);
     if(ERR_MSP_SUCCESS != ulRet)
     {
         return;
     }
 
-    /* 判断是否有PEND状态的通道 */
+    /* ??????????PEND?????????? */
     ulRet = AT_ParseCmdIsPend(ucIndex, pData, usLen);
     if(ERR_MSP_SUCCESS != ulRet)
     {
@@ -1762,11 +1762,11 @@ VOS_VOID atCmdMsgProc(VOS_UINT8 ucIndex, VOS_UINT8 *pData, VOS_UINT16 usLen)
 VOS_UINT32 At_CmdStreamRcv(VOS_UINT8 ucIndex, VOS_UINT8* pData, VOS_UINT16 usLen)
 {
     VOS_UINT8* pHead = NULL;
-    VOS_UINT16 usCount = 0;  /* 当前指向的字符位置 */
-    VOS_UINT16 usTotal = 0;  /* 已经处理的字符个数 */
+    VOS_UINT16 usCount = 0;  /* ?????????????????? */
+    VOS_UINT16 usTotal = 0;  /* ?????????????????? */
     AT_PARSE_CONTEXT_STRU* pstClientContext = NULL;
 
-    /* ucIndex只检查一次，后续的子函数不再检查 */
+    /* ucIndex???????????????????????????????? */
     if((NULL == pData) || (ucIndex >= AT_MAX_CLIENT_NUM))
     {
         return ERR_MSP_INVALID_PARAMETER;
@@ -1776,12 +1776,12 @@ VOS_UINT32 At_CmdStreamRcv(VOS_UINT8 ucIndex, VOS_UINT8* pData, VOS_UINT16 usLen
 
     pHead = pData;
 
-    /* 行结束符(<CR>或者用户指定) */
+    /* ????????(<CR>????????????) */
     while(usCount++ < usLen)
     {
         if(At_CheckCmdSms(*(pData+usCount-1), pstClientContext->ucMode))
         {
-            /* 缓存中已经有数据 */
+            /* ???????????????? */
             if(pstClientContext->usDataLen > 0)
             {
                 if((pstClientContext->usDataLen + usCount) >= AT_CMD_MAX_LEN)
@@ -1796,7 +1796,7 @@ VOS_UINT32 At_CmdStreamRcv(VOS_UINT8 ucIndex, VOS_UINT8* pData, VOS_UINT16 usLen
                     usCount);
                 pstClientContext->usDataLen += usCount;
             }
-            else    /* 缓存中无数据 */
+            else    /* ???????????? */
             {
                 TAF_MEM_CPY_S(&pstClientContext->aucDataBuff[0], AT_CMD_MAX_LEN, pHead, (VOS_SIZE_T)(usCount-usTotal));
                 pstClientContext->usDataLen = usCount-usTotal;
@@ -1812,7 +1812,7 @@ VOS_UINT32 At_CmdStreamRcv(VOS_UINT8 ucIndex, VOS_UINT8* pData, VOS_UINT16 usLen
         }
     }
 
-    /* 有部分字符未处理，需要缓存 */
+    /* ?????????????????????????? */
     if(usTotal < usLen)
     {
         if((pstClientContext->usDataLen + (usLen-usTotal)) >= AT_CMD_MAX_LEN)
@@ -1851,13 +1851,13 @@ VOS_VOID At_CombineBlockCmdProc(VOS_UINT8 ucIndex)
 
     pstCombineCmdInfo = &pClientContext->stCombineCmdInfo;
 
-    /* 判断组合命令是否处理完毕 */
+    /* ???????????????????????? */
     if((pstCombineCmdInfo->usProcNum < pstCombineCmdInfo->usTotalNum))
     {
-        /* 处理下一条命令 */
+        /* ?????????????? */
         ulResult = (AT_RRETURN_CODE_ENUM_UINT32)At_CombineCmdProc(ucIndex);
 
-        /* 返回结果 */
+        /* ???????? */
         if((AT_FAILURE == ulResult) || (AT_SUCCESS == ulResult))
         {
             return ;
@@ -1871,20 +1871,20 @@ VOS_VOID At_CombineBlockCmdProc(VOS_UINT8 ucIndex)
         return ;
     }
 
-    /* 判断是否有缓存的命令 */
+    /* ???????????????????? */
     ucIndex = AT_BlockCmdCheck();
     if(ucIndex < AT_MAX_CLIENT_NUM)
     {
         pClientContext = &(g_stParseContext[ucIndex]);
 
-        /* 停止缓存命令的定时器 */
+        /* ???????????????????? */
         AT_StopRelTimer(ucIndex, &pClientContext->hTimer);
 
         usBlockCmdLen = pClientContext->usBlockCmdLen;
         pucBlockCmd = (VOS_UINT8*)AT_MALLOC(usBlockCmdLen);
         if(NULL == pucBlockCmd)
         {
-            /* 留待超时返回或下条命令处理结束后触发 */
+            /* ???????????????????????????????????? */
             return ;
         }
 
@@ -1892,7 +1892,7 @@ VOS_VOID At_CombineBlockCmdProc(VOS_UINT8 ucIndex)
 
         AT_ClearBlockCmdInfo(ucIndex);
 
-        /* 处理缓存命令 */
+        /* ???????????? */
         At_ReadyClientCmdProc(ucIndex, pucBlockCmd, usBlockCmdLen);
 
         AT_FREE(pucBlockCmd);
@@ -1917,7 +1917,7 @@ VOS_VOID At_CmdMsgDistr(AT_MSG_STRU *pstMsg)
     {
         pstMsgNumCtrlCtx = AT_GetMsgNumCtrlCtxAddr();
 
-        /* 队列加锁 */
+        /* ???????? */
         /*lint -e571*/
         VOS_SpinLockIntLock(&(pstMsgNumCtrlCtx->stSpinLock), ulLockLevel);
         /*lint +e571*/
@@ -1934,7 +1934,7 @@ VOS_VOID At_CmdMsgDistr(AT_MSG_STRU *pstMsg)
     pData   = pstMsg->aucValue;
     ucIndex = pstMsg->ucIndex;
 
-    /* C核/HIFI复位时，模拟的是AT给AT发的消息 */
+    /* C??/HIFI????????????????AT??AT???????? */
     switch(pstMsg->ucType)
     {
         case ID_CCPU_AT_RESET_START_IND:
@@ -1959,7 +1959,7 @@ VOS_VOID At_CmdMsgDistr(AT_MSG_STRU *pstMsg)
 
     AT_AddUsedClientId2Tab(ucIndex);
 
-    /* 如果处于C核复位前则不处理任何AT命令 */
+    /* ????????C????????????????????AT???? */
     if (VOS_TRUE == AT_GetResetFlag())
     {
         return;
@@ -2004,13 +2004,13 @@ VOS_UINT32 atfwParseSaveParam(VOS_UINT8* pStringBuf, VOS_UINT16 usLen)
         return ERR_MSP_FAILURE;
     }
 
-    /* 如果长度为0，则允许字符串指针为空，否则返回失败 */
+    /* ??????????0???????????????????????????????????? */
     if ((NULL == pStringBuf) && (0 != usLen))
     {
         return ERR_MSP_FAILURE;
     }
 
-    /* 如果字符串长度为0，则不需要拷贝 */
+    /* ????????????????0?????????????? */
     if((0 != usLen) && (NULL != pStringBuf))
     {
         TAF_MEM_CPY_S(gastAtParaList[gucAtParaIndex].aucPara,
@@ -2039,8 +2039,8 @@ VOS_UINT32 AT_SaveCdataDialParam(
     {
         return ERR_MSP_FAILURE;
     }
-    /* 为适配解析"*99#", "*98#",
-       将"#777"解析存为:
+    /* ??????????"*99#", "*98#",
+       ??"#777"????????:
        #,
        #777,
        777
@@ -2048,14 +2048,14 @@ VOS_UINT32 AT_SaveCdataDialParam(
 
     if (AT_CDATA_DIAL_777_LEN < usLen)
     {
-        /* 指针跳过'D' */
+        /* ????????'D' */
         pucCurrPtr++;
 
-        /* 保存'#' */
+        /* ????'#' */
         gastAtParaList[gucAtParaIndex].aucPara[0] = *pucCurrPtr;
         gastAtParaList[gucAtParaIndex].usParaLen  = 1;
 
-        /* 保存'#777' */
+        /* ????'#777' */
         gucAtParaIndex++;
         usLength = usLen - 1;
         TAF_MEM_CPY_S(gastAtParaList[gucAtParaIndex].aucPara,
@@ -2064,7 +2064,7 @@ VOS_UINT32 AT_SaveCdataDialParam(
             usLength);
         gastAtParaList[gucAtParaIndex].usParaLen = usLength;
 
-        /* 保存'777' */
+        /* ????'777' */
         pucCurrPtr++;
         gucAtParaIndex++;
         usLength--;
@@ -2112,11 +2112,11 @@ VOS_UINT32 AT_IsAbortCmdStr(
     ulAtCurrSetTick = VOS_GetTick();
     pstCmdAbortTick = At_GetAtCmdAbortTickInfo();
 
-    /* 输入的字符已经去除了不可见字符(<0x20的ASCII字符),空格, S3, S5等字符. 但没有字符串结束符 */
+    /* ??????????????????????????????(<0x20??ASCII????),????, S3, S5??????. ?????????????????? */
 
     ulAbortCmdStrLen = 0;
 
-    /* 获取打断命令的参数 */
+    /* ?????????????????? */
     pstAbortCmdPara  = AT_GetAbortCmdPara();
 
     if (VOS_NULL_PTR == pstAbortCmdPara)
@@ -2124,7 +2124,7 @@ VOS_UINT32 AT_IsAbortCmdStr(
         return VOS_FALSE;
     }
 
-    /* 判断是否使能打断命令功能 */
+    /* ???????????????????????? */
     if ( VOS_TRUE != pstAbortCmdPara->ucAbortEnableFlg )
     {
         return VOS_FALSE;
@@ -2132,7 +2132,7 @@ VOS_UINT32 AT_IsAbortCmdStr(
 
 
 
-    /* 检测当前打断tick值是否满足相隔125ms条件,如果不满足，则直接返回不打断 */
+    /* ????????????tick??????????????125ms????,???????????????????????????? */
     if  ( ulAtCurrSetTick >= pstCmdAbortTick->ulAtSetTick[ucIndex] )
     {
 
@@ -2148,20 +2148,20 @@ VOS_UINT32 AT_IsAbortCmdStr(
         return VOS_FALSE;
     }
 
-    /* 检测当前是否是任意字符打断，如果是，则直接返回打断 */
+    /* ?????????????????????????????????????????????????? */
     if  ( VOS_TRUE == At_GetAtCmdAnyAbortFlg() )
     {
         return VOS_TRUE;
     }
 
-    /* 长度判断 */
+    /* ???????? */
     ulAbortCmdStrLen = VOS_StrLen((VOS_CHAR *)pstAbortCmdPara->aucAbortAtCmdStr);
     if ( (0 == usLen) || (usLen != ulAbortCmdStrLen) )
     {
         return VOS_FALSE;
     }
 
-    /* 当前不是任意字符打断，则需要检测AT打断内容，是打断命令，则返回打断 */
+    /* ????????????????????????????????AT???????????????????????????????? */
     if ( (0 == VOS_StrNiCmp((VOS_CHAR *)pucData, (VOS_CHAR *)pstAbortCmdPara->aucAbortAtCmdStr, usLen)) )
     {
         return VOS_TRUE;
@@ -2178,7 +2178,7 @@ VOS_VOID AT_AbortCmdProc(
     VOS_UINT32                          ulTimerLen;
     VOS_UINT32                          ulResult;
 
-    /* 空指针检查 */
+    /* ?????????? */
     if ( VOS_NULL_PTR == g_stParseContext[ucIndex].pstCmdElement )
     {
         AT_WARN_LOG("AT_AbortCmdProc: pstCmdElement NULL.");
@@ -2190,13 +2190,13 @@ VOS_VOID AT_AbortCmdProc(
         return;
     }
 
-    /* 调用当前正在处理的AT命令的Abort函数 */
+    /* ??????????????????AT??????Abort???? */
     ulResult = g_stParseContext[ucIndex].pstCmdElement->pfnAbortProc(ucIndex);
     if ( AT_WAIT_ASYNC_RETURN == ulResult )
     {
-        /* 由于当前AT端口的状态已经处于PEND状态, 此处不需要再更新端口状态 */
+        /* ????????AT??????????????????PEND????, ???????????????????????? */
 
-        /* 启动打断保护定时器, 超时后需要向AT端口上报ABORT */
+        /* ??????????????????, ????????????AT????????ABORT */
         ulTimerLen = g_stParseContext[ucIndex].pstCmdElement->ulAbortTimeOut;
         if ( 0 == ulTimerLen )
         {
@@ -2204,14 +2204,14 @@ VOS_VOID AT_AbortCmdProc(
             return;
         }
 
-        /* 起保护定时器 */
+        /* ???????????? */
         if ( AT_SUCCESS != At_StartTimer(ulTimerLen, ucIndex) )
         {
             AT_WARN_LOG("AT_AbortCmdProc: StartTimer Err.");
             return;
         }
     }
-    /* 表示AT直接打断 不需要等异步消息 */
+    /* ????AT???????? ???????????????? */
     else if ( (AT_ABORT == ulResult)
            || (AT_OK    == ulResult) )
     {
@@ -2222,8 +2222,8 @@ VOS_VOID AT_AbortCmdProc(
 
         At_FormatResultData(ucIndex,ulResult);
     }
-    /* 其它异常，如消息发送失败 内存申请失败，当前命令操作类型不支持打断
-       (如在指定搜过程收到打断命令, 但当前指定搜不支持打断)等，丢弃 不做打断处理 */
+    /* ???????????????????????? ????????????????????????????????????????
+       (??????????????????????????, ??????????????????????)???????? ???????????? */
     else
     {
         AT_WARN_LOG1("AT_AbortCmdProc, WARNING, Return Code %d!", ulResult);
@@ -2243,29 +2243,29 @@ AT_PAR_CMD_ELEMENT_STRU* AT_GetCmdElementInfo(
     VOS_UINT32                          i;
 
 
-    /* 调用的地方保证输入的指针不为空 */
+    /* ?????????????????????????????? */
 
     pstCmdTblList   = &(g_stCmdTblList);
 
-    /* 如果命令类型不是扩展命令也不是基本命令，直接返回空指针 */
+    /* ?????????????????????????????????????????????????????? */
     if ((AT_EXTEND_CMD_TYPE != ulCmdType) && (AT_BASIC_CMD_TYPE != ulCmdType))
     {
         return VOS_NULL_PTR;
     }
 
-    /* 在各命令表中查找指定命令 */
+    /* ???????????????????????? */
     msp_list_for_each(pstCurList, pstCmdTblList)
     {
         pstCurCmdNode = msp_list_entry(pstCurList, AT_PAR_CMDTBL_LIST_STRU, stCmdTblList);
 
         for (i = 0; i < pstCurCmdNode->usCmdNum; i++)
         {
-            /* 没找到时，在命令表中查找下一条命令 */
+            /* ?????????????????????????????????? */
             if ((NULL == pstCurCmdNode->pstCmdElement) || (NULL == pstCurCmdNode->pstCmdElement[i].pszCmdName))
             {
                 continue;
             }
-            /* 找到时，指针指到相应的命令 */
+            /* ?????????????????????????? */
             if (ERR_MSP_SUCCESS == AT_STRCMP((VOS_CHAR*)pucCmdName, (VOS_CHAR*)pstCurCmdNode->pstCmdElement[i].pszCmdName))
             {
                 return &(pstCurCmdNode->pstCmdElement[i]);
@@ -2290,7 +2290,7 @@ VOS_VOID AT_SaveCmdElementInfo(
         return;
     }
 
-    /* 没有找到相应的指定命令时，直接返回 */
+    /* ?????????????????????????????????? */
     pstGetCmdElemnet = AT_GetCmdElementInfo(pucCmdName, ulCmdType);
     if (VOS_NULL_PTR == pstGetCmdElemnet)
     {
@@ -2298,7 +2298,7 @@ VOS_VOID AT_SaveCmdElementInfo(
         return;
     }
 
-    /* 找到时，保存到全局变量 */
+    /* ?????????????????????? */
     g_stParseContext[ucIndex].pstCmdElement = pstGetCmdElemnet;
 
     return;
@@ -2319,7 +2319,7 @@ VOS_UINT32 AT_IsAnyParseClientPend(VOS_VOID)
         pstPortBuffCfg->ucNum = AT_MAX_CLIENT_NUM;
     }
 
-    /* 根据当前记录的通道查询通道状态 */
+    /* ?????????????????????????????? */
     for (i = 0; i < pstPortBuffCfg->ucNum; i++)
     {
         ucClientIndex = (VOS_UINT8)pstPortBuffCfg->ulUsedClientID[i];
@@ -2354,7 +2354,7 @@ VOS_UINT32 AT_IsAllClientDataMode(VOS_VOID)
         pstPortBuffCfg->ucNum = AT_MAX_CLIENT_NUM;
     }
 
-    /* 查看有多少个通道处于data模式 */
+    /* ????????????????????data???? */
     for (i = 0; i < pstPortBuffCfg->ucNum; i++)
     {
         ucClientIndex = (VOS_UINT8)pstPortBuffCfg->ulUsedClientID[i];
@@ -2369,7 +2369,7 @@ VOS_UINT32 AT_IsAllClientDataMode(VOS_VOID)
         }
     }
 
-    /* 所有通道有处理data模式 */
+    /* ??????????????data???? */
     if (ulDataModeNum == pstPortBuffCfg->ucNum)
     {
         return VOS_TRUE;
@@ -2408,14 +2408,14 @@ VOS_UINT8 atCmdIsSupportedByCLMode(VOS_UINT8 ucIndex)
                                                              AT_CMD_RELEASERRC,
                                                              AT_CMD_EOPLMN,
                                                              AT_CMD_CNMR
-                                                             /*  电信Volte功能增加，at命令限制解除 */
+                                                             /*  ????Volte??????????at???????????? */
                                                              };
 
     ulCmdArraySize = sizeof((aulCmdIndex)) / sizeof((aulCmdIndex[0]));
 
     pstCmdElement = g_stParseContext[ucIndex].pstCmdElement;
 
-    /* CLCK的操作类型为SC和FD不需要禁，其它的需要禁掉 */
+    /* CLCK????????????SC??FD???????????????????????? */
     if (AT_CMD_CLCK == pstCmdElement->ulCmdIndex)
     {
         if ((AT_CLCK_SC_TYPE == gastAtParaList[0].ulParaValue)
@@ -2429,7 +2429,7 @@ VOS_UINT8 atCmdIsSupportedByCLMode(VOS_UINT8 ucIndex)
         }
     }
 
-    /* CPWD的操作类型为SC和FD不需要禁，其它的需要禁掉 */
+    /* CPWD????????????SC??FD???????????????????????? */
     if (AT_CMD_CPWD == pstCmdElement->ulCmdIndex)
     {
         if ((AT_CLCK_SC_TYPE == gastAtParaList[0].ulParaValue)
@@ -2443,7 +2443,7 @@ VOS_UINT8 atCmdIsSupportedByCLMode(VOS_UINT8 ucIndex)
         }
     }
 
-    /* 判断下发的AT命令的cmdindex是否属于下列的在CL模式下待保护的AT命令的index */
+    /* ??????????AT??????cmdindex????????????????CL??????????????AT??????index */
     for (ulLoop = 0; ulLoop < ulCmdArraySize; ulLoop++)
     {
         if (pstCmdElement->ulCmdIndex == aulCmdIndex[ulLoop])
@@ -2473,7 +2473,7 @@ VOS_UINT8 atCmdIsSupportedByGULMode(VOS_UINT8 ucIndex)
 
     enModemId = MODEM_ID_0;
 
-    /* 获取modemid失败，默认不拦截相应的AT命令 */
+    /* ????modemid??????????????????????AT???? */
     if (VOS_OK != AT_GetModemIdFromClient((VOS_UINT16)ucIndex, &enModemId))
     {
         AT_ERR_LOG("atCmdIsSupportedByGULMode:Get Modem Id fail!");
@@ -2486,7 +2486,7 @@ VOS_UINT8 atCmdIsSupportedByGULMode(VOS_UINT8 ucIndex)
 
     pstCmdElement = g_stParseContext[ucIndex].pstCmdElement;
 
-    /* 判断下发的AT命令的cmdindex是否属于下列的在GUL模式下不进行处理的AT命令的index */
+    /* ??????????AT??????cmdindex????????????????GUL??????????????????AT??????index */
     for (ulLoop = 0; ulLoop < ulCmdArraySize; ulLoop++)
     {
         if (pstCmdElement->ulCmdIndex == aulCmdIndex[ulLoop])

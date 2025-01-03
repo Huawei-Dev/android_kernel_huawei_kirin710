@@ -51,7 +51,7 @@
 #define __APPVCOMDEV_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "v_typdef.h"
 #include "PsTypeDef.h"
@@ -94,12 +94,12 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define USE_SEM                         (0)
-#define APP_VCOM_MEM_CLEAR              (0x1)                                   /* 清零全局内存 */
+#define APP_VCOM_MEM_CLEAR              (0x1)                                   /* ???????????? */
 
-#define APP_VCOM_MAX_NUM                 (APP_VCOM_DEV_INDEX_BUTT)                /*VCOM口数量*/
+#define APP_VCOM_MAX_NUM                 (APP_VCOM_DEV_INDEX_BUTT)                /*VCOM??????*/
 #define APP_VCOM_ERROR                   (-1)
 
 #define APP_VCOM_BUILD_DEV_ID(dev, type) (((unsigned int)(dev) << 8) | ((unsigned int)(type) & 0x00ff))
@@ -112,10 +112,10 @@ extern "C" {
 #define APP_VCOM_ARRAY_SIZE(a)                (sizeof((a)) / sizeof((a[0])))
 #endif
 
-/* 虚拟串口设备名称 */
+/* ???????????????? */
 #define APP_VCOM_DEV_NAME_0              "appvcom"
 
-/*新增虚拟串口设备名称*/
+/*????????????????????*/
 #define APP_VCOM_DEV_NAME_1              "appvcom1"
 #if (FEATURE_ON == FEATURE_VCOM_EXT)
 #define APP_VCOM_DEV_NAME_2              "appvcom2"
@@ -188,7 +188,7 @@ extern "C" {
 
 #endif
 
-/*设备信号量名称*/
+/*??????????????*/
 #define APP_VCOM_SEM_NAME_0               "SEM"
 #define APP_VCOM_SEM_NAME_1               "SEM1"
 #if (FEATURE_ON == FEATURE_VCOM_EXT)
@@ -258,10 +258,10 @@ extern "C" {
 #endif
 
 
-/* E5口输入的AT命令的一般长度 */
+/* E5????????AT?????????????? */
 #define APP_VCOM_NORMAL_CMD_LEN         (100)
 
-/* 虚拟串口设备名称长度*/
+/* ????????????????????*/
 #define APP_VCOM_DEV_NAME_MAX_LEN       (16)
 #define APP_VCOM_SEM_NAME_MAX_LEN       (8)
 
@@ -337,7 +337,7 @@ extern "C" {
             ( (ucIndex != APP_VCOM_DEV_INDEX_LOG)\
            && (ucIndex != APP_VCOM_DEV_INDEX_LOG1) )
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum APP_VCOM_RESULT_ENUM
@@ -484,53 +484,53 @@ enum APP_VCOM_DEV_MAJORDEVID
 typedef unsigned int APP_VCOM_DEV_MAJORDEVID_UINT32;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 typedef struct
 {
-    struct cdev                         stAppVcomDev;                           /* 虚拟串口结构体 */
-    VOS_UINT8                          *pucAppVcomMem;                          /* 设备内存 */
-    wait_queue_head_t                   Read_Wait;                              /* 阻塞读用的等待队列头 */
-    wait_queue_head_t                   Write_Wait;                             /* 阻塞写用的等待队列头 */
+    struct cdev                         stAppVcomDev;                           /* ?????????????? */
+    VOS_UINT8                          *pucAppVcomMem;                          /* ???????? */
+    wait_queue_head_t                   Read_Wait;                              /* ???????????????????? */
+    wait_queue_head_t                   Write_Wait;                             /* ???????????????????? */
     struct semaphore                    stMsgSendSem;
     struct semaphore                    stWrtSem;
-    VOS_UINT8                          *pucWrtBuffer;                           /* 写缓存 */
+    VOS_UINT8                          *pucWrtBuffer;                           /* ?????? */
     VOS_UINT32                          ulWrtBufferLen;
     VOS_UINT8                           aucReserved[4];
-    size_t                              current_len;                            /* fifo有效数据长度 */
+    size_t                              current_len;                            /* fifo???????????? */
     VOS_UINT32                          ulReadWakeUpFlg;
     VOS_UINT32                          ulIsDeviceOpen ;
     struct wakeup_source                stRdWakeLock;
     VOS_CHAR                            acWakeLockName[APP_VCOM_RD_WAKE_LOCK_NAME_LEN];
-    struct mutex                        stMutex;                                /* 线程互斥锁 */
+    struct mutex                        stMutex;                                /* ?????????? */
 }APP_VCOM_DEV_ENTITY_STRU;
 
 
 typedef struct
 {
-    APP_VCOM_DEV_ENTITY_STRU           *pstAppVcomDevEntity;                       /* 设备实体 */
-    SEND_UL_AT_FUNC                     pSendUlAtFunc;                             /*对应的上行At码流发送函数*/
-    VOS_UINT32                          ulAppVcomMajorId;                          /* 设备号 */
-    VOS_CHAR                            aucAppVcomName[APP_VCOM_DEV_NAME_MAX_LEN]; /* 设备名称*/
-    VOS_CHAR                            aucSendSemName[APP_VCOM_SEM_NAME_MAX_LEN]; /*信号量名称*/
+    APP_VCOM_DEV_ENTITY_STRU           *pstAppVcomDevEntity;                       /* ???????? */
+    SEND_UL_AT_FUNC                     pSendUlAtFunc;                             /*??????????At????????????*/
+    VOS_UINT32                          ulAppVcomMajorId;                          /* ?????? */
+    VOS_CHAR                            aucAppVcomName[APP_VCOM_DEV_NAME_MAX_LEN]; /* ????????*/
+    VOS_CHAR                            aucSendSemName[APP_VCOM_SEM_NAME_MAX_LEN]; /*??????????*/
     VOS_UINT8                           aucReserved[4];
-    EVENT_FUNC                          pEventFunc;                                /* 事件处理回调 */
+    EVENT_FUNC                          pEventFunc;                                /* ???????????? */
 }APP_VCOM_DEV_CTX_STRU;
 
 
@@ -539,7 +539,7 @@ typedef struct
 {
     VOS_CHAR                           *pcAppVcomName;
     VOS_CHAR                           *pcSendSemName;
-    VOS_UINT32                          ulAppVcomMemSize;                       /* 设备缓存大小 */
+    VOS_UINT32                          ulAppVcomMemSize;                       /* ???????????? */
     VOS_UINT32                          ulReserved;
 }APP_VCOM_DEV_CONFIG_STRU;
 
@@ -547,38 +547,38 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulDevIndexErr;                          /* 设备Index错误 */
-    VOS_UINT32                          ulVcomDevErr[APP_VCOM_MAX_NUM];         /* 获得设备实体指针错误 */
-    VOS_UINT32                          ulMemFullErr[APP_VCOM_MAX_NUM];         /* 设备缓存满计数 */
-    VOS_UINT32                          ulSendLenErr[APP_VCOM_MAX_NUM];         /* 发送数据长度为0 */
-    VOS_UINT32                          ulReadLenErr[APP_VCOM_MAX_NUM];         /* 读取数据长度为0 */
-    VOS_UINT32                          ulAtCallBackErr[APP_VCOM_MAX_NUM];      /* AT回调处理函数返回失败 */
+    VOS_UINT32                          ulDevIndexErr;                          /* ????Index???? */
+    VOS_UINT32                          ulVcomDevErr[APP_VCOM_MAX_NUM];         /* ???????????????????? */
+    VOS_UINT32                          ulMemFullErr[APP_VCOM_MAX_NUM];         /* ?????????????? */
+    VOS_UINT32                          ulSendLenErr[APP_VCOM_MAX_NUM];         /* ??????????????0 */
+    VOS_UINT32                          ulReadLenErr[APP_VCOM_MAX_NUM];         /* ??????????????0 */
+    VOS_UINT32                          ulAtCallBackErr[APP_VCOM_MAX_NUM];      /* AT???????????????????? */
 }APP_VCOM_DEBUG_INFO_STRU;
 
 
 
 typedef struct
 {
-    VOS_UINT32                          ulPortIdMask1;                          /* VCOM端口ID掩码vcom0-vcom31 */
-    VOS_UINT32                          ulPortIdMask2;                          /* VCOM端口ID掩码 vcom32-vcom63*/
-    VOS_UINT32                          ulDebugLevel;                           /* VCOM DEBUG级别:ERR,NORMAL,INFO,DEBUG */
+    VOS_UINT32                          ulPortIdMask1;                          /* VCOM????ID????vcom0-vcom31 */
+    VOS_UINT32                          ulPortIdMask2;                          /* VCOM????ID???? vcom32-vcom63*/
+    VOS_UINT32                          ulDebugLevel;                           /* VCOM DEBUG????:ERR,NORMAL,INFO,DEBUG */
 } APP_VCOM_DEBUG_CFG_STRU;
 
 extern APP_VCOM_DEBUG_CFG_STRU          g_stAppVcomDebugCfg;
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 

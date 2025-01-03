@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AtSndMsg.h"
 #include "AtCsimagent.h"
@@ -57,12 +57,12 @@
 #define    THIS_FILE_ID        PS_FILE_ID_AT_SND_MSG_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -153,7 +153,7 @@ VOS_UINT32  AT_FillAndSndAppReqMsg(
 
     enModemId = MODEM_ID_0;
 
-    /* 获取client id对应的Modem Id */
+    /* ????client id??????Modem Id */
     ulRet = AT_GetModemIdFromClient(usClientId, &enModemId);
 
     if (VOS_ERR == ulRet)
@@ -174,10 +174,10 @@ VOS_UINT32  AT_FillAndSndAppReqMsg(
 
     pMsgPara = (VOS_UINT8 *)pPara;
 
-    /* 获取消息长度 */
+    /* ???????????? */
     AT_GetAppReqMsgLen( ulParaLen, &ulMsgLen);
 
-    /* 申请消息 */
+    /* ???????? */
     /*lint -save -e516 */
     pMsg = (VOS_UINT8 *)PS_ALLOC_MSG(WUEPS_PID_AT, ulMsgLen - VOS_MSG_HEAD_LENGTH);
     /*lint -restore */
@@ -188,10 +188,10 @@ VOS_UINT32  AT_FillAndSndAppReqMsg(
 
     TAF_MEM_SET_S((pMsg + VOS_MSG_HEAD_LENGTH), (ulMsgLen - VOS_MSG_HEAD_LENGTH), 0x00, (ulMsgLen - VOS_MSG_HEAD_LENGTH));
 
-    /* 填充消息头 */
+    /* ?????????? */
     AT_FillAppReqMsgHeader((MN_APP_REQ_MSG_STRU *)pMsg, usClientId, ucOpId, usMsgType, ulRcvPid);
 
-    /* 填充消息参数 */
+    /* ???????????? */
     AT_FillAppReqMsgPara(&pMsg[sizeof(MN_APP_REQ_MSG_STRU) - 4], pMsgPara, ulParaLen);
 
     ulRet = PS_SEND_MSG(WUEPS_PID_AT, pMsg);
@@ -214,19 +214,19 @@ VOS_UINT32 AT_SndSetFastDorm (
     AT_RABM_SET_FASTDORM_PARA_REQ_STRU  *pstSndMsg;
     VOS_UINT32                           ulRslt;
 
-    /* 申请内存  */
+    /* ????????  */
     /*lint -save -e516 */
     pstSndMsg = (AT_RABM_SET_FASTDORM_PARA_REQ_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                                                sizeof(AT_RABM_SET_FASTDORM_PARA_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
     /*lint -restore */
     if ( VOS_NULL_PTR == pstSndMsg )
     {
-        /* 内存申请失败 */
+        /* ???????????? */
         AT_ERR_LOG("AT_SndSetFastDorm:ERROR: Memory Alloc Error for pstMsg");
         return VOS_ERR;
     }
 
-    /* 填写相关参数 */
+    /* ???????????? */
     pstSndMsg->stMsgHeader.ulReceiverCpuId   = VOS_LOCAL_CPUID;
     pstSndMsg->stMsgHeader.ulReceiverPid     = AT_GetDestPid(usClientId, I0_WUEPS_PID_RABM);
     pstSndMsg->stMsgHeader.ulLength          = sizeof(AT_RABM_SET_FASTDORM_PARA_REQ_STRU) - VOS_MSG_HEAD_LENGTH;
@@ -235,7 +235,7 @@ VOS_UINT32 AT_SndSetFastDorm (
     pstSndMsg->usClientId                    = usClientId;
     pstSndMsg->ucOpId                        = ucOpId;
 
-    /* 调用VOS发送原语 */
+    /* ????VOS???????? */
     ulRslt = PS_SEND_MSG(WUEPS_PID_AT, pstSndMsg);
     if ( VOS_OK != ulRslt )
     {
@@ -255,19 +255,19 @@ VOS_UINT32 AT_SndQryFastDorm (
     AT_RABM_QRY_FASTDORM_PARA_REQ_STRU  *pstSndMsg;
     VOS_UINT32                           ulRslt;
 
-    /* 申请内存  */
+    /* ????????  */
     /*lint -save -e516 */
     pstSndMsg = (AT_RABM_QRY_FASTDORM_PARA_REQ_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                                                sizeof(AT_RABM_QRY_FASTDORM_PARA_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
     /*lint -restore */
     if ( VOS_NULL_PTR == pstSndMsg )
     {
-        /* 内存申请失败 */
+        /* ???????????? */
         AT_ERR_LOG("AT_SndSetFastDorm:ERROR: Memory Alloc Error for pstMsg");
         return VOS_ERR;
     }
 
-    /* 填写相关参数 */
+    /* ???????????? */
     pstSndMsg->stMsgHeader.ulReceiverCpuId   = VOS_LOCAL_CPUID;
     pstSndMsg->stMsgHeader.ulReceiverPid     = AT_GetDestPid(usClientId, I0_WUEPS_PID_RABM);
     pstSndMsg->stMsgHeader.ulLength          = sizeof(AT_RABM_QRY_FASTDORM_PARA_REQ_STRU) - VOS_MSG_HEAD_LENGTH;
@@ -275,7 +275,7 @@ VOS_UINT32 AT_SndQryFastDorm (
     pstSndMsg->usClientId                    = usClientId;
     pstSndMsg->ucOpId                        = ucOpId;
 
-    /* 调用VOS发送原语 */
+    /* ????VOS???????? */
     ulRslt = PS_SEND_MSG(WUEPS_PID_AT, pstSndMsg);
     if ( VOS_OK != ulRslt )
     {
@@ -295,21 +295,21 @@ VOS_UINT32 At_SndReleaseRrcReq (
     AT_RABM_RELEASE_RRC_REQ_STRU        *pstSndMsg;
     VOS_UINT32                           ulRslt;
 
-    /* 申请内存  */
+    /* ????????  */
     /*lint -save -e516 */
     pstSndMsg = (AT_RABM_RELEASE_RRC_REQ_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                                                sizeof(AT_RABM_RELEASE_RRC_REQ_STRU) - VOS_MSG_HEAD_LENGTH);
     /*lint -restore */
     if ( VOS_NULL_PTR == pstSndMsg )
     {
-        /* 内存申请失败 */
+        /* ???????????? */
         AT_ERR_LOG("At_SndReleaseRrcReq:ERROR: Memory Alloc Error for pstMsg");
         return VOS_ERR;
     }
 
     TAF_MEM_SET_S((VOS_CHAR*)pstSndMsg + VOS_MSG_HEAD_LENGTH, (sizeof(AT_RABM_RELEASE_RRC_REQ_STRU) - VOS_MSG_HEAD_LENGTH), 0x00, (sizeof(AT_RABM_RELEASE_RRC_REQ_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写相关参数 */
+    /* ???????????? */
     pstSndMsg->stMsgHeader.ulReceiverCpuId   = VOS_LOCAL_CPUID;
     pstSndMsg->stMsgHeader.ulReceiverPid     = AT_GetDestPid(usClientId, I0_WUEPS_PID_RABM);
     pstSndMsg->stMsgHeader.ulLength          = sizeof(AT_RABM_RELEASE_RRC_REQ_STRU) - VOS_MSG_HEAD_LENGTH;
@@ -317,7 +317,7 @@ VOS_UINT32 At_SndReleaseRrcReq (
     pstSndMsg->usClientId                    = usClientId;
     pstSndMsg->ucOpId                        = ucOpId;
 
-    /* 调用VOS发送原语 */
+    /* ????VOS???????? */
     ulRslt = PS_SEND_MSG(WUEPS_PID_AT, pstSndMsg);
     if ( VOS_OK != ulRslt )
     {
@@ -335,26 +335,26 @@ VOS_UINT32 AT_FillAndSndCSIMAMsg(VOS_UINT16 usClinetID, VOS_UINT32 ulModemStatus
     AT_CSIMA_RESET_STATUS_IND_MSG_STRU  *pstATCSIMAIndMsg;
     MODEM_ID_ENUM_UINT16                enModemID;
 
-    /* 调用接口获取Modem ID */
+    /* ????????????Modem ID */
     if(VOS_OK != AT_GetModemIdFromClient(usClinetID,&enModemID))
     {
         AT_ERR_LOG("AT_FillAndSndCSIMAMsg:ERROR: AT_GetModemIdFromClient Error");
         return VOS_ERR;
     }
 
-    /* 申请内存  */
+    /* ????????  */
     /*lint -save -e516 */
     pstATCSIMAIndMsg = (AT_CSIMA_RESET_STATUS_IND_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT,
                                                sizeof(AT_CSIMA_RESET_STATUS_IND_MSG_STRU) - VOS_MSG_HEAD_LENGTH);
     /*lint -restore */
     if ( VOS_NULL_PTR == pstATCSIMAIndMsg )
     {
-        /* 内存申请失败 */
+        /* ???????????? */
         AT_ERR_LOG("AT_FillAndSndCSIMAMsg:ERROR: Memory Alloc Error for pstMsg");
         return VOS_ERR;
     }
 
-    /* 填写相关参数 */
+    /* ???????????? */
     if (MODEM_ID_1 == enModemID)
     {
         pstATCSIMAIndMsg->ulReceiverPid     = I1_WUEPS_PID_CSIMA;
@@ -367,7 +367,7 @@ VOS_UINT32 AT_FillAndSndCSIMAMsg(VOS_UINT16 usClinetID, VOS_UINT32 ulModemStatus
     pstATCSIMAIndMsg->ulMsgId           = AT_CSIMA_RESET_IND_MSG;
     pstATCSIMAIndMsg->enVIAModemStatus  = (CBP_MODEM_RESET_STATUS_ENUM_UINT32)ulModemStatus;
 
-    /* 调用VOS发送原语 */
+    /* ????VOS???????? */
     return PS_SEND_MSG(WUEPS_PID_AT, pstATCSIMAIndMsg);
 }
 
@@ -385,7 +385,7 @@ VOS_UINT32 AT_SndImsaImsCtrlMsg (
 
     enModemId = MODEM_ID_0;
 
-    /* 获取client id对应的Modem Id */
+    /* ????client id??????Modem Id */
     ulRet = AT_GetModemIdFromClient(usClientId, &enModemId);
 
     if (VOS_ERR == ulRet)
@@ -402,17 +402,17 @@ VOS_UINT32 AT_SndImsaImsCtrlMsg (
 
     ulMsgLen = sizeof(AT_IMSA_IMS_CTRL_MSG_STRU) - 4 + pstAtImsaMsgPara->ulMsgLen;
 
-    /* 申请内存  */
+    /* ????????  */
     pstSndMsg = (AT_IMSA_IMS_CTRL_MSG_STRU *)PS_ALLOC_MSG(WUEPS_PID_AT, ulMsgLen - VOS_MSG_HEAD_LENGTH);
 
     if ( VOS_NULL_PTR == pstSndMsg )
     {
-        /* 内存申请失败 */
+        /* ???????????? */
         AT_ERR_LOG("AT_SndImsaImsCtrlMsg:ERROR: Memory Alloc Error for pstMsg");
         return VOS_ERR;
     }
 
-    /* 填写相关参数 */
+    /* ???????????? */
     pstSndMsg->ulReceiverCpuId   = VOS_LOCAL_CPUID;
     pstSndMsg->ulReceiverPid     = AT_GetDestPid(usClientId, PS_PID_IMSA);
     pstSndMsg->ulLength          = ulMsgLen - VOS_MSG_HEAD_LENGTH;
@@ -423,7 +423,7 @@ VOS_UINT32 AT_SndImsaImsCtrlMsg (
 
     TAF_MEM_CPY_S(pstSndMsg->aucWifiMsg, pstAtImsaMsgPara->ulMsgLen, pstAtImsaMsgPara->ucMsgContext, pstAtImsaMsgPara->ulMsgLen);
 
-    /* 调用VOS发送原语 */
+    /* ????VOS???????? */
     return PS_SEND_MSG(WUEPS_PID_AT, pstSndMsg);
 }
 

@@ -91,7 +91,7 @@ typedef struct tagIPF_UL_S
     void* pstIpfRDQ;
     void* pstIpfADQ0;
     void* pstIpfADQ1;
-    unsigned int* pu32IdleBd; /* 记录上一次获取的空闲BD 数 */
+    unsigned int* pu32IdleBd; /* ????????????????????BD ?? */
     ipf_bd_empty handle_bd_empty; /* Upload BD empty handler */
 }IPF_UL_S;
 

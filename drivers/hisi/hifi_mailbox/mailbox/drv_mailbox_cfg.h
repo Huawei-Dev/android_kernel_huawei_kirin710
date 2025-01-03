@@ -57,18 +57,18 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "hifi_lpp.h"
 #include "mdrv_ipc_enum.h"
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
-/* 定义源CPU 往 目标CPU的邮箱通道, 每通道对应独立的邮箱缓存 */
+/* ??????CPU ?? ????CPU??????????, ???????????????????????? */
 
-/* 按规则生成枚举项的宏定义 */
+/* ???????????????????????? */
 #define MAILBOX_CHANNEL_BEGIN(src, dst) \
     enum MAILBOX_CHANNEL_##src##2##dst##_ENUM \
     { \
@@ -83,7 +83,7 @@ extern "C" {
 
 /* CCPU -> HIFI */
 MAILBOX_CHANNEL_BEGIN(CCPU, HIFI)
-    /* 以下各枚举项按规则生成, 形如: MAILBOX_CHANNEL_CCPU2HIFI_DEFAULT */
+    /* ??????????????????????, ????: MAILBOX_CHANNEL_CCPU2HIFI_DEFAULT */
     MAILBOX_CHANNEL_ITEM(CCPU, HIFI, MSG),
 MAILBOX_CHANNEL_END(CCPU, HIFI)
 
@@ -148,14 +148,14 @@ MAILBOX_CHANNEL_BEGIN(BBE16, HIFI)
     MAILBOX_CHANNEL_ITEM(BBE16, HIFI, MSG),
 MAILBOX_CHANNEL_END(BBE16, HIFI)
 
-/* 有助SI解析, 利于阅读代码 */
+/* ????SI????, ???????????? */
 enum MAILBOX_GAP_FOR_SI_PARSE {MAILBOX_GAP_FOR_SI_BUTT};
 
-#define MAILBOX_ID_SRC_CPU_OFFSET       (24)        /*邮件ID中的源CPU ID bit位偏移地址*/
-#define MAILBOX_ID_DST_CPU_OFFSET       (16)        /*邮件ID中的源CPU ID bit位偏移地址*/
-#define MAILBOX_ID_CHANNEL_OFFSET       (8)         /*邮件ID中邮箱内存通道 ID bit位偏移地址*/
+#define MAILBOX_ID_SRC_CPU_OFFSET       (24)        /*????ID??????CPU ID bit??????????*/
+#define MAILBOX_ID_DST_CPU_OFFSET       (16)        /*????ID??????CPU ID bit??????????*/
+#define MAILBOX_ID_CHANNEL_OFFSET       (8)         /*????ID?????????????? ID bit??????????*/
 
-/* 邮编起始编号宏定义 */
+/* ?????????????????? */
 #define MAILBOX_MAILCODE_CHANNEL(src, dst, channel) \
     ( ((unsigned int)(src) << MAILBOX_ID_SRC_CPU_OFFSET) \
     | ((unsigned int)(dst) << MAILBOX_ID_DST_CPU_OFFSET) \
@@ -178,12 +178,12 @@ enum MAILBOX_GAP_FOR_SI_PARSE {MAILBOX_GAP_FOR_SI_BUTT};
     MAILBOX_MAILCODE_ITEM_RESERVED(src, dst, channel) = MAILBOX_MAILCODE_RESERVED(src, dst, channel)
 /*lint +e773*/
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
- 实 体 名  : MAILBOX_CPUID_E
- 功能描述  : 定义邮箱涉及CPU编号
+ ?? ?? ??  : MAILBOX_CPUID_E
+ ????????  : ????????????CPU????
 *****************************************************************************/
 /* Modified by c64416 for hifi mailbox, 2013/09/24, begin */
 enum MAILBOX_CPUID_ENUM
@@ -199,13 +199,13 @@ enum MAILBOX_CPUID_ENUM
 /* Modified by c64416 for hifi mailbox, 2013/09/24, end */
 
 /*****************************************************************************
- 实体名称  : MAILBOX_MAILCODE_ENUM
- 功能描述  : 邮编枚举定义, 邮编唯一标识邮件发送目标, 也即邮件数据接收处理者
+ ????????  : MAILBOX_MAILCODE_ENUM
+ ????????  : ????????????, ????????????????????????, ??????????????????????
 *****************************************************************************/
 /*lint -e488*/
 enum MAILBOX_MAILCODE_ENUM
 {
-    /* CCPU->MCU 邮编号定义在这里 */
+    /* CCPU->MCU ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(CCPU, MCU, MSG),
     MAILBOX_MAILCODE_CCPU_TO_MCU_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_CCPU_TO_MCU_VOS_MSG_URGENT,
@@ -213,24 +213,24 @@ enum MAILBOX_MAILCODE_ENUM
 
     MAILBOX_MAILCODE_ITEM_END(CCPU, MCU, MSG),
 
-    /* CCPU->MCU IFC调用号定义在这里 */
+    /* CCPU->MCU IFC???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(CCPU, MCU, IFC),
     MAILBOX_IFC_CCPU_TO_MCU_TEST_CMP,
     MAILBOX_IFC_CCPU_TO_MCU_TEST,
     MAILBOX_IFC_CCPU_TO_MCU_MCA,
     MAILBOX_MAILCODE_ITEM_END(CCPU, MCU, IFC),
 
-    /* CCPU->HIFI 邮编号定义在这里 */
+    /* CCPU->HIFI ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(CCPU, HIFI, MSG),
     MAILBOX_MAILCODE_CCPU_TO_HIFI_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_CCPU_TO_HIFI_VOS_MSG_URGENT,
     MAILBOX_MAILCODE_ITEM_END(CCPU, HIFI, MSG),
 
-    /* CCPU->ACPU 邮编号定义在这里 */
+    /* CCPU->ACPU ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(CCPU, ACPU, MSG),
     MAILBOX_MAILCODE_ITEM_END(CCPU, ACPU, MSG),
 
-    /* CCPU->ACPU IFC编号定义在这里 */
+    /* CCPU->ACPU IFC?????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(CCPU, ACPU, IFC),
     MAILBOX_IFC_CCPU_TO_ACPU_TEST_CMP,
     MAILBOX_IFC_CCPU_TO_ACPU_TEST,
@@ -249,7 +249,7 @@ enum MAILBOX_MAILCODE_ENUM
     MAILBOX_IFC_ACPU_TO_CCPU_PMIC_IRQEVENT_REPO,
     MAILBOX_MAILCODE_ITEM_END(CCPU, ACPU, IFC),
 
-    /* ACPU->MCU 邮编号定义在这里 */
+    /* ACPU->MCU ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(ACPU, MCU, MSG),
     MAILBOX_MAILCODE_ACPU_TO_MCU_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_ACPU_TO_MCU_VOS_MSG_URGENT,
@@ -261,7 +261,7 @@ enum MAILBOX_MAILCODE_ENUM
     BSP_MAILBOX_CHANNEL_ACPU_TO_MCU_RST_CH,
     MAILBOX_MAILCODE_ITEM_END(ACPU, MCU, MSG),
 
-    /* ACPU->MCU IFC远程函数调用邮编号定义在这里 */
+    /* ACPU->MCU IFC???????????????????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(ACPU, MCU, IFC),
     MAILBOX_IFC_ACPU_TO_MCU_TEST_CMP,
     MAILBOX_IFC_ACPU_TO_MCU_TEST,
@@ -272,7 +272,7 @@ enum MAILBOX_MAILCODE_ENUM
     MAILBOX_MAILCODE_ITEM_END(ACPU, MCU, IFC),
 
 
-    /* ACPU->HIFI 邮编号定义在这里 */
+    /* ACPU->HIFI ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(ACPU, HIFI, MSG),
     MAILBOX_MAILCODE_ACPU_TO_HIFI_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_ACPU_TO_HIFI_VOS_MSG_URGENT,
@@ -286,12 +286,12 @@ enum MAILBOX_MAILCODE_ENUM
     MAILBOX_MAILCODE_ACPU_TO_HIFI_CCORE_RESET_ID,
     MAILBOX_MAILCODE_ITEM_END(ACPU, HIFI, MSG),
 
-    /* ACPU->CCPU MSG号定义在这里 */
+    /* ACPU->CCPU MSG???????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(ACPU, CCPU, MSG),
     MAILBOX_IFC_ACPU_TO_CCPU_CSHELL_START,
     MAILBOX_MAILCODE_ITEM_END(ACPU, CCPU, MSG),
 
-    /* ACPU->CCPU IFC号定义在这里 */
+    /* ACPU->CCPU IFC???????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(ACPU, CCPU, IFC),
     MAILBOX_IFC_ACPU_TO_CCPU_TEST_CMP,
     MAILBOX_IFC_ACPU_TO_CCPU_TEST,
@@ -314,13 +314,13 @@ enum MAILBOX_MAILCODE_ENUM
     MAILBOX_IFC_ACPU_TO_CCPU_SYSTEMERROR,
     MAILBOX_MAILCODE_ITEM_END(ACPU, CCPU, IFC),
 
-    /* HIFI->CCPU 邮编号定义在这里 */
+    /* HIFI->CCPU ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(HIFI, CCPU, MSG),
     MAILBOX_MAILCODE_HIFI_TO_CCPU_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_HIFI_TO_CCPU_VOS_MSG_URGENT,
     MAILBOX_MAILCODE_ITEM_END(HIFI, CCPU, MSG),
 
-    /* HIFI->ACPU 邮编号定义在这里 */
+    /* HIFI->ACPU ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(HIFI, ACPU, MSG),
     MAILBOX_MAILCODE_HIFI_TO_ACPU_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_HIFI_TO_ACPU_VOS_MSG_URGENT,
@@ -333,20 +333,20 @@ enum MAILBOX_MAILCODE_ENUM
     MAILBOX_MAILCODE_HIFI_TO_ACPU_USB,
     MAILBOX_MAILCODE_ITEM_END(HIFI, ACPU, MSG),
 
-    /* HIFI->BBE16 邮编号定义在这里 */
+    /* HIFI->BBE16 ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(HIFI, BBE16, MSG),
     MAILBOX_MAILCODE_HIFI_TO_BBE16_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_HIFI_TO_BBE16_VOS_MSG_URGENT,
     MAILBOX_MAILCODE_ITEM_END(HIFI, BBE16, MSG),
 
-    /* MCU->CCPU 邮编号定义在这里 */
+    /* MCU->CCPU ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(MCU, CCPU, MSG),
     MAILBOX_MAILCODE_MCU_TO_CCPU_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_MCU_TO_CCPU_VOS_MSG_URGENT,
     BSP_MAILBOX_CHANNEL_MCU_TO_CCPU_MCA_CH,
     MAILBOX_MAILCODE_ITEM_END(MCU, CCPU, MSG),
 
-    /* MCU->CCPU ifc邮编号定义在这里 */
+    /* MCU->CCPU ifc???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(MCU, CCPU, IFC),
     MAILBOX_IFC_MCU_TO_CCPU_TEST_CMP,
     MAILBOX_IFC_MCU_TO_CCPU_BASE_TEST2,
@@ -354,7 +354,7 @@ enum MAILBOX_MAILCODE_ENUM
     MAILBOX_IFC_MCU_TO_CCPU_TEST,
     MAILBOX_MAILCODE_ITEM_END(MCU, CCPU, IFC),
 
-    /* MCU->ACPU 邮编号定义在这里 */
+    /* MCU->ACPU ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(MCU, ACPU, MSG),
     MAILBOX_MAILCODE_MCU_TO_ACPU_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_MCU_TO_ACPU_VOS_MSG_URGENT,
@@ -368,14 +368,14 @@ enum MAILBOX_MAILCODE_ENUM
     MAILBOX_MAILCODE_MCU_TO_ACPU_CCORE_RESET_ID,
     MAILBOX_MAILCODE_ITEM_END(MCU, ACPU, MSG),
 
-    /* MCU->ACPU 远程函数调用邮编号定义在这里 */
+    /* MCU->ACPU ???????????????????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(MCU, ACPU, IFC),
     MAILBOX_IFC_MCU_TO_ACPU_TEST_CMP,
     MAILBOX_IFC_MCU_TO_ACPU_TEST,
     MAILBOX_IFC_MCU_TO_ACPU_PRINT,
     MAILBOX_MAILCODE_ITEM_END(MCU, ACPU, IFC),
 
-    /* BBE16 -> HIFI 邮编号定义在这里 */
+    /* BBE16 -> HIFI ???????????????? */
     MAILBOX_MAILCODE_ITEM_BEGIN(BBE16, HIFI, MSG),
     MAILBOX_MAILCODE_BBE16_TO_HIFI_VOS_MSG_NORMAL,
     MAILBOX_MAILCODE_BBE16_TO_HIFI_VOS_MSG_URGENT,
@@ -383,58 +383,58 @@ enum MAILBOX_MAILCODE_ENUM
 };
 /*lint +e488*/
 /*****************************************************************************
- 实 体 名  : MAILBOX_RET_ENUM
- 功能描述  : 邮箱接口返回值
+ ?? ?? ??  : MAILBOX_RET_ENUM
+ ????????  : ??????????????
 *****************************************************************************/
 #define MAILBOX_OK                       0
 #define MAILBOX_ERRO                     0xF7654321
 #define MAILBOX_FULL                     0xF7654322
-#define MAILBOX_NOT_READY                0xF7654323   /*目标CPU邮箱未初始化*/
-#define MAILBOX_TARGET_NOT_READY         MAILBOX_NOT_READY   /*目标CPU邮箱未初始化*/
-#define MAILBOX_TIME_OUT                 0xF7654324     /*发送等待返回超时*/
+#define MAILBOX_NOT_READY                0xF7654323   /*????CPU????????????*/
+#define MAILBOX_TARGET_NOT_READY         MAILBOX_NOT_READY   /*????CPU????????????*/
+#define MAILBOX_TIME_OUT                 0xF7654324     /*????????????????*/
 #define MAILBOX_HIFI_NOT_LOAD            0xF7654325
 
-/* 邮件序列号的初始值 */
+/* ?????????????????? */
 #define MAILBOX_SEQNUM_START            (0)
 
 /* Modified by c64416 for hifi mailbox, 2013/09/24, begin */
-/* 邮箱占用memory基地址 */
+/* ????????memory?????? */
 #define MAILBOX_MEM_BASEADDR            (HIFI_AP_MAILBOX_BASE_ADDR)
 
-/* 邮箱占用memory预留总长度, 包括邮箱控制头和邮箱队列缓存 */
+/* ????????memory??????????, ???????????????????????????? */
 #define MAILBOX_MEM_LENGTH              (HIFI_AP_MAILBOX_TOTAL_SIZE)
 /* Modified by c64416 for hifi mailbox, 2013/09/24, end */
 
 /*****************************************************************************
- 实 体 名  : struct mb_head
- 功能描述  : 核间邮箱缓存头, 通过保护字判断邮箱通道有没有被初始化, 此功能需要
-             fastboot同步修改:上电初始化对邮箱共享内存头数据清零
+ ?? ?? ??  : struct mb_head
+ ????????  : ??????????????, ????????????????????????????????????, ??????????
+             fastboot????????:??????????????????????????????????
 *****************************************************************************/
 typedef struct mb_head
 {
-    unsigned int       ulProtectWord1;     /*保护字 0x55AA55AA*/
-    unsigned int       ulProtectWord2;     /*保护字 0x5A5A5A5A*/
-    unsigned int       ulFront;            /*队列待写单元距离队列(不含保护字)头的长度，单位32bit */
-    unsigned int       ulRear;             /*队列待读单元距离队列(不含保护字)头的长度，单位32bit */
-    unsigned int       ulFrontslice;       /*更新邮箱环形队列的头指针系统时间*/
-    unsigned int       ulRearslice;        /*更新邮箱环形队列的尾指针系统时间*/
-    unsigned short      ausReserve[4];      /*保留*/
-    unsigned int       ulProtectWord3;     /*保护字 0x55AA55AA*/
-    unsigned int       ulProtectWord4;     /*保护字 0x5A5A5A5A*/
+    unsigned int       ulProtectWord1;     /*?????? 0x55AA55AA*/
+    unsigned int       ulProtectWord2;     /*?????? 0x5A5A5A5A*/
+    unsigned int       ulFront;            /*????????????????????(??????????)??????????????32bit */
+    unsigned int       ulRear;             /*????????????????????(??????????)??????????????32bit */
+    unsigned int       ulFrontslice;       /*????????????????????????????????*/
+    unsigned int       ulRearslice;        /*????????????????????????????????*/
+    unsigned short      ausReserve[4];      /*????*/
+    unsigned int       ulProtectWord3;     /*?????? 0x55AA55AA*/
+    unsigned int       ulProtectWord4;     /*?????? 0x5A5A5A5A*/
 } MAILBOX_HEAD_STRU;
 
-/* 邮箱头占用空间总长度定义*/
+/* ????????????????????????*/
 #define MAILBOX_HEAD_LEN                (sizeof(struct mb_head))
 #define MAILBOX_MAX_CHANNEL             (30)
 #define MAILBOX_MEM_HEAD_LEN            (MAILBOX_MAX_CHANNEL * MAILBOX_HEAD_LEN)
 
-/* 各邮箱数据队列长度定义 */
+/* ?????????????????????? */
 #define MAILBOX_QUEUE_SIZE(src, dst, channel) \
     MAILBOX_QUEUE_SIZE_##src##2##dst##_##channel
 enum MAILBOX_QUEUE_SIZE_ENUM
 {
 /* Modified by c64416 for hifi mailbox, 2013/09/24, begin */
-    /* 以下各枚举项按规则生成, 形如: MAILBOX_QUEUE_SIZE_MCU2ACPU_DEFAULT */
+    /* ??????????????????????, ????: MAILBOX_QUEUE_SIZE_MCU2ACPU_DEFAULT */
     MAILBOX_QUEUE_SIZE(MCU,  ACPU, MSG) = 0x00000000,
     MAILBOX_QUEUE_SIZE(ACPU, MCU,  MSG) = 0x00000000,
     MAILBOX_QUEUE_SIZE(MCU, ACPU, IFC)  = 0x00000000,
@@ -461,13 +461,13 @@ enum MAILBOX_QUEUE_SIZE_ENUM
 /* Modified by c64416 for hifi mailbox, 2013/09/24, end */
 };
 
-/* 各邮箱控制头地址分配 */
+/* ???????????????????? */
 #define MAILBOX_HEAD_ADDR(src, dst, channel) \
     MAILBOX_HEAD_ADDR_##src##2##dst##_##channel
 /*lint -e575*/
 enum MAILBOX_HEAD_ADDR_ENUM
 {
-    /* 以下各枚举项按规则生成, 形如: MAILBOX_HEAD_ADDR_MCU2ACPU_DEFAULT */
+    /* ??????????????????????, ????: MAILBOX_HEAD_ADDR_MCU2ACPU_DEFAULT */
     MAILBOX_HEAD_ADDR(MCU,  ACPU, MSG)  = MAILBOX_MEM_BASEADDR,
     MAILBOX_HEAD_ADDR(ACPU, MCU,  MSG)  = MAILBOX_HEAD_ADDR(MCU,  ACPU, MSG) + MAILBOX_HEAD_LEN,
     MAILBOX_HEAD_ADDR(ACPU, HIFI, MSG)  = MAILBOX_HEAD_ADDR(ACPU, MCU,  MSG) + MAILBOX_HEAD_LEN,
@@ -494,14 +494,14 @@ enum MAILBOX_HEAD_ADDR_ENUM
 
 };
 /*lint +e575*/
-/* 各邮箱数据队列地址分配 */
+/* ?????????????????????? */
 #define MAILBOX_QUEUE_ADDR(src, dst, channel) \
     MAILBOX_QUEUE_ADDR_##src##2##dst##_##channel
 #define MAILBOX_QUEUE_BOTTOM_ADDR(src, dst, channel) \
     (MAILBOX_QUEUE_ADDR(src, dst, channel) + MAILBOX_QUEUE_SIZE(src, dst, channel))
 enum MAILBOX_QUEUE_ADDR_ENUM
 {
-    /* 以下各枚举项按规则生成, 形如: MAILBOX_QUEUE_ADDR_MCU2ACPU_DEFAULT */
+    /* ??????????????????????, ????: MAILBOX_QUEUE_ADDR_MCU2ACPU_DEFAULT */
     MAILBOX_QUEUE_ADDR(MCU,  ACPU, MSG)  = MAILBOX_MEM_BASEADDR + MAILBOX_MEM_HEAD_LEN,
     MAILBOX_QUEUE_ADDR(ACPU, MCU,  MSG)  = MAILBOX_QUEUE_BOTTOM_ADDR(MCU,  ACPU, MSG),
     MAILBOX_QUEUE_ADDR(ACPU, HIFI, MSG)  = MAILBOX_QUEUE_BOTTOM_ADDR(ACPU, MCU,  MSG),
@@ -528,28 +528,28 @@ enum MAILBOX_QUEUE_ADDR_ENUM
     MAILBOX_MEMORY_BOTTOM_ADDR           = MAILBOX_QUEUE_BOTTOM_ADDR(HIFI, BBE16, MSG)
 };
 
-/*共享内存中的保护字定义*/
-#define MAILBOX_PROTECT1                (0x55AA55AA)    /* 邮箱保护字1，用于邮箱头及邮箱, 同时表示邮箱刚初始化没有接收过数据*/
-#define MAILBOX_PROTECT2                (0x5A5A5A5A)    /* 邮箱保护字2，用于邮箱头及邮箱 */
-#define MAILBOX_PROTECT_LEN             (sizeof(int))  /* 邮箱保护字长度，单位byte，邮箱头及邮箱头、尾均有两个这样的保护字 */
-#define MAILBOX_MSGHEAD_NUMBER          (0xA5A5A5A5)    /* 跨核消息消息分隔字 */
+/*??????????????????????*/
+#define MAILBOX_PROTECT1                (0x55AA55AA)    /* ??????????1??????????????????, ??????????????????????????????????*/
+#define MAILBOX_PROTECT2                (0x5A5A5A5A)    /* ??????????2?????????????????? */
+#define MAILBOX_PROTECT_LEN             (sizeof(int))  /* ????????????????????byte???????????????????????????????????????? */
+#define MAILBOX_MSGHEAD_NUMBER          (0xA5A5A5A5)    /* ?????????????????? */
 
-#define MAILBOX_DATA_BASE_PROTECT_NUM         (2)    /* 邮箱通道共享内存数据区以首地址开始的保护字个数*/
-#define MAILBOX_DATA_TAIL_PROTECT_NUM         (2)    /* 邮箱通道共享内存数据区以尾地址结束的保护字个数*/
+#define MAILBOX_DATA_BASE_PROTECT_NUM         (2)    /* ??????????????????????????????????????????????*/
+#define MAILBOX_DATA_TAIL_PROTECT_NUM         (2)    /* ??????????????????????????????????????????????*/
 
-/* 邮箱通道共享内存数据区长度中包含的保护字的个数，包括首地址开始的2个保护字，和末地址结束的2个保护字*/
+/* ????????????????????????????????????????????????????????????????2????????????????????????2????????*/
 #define MAILBOX_DATA_LEN_PROTECT_NUM          (MAILBOX_DATA_BASE_PROTECT_NUM + MAILBOX_DATA_TAIL_PROTECT_NUM)
 
 
-/* hifi邮箱地址信息保护字 */
+/* hifi?????????????????? */
 #define HIFI_MB_ADDR_PROTECT            (0x5a5a5a5a)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  定义邮箱核与核之间的IPC中断号
+  ????????????????????IPC??????
 *****************************************************************************/
 #define MAILBOX_IPC_INT_NUM(src, dst, channel) \
     MAILBOX_IPC_INT_##src##2##dst##_##channel
@@ -562,78 +562,78 @@ enum IPC_MAILBOX_INT_ENUM
     MAILBOX_IPC_INT_NUM(HIFI, ACPU, MSG) = IPC_ACPU_INT_SRC_HIFI_MSG,
 };
 
-/* 各邮箱数据单个邮件最大长度定义 */
+/* ?????????????????????????????? */
 #define MAILBOX_MAILSIZE_MAX(src, dst, channel) \
     MAILBOX_MAILSIZE_MAX_##src##2##dst##_##channel
 enum MAILBOX_MAILSIZE_MAX_ENUM
 {
-    /* 以下各枚举项按规则生成, 形如: MAILBOX_MAILSIZE_MAX_MCU2ACPU_DEFAULT */
-    MAILBOX_MAILSIZE_MAX(MCU,  ACPU ,MSG)  = MAILBOX_QUEUE_SIZE(MCU,  ACPU ,MSG)/4, //DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(ACPU, MCU  ,MSG)  = MAILBOX_QUEUE_SIZE(ACPU, MCU  ,MSG)/4, //DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(ACPU, HIFI ,MSG)  = MAILBOX_QUEUE_SIZE(ACPU ,HIFI ,MSG)/4, //DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(HIFI, ACPU ,MSG)  = MAILBOX_QUEUE_SIZE(HIFI ,ACPU ,MSG)/4, //DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(MCU , CCPU ,MSG)  = MAILBOX_QUEUE_SIZE(MCU  ,CCPU ,MSG)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(CCPU, MCU  ,MSG)  = MAILBOX_QUEUE_SIZE(CCPU ,MCU  ,MSG)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(CCPU, HIFI ,MSG)  = MAILBOX_QUEUE_SIZE(CCPU ,HIFI ,MSG)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(HIFI, CCPU ,MSG)  = MAILBOX_QUEUE_SIZE(HIFI ,CCPU ,MSG)/4,//DOTO:具体值需要分析
+    /* ??????????????????????, ????: MAILBOX_MAILSIZE_MAX_MCU2ACPU_DEFAULT */
+    MAILBOX_MAILSIZE_MAX(MCU,  ACPU ,MSG)  = MAILBOX_QUEUE_SIZE(MCU,  ACPU ,MSG)/4, //DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(ACPU, MCU  ,MSG)  = MAILBOX_QUEUE_SIZE(ACPU, MCU  ,MSG)/4, //DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(ACPU, HIFI ,MSG)  = MAILBOX_QUEUE_SIZE(ACPU ,HIFI ,MSG)/4, //DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(HIFI, ACPU ,MSG)  = MAILBOX_QUEUE_SIZE(HIFI ,ACPU ,MSG)/4, //DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(MCU , CCPU ,MSG)  = MAILBOX_QUEUE_SIZE(MCU  ,CCPU ,MSG)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(CCPU, MCU  ,MSG)  = MAILBOX_QUEUE_SIZE(CCPU ,MCU  ,MSG)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(CCPU, HIFI ,MSG)  = MAILBOX_QUEUE_SIZE(CCPU ,HIFI ,MSG)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(HIFI, CCPU ,MSG)  = MAILBOX_QUEUE_SIZE(HIFI ,CCPU ,MSG)/4,//DOTO:??????????????
 
-    MAILBOX_MAILSIZE_MAX(CCPU, ACPU ,MSG)  = MAILBOX_QUEUE_SIZE(CCPU, ACPU ,MSG)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(ACPU, CCPU ,MSG)  = MAILBOX_QUEUE_SIZE(ACPU, CCPU ,MSG)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(CCPU, ACPU ,IFC)  = MAILBOX_QUEUE_SIZE(CCPU, ACPU ,IFC)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(ACPU, CCPU ,IFC)  = MAILBOX_QUEUE_SIZE(ACPU, CCPU ,IFC)/4,//DOTO:具体值需要分析
+    MAILBOX_MAILSIZE_MAX(CCPU, ACPU ,MSG)  = MAILBOX_QUEUE_SIZE(CCPU, ACPU ,MSG)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(ACPU, CCPU ,MSG)  = MAILBOX_QUEUE_SIZE(ACPU, CCPU ,MSG)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(CCPU, ACPU ,IFC)  = MAILBOX_QUEUE_SIZE(CCPU, ACPU ,IFC)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(ACPU, CCPU ,IFC)  = MAILBOX_QUEUE_SIZE(ACPU, CCPU ,IFC)/4,//DOTO:??????????????
 
-    MAILBOX_MAILSIZE_MAX(CCPU, MCU ,IFC)  = MAILBOX_QUEUE_SIZE(CCPU, MCU ,IFC)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(MCU, CCPU ,IFC)  = MAILBOX_QUEUE_SIZE(MCU, CCPU ,IFC)/4,//DOTO:具体值需要分析
+    MAILBOX_MAILSIZE_MAX(CCPU, MCU ,IFC)  = MAILBOX_QUEUE_SIZE(CCPU, MCU ,IFC)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(MCU, CCPU ,IFC)  = MAILBOX_QUEUE_SIZE(MCU, CCPU ,IFC)/4,//DOTO:??????????????
 
-    MAILBOX_MAILSIZE_MAX(ACPU, MCU ,IFC)  = MAILBOX_QUEUE_SIZE(ACPU, MCU ,IFC)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(MCU, ACPU ,IFC)  = MAILBOX_QUEUE_SIZE(MCU, ACPU ,IFC)/4,//DOTO:具体值需要分析
+    MAILBOX_MAILSIZE_MAX(ACPU, MCU ,IFC)  = MAILBOX_QUEUE_SIZE(ACPU, MCU ,IFC)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(MCU, ACPU ,IFC)  = MAILBOX_QUEUE_SIZE(MCU, ACPU ,IFC)/4,//DOTO:??????????????
 
-    MAILBOX_MAILSIZE_MAX(BBE16, HIFI ,MSG) = MAILBOX_QUEUE_SIZE(BBE16 ,HIFI ,MSG)/4,//DOTO:具体值需要分析
-    MAILBOX_MAILSIZE_MAX(HIFI, BBE16 ,MSG) = MAILBOX_QUEUE_SIZE(HIFI ,BBE16 ,MSG)/4,//DOTO:具体值需要分析
+    MAILBOX_MAILSIZE_MAX(BBE16, HIFI ,MSG) = MAILBOX_QUEUE_SIZE(BBE16 ,HIFI ,MSG)/4,//DOTO:??????????????
+    MAILBOX_MAILSIZE_MAX(HIFI, BBE16 ,MSG) = MAILBOX_QUEUE_SIZE(HIFI ,BBE16 ,MSG)/4,//DOTO:??????????????
 };
 
 /*****************************************************************************
-  4 消息头定义
+  4 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息定义
+  5 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 STRUCT定义
+  6 STRUCT????
 *****************************************************************************/
 
 /*****************************************************************************
- 实 体 名  : struct mb_mail
- 功能描述  : 核间邮件头
+ ?? ?? ??  : struct mb_mail
+ ????????  : ??????????
 *****************************************************************************/
 typedef struct mb_mail
 {
-    unsigned int       ulPartition;    /*消息分隔字 0xA5A5A5A5*/
-    unsigned int       ulWriteSlice;   /*消息写入系统时间信息 */
-    unsigned int       ulReadSlice;    /*消息读出系统时间信息 */
-    unsigned int       ulSeqNum;       /*消息序列号 */
-    unsigned int       ulPriority;     /*消息优先级：紧急、普通, 废弃*/
-    unsigned int       ulMailCode;     /*邮编*/
-    unsigned int       ausReserve[2];  /*保留*/
-    unsigned int       ulMsgLength;    /*自ulMsgLength字段(不含本身)往后的消息长度*/
+    unsigned int       ulPartition;    /*?????????? 0xA5A5A5A5*/
+    unsigned int       ulWriteSlice;   /*???????????????????? */
+    unsigned int       ulReadSlice;    /*???????????????????? */
+    unsigned int       ulSeqNum;       /*?????????? */
+    unsigned int       ulPriority;     /*??????????????????????, ????*/
+    unsigned int       ulMailCode;     /*????*/
+    unsigned int       ausReserve[2];  /*????*/
+    unsigned int       ulMsgLength;    /*??ulMsgLength????(????????)??????????????*/
 } MAILBOX_MSG_HEADER;
 
 /************************************************************************
- 结构名    : IPC_MAILBOX_QUEUE_STRU
- 结构说明  : 核间邮箱缓存
+ ??????    : IPC_MAILBOX_QUEUE_STRU
+ ????????  : ????????????
  ************************************************************************/
-/* 邮箱结构示意:
+/* ????????????:
 typedef struct
 {
-    unsigned int      ulProtectWord1;     //保护字 0x55aa55aa
-    unsigned int      ulProtectWord2;     //保护字 0a5a5a5a5a
-    unsigned int      aulMsgQueue[队列长度-4];//环形队列存放若干封邮件
-    unsigned int      ulProtectWord3;     //保护字 0x55aa55aa
-    unsigned int      ulProtectWord4;     //保护字 0x5a5a5a5a
+    unsigned int      ulProtectWord1;     //?????? 0x55aa55aa
+    unsigned int      ulProtectWord2;     //?????? 0a5a5a5a5a
+    unsigned int      aulMsgQueue[????????-4];//??????????????????????
+    unsigned int      ulProtectWord3;     //?????? 0x55aa55aa
+    unsigned int      ulProtectWord4;     //?????? 0x5a5a5a5a
 } MAILBOX_QUEUE_STRU;
 */
 enum
@@ -653,14 +653,14 @@ enum
 
 typedef struct
 {
-	unsigned int enID;				/*地址枚举值*/
-	unsigned int uwAddress; 			/*地址物理值*/
+	unsigned int enID;				/*??????????*/
+	unsigned int uwAddress; 			/*??????????*/
 } SOC_HIFI_ADDR_ITEM_STRU;
 
 typedef struct
 {
 	unsigned int uwProtectWord; 				/*0x5a5a5a5a*/
-	SOC_HIFI_ADDR_ITEM_STRU 	astSocAddr[64]; /*地址项定义*/
+	SOC_HIFI_ADDR_ITEM_STRU 	astSocAddr[64]; /*??????????*/
 } SOC_HIFI_ADDR_SHARE_STRU;
 
 
@@ -676,8 +676,8 @@ typedef struct
 typedef struct
 {
     unsigned int uwProtectWord;                /*0x5a5a5a5a*/
-    unsigned int uwHifi2AarmMailBoxLen;        /* hifi到Aarm跨核邮箱长度 */
-    unsigned int uwAarm2HifiMailBoxLen;        /* Aarm到hifi跨核邮箱长度 */
+    unsigned int uwHifi2AarmMailBoxLen;        /* hifi??Aarm???????????? */
+    unsigned int uwAarm2HifiMailBoxLen;        /* Aarm??hifi???????????? */
     unsigned int uwHifiAarmHeadAddr;
     unsigned int uwHifiAarmBodyAddr;
     unsigned int uwAarmHifiHeadAddr;
@@ -686,16 +686,16 @@ typedef struct
 }AARM_HIFI_MAILBOX_STRU;
 
 /*****************************************************************************
- 结构名    : CARM_HIFI_DYN_ADDR_SHARE_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  :CARM和HIFI的共享地址，OAM需要赋值并拷贝至Hifi共享数据中的相应结构体
+ ??????    : CARM_HIFI_DYN_ADDR_SHARE_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  :CARM??HIFI????????????OAM????????????????Hifi??????????????????????
 *****************************************************************************/
 typedef struct
 {
     unsigned int uwProtectWord;                /*0x5a5a5a5a*/
-    unsigned int uwHifi2CarmMailBoxLen;        /* hifi到Carm跨核邮箱长度 */
-    unsigned int uwCarm2HifiMailBoxLen;        /* Carm到hifi跨核邮箱长度 */
+    unsigned int uwHifi2CarmMailBoxLen;        /* hifi??Carm???????????? */
+    unsigned int uwCarm2HifiMailBoxLen;        /* Carm??hifi???????????? */
     unsigned int uwHifiCarmHeadAddr;
     unsigned int uwHifiCarmBodyAddr;
     unsigned int uwCarmHifiHeadAddr;
@@ -716,40 +716,40 @@ typedef struct
 }CARM_HIFI_ICC_STRU;
 
 /*****************************************************************************
- 结构名    : AARM_HIFI_DYN_ADDR_SHARE_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  :AARM和HIFI的共享地址，OAM需要赋值并拷贝至Hifi共享数据中的相应结构体
+ ??????    : AARM_HIFI_DYN_ADDR_SHARE_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  :AARM??HIFI????????????OAM????????????????Hifi??????????????????????
 *****************************************************************************/
 typedef struct
 {
 	unsigned int uwProtectWord; 		   /*0x5a5a5a5a*/
-	CARM_HIFI_ICC_STRU stCarmHifiMB;	/*CARM和HIFI的邮箱共享区定义*/
-	AARM_HIFI_MAILBOX_STRU stAarmHifiMB;	/*AARM和HIFI的邮箱共享区定义*/
-	unsigned int uwNvBaseAddrPhy;		   /*DDR上NV备份区首地址的物理地址*/
-	unsigned int uwNvBaseAddrVirt;		   /*DDR上NV备份区首地址的ARM虚拟地址*/
-	MODEM_HIFI_NV_SHARE_STRU stNVShare;  /*Modem NV共享区定义*/
-	SOC_HIFI_ADDR_SHARE_STRU	stSoCShare;  /*SoC共享区定义*/
+	CARM_HIFI_ICC_STRU stCarmHifiMB;	/*CARM??HIFI????????????????*/
+	AARM_HIFI_MAILBOX_STRU stAarmHifiMB;	/*AARM??HIFI????????????????*/
+	unsigned int uwNvBaseAddrPhy;		   /*DDR??NV??????????????????????*/
+	unsigned int uwNvBaseAddrVirt;		   /*DDR??NV??????????????ARM????????*/
+	MODEM_HIFI_NV_SHARE_STRU stNVShare;  /*Modem NV??????????*/
+	SOC_HIFI_ADDR_SHARE_STRU	stSoCShare;  /*SoC??????????*/
 	unsigned int uwReserved[2];
 }CARM_HIFI_DYN_ADDR_SHARE_STRU;
 
 
 /*****************************************************************************
-  7 UNION定义
+  7 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  8 OTHERS定义
+  8 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 全局变量声明
+  9 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 

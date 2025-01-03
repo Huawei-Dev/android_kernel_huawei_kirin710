@@ -70,7 +70,7 @@ enum m3_mdm_pm_log_mode
 #define M3PM_AP_SHOW_ADDR               (SHM_MEM_M3PM_LOG_ADDR+SHM_MEM_M3PM_LOG_SIZE)
 #define M3PM_AP_SHOW_SIZE               (0x3C)
 
-/* k3平台 m3上modem相关 log */
+/* k3???? m3??modem???? log */
 #define M3PM_LOG_MODEM_DOWN_OFFSET      0
 #define M3PM_LOG_MODEM_DOWN_SIZE        0x8
 
@@ -93,7 +93,7 @@ enum m3_mdm_pm_log_mode
 #define M3PM_LOG_MDM_SR_SIZE            (M3PM_LOG_MODEM_SUSPEND_SIZE+M3PM_LOG_MODEM_RESUME_SIZE+M3PM_LOG_MODEM_RESUME_OK_SIZE)
 #define M3PM_LOG_MDM_A9_SR_SIZE         (M3PM_LOG_MDM_A9_SIZE+M3PM_LOG_MDM_SR_SIZE)
 
-/* mbb m3pm相关信息 */
+/* mbb m3pm???????? */
 
 /* mbb m3pm   M3PM_AP_SHOW_ADDR*/
 #define M3PM_AP_SHOW_OFFSET        (0)

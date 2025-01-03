@@ -52,7 +52,7 @@ typedef struct {
 	u64 coreid;
 	u64 slice;
 	struct rdr_register_module_result ap_rdr_info;
-	unsigned int enter_times;	/* 重入计数，初始化为0，每次进入++； */
+	unsigned int enter_times;	/* ??????????????????0??????????++?? */
 
 	unsigned int num_reg_regions;
 	regs_info dump_regs_info[REGS_DUMP_MAX_NUM];
@@ -65,23 +65,23 @@ typedef struct {
 	unsigned char *last_task_stack_dump_addr[NR_CPUS];
 
 	char log_path[LOG_PATH_LEN];
-	unsigned char *rdr_ap_area_map_addr;	/* rdr非配给ap内存的映射地址 */
+	unsigned char *rdr_ap_area_map_addr;	/* rdr??????ap?????????????? */
 	module_dump_mem_info module_dump_info[MODU_MAX];
 	u64 wdt_kick_slice[WDT_KICK_SLICE_TIMES];
 	unsigned char device_id[PRODUCT_DEVICE_LEN];
-	u64 bbox_version;	/* 表示BBox版本信息 */
-	unsigned int end_magic;	/* 标记结构体末尾，用于判断结构体范围 */
+	u64 bbox_version;	/* ????BBox???????? */
+	unsigned int end_magic;	/* ?????????????????????????????????? */
 	char reserved[1];	/*sizeof(AP_EH_ROOT)=1024byte*/
-} AP_EH_ROOT;			/*AP_EH_ROOT占用2K空间，通过get_rdr_hisiap_dump_addr函数预留 */
+} AP_EH_ROOT;			/*AP_EH_ROOT????2K??????????get_rdr_hisiap_dump_addr???????? */
 
-/*外部可以使用的变量声明*/
+/*??????????????????????*/
 void get_product_version(char *version, size_t count);
 void print_debug_info(void);
 int rdr_hisiap_dump_init(struct rdr_register_module_result *retinfo);
 void rdr_hisiap_dump(u32 modid, u32 etype, u64 coreid,
 		     char *log_path, pfn_cb_dump_done pfn_cb);
 
-/* 测试函数声明 */
+/* ???????????? */
 void ap_exch_task_stack_dump(int taskPid);
 void ap_exch_buf_show(unsigned int offset, unsigned int size);
 void ap_exch_hex_dump(unsigned char *buf, unsigned int size,

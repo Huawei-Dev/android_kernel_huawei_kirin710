@@ -56,7 +56,7 @@
 #include "si_pih.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define      THIS_FILE_ID     PS_FILE_ID_PBAPI_C
 
@@ -67,7 +67,7 @@ VOS_UINT32 SI_PB_GetReceiverPid(MN_CLIENT_ID_T  ClientId, VOS_UINT32 *pulReceive
     MODEM_ID_ENUM_UINT16                enModemID;
     SI_PIH_CARD_SLOT_ENUM_UINT32        enSlotId;
 
-    /* 调用接口获取Modem ID */
+    /* ????????????Modem ID */
     if(VOS_OK != AT_GetModemIdFromClient(ClientId,&enModemID))
     {
         return VOS_ERR;
@@ -208,7 +208,7 @@ SI_UINT32 SI_PB_Add(    MN_CLIENT_ID_T          ClientId,
     pMsg->usClient      = ClientId;
     pMsg->ucOpID        = OpId;
 
-    pMsg->ulStorage = SI_PB_STORAGE_FD;     /*只能够操作FDN号码*/
+    pMsg->ulStorage = SI_PB_STORAGE_FD;     /*??????????FDN????*/
 
     pRecord->Index = 1;
 
@@ -269,7 +269,7 @@ SI_UINT32 SI_PB_Modify(    MN_CLIENT_ID_T          ClientId,
     pMsg->usClient      = ClientId;
     pMsg->ucOpID        = OpId;
 
-    pMsg->ulStorage = SI_PB_STORAGE_FD;     /*只能够操作FDN号码*/
+    pMsg->ulStorage = SI_PB_STORAGE_FD;     /*??????????FDN????*/
 
     PAM_MEM_CPY_S(&pMsg->Record, sizeof(SI_PB_RECORD_STRU), pRecord, sizeof(SI_PB_RECORD_STRU));
 
@@ -323,7 +323,7 @@ SI_UINT32 SI_PB_Delete(     MN_CLIENT_ID_T             ClientId,
     pMsg->ucOpID        = OpId;
     pMsg->usIndex       = Index;
 
-    pMsg->ulStorage = SI_PB_STORAGE_FD;     /*只能够操作FDN号码*/
+    pMsg->ulStorage = SI_PB_STORAGE_FD;     /*??????????FDN????*/
 
     if(VOS_OK !=  VOS_SendMsg(WUEPS_PID_AT, pMsg))
     {
@@ -348,13 +348,13 @@ SI_UINT32 SI_PB_Search(    MN_CLIENT_ID_T             ClientId,
 
 VOS_UINT32 SI_PB_GetStorateType(VOS_VOID)
 {
-    return SI_PB_STORAGE_UNSPECIFIED;   /*返回当前未指定*/
+    return SI_PB_STORAGE_UNSPECIFIED;   /*??????????????*/
 }
 
 
 VOS_UINT32 SI_PB_GetSPBFlag(VOS_VOID)
 {
-    return VOS_FALSE;   /*返回状态关闭*/
+    return VOS_FALSE;   /*????????????*/
 }
 
 

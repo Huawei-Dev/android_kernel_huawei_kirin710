@@ -83,10 +83,10 @@ extern "C" {
    5 STRUCT
 *****************************************************************************/
 
-/* 核间透传通信结构体 */
+/* ?????????????????? */
 typedef struct
 {
-     VOS_MSG_HEADER                     /*VOS头 */
+     VOS_MSG_HEADER                     /*VOS?? */
      VOS_UINT32                         ulMsgId;
      DIAG_FRAME_INFO_STRU               stInfo;
 }DIAG_HIFI_MSG_A_TRANS_C_STRU;

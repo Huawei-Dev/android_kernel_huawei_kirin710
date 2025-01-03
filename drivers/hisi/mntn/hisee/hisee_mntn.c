@@ -690,7 +690,7 @@ static struct dsm_client *hisee_dclient = NULL;
 extern int32_t hisee_exception_to_reset_rpmb(void);
 /********************************************************************
 Description:	Only for hisi hisee, to call directly to record an exception.
-input:	data£ºdata to save
+input:	data??data to save
 output:	NA
 return:	NA
 ********************************************************************/
@@ -908,7 +908,7 @@ int hisee_mntn_printverinfo_thread(void *arg)
 }
 /********************************************************************
 Description:	receive ipc message
-input:	msg£ºipc message
+input:	msg??ipc message
 output:	NA
 return:	NA
 ********************************************************************/

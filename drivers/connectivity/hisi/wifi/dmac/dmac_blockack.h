@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "hal_ext_if.h"
@@ -24,13 +24,13 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_BLOCKACK_H
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-/* 判断一个seq num是否在发送窗口内 */
+/* ????????seq num???????????????? */
 #define DMAC_BAW_WITHIN(_start, _bawsz, _seqno)      \
         ((((_seqno) - (_start)) & 4095) < (_bawsz))
 
-/* 计算seq num到ba窗start的偏移量 */
+/* ????seq num??ba??start???????? */
 #define DMAC_BA_INDEX(_st, _seq) (((_seq) - (_st)) & 4095)
 
 #define DMAC_TX_BUF_BITMAP_LOG2_WORD_SIZE 5 /* log2(32) == 5 */
@@ -53,7 +53,7 @@ extern "C" {
     ((_bitmap[_idx >> DMAC_TX_BUF_BITMAP_LOG2_WORD_SIZE] & \
     (1 << (_idx & DMAC_TX_BUF_BITMAP_WORD_MASK))) != 0)
 
-/* 判断index为n 在bitmap中的bit位是否是1 */
+/* ????index??n ??bitmap????bit????????1 */
 #define DMAC_BA_ISSET(_bm, _n)        (((_n) < (DMAC_BA_BMP_SIZE)) &&          \
                                      ((_bm)[(_n) >> 5] & (1 << ((_n) & 31))))
 
@@ -69,29 +69,29 @@ extern "C" {
 
 #define WLAN_AMPDU_TX_MAX_NUM_DEBUG 32
 
-#define WLAN_RX_RESET_BA_THREHOLD 32 /* BA会话未建立收到一定聚合帧发送DELBA */
+#define WLAN_RX_RESET_BA_THREHOLD 32 /* BA????????????????????????????DELBA */
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  5 消息头定义
-*****************************************************************************/
-
-
-/*****************************************************************************
-  6 消息定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  6 ????????
+*****************************************************************************/
+
+
+/*****************************************************************************
+  7 STRUCT????
 *****************************************************************************/
 typedef struct
 {
@@ -109,18 +109,18 @@ typedef struct
 
 typedef struct
 {
-    /*类型*/
+    /*????*/
     oal_bool_enum_uint8 en_is_before_tx_track;
 
-    /*tid队列相关信息*/
+    /*tid????????????*/
     oal_uint8       uc_tid;                    /*tid*/
-    oal_uint16      us_tid_total_mpdu_num;     /*tid队列中总的mpdu数目*/
-    oal_uint8       uc_tid_retry_mpdu_num;     /*tid队列中存在多少个重传mpdu*/
-    oal_uint8       uc_tid_record_mpdu_num;    /*aus_tid_seqnum中记录了tid队列中多少个mpdu的seqnum*/
-    oal_uint16      aus_tid_seqnum[WLAN_AMPDU_TX_MAX_NUM_DEBUG];        /*保存tid队列中的seqnum*/
+    oal_uint16      us_tid_total_mpdu_num;     /*tid??????????mpdu????*/
+    oal_uint8       uc_tid_retry_mpdu_num;     /*tid????????????????????mpdu*/
+    oal_uint8       uc_tid_record_mpdu_num;    /*aus_tid_seqnum????????tid????????????mpdu??seqnum*/
+    oal_uint16      aus_tid_seqnum[WLAN_AMPDU_TX_MAX_NUM_DEBUG];        /*????tid????????seqnum*/
 
-    /*ba handle中相关信息*/
-    oal_uint32      aul_bitmap[4];             /*ba handle中的bitmap*/
+    /*ba handle??????????*/
+    oal_uint32      aul_bitmap[4];             /*ba handle????bitmap*/
     oal_uint16      us_seq_start;
     oal_uint16      us_lsn;
     oal_uint16      us_baw_head;
@@ -130,17 +130,17 @@ typedef struct
     {
         struct
         {
-            /*调度出的描述符链信息*/
+            /*????????????????????*/
             oal_uint16      aus_schedule_seqnum[WLAN_AMPDU_TX_MAX_NUM_DEBUG];
             oal_uint8       uc_schedule_mpdu_num;
             oal_uint8       auc_resv0[3];
         } st_schedule;
         struct
         {
-            /*发送完成上报的描述符链信息*/
-            oal_uint16      aus_report_seqnum[WLAN_AMPDU_TX_MAX_NUM_DEBUG];     /*发送完成描述符链seqnum*/
-            oal_uint8       uc_report_mpdu_num;        /*发送完成的mpdu数目*/
-            oal_uint8       uc_tx_status;              /*发送完成描述符状态*/
+            /*??????????????????????????*/
+            oal_uint16      aus_report_seqnum[WLAN_AMPDU_TX_MAX_NUM_DEBUG];     /*????????????????seqnum*/
+            oal_uint8       uc_report_mpdu_num;        /*??????????mpdu????*/
+            oal_uint8       uc_tx_status;              /*??????????????????*/
             oal_uint8       auc_resv1[2];
         } st_report;
 
@@ -165,17 +165,17 @@ typedef struct
 #endif
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 inline函数定义
+  10 inline????????
 *****************************************************************************/
 
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8  dmac_ba_rx_seqno_lt(oal_uint16 us_seq1, oal_uint16 us_seq2)
@@ -297,7 +297,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_update_txba_session_params_ap(
 {
     if(OAL_PTR_NULL != pst_dmac_tid->pst_ba_tx_hdl)
     {
-        /*  ampdu的最大的聚合个数不能超过BA窗的大小 */
+        /*  ampdu????????????????????????BA???????? */
         pst_dmac_tid->pst_ba_tx_hdl->us_baw_size = OAL_MIN(pst_dmac_tid->pst_ba_tx_hdl->us_baw_size, uc_ampdu_max_num);
     }
 }
@@ -328,7 +328,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_reset_tx_ampdu_session(
 
     pst_tid_queue = &(pst_dmac_user->ast_tx_tid_queue[uc_tid]);
 
-    /* 清空与该AMPDU相关的HT信息 */
+    /* ????????AMPDU??????HT???? */
     pst_tid_queue->st_ht_tx_hdl.uc_ampdu_max_num  = 0;
     pst_tid_queue->en_tx_mode = DMAC_TX_MODE_NORMAL;
 }
@@ -350,22 +350,22 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 dmac_ba_addto_baw(dmac_ba_tx_stru *pst
     oal_uint16    us_index;
     oal_uint16    us_cindex;
 #if 0
-    /* 重传包不需要移窗处理 */
+    /* ???????????????????? */
     if (pst_tx_dscr->bit_is_retried)
     {
         return OAL_TRUE;
     }
 #endif
-    /*更新最后发送MPDU序列号*/
+    /*????????????MPDU??????*/
     pst_tx_ba_handle->us_last_seq_num = DMAC_BA_SEQ_ADD(pst_tx_ba_handle->us_last_seq_num, 1);
 
-    /*获取最后发送MPDU和第一个未确定MPDU之间的序列号差值*/
+    /*????????????MPDU??????????????MPDU????????????????*/
     us_index = DMAC_BA_INDEX(pst_tx_ba_handle->us_baw_start, pst_tx_ba_handle->us_last_seq_num);
 
-    /*获取bitmap中，最后发送MPDU对应位置*/
+    /*????bitmap????????????MPDU????????*/
     us_cindex = (pst_tx_ba_handle->us_baw_head + us_index) & (DMAC_TID_MAX_BUFS - 1);
 
-    /*置位bitmap中对应bit*/
+    /*????bitmap??????bit*/
     DMAC_TX_BUF_BITMAP_SET(pst_tx_ba_handle->aul_tx_buf_bitmap, us_cindex);
 
     if (us_index >= ((pst_tx_ba_handle->us_baw_tail - pst_tx_ba_handle->us_baw_head) & (DMAC_TID_MAX_BUFS - 1)))
@@ -399,7 +399,7 @@ OAL_STATIC OAL_INLINE oal_void  dmac_ba_update_baw(dmac_ba_tx_stru *pst_tx_ba_ha
 }
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern oal_uint32  dmac_ba_filter_serv(mac_vap_stru *pst_vap,
                                       dmac_user_stru *pst_dmac_user,

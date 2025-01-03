@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 
 #include <dms.h>
@@ -57,14 +57,14 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 
 #define THIS_FILE_ID                    PS_FILE_ID_DMS_DEBUG_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 DMS_DEBUG_INFO_TBL_STRU                 g_astDmsSdmInfoTable[DMS_SDM_DBG_INFO_MAX];
@@ -74,7 +74,7 @@ DMS_MNTN_NLK_STATS_STRU                 g_stDmsMntnNlkStats = {0};
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 DMS_DEBUG_INFO_TBL_STRU* DMS_GetDebugInfo(VOS_VOID)
@@ -140,7 +140,7 @@ VOS_VOID DMS_ShowVcomStats(VOS_VOID)
 {
     DMS_DEBUG_INFO_TBL_STRU* pstTable;
 
-    /* 如果某个成员在某个类别没有使用可以不打印 */
+    /* ???????????????????????????????????????? */
 
     pstTable = DMS_GetDebugInfo();
 
@@ -184,7 +184,7 @@ VOS_VOID DMS_ShowVcomStats(VOS_VOID)
         pstTable[DMS_SDM_VCOM_CLOSE_ERR_PCUI2].ulCalledNum,
         pstTable[DMS_SDM_VCOM_CLOSE_ERR_PCUI2].ulRserved1);
 
-    PS_PRINTF("*------------WRITE_异步写-------------------\n");
+    PS_PRINTF("*------------WRITE_??????-------------------\n");
     PS_PRINTF("VCOM_AT write counts  : %d \n VCOM_AT write OK counts  : %d \n  VCOM_AT Last write OK len : %d\n\n",
         pstTable[DMS_SDM_VCOM_WRT_PCUI].ulCalledNum,
         pstTable[DMS_SDM_VCOM_WRT_SUSS_PCUI].ulCalledNum,
@@ -227,7 +227,7 @@ VOS_VOID DMS_ShowVcomStats(VOS_VOID)
         pstTable[DMS_SDM_VCOM_EVT_PCUI2].ulRserved1);
 
     PS_PRINTF("*------------NCM SEND TO DRV INFO------------------\n");
-    PS_PRINTF("发送到驱动次数   : %d\n 发送buf: %x\n 发送长度:%d\n 驱动返回成功次数  : %d \n\n",
+    PS_PRINTF("??????????????   : %d\n ????buf: %x\n ????????:%d\n ????????????????  : %d \n\n",
         pstTable[DMS_SDM_VCOM_WRT_NCM].ulCalledNum,
         pstTable[DMS_SDM_VCOM_WRT_NCM].ulRserved1,
         pstTable[DMS_SDM_VCOM_WRT_NCM].ulRserved2,
@@ -290,7 +290,7 @@ VOS_VOID DMS_ShowNlkDlStats(VOS_VOID)
 VOS_VOID DMS_Help(VOS_VOID)
 {
     PS_PRINTF("****************************************************\n");
-    PS_PRINTF("DMS软调信息                                         \n");
+    PS_PRINTF("DMS????????                                         \n");
     PS_PRINTF("****************************************************\n");
     PS_PRINTF("DMS_SetLogLevel                                     \n");
     PS_PRINTF("DMS_ShowDebugInfo                                   \n");

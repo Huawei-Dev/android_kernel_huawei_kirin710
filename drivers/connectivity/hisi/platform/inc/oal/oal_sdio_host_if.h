@@ -106,11 +106,11 @@ struct hsdio_credit_info{
 
 typedef struct _wlan_pm_callback
 {
-    oal_uint (*wlan_pm_wakeup_dev)(oal_void);                        //SDIO发包过程中中PM状态检查，如果是睡眠状态，同时唤醒
-    oal_uint (*wlan_pm_state_get)(oal_void);                         //获取当前PM状态
-    oal_uint (*wlan_pm_wakeup_host)(oal_void);                       //device唤醒host中断处理
-    oal_void (*wlan_pm_feed_wdg)(oal_void);                          //PM Sleep watch dog喂狗接口
-    oal_void (*wlan_pm_wakeup_dev_ack)(oal_void);   				//唤醒device的ACK 中断处理
+    oal_uint (*wlan_pm_wakeup_dev)(oal_void);                        //SDIO????????????PM??????????????????????????????????
+    oal_uint (*wlan_pm_state_get)(oal_void);                         //????????PM????
+    oal_uint (*wlan_pm_wakeup_host)(oal_void);                       //device????host????????
+    oal_void (*wlan_pm_feed_wdg)(oal_void);                          //PM Sleep watch dog????????
+    oal_void (*wlan_pm_wakeup_dev_ack)(oal_void);   				//????device??ACK ????????
 }wlan_pm_callback_stru;
 
 #define OAL_SDIO_TX        (1<<0)
@@ -122,11 +122,11 @@ struct oal_sdio
     /*sdio work state, sleep , work or shutdown?*/
     oal_uint32                  state;
 
-    oal_spin_lock_stru          st_pm_state_lock;       //pm state互斥锁，pm和gpio中断都用到
+    oal_spin_lock_stru          st_pm_state_lock;       //pm state????????pm??gpio??????????
     wlan_pm_callback_stru      *pst_pm_callback;
 
-    oal_spin_lock_stru          st_irq_lock;         //wlan gpio中断操作锁
-    oal_uint                    ul_wlan_irq ;        //wlan gpio中断
+    oal_spin_lock_stru          st_irq_lock;         //wlan gpio??????????
+    oal_uint                    ul_wlan_irq ;        //wlan gpio????
 
     oal_wakelock_stru           st_sdio_wakelock;   
 

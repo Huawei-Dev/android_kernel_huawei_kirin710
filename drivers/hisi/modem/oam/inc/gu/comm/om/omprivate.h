@@ -51,7 +51,7 @@
 #define _OM_PRIVATE_H_
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "PsTypeDef.h"
@@ -70,13 +70,13 @@ extern "C"{
 #endif
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 /*Used to control sequence number mutex.*/
 #define OM_PV_TIMEOUT                             5000
 
-/*用于获取高2Bit的Modem ID 的值*/
+/*??????????2Bit??Modem ID ????*/
 #define OM_GET_FUNCID_MODEMINFO(ucFuncID)           ((ucFuncID>>6)&0x3)
 #define OM_ADD_FUNCID_MODEMINFO(ucFuncID, ucModemID)(ucFuncID|((ucModemID<<6)&0xc0))
 
@@ -95,7 +95,7 @@ extern "C"{
 #define PAM_STR_MAX_LEN                  (64*1024)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 /*Query PA attribute*/
 enum
@@ -123,7 +123,7 @@ enum
 
 typedef enum
 {
-    OM_FILE_TIMER = 1,     /*用来指示操作文件时启动的超时定时器*/
+    OM_FILE_TIMER = 1,     /*??????????????????????????????????*/
     OM_ICC_TIMER,
     OM_BUFF_TIMER,
     OM_ERRLOG_TIMER,
@@ -137,9 +137,9 @@ typedef enum
 
 enum
 {
-    LOG_FROM_PS_LOG = 0,        /* ps_log 输入的log */
-    LOG_FROM_PRINTF,             /* printf 输入的log */
-    LOG_FROM_OM,                /* om 输入的log     */
+    LOG_FROM_PS_LOG = 0,        /* ps_log ??????log */
+    LOG_FROM_PRINTF,             /* printf ??????log */
+    LOG_FROM_OM,                /* om ??????log     */
     LOG_SOURCE_BUTT
 };
 
@@ -206,7 +206,7 @@ enum
     OAM_PROTECTION_ID_BUTT              = 0x2fffffff
 };
 
-/* OM 的event定义 */
+/* OM ??event???? */
 enum
 {
     OAM_EVENT_TIMER        = 5,
@@ -216,14 +216,14 @@ enum
     OAM_DEGUG_EVENT_ID4    = 9,
     OAM_EVENT_CONNECT_INFO = 10,
 
-    /* 下次定义从 100 开始往后 之前的被使用 */
+    /* ?????????? 100 ???????? ???????????? */
     OAM_DEGUG_EVENT_ID100  = 100,
     OAM_CBT_USB_EVENT_TIMER     = 101,
 
     OAM_EVENT_BUTT
 };
 
-/* 调用DRV_CACHEDMAM_ALLOC函数分配空间失败，直接复位 */
+/* ????DRV_CACHEDMAM_ALLOC?????????????????????????? */
 #define OM_DRV_CACHEDMAM_ALLOC_ERROR()\
     mdrv_om_system_error(DRV_CACHEMALLOC_ERR, (VOS_INT)THIS_FILE_ID, (VOS_INT)__LINE__, VOS_NULL_PTR, 0)
 
@@ -251,24 +251,24 @@ typedef enum
 typedef VOS_UINT8   OM_RFIC_CHANNEL_FLAG_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
-/*查询PA属性结构体*/
+/*????PA??????????*/
 typedef struct
 {
     VOS_UINT16        usQueryType;
@@ -286,8 +286,8 @@ typedef struct
 {
     VOS_UINT16                          usSysMode;
     VOS_UINT8                           ucNvEnable                  :1;
-    VOS_UINT8                           ucRficChannel               :4;  /* RFIC通道 */
-    OM_RFIC_CHANNEL_FLAG_ENUM_UINT8     ucRficChannelFlag           :3;  /* RFIC通道使能标志, 0 不使能, 1 表示物理通道, 2 表示通道的业务类型 */
+    VOS_UINT8                           ucRficChannel               :4;  /* RFIC???? */
+    OM_RFIC_CHANNEL_FLAG_ENUM_UINT8     ucRficChannelFlag           :3;  /* RFIC????????????, 0 ??????, 1 ????????????, 2 ?????????????????? */
     VOS_UINT8                           ucFtmMode                   :1;
     VOS_UINT8                           ucRsv2                      :7;
 }OM_LMT_MSG_STRU;
@@ -339,17 +339,17 @@ typedef struct
 }OM_RECORD_BUF_STRU;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 #if (VOS_OS_VER == VOS_WIN32)

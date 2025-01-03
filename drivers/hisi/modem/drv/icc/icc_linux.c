@@ -204,7 +204,7 @@ s32 bsp_icc_channel_reset(DRV_RESET_CB_MOMENT_E stage, int usrdata)
 			}
             if(g_icc_ctrl.channels[ICC_CHN_IQI])
             {
-                //新增的IQI 通道单独处理
+                //??????IQI ????????????
                 g_icc_ctrl.channels[ICC_CHN_IQI]->fifo_send->read  = 0;
                 g_icc_ctrl.channels[ICC_CHN_IQI]->fifo_send->write = 0;
                 g_icc_ctrl.channels[ICC_CHN_IQI]->fifo_recv->read  = 0;

@@ -211,7 +211,7 @@ static s32 timer_start_ms(struct bsp_hardtimer_control  *timer_ctrl)
 		hardtimer_print_error("bsp_hardtimer_config_init error \n");
 		return BSP_ERROR;
 	}
-	ret = bsp_hardtimer_enable(timer_ctrl->timerId);/* [false alarm]:误报 */
+	ret = bsp_hardtimer_enable(timer_ctrl->timerId);/* [false alarm]:???? */
 	return ret;
 }
 
@@ -225,7 +225,7 @@ static s32 timer_start_us(struct bsp_hardtimer_control  *timer_ctrl)
 		if(timer_ctrl->timeout > TIMER_32K_US_BOUNDARY)
 			timer_ctrl->timeout= timer_clk*timer_ctrl->timeout/1000000;
 
-		else/* 对于不大于31us的定时，直接往load寄存器写1 */
+		else/* ??????????31us??????????????load????????1 */
 			timer_ctrl->timeout=1;
 	}
 	else
@@ -237,7 +237,7 @@ static s32 timer_start_us(struct bsp_hardtimer_control  *timer_ctrl)
 		hardtimer_print_error("bsp_hardtimer_config_init error \n");
 		return BSP_ERROR;
 	}
-	ret = bsp_hardtimer_enable(timer_ctrl->timerId);/* [false alarm]:误报 */
+	ret = bsp_hardtimer_enable(timer_ctrl->timerId);/* [false alarm]:???? */
 	return ret;
 }
 static s32 timer_start_none(struct bsp_hardtimer_control  *timer_ctrl){
@@ -247,7 +247,7 @@ static s32 timer_start_none(struct bsp_hardtimer_control  *timer_ctrl){
 		hardtimer_print_error("bsp_hardtimer_config_init error \n");
 		return BSP_ERROR;
 	}
-	ret = bsp_hardtimer_enable(timer_ctrl->timerId);/* [false alarm]:误报 */
+	ret = bsp_hardtimer_enable(timer_ctrl->timerId);/* [false alarm]:???? */
 	return ret;
 }
 
@@ -258,7 +258,7 @@ s32 bsp_hardtimer_start(struct bsp_hardtimer_control  *timer_ctrl)
 		hardtimer_print_error("timer_ctrl is NULL \n");
 		return BSP_ERROR;
 	}
-	/*直接操作寄存器*/
+	/*??????????????*/
 	if(TIMER_UNIT_NONE==timer_ctrl->unit){
 		ret = timer_start_none(timer_ctrl);
 		return ret;
@@ -302,7 +302,7 @@ s32 bsp_hardtimer_free(u32 timer_id)
 	return BSP_OK;
 }
 
-/*获取唤醒源timer的下一个最近到时时间，供低功耗模块使用*/
+/*??????????timer??????????????????????????????????????*/
 u32 get_next_schedule_time(u32 *min_timer_id)
 {
 	u32 i=0,min = 0xffffffff,ret = 0,request_id = 0,tmp = 0;/*lint !e123*/
@@ -458,7 +458,7 @@ static s32 timer_suspend_noirq(struct device *dev)
 	int i=0;
 	u32 stamp = 0;
 	pr_info("%s +\n", __func__);
-	/*遍历timer，保存sr_flag为1，即为掉电区timer的sysctrl reg和load reg 寄存器值*/
+	/*????timer??????sr_flag??1????????????timer??sysctrl reg??load reg ????????*/
 	for(i=0;i<TIMER_ID_MAX;i++){
 		if(core_timer_control.timer[i].sr_flag && core_timer_control.timer[i].driver->ops->suspend){
 			core_timer_control.timer[i].driver->ops->suspend((struct timer_device *)(uintptr_t)&core_timer_control.timer[i]);

@@ -50,7 +50,7 @@
 #define __ADS_TCPIPTYPEDEF_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 
@@ -65,33 +65,33 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
-/* IP 数据包可维可测*/
-#define ADS_IP_VERSION_V4               (4)                                     /* IPV4的版本号 */
-#define ADS_IPV4_HDR_LEN                (20)                                    /* IPV4的头部长度 */
-#define ADS_IPV4_PROTO_ICMP             (1)                                     /* IPV4的ICMP协议号 */
-#define ADS_IPV4_ICMP_ECHO_REQUEST      (8)                                     /* IPV4的ICMP的TYPE ECHO REQ */
-#define ADS_IPV4_ICMP_ECHO_REPLY        (0)                                     /* IPV4的ICMP的TYPE ECHO REPLY */
+/* IP ??????????????*/
+#define ADS_IP_VERSION_V4               (4)                                     /* IPV4???????? */
+#define ADS_IPV4_HDR_LEN                (20)                                    /* IPV4?????????? */
+#define ADS_IPV4_PROTO_ICMP             (1)                                     /* IPV4??ICMP?????? */
+#define ADS_IPV4_ICMP_ECHO_REQUEST      (8)                                     /* IPV4??ICMP??TYPE ECHO REQ */
+#define ADS_IPV4_ICMP_ECHO_REPLY        (0)                                     /* IPV4??ICMP??TYPE ECHO REPLY */
 
-#define ADS_IP_VERSION_V6               (6)                                     /* IPV6的版本号 */
-#define ADS_IPV6_HDR_LEN                (40)                                    /* IPV6的头部长度 */
-#define ADS_IPV6_PROTO_ICMP             (58)                                    /* IPV6的ICMP协议号 */
-#define ADS_IPV6_ICMP_ECHO_REQUEST      (128)                                   /* IPV6的ICMP的TYPE ECHO REQ */
-#define ADS_IPV6_ICMP_ECHO_REPLY        (129)                                   /* IPV6的ICMP的TYPE ECHO REPLY */
+#define ADS_IP_VERSION_V6               (6)                                     /* IPV6???????? */
+#define ADS_IPV6_HDR_LEN                (40)                                    /* IPV6?????????? */
+#define ADS_IPV6_PROTO_ICMP             (58)                                    /* IPV6??ICMP?????? */
+#define ADS_IPV6_ICMP_ECHO_REQUEST      (128)                                   /* IPV6??ICMP??TYPE ECHO REQ */
+#define ADS_IPV6_ICMP_ECHO_REPLY        (129)                                   /* IPV6??ICMP??TYPE ECHO REPLY */
 
-#define ADS_IP_PROTO_TCP                (6)                                     /* TCP协议号 */
-#define ADS_IP_PROTO_UDP                (17)                                    /* UDP协议号 */
+#define ADS_IP_PROTO_TCP                (6)                                     /* TCP?????? */
+#define ADS_IP_PROTO_UDP                (17)                                    /* UDP?????? */
 
-#define ADS_IPV4_ADDR_LEN               (4)                                     /* IPV4地址长度 */
-#define ADS_IPV6_ADDR_LEN               (16)                                    /* IPV6地址长度 */
+#define ADS_IPV4_ADDR_LEN               (4)                                     /* IPV4???????? */
+#define ADS_IPV6_ADDR_LEN               (16)                                    /* IPV6???????? */
 #define ADS_IPV6_ADDR_HALF_LEN          (8)
 #define ADS_IPV6_ADDR_QUARTER_LEN       (4)
 
-#define ADS_GET_IP_VERSION(pucIpPkt)    ((pucIpPkt)[0] >> 4)                    /* 获取IP version */
+#define ADS_GET_IP_VERSION(pucIpPkt)    ((pucIpPkt)[0] >> 4)                    /* ????IP version */
 
-/* 大小字节序转换*/
+/* ??????????????*/
 #ifndef VOS_NTOHL
 #if VOS_BYTE_ORDER==VOS_BIG_ENDIAN
 #define VOS_NTOHL(x)    (x)
@@ -119,26 +119,26 @@ extern "C" {
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  7 UNION定义
+  7 UNION????
 *****************************************************************************/
 
 #if (VOS_OS_VER != VOS_WIN32)
@@ -163,7 +163,7 @@ typedef union
 } ADS_IPV6_ADDR_UN;
 
 /*****************************************************************************
-  8 STRUCT定义
+  8 STRUCT????
 *****************************************************************************/
 
 
@@ -198,10 +198,10 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                          usSrcPort;                              /* 源端口 */
-    VOS_UINT16                          usDstPort;                              /* 目的端口 */
-    VOS_UINT16                          usLen;                                  /* UDP包长度 */
-    VOS_UINT16                          usChecksum;                             /* UDP校验和 */
+    VOS_UINT16                          usSrcPort;                              /* ?????? */
+    VOS_UINT16                          usDstPort;                              /* ???????? */
+    VOS_UINT16                          usLen;                                  /* UDP?????? */
+    VOS_UINT16                          usChecksum;                             /* UDP?????? */
 } ADS_UDP_HDR_STRU;
 
 
@@ -263,12 +263,12 @@ typedef struct
 #endif
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 

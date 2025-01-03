@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "frw_ext_if.h"
@@ -32,12 +32,12 @@ extern "C" {
 
 #ifdef _PRE_WLAN_CHIP_TEST
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 extern oal_uint32  dmac_scan_send_probe_req_frame(dmac_vap_stru *pst_dmac_vap, oal_uint8 *puc_bssid, oal_int8 *pc_ssid);
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void dmac_test_lpm_smps_set_rate(mac_tx_ctl_stru *pst_tx_ctl, hal_tx_txop_alg_stru *pst_txop_alg,dmac_test_stub_opera_enum_uint8 en_opera)
@@ -53,13 +53,13 @@ oal_void dmac_test_lpm_smps_set_rate(mac_tx_ctl_stru *pst_tx_ctl, hal_tx_txop_al
         return;
     }
 
-    /*广播或组播包，如果发RTS的话，对端不会回CTS*/
+    /*????????????????????RTS????????????????CTS*/
     if(OAL_TRUE == pst_tx_ctl->en_ismcast)
     {
         return;
     }
 
-    /*打桩开始，保存原始数据，打桩数据*/
+    /*????????????????????????????????*/
     if (DMAC_TEST_STUB_BEGIN == en_opera)
     {
         pst_smps_stub->ul_rate_real[0] = pst_txop_alg->ast_per_rate[0].ul_value;
@@ -70,21 +70,21 @@ oal_void dmac_test_lpm_smps_set_rate(mac_tx_ctl_stru *pst_tx_ctl, hal_tx_txop_al
         past_rate_param[0].rate_bit_stru.bit_tx_count = 1;
         past_rate_param[0].rate_bit_stru.un_nss_rate.st_ht_rate.bit_protocol_mode = WLAN_HT_PHY_PROTOCOL_MODE;
 
-        /*单流速率发送*/
+        /*????????????*/
         if (1 == pst_smps_stub->uc_stub_type)
         {
-            /*mcs5,11n为单流*/
+            /*mcs5,11n??????*/
             past_rate_param[0].rate_bit_stru.un_nss_rate.st_ht_rate.bit_ht_mcs = 5;
             past_rate_param[0].rate_bit_stru.bit_tx_chain_selection = 0x1;
         }
 
-        /*双流速率发送*/
+        /*????????????*/
         if (2 == pst_smps_stub->uc_stub_type)
         {
-            /*mcs10,11n为双流*/
+            /*mcs10,11n??????*/
             past_rate_param[0].rate_bit_stru.un_nss_rate.st_ht_rate.bit_ht_mcs = 10;
 
-             /* 发送通道选择 (单通道:0x1, 双通道:0x3, 三通道:0x7, 四通道:0xf) */
+             /* ???????????? (??????:0x1, ??????:0x3, ??????:0x7, ??????:0xf) */
             past_rate_param[0].rate_bit_stru.bit_tx_chain_selection = 0x3;
         }
 
@@ -147,7 +147,7 @@ oal_void dmac_test_lpm_txopps_set_partial_aid(dmac_vap_stru         *pst_dmac_va
         return;
     }
 
-    /*打桩开始，保存原始数据，打桩数据*/
+    /*????????????????????????????????*/
     if (DMAC_TEST_STUB_BEGIN == en_opera)
     {
         OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_test_lpm_txopps_set_partial_aid::start %d}\r\n",
@@ -158,14 +158,14 @@ oal_void dmac_test_lpm_txopps_set_partial_aid(dmac_vap_stru         *pst_dmac_va
             return;
         }
 
-        /*设置错误的partial aid,STA在收到PAID不是和自身匹配后，进入TXOP节能 */
+        /*??????????partial aid,STA??????PAID??????????????????????TXOP???? */
         pst_txop_stub->us_partial_aid_real =  pst_dmac_user->us_partial_aid;
         pst_dmac_user->us_partial_aid = 123;
 
      }
      else if (DMAC_TEST_STUB_END == en_opera)
      {
-        /*打桩结束，数据恢复*/
+        /*??????????????????*/
         OAM_WARNING_LOG0(0, OAM_SF_ANY, "{dmac_test_lpm_txopps_set_partial_aid::end}\r\n");
         if (pst_txop_stub->us_begin_num == pst_txop_stub->us_curr_num)
         {
@@ -182,7 +182,7 @@ oal_uint32 dmac_test_lpm_send_probe_requst(dmac_vap_stru *pst_dmac_vap,oal_uint8
     oal_int8    ac_ssid[4] = {'\0'};
     oal_uint32  ul_ret;
 
-    /* 被动方式，第三地址为广播地址 */
+    /* ???????????????????????????? */
     if (0 == uc_positive)
     {
 
@@ -192,7 +192,7 @@ oal_uint32 dmac_test_lpm_send_probe_requst(dmac_vap_stru *pst_dmac_vap,oal_uint8
             OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_test_lpm_send_probe_requst::failed to send broadcast probe req! ul_ret=%d}\r\n", ul_ret);
         }
     }
-    /* 主动方式，第三地址为指定BSSID */
+    /* ????????????????????????BSSID */
     else
     {
         ul_ret = dmac_scan_send_probe_req_frame(pst_dmac_vap, puc_bssid, ac_ssid);
@@ -217,14 +217,14 @@ oal_void dmac_test_lpm_wow_init(oal_void)
 #ifdef _PRE_BOARD_SD5115
     hi_gpio_bit_attr_s          st_attr;
 
-    /*WOW唤醒GPIO管脚为GPIO 62，对应HI_GPIO_PORT1_E, HI_GPIO_BIT30_E*/
+    /*WOW????GPIO??????GPIO 62??????HI_GPIO_PORT1_E, HI_GPIO_BIT30_E*/
     HI_GPIO_PORT_E              em_port     = HI_GPIO_PORT1_E;
     HI_GPIO_BIT_E               em_bit      = HI_GPIO_BIT30_E;
 
-    /*1. 获取属性*/
+    /*1. ????????*/
     hi_kernel_gpio_bit_attr_get(em_port, em_bit, &st_attr);
 
-    /*将GPIO管脚设置为INPUT模式*/
+    /*??GPIO??????????INPUT????*/
     st_attr.em_mode = HI_GPIO_WORK_MODE_INPUT_E;
 
     hi_kernel_gpio_bit_attr_set(em_port, em_bit, &st_attr);
@@ -259,24 +259,24 @@ oal_void dmac_test_lpm_wow_debug(oal_void)
 
      hi_gpio_bit_attr_s          st_attr;
 
-     /*WOW唤醒GPIO管脚为GPIO 62，对应HI_GPIO_PORT1_E, HI_GPIO_BIT30_E*/
+     /*WOW????GPIO??????GPIO 62??????HI_GPIO_PORT1_E, HI_GPIO_BIT30_E*/
      HI_GPIO_PORT_E              em_port     = HI_GPIO_PORT1_E;
      HI_GPIO_BIT_E               em_bit      = HI_GPIO_BIT30_E;
 
-     /*初始化为低电平*/
+     /*??????????????*/
      HI_LEVEL_E                  em_level    = HI_LOW_LEVEL_E;
 
-      /*将GPIO管脚设置为INPUT模式*/
+      /*??GPIO??????????INPUT????*/
      st_attr.em_mode = HI_GPIO_WORK_MODE_INPUT_E;
 
      hi_kernel_gpio_bit_attr_set(em_port, em_bit, &st_attr);
 
-    /*获取属性*/
+    /*????????*/
      hi_kernel_gpio_bit_attr_get(em_port, em_bit, &st_attr);
 
      OAM_INFO_LOG1(0, OAM_SF_ANY, "GPIO_62 attribute = %d\n",st_attr.em_mode);
 
-     /*读信号*/
+     /*??????*/
      hi_kernel_gpio_bit_read( em_port,  em_bit, &em_level);
 
      if(HI_HIGH_LEVEL_E == em_level)
@@ -306,7 +306,7 @@ oal_uint32 dmac_test_lpm_wow_prepare_probe_resp(dmac_vap_stru *pst_dmac_vap)
         OAL_NETBUF_NEXT(pst_dmac_vap->pst_wow_probe_resp) = OAL_PTR_NULL;
     }
 
-    /* 封装probe response帧 */
+    /* ????probe response?? */
     pst_dmac_vap->us_wow_probe_resp_len = dmac_mgmt_encap_probe_response(pst_dmac_vap, pst_dmac_vap->pst_wow_probe_resp, &ast_dest_addr[0], OAL_FALSE);
 
     return OAL_SUCC;
@@ -331,7 +331,7 @@ oal_uint32 dmac_test_lpm_wow_prepare_null_data(dmac_vap_stru *pst_dmac_vap)
 {
     dmac_user_stru* pst_dmac_user;
 
-    /*仅需要为STA模式的VAP准备null data帧，做keep alive*/
+    /*????????STA??????VAP????null data??????keep alive*/
     if (WLAN_VAP_MODE_BSS_STA == pst_dmac_vap->st_vap_base_info.en_vap_mode)
     {
         pst_dmac_user = mac_res_get_dmac_user(pst_dmac_vap->st_vap_base_info.uc_assoc_vap_id);
@@ -342,7 +342,7 @@ oal_uint32 dmac_test_lpm_wow_prepare_null_data(dmac_vap_stru *pst_dmac_vap)
 
         if (OAL_PTR_NULL == pst_dmac_vap->pst_wow_null_data)
         {
-            /* 申请net_buff */
+            /* ????net_buff */
             pst_dmac_vap->pst_wow_null_data = OAL_MEM_NETBUF_ALLOC(OAL_NORMAL_NETBUF, WLAN_SHORT_NETBUF_SIZE, OAL_NETBUF_PRIORITY_MID);
             if (OAL_PTR_NULL == pst_dmac_vap->pst_wow_null_data)
             {
@@ -354,16 +354,16 @@ oal_uint32 dmac_test_lpm_wow_prepare_null_data(dmac_vap_stru *pst_dmac_vap)
             OAL_NETBUF_NEXT(pst_dmac_vap->pst_wow_null_data) = OAL_PTR_NULL;
         }
 
-        /* 填写帧头,其中from ds为1，to ds为0，因此frame control的第二个字节为02 */
+        /* ????????,????from ds??1??to ds??0??????frame control??????????????02 */
         mac_hdr_set_frame_control(oal_netbuf_header(pst_dmac_vap->pst_wow_null_data), (oal_uint16)(WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_DATA | WLAN_FC0_SUBTYPE_NODATA) | 0x0200);
 
-        /* 设置ADDR1为目的地址 */
+        /* ????ADDR1?????????? */
         oal_set_mac_addr((oal_netbuf_header(pst_dmac_vap->pst_wow_null_data) + 4), pst_dmac_user->st_user_base_info.auc_user_mac_addr);
 
-        /* 设置ADDR2为SA */
+        /* ????ADDR2??SA */
         oal_set_mac_addr((oal_netbuf_header(pst_dmac_vap->pst_wow_null_data) + 10),pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
-        /* 设置ADDR3为BSSID */
+        /* ????ADDR3??BSSID */
         oal_set_mac_addr((oal_netbuf_header(pst_dmac_vap->pst_wow_null_data) + 16), pst_dmac_vap->st_vap_base_info.auc_bssid);
     }
 
@@ -391,7 +391,7 @@ oal_uint32 dmac_test_lpm_send_nulldata(dmac_vap_stru *pst_dmac_vap,oal_uint8 uc_
     oal_uint16                   us_user_index;
 
 
-    /* 申请net_buff */
+    /* ????net_buff */
     pst_null_data = OAL_MEM_NETBUF_ALLOC(OAL_NORMAL_NETBUF, WLAN_SHORT_NETBUF_SIZE, OAL_NETBUF_PRIORITY_MID);
     if (OAL_PTR_NULL == pst_null_data)
     {
@@ -402,28 +402,28 @@ oal_uint32 dmac_test_lpm_send_nulldata(dmac_vap_stru *pst_dmac_vap,oal_uint8 uc_
     OAL_NETBUF_PREV(pst_null_data) = OAL_PTR_NULL;
     OAL_NETBUF_NEXT(pst_null_data) = OAL_PTR_NULL;
 
-    /* 填写帧头,其中from ds为1，to ds为0，因此frame control的第二个字节为02 */
+    /* ????????,????from ds??1??to ds??0??????frame control??????????????02 */
     mac_hdr_set_frame_control(oal_netbuf_header(pst_null_data), (oal_uint16)(WLAN_PROTOCOL_VERSION | WLAN_FC0_TYPE_DATA | WLAN_FC0_SUBTYPE_NODATA) | 0x0200);
 
-    /* 设置ADDR1为目的地址 */
+    /* ????ADDR1?????????? */
     oal_set_mac_addr((oal_netbuf_header(pst_null_data) + 4), puc_da);
 
-    /* 设置ADDR2为SA */
+    /* ????ADDR2??SA */
     oal_set_mac_addr((oal_netbuf_header(pst_null_data) + 10),pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
-    /* 设置ADDR3为BSSID */
+    /* ????ADDR3??BSSID */
     oal_set_mac_addr((oal_netbuf_header(pst_null_data) + 16), pst_dmac_vap->st_vap_base_info.auc_bssid);
 
     pst_frame_hdr = (mac_ieee80211_frame_stru*)oal_netbuf_header(pst_null_data);
 
-    /* 设置节能标记*/
+    /* ????????????*/
     pst_frame_hdr->st_frame_control.bit_power_mgmt = uc_psm;
 
-    /* 填写cb字段 */
+    /* ????cb???? */
     pst_tx_ctrl = (mac_tx_ctl_stru *)OAL_NETBUF_CB(pst_null_data);
     OAL_MEMZERO(pst_tx_ctrl, OAL_NETBUF_CB_SIZE());
 
-    /* 填写tx部分 */
+    /* ????tx???? */
     pst_tx_ctrl->en_ack_policy            = WLAN_TX_NORMAL_ACK;
     pst_tx_ctrl->en_event_type            = FRW_EVENT_TYPE_WLAN_DTX;
     pst_tx_ctrl->en_is_bar                = OAL_FALSE;
@@ -441,7 +441,7 @@ oal_uint32 dmac_test_lpm_send_nulldata(dmac_vap_stru *pst_dmac_vap,oal_uint8 uc_
     }
     else
     {
-       /* 获取用户对应的索引 */
+       /* ?????????????????? */
         ul_ret = mac_vap_find_user_by_macaddr(&pst_dmac_vap->st_vap_base_info,puc_da, &us_user_index);
         if (OAL_SUCC != ul_ret)
         {
@@ -458,7 +458,7 @@ oal_uint32 dmac_test_lpm_send_nulldata(dmac_vap_stru *pst_dmac_vap,oal_uint8 uc_
 
     }
 
-    /* 填写tx rx公共部分 */
+    /* ????tx rx???????? */
     //pst_tx_ctrl->en_frame_type             = WLAN_DATA_NULL;
     pst_tx_ctrl->en_ismcast                = OAL_FALSE;
     pst_tx_ctrl->en_is_amsdu               = OAL_FALSE;
@@ -485,7 +485,7 @@ oal_uint32 dmac_test_lpm_send_nulldata(dmac_vap_stru *pst_dmac_vap,oal_uint8 uc_
 
 oal_void dmac_test_always_tx(hal_to_dmac_device_stru * pst_hal_device, hal_tx_dscr_stru * pst_tx_dscr)
 {
-    /* 获取设备 */
+    /* ???????? */
     if (OAL_SWITCH_ON == pst_hal_device->uc_al_tx_flag)
     {
          hal_rf_test_enable_al_tx(pst_hal_device, pst_tx_dscr);

@@ -139,14 +139,14 @@ do{\
 #define IPC_SME_TIME_OUT   (1000)
 
 
-/*睡眠唤醒状态*/
+/*????????????*/
 enum
 {
     NV_WAKEUP_STATE         =0,
     NV_SLEEP_STATE          =1
 };
 
-/*操作进行与空闲状态*/
+/*??????????????????*/
 enum
 {
     NV_IDLE_STATE           =0,
@@ -218,7 +218,7 @@ typedef struct _nv_revert_file_s
 struct nv_global_ctrl_info_stru
 {
     u8 nv_icc_buf[NV_ICC_BUF_LEN];
-    osl_sem_id rw_sem;      /*与IPC锁同时使用保证本核访问的互斥*/
+    osl_sem_id rw_sem;      /*??IPC????????????????????????????*/
     osl_sem_id cc_sem;      /*lock the core comm*/
     osl_sem_id task_sem;
     osl_sem_id suspend_sem;
@@ -243,8 +243,8 @@ struct nv_global_ctrl_info_stru
     u32 acore_flush_req;
     u32 acore_flush_count;
 
-    osl_sem_id nv_list_sem;         /*用于保护nv_list的信号量*/
-    struct list_head  nv_list;      /*存储待写入的list的buf*/
+    osl_sem_id nv_list_sem;         /*????????nv_list????????*/
+    struct list_head  nv_list;      /*????????????list??buf*/
 
 };
 

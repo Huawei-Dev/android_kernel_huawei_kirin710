@@ -945,7 +945,7 @@ static int get_valid_length(int datalen, int *length)
 0: I2C Communication
 1: Cap Rawdata
 2: Trx delta
-3:  noise delta  ---Act data ÅÐ¶¨ - Calibration Threshold
+3:  noise delta  ---Act data ???? - Calibration Threshold
 4: Open/Short  ---gap check (open test)
 */
 int wacom_fac_test(struct ts_rawdata_info *info, struct ts_cmd_node *out_cmd)

@@ -122,8 +122,8 @@ enum
 #define NV_FLASH_FILL                        (0xff)    /*mtd write one page,need to fill invality data*/
 
 /*8bit nand,blocksize = 128k*/
-#define NV_BIN_FILE_BLOCK_NUM         32           /*分区最大有4M,32块*/
-#define NV_DLOAD_FILE_BLOCK_NUM       24           /*dload 分区长度3M,块数最多24块*/
+#define NV_BIN_FILE_BLOCK_NUM         32           /*??????????4M,32??*/
+#define NV_DLOAD_FILE_BLOCK_NUM       24           /*dload ????????3M,????????24??*/
 
 struct nv_sec_file_block_info
 {
@@ -137,7 +137,7 @@ struct nv_sec_file_block_info
 struct nv_global_ctrl_stru
 {
     nv_dload_packet_head_s nv_dload;  /*data info in dload flag*/
-    xnv_map_file_s *other_card_info;  /*除卡1 2外的其他卡的NV信息*/
+    xnv_map_file_s *other_card_info;  /*????1 2????????????NV????*/
     nv_file_map_s  dload_nv;
     nv_file_map_s  dload_nvcust;
     nv_file_map_s  sys_nv;

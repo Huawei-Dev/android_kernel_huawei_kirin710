@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oam_ext_if.h"
 #include "oam_linux_netlink.h"
@@ -19,31 +19,31 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_OAM_LINUX_NETLINK_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 oam_netlink_stru        g_st_netlink;
 
 oam_netlink_proto_ops   g_st_netlink_ops;
 
-/* 数采上报app的结构体 */
+/* ????????app???????? */
 typedef struct
 {
-    oal_uint32      ul_daq_addr;         /* 数采数据首地址 */
-    oal_uint32      ul_data_len;         /* 数采数据总的长度 */
-    oal_uint32      ul_unit_len;         /* 单元数据的最大长度:不包含(daq_unit_head)头长度 */
+    oal_uint32      ul_daq_addr;         /* ?????????????? */
+    oal_uint32      ul_data_len;         /* ???????????????? */
+    oal_uint32      ul_unit_len;         /* ??????????????????:??????(daq_unit_head)?????? */
 }oam_data_acq_info_stru;
 
-/* 数采单元头结构体 */
+/* ???????????????? */
 typedef struct
 {
-    oal_uint8                           en_send_type;        /* 数采单元数据序列号 */
+    oal_uint8                           en_send_type;        /* ?????????????????? */
     oal_uint8                           uc_resv[3];
-    oal_uint32                          ul_msg_sn;           /* 数采单元数据序列号 */
-    oal_uint32                          ul_data_len;         /* 当前单元长度 */
+    oal_uint32                          ul_msg_sn;           /* ?????????????????? */
+    oal_uint32                          ul_data_len;         /* ???????????? */
 }oam_data_acq_data_head_stru;
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void  oam_netlink_ops_register(oam_nl_cmd_enum_uint8 en_type, oal_uint32 (*p_func)(oal_uint8 *puc_data, oal_uint32 ul_len))
@@ -230,10 +230,10 @@ oal_int32  oam_netlink_kernel_send(oal_uint8 *puc_data, oal_uint32 ul_data_len, 
         return -1;
     }
 
-    /* 初始化netlink消息首部 */
+    /* ??????netlink???????? */
     pst_nlmsghdr = oal_nlmsg_put(pst_netbuf, 0, 0, (oal_int32)en_type, (oal_int32)ul_data_len, 0);
 
-    /* 设置控制字段 */
+    /* ???????????? */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
     OAL_NETLINK_CB(pst_netbuf).portid = 0;
 #else
@@ -241,10 +241,10 @@ oal_int32  oam_netlink_kernel_send(oal_uint8 *puc_data, oal_uint32 ul_data_len, 
 #endif
     OAL_NETLINK_CB(pst_netbuf).dst_group = 0;
 
-    /* 填充数据区 */
+    /* ?????????? */
     oal_memcopy(OAL_NLMSG_DATA(pst_nlmsghdr), puc_data, ul_data_len);
 
-    /* 发送数据 */
+    /* ???????? */
     l_ret = oal_netlink_unicast(g_st_netlink.pst_nlsk, pst_netbuf, g_st_netlink.ul_pid, OAL_MSG_DONTWAIT);
 
     return l_ret;
@@ -275,18 +275,18 @@ oal_int32  oam_netlink_kernel_send_ex(oal_uint8 *puc_data_1st, oal_uint8 *puc_da
         return -1;
     }
 
-    /* 初始化netlink消息首部 */
+    /* ??????netlink???????? */
     pst_nlmsghdr = oal_nlmsg_put(pst_netbuf, 0, 0, (oal_int32)en_type, (oal_int32)(ul_len_1st + ul_len_2nd), 0);
 
-    /* 设置控制字段 */
+    /* ???????????? */
     OAL_NETLINK_CB(pst_netbuf).pid = 0;
     OAL_NETLINK_CB(pst_netbuf).dst_group = 0;
 
-    /* 填充数据区 */
+    /* ?????????? */
     oal_memcopy(OAL_NLMSG_DATA(pst_nlmsghdr), puc_data_1st, ul_len_1st);
     oal_memcopy((oal_uint8 *)OAL_NLMSG_DATA(pst_nlmsghdr) + ul_len_1st, puc_data_2nd, ul_len_2nd);
 
-    /* 发送数据 */
+    /* ???????? */
     l_ret = oal_netlink_unicast(g_st_netlink.pst_nlsk, pst_netbuf, g_st_netlink.ul_pid, OAL_MSG_DONTWAIT);
 
     return l_ret;

@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "hal_ext_if.h"
 #include "oal_ext_if.h"
@@ -29,7 +29,7 @@ extern "C" {
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_TX_BSS_COMM_H
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define DMAC_MAX_FIFO_PUT       10  /* = FIFO DEHPTH + PREFETCH */
 #define DMAC_MAX_PENDING_RETRY  6
@@ -38,29 +38,29 @@ typedef oal_uint32 (*p_dmac_tx_parse_mpdu_func)(oal_netbuf_stru *pst_netbuf, hal
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_WEB_CFG_FIXED_RATE
 extern oal_uint8 g_auc_default_mac_to_phy_protocol_mapping[WLAN_PROTOCOL_BUTT];
 #endif
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 typedef struct
 {
@@ -71,7 +71,7 @@ typedef struct
     oal_uint8               *puc_mac_hdr_addr;
     oal_uint8               *puc_mac_payload_addr;
     oal_uint8                auc_user_macaddr[WLAN_MAC_ADDR_LEN];
-    oal_uint16               us_mac_frame_len;      /* 帧头+帧体长度 */
+    oal_uint16               us_mac_frame_len;      /* ????+???????? */
     oal_uint8                uc_mac_hdr_len;
     oal_switch_enum_uint8    en_frame_switch;
     oal_switch_enum_uint8    en_cb_switch;
@@ -79,7 +79,7 @@ typedef struct
 }dmac_tx_dump_param_stru;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 extern oal_uint32  dmac_tx_data(
     dmac_vap_stru            *pst_dmac_vap,
@@ -110,7 +110,7 @@ extern oal_uint32 dmac_send_qosnull(dmac_vap_stru *pst_dmac_vap, dmac_user_stru 
 extern oal_uint32  dmac_tx_force(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_netbuf, oal_uint16 us_len, oal_uint8 uc_mgmt);
 #endif //_PRE_WLAN_FEATURE_ROAM
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
@@ -124,7 +124,7 @@ OAL_STATIC OAL_INLINE oal_void  dmac_tx_set_htc_field(
     mac_ieee80211_qos_htc_frame_stru        *pst_mac_ieee80211_qos_htc_frame;
     oal_uint8                                uc_mac_header_length;
 
-    /* frame control B15(Order)改为1，加上HTC部分，并且HTC字段的B22B23值是11, 改写描述符 */
+    /* frame control B15(Order)????1??????HTC??????????HTC??????B22B23????11, ?????????? */
     if (OAL_TRUE == mac_get_cb_is_use_4_addr(pst_tx_ctl))
     {
         pst_mac_ieee80211_qos_htc_frame_addr4  = (mac_ieee80211_qos_htc_frame_addr4_stru *)mac_get_cb_frame_hdr(pst_tx_ctl);
@@ -149,7 +149,7 @@ OAL_STATIC OAL_INLINE oal_void  dmac_tx_set_htc_field(
         pst_ppdu_feature->ul_ampdu_length  += (OAL_SIZEOF(mac_ieee80211_qos_htc_frame_stru) - OAL_SIZEOF(mac_ieee80211_qos_frame_stru));
     }
 
-    /* 修改描述符中mac 帧头长度 */
+    /* ????????????mac ???????? */
     hal_tx_set_dscr_modify_mac_header_length(pst_hal_device,pst_tx_dscr, uc_mac_header_length);
 
 }
@@ -181,7 +181,7 @@ OAL_STATIC OAL_INLINE oal_void  dmac_tx_unset_htc_field(
         pst_ppdu_feature->ul_ampdu_length  -= (MAC_80211_QOS_HTC_FRAME_LEN - MAC_80211_QOS_FRAME_LEN);
     }
 
-    /* 修改描述符中mac 帧头长度 */
+    /* ????????????mac ???????? */
     hal_tx_set_dscr_modify_mac_header_length(pst_hal_device, pst_tx_dscr, uc_mac_header_length);
 }
 
@@ -221,7 +221,7 @@ OAL_STATIC OAL_INLINE oal_uint32 dmac_tx_get_spec_mode_ucast_data_params(
         return OAL_FAIL;
     }
 
-    /* 若当前user采用的protocol所对应的配置参数valid, 则采用该协议下的ucast data发送参数 */
+    /* ??????user??????protocol????????????????valid, ????????????????ucast data???????? */
     if ((WLAN_VHT_PHY_PROTOCOL_MODE == en_phy_protocol) && (1 == pst_dmac_vap->un_mode_valid.st_spec_mode.bit_vht_param_vaild))
     {
         dmac_alg_tx_notify(pst_dmac_vap, (mac_user_stru *)pst_dmac_user, pst_tx_ctl, &pst_dmac_vap->st_tx_alg_vht);
@@ -242,7 +242,7 @@ OAL_STATIC OAL_INLINE oal_uint32 dmac_tx_get_spec_mode_ucast_data_params(
         dmac_alg_tx_notify(pst_dmac_vap, (mac_user_stru *)pst_dmac_user, pst_tx_ctl, &pst_dmac_vap->st_tx_alg_11b);
         *ppst_txop_alg = &pst_dmac_vap->st_tx_alg_11b;
     }
-    /* 否则, 还是采用默认的ucast data发送参数 */
+    /* ????, ??????????????ucast data???????? */
     else
     {
         dmac_alg_tx_notify(pst_dmac_vap, (mac_user_stru *)pst_dmac_user, pst_tx_ctl, &pst_dmac_vap->st_tx_alg);
@@ -267,11 +267,11 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_tx_get_txop_alg_params(
          return OAL_SUCC;
     }
 
-    /* 从算法获取单播发送数据帧参数 */
+    /* ???????????????????????????? */
     if (OAL_FALSE == MAC_GET_CB_IS_MCAST(pst_tx_ctl))
     {
     #ifdef _PRE_WLAN_FEATURE_WEB_CFG_FIXED_RATE
-        /* 若vap下未配置针对特定协议的ucast data发送参数, 则采用默认的ucast data发送参数 */
+        /* ??vap??????????????????????ucast data????????, ????????????ucast data???????? */
         if (0 == pst_dmac_vap->un_mode_valid.uc_mode_param_valid)
         {
             dmac_alg_tx_notify(pst_dmac_vap, (mac_user_stru *)pst_dmac_user, pst_tx_ctl, &pst_dmac_vap->st_tx_alg);
@@ -288,12 +288,12 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_tx_get_txop_alg_params(
             }
         }
     #else
-        /* 从算法处获取单播数据帧速率等发送参数 */
+        /* ???????????????????????????????????? */
         dmac_alg_tx_notify(pst_dmac_vap, (mac_user_stru *)pst_dmac_user, pst_tx_ctl, &pst_dmac_vap->st_tx_alg);
         *ppst_txop_alg = &pst_dmac_vap->st_tx_alg;
     #endif
     }
-    else /* 软件填写组播/广播数据帧发送参数 */
+    else /* ????????????/?????????????????? */
     {
         *ppst_txop_alg = &pst_dmac_vap->st_tx_data_mcast;
     }
@@ -325,7 +325,7 @@ OAL_STATIC OAL_INLINE oal_void  dmac_tx_init_ppdu_feature(dmac_vap_stru *pst_dma
 #ifdef _PRE_WLAN_FEATURE_PROXYSTA
     if (mac_vap_is_vsta(&pst_dmac_vap->st_vap_base_info))
     {
-        /* 如果启用Repeater功能，Proxy STA的发送描述符中的TX VAP index需要填为4(和普通sta是一样的) */
+        /* ????????Repeater??????Proxy STA????????????????TX VAP index????????4(??????sta????????) */
         pst_ppdu_feature->st_ppdu_addr_index.uc_tx_vap_index = WLAN_STA0_HAL_VAP_ID;
         pst_ppdu_feature->st_ppdu_addr_index.uc_ori_tx_vap_index = pst_dmac_vap->pst_hal_vap->uc_vap_id;
     }
@@ -340,17 +340,17 @@ OAL_STATIC OAL_INLINE oal_void  dmac_tx_init_ppdu_feature(dmac_vap_stru *pst_dma
 
     if (OAL_PTR_NULL == pst_dmac_user)
     {
-        pst_ppdu_feature->st_ppdu_addr_index.uc_ra_lut_index = 0;/* 用户结构体下的lut index */
+        pst_ppdu_feature->st_ppdu_addr_index.uc_ra_lut_index = 0;/* ??????????????lut index */
     }
     else
     {
-        /* addba req需要填写正确的ra lut index 以获取正确的ssn */
-        pst_ppdu_feature->st_ppdu_addr_index.uc_ra_lut_index = pst_dmac_user->uc_lut_index; /* 用户结构体下的lut index */
+        /* addba req??????????????ra lut index ????????????ssn */
+        pst_ppdu_feature->st_ppdu_addr_index.uc_ra_lut_index = pst_dmac_user->uc_lut_index; /* ??????????????lut index */
         /* OAM_INFO_LOG1(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_TX, "{dmac_tx_init_ppdu_feature::uc_ra_lut_index=%d.}",
                       pst_ppdu_feature->st_ppdu_addr_index.uc_ra_lut_index); */
     }
 
-    /* 单包/管理帧 发送这些字段无效初始化为0 */
+    /* ????/?????? ????????????????????????0 */
     pst_ppdu_feature->uc_mpdu_num               = uc_mpdu_num;
     pst_ppdu_feature->uc_ampdu_enable           = 0;
     pst_ppdu_feature->uc_rifs_enable            = 0;
@@ -378,12 +378,12 @@ OAL_STATIC OAL_INLINE oal_void  dmac_tx_init_ppdu_feature(dmac_vap_stru *pst_dma
 OAL_STATIC OAL_INLINE oal_void  dmac_tx_update_ppdu_feature(oal_netbuf_stru *pst_netbuf, hal_tx_ppdu_feature_stru *pst_ppdu_feature)
 {
     mac_tx_ctl_stru            *pst_cb;
-    oal_uint8                   uc_frame_type = 0;           /* 802.11头 */
+    oal_uint8                   uc_frame_type = 0;           /* 802.11?? */
 
     pst_cb = (mac_tx_ctl_stru *)OAL_NETBUF_CB(pst_netbuf);
     uc_frame_type = (oal_uint8)(((mac_ieee80211_frame_stru *)mac_get_cb_frame_hdr(pst_cb))->st_frame_control.bit_type);
 
-    /* 更新非Qos帧的seq_ctl_hw_bypass 标志 */
+    /* ??????Qos????seq_ctl_hw_bypass ???? */
     if ((OAL_TRUE!= mac_get_cb_is_qosdata(pst_cb)) && (2 == uc_frame_type))
     {
         pst_ppdu_feature->en_seq_ctl_hw_bypass = mac_get_cb_is_seq_ctrl_bypass(pst_cb);
@@ -393,13 +393,13 @@ OAL_STATIC OAL_INLINE oal_void  dmac_tx_update_ppdu_feature(oal_netbuf_stru *pst
 
 OAL_STATIC OAL_INLINE oal_void  dmac_get_mgmt_mpdu_param(oal_netbuf_stru *pst_netbuf_mgmt, mac_tx_ctl_stru *pst_tx_ctl,  oal_uint16 us_len, hal_tx_mpdu_stru *pst_mpdu)
 {
-    MAC_GET_CB_NETBUF_NUM(pst_tx_ctl) = 1;              /* 管理帧只有一个 */
+    MAC_GET_CB_NETBUF_NUM(pst_tx_ctl) = 1;              /* ?????????????? */
     MAC_GET_CB_EVENT_TYPE(pst_tx_ctl) = FRW_EVENT_TYPE_WLAN_CTX;
-    MAC_GET_CB_MPDU_NUM(pst_tx_ctl)   = 1;              /* 管理帧只有一个 */
-    mac_set_cb_is_amsdu(pst_tx_ctl, OAL_FALSE);         /* 管理帧不做amsdu聚合 */
+    MAC_GET_CB_MPDU_NUM(pst_tx_ctl)   = 1;              /* ?????????????? */
+    mac_set_cb_is_amsdu(pst_tx_ctl, OAL_FALSE);         /* ??????????amsdu???? */
     mac_set_cb_frame_hdr(pst_tx_ctl, (mac_ieee80211_frame_stru *)oal_netbuf_header(pst_netbuf_mgmt));
 
-    /* 填写MPDU基本参数 */
+    /* ????MPDU???????? */
     pst_mpdu->st_wmm.uc_tid_no = 0;
     pst_mpdu->st_wmm.uc_qos_enable = OAL_FALSE;
     if (WLAN_CONTROL == MAC_GET_CB_FRAME_TYPE(pst_tx_ctl))
@@ -450,7 +450,7 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_tx_get_mpdu_params(
                 hal_tx_mpdu_stru          *pst_mpdu)
 {
 
-    /* 获取MPDU相关参数 */
+    /* ????MPDU???????? */
     pst_mpdu->st_mpdu_mac_hdr.uc_mac_hdr_len   = MAC_GET_CB_FRAME_HEADER_LENGTH(pst_tx_ctl);
     pst_mpdu->st_mpdu_mac_hdr.uc_num_sub_msdu  = MAC_GET_CB_NETBUF_NUM(pst_tx_ctl);
 

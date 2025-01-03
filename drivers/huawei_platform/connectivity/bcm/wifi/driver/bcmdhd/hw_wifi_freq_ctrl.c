@@ -181,7 +181,7 @@ static int get_cpu_freq_raw(int freq, uint* value)
         return -1;
 
     if (IS_ERR(filp)) {
-        HW_PRINT_HI("get_cpu_freq_raw:¡¡freq¡¡= %d error\n", freq);
+        HW_PRINT_HI("get_cpu_freq_raw:??freq??= %d error\n", freq);
         return -1;
     }
     old_fs = get_fs();
@@ -216,7 +216,7 @@ static int set_cpu_freq_raw(int freq, uint value)
         return -1;
 
     if (IS_ERR(filp)) {
-        HW_PRINT_HI("set_cpu_freq_raw:¡¡freq¡¡= %d error\n", freq);
+        HW_PRINT_HI("set_cpu_freq_raw:??freq??= %d error\n", freq);
         return -1;
     }
     old_fs = get_fs();
@@ -243,7 +243,7 @@ static int get_ddr_freq_raw(int freq, uint* value)
         return -1;
 
     if (IS_ERR(filp)) {
-        HW_PRINT_HI("get_ddr_freq_raw:¡¡freq¡¡= %d error£\\n", freq);
+        HW_PRINT_HI("get_ddr_freq_raw:??freq??= %d error?\\n", freq);
         return -1;
     }
     old_fs = get_fs();
@@ -279,7 +279,7 @@ static int set_ddr_freq_raw(int freq, uint value)
         return -1;
 
     if (IS_ERR(filp)) {
-        HW_PRINT_HI("set_ddr_freq_raw:¡¡freq¡¡= %d error£Ün", freq);
+        HW_PRINT_HI("set_ddr_freq_raw:??freq??= %d error??n", freq);
         return -1;
     }
     old_fs = get_fs();

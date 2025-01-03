@@ -42,7 +42,7 @@ enum RDR_LPM3_SYSTEM_ERROR_TYPE {
 #define LPMCU_RESET_OFF_MODID_WDT       (0x2)
 /*lint -e750 -esym(750, PSCI_MSG_TYPE_M3_WDTTIMEOUT)*/
 /*
-如下PSCI_MSG_TYPE_M3_WDTTIMEOUT 等宏定义，如下三个文件要保持一致:
+????PSCI_MSG_TYPE_M3_WDTTIMEOUT ????????????????????????????????:
 kernel\drivers\watchdog\sp805_wdt.c
 kernel\drivers\hisi\mntn\blackbox\platform_lpm3\rdr_hisi_lpm3.c
 vendor\hisi\confidential\lpmcu\include\psci.h

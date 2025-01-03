@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AtParse.h"
 #include "ATCmdProc.h"
@@ -74,21 +74,21 @@
 #include "AtCmdAgpsProc.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_AT_EXTENDPRIVATECMD_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
-/* 主动上报相关命令下移至C核，设置和查询时需要等待C核回复，添加等待设置回复和查询回复的时间 */
+/* ??????????????????????C????????????????????????C???????????????????????????????????????? */
 AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
 
-/* 示例: ^CMDX 命令是不受E5密码保护命令，且在+CLAC列举所有命令时不显示，第一个参数是不带双引号的字符串,
-        第二个参数是带双引号的字符串，第三个参数是整数型参数
+/* ????: ^CMDX ??????????E5??????????????????+CLAC????????????????????????????????????????????????????,
+        ????????????????????????????????????????????????????
 
-   !!!!!!!!!!!注意: param1和param2是示例，实际定义命令时应尽量定义的简短(可提高解析效率)!!!!!!!!!!!!!
+   !!!!!!!!!!!????: param1??param2??????????????????????????????????????(??????????????)!!!!!!!!!!!!!
 
     {AT_CMD_CMDX,
     At_SetCmdxPara, AT_SET_PARA_TIME, At_QryCmdxPara, AT_QRY_PARA_TIME, At_TestCmdxPara, AT_NOT_SET_TIME,
@@ -235,7 +235,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CMS_OPERATION_NOT_ALLOWED,       CMD_TBL_PIN_IS_LOCKED,
     (TAF_UINT8*)"^CMMT", (TAF_UINT8*)"(0-254),(0,1)"},
 
-    /* E5命令 begin */
+    /* E5???? begin */
     {AT_CMD_APTHROUGHPUT,
     At_SetApThroughputPara, AT_SET_PARA_TIME,  At_QryApThroughputPara,   AT_QRY_PARA_TIME,   AT_TestApThroughputPara, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -337,23 +337,23 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS,       CMD_TBL_PIN_IS_LOCKED,
     (VOS_UINT8*)"^USBTETHERINFO", (VOS_UINT8*)"(0,1),(rnmet_name)"},
 
-/* E5命令 end */
+/* E5???? end */
 
-    /*闪电卡版本自动化测试控制应用手动拨号*/
+    /*????????????????????????????????????*/
     {AT_CMD_APPDIALMODE,
     At_SetAppDialModePara,  AT_NOT_SET_TIME,  VOS_NULL_PTR,              AT_NOT_SET_TIME,   VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
     AT_CME_INCORRECT_PARAMETERS,       CMD_TBL_LIMITED_NULL,
     (VOS_UINT8*)"^APPDIALMODE", (VOS_UINT8*)"(0-1)"},
 
-    /* 统计从上电到pdp激活成功的启动时间*/
+    /* ????????????pdp??????????????????*/
     {AT_CMD_LCSTARTTIME,
     VOS_NULL_PTR,           AT_NOT_SET_TIME,  At_QryLcStartTimePara,     AT_NOT_SET_TIME,   VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
     AT_CME_INCORRECT_PARAMETERS,       CMD_TBL_LIMITED_NULL,
     (VOS_UINT8*)"^LCSTARTTIME", VOS_NULL_PTR},
 
-/* HUAWEI 移动宽带产品终端设备一键升级接口规范V1.07.doc 文档涉及的命令底软未归一: V700R001版本使用LTE的实现，V300R002版本使用GU模的实现 */
+/* HUAWEI ????????????????????????????????????V1.07.doc ????????????????????????: V700R001????????LTE????????V300R002????????GU???????? */
     {AT_CMD_DLOADVER,
     VOS_NULL_PTR, AT_NOT_SET_TIME, atQryDLoadVer, AT_UPGRADE_TIME_5S, VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -461,7 +461,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS,       CMD_TBL_LIMITED_NULL,
     (VOS_UINT8*)"^IPV6TEMPADDR",(VOS_UINT8*)"(1-11)"},
 
-/* XML命令 begin */
+/* XML???? begin */
     {AT_CMD_APRPTSRVURL,
     AT_SetApRptSrvUrlPara,  AT_NOT_SET_TIME,  AT_QryApRptSrvUrlPara,     AT_NOT_SET_TIME,    At_CmdTestProcOK, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -479,7 +479,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
     AT_CME_INCORRECT_PARAMETERS,       CMD_TBL_LIMITED_NULL,
     (VOS_UINT8*)"^APXMLRPTFLAG",   (VOS_UINT8*)"(0,1)"},
-/* XML命令 end  */
+/* XML???? end  */
 
 
     {AT_CMD_CMSTUB,
@@ -488,7 +488,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CMS_OPERATION_NOT_ALLOWED,       CMD_TBL_CLAC_IS_INVISIBLE,
     (VOS_UINT8*)"^CMSTUB",      (VOS_UINT8*)"(0-11),(0-6)"},
 
-    /* 支持5中形态的语音类型 */
+    /* ????5???????????????? */
     {AT_CMD_VMSET,
     At_SetVMSETPara,        AT_SET_VC_PARA_TIME, At_QryVMSETPara,         AT_QRY_VC_PARA_TIME,    VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -545,14 +545,14 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     (VOS_UINT8*)"^CSNR", (VOS_UINT8*)"(-145 - -60),(-32 - 0)"},
 
 
-    /*OAM应终端要求新增AT命令*/
+    /*OAM??????????????AT????*/
     {AT_CMD_ADCTEMP,
     At_SetAdcTempPara,      AT_SET_PARA_TIME,  At_QryAdcTempPara,        AT_NOT_SET_TIME,    VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
     AT_CME_INCORRECT_PARAMETERS, CMD_TBL_PIN_IS_LOCKED | CMD_TBL_CLAC_IS_INVISIBLE,
     (VOS_UINT8*)"^ADCTEMP", (VOS_UINT8*)"(0,1),(0-150),(0-150),(0-150)"},
 
-    /*NAS应终端要求新增AT命令*/
+    /*NAS??????????????AT????*/
     {AT_CMD_CRPN,
     At_SetCrpnPara,         AT_SET_PARA_TIME, At_QryCrpnPara,           AT_NOT_SET_TIME,    At_CmdTestProcOK, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -697,7 +697,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS, CMD_TBL_LIMITED_NULL,
     (VOS_UINT8*)"^CFPLMN",      (VOS_UINT8*)"(0,1),(oper)"},
 
-    /* SVLTE项目AP需要在无卡时候设置CAATT命令 */
+    /* SVLTE????AP??????????????????CAATT???? */
     {AT_CMD_CAATT,
     At_SetAutoAttach,       AT_SET_PARA_TIME,   At_QryAutoAttach,       AT_QRY_PARA_TIME,   VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -820,7 +820,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS, CMD_TBL_PIN_IS_LOCKED,
     (VOS_UINT8*)"^VTFLOWRPT",   (VOS_UINT8*)"(0,1)"},
 
-    /* 自定义命令 */
+    /* ?????????? */
     {AT_CMD_CCIN,
     At_SetCcinPara,         AT_NOT_SET_TIME,    VOS_NULL_PTR,           AT_NOT_SET_TIME,    VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -941,7 +941,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS, CMD_TBL_LIMITED_NULL,
     (VOS_UINT8*)"^DNSQUERY",    (VOS_UINT8*)DNSQUERY_TEST_CMD_PARA_STRING},
 
-    /* 与K3对接命令 */
+    /* ??K3???????? */
     {AT_CMD_CSASM,
     AT_SetMemStatusPara,  AT_SET_PARA_TIME, VOS_NULL_PTR,   AT_NOT_SET_TIME, VOS_NULL_PTR,  AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -1361,7 +1361,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS,    CMD_TBL_NO_LIMITED,
     (VOS_UINT8 *)"^CACMIMS",   (VOS_UINT8 *)"(1-5),(0-1),(@number),(@number),(@number),(@number),(@number)"},
 
-    /* 添加了class域支持VIDEO */
+    /* ??????class??????VIDEO */
     {AT_CMD_CCWAI,
     AT_SetCcwaiPara,     AT_SET_PARA_TIME,   At_CmdTestProcOK,       AT_NOT_SET_TIME,   At_CmdTestProcOK,   AT_NOT_SET_TIME,
     VOS_NULL_PTR,        AT_NOT_SET_TIME,
@@ -1446,14 +1446,14 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS, CMD_TBL_NO_LIMITED,
     (VOS_UINT8 *)"^JDSWITCH", (VOS_UINT8 *)"(0,1)"},
 
-    /* 根据干扰预警需求新增AT命令^EMRSSICFG */
+    /* ????????????????????AT????^EMRSSICFG */
     {AT_CMD_EMRSSICFG,
     AT_SetEmRssiCfgPara,    AT_SET_PARA_TIME,   AT_QryEmRssiCfgPara, AT_QRY_PARA_TIME,  VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR, AT_NOT_SET_TIME,
     AT_CME_INCORRECT_PARAMETERS, CMD_TBL_NO_LIMITED,
     (VOS_UINT8 *)"^EMRSSICFG", (VOS_UINT8 *)"(0-2),(5-70)"},
 
-    /* 根据干扰预警需求新增AT命令^EMRSSIRPT */
+    /* ????????????????????AT????^EMRSSIRPT */
     {AT_CMD_EMRSSIRPT,
     AT_SetEmRssiRptPara,    AT_SET_PARA_TIME,   AT_QryEmRssiRptPara, AT_QRY_PARA_TIME,  VOS_NULL_PTR, AT_NOT_SET_TIME,
     VOS_NULL_PTR, AT_NOT_SET_TIME,
@@ -1467,7 +1467,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     (VOS_UINT8*)"^PSPROTECTMODE",       (VOS_UINT8*)"(0,1)"},
 
 
-    /* 模块产品线GUTL锁频特性 */
+    /* ??????????GUTL???????? */
     {AT_CMD_M2MFREQLOCK,
     At_SetM2MFreqLock,      AT_SET_PARA_TIME,   At_QryM2MFreqLock,      AT_QRY_PARA_TIME,   At_TestM2MFreqLock, AT_NOT_SET_TIME,
     VOS_NULL_PTR,   AT_NOT_SET_TIME,
@@ -1626,7 +1626,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
     AT_CME_INCORRECT_PARAMETERS, CMD_TBL_PIN_IS_LOCKED,
     (VOS_UINT8 *)"^CSID", (VOS_UINT8*)"(0,1)"},
 
-    /* 移出CDMA编译开关 */
+    /* ????CDMA???????? */
 
     {AT_CMD_CSNID,
     VOS_NULL_PTR,    AT_SET_PARA_TIME,    AT_QryCurrSidNid,    AT_QRY_PARA_TIME,    VOS_NULL_PTR,    AT_NOT_SET_TIME,
@@ -2502,7 +2502,7 @@ AT_PAR_CMD_ELEMENT_STRU g_astAtPrivateCmdTbl[] = {
 
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -2548,15 +2548,15 @@ VOS_UINT32 AT_TestOplPara(VOS_UINT8 ucIndex)
 
     TAF_MEM_SET_S(&stUsimInfo, sizeof(stUsimInfo), 0x00, sizeof(TAF_PH_QRY_USIM_INFO_STRU));
 
-    /* 执行命令操作 */
+    /* ???????????? */
     stUsimInfo.enEfId = TAF_PH_OPL_FILE;
     stUsimInfo.Icctype = TAF_PH_ICC_USIM;
     stUsimInfo.ulRecNum = TAF_PH_INVALID_USIM_REC;
     if(AT_SUCCESS == TAF_QryUsimInfo(gastAtClientTab[ucIndex].usClientId, 0, &stUsimInfo))
     {
-        /* 设置当前操作类型 */
+        /* ???????????????? */
         gastAtClientTab[ucIndex].CmdCurrentOpt = AT_CMD_OPL_READ;
-        return AT_WAIT_ASYNC_RETURN;    /* 返回命令处理挂起状态 */
+        return AT_WAIT_ASYNC_RETURN;    /* ???????????????????? */
     }
     else
     {
@@ -2572,15 +2572,15 @@ VOS_UINT32 AT_TestPnnPara(VOS_UINT8 ucIndex)
 
     TAF_MEM_SET_S(&stUsimInfo, sizeof(stUsimInfo), 0x00, sizeof(TAF_PH_QRY_USIM_INFO_STRU));
 
-    /* 执行命令操作 */
+    /* ???????????? */
     stUsimInfo.enEfId = TAF_PH_PNN_FILE;
     stUsimInfo.Icctype = TAF_PH_ICC_USIM;
     stUsimInfo.ulRecNum = TAF_PH_INVALID_USIM_REC;
     if(AT_SUCCESS == TAF_QryUsimInfo(gastAtClientTab[ucIndex].usClientId,0,&stUsimInfo))
     {
-        /* 设置当前操作类型 */
+        /* ???????????????? */
         gastAtClientTab[ucIndex].CmdCurrentOpt = AT_CMD_PNN_READ;
-        return AT_WAIT_ASYNC_RETURN;    /* 返回命令处理挂起状态 */
+        return AT_WAIT_ASYNC_RETURN;    /* ???????????????????? */
     }
     else
     {
@@ -2694,7 +2694,7 @@ VOS_UINT32 AT_TestSetPort(VOS_UINT8 ucIndex)
                                         "%s:",
                                         g_stParseContext[ucIndex].pstCmdElement->pszCmdName);
 
-        /*参数*/
+        /*????*/
         usLength += (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                         (VOS_CHAR *)pgucAtSndCodeAddr,
                                         (VOS_CHAR *)pgucAtSndCodeAddr + usLength,
@@ -2704,7 +2704,7 @@ VOS_UINT32 AT_TestSetPort(VOS_UINT8 ucIndex)
 
         if (i < (ulAvailablePortTypeNum - 1))
         {
-            /*回车换行*/
+            /*????????*/
             usLength += (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                             (VOS_CHAR *)pgucAtSndCodeAddr,
                                             (VOS_CHAR *)pgucAtSndCodeAddr + usLength,
@@ -2736,7 +2736,7 @@ VOS_UINT32 AT_QryDloadVerPara( VOS_UINT8 ucIndex )
 {
     VOS_UINT32                          ulRet;
 
-    /* 发消息到C核获取鉴权标识 */
+    /* ????????C?????????????? */
     ulRet = AT_FillAndSndAppReqMsg(gastAtClientTab[ucIndex].usClientId,
                                    gastAtClientTab[ucIndex].opId,
                                    DRV_AGENT_DLOADVER_QRY_REQ,
@@ -2749,7 +2749,7 @@ VOS_UINT32 AT_QryDloadVerPara( VOS_UINT8 ucIndex )
         return AT_ERROR;
     }
 
-    /* 设置AT模块实体的状态为等待异步返回 */
+    /* ????AT???????????????????????????? */
     gastAtClientTab[ucIndex].CmdCurrentOpt = AT_CMD_DLOADVER_READ;
     return AT_WAIT_ASYNC_RETURN;
 
@@ -2800,7 +2800,7 @@ VOS_UINT32 At_RegisterExPrivateCmdTable(VOS_VOID)
 
 VOS_UINT32 AT_TestApRptPortSelectPara(VOS_UINT8 ucIndex)
 {
-    /* 通道检查 */
+    /* ???????? */
     if (VOS_FALSE == AT_IsApPort(ucIndex))
     {
         return AT_ERROR;
@@ -2818,7 +2818,7 @@ VOS_UINT32 AT_TestApRptPortSelectPara(VOS_UINT8 ucIndex)
 
 VOS_UINT32 AT_TestUsbSwitchPara(VOS_UINT8 ucIndex)
 {
-    /* 通道检查 */
+    /* ???????? */
     if (VOS_FALSE == AT_IsApPort(ucIndex))
     {
         return AT_ERROR;
@@ -2836,7 +2836,7 @@ VOS_UINT32 AT_TestUsbSwitchPara(VOS_UINT8 ucIndex)
 
 VOS_UINT32 AT_TestGpioPara(VOS_UINT8 ucIndex)
 {
-    /* 如果不支持HSIC特性，不支持^GPIO测试命令 */
+    /* ??????????HSIC????????????^GPIO???????? */
     if (BSP_MODULE_SUPPORT != mdrv_misc_support_check(BSP_MODULE_TYPE_HSIC))
     {
         return AT_ERROR;
@@ -2876,7 +2876,7 @@ VOS_UINT32 AT_TestRsfwPara(VOS_UINT8 ucIndex)
 
 VOS_UINT32 AT_TestXcposrPara(VOS_UINT8 ucIndex)
 {
-    /* 通道检查 */
+    /* ???????? */
     if (VOS_FALSE == AT_IsApPort(ucIndex))
     {
         return AT_ERROR;
@@ -2911,7 +2911,7 @@ VOS_UINT32 AT_TestBodySarWcdmaPara( VOS_UINT8 ucIndex )
 
     TAF_MEM_SET_S(&stWGBand, sizeof(stWGBand), 0x00, sizeof(stWGBand));
 
-    /* 获取WCDMA Band能力值 */
+    /* ????WCDMA Band?????? */
     if (NV_OK != TAF_ACORE_NV_READ(MODEM_ID_0,
                                    en_NV_Item_WG_RF_MAIN_BAND,
                                    &stWGBand,

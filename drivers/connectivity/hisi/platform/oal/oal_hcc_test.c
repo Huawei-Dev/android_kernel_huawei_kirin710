@@ -547,7 +547,7 @@ OAL_STATIC  oal_uint64 hcc_test_utilization_ratio_gen(oal_uint64 payload_size,oa
     return ret;
 }
 
-/*统计发送方向的丢包率，接收方向默认不丢包*/
+/*????????????????????????????????????????*/
 OAL_STATIC  oal_uint32 hcc_test_tx_pkt_loss_gen(oal_uint32 tx_pkts,oal_uint32 actual_tx_pkts)
 {
     oal_uint32 ul_loss;
@@ -573,7 +573,7 @@ OAL_STATIC oal_int32 hcc_test_rcvd(oal_uint8 stype, hcc_netbuf_stru* pst_hcc_net
     {
         oal_int32 filter_flag = 0;
 
-        /*计算总共数据包长度*/
+        /*??????????????????*/
         if(OAL_UNLIKELY(OAL_NETBUF_LEN(pst_netbuf)!= g_hcc_test_event->test_data.pkt_len))
         {
             if(printk_ratelimit())
@@ -609,7 +609,7 @@ OAL_STATIC oal_int32 hcc_test_rcvd(oal_uint8 stype, hcc_netbuf_stru* pst_hcc_net
 
         if(!filter_flag)
         {
-            /*filter_flag=1 时接收的数据包不符合要求，则过滤掉*/
+            /*filter_flag=1 ??????????????????????????????????*/
             g_hcc_test_event->test_data.pkt_rcvd++;
             g_hcc_test_event->test_data.total_rcvd_bytes += OAL_NETBUF_LEN(pst_netbuf);
             g_hcc_test_event->last_time= ktime_get();
@@ -750,7 +750,7 @@ OAL_STATIC oal_int32 hcc_test_rx_start(oal_uint16 start_cmd)
 
     g_hcc_test_event->last_time= ktime_get();
 
-    /*等待回来的CMD命令*/
+    /*??????????CMD????*/
     ret = wait_for_completion_interruptible(&g_hcc_test_event->test_trans_done);
     if(ret < 0)
     {
@@ -828,7 +828,7 @@ OAL_STATIC oal_int32 hcc_test_normal_start(oal_uint16 start_cmd)
     g_hcc_test_event->last_time= ktime_get();
 
 retry:
-    /*等待回来的CMD命令*/
+    /*??????????CMD????*/
     ret = wait_for_completion_interruptible_timeout(&g_hcc_test_event->test_trans_done,OAL_MSECS_TO_JIFFIES(500));
     if(ret < 0)
     {
@@ -936,13 +936,13 @@ OAL_STATIC ssize_t  hcc_test_get_para(struct device *dev, struct device_attribut
     ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "PayloadRcvd %llu bytes, SDIOActualRecv  %llu bytes\n",
                                                             g_hcc_test_event->test_data.total_rcvd_bytes,
                                                             g_hcc_test_event->test_data.trans_info.total_d2h_trans_bytes);
-    /*SDIO通道利用率*/
-    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "Hcc Utilization Ratio %llu ‰\n",
+    /*SDIO??????????*/
+    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "Hcc Utilization Ratio %llu ??\n",
                             hcc_test_utilization_ratio_gen(g_hcc_test_event->test_data.total_sent_bytes + g_hcc_test_event->test_data.total_rcvd_bytes,
                                                             g_hcc_test_event->test_data.trans_info.total_h2d_trans_bytes +
                                                              g_hcc_test_event->test_data.trans_info.total_d2h_trans_bytes));
-    /*发送方向的丢包率*/
-    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "TxPackageLoss %u ‰, pkt_sent: %d actual_tx_pkts: %u\n",
+    /*????????????????*/
+    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "TxPackageLoss %u ??, pkt_sent: %d actual_tx_pkts: %u\n",
                                     hcc_test_tx_pkt_loss_gen(g_hcc_test_event->test_data.pkt_sent,g_hcc_test_event->test_data.trans_info.actual_tx_pkts),
                                     g_hcc_test_event->test_data.pkt_sent,
                                     g_hcc_test_event->test_data.trans_info.actual_tx_pkts);

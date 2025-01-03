@@ -50,7 +50,7 @@
 #define __ADSTIMERMGMT_H__
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 
@@ -65,40 +65,40 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-/* ADS中同时运行的定时器的最大数目,目前只有一个 */
+/* ADS????????????????????????????,???????????? */
 #define ADS_MAX_TIMER_NUM               (TI_ADS_TIMER_BUTT)
 
-/* 定时器TI_ADS_UL_SEND的时长 */
+/* ??????TI_ADS_UL_SEND?????? */
 #define TI_ADS_UL_SEND_LEN              (10)
 
-/* 定时器TI_ADS_DSFLOW_STATS的时长，1秒统计一次速率 */
+/* ??????TI_ADS_DSFLOW_STATS????????1?????????????? */
 #define TI_ADS_DSFLOW_STATS_LEN         (1000)
 
-/* 定时器TI_ADS_DL_PROTECT的时长, 100ms */
+/* ??????TI_ADS_DL_PROTECT??????, 100ms */
 #define TI_ADS_DL_PROTECT_LEN           (100)
 
-/* 定时器TI_ADS_DL_ADQ_EMPTY的时长, 10ms */
+/* ??????TI_ADS_DL_ADQ_EMPTY??????, 10ms */
 #define TI_ADS_DL_ADQ_EMPTY_LEN         (10)
 
-/* 定时器TI_ADS_RPT_STATS的时长，2秒上报一次统计信息 */
+/* ??????TI_ADS_RPT_STATS????????2?????????????????? */
 #define TI_ADS_RPT_STATS_LEN         (2000)
 
 typedef VOS_VOID (*PFN_ADS_TIMER_CALL_BACK_FUN)(VOS_UINT32 ulParam, VOS_UINT32 ulTimerName);
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 enum ADS_TIMER_ID_ENUM
 {
-    TI_ADS_UL_SEND                      = 0x00,                                 /* ADS上行发送定时器 */
-    TI_ADS_DSFLOW_STATS                 = 0x01,                                 /* 流量统计定时器 */
-    TI_ADS_DL_ADQ_EMPTY                 = 0x02,                                 /* 下行ADQ空定时器 */
-    TI_ADS_UL_DATA_STAT                 = 0x03,                                 /* 上行数据统计定时器 */
-    TI_ADS_DL_CCORE_RESET_DELAY         = 0x04,                                 /* 下行C核单独复位延时定时器 */
+    TI_ADS_UL_SEND                      = 0x00,                                 /* ADS?????????????? */
+    TI_ADS_DSFLOW_STATS                 = 0x01,                                 /* ?????????????? */
+    TI_ADS_DL_ADQ_EMPTY                 = 0x02,                                 /* ????ADQ???????? */
+    TI_ADS_UL_DATA_STAT                 = 0x03,                                 /* ?????????????????? */
+    TI_ADS_DL_CCORE_RESET_DELAY         = 0x04,                                 /* ????C???????????????????? */
 
     TI_ADS_TIMER_BUTT
 };
@@ -108,8 +108,8 @@ typedef VOS_UINT32  ADS_TIMER_ID_ENUM_UINT32;
 
 enum ADS_TIMER_STATUS_ENUM
 {
-    ADS_TIMER_STATUS_STOP,                                                      /* 定时器停止状态 */
-    ADS_TIMER_STATUS_RUNNING,                                                   /* 定时器运行状态 */
+    ADS_TIMER_STATUS_STOP,                                                      /* ?????????????? */
+    ADS_TIMER_STATUS_RUNNING,                                                   /* ?????????????? */
     ASD_TIMER_STATUS_BUTT
 };
 typedef VOS_UINT8 ADS_TIMER_STATUS_ENUM_UINT8;
@@ -117,8 +117,8 @@ typedef VOS_UINT8 ADS_TIMER_STATUS_ENUM_UINT8;
 
 enum ADS_TIMER_OPERATION_TYPE_ENUM
 {
-    ADS_TIMER_OPERATION_START,                                                  /*启动定时器*/
-    ADS_TIMER_OPERATION_STOP,                                                   /*停止定时器*/
+    ADS_TIMER_OPERATION_START,                                                  /*??????????*/
+    ADS_TIMER_OPERATION_STOP,                                                   /*??????????*/
     ADS_TIMER_OPERATION_TYPE_ENUM_BUTT
 };
 typedef VOS_UINT8 ADS_TIMER_OPERATION_TYPE_ENUM_UINT8;
@@ -126,79 +126,79 @@ typedef VOS_UINT8 ADS_TIMER_OPERATION_TYPE_ENUM_UINT8;
 
 enum ADS_TIMER_STOP_CAUSE_ENUM
 {
-    ADS_TIMER_STOP_CAUSE_USER,                                                   /* 用户主动停止的 */
-    ADS_TIMER_STOP_CAUSE_TIMEOUT,                                                /* 定时器超时显示停止的 */
+    ADS_TIMER_STOP_CAUSE_USER,                                                   /* ?????????????? */
+    ADS_TIMER_STOP_CAUSE_TIMEOUT,                                                /* ???????????????????? */
     ADS_TIMER_STOP_CAUSE_ENUM_BUTT
 };
 typedef VOS_UINT8 ADS_TIMER_STOP_CAUSE_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 
 typedef struct
 {
-    HTIMER                              hTimer;                                 /* 定时器的运行指针 */
-    VOS_UINT8                           aucRsv[8];                              /* 保留*/
+    HTIMER                              hTimer;                                 /* ???????????????? */
+    VOS_UINT8                           aucRsv[8];                              /* ????*/
 } ADS_TIMER_CTX_STRU;
 
 /*****************************************************************************
- 结构名称: ADS_TIMER_INFO_STRU
- 结构说明: ADS定时器信息结构，用于SDT中显示
+ ????????: ADS_TIMER_INFO_STRU
+ ????????: ADS????????????????????SDT??????
 *****************************************************************************/
 typedef struct
 {
     VOS_MSG_HEADER                                          /* _H2ASN_Skip */
     ADS_TIMER_ID_ENUM_UINT32            enTimerId;          /* _H2ASN_Skip */
-    VOS_UINT32                          ulTimerLen;         /* 定时器长度*/
-    ADS_TIMER_OPERATION_TYPE_ENUM_UINT8 enTimerAction;      /* 定时器操作类型 */
-    ADS_TIMER_STOP_CAUSE_ENUM_UINT8     enTimerStopCause;   /* 定时器停止的原因 */
+    VOS_UINT32                          ulTimerLen;         /* ??????????*/
+    ADS_TIMER_OPERATION_TYPE_ENUM_UINT8 enTimerAction;      /* ?????????????? */
+    ADS_TIMER_STOP_CAUSE_ENUM_UINT8     enTimerStopCause;   /* ???????????????? */
     VOS_UINT8                           aucReserved[2];
 } ADS_TIMER_INFO_STRU;
 
 /*****************************************************************************
- 结构名称: ADS_TIMER_OPERATE_STRU
- 结构说明: ADS定时器操作结构
+ ????????: ADS_TIMER_OPERATE_STRU
+ ????????: ADS??????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT32                              ulPid;
-    VOS_UINT32                              enTimerId;                          /* 定时器名称 */
-    VOS_TIMER_PRECISION_ENUM_UINT32         enPrecision;                        /* 定时器精度 */
+    VOS_UINT32                              enTimerId;                          /* ?????????? */
+    VOS_TIMER_PRECISION_ENUM_UINT32         enPrecision;                        /* ?????????? */
     VOS_UINT8                               aucReserved[4];
-    PFN_ADS_TIMER_CALL_BACK_FUN             pfnTimerStartCallBack;              /* 定时器使用CALLBACK的函数 */
+    PFN_ADS_TIMER_CALL_BACK_FUN             pfnTimerStartCallBack;              /* ??????????CALLBACK?????? */
 } ADS_TIMER_OPERATE_STRU;
 
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 VOS_VOID ADS_DL_StartProtectTimer(VOS_VOID);

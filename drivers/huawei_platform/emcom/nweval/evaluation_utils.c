@@ -1,9 +1,9 @@
 /******************************************************************************
-   说明：本文件包含basten项目的network evaluation模块的辅助函数
+   ????????????????basten??????network evaluation??????????????
 ******************************************************************************/
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -17,7 +17,7 @@
 HWLOG_REGIST();
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 /* constant arrays */
 static const int32_t TRAFFIC_SS_SEGMENT_ENDS[TRAFFIC_SS_SEGMENT_ENDPOINTS] = {-100, -60, -40, 0};
@@ -35,7 +35,7 @@ static const int32_t STABILITY_RTT_SEGMENT_ENDS[STABILITY_RTT_SEGMENT_ENDPOINTS]
 static const int32_t STABILITY_RTT_FINE_SQRDEV_SCALS[STABILITY_RTT_FINE_STDEV_ENDPOINTS] = {160, 300, 500, 2500, 10000};                     // formally used stdev = {1, 10, 20, 50, 100}
 
 /*****************************************************************************
-  3 函数声明
+  3 ????????
 *****************************************************************************/
 /* function decarations */
 static POINT_SET convert_probability_to_count(POINT_SET* probability_set, int8_t data_length);
@@ -43,7 +43,7 @@ static int32_t cal_euclidiean_distance_square(POINT point1, POINT point2);
 static int8_t find_nearest_reference_point(int32_t* distance_squares, int8_t number);
 
 /*****************************************************************************
-  4 函数实现
+  4 ????????
 *****************************************************************************/
 /* function implementations */
 

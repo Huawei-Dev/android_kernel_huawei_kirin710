@@ -26,20 +26,20 @@ extern "C" {
 
 #ifdef _PRE_WLAN_CHIP_TEST
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 内部函数声明
+  3 ????????????
 *****************************************************************************/
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
-/* WME初始参数定义，按照OFDM初始化 */
+/* WME??????????????????OFDM?????? */
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -78,52 +78,52 @@ oal_uint32  dmac_test_open_wmm_test(mac_vap_stru *pst_mac_vap, oal_uint8 uc_test
     pst_hal_vap  = pst_dmac_vap->pst_hal_vap;
     pst_wmm = mac_get_wmm_cfg(pst_mac_vap->en_vap_mode);
 
-    /* 关中断，挂起硬件发送需要关中断 */
+    /* ?????????????????????????????? */
     oal_irq_save(&ul_irq_flag, OAL_5115IRQ_DTOWT);
 
     if (DMAC_TEST_WMM_SUSPEND == (uc_test_type & DMAC_TEST_WMM_SUSPEND))
     {
-        /* 挂起硬件发送 */
+        /* ???????????? */
         hal_set_machw_tx_suspend(pst_hal_device);
     }
 
-    /* 获取时间戳 */
+    /* ?????????? */
     hal_vap_tsf_get_32bit(pst_hal_vap, &ul_tsf);
 
-    /* 触发硬件abort */
+    /* ????????abort */
     hal_set_tx_abort_en(pst_hal_device, 1);
 
     if (DMAC_TEST_WMM_ENABLE == (uc_test_type & DMAC_TEST_WMM_ENABLE))
     {
-        /* 打开WMM */
+        /* ????WMM */
         hal_enable_machw_edca(pst_hal_device);
-        /* 重新设置WMM参数 */
+        /* ????????WMM???? */
         dmac_config_set_wmm_open_cfg(pst_hal_vap, pst_wmm);
     }
     else
     {
-        /* 关闭WMM */
+        /* ????WMM */
         hal_disable_machw_edca(pst_hal_device);
-        /* 重新设置WMM参数 */
+        /* ????????WMM???? */
         dmac_config_set_wmm_close_cfg(pst_hal_vap, pst_wmm);
     }
 
-    /* 退出abort */
+    /* ????abort */
     hal_set_tx_abort_en(pst_hal_device, 0);
 
     if (DMAC_TEST_WMM_SUSPEND == (uc_test_type & DMAC_TEST_WMM_SUSPEND))
     {
-        /* 重新设置硬件发送 */
+        /* ???????????????? */
         hal_set_machw_tx_resume(pst_hal_device);
     }
 
-    /* 再次获取时间戳 */
+    /* ?????????????? */
     hal_vap_tsf_get_32bit(pst_hal_vap, &ul_tsf_passed);
 
-    /* 开中断 */
+    /* ?????? */
     oal_irq_restore(&ul_irq_flag, OAL_5115IRQ_DTOWT);
 
-    /*打印消耗的时间，单位为us*/
+    /*??????????????????????us*/
     OAM_WARNING_LOG1(0, OAM_SF_WMM, "{dmac_test_open_wmm_test::wmm time passed=%u}\r\n",
                                      (ul_tsf_passed - ul_tsf));
     return OAL_SUCC;

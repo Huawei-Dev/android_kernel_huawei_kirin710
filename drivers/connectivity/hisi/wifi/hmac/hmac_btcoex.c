@@ -12,7 +12,7 @@
 #ifdef _PRE_WLAN_FEATURE_BTCOEX
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "hmac_vap.h"
 #include "hmac_ext_if.h"
@@ -25,11 +25,11 @@
 #define THIS_FILE_ID OAM_FILE_ID_HMAC_BTCOEX_C
 
 /*****************************************************************************
-  2 函数声明
+  2 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -189,15 +189,15 @@ oal_void hmac_btcoex_arp_fail_delba_process(oal_netbuf_stru *pst_netbuf, mac_vap
 
     if((pst_hmac_user_btcoex->us_ba_size > 0) && (pst_hmac_user_btcoex->us_ba_size < WLAN_AMPDU_RX_BA_LUT_WSIZE))
     {
-        /* 参数外面已经做检查，里面没必要再做检查了 */
+        /* ???????????????????????????????????????? */
         uc_data_type =  mac_get_data_type_from_8023((oal_uint8 *)pst_mac_ether_hdr, MAC_NETBUFF_PAYLOAD_ETH);
 
         pst_hmac_btcoex_arp_req_process = &(pst_hmac_user_btcoex->st_hmac_btcoex_arp_req_process);
 
-        /* 发送方向创建定时器 */
+        /* ?????????????????? */
         if((MAC_DATA_ARP_REQ == uc_data_type) && (OAL_FALSE == pst_hmac_btcoex_arp_req_process->st_delba_opt_timer.en_is_registerd))
         {
-            /* 每次重启定时器之前清零,保证统计的时间 */
+            /* ??????????????????????,?????????????? */
             oal_atomic_set(&(pst_hmac_btcoex_arp_req_process->ul_rx_unicast_pkt_to_lan), 0);
 
             FRW_TIMER_CREATE_TIMER(&(pst_hmac_btcoex_arp_req_process->st_delba_opt_timer),
@@ -288,7 +288,7 @@ oal_void hmac_btcoex_check_rx_same_baw_start_from_addba_req(hmac_vap_stru *pst_h
 
     pst_hmac_btcoex_addba_req = &(pst_hmac_user_btcoex->st_hmac_btcoex_addba_req);
 
-    /* 两次收到addba req的start num一样且不是重传帧，认为对端移窗卡死  */
+    /* ????????addba req??start num??????????????????????????????????  */
     if (OAL_TRUE == pst_frame_hdr->st_frame_control.bit_retry
         && pst_frame_hdr->bit_seq_num == pst_hmac_btcoex_addba_req->us_last_seq_num)
     {
@@ -330,15 +330,15 @@ oal_void hmac_btcoex_check_rx_same_baw_start_from_addba_req(hmac_vap_stru *pst_h
             hmac_btcoex_add_exception_to_list(pst_hmac_vap, pst_frame_hdr->auc_address2);
         }
 
-        /* 发送去认证帧到AP */
+        /* ??????????????AP */
         hmac_mgmt_send_disassoc_frame(&pst_hmac_vap->st_vap_base_info,
                                     pst_frame_hdr->auc_address2,
                                     MAC_UNSPEC_REASON,
                                     pst_hmac_user->st_user_base_info.st_cap_info.bit_pmf_active);
 
-        /* 删除对应用户 */
+        /* ???????????? */
         hmac_user_del(&pst_hmac_vap->st_vap_base_info, pst_hmac_user);
-        /* 设置状态为FAKE UP */
+        /* ??????????FAKE UP */
         hmac_fsm_change_state(pst_hmac_vap, MAC_VAP_STATE_STA_FAKE_UP);
         hmac_sta_handle_disassoc_rsp(pst_hmac_vap, MAC_AUTH_NOT_VALID);
     }
@@ -364,7 +364,7 @@ oal_uint32  hmac_config_print_btcoex_status(mac_vap_stru *pst_mac_vap, oal_uint1
     }
 
     /***************************************************************************
-        抛事件到DMAC层, 同步DMAC数据
+        ????????DMAC??, ????DMAC????
     ***************************************************************************/
     ul_ret = hmac_config_send_event(pst_mac_vap, WLAN_CFGID_BTCOEX_STATUS_PRINT, us_len, puc_param);
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))

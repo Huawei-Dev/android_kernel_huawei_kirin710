@@ -120,7 +120,7 @@ DIAG_BBP_PROC_FUN_STRU g_DiagBbpFunc[] = {
 
 /*****************************************************************************
  Function Name      : diag_DsSendChanInfoToLrm
- Description        : SOCP通道信息发送给LRM
+ Description        : SOCP??????????????LRM
  Input              : DIAG_FRAME_INFO_STRU *pData
  Output             : None
  Return             : VOS_VOID
@@ -138,7 +138,7 @@ VOS_VOID diag_DsSendChanInfoToLrm(DIAG_FRAME_INFO_STRU *pData)
     /*lint -save -e826*/
     psChanEnumInfo = (DIAG_CMD_DRX_SAMPLE_GET_CHNSIZE_REQ_STRU*)((VOS_UINT8*)(pData->aucData) + sizeof(MSP_DIAG_DATA_REQ_STRU));
 
-    /*AP在发送给LRM命令时，需要把数采地址空间信息一起发送过去*/
+    /*AP????????LRM??????????????????????????????????????????*/
     ulLen = (VOS_UINT32)sizeof(DIAG_BBP_MSG_A_TRANS_C_STRU)-VOS_MSG_HEAD_LENGTH + pData->ulMsgLen +(VOS_UINT32)sizeof(DIAG_BBP_DS_ADDR_INFO_STRU);
     pstInfo = (DIAG_BBP_MSG_A_TRANS_C_STRU*)VOS_AllocMsg(MSP_PID_DIAG_APP_AGENT, ulLen);
     if(VOS_NULL == pstInfo)
@@ -189,7 +189,7 @@ VOS_VOID diag_DsSendChanInfoToLrm(DIAG_FRAME_INFO_STRU *pData)
 
 /*****************************************************************************
  Function Name      : diag_DrxSampleGetChnSizeProc
- Description        : 获取SOCP通道信息
+ Description        : ????SOCP????????
  Input              : VOS_UINT8* pstReq
  Output             : None
  Return             : VOS_VOID
@@ -213,7 +213,7 @@ VOS_UINT32 diag_DrxSampleGetChnSizeProc(DIAG_FRAME_INFO_STRU *pData)
 
 /*****************************************************************************
  Function Name   : diag_BbpMsgProc
- Description     : MSP bbp部分消息处理函数
+ Description     : MSP bbp????????????????
  Input           : None
  Output          : None
  Return          : None
@@ -247,7 +247,7 @@ VOS_UINT32 diag_BbpMsgProc(DIAG_FRAME_INFO_STRU *pData)
         }
     }
 
-    /* 2/3/4G 中PAM Trigger命令直接由A核转发 */
+    /* 2/3/4G ??PAM Trigger??????????A?????? */
     if((DIAG_CMD_BBP_SAMPLE_PAM_TRIGGER_CFG == pData->ulCmdId) || (DIAG_CMD_BBP_SAMPLE_PAM_TRIGGER_START == pData->ulCmdId))
     {
         return diag_TransReqProcEntry(pData, &g_stBbpTransHead);
@@ -269,13 +269,13 @@ VOS_UINT32 diag_BbpMsgProc(DIAG_FRAME_INFO_STRU *pData)
     pstInfo->ulSenderPid   = MSP_PID_DIAG_APP_AGENT;
     ulLen = sizeof(DIAG_FRAME_INFO_STRU)+pData->ulMsgLen;
 
-    /*5G BBP采数命令通过NRM发送给HL1C*/
+    /*5G BBP????????????NRM??????HL1C*/
     if(DIAG_MODE_NR == pData->stID.mode4b)
     {
         pstInfo->ulReceiverPid = MSP_PID_DIAG_NRM_AGENT;
         pstInfo->ulMsgId       = DIAG_MSG_BBP_A_TRANS_NRM_REQ;
     }
-    else/*其他模式(包括EasyRF)采数命令通过LRM发送*/
+    else/*????????(????EasyRF)????????????LRM????*/
     {
         pstInfo->ulReceiverPid = MSP_PID_DIAG_AGENT;
         pstInfo->ulMsgId       = DIAG_MSG_BBP_A_TRANS_C_REQ;
@@ -390,7 +390,7 @@ int set_mdmlog_nvme(void)
 /*lint -save -e423 */
 /*****************************************************************************
  Function Name   : diag_BbpMsgInit
- Description     : MSP bbp部分初始化
+ Description     : MSP bbp??????????
  Input           : None
  Output          : None
  Return          : None
@@ -402,17 +402,17 @@ VOS_VOID diag_BbpMsgInit(VOS_VOID)
     VOS_UINT32 ulRet;
     const BSP_VERSION_INFO_S *VerInfo;
 
-    /* 创建节点保护信号量, Diag Trans Bbp */
+    /* ??????????????????, Diag Trans Bbp */
     ulRet = VOS_SmBCreate("DTB", 1, VOS_SEMA4_FIFO,&g_stBbpTransHead.TransSem);
     if(VOS_OK != ulRet)
     {
         diag_error("[init]VOS_SmBCreate failed.\n");
     }
 
-    /* 初始化请求链表 */
+    /* ?????????????? */
     blist_head_init(&g_stBbpTransHead.TransHead);
     (VOS_VOID)diag_BbpDrxDdrEnable();
-    /*注册message消息回调*/
+    /*????message????????*/
     DIAG_MsgProcReg(DIAG_MSG_TYPE_BBP,diag_BbpMsgProc);
     diag_crit("diag modem:modem_reserver define !");
 
@@ -431,7 +431,7 @@ VOS_VOID diag_BbpMsgInit(VOS_VOID)
         return;
     }
 
-    if(HW_VER_HIONE_UDP_MAGIC == VerInfo->udp_flag) // 通过udp_mask判断硬件形态为udp
+    if(HW_VER_HIONE_UDP_MAGIC == VerInfo->udp_flag) // ????udp_mask??????????????udp
     {
         ulRet = set_mdmlog_nvme();
         if(VOS_OK == ulRet)
@@ -444,15 +444,15 @@ VOS_VOID diag_BbpMsgInit(VOS_VOID)
 }
 
 /*****************************************************************************
-* 函 数 名  : socp_logbuffer_sizeparse
+* ?? ?? ??  : socp_logbuffer_sizeparse
 *
-* 功能描述  : 在代码编译阶段将CMD LINE中的BUFFER大小参数解析出来
+* ????????  : ????????????????CMD LINE????BUFFER????????????????
 *
-* 输入参数  : 无
+* ????????  : ??
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *****************************************************************************/
 VOS_UINT32 diag_BbpDrxDdrEnable(void)
 {
@@ -483,15 +483,15 @@ VOS_UINT32 diag_BbpDrxDdrEnable(void)
 
 
 /*****************************************************************************
-* 函 数 名  : modem_cdma_bbpds_reserve_area
+* ?? ?? ??  : modem_cdma_bbpds_reserve_area
 *
-* 功能描述  : 在代码编译阶段将动态预留内存申请出来
+* ????????  : ????????????????????????????????????
 *
-* 输入参数  : 无
+* ????????  : ??
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *****************************************************************************/
 static int modem_cdma_bbpds_reserve_area(struct reserved_mem *rmem)
 {

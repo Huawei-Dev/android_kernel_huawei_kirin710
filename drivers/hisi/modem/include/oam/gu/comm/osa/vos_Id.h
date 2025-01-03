@@ -306,7 +306,7 @@ VOS_UINT32 VOS_AnalyzePidMemory(VOS_VOID *pBUffer, VOS_UINT32 ulSize, VOS_UINT32
 
 VOS_UINT32 VOS_GetTCBFromPid(VOS_UINT32 ulPid);
 
-/* 该API不能查询卡模块PID(usim/pih/stk/pb),建议外部组建使用PS_GetModemIdFromPid */
+/* ??API??????????????PID(usim/pih/stk/pb),????????????????PS_GetModemIdFromPid */
 MODEM_ID_ENUM_UINT16 VOS_GetModemIDFromPid(VOS_UINT32 ulPid);
 
 VOS_BOOL VOS_CheckPSPidValidity(VOS_UINT32 ulPid);

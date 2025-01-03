@@ -58,11 +58,11 @@ extern "C" {
 #endif
 
 /****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 /*****************************************************************************
- 枚举名    : GUCNAS_NV_ID_ENUM
- 枚举说明  : GUCNAS组件公共的NV项ID枚举定义
+ ??????    : GUCNAS_NV_ID_ENUM
+ ????????  : GUCNAS??????????NV??ID????????
 *****************************************************************************/
 enum GUCNAS_NV_ID_ENUM
 {
@@ -76,13 +76,13 @@ enum GUCNAS_NV_ID_ENUM
 /*  2095 */     en_NV_Item_LTE_SMS_CFG                      = 2095,     /* TAF_NVIM_LTE_SMS_CFG_STRU */
 /*  2300 */     en_NV_Item_DSDS_Active_Modem_Mode           = 2300,     /* TAF_NV_DSDS_ACTIVE_MODEM_MODE_STRU */
 /*  2316 */     en_NV_Item_ENHANCED_OPERATOR_NAME_SRV_CFG   = 2316,     /* TAF_NVIM_ENHANCED_OPER_NAME_SERVICE_CFG_STRU */
-/*  2321 */     en_NV_Item_NVWR_SEC_CTRL                    = 2321,     /* TAF_NV_NVWR_SEC_CTRL_STRU    NVWR命令安全控制 */
-/*  2331 */     en_NV_Item_Ccpu_Reset_Record                = 2331,     /* TAF_NVIM_CCPU_RESET_RECORD_STRU  C核单独复位记录 */
+/*  2321 */     en_NV_Item_NVWR_SEC_CTRL                    = 2321,     /* TAF_NV_NVWR_SEC_CTRL_STRU    NVWR???????????? */
+/*  2331 */     en_NV_Item_Ccpu_Reset_Record                = 2331,     /* TAF_NVIM_CCPU_RESET_RECORD_STRU  C?????????????? */
 /*  2340 */     en_NV_Item_Ccwa_Ctrl_Mode                   = 2340,     /* TAF_CALL_NVIM_CCWA_CTRL_MODE_STRU */
 /*  2352 */     en_NV_Item_Privacy_Log_Filter_Cfg           = 2352,     /* NAS_NV_PRIVACY_FILTER_CFG_STRU */
-/*  2371 */     en_NV_Item_XCPOSRRPT_CFG                    = 2371,     /* TAF_NVIM_XCPOSRRPT_CFG_STRU 是否上报清除GPS缓存的辅助定位信息 */
-/*  2387 */     en_NV_Item_USER_SYS_CFG_RAT_INFO            = 2387,     /* TAF_NVIM_MULTIMODE_RAT_CFG_STRU 用户SYS CFG RAT配置 */
-/*  2396 */     en_NV_Item_Gps_Cust_CFG                     = 2396,     /* TAF_NVIM_GPS_CUST_CFG_STRU 查询GPS芯片类型 */
+/*  2371 */     en_NV_Item_XCPOSRRPT_CFG                    = 2371,     /* TAF_NVIM_XCPOSRRPT_CFG_STRU ????????????GPS?????????????????? */
+/*  2387 */     en_NV_Item_USER_SYS_CFG_RAT_INFO            = 2387,     /* TAF_NVIM_MULTIMODE_RAT_CFG_STRU ????SYS CFG RAT???? */
+/*  2396 */     en_NV_Item_Gps_Cust_CFG                     = 2396,     /* TAF_NVIM_GPS_CUST_CFG_STRU ????GPS???????? */
 
 /* 2512 */      en_NV_Item_RAT_PRIO_LIST_EX                 = 2512,     /* TAF_NVIM_RAT_ORDER_EX_STRU */
 

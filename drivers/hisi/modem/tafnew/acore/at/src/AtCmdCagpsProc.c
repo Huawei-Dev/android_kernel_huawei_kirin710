@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AtCmdCagpsProc.h"
 #include "AtEventReport.h"
@@ -55,13 +55,13 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_AT_CMDCAGPSPROC_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 AT_CAGPS_CMD_NAME_TLB_STRU  g_astAtCagpsCmdNameTlb[] =
@@ -100,7 +100,7 @@ AT_CAGPS_CMD_OPT_TLB_STRU  g_astAtCagpsCmdOptTbl[] =
 };
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -110,13 +110,13 @@ VOS_UINT32 At_SetAgpsDataCallStatus(VOS_UINT8 ucIndex)
     AT_XPDS_AP_DATA_CALL_STATUS_IND_STRU                   *pstDataCallInd;
     VOS_UINT32                                              ulMsgLength;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_PARA_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_ERROR;
     }
 
-    /* 参数过多 */
+    /* ???????? */
     if (gucAtParaIndex > 1)
     {
         return AT_TOO_MANY_PARA;
@@ -167,13 +167,13 @@ VOS_UINT32 At_SetAgpsUpBindStatus(
     AT_XPDS_AP_SERVER_BIND_STATUS_IND_STRU                 *pstMsgBindInd;
     VOS_UINT32                                              ulMsgLength;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_PARA_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_ERROR;
     }
 
-    /* 参数过多 */
+    /* ???????? */
     if (gucAtParaIndex > 2)
     {
         return AT_TOO_MANY_PARA;
@@ -227,13 +227,13 @@ VOS_UINT32 At_SetAgpsForwardData(
     AT_XPDS_AP_FORWARD_DATA_IND_STRU   *pstMsgFwdDataInd;
     VOS_UINT32                          ulMsgLength;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_PARA_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_ERROR;
     }
 
-    /* 参数过多 */
+    /* ???????? */
     if (gucAtParaIndex > 5)
     {
         return AT_TOO_MANY_PARA;
@@ -311,10 +311,10 @@ VOS_UINT32 AT_RcvXpdsAgpsDataCallReq(
     VOS_UINT8                           ucIndex;
     XPDS_AT_AP_DATA_CALL_REQ_STRU      *pstMsgDataCallReq;
 
-    /* 初始化 */
+    /* ?????? */
     pstMsgDataCallReq = (XPDS_AT_AP_DATA_CALL_REQ_STRU *)pstMsg;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstMsgDataCallReq->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvXpdsAgpsDataCallReq: WARNING:AT INDEX NOT FOUND!");
@@ -343,10 +343,10 @@ VOS_UINT32 AT_RcvXpdsAgpsServerBindReq(
     VOS_UINT8                           ucIndex;
     XPDS_AT_AP_SERVER_BIND_REQ_STRU    *pstMsgBindReq;
 
-    /* 初始化 */
+    /* ?????? */
     pstMsgBindReq = (XPDS_AT_AP_SERVER_BIND_REQ_STRU *)pstMsg;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstMsgBindReq->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvXpdsAgpsServerBindReq: WARNING:AT INDEX NOT FOUND!");
@@ -385,10 +385,10 @@ VOS_UINT32 AT_RcvXpdsAgpsReverseDataInd(
     VOS_UINT32                          ulRemainLen;
     VOS_UINT16                          usLength;
 
-    /* 初始化 */
+    /* ?????? */
     pstMsgDataInd = (XPDS_AT_AP_REVERSE_DATA_IND_STRU *)pstMsg;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstMsgDataInd->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvXpdsAgpsReverseDataInd: WARNING:AT INDEX NOT FOUND!");
@@ -439,7 +439,7 @@ VOS_UINT32 AT_RcvXpdsAgpsReverseDataInd(
                                           ulCurNum,
                                           ulOutputLen*2);
 
-        /* 将16进制数转换为ASCII码后输入主动命令内容 */
+        /* ??16????????????ASCII???????????????????? */
         usLength += (TAF_UINT16)At_HexText2AsciiStringSimple(AT_CMD_MAX_LEN,
                                                             (TAF_INT8 *)pgucAtSndCodeAddr,
                                                             (TAF_UINT8 *)pgucAtSndCodeAddr+usLength,
@@ -472,25 +472,25 @@ VOS_UINT32 AT_CagpsSndXpdsReq(
     VOS_UINT32                          ulMsgLength;
     AT_XPDS_MSG_STRU                   *pstAtXpdsMsg;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_PARA_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 参数过多 */
+    /* ???????? */
     if (2 != gucAtParaIndex)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 字符串长度不正确 */
+    /* ???????????????? */
     if (gastAtParaList[0].ulParaValue != gastAtParaList[1].usParaLen)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 将字符串转换为16进制数组 */
+    /* ??????????????16???????? */
     if (AT_FAILURE == At_AsciiNum2HexString(gastAtParaList[1].aucPara, &gastAtParaList[1].usParaLen))
     {
         AT_ERR_LOG1("AT_CagpsSndXpdsReq: At_AsciiNum2HexString fail.", enMsgType);
@@ -500,7 +500,7 @@ VOS_UINT32 AT_CagpsSndXpdsReq(
 
     ulDataLen = ulMsgStructSize - VOS_MSG_HEAD_LENGTH - sizeof(VOS_UINT32) - sizeof(AT_APPCTRL_STRU);
 
-    /* 消息内容长度是否正确 */
+    /* ???????????????????? */
     if (ulDataLen != gastAtParaList[1].usParaLen)
     {
         return AT_CME_INCORRECT_PARAMETERS;
@@ -591,7 +591,7 @@ VOS_UINT32 AT_SetCagpsStop(
     AT_XPDS_GPS_STOP_REQ_STRU          *pstMsgStopReq;
     VOS_UINT32                          ulMsgLength;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_CMD_NO_PARA != g_stATParseCmd.ucCmdOptType)
     {
         return AT_CME_INCORRECT_PARAMETERS;
@@ -679,7 +679,7 @@ VOS_UINT32 AT_SetCagpsQryRefloc(
     VOS_UINT32                                              ulMsgLength;
     AT_XPDS_GPS_QRY_REFLOC_INFO_REQ_STRU                   *pstMsgQryRefLoc;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_CMD_NO_PARA != g_stATParseCmd.ucCmdOptType)
     {
         return AT_CME_INCORRECT_PARAMETERS;
@@ -723,19 +723,19 @@ VOS_UINT32 AT_SetCagpsQryTime(
     AT_XPDS_GPS_QRY_TIME_INFO_REQ_STRU                     *pstMsgQryTime;
     VOS_UINT32                                              ulMsgLength;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_PARA_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 参数过多 */
+    /* ???????? */
     if (2 != gucAtParaIndex)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 将字符串转换为16进制数组 */
+    /* ??????????????16???????? */
     if (AT_FAILURE == At_AsciiNum2HexString(gastAtParaList[1].aucPara, &gastAtParaList[1].usParaLen))
     {
         AT_ERR_LOG("AT_SetCagpsQryTime: At_AsciiNum2HexString fail.");
@@ -743,13 +743,13 @@ VOS_UINT32 AT_SetCagpsQryTime(
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 消息内容长度是否正确 */
+    /* ???????????????????? */
     if (sizeof(VOS_UINT32) != gastAtParaList[1].usParaLen)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 按照方案要求，1:reply time sync info；2:reply time sync info and GPS assist data */
+    /* ??????????????1:reply time sync info??2:reply time sync info and GPS assist data */
     if ((0 == gastAtParaList[1].aucPara[0])
         || (AT_XPDS_REPLY_SYNC_BUTT <= gastAtParaList[1].aucPara[0]))
     {
@@ -851,11 +851,11 @@ VOS_UINT32 AT_RcvXpdsCagpsCnf(
     VOS_UINT32                          ulContentLen;
     VOS_UINT16                          usLength        = 0;
 
-    /* 初始化 */
+    /* ?????? */
     pstRcvMsg           = (AT_XPDS_MSG_STRU *)pMsg;
     ucIndex             = 0;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstRcvMsg->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvXpdsCagpsCnf : WARNING:AT INDEX NOT FOUND!");
@@ -864,7 +864,7 @@ VOS_UINT32 AT_RcvXpdsCagpsCnf(
 
     usLength += (TAF_UINT16)At_sprintf(AT_CMD_MAX_LEN, (TAF_CHAR *)pgucAtSndCodeAddr, (TAF_CHAR *)pgucAtSndCodeAddr + usLength,"%s%s", gaucAtCrLf, AT_SearchCagpsATCmd(pstRcvMsg->enMsgId));
 
-    /* 获取消息内容长度 */
+    /* ???????????????? */
     ulContentLen = pstRcvMsg->ulLength - (sizeof(pstRcvMsg->enMsgId) + sizeof(AT_APPCTRL_STRU));
 
     if (ulContentLen != 0)
@@ -913,12 +913,12 @@ VOS_UINT32 AT_RcvXpdsCagpsRlstCnf(
     VOS_UINT8                           ucIndex;
     AT_CMD_CURRENT_OPT_ENUM             enCmdOpt;
 
-    /* 初始化 */
+    /* ?????? */
     pstMsgRsltCnf = (XPDS_AT_RESULT_CNF_STRU *)pMsg;
     ulResult      = AT_OK;
     ucIndex       = 0;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstMsgRsltCnf->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvXpdsCagpsRlstCnf : WARNING:AT INDEX NOT FOUND!");
@@ -927,14 +927,14 @@ VOS_UINT32 AT_RcvXpdsCagpsRlstCnf(
 
     enCmdOpt = AT_SearchCagpsATCmdOpt(pstMsgRsltCnf->enMsgId);
 
-    /* 当前AT是否在等待该命令返回 */
+    /* ????AT???????????????????? */
     if (enCmdOpt != gastAtClientTab[ucIndex].CmdCurrentOpt)
     {
         AT_WARN_LOG("AT_RcvXpdsCagpsRlstCnf : Current Option is not correct.");
         return VOS_ERR;
     }
 
-    /* 复位AT状态 */
+    /* ????AT???? */
     AT_STOP_TIMER_CMD_READY(ucIndex);
 
     gstAtSendData.usBufLen = 0;
@@ -944,7 +944,7 @@ VOS_UINT32 AT_RcvXpdsCagpsRlstCnf(
         ulResult = AT_ERROR;
     }
 
-    /* 输出结果 */
+    /* ???????? */
     At_FormatResultData(ucIndex, ulResult);
 
     return VOS_OK;
@@ -966,10 +966,10 @@ VOS_UINT32 AT_RcvXpdsEphInfoInd(
     VOS_UINT8                          *pucEphData;
     VOS_UINT8                           ucLoop;
 
-    /* 初始化 */
+    /* ?????? */
     pstMsgEphInfoInd = (XPDS_AT_GPS_EPH_INFO_IND_STRU *)pstMsg;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstMsgEphInfoInd->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvXpdsEphInfoInd: WARNING:AT INDEX NOT FOUND!");
@@ -987,7 +987,7 @@ VOS_UINT32 AT_RcvXpdsEphInfoInd(
 
     ulEphDataStrLen = AT_AGPS_EPH_INFO_FIRST_SEG_STR_LEN;
 
-    /* 第1包数据 */
+    /* ??1?????? */
     usAtCmdLength  = (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                             (TAF_CHAR *)pgucAtSndCodeAddr,
                                             (TAF_CHAR *)pgucAtSndCodeAddr,
@@ -997,8 +997,8 @@ VOS_UINT32 AT_RcvXpdsEphInfoInd(
                                             0,
                                             ulEphDataStrLen);
 
-    /* 第1包数据 */
-    /* 将16进制数转换为ASCII码后输入主动命令内容 */
+    /* ??1?????? */
+    /* ??16????????????ASCII???????????????????? */
     usAtCmdLength += (TAF_UINT16)At_HexText2AsciiStringSimple(AT_CMD_MAX_LEN,
                                             (TAF_INT8 *)pgucAtSndCodeAddr,
                                             ((TAF_UINT8 *)pgucAtSndCodeAddr) + usAtCmdLength,
@@ -1014,7 +1014,7 @@ VOS_UINT32 AT_RcvXpdsEphInfoInd(
 
     ulEphDataByteOffset = ulEphDataStrLen / 2;
 
-    /* 从第2包到第5包的数据 */
+    /* ????2??????5???????? */
     for (ucLoop = 0; ucLoop < AT_AGPS_EPH_INFO_MAX_SEG_NUM - 1; ucLoop++)
     {
         ulEphDataStrLen = AT_AGPS_EPH_INFO_NOT_FIRST_SEG_STR_LEN;
@@ -1028,7 +1028,7 @@ VOS_UINT32 AT_RcvXpdsEphInfoInd(
                                                 ucLoop + 1,
                                                 ulEphDataStrLen);
 
-        /* 将16进制数转换为ASCII码后输入主动命令内容 */
+        /* ??16????????????ASCII???????????????????? */
         usAtCmdLength += (TAF_UINT16)At_HexText2AsciiStringSimple(AT_CMD_MAX_LEN,
                                                 (TAF_INT8 *)pgucAtSndCodeAddr,
                                                 ((TAF_UINT8 *)pgucAtSndCodeAddr) + usAtCmdLength,
@@ -1062,10 +1062,10 @@ VOS_UINT32 AT_RcvXpdsAlmInfoInd(
     VOS_UINT8                          *pucAlmData;
     VOS_UINT8                           ucLoop;
 
-    /* 初始化 */
+    /* ?????? */
     pstMsgAlmInfoInd = (XPDS_AT_GPS_ALM_INFO_IND_STRU *)pstMsg;
 
-    /* 通过clientid获取index */
+    /* ????clientid????index */
     if (AT_FAILURE == At_ClientIdToUserId(pstMsgAlmInfoInd->stAppCtrl.usClientId, &ucIndex))
     {
         AT_WARN_LOG("AT_RcvXpdsAlmInfoInd: WARNING:AT INDEX NOT FOUND!");
@@ -1083,7 +1083,7 @@ VOS_UINT32 AT_RcvXpdsAlmInfoInd(
 
     ulAlmDataStrLen = AT_AGPS_ALM_INFO_FIRST_SEG_STR_LEN;
 
-    /* 第1包数据 */
+    /* ??1?????? */
     usAtCmdLength  = (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
                                             (TAF_CHAR *)pgucAtSndCodeAddr,
                                             (TAF_CHAR *)pgucAtSndCodeAddr,
@@ -1093,8 +1093,8 @@ VOS_UINT32 AT_RcvXpdsAlmInfoInd(
                                             0,
                                             ulAlmDataStrLen);
 
-    /* 第1包数据 */
-    /* 将16进制数转换为ASCII码后输入主动命令内容 */
+    /* ??1?????? */
+    /* ??16????????????ASCII???????????????????? */
     usAtCmdLength += (TAF_UINT16)At_HexText2AsciiStringSimple(AT_CMD_MAX_LEN,
                                             (TAF_INT8 *)pgucAtSndCodeAddr,
                                             ((TAF_UINT8 *)pgucAtSndCodeAddr) + usAtCmdLength,
@@ -1110,7 +1110,7 @@ VOS_UINT32 AT_RcvXpdsAlmInfoInd(
 
     ulAlmDataByteOffset = ulAlmDataStrLen / 2;
 
-    /* 从第2包到第3包的数据 */
+    /* ????2??????3???????? */
     for (ucLoop = 0; ucLoop < AT_AGPS_ALM_INFO_MAX_SEG_NUM - 1; ucLoop++)
     {
         ulAlmDataStrLen = AT_AGPS_ALM_INFO_NOT_FIRST_SEG_STR_LEN;
@@ -1124,7 +1124,7 @@ VOS_UINT32 AT_RcvXpdsAlmInfoInd(
                                                 ucLoop + 1,
                                                 ulAlmDataStrLen);
 
-        /* 将16进制数转换为ASCII码后输入主动命令内容 */
+        /* ??16????????????ASCII???????????????????? */
         usAtCmdLength += (TAF_UINT16)At_HexText2AsciiStringSimple(AT_CMD_MAX_LEN,
                                                 (TAF_INT8 *)pgucAtSndCodeAddr,
                                                 ((TAF_UINT8 *)pgucAtSndCodeAddr) + usAtCmdLength,
@@ -1153,25 +1153,25 @@ VOS_UINT32 At_SetCgpsControlStart(
     AT_XPDS_MSG_STRU                   *pstMsgStr;
     VOS_UINT32                          ulMsgLength;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_PARA_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 参数过多 */
+    /* ???????? */
     if (2 != gucAtParaIndex)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 字符串长度不正确 */
+    /* ???????????????? */
     if (gastAtParaList[0].ulParaValue != gastAtParaList[1].usParaLen)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 将字符串转换为16进制数组 */
+    /* ??????????????16???????? */
     if (AT_FAILURE == At_AsciiNum2HexString(gastAtParaList[1].aucPara, &gastAtParaList[1].usParaLen))
     {
         AT_ERR_LOG("At_SetgpsControlStart: At_AsciiNum2HexString fail.");
@@ -1226,25 +1226,25 @@ VOS_UINT32 At_SetCgpsControlStop(
     AT_XPDS_MSG_STRU                   *pstMsgStr;
     VOS_UINT32                          ulMsgLength;
 
-    /* 参数检查 */
+    /* ???????? */
     if (AT_CMD_OPT_SET_PARA_CMD != g_stATParseCmd.ucCmdOptType)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 参数过多 */
+    /* ???????? */
     if (2 != gucAtParaIndex)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 字符串长度不正确 */
+    /* ???????????????? */
     if (gastAtParaList[0].ulParaValue != gastAtParaList[1].usParaLen)
     {
         return AT_CME_INCORRECT_PARAMETERS;
     }
 
-    /* 将字符串转换为16进制数组 */
+    /* ??????????????16???????? */
     if (AT_FAILURE == At_AsciiNum2HexString(gastAtParaList[1].aucPara, &gastAtParaList[1].usParaLen))
     {
         AT_ERR_LOG("At_SetCgpsControlStop: At_AsciiNum2HexString fail.");

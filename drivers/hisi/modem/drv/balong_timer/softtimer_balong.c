@@ -400,7 +400,7 @@ int  softtimer_task_func(void* data)
 			else
 				break;
 		}
-		if (!list_empty(&(ptimer_control->timer_list_head)))/*如果还有未超时定时器*/
+		if (!list_empty(&(ptimer_control->timer_list_head)))/*????????????????????*/
 		{
 			p=list_first_entry(&(ptimer_control->timer_list_head),struct softtimer_list,entry);
 			p->is_running = TIMER_TRUE;

@@ -51,7 +51,7 @@
 
 
 /******************************************************************************
-   1 头文件包含
+   1 ??????????
 ******************************************************************************/
 #include <mdrv_diag_system.h>
 #include <osl_types.h>
@@ -61,19 +61,19 @@
 
 #define  THIS_MODU mod_soft_dec
 /******************************************************************************
-   2 外部函数变量声明
+   2 ????????????????
 ******************************************************************************/
 
 
 /******************************************************************************
-   3 私有定义
+   3 ????????
 ******************************************************************************/
 
 
 /******************************************************************************
-   4 全局变量定义
+   4 ????????????
 ******************************************************************************/
-/* 该全局数组为FCS查找表，用于计算16位FCS。
+/* ????????????FCS????????????????16??FCS??
     rfc1662: the lookup table used to calculate the FCS-16. */
 u16 const g_ausDiagHdlcFcsTab[256] = {
    /* 00 */ 0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
@@ -113,7 +113,7 @@ u16 const g_ausDiagHdlcFcsTab[256] = {
 
 
 /******************************************************************************
-   5 函数实现
+   5 ????????
 ******************************************************************************/
 
 
@@ -150,10 +150,10 @@ OM_HDLC_RESULT_ENUM_UINT32 diag_HdlcDecapProcess( OM_HDLC_STRU *pstHdlc, u8 ucCh
     switch (ucChar)
     {
         case OM_HDLC_FRAME_FLAG:
-            pstHdlc->ulMode &= ~OM_HDLC_MODE_HUNT;          /* 清标记 */
+            pstHdlc->ulMode &= ~OM_HDLC_MODE_HUNT;          /* ?????? */
 
             if (pstHdlc->ulLength > OM_HDLC_FCS_LEN)
-            {                           /* 该分支表示解析到(信息域+FCS)长度大于2 BYTE的帧 */
+            {                           /* ????????????????(??????+FCS)????????2 BYTE???? */
                 usFcs = diag_HdlcFcs(pstHdlc->pucDecapBuff, pstHdlc->ulLength);
                 if (OM_HDLC_GOOD_FCS != usFcs)
                 {
@@ -166,30 +166,30 @@ OM_HDLC_RESULT_ENUM_UINT32 diag_HdlcDecapProcess( OM_HDLC_STRU *pstHdlc, u8 ucCh
                 return HDLC_SUCC;
             }
             else
-            {                           /* 该分支若pstHdlc->ulLength为0，认为是正常情况：连续的OM_HDLC_FRAME_FLAG */
-                                        /* 该分支若pstHdlc->ulLength不为0，认为有HDLC帧，但(信息域+FCS)长度小于3，故丢弃 */
+            {                           /* ????????pstHdlc->ulLength??0????????????????????????OM_HDLC_FRAME_FLAG */
+                                        /* ????????pstHdlc->ulLength????0????????HDLC??????(??????+FCS)????????3???????? */
                 pstHdlc->ulLength   = 0;
                 break;
             }
         case OM_HDLC_ESC:
             if (!(pstHdlc->ulMode & OM_HDLC_MODE_ESC))
             {
-                pstHdlc->ulMode |= OM_HDLC_MODE_ESC;        /* 置标记 */
+                pstHdlc->ulMode |= OM_HDLC_MODE_ESC;        /* ?????? */
             }
             else
-            {                           /* 异常情况: 连续两个OM_HDLC_ESC */
-                pstHdlc->ulMode &= ~OM_HDLC_MODE_ESC;       /* 清标记 */
-                pstHdlc->ulMode |= OM_HDLC_MODE_HUNT;       /* 置标记 */
+            {                           /* ????????: ????????OM_HDLC_ESC */
+                pstHdlc->ulMode &= ~OM_HDLC_MODE_ESC;       /* ?????? */
+                pstHdlc->ulMode |= OM_HDLC_MODE_HUNT;       /* ?????? */
                 pstHdlc->ulLength = 0;
                 soft_decode_error("EscChar Error:0x%x!\n\r", ucChar);
                 return HDLC_FRAME_DISCARD;
             }
             break;
         default:
-            /* 判断目的BUFFER是否已满 */
+            /* ????????BUFFER???????? */
             if (pstHdlc->ulLength >= pstHdlc->ulDecapBuffSize)
-            {                           /* 异常情况: 解封装BUFFER不足 */
-                pstHdlc->ulMode |= OM_HDLC_MODE_HUNT;        /* 置标记 */
+            {                           /* ????????: ??????BUFFER???? */
+                pstHdlc->ulMode |= OM_HDLC_MODE_HUNT;        /* ?????? */
                 pstHdlc->ulLength = 0;
                 soft_decode_error("DstBuf is full:BufLen=0x%x\n\r", (s32)pstHdlc->ulDecapBuffSize);
                 return HDLC_BUFF_FULL;
@@ -197,15 +197,15 @@ OM_HDLC_RESULT_ENUM_UINT32 diag_HdlcDecapProcess( OM_HDLC_STRU *pstHdlc, u8 ucCh
 
             if (pstHdlc->ulMode & OM_HDLC_MODE_ESC)
             {
-                pstHdlc->ulMode &= ~OM_HDLC_MODE_ESC;          /* 清标记 */
+                pstHdlc->ulMode &= ~OM_HDLC_MODE_ESC;          /* ?????? */
                 if (((OM_HDLC_FRAME_FLAG^OM_HDLC_ESC_MASK) == ucChar)
                     || ((OM_HDLC_ESC^OM_HDLC_ESC_MASK) == ucChar))
                 {
                     ucChar ^= OM_HDLC_ESC_MASK;
                 }
                 else
-                {                           /* 异常情况: OM_HDLC_ESC后面的字符不正确 */
-                    pstHdlc->ulMode |= OM_HDLC_MODE_HUNT;        /* 置标记 */
+                {                           /* ????????: OM_HDLC_ESC???????????????? */
+                    pstHdlc->ulMode |= OM_HDLC_MODE_HUNT;        /* ?????? */
                     pstHdlc->ulLength = 0;
                     soft_decode_error("EscChar Error:0x%x\n\r", ucChar);
                     return HDLC_FRAME_DISCARD;
@@ -235,10 +235,10 @@ OM_HDLC_RESULT_ENUM_UINT32 diag_HdlcDecap( OM_HDLC_STRU *pstHdlc, u8 ucChar )
         return HDLC_PARA_ERROR;
     }
 
-    /* 未找到帧头时，丢弃非OM_HDLC_FRAME_FLAG字符 */
+    /* ????????????????????OM_HDLC_FRAME_FLAG???? */
     if ((pstHdlc->ulMode & OM_HDLC_MODE_HUNT) && (OM_HDLC_FRAME_FLAG != ucChar))
     {
-        pstHdlc->ulLength   = 0;        /* 如果用户首次调用Om_HdlcDecap前进行了初始化Om_HdlcInit，则此处pstHdlc->ulLength可以不清0 */
+        pstHdlc->ulLength   = 0;        /* ????????????????Om_HdlcDecap??????????????Om_HdlcInit????????pstHdlc->ulLength????????0 */
         return HDLC_NOT_HDLC_FRAME;
     }
 

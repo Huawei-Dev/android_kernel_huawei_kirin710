@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_schedule.h"
 
@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
@@ -52,7 +52,7 @@ oal_int32  oal_timer_start(oal_timer_list_stru *pst_timer, oal_uint ui_expires)
 {
 
 #ifdef  _PRE_WIFI_DMT
-	DmtStub_StartTimer(MGMT_TIMER, ui_expires);  /*15ms 的定时任务，触发frw_timer_timeout_proc_event */
+	DmtStub_StartTimer(MGMT_TIMER, ui_expires);  /*15ms ????????????????frw_timer_timeout_proc_event */
 #endif
 
     return OAL_SUCC;

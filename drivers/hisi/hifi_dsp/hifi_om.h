@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 #define HIFI_DUMP_FILE_NAME_MAX_LEN 256
-#define DSP_DUMP_MAX_EFFECTS_CNT        (10)/*与HIFI  中dps_dump.h 中的定义保持一致*/
+#define DSP_DUMP_MAX_EFFECTS_CNT        (10)/*??HIFI  ??dps_dump.h ????????????????*/
 #define ROOT_UID     0
 #define SYSTEM_GID   1000
 #define HIFI_OM_DIR_LIMIT		0750
@@ -83,17 +83,17 @@ typedef enum {
 
 enum HIFI_CPU_LOAD_INFO_ENUM
 {
-	HIFI_CPU_LOAD_REPORT   = 0,              /* 定时上报cpu频率 */
-	HIFI_CPU_LOAD_VOTE_UP,                   /* 投票ddr上调 */
-	HIFI_CPU_LOAD_VOTE_DOWN,                 /* 投票ddr下调 */
-	HIFI_CPU_LOAD_LACK_PERFORMANCE,          /* 性能不足 */
+	HIFI_CPU_LOAD_REPORT   = 0,              /* ????????cpu???? */
+	HIFI_CPU_LOAD_VOTE_UP,                   /* ????ddr???? */
+	HIFI_CPU_LOAD_VOTE_DOWN,                 /* ????ddr???? */
+	HIFI_CPU_LOAD_LACK_PERFORMANCE,          /* ???????? */
 	HIFI_CPU_LOAD_INFO_BUTT
 };
 
 enum HIFI_CPU_OM_INFO_ENUM
 {
-	HIFI_CPU_OM_LOAD_INFO= 0,     /*DDR 调时hifi发消息类型*/
-	HIFI_CPU_OM_ALGO_MCPS_INFO,   /*DDR调频到顶或播放卡顿hifi发送算法占用mcps信息*/
+	HIFI_CPU_OM_LOAD_INFO= 0,     /*DDR ????hifi??????????*/
+	HIFI_CPU_OM_ALGO_MCPS_INFO,   /*DDR??????????????????hifi????????????mcps????*/
 	HIFI_CPU_OM_UPDATE_BUFF_DELAY_INFO, /* audio pcm play or capture update buff delay */
 	HIFI_CPU_OM_INFO_BUTT
 };
@@ -104,7 +104,7 @@ enum HIFI_VOICE_3A_INFO_ENUM
 	HIFI_3A_INFO_MSG_BUTT
 };
 
-enum EFFECT_ALGO_ENUM                          /*算法列表*/
+enum EFFECT_ALGO_ENUM                          /*????????*/
 {
 	ID_EFFECT_ALGO_START                =0,
 	ID_EFFECT_ALGO_FORMATER,
@@ -281,7 +281,7 @@ typedef struct
 
 struct hifi_om_load_info_stru
 {
-	unsigned int	recv_msg_type;            /* CPU负载上报消息类型 */
+	unsigned int	recv_msg_type;            /* CPU???????????????? */
 	hifi_cpu_load_info_stru	cpu_load_info;
 	unsigned int	info_type;
 	unsigned int	report_interval;

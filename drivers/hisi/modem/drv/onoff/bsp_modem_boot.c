@@ -154,7 +154,7 @@ ssize_t modem_reset_set(struct device *dev, struct device_attribute *attr, const
     state = simple_strtol(buf, &endp, 10); /*10 means read as dec*/
     bsp_err("count = %lu\n", (unsigned long)count);
 
-    /* 整机复位对rild为桩,应该整机复位 */
+    /* ??????????rild????,???????????? */
     if (!bsp_reset_is_connect_ril())
     {
         bsp_err("<modem_reset_set>: modem reset not to be connected to ril\n");
@@ -178,7 +178,7 @@ ssize_t modem_reset_set(struct device *dev, struct device_attribute *attr, const
         return (ssize_t)count;
     }
 
-    if (state == BALONG_MODEM_RESET) /* 切卡 */
+    if (state == BALONG_MODEM_RESET) /* ???? */
     {
         bsp_err("modem reset %d\n", BALONG_MODEM_RESET);
         if(!is_in_llt())
@@ -203,7 +203,7 @@ ssize_t modem_reset_set(struct device *dev, struct device_attribute *attr, const
         spin_unlock_irqrestore(&modem_power_spinlock, lock_flag);
         return (ssize_t)count;
     }
-    else if(state == BALONG_MODEM_ON) /* TODO: 是否需要上电，根HIFI什么关系 */
+    else if(state == BALONG_MODEM_ON) /* TODO: ????????????????HIFI???????? */
     {
         if((modem_power_off_flag)&&(!modem_power_on_flag))
         {

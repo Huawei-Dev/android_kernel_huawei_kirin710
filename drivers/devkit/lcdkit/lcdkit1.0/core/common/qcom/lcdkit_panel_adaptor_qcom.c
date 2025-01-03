@@ -101,7 +101,7 @@ void lcdkit_dsi_tx(void *pdata, struct lcdkit_dsi_panel_cmds *cmds)
     kfree(dsi_cmds.cmds);
 }
 
-/*¶Á½Ó¿Ú*/
+/*??????*/
 //mdss_dsi_panel_cmds_send
 int lcdkit_dsi_rx(void *pdata, uint32_t *rbuf,
                 int len, struct lcdkit_dsi_panel_cmds *cmds)

@@ -190,7 +190,7 @@ void icc_dbg_info_print(const char *fifo_name, u32 channel_id, u8 *data, u32 dat
 	}
 }
 
-/* 如果在中断中，则返回0 */
+/* ????????????????????0 */
 u32 icc_taskid_get(void)
 {
 	if (in_interrupt()) /*lint !e737 */
@@ -295,7 +295,7 @@ err_ret:
 		return (s32)ICC_ERR;
 	}
 
-	/* 收发子通道一同分配 */
+	/* ?????????????????? */
 	sub_channel = (struct icc_channel_stat_info *)osl_malloc(sizeof(struct icc_channel_stat_info) * icc_channel->func_size * 2);/*lint !e838 */
 	if (!sub_channel)
 	{
@@ -313,12 +313,12 @@ err_ret:
 
 	/* sub channel init */
 	/* coverity[secure_coding] */
-	(void)memset_s((void *)sub_channel, sizeof(struct icc_channel_stat_info) * icc_channel->func_size * 2,/* [false alarm]:屏蔽Fortify误报 */
+	(void)memset_s((void *)sub_channel, sizeof(struct icc_channel_stat_info) * icc_channel->func_size * 2,/* [false alarm]:????Fortify???? */
 		0, sizeof(struct icc_channel_stat_info) * icc_channel->func_size * 2); /*lint !e665 */
 	channel->send.sub_chn  = sub_channel;
 	channel->recv.sub_chn  = &(sub_channel[icc_channel->func_size]);
 
-	g_icc_dbg.channel_stat[channel->id] = channel;/* [false alarm]:屏蔽Fortify误报 */
+	g_icc_dbg.channel_stat[channel->id] = channel;/* [false alarm]:????Fortify???? */
 
 	return ICC_OK;
 }
@@ -334,7 +334,7 @@ s32  icc_debug_init(u32 channel_num)
 
 	for(i = 0; i < channel_num; i++)/*lint !e838 */
 	{
-		/* 使用g_icc_ctrl而不是g_icc_init_info，因为测试编进去以后，统计通道不需要再处理 */
+		/* ????g_icc_ctrl??????g_icc_init_info?????????????????????????????????????????? */
 		if (!g_icc_ctrl.channels[i])
 		{
 		    continue ;
@@ -372,7 +372,7 @@ void icc_debug_in_isr(void)
 
 void icc_debug_before_send(struct icc_channel_packet *packet)
 {
-	/* 发送数据包的任务ID及时间戳 */	
+	/* ????????????????ID???????? */	
 	packet->timestamp = bsp_get_slice_value();
 	packet->task_id = icc_taskid_get();
 }

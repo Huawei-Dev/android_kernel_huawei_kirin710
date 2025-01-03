@@ -1,7 +1,7 @@
 
 
 /*******************************************************************************
-  1 头文件包含
+  1 ??????????
  *******************************************************************************/
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -140,7 +140,7 @@ static int kernel_notify_bl31(void *arg)
 		}
 	}
 
-	/* smc成功返回才需要打印sucessful，否则failure */
+	/* smc??????????????????sucessful??????failure */
 	u64_ret = kernel_init_notify_bl31();
 	if (u64_ret) {
 		BB_PRINT_ERR("%s():smc call kernel_init_notify_bl31 fail ret %llu.\n", __func__, u64_ret);

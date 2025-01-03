@@ -81,7 +81,7 @@ static void inline int_unlock_hook(void)
 }
 
 
-/*该宏传参不准传入__specific_flags名字*/
+/*????????????????__specific_flags????*/
 #define local_irq_save(__specific_flags)	    \
 	do \
     {                           \
@@ -123,7 +123,7 @@ static __inline__ void free_irq(unsigned int irq, void *dev_id)
 		logMsg("intDisable irq %d error\n", irq, 0, 0, 0, 0, 0);
 		return;
 	}
-	ret = intDisconnect((VOIDFUNCPTR*)(irq), (VOIDFUNCPTR)NULL, (int)dev_id);/* [false alarm]:误报 */
+	ret = intDisconnect((VOIDFUNCPTR*)(irq), (VOIDFUNCPTR)NULL, (int)dev_id);/* [false alarm]:???? */
 	if(ret != OK)
 	{
 		logMsg("intDisconnect irq %d error\n", irq, 0, 0, 0, 0, 0);
@@ -208,9 +208,9 @@ typedef irqreturn_t (*irq_handler_t)(void *);
 
 //lint -esym(683,*)
 
-/*该宏传参不准传入__specific_flags名字*/
+/*????????????????__specific_flags????*/
 /*
-*参数类型
+*????????
 *unsigned long __specific_flags
 */
 #define local_irq_save(__specific_flags)	    \
@@ -219,7 +219,7 @@ typedef irqreturn_t (*irq_handler_t)(void *);
 		__specific_flags = (unsigned long)SRE_IntLock();			\
 	} while (0)/*lint !e683*/
 /*
-*参数类型
+*????????
 *unsigned long __specific_flags
 */
 #define local_irq_restore(__specific_flags)   \

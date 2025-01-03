@@ -48,7 +48,7 @@
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 **************************************************************************** */
 #include <product_config.h>
 #include <mdrv_diag_system.h>
@@ -67,7 +67,7 @@
 
 
 /* ****************************************************************************
-  2 全局变量定义
+  2 ????????????
 **************************************************************************** */
 SCM_CODER_DEST_CFG_STRU g_astSCMIndCoderDstCfg=
 {
@@ -89,22 +89,22 @@ u32 scm_malloc_ind_dst_buff(void)
 {
     unsigned long                        ulPHYAddr;
 
-    /* 申请编码目的空间 */
+    /* ???????????????? */
     g_astSCMIndCoderDstCfg.pucBuf = (u8*)scm_UnCacheMemAlloc(g_astSCMIndCoderDstCfg.ulBufLen, &ulPHYAddr);
 
-    /* 申请空间错误 */
+    /* ???????????? */
     if (NULL == g_astSCMIndCoderDstCfg.pucBuf)
     {
-        /*2M申请失败重试1M*/
+        /*2M????????????1M*/
         g_astSCMIndCoderDstCfg.ulBufLen = 1*1024*1024;
         
-        /* 申请编码目的空间 */
+        /* ???????????????? */
         g_astSCMIndCoderDstCfg.pucBuf = (u8*)scm_UnCacheMemAlloc(g_astSCMIndCoderDstCfg.ulBufLen, &ulPHYAddr);
         if(NULL == g_astSCMIndCoderDstCfg.pucBuf)
         {
-            /* 记录通道初始化标记为内存申请异常 */
+            /* ???????????????????????????????? */
             g_astSCMIndCoderDstCfg.enInitState = SCM_CHANNEL_MEM_FAIL;
-            return ERR_MSP_FAILURE;/* 返回错误 */
+            return ERR_MSP_FAILURE;/* ???????? */
         }
     }
 
@@ -126,7 +126,7 @@ u32 scm_ind_dst_buff_init(void)
         return scm_malloc_ind_dst_buff();
     }
 
-    /* 未打开log buffer下的处理 */
+    /* ??????log buffer???????? */
     if ((SOCP_DST_CHAN_NOT_CFG == stLogCfg.logOnFlag)
         || ((unsigned long)NULL == stLogCfg.ulPhyBufferAddr))
     {
@@ -135,11 +135,11 @@ u32 scm_ind_dst_buff_init(void)
         return scm_malloc_ind_dst_buff();
     }
 
-    /* IND通道需要做延迟写入，BUFFER大小50M(默认值)，水线设置为水线设置为75%，内存在初始化已经申请过 */
+    /* IND????????????????????BUFFER????50M(??????)??????????????????????75%???????????????????????? */
     g_astSCMIndCoderDstCfg.pucBufPHY    = (u8*)(stLogCfg.ulPhyBufferAddr);
     g_astSCMIndCoderDstCfg.ulBufLen     = stLogCfg.BufferSize;
     g_astSCMIndCoderDstCfg.pucBuf       = stLogCfg.pVirBuffer;
-    /* 因为旧版本的SOCP的单位是KB新的版本是B,为了兼容SOCP代码中乘了1024,所以这里需要除以1024 */
+    /* ????????????SOCP????????KB??????????B,????????SOCP??????????1024,????????????????1024 */
     g_astSCMIndCoderDstCfg.ulThreshold  = 0x4;
 
     return BSP_OK;
@@ -154,7 +154,7 @@ u32 scm_rls_ind_dst_buff(u32 ulReadSize)
     
     ulChanlID = g_astSCMIndCoderDstCfg.enChannelID;
 
-    if(0 == ulReadSize) /*释放通道所有数据*/
+    if(0 == ulReadSize) /*????????????????*/
     {
         if (BSP_OK != bsp_socp_get_read_buff(ulChanlID, &stBuffer))
         {
@@ -186,7 +186,7 @@ u32 scm_ind_dst_channel_init(void)
 {
     SOCP_CODER_DEST_CHAN_S              stChannel;
 
-    /* 扩大编码目的通道1阈值门限 */
+    /* ????????????????1???????? */
     stChannel.u32EncDstThrh = 2 * SCM_CODER_DST_GTHRESHOLD;
 
     stChannel.sCoderSetDstBuf.pucOutputStart    = g_astSCMIndCoderDstCfg.pucBufPHY;
@@ -200,12 +200,12 @@ u32 scm_ind_dst_channel_init(void)
 
     if (BSP_OK != mdrv_socp_coder_set_dest_chan_attr(g_astSCMIndCoderDstCfg.enChannelID, &stChannel))
     {
-        g_astSCMIndCoderDstCfg.enInitState = SCM_CHANNEL_CFG_FAIL;  /* 记录通道初始化配置错误 */
+        g_astSCMIndCoderDstCfg.enInitState = SCM_CHANNEL_CFG_FAIL;  /* ?????????????????????? */
 
-        return ERR_MSP_FAILURE;/* 返回失败 */
+        return ERR_MSP_FAILURE;/* ???????? */
     }
 
-    g_astSCMIndCoderDstCfg.enInitState = SCM_CHANNEL_INIT_SUCC;     /* 记录通道初始化配置错误 */
+    g_astSCMIndCoderDstCfg.enInitState = SCM_CHANNEL_INIT_SUCC;     /* ?????????????????????? */
 
     (void)bsp_socp_register_read_cb(g_astSCMIndCoderDstCfg.enChannelID, (socp_read_cb)scm_ind_dst_read_cb);
 
@@ -232,7 +232,7 @@ void scm_send_ind_data_to_udi(u8 *pucVirData, u8 *pucPHYData, u32 ulDataLen)
     pstDebugInfo = &g_stAcpuDebugInfo.stIndDebugInfo;
     enLogicPort  = CPM_OM_IND_COMM;
 
-    /*参数检查*/
+    /*????????*/
     if ((0 == ulDataLen)||(NULL == pucVirData))
     {
         pstDebugInfo->ulUSBSendCBAbnormalNum++;
@@ -247,25 +247,25 @@ void scm_send_ind_data_to_udi(u8 *pucVirData, u8 *pucPHYData, u32 ulDataLen)
     diag_ThroughputSave(EN_DIAG_THRPUT_DATA_CHN_PHY, ulSendDataLen);
     ulResult = CPM_ComSend(enLogicPort, pucVirData, pucPHYData, ulSendDataLen);
 
-    if(CPM_SEND_ERR == ulResult)  /*当前通道已经发送失败，调用SOCP通道无数据搬运*/
+    if(CPM_SEND_ERR == ulResult)  /*??????????????????????????SOCP??????????????*/
     {
         pstDebugInfo->ulUSBSendErrNum++;
         pstDebugInfo->ulUSBSendErrLen += ulSendDataLen;
         diag_system_debug_ind_dst_lost(EN_DIAG_DST_LOST_CPMWR, ulSendDataLen);
     }
-    else if(CPM_SEND_FUNC_NULL == ulResult)   /*当前通道异常，扔掉所有数据*/
+    else if(CPM_SEND_FUNC_NULL == ulResult)   /*??????????????????????????*/
     {
         pstDebugInfo->ulOmDiscardNum++;
         pstDebugInfo->ulOmDiscardLen += ulDataLen;
        diag_system_debug_ind_dst_lost(EN_DIAG_DST_LOST_CPMWR, ulSendDataLen);
     }
-    else if(CPM_SEND_PARA_ERR == ulResult)   /* 发送数据获取实地址异常 */
+    else if(CPM_SEND_PARA_ERR == ulResult)   /* ?????????????????????? */
     {
         pstDebugInfo->ulOmGetVirtErr++;
         pstDebugInfo->ulOmGetVirtSendLen += ulDataLen;
         diag_system_debug_ind_dst_lost(EN_DIAG_DST_LOST_CPMWR, ulSendDataLen);
     }
-    else if(CPM_SEND_AYNC == ulResult) //增加cpm错误码
+    else if(CPM_SEND_AYNC == ulResult) //????cpm??????
     {
         bUsbSendSucFlag = true;
         bUsbSendFlag    = true;
@@ -347,13 +347,13 @@ int scm_ind_dst_read_cb(unsigned int u32ChanID)
 
     if (BSP_OK != bsp_socp_get_read_buff(ulDstChID, &stBuffer))
     {
-        diag_error("Get Read Buffer is Error\n");/* 记录Log */
+        diag_error("Get Read Buffer is Error\n");/* ????Log */
         return ERR_MSP_INVALID_PARAMETER;
     }
 
     diag_system_debug_rev_socp_data(stBuffer.u32RbSize + stBuffer.u32Size);
 
-     /* 开机log功能，IND通道上报函数为空，使log缓存在本地 */
+     /* ????log??????IND????????????????????log?????????? */
     if(NULL == g_astSCMIndCoderDstCfg.pfunc)
     {
         diag_crit("ind dst channel is null, delay log is open\n");
@@ -362,7 +362,7 @@ int scm_ind_dst_read_cb(unsigned int u32ChanID)
 
     if((0 == (stBuffer.u32Size + stBuffer.u32RbSize))||(NULL == stBuffer.pBuffer))
     {
-        bsp_socp_read_data_done(ulDstChID, stBuffer.u32Size + stBuffer.u32RbSize);  /* 清空数据 */
+        bsp_socp_read_data_done(ulDstChID, stBuffer.u32Size + stBuffer.u32RbSize);  /* ???????? */
         diag_system_debug_ind_dst_lost(EN_DIAG_DST_LOST_BRANCH, stBuffer.u32Size + stBuffer.u32RbSize);
         diag_error("Get RD error\n");
         return ERR_MSP_SUCCESS;
@@ -373,14 +373,14 @@ int scm_ind_dst_read_cb(unsigned int u32ChanID)
         return ERR_MSP_SUCCESS;
     }
 
-    /* 发送数据 */
+    /* ???????? */
     ulVirtAddr = scm_UncacheMemPhyToVirt((u8 *)stBuffer.pBuffer,
                                 g_astSCMIndCoderDstCfg.pucBufPHY,
                                 g_astSCMIndCoderDstCfg.pucBuf,
                                 g_astSCMIndCoderDstCfg.ulBufLen);
     if((unsigned long)NULL == ulVirtAddr)
     {
-        bsp_socp_read_data_done(ulDstChID, stBuffer.u32Size + stBuffer.u32RbSize);  /* 清空数据 */
+        bsp_socp_read_data_done(ulDstChID, stBuffer.u32Size + stBuffer.u32RbSize);  /* ???????? */
         diag_system_debug_ind_dst_lost(EN_DIAG_DST_LOST_BRANCH, stBuffer.u32Size + stBuffer.u32RbSize);
         diag_error("stBuffer.pBuffe==NULL\n");
         return ERR_MSP_MALLOC_FAILUE;
@@ -389,7 +389,7 @@ int scm_ind_dst_read_cb(unsigned int u32ChanID)
 
     g_astSCMIndCoderDstCfg.pfunc((u8*)ulVirtAddr, (u8*)stBuffer.pBuffer,(u32)stBuffer.u32Size);
     ulTimerOut = bsp_get_slice_value();
-    /* 记录回调函数的执行时间 */
+    /* ?????????????????????? */
     if(g_DiagLogLevel)
     {
         diag_crit("g_astSCMCnfCoderDstCfg.pfunc Proc time 0x%x\n", (ulTimerOut - ulTimerIn));        

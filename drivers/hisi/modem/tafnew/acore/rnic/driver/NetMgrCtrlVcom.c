@@ -47,19 +47,19 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "NetMgrCtrlVcom.h"
 #include "NetMgrCtrlInterface.h"
 #include "mdrv.h"
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_NET_MGR_CTRL_VCOM_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 NM_CTRL_CTX_STRU    g_stNmCtrlCtx = {0};
 STATIC unsigned int nm_bind_pid = 0;
@@ -74,13 +74,13 @@ STATIC const struct file_operations g_stNmCtrlCdevFops =
 };
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 void NM_CTRL_SendMsg(void* pDataBuffer, unsigned int len)
 {
     /*lint --e{429}*/
-    /* 屏蔽error 429(警告pstListEntry内存没有释放，此处pstListEntry内存在read函数中释放，所以该告警屏蔽) */
+    /* ????error 429(????pstListEntry??????????????????pstListEntry??????read??????????????????????????) */
     NM_CTRL_CDEV_DATA_STRU             *pstListEntry    = VOS_NULL_PTR;
     NM_CTRL_CDEV_DATA_STRU             *pstCurEntry     = VOS_NULL_PTR;
     NM_MSG_STRU                        *pstRnicNmMsg    = VOS_NULL_PTR;
@@ -95,7 +95,7 @@ void NM_CTRL_SendMsg(void* pDataBuffer, unsigned int len)
        return;
     }
 
-    /* 分配链表内存kmalloc，用于存储数据 */
+    /* ????????????kmalloc?????????????? */
     pstListEntry = (NM_CTRL_CDEV_DATA_STRU *)kmalloc(sizeof(NM_CTRL_CDEV_DATA_STRU) + len, GFP_KERNEL);
     if (VOS_NULL_PTR == pstListEntry)
     {
@@ -103,31 +103,31 @@ void NM_CTRL_SendMsg(void* pDataBuffer, unsigned int len)
         return;
     }
 
-    /* 屏蔽告警 */
+    /* ???????? */
     memset(pstListEntry, 0, sizeof(NM_CTRL_CDEV_DATA_STRU) + len); /* unsafe_function_ignore: memset */
 
     pstListEntry->ulLen = len;
     memcpy(pstListEntry->aucData, pDataBuffer, len); /* unsafe_function_ignore: memcpy */
 
 
-    /* 获取信号量 */
+    /* ?????????? */
     mutex_lock(&(g_stNmCtrlCtx.stListLock));
 
     if ( ID_NM_BIND_PID_CONFIG_IND != pstRnicNmMsg->enMsgId)
     {
-        /* 挂接到链表末尾 */
+        /* ?????????????? */
         list_add_tail(&(pstListEntry->stMsgList), &(g_stNmCtrlCtx.stListHead));/*lint !e64 */
     }
     else
     {
-        /* HIFI Agent Pid信息挂接到低优先级链表末尾，只存一个节点 */
+        /* HIFI Agent Pid???????????????????????????????????????? */
         if (list_empty(&(g_stNmCtrlCtx.stLowPriListHead)))
         {
             list_add_tail(&(pstListEntry->stMsgList), &(g_stNmCtrlCtx.stLowPriListHead));/*lint !e64 */
         }
         else
         {
-            /* stLowPriListHead先删除一个节点，然后在链尾添加一个节点 */
+            /* stLowPriListHead?????????????????????????????????????? */
             pstCurEntry = list_first_entry(&(g_stNmCtrlCtx.stLowPriListHead), NM_CTRL_CDEV_DATA_STRU, stMsgList);
             list_del((LIST_HEAD_STRU *)pstCurEntry);/*lint !e64 */
             kfree(pstCurEntry);
@@ -138,7 +138,7 @@ void NM_CTRL_SendMsg(void* pDataBuffer, unsigned int len)
 
     g_stNmCtrlCtx.ulDataFlg = true;
 
-    /* 释放信号量 */
+    /* ?????????? */
     mutex_unlock(&(g_stNmCtrlCtx.stListLock));
 
     wake_up_interruptible(&(g_stNmCtrlCtx.stReadInq));
@@ -157,7 +157,7 @@ VOS_VOID NM_CTRL_SendBindPidCfgInd(unsigned int ulBindPid)
     stRnicNmMsg.ulMsgLen            = sizeof(unsigned int);
     stRnicNmMsg.unMsgInfo.ulBindPid = ulBindPid;
 
-    /* 调用虚拟设备提供的发送接口发送消息 */
+    /* ?????????????????????????????????? */
     NM_CTRL_SendMsg(&stRnicNmMsg, sizeof(NM_MSG_STRU));
     return;
 }
@@ -182,7 +182,7 @@ int NM_CTRL_Release(struct inode *node, struct file *filp)
     NM_CTRL_CDEV_DATA_STRU             *pstCurEntry = VOS_NULL_PTR;
     int                                 ret         = 0;
 
-    /* 获取信号量 */
+    /* ?????????? */
     mutex_lock(&(g_stNmCtrlCtx.stListLock));
 
     list_for_each_safe(pstCurPtr, pstNextPtr, &(g_stNmCtrlCtx.stListHead))
@@ -201,7 +201,7 @@ int NM_CTRL_Release(struct inode *node, struct file *filp)
 
     g_stNmCtrlCtx.ulDataFlg = false;
 
-    /* 释放信号量 */
+    /* ?????????? */
     mutex_unlock(&(g_stNmCtrlCtx.stListLock));
 
     NM_CTRL_LOGI("Enter.");
@@ -266,10 +266,10 @@ ssize_t NM_CTRL_Read(struct file *filp, char __user *buf, size_t size, loff_t *p
         return -ERESTARTSYS;
     }
 
-    /* 获取信号量 */
+    /* ?????????? */
     mutex_lock(&(g_stNmCtrlCtx.stListLock));
 
-    /* 读取数据链表，读空stListHead之后，再读stLowPriListHead */
+    /* ??????????????????stListHead??????????stLowPriListHead */
     if (!list_empty(&(g_stNmCtrlCtx.stListHead)))/*lint !e64 */
     {
         ret = NM_CTRL_Read_List_Entry(&(g_stNmCtrlCtx.stListHead), buf, size);
@@ -282,7 +282,7 @@ ssize_t NM_CTRL_Read(struct file *filp, char __user *buf, size_t size, loff_t *p
         }
     }
 
-    /* 判断链表是否为空 list_empty(g_stNmCtrlCdevp->data)；如果是空，false；如果非空，true; */
+    /* ???????????????? list_empty(g_stNmCtrlCdevp->data)????????????false????????????true; */
     if (list_empty(&(g_stNmCtrlCtx.stListHead)) && list_empty(&(g_stNmCtrlCtx.stLowPriListHead)))/*lint !e64 */
     {
         g_stNmCtrlCtx.ulDataFlg = false;
@@ -292,7 +292,7 @@ ssize_t NM_CTRL_Read(struct file *filp, char __user *buf, size_t size, loff_t *p
         g_stNmCtrlCtx.ulDataFlg = true;
     }
 
-    /* 释放信号量 */
+    /* ?????????? */
     mutex_unlock(&(g_stNmCtrlCtx.stListLock));
 
     return ret;
@@ -351,7 +351,7 @@ int __init NM_CTRL_Init(VOS_VOID)
 
     NM_CTRL_LOGI("Enter.");
 
-    /* 屏蔽告警 */
+    /* ???????? */
     memset(&g_stNmCtrlCtx, 0, sizeof(NM_CTRL_CTX_STRU)); /* unsafe_function_ignore: memset */
 
     ret = alloc_chrdev_region(&devno, 0, 1, NM_CTRL_DEVICE_NAME);
@@ -391,7 +391,7 @@ int __init NM_CTRL_Init(VOS_VOID)
        device_create(pstNmCtrlClass, NULL, MKDEV(g_stNmCtrlCtx.ulMajorNum, 0), NULL, NM_CTRL_DEVICE_NAME);
     }
 
-    /* 初始化 */
+    /* ?????? */
     INIT_LIST_HEAD(&(g_stNmCtrlCtx.stListHead));/*lint !e64 */
     INIT_LIST_HEAD(&(g_stNmCtrlCtx.stLowPriListHead));/*lint !e64 */
 

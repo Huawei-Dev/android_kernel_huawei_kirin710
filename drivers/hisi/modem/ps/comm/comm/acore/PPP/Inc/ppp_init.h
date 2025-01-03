@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "PPP/Inc/ppp_public.h"
 #include "LinuxInterface.h"
@@ -48,45 +48,45 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  4 STRUCT定义
+  4 STRUCT????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                  ulUplinkCnt;                /* 上行数据包总个数 */
-    VOS_UINT32                  ulUplinkDropCnt;            /* 上行丢包数 */
-    VOS_UINT32                  ulUplinkSndDataCnt;         /* 上行发包数 */
+    VOS_UINT32                  ulUplinkCnt;                /* ???????????????? */
+    VOS_UINT32                  ulUplinkDropCnt;            /* ?????????? */
+    VOS_UINT32                  ulUplinkSndDataCnt;         /* ?????????? */
 
-    VOS_UINT32                  ulDownlinkCnt;              /* 下行数据包总个数 */
-    VOS_UINT32                  ulDownlinkDropCnt;          /* 下行丢包数 */
-    VOS_UINT32                  ulDownlinkSndDataCnt;       /* 下行发包数 */
+    VOS_UINT32                  ulDownlinkCnt;              /* ???????????????? */
+    VOS_UINT32                  ulDownlinkDropCnt;          /* ?????????? */
+    VOS_UINT32                  ulDownlinkSndDataCnt;       /* ?????????? */
 
-    VOS_UINT32                  ulMemAllocDownlinkCnt;      /* 下行内存申请次数 */
-    VOS_UINT32                  ulMemAllocDownlinkFailCnt;  /* 下行内存申请失败次数 */
-    VOS_UINT32                  ulMemAllocUplinkCnt;        /* 上行内存申请次数 */
-    VOS_UINT32                  ulMemAllocUplinkFailCnt;    /* 上行内存申请失败次数 */
-    VOS_UINT32                  ulMemFreeCnt;               /* 其他内存释放次数 */
+    VOS_UINT32                  ulMemAllocDownlinkCnt;      /* ???????????????? */
+    VOS_UINT32                  ulMemAllocDownlinkFailCnt;  /* ???????????????????? */
+    VOS_UINT32                  ulMemAllocUplinkCnt;        /* ???????????????? */
+    VOS_UINT32                  ulMemAllocUplinkFailCnt;    /* ???????????????????? */
+    VOS_UINT32                  ulMemFreeCnt;               /* ???????????????? */
 
-    VOS_UINT32                  ulDropCnt;                  /* 队列满丢包数 */
+    VOS_UINT32                  ulDropCnt;                  /* ???????????? */
 
-    VOS_UINT32                  ulQMaxCnt;                  /* 队列中出现过的最大结点个数 */
-    VOS_UINT32                  ulSndMsgCnt;                /* DataNotify消息发送数 */
-    VOS_UINT32                  ulProcMsgCnt;               /* DataNotify消息处理数 */
+    VOS_UINT32                  ulQMaxCnt;                  /* ?????????????????????????? */
+    VOS_UINT32                  ulSndMsgCnt;                /* DataNotify?????????? */
+    VOS_UINT32                  ulProcMsgCnt;               /* DataNotify?????????? */
 } PPP_DATA_Q_STAT_ST;
 
 typedef struct
 {
-    PPP_ZC_QUEUE_STRU           stDataQ;                    /* PPP数据队列，上下行数据都在其中 */
-    PPP_DATA_Q_STAT_ST          stStat;                     /* PPP数据队列的统计信息 */
-    volatile VOS_UINT32         ulNotifyMsg;                /* 通知PPP处理数据 */
+    PPP_ZC_QUEUE_STRU           stDataQ;                    /* PPP???????????????????????????? */
+    PPP_DATA_Q_STAT_ST          stStat;                     /* PPP?????????????????? */
+    volatile VOS_UINT32         ulNotifyMsg;                /* ????PPP???????? */
 }PPP_DATA_Q_CTRL_ST;
 
 typedef struct
@@ -97,16 +97,16 @@ typedef struct
     VOS_UINT32                  ulPppTaskId;
     VOS_UINT32                  ulPppInitFlag;
 
-    TTF_ACORE_BOOL_ENUM_UINT8   enChapEnable;           /* 是否使能Chap鉴权 */
-    TTF_ACORE_BOOL_ENUM_UINT8   enPapEnable;            /* 是否使能Pap鉴权 */
-    VOS_UINT16                  usLcpEchoMaxLostCnt;    /* 发送LcpEchoRequest允许丢弃的最大个数 */
+    TTF_ACORE_BOOL_ENUM_UINT8   enChapEnable;           /* ????????Chap???? */
+    TTF_ACORE_BOOL_ENUM_UINT8   enPapEnable;            /* ????????Pap???? */
+    VOS_UINT16                  usLcpEchoMaxLostCnt;    /* ????LcpEchoRequest?????????????????? */
 
-    VOS_UINT16                  usQueneMaxCnt;          /* 队列最大允许个数 */
+    VOS_UINT16                  usQueneMaxCnt;          /* ???????????????? */
     VOS_UINT8                   aucRsv[2];
 } PPP_ENTITY_INFO_STRU;
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 extern PPP_ENTITY_INFO_STRU             g_stPppEntInfo;
 extern PPP_DATA_Q_CTRL_ST               g_PppDataQCtrl;

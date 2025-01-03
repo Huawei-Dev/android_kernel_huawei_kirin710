@@ -46,7 +46,7 @@
 *
 */
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "vos.h"
 #include "PsTypeDef.h"
@@ -56,18 +56,18 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_BST_INIT_C
 
 RECV_MSG_PROC pRecvMsgProc = NULL;
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 VOS_VOID BASTET_CommRegRecvCallBack(RECV_MSG_PROC pFunc)
@@ -113,7 +113,7 @@ VOS_UINT32 BASTET_CommFidInit(enum VOS_INIT_PHASE_DEFINE ip)
     {
         case VOS_IP_LOAD_CONFIG:
 
-            /* 上行PID初始化 */
+            /* ????PID?????? */
             ulRslt = VOS_RegisterPIDInfo(ACPU_PID_BASTET_COMM,
                                          (Init_Fun_Type)BASTET_CommPidInit,
                                          (Msg_Fun_Type)BASTET_CommProcMsg);
@@ -122,7 +122,7 @@ VOS_UINT32 BASTET_CommFidInit(enum VOS_INIT_PHASE_DEFINE ip)
             {
                 return VOS_ERR;
             }
-            /* 任务优先级 */
+            /* ?????????? */
             ulRslt = VOS_RegisterTaskPrio(ACPU_FID_BASTET_COMM, VOS_PRIORITY_P4);
             if( VOS_OK != ulRslt )
             {

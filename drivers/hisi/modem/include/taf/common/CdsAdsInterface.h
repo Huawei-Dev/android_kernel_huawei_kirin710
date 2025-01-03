@@ -50,7 +50,7 @@
 #define __CDS_ADS_INTERFACE_H__
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 
 #include "vos.h"
@@ -72,7 +72,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 #define ADS_CDS_MSG_ID_HEADER           (0x0000)
@@ -83,16 +83,16 @@ extern "C" {
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
- 枚举名称: CDS_ADS_MSG_ID_ENUM
- 枚举说明: CDS和ADS的之间的消息
+ ????????: CDS_ADS_MSG_ID_ENUM
+ ????????: CDS??ADS????????????
 *****************************************************************************/
 enum CDS_ADS_MSG_ID_ENUM
 {
-    /* 0x01~0x03 消息废弃 */
+    /* 0x01~0x03 ???????? */
 
     /* CDS<--->ADS */
     ID_CDS_ADS_DATA_IND                 = CDS_ADS_MSG_ID_HEADER + 0x04,
@@ -110,8 +110,8 @@ enum CDS_ADS_MSG_ID_ENUM
 typedef VOS_UINT32 CDS_ADS_MSG_ID_ENUM_UINT32;
 
 /*****************************************************************************
- 枚举名称: CDS_ADS_IP_PACKET_TYPE_ENUM_UINT8
- 枚举说明: CDS与ADS的IP消息包类型定义
+ ????????: CDS_ADS_IP_PACKET_TYPE_ENUM_UINT8
+ ????????: CDS??ADS??IP??????????????
 *****************************************************************************/
 enum CDS_ADS_IP_PACKET_TYPE_ENUM
 {
@@ -125,21 +125,21 @@ enum CDS_ADS_IP_PACKET_TYPE_ENUM
 typedef VOS_UINT8 CDS_ADS_IP_PACKET_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名称: CDS_ADS_DL_IPF_BEARER_ID_ENUM
- 枚举说明: CDS与ADS下行的IPF Bearer Id定义
+ ????????: CDS_ADS_DL_IPF_BEARER_ID_ENUM
+ ????????: CDS??ADS??????IPF Bearer Id????
            IPF Bearer ID:
-               0~4      保留
+               0~4      ????
                5~15     EPS Bearer ID
-               16       下行DHCP
-               17       下行DHCPv6
-               18       下行ICMP
-               19       下行ICMPv6
-               20       下行Link Local Address FE80
-               21       下行Link Local Address FF
-               22       下行MIP
-               23       下行MIP
-               24~62    暂时保留，可扩展
-               63       不匹配任何Filter
+               16       ????DHCP
+               17       ????DHCPv6
+               18       ????ICMP
+               19       ????ICMPv6
+               20       ????Link Local Address FE80
+               21       ????Link Local Address FF
+               22       ????MIP
+               23       ????MIP
+               24~62    ????????????????
+               63       ??????????Filter
 *****************************************************************************/
 enum CDS_ADS_DL_IPF_BEARER_ID_ENUM
 {
@@ -159,8 +159,8 @@ enum CDS_ADS_DL_IPF_BEARER_ID_ENUM
 typedef VOS_UINT8 CDS_ADS_DL_IPF_BEARER_ID_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名称: ADS_CDS_IPF_PKT_TYPE_ENUM_UINT8
- 枚举说明: ADS给CDS的数据包类型
+ ????????: ADS_CDS_IPF_PKT_TYPE_ENUM_UINT8
+ ????????: ADS??CDS????????????
 *****************************************************************************/
 enum ADS_CDS_PKT_TYPE_ENUM
 {
@@ -172,21 +172,21 @@ enum ADS_CDS_PKT_TYPE_ENUM
 typedef VOS_UINT8 ADS_CDS_IPF_PKT_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名称: CDS_ADS_DL_IPF_BID_ENUM
- 枚举说明: IPF下行过滤结果中BID定义
+ ????????: CDS_ADS_DL_IPF_BID_ENUM
+ ????????: IPF??????????????BID????
            IPF Bearer ID:
-               0~4      保留
+               0~4      ????
                5~15     EPS Bearer ID
-               16       下行DHCP
-               17       下行DHCPv6
-               18       下行ICMP
-               19       下行ICMPv6
-               20       下行Link Local Address FE80
-               21       下行Link Local Address FF
-               22       下行MIP
-               23       下行MIP
-               24~254   暂时保留，可扩展
-               255      不匹配任何Filter
+               16       ????DHCP
+               17       ????DHCPv6
+               18       ????ICMP
+               19       ????ICMPv6
+               20       ????Link Local Address FE80
+               21       ????Link Local Address FF
+               22       ????MIP
+               23       ????MIP
+               24~254   ????????????????
+               255      ??????????Filter
 *****************************************************************************/
 enum CDS_ADS_DL_IPF_BID_ENUM
 {
@@ -206,19 +206,19 @@ enum CDS_ADS_DL_IPF_BID_ENUM
 typedef VOS_UINT8 CDS_ADS_DL_IPF_BID_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名称: CDS_ADS_UL_IPF_BID_ENUM
- 枚举说明: IPF上行过滤结果中BID内容定义
+ ????????: CDS_ADS_UL_IPF_BID_ENUM
+ ????????: IPF??????????????BID????????
            IPF Bearer ID:
-               0~4      保留
+               0~4      ????
                5~15     EPS Bearer ID
-               16       上行DHCP
-               17       上行DHCPv6
-               18       上行ICMP
-               19       上行ICMPv6
-               20       上行Link Local Address FE80
-               21       上行Link Local Address FF
-               22~254   暂时保留，可扩展
-               255      不匹配任何Filter
+               16       ????DHCP
+               17       ????DHCPv6
+               18       ????ICMP
+               19       ????ICMPv6
+               20       ????Link Local Address FE80
+               21       ????Link Local Address FF
+               22~254   ????????????????
+               255      ??????????Filter
 *****************************************************************************/
 enum CDS_ADS_UL_IPF_BID_ENUM
 {
@@ -237,12 +237,12 @@ typedef VOS_UINT8 CDS_ADS_UL_IPF_BID_ENUM_UINT8;
 
 
 /*****************************************************************************
-  4 STRUCT定义
+  4 STRUCT????
 *****************************************************************************/
 
 /*****************************************************************************
- 结构名称: CDS_ADS_DATA_IND_STRU
- 结构说明: ID_CDS_ADS_DATA_IND 消息结构
+ ????????: CDS_ADS_DATA_IND_STRU
+ ????????: ID_CDS_ADS_DATA_IND ????????
 *****************************************************************************/
 typedef struct
 {
@@ -258,8 +258,8 @@ typedef struct
 } CDS_ADS_DATA_IND_STRU;
 
 /*****************************************************************************
- 结构名称: ADS_CDS_ERR_IND_STRU
- 结构说明: ID_ADS_CDS_ERR_IND 消息结构
+ ????????: ADS_CDS_ERR_IND_STRU
+ ????????: ID_ADS_CDS_ERR_IND ????????
 *****************************************************************************/
 typedef struct
 {
@@ -273,8 +273,8 @@ typedef struct
 } ADS_CDS_ERR_IND_STRU;
 
 /*****************************************************************************
- 结构名称: CDS_ADS_DATA_IND_V2_STRU
- 结构说明: ID_CDS_ADS_DATA_IND_V2 消息结构
+ ????????: CDS_ADS_DATA_IND_V2_STRU
+ ????????: ID_CDS_ADS_DATA_IND_V2 ????????
 *****************************************************************************/
 typedef struct
 {
@@ -288,8 +288,8 @@ typedef struct
 } CDS_ADS_DATA_IND_V2_STRU;
 
 /*****************************************************************************
- 结构名称: ADS_CDS_SEPCIAL_PACKET_IND_STRU
- 结构说明: ID_ADS_CDS_DATA_IND_V2 消息结构
+ ????????: ADS_CDS_SEPCIAL_PACKET_IND_STRU
+ ????????: ID_ADS_CDS_DATA_IND_V2 ????????
 *****************************************************************************/
 typedef struct
 {
@@ -306,8 +306,8 @@ typedef struct
 } ADS_CDS_DATA_IND_V2_STRU;
 
 /*****************************************************************************
- 结构名称: ADS_CDS_ERR_IND_V2_STRU
- 结构说明: ID_ADS_CDS_ERR_IND_V2 消息结构
+ ????????: ADS_CDS_ERR_IND_V2_STRU
+ ????????: ID_ADS_CDS_ERR_IND_V2 ????????
 *****************************************************************************/
 typedef struct
 {
@@ -315,8 +315,8 @@ typedef struct
     CDS_ADS_MSG_ID_ENUM_UINT32          enMsgId;
 
     VOS_UINT8                           ucIfaceId;
-    VOS_UINT8                           ucErrRate;                              /* 错包率，扩展备用，目前不处理*/
-    VOS_UINT8                           aucRsv[2];                              /* 保留*/
+    VOS_UINT8                           ucErrRate;                              /* ????????????????????????????*/
+    VOS_UINT8                           aucRsv[2];                              /* ????*/
 } ADS_CDS_ERR_IND_V2_STRU;
 
 

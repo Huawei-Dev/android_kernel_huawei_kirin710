@@ -106,7 +106,7 @@ typedef struct _FAULTID_MAP
     VOS_UINT16 usFaultId;
     VOS_UINT8  aucReserved0[2];
     VOS_UINT32 ulNvId;
-    VOS_UINT8  aucReserved1[4];              //±£¡ÙŒª
+    VOS_UINT8  aucReserved1[4];              //??????
 
 }FAULTID_MAP;
 

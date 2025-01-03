@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "hal_ext_if.h"
 #include "oal_net.h"
@@ -72,12 +72,12 @@ OAL_STATIC oal_uint32 dmac_reset_restore_peer_addr_lut(mac_device_stru* pst_mac_
 
 #endif
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 dmac_reset_mng_stru g_st_dmac_reset_mng;
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_void dmac_reset_init(oal_void)
@@ -260,7 +260,7 @@ OAL_STATIC oal_uint32 dmac_reset_save_tx_queue(hal_to_dmac_device_stru *pst_hal_
         return OAL_FAIL;
     }
 
-    /* 申请fake_fifo_buff */
+    /* ????fake_fifo_buff */
     pst_fake_buf = OAL_MEM_NETBUF_ALLOC(OAL_NORMAL_NETBUF, (HAL_TX_QUEUE_NUM * OAL_SIZEOF(hal_tx_dscr_queue_header_stru)), OAL_NETBUF_PRIORITY_HIGH);
     if (OAL_PTR_NULL == pst_fake_buf)
     {
@@ -309,7 +309,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
     mac_vap_stru                *pst_mac_sta;
     oal_uint8                    uc_vap_idx;
 
-    /* 注意仅为了获取配置VAP */
+    /* ??????????????????VAP */
     pst_mac_vap = (mac_vap_stru *)mac_res_get_mac_vap(pst_device->uc_cfg_vap_id);
     if(OAL_PTR_NULL == pst_mac_vap)
     {
@@ -328,7 +328,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
 
     OAM_PROFILING_STARTTIME_STATISTIC(OAM_PROFILING_RESET_TOTAL_BEGIN);
 
-    /* 设置复位处理中true */
+    /* ??????????????true */
     MAC_DEV_RESET_IN_PROGRESS(pst_device, OAL_TRUE);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
@@ -337,18 +337,18 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
     dmac_send_sys_event(pst_mac_vap, WLAN_CFGID_RESET_HW_OPERATE, OAL_SIZEOF(mac_reset_sys_stru), (oal_uint8 *)&st_reset_sys);
 #endif
 
-     /* 挂起硬件发送 */
+     /* ???????????? */
     hal_set_machw_tx_suspend(pst_hal_device);
 
-    /* 关闭pa */
+    /* ????pa */
     hal_disable_machw_phy_and_pa(pst_hal_device);
 
-    /* 关中断，在挂起硬件发送之后 */
+    /* ?????????????????????????? */
     oal_irq_save(&ul_irq_flag, OAL_5115IRQ_DMSC);
 
     if (pst_reset_para->uc_reset_mac_reg)
     {
-       /*保存LUT现场所需内存申请*/
+       /*????LUT????????????????*/
        ul_ret = dmac_reset_lut_init();
        if(OAL_SUCC != ul_ret)
        {
@@ -357,17 +357,17 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
             return  ul_ret ;
        }
 
-       /* 处理完接收事件队列 */
+       /* ?????????????????? */
        frw_event_flush_event_queue(FRW_EVENT_TYPE_WLAN_CRX);
        frw_event_flush_event_queue(FRW_EVENT_TYPE_WLAN_DRX);
 
-       /* 保存发送队列的内容 */
+       /* ?????????????????? */
        dmac_reset_save_tx_queue(pst_hal_device);
 
-       /*复位寄存器前操作,清发送队列，保存LUT内容*/
+       /*????????????????,????????????????LUT????*/
        dmac_tx_reset_flush(pst_hal_device);
 
-       /*保存各VAP的TSF的值，并记录当前时间*/
+       /*??????VAP??TSF????????????????????*/
        dmac_reset_save_tsf(pst_device,g_st_dmac_reset_mng.pst_tsf);
        oal_time_get_stamp_us(&st_time_record);
     }
@@ -396,7 +396,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
           if (WLAN_VAP_MODE_BSS_STA == pst_mac_sta->en_vap_mode)
           {
 
-              /* 调用hal接口设置信道号 */
+              /* ????hal?????????????? */
               hal_set_primary_channel(pst_hal_device,
                                     pst_mac_sta->st_channel.uc_chan_number,
                                     pst_mac_sta->st_channel.en_band,
@@ -415,32 +415,32 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
 
     if(pst_reset_para->uc_reset_mac_reg)
     {
-       /*复位寄存器后操作: 恢复寄存器和LUT*/
+       /*????????????????: ????????????LUT*/
        hal_reset_reg_restore(pst_hal_device,HAL_RESET_HW_NORMAL_TYPE_MAC);
 
-       /*避免复位过程中接收描述符队列异常，重新初始化接收描述符队列*/
+       /*??????????????????????????????????????????????????????????*/
        dmac_reset_rx_dscr_queue_flush(pst_hal_device);
 
-       /* 恢复发送队列内容 */
+       /* ???????????????? */
        dmac_reset_restore_tx_queue(pst_hal_device);
 
-       /*重写TSF*/
+       /*????TSF*/
        dmac_reset_restore_tsf(pst_device,g_st_dmac_reset_mng.pst_tsf,&st_time_record);
 
        dmac_reset_lut_destroy();
     }
 
 
-    /* 开中断 */
+    /* ?????? */
     oal_irq_restore(&ul_irq_flag, OAL_5115IRQ_DMSC);
 
-    /* 使能pa */
+    /* ????pa */
     hal_enable_machw_phy_and_pa(pst_hal_device);
 
-    /* 恢复硬件发送 */
+    /* ???????????? */
     hal_set_machw_tx_resume(pst_hal_device);
 
-    /* 设置复位处理中false */
+    /* ??????????????false */
     MAC_DEV_RESET_IN_PROGRESS(pst_device, OAL_FALSE);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
@@ -479,7 +479,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
     mac_reset_sys_stru           st_reset_sys;
     mac_vap_stru                *pst_mac_vap;
 
-    /* 注意仅为了获取配置VAP */
+    /* ??????????????????VAP */
     pst_mac_vap = (mac_vap_stru *)mac_res_get_mac_vap(0);
     if(OAL_PTR_NULL == pst_mac_vap)
     {
@@ -498,7 +498,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
 
     OAM_PROFILING_STARTTIME_STATISTIC(OAM_PROFILING_RESET_TOTAL_BEGIN);
 
-    /* 设置复位处理中true */
+    /* ??????????????true */
     MAC_DEV_RESET_IN_PROGRESS(pst_device, OAL_TRUE);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
@@ -507,20 +507,20 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
     dmac_send_sys_event(pst_mac_vap, WLAN_CFGID_RESET_HW_OPERATE, OAL_SIZEOF(mac_reset_sys_stru), (oal_uint8 *)&st_reset_sys);
 #endif
 
-     /* 挂起硬件发送 */
+     /* ???????????? */
     hal_set_machw_tx_suspend(pst_hal_device);
 
-    /* 关闭pa */
+    /* ????pa */
     hal_disable_machw_phy_and_pa(pst_hal_device);
 
     oal_udelay(1000);
 
-    /* 关中断，在挂起硬件发送之后 */
+    /* ?????????????????????????? */
     oal_irq_save(&ul_irq_flag, OAL_5115IRQ_DMSC);
 
     if (pst_reset_para->uc_reset_mac_reg)
     {
-       /*保存LUT现场所需内存申请*/
+       /*????LUT????????????????*/
        ul_ret = dmac_reset_lut_init();
        if(OAL_SUCC != ul_ret)
        {
@@ -528,7 +528,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
             return  ul_ret ;
        }
 
-       /*复位寄存器前操作,清发送队列，保存LUT内容*/
+       /*????????????????,????????????????LUT????*/
        dmac_tx_reset_flush(pst_hal_device);
 
        dmac_reset_save_seq_lut(pst_device,g_st_dmac_reset_mng.pst_sequence_qos,&ul_sequence_nonqos);
@@ -544,7 +544,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
 
        dmac_reset_save_smartant_lut(pst_device,g_st_dmac_reset_mng.pst_smartant);
 
-       /*保存各VAP的TSF的值，并记录当前时间*/
+       /*??????VAP??TSF????????????????????*/
        dmac_reset_save_tsf(pst_device,g_st_dmac_reset_mng.pst_tsf);
        oal_time_get_stamp_us(&st_time_record);
     }
@@ -567,13 +567,13 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
 
     if(pst_reset_para->uc_reset_mac_reg)
     {
-       /*复位寄存器后操作: 恢复寄存器和LUT*/
+       /*????????????????: ????????????LUT*/
        hal_reset_reg_restore(pst_hal_device,HAL_RESET_HW_TYPE_MAC);
 
-       /*避免复位过程中接收描述符队列异常，重新初始化接收描述符队列*/
+       /*??????????????????????????????????????????????????????????*/
        dmac_reset_rx_dscr_queue_flush(pst_hal_device);
 
-       /*LUT表的恢复*//* TBD zhongwen 复位lut表需要在hal接口封装，不能再dmac，zourong */
+       /*LUT????????*//* TBD zhongwen ????lut????????hal????????????????dmac??zourong */
        dmac_reset_restore_ba_lut(pst_device,g_st_dmac_reset_mng.pst_ba_rx);
 
        dmac_reset_restore_seq_lut(pst_device,g_st_dmac_reset_mng.pst_sequence_qos,&ul_sequence_nonqos);
@@ -584,7 +584,7 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
 
        dmac_reset_restore_cipher_lut(pst_device);
 
-       /*因为重配置密钥硬件会自动重置PN，所以必须在重配置密钥后再恢复pn*/
+       /*????????????????????????????PN??????????????????????????????pn*/
        dmac_reset_restore_pn_lut(pst_device,
                                  g_st_dmac_reset_mng.pst_rx_pn_ucast,
                                  g_st_dmac_reset_mng.pst_rx_pn_mcast,
@@ -593,22 +593,22 @@ oal_uint32  dmac_reset_hw(mac_device_stru* pst_device,oal_uint8* pst_param)
 
        dmac_reset_restore_peer_addr_lut(pst_device);
 
-       /*重写TSF*/
+       /*????TSF*/
        dmac_reset_restore_tsf(pst_device,g_st_dmac_reset_mng.pst_tsf,&st_time_record);
 
        dmac_reset_lut_destroy();
     }
 
-    /* 开中断 */
+    /* ?????? */
     oal_irq_restore(&ul_irq_flag, OAL_5115IRQ_DMSC);
 
-    /* 使能pa */
+    /* ????pa */
     hal_enable_machw_phy_and_pa(pst_hal_device);
 
-    /* 恢复硬件发送 */
+    /* ???????????? */
     hal_set_machw_tx_resume(pst_hal_device);
 
-    /* 设置复位处理中false */
+    /* ??????????????false */
     MAC_DEV_RESET_IN_PROGRESS(pst_device, OAL_FALSE);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
@@ -642,7 +642,7 @@ OAL_STATIC oal_uint32 dmac_reset_save_seq_lut(mac_device_stru* pst_mac_device,oa
 
     if(g_st_dmac_reset_mng.bit_seq_lut_reset)
     {
-        /* 遍历device下所有用户，读寄存器，保存每个TID对应的sequence */
+        /* ????device??????????????????????????????TID??????sequence */
         for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
         {
             pst_mac_vap = mac_res_get_mac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -661,7 +661,7 @@ OAL_STATIC oal_uint32 dmac_reset_save_seq_lut(mac_device_stru* pst_mac_device,oa
                     OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_reset_save_seq_lut::pst_dmac_user_tmp null, assoc_id id=%d.", pst_user_tmp->us_assoc_id);
                     return OAL_ERR_CODE_PTR_NULL;
                 }
-                /* 非活跃用户，直接返回 */
+                /* ???????????????????? */
                 if (OAL_FALSE == pst_dmac_user_tmp->bit_active_user)
                 {
                     continue;
@@ -682,7 +682,7 @@ OAL_STATIC oal_uint32 dmac_reset_save_seq_lut(mac_device_stru* pst_mac_device,oa
             }
         }
     }
-    /*non-qos,index和tid没有意义*/
+    /*non-qos,index??tid????????*/
     hal_get_tx_sequence_num(pst_mac_device->pst_device_stru,
                             0,
                             0,
@@ -708,8 +708,8 @@ OAL_STATIC oal_uint32 dmac_reset_restore_seq_lut(mac_device_stru* pst_mac_device
 
     if(g_st_dmac_reset_mng.bit_seq_lut_reset)
     {
-        /* 遍历device下所有用户，读寄存器，保存每个TID对应的sequence */
-        /* 业务VAP从0开始*/
+        /* ????device??????????????????????????????TID??????sequence */
+        /* ????VAP??0????*/
         for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
         {
             pst_mac_vap = mac_res_get_mac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -728,7 +728,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_seq_lut(mac_device_stru* pst_mac_device
                     OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_reset_restore_seq_lut::pst_dmac_user_tmp null, assoc_id id=%d.", pst_user_tmp->us_assoc_id);
                     return OAL_ERR_CODE_PTR_NULL;
                 }
-                /* 非活跃用户，直接返回 */
+                /* ???????????????????? */
                 if (OAL_FALSE == pst_dmac_user_tmp->bit_active_user)
                 {
                     continue;
@@ -751,7 +751,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_seq_lut(mac_device_stru* pst_mac_device
         }
     }
 
-    /*non-qos,index和tid没有意义*/
+    /*non-qos,index??tid????????*/
     hal_set_tx_sequence_num(pst_mac_device->pst_device_stru,
                             0,
                             0,
@@ -830,7 +830,7 @@ OAL_STATIC oal_uint32 dmac_reset_save_pn_lut(mac_device_stru* pst_mac_device,oal
 
     if(g_st_dmac_reset_mng.bit_pn_lut_reset)
     {
-        /* 遍历device下所有用户，读寄存器，保存单播PN LUT */
+        /* ????device??????????????????????????????PN LUT */
         for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
         {
             pst_dmac_vap = mac_res_get_dmac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -850,26 +850,26 @@ OAL_STATIC oal_uint32 dmac_reset_save_pn_lut(mac_device_stru* pst_mac_device,oal
                     return OAL_ERR_CODE_PTR_NULL;
                 }
 
-                /* 非活跃用户，直接返回 */
+                /* ???????????????????? */
                 if (OAL_FALSE == pst_dmac_user_tmp->bit_active_user)
                 {
                     continue;
                 }
 
                 {
-                 /* 单播tx pn */
+                 /* ????tx pn */
                  st_pn_lut_cfg.uc_pn_key_type = 1;
                  st_pn_lut_cfg.uc_pn_peer_idx = pst_dmac_user_tmp->uc_lut_index;
                  hal_get_tx_pn(pst_mac_device->pst_device_stru,&st_pn_lut_cfg);
 
 
-                 /*保存读取到DBB mac的值*/
+                 /*??????????DBB mac????*/
                  pst_curr_entry         = pst_tx_pn_ucast + (pst_dmac_user_tmp->uc_lut_index)*2;
                 *pst_curr_entry         = st_pn_lut_cfg.ul_pn_msb;
                 *(pst_curr_entry + 1)   = st_pn_lut_cfg.ul_pn_lsb;
                 }
 
-                /* 单播rx pn */
+                /* ????rx pn */
                 for(uc_tid_loop = 0; uc_tid_loop < WLAN_TID_MAX_NUM; uc_tid_loop++)
                 {
                      st_pn_lut_cfg.uc_pn_key_type = 1;
@@ -877,7 +877,7 @@ OAL_STATIC oal_uint32 dmac_reset_save_pn_lut(mac_device_stru* pst_mac_device,oal
                      st_pn_lut_cfg.uc_pn_tid      = uc_tid_loop;
                      hal_get_rx_pn(pst_mac_device->pst_device_stru,&st_pn_lut_cfg);
 
-                     /*保存读取到DBB mac的值*/
+                     /*??????????DBB mac????*/
                      pst_curr_entry         = pst_rx_pn_ucast + ((pst_dmac_user_tmp->uc_lut_index)*WLAN_TID_MAX_NUM + uc_tid_loop)*2;
                     *pst_curr_entry         = st_pn_lut_cfg.ul_pn_msb;
                     *(pst_curr_entry + 1)   = st_pn_lut_cfg.ul_pn_lsb;
@@ -886,7 +886,7 @@ OAL_STATIC oal_uint32 dmac_reset_save_pn_lut(mac_device_stru* pst_mac_device,oal
 
         }
 
-        /*组播 rx pn*/
+        /*???? rx pn*/
         for(uc_vap_idx = 0; uc_vap_idx < WLAN_ASSOC_AP_MAX_NUM; uc_vap_idx++)
         {
             for(uc_tid_loop = 0;uc_tid_loop < WLAN_TID_MAX_NUM;uc_tid_loop++)
@@ -896,21 +896,21 @@ OAL_STATIC oal_uint32 dmac_reset_save_pn_lut(mac_device_stru* pst_mac_device,oal
                  st_pn_lut_cfg.uc_pn_tid      = uc_tid_loop;
                  hal_get_rx_pn(pst_mac_device->pst_device_stru,&st_pn_lut_cfg);
 
-                 /*保存读取到DBB mac的值*/
+                 /*??????????DBB mac????*/
                  pst_curr_entry         = pst_rx_pn_mcast + (uc_vap_idx*WLAN_TID_MAX_NUM + uc_tid_loop)*2;
                 *pst_curr_entry         = st_pn_lut_cfg.ul_pn_msb;
                 *(pst_curr_entry + 1)   = st_pn_lut_cfg.ul_pn_lsb;
             }
         }
 
-        /*组播 Tx pn*/
+        /*???? Tx pn*/
         for(uc_vap_idx = 0; uc_vap_idx < WLAN_SERVICE_AP_MAX_NUM_PER_DEVICE; uc_vap_idx++)
         {
              st_pn_lut_cfg.uc_pn_key_type = 0;
              st_pn_lut_cfg.uc_pn_peer_idx = uc_vap_idx;
              hal_get_tx_pn(pst_mac_device->pst_device_stru,&st_pn_lut_cfg);
 
-             /*保存读取到DBB mac的值*/
+             /*??????????DBB mac????*/
              pst_curr_entry         = pst_tx_pn_mcast + uc_vap_idx*2;
             *pst_curr_entry         = st_pn_lut_cfg.ul_pn_msb;
             *(pst_curr_entry + 1)   = st_pn_lut_cfg.ul_pn_lsb;
@@ -936,7 +936,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_pn_lut(mac_device_stru* pst_mac_device,
 
     if(g_st_dmac_reset_mng.bit_pn_lut_reset)
     {
-        /* 遍历device下所有VAP的活跃用户，恢复单播PN lut*/
+        /* ????device??????VAP????????????????????PN lut*/
         for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
         {
             pst_dmac_vap = mac_res_get_dmac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -955,14 +955,14 @@ OAL_STATIC oal_uint32 dmac_reset_restore_pn_lut(mac_device_stru* pst_mac_device,
                     OAM_WARNING_LOG1(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ANY, "{dmac_reset_restore_pn_lut::pst_dmac_user_tmp null, assoc_id id=%d.", pst_user_tmp->us_assoc_id);
                     return OAL_ERR_CODE_PTR_NULL;
                 }
-                /* 非活跃用户，直接返回 */
+                /* ???????????????????? */
                 if (OAL_FALSE == pst_dmac_user_tmp->bit_active_user)
                 {
                     continue;
                 }
 
                 {
-                    /* 单播tx pn */
+                    /* ????tx pn */
                      pst_curr_entry               = pst_tx_pn_ucast + (pst_dmac_user_tmp->uc_lut_index)*2;
                      st_pn_lut_cfg.uc_pn_key_type = 1;
                      st_pn_lut_cfg.uc_pn_peer_idx = pst_dmac_user_tmp->uc_lut_index;
@@ -972,7 +972,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_pn_lut(mac_device_stru* pst_mac_device,
                      hal_set_tx_pn(pst_mac_device->pst_device_stru,&st_pn_lut_cfg);
                 }
 
-                /* 单播rx pn */
+                /* ????rx pn */
                 for(uc_tid_loop = 0;uc_tid_loop < WLAN_TID_MAX_NUM;uc_tid_loop++)
                 {
                      pst_curr_entry               = pst_rx_pn_ucast + ((pst_dmac_user_tmp->uc_lut_index)*WLAN_TID_MAX_NUM + uc_tid_loop)*2;
@@ -990,7 +990,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_pn_lut(mac_device_stru* pst_mac_device,
 
         }
 
-        /*组播 rx pn*/
+        /*???? rx pn*/
         for(uc_vap_idx = 0; uc_vap_idx < WLAN_ASSOC_AP_MAX_NUM; uc_vap_idx++)
         {
             for(uc_tid_loop = 0;uc_tid_loop < WLAN_TID_MAX_NUM;uc_tid_loop++)
@@ -1007,7 +1007,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_pn_lut(mac_device_stru* pst_mac_device,
             }
         }
 
-        /*组播 Tx pn*/
+        /*???? Tx pn*/
         for(uc_vap_idx = 0; uc_vap_idx < WLAN_SERVICE_AP_MAX_NUM_PER_DEVICE; uc_vap_idx++)
         {
              pst_curr_entry               = pst_tx_pn_mcast + uc_vap_idx*2;
@@ -1039,8 +1039,8 @@ OAL_STATIC oal_uint32 dmac_reset_restore_cipher_lut(mac_device_stru* pst_mac_dev
 
     if(g_st_dmac_reset_mng.bit_key_lut_reset)
     {
-        /* 遍历device下所有用户，读寄存器，保存每个TID对应的sequence */
-        /* 业务VAP从WLAN_SERVICE_VAP_START_ID_PER_BOARD开始*/
+        /* ????device??????????????????????????????TID??????sequence */
+        /* ????VAP??WLAN_SERVICE_VAP_START_ID_PER_BOARD????*/
         for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
         {
             pst_dmac_vap = mac_res_get_dmac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -1050,7 +1050,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_cipher_lut(mac_device_stru* pst_mac_dev
                 return OAL_ERR_CODE_PTR_NULL;
             }
             pst_mac_vap = &pst_dmac_vap->st_vap_base_info;
-            /*不加密模式跳过*/
+            /*??????????????*/
             pst_multi_user = mac_res_get_mac_user(pst_mac_vap->us_multi_user_idx);
             if (OAL_UNLIKELY(OAL_PTR_NULL == pst_multi_user))
             {
@@ -1062,7 +1062,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_cipher_lut(mac_device_stru* pst_mac_dev
                 continue;
             }
 
-            /*wep key恢复*/
+            /*wep key????*/
             if(OAL_TRUE == mac_is_wep_allowed(pst_mac_vap))
             {
                 uc_key_idx = mac_get_wep_default_keyid(pst_mac_vap);
@@ -1073,12 +1073,12 @@ OAL_STATIC oal_uint32 dmac_reset_restore_cipher_lut(mac_device_stru* pst_mac_dev
             if (!mac_vap_is_vsta(pst_mac_vap))
 #endif
             {
-                /*GTK恢复*/
+                /*GTK????*/
                 uc_key_idx = pst_multi_user->st_key_info.uc_default_index;
                 dmac_11i_add_gtk_key(pst_mac_vap, uc_key_idx);
             }
 
-            /*PTK恢复*/
+            /*PTK????*/
             OAL_DLIST_SEARCH_FOR_EACH(pst_entry, &(pst_mac_vap->st_mac_user_list_head))
             {
                 pst_user      = OAL_DLIST_GET_ENTRY(pst_entry, mac_user_stru, st_user_dlist);
@@ -1088,7 +1088,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_cipher_lut(mac_device_stru* pst_mac_dev
                     OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_reset_restore_cipher_lut::pst_dmac_user null, assoc id=%d.", pst_user->us_assoc_id);
                     return OAL_ERR_CODE_PTR_NULL;
                 }
-                /* 非活跃用户，直接返回 */
+                /* ???????????????????? */
                 if (OAL_FALSE == pst_dmac_user->bit_active_user)
                 {
                     continue;
@@ -1195,7 +1195,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_peer_addr_lut(mac_device_stru* pst_mac_
 
     if(g_st_dmac_reset_mng.bit_peer_addr_lut_reset)
     {
-        /* 遍历device下所有用户， */
+        /* ????device???????????? */
         for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
         {
             pst_dmac_vap = mac_res_get_dmac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -1215,7 +1215,7 @@ OAL_STATIC oal_uint32 dmac_reset_restore_peer_addr_lut(mac_device_stru* pst_mac_
                     OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_reset_restore_peer_addr_lut::pst_dmac_user_tmp null, assoc_id id=%d.", pst_user->us_assoc_id);
                     return OAL_ERR_CODE_PTR_NULL;
                 }
-                /* 非活跃用户，直接返回 */
+                /* ???????????????????? */
                 if (OAL_FALSE == pst_dmac_user->bit_active_user)
                 {
                     continue;
@@ -1257,7 +1257,7 @@ OAL_STATIC oal_void dmac_reset_save_tsf(mac_device_stru* pst_mac_device,oal_uint
             OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_reset_save_tsf::pst_mac_vap null, vap id=%d.", pst_mac_device->auc_vap_id[uc_vap_idx]);
             return ;
         }
-        /*每个timestamp 64位，占用数组的2个条目*/
+        /*????timestamp 64??????????????2??????*/
         pst_tsf_entry = pst_tsf_array + uc_vap_idx*2;
 
         hal_vap_tsf_get_64bit(pst_dmac_vap->pst_hal_vap, pst_tsf_entry, pst_tsf_entry + 1);
@@ -1277,10 +1277,10 @@ OAL_STATIC oal_void dmac_reset_restore_tsf(mac_device_stru* pst_mac_device,oal_u
     oal_uint32               ul_tsf_lo;
     oal_uint32               ul_tsf_lo_plus;
 
-    /*当前时间*/
+    /*????????*/
     oal_time_get_stamp_us(&st_now_time);
 
-    /*计算时差*/
+    /*????????*/
     ul_diff_time_us = (oal_uint32)DMAC_TIME_USEC_DIFF(pst_time_record, &st_now_time);
 
     for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
@@ -1291,12 +1291,12 @@ OAL_STATIC oal_void dmac_reset_restore_tsf(mac_device_stru* pst_mac_device,oal_u
             OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_reset_restore_tsf::pst_mac_vap null, vap id=%d.", pst_mac_device->auc_vap_id[uc_vap_idx]);
             return ;
         }
-        /*每个timestamp 64位，占用数组的2个条目*/
+        /*????timestamp 64??????????????2??????*/
         pst_tsf_entry = pst_tsf_array + uc_vap_idx*2;
         ul_tsf_hi     = *pst_tsf_entry;
         ul_tsf_lo     = *(pst_tsf_entry + 1);
 
-        /*加上差值*/
+        /*????????*/
         ul_tsf_lo_plus = ul_tsf_lo + ul_diff_time_us;
         if((ul_tsf_lo_plus < ul_tsf_lo )|| (ul_tsf_lo_plus < ul_diff_time_us))
         {
@@ -1328,7 +1328,7 @@ oal_uint32 dmac_reset_sys_event(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal
     switch(pst_reset_sys->en_reset_sys_type)
     {
         case MAC_RESET_STATUS_SYS_TYPE:
-            /* 下发复位 */
+            /* ???????? */
             break;
         case MAC_RESET_SWITCH_SYS_TYPE:
             pst_mac_dev->en_reset_switch = pst_reset_sys->uc_value;
@@ -1493,7 +1493,7 @@ oal_void dmac_reset_debug_init(oal_void)
     if(g_st_dmac_reset_mng.pst_debug_file)
     {
         g_st_dmac_reset_mng.old_fs = oal_get_fs();
-        oal_set_fs(OAL_KERNEL_DS);                  //扩展内核空间到用户空间
+        oal_set_fs(OAL_KERNEL_DS);                  //??????????????????????
     }
     else
     {
@@ -1508,7 +1508,7 @@ oal_void dmac_reset_debug_init(oal_void)
 oal_void dmac_reset_debug_close(oal_void)
 {
     oal_kernel_file_close(g_st_dmac_reset_mng.pst_debug_file);
-    oal_set_fs(g_st_dmac_reset_mng.old_fs);  //恢复内核空间
+    oal_set_fs(g_st_dmac_reset_mng.old_fs);  //????????????
 }
 
 
@@ -1521,11 +1521,11 @@ oal_void dmac_reset_debug_to_file(oal_uint8 *pst_str)
 oal_void dmac_reset_debug_all(mac_device_stru* pst_device,dmac_reset_para_stru* pst_debug_para)
 {
 
-    /* debug显示lut表和寄存器:hipriv "Hisilicon0 reset_hw 3(debug) 0|1|2(all|mac reg|phy reg|lut) "*/
+    /* debug????lut??????????:hipriv "Hisilicon0 reset_hw 3(debug) 0|1|2(all|mac reg|phy reg|lut) "*/
 
     if(pst_debug_para->uc_debug_type == 0)
     {
-        /*输出所有的*/
+        /*??????????*/
         hal_reset_reg_restore(pst_device->pst_device_stru,HAL_RESET_HW_TYPE_DUMP_MAC);
         hal_reset_reg_restore(pst_device->pst_device_stru,HAL_RESET_HW_TYPE_DUMP_PHY);
         dmac_reset_debug_sequence_lut(pst_device);
@@ -1535,13 +1535,13 @@ oal_void dmac_reset_debug_all(mac_device_stru* pst_device,dmac_reset_para_stru* 
     }
     else if(pst_debug_para->uc_debug_type == 1)
     {
-         /*输出mac寄存器*/
+         /*????mac??????*/
        hal_reset_reg_restore(pst_device->pst_device_stru,HAL_RESET_HW_TYPE_DUMP_MAC);
 
     }
     else if(pst_debug_para->uc_debug_type == 2)
     {
-        /*输出phy指定bank的reg*/
+        /*????phy????bank??reg*/
         hal_reset_reg_restore(pst_device->pst_device_stru,HAL_RESET_HW_TYPE_DUMP_PHY);
     }
     else if(pst_debug_para->uc_debug_type == 3)

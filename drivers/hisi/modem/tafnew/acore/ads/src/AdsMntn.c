@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AdsDebug.h"
 #include "AdsMntn.h"
@@ -55,13 +55,13 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_ADS_MNTN_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 
@@ -69,7 +69,7 @@ ADS_MNTN_UL_IP_PKT_REC_STRU             g_stAdsUlPktRecInfo = {0};
 ADS_MNTN_DL_IP_PKT_REC_STRU             g_stAdsDlPktRecInfo = {0};
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -313,7 +313,7 @@ VOS_VOID ADS_MNTN_ReportULPktInfo(VOS_VOID)
 
     pstRecStru = ADS_MNTN_UL_RKT_REC_INFO_ARRAY;
 
-    /*没有数据不上报*/
+    /*??????????????*/
     if (0 == pstRecStru->ulRptNum)
     {
         return;
@@ -340,7 +340,7 @@ VOS_VOID ADS_MNTN_ReportDLPktInfo(VOS_VOID)
 
     pstRecStru = ADS_MNTN_DL_RKT_REC_INFO_ARRAY;
 
-    /*没有数据不上报*/
+    /*??????????????*/
     if (0 == pstRecStru->ulRptNum)
     {
         return;
@@ -480,7 +480,7 @@ VOS_VOID ADS_MNTN_RecULIpPktInfo(
     VOS_UINT32                          ulDataLen;
     VOS_UINT32                          ulCacheLen;
 
-    /* HIDS未连接 */
+    /* HIDS?????? */
     if (VOS_NO == DIAG_GetConnState())
     {
         return;
@@ -489,7 +489,7 @@ VOS_VOID ADS_MNTN_RecULIpPktInfo(
     ulRet = IPS_MNTN_GetIPInfoCfg(ID_IPS_TRACE_ADS_UL);
     if (PS_FALSE == ulRet)
     {
-        /*不捕获该报文*/
+        /*????????????*/
         return;
     }
 
@@ -539,7 +539,7 @@ VOS_VOID ADS_MNTN_RecDLIpPktInfo(
     VOS_UINT32                          ulDataLen;
     VOS_UINT32                          ulCacheLen;
 
-    /* HIDS未连接 */
+    /* HIDS?????? */
     if (VOS_NO == DIAG_GetConnState())
     {
         return;
@@ -548,7 +548,7 @@ VOS_VOID ADS_MNTN_RecDLIpPktInfo(
     ulRet = IPS_MNTN_GetIPInfoCfg(ID_IPS_TRACE_ADS_DL);
     if(PS_FALSE == ulRet)
     {
-        /*不捕获该报文*/
+        /*????????????*/
         return;
     }
 

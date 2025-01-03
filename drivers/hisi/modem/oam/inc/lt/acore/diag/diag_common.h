@@ -153,7 +153,7 @@ do {    \
 *****************************************************************************/
 extern VOS_VOID diag_MessageInit(VOS_VOID);
 
-/* DIAG全局信息初始化接口 */
+/* DIAG?????????????????? */
 extern VOS_VOID diag_MspMsgInit(VOS_VOID);
 
 extern VOS_UINT32 diag_SendMsg(VOS_UINT32 ulSenderId, VOS_UINT32 ulRecverId, VOS_UINT32 ulMsgId, VOS_UINT8* pDta, VOS_UINT32 dtaSize);

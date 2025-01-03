@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "RnicTimerMgmt.h"
 #include "RnicCtx.h"
@@ -57,16 +57,16 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_RNIC_TIMERMGMT_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -99,21 +99,21 @@ VOS_VOID  RNIC_StartTimer(
 
     RNIC_NORMAL_LOG1(ACPU_PID_ADS_UL, "RNIC_StartTimer: enTimerId is ", enTimerId);
 
-    /* 不在使用的定时器范围内 */
+    /* ?????????????????????? */
     if (enTimerId >= RNIC_MAX_TIMER_NUM)
     {
         RNIC_ERROR_LOG1(ACPU_PID_ADS_UL, "RNIC_StartTimer: invalid enTimerId ", enTimerId);
         return;
     }
 
-    /* 如果缓存队列中该定时器已经启动则直接返回 */
+    /* ???????????????????????????????????????? */
     if (RNIC_TIMER_STATUS_RUNING == pstRnicTimerCtx[enTimerId].enTimerStatus)
     {
         RNIC_WARNING_LOG1(ACPU_PID_ADS_UL, "RNIC_StartTimer: The timer is running ", enTimerId);
         return;
     }
 
-    /* 输入参数检查 */
+    /* ???????????? */
     if (0 == ulLen)
     {
         RNIC_ERROR_LOG(ACPU_PID_ADS_UL, "RNIC_StartTimer:ulLen is 0 ");
@@ -125,13 +125,13 @@ VOS_VOID  RNIC_StartTimer(
         ulLen = VOS_TIMER_MAX_LENGTH - 1;
     }
 
-     /* 如果是流量上报定时器，则挂在26M时钟上，以降低功耗 */
+     /* ????????????????????????????26M?????????????????? */
     if (RNIC_IS_DSFLOW_TIMER_ID(enTimerId))
     {
         enTimerPrecision = VOS_TIMER_NO_PRECISION;
     }
 
-    /* VOS_StartRelTimer 启动定时器 */
+    /* VOS_StartRelTimer ?????????? */
     ulRet = VOS_StartRelTimer(&(pstRnicTimerCtx[enTimerId].hTimer),
                               ACPU_PID_RNIC,
                               ulLen,
@@ -147,14 +147,14 @@ VOS_VOID  RNIC_StartTimer(
 
     if (TI_RNIC_DEMAND_DIAL_DISCONNECT == enTimerId)
     {
-        /* 按需拨号统计清零 */
+        /* ???????????????? */
         RNIC_SET_IFACE_PERIOD_SEND_PKT(RNIC_DEV_ID_RMNET0, 0);
     }
 
     pstRnicTimerCtx[enTimerId].enTimerStatus = RNIC_TIMER_STATUS_RUNING;
 
 
-    /* 定时器状态勾包出来 */
+    /* ?????????????????? */
 
 }
 
@@ -168,19 +168,19 @@ VOS_VOID  RNIC_StopTimer(
 
     pstRnicTimerCtx   =  RNIC_GET_RNIC_TIMER_ADR();
 
-    /* 不在使用的定时器范围内 */
+    /* ?????????????????????? */
     if (enTimerId >= RNIC_MAX_TIMER_NUM)
     {
         return;
     }
 
-    /* 没有启动则不需要停止 */
+    /* ???????????????????? */
     if (RNIC_TIMER_STATUS_RUNING  != pstRnicTimerCtx[enTimerId].enTimerStatus)
     {
         return;
     }
 
-    /* 停止VOS定时器: 当定时器的指针已经为空的时候, 说明其已经停止或者超时 */
+    /* ????VOS??????: ????????????????????????????, ?????????????????????? */
     if (VOS_NULL_PTR != pstRnicTimerCtx[enTimerId].hTimer)
     {
         VOS_StopRelTimer(&(pstRnicTimerCtx[enTimerId].hTimer));
@@ -205,7 +205,7 @@ VOS_VOID  RNIC_StopAllTimer( VOS_VOID )
     {
         if (RNIC_TIMER_STATUS_RUNING  == pstRnicTimerCtx[i].enTimerStatus)
         {
-            /* 停止VOS定时器 */
+            /* ????VOS?????? */
             VOS_StopRelTimer(&(pstRnicTimerCtx[i].hTimer));
 
             pstRnicTimerCtx[i].hTimer        = VOS_NULL_PTR;

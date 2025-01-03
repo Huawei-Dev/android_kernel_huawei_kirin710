@@ -68,7 +68,7 @@ extern "C" {
 #pragma pack(push)
 #pragma pack(4)
 
-/* 连接消息定时器时长 5s超时 */
+/* ?????????????????? 5s???? */
 #define     DIAG_CONNECT_TIMER_LEN          (5*1000)
 
 #define     DIAG_CONNECT_TIMER_NAME         (0x00004004)
@@ -79,7 +79,7 @@ extern "C" {
 #define     DIAG_CHANN_NOT_IN_USE           (0x5A5A5A5A)
 #define     DIAG_CHANN_REGISTER             (0x5B5B5B5B)
 #define     DIAG_CHANN_OWNER_NOT_INIT       (0x5E5E5E5E)
-/* 通道断开时填写固定的SN */
+/* ????????????????????SN */
 #define     DIAG_CHANN_DIS_SN               (0x5D5D5D5D)
 
 #ifdef DIAG_SYSTEM_5G
@@ -114,8 +114,8 @@ enum DIAG_CNF_STATE_TYPE_E
 
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
 
     VOS_UINT32 ulMsgTransId;       /* Trans ID */
     VOS_UINT32 ulMsgId;
@@ -128,7 +128,7 @@ struct CONNECT_CTRL_STRU
     DIAG_CMD_CONNECT_HEAD_STRU  stConnectCmd;
     union
     {
-        VOS_UINT32          ulID;           /* 结构化ID */
+        VOS_UINT32          ulID;           /* ??????ID */
         MSP_DIAG_STID_STRU  stID;
     }connectCommandId;
 };
@@ -144,68 +144,68 @@ typedef VOS_UINT32 (*DIAG_SEND_PROC_FUNC)(VOS_UINT8 * pData);
 typedef struct
 {
     VOS_UINT32              ulConnId;       /* DIAG_CONN_ID_TYPE_E */
-    VOS_CHAR                cName[16];   /* 子系统名称  */
-    DIAG_SEND_PROC_FUNC     pSendFunc;      /* 接收函数 */
-    VOS_UINT32              ulResult;       /* connect id的处理结果 */
+    VOS_CHAR                cName[16];   /* ??????????  */
+    DIAG_SEND_PROC_FUNC     pSendFunc;      /* ???????? */
+    VOS_UINT32              ulResult;       /* connect id?????????? */
     VOS_UINT32              ulChannelCount;
     VOS_UINT32              ulHasCnf;
 }DIAG_CONNECT_PROC_STRU;
 
-/* 建连失败时的回复 */
+/* ???????????????? */
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
+    VOS_UINT32 ulRc;            /* ??????*/
 
-    VOS_UINT32 ulChannelNum;    /* 通道数量 */
+    VOS_UINT32 ulChannelNum;    /* ???????? */
     DIAG_CONNECT_RESULT stResult[0];
 }DIAG_CMD_HOST_CONNECT_FAIL_CNF_STRU;
 
 
 /*****************************************************************************
- 描述 : HSO连接UE设备
+ ???? : HSO????UE????
 ID   : DIAG_CMD_HOST_CONNECT
 REQ  : DIAG_CMD_HOST_CONNECT_REQ_STRU
 CNF  : DIAG_CMD_HOST_CONNECT_CNF_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32 ulMajorMinorVersion; /* 主版本号.次版本号*/
-    VOS_UINT32 ulRevisionVersion;   /* 修正版本号*/
-    VOS_UINT32 ulBuildVersion;      /* 内部版本号*/
+    VOS_UINT32 ulMajorMinorVersion; /* ????????.????????*/
+    VOS_UINT32 ulRevisionVersion;   /* ??????????*/
+    VOS_UINT32 ulBuildVersion;      /* ??????????*/
 } DIAG_CMD_UE_SOFT_VERSION_STRU;
 
 typedef struct
 {
-    VOS_UINT16 usVVerNo;           /* V部分*/
-    VOS_UINT16 usRVerNo;           /* R部分*/
-    VOS_UINT16 usCVerNo;           /* C部分*/
-    VOS_UINT16 usBVerNo;           /* B部分*/
-    VOS_UINT16 usSpcNo;            /* SPC部分*/
-    VOS_UINT16 usHardwareVerNo;    /* 硬件PCB号和印制板版本号*/
-    VOS_UINT32 ulProductNo;        /* 产品类型编号，即不同外设组合的硬件平台*/
-} DIAG_CMD_UE_BUILD_VER_STRU; /* 内部版本*/
+    VOS_UINT16 usVVerNo;           /* V????*/
+    VOS_UINT16 usRVerNo;           /* R????*/
+    VOS_UINT16 usCVerNo;           /* C????*/
+    VOS_UINT16 usBVerNo;           /* B????*/
+    VOS_UINT16 usSpcNo;            /* SPC????*/
+    VOS_UINT16 usHardwareVerNo;    /* ????PCB????????????????*/
+    VOS_UINT32 ulProductNo;        /* ??????????????????????????????????????*/
+} DIAG_CMD_UE_BUILD_VER_STRU; /* ????????*/
 
 typedef struct
 {
-    /* 010: OM通道融合的版本        */
-    /* 110: OM融合GU未融合的版本    */
-    /* 100: OM完全融合的版本        */
-    VOS_UINT32  ulDrxControlFlag:1; /* DRX部分*/
+    /* 010: OM??????????????        */
+    /* 110: OM????GU????????????    */
+    /* 100: OM??????????????        */
+    VOS_UINT32  ulDrxControlFlag:1; /* DRX????*/
     VOS_UINT32  ulPortFlag      :1; /* OM Port flag 0:old,1:new */
     VOS_UINT32  ulOmUnifyFlag   :1; /* OM */
     VOS_UINT32  ul5GFrameFlag    :1;
     VOS_UINT32  ulReserved      :28;
 }DIAG_CONTROLFLAG_STRU;
 
-/* 建连成功时的回复  */
+/* ????????????????  */
 typedef struct
 {
-    VOS_UINT32 ulAuid;          /* 原AUID*/
-    VOS_UINT32 ulSn;            /* HSO分发，插件命令管理*/
+    VOS_UINT32 ulAuid;          /* ??AUID*/
+    VOS_UINT32 ulSn;            /* HSO??????????????????*/
 
-    VOS_UINT32 ulRc;            /* 结果码*/
+    VOS_UINT32 ulRc;            /* ??????*/
     VOS_CHAR szImei[16];
     DIAG_CMD_UE_SOFT_VERSION_STRU stUeSoftVersion;
     DIAG_CMD_UE_BUILD_VER_STRU stBuildVersion;
@@ -214,7 +214,7 @@ typedef struct
     {
         VOS_UINT32              UintValue;
         DIAG_CONTROLFLAG_STRU   CtrlFlag;
-    } diag_cfg;/* B135新增，标示低功耗特性版本: 1:低功耗版本；0：正常版本；0xFFFFFFFF:MSP读取NV项失败，HSO会认为连接不成功并给出提示，要求重新进行连接*/
+    } diag_cfg;/* B135????????????????????????: 1:????????????0????????????0xFFFFFFFF:MSP????NV????????HSO????????????????????????????????????????????*/
     VOS_UINT32 ulLpdMode;
     NV_ITEM_AGENT_FLAG_STRU stAgentFlag;
     VOS_CHAR szProduct[64];
@@ -226,8 +226,8 @@ typedef struct
     VOS_UINT32  ulSn;
 }DIAG_CONN_MSG_SEND_T;
 
-/* 任何情况下工具下发的链接命令都是旧的贞格式 */
-/* 描述 :4G 一级头: service头 */
+/* ?????????????????????????????????????????? */
+/* ???? :4G ??????: service?? */
 typedef struct
 {
     VOS_UINT32    sid8b       :8;   /* service id, value:DIAG_SID_TYPE */
@@ -250,7 +250,7 @@ typedef struct
 
     union
     {
-        VOS_UINT32          ulCmdId;           /* 结构化ID */
+        VOS_UINT32          ulCmdId;           /* ??????ID */
         MSP_DIAG_STID_STRU  stID;
     };
 
@@ -263,10 +263,10 @@ typedef struct
 
 }DIAG_CONNECT_FRAME_INFO_STRU;
 
-/* 建链核间通信结构体 */
+/* ?????????????????? */
 typedef struct
 {
-     VOS_MSG_HEADER                     /*VOS头 */
+     VOS_MSG_HEADER                     /*VOS?? */
      VOS_UINT32                     ulMsgId;
      VOS_UINT32                     ulCmdId;
      DIAG_CMD_HOST_CONNECT_CNF_STRU stConnInfo;

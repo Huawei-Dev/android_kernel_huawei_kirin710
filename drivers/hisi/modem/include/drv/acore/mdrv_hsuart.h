@@ -56,11 +56,11 @@ extern "C"
 #endif /* __cplusplus */
 
 /**************************************************************************
-  头文件包含                            
+  ??????????                            
 **************************************************************************/
 #include "mdrv_udi.h"
 /**************************************************************************
-  宏定义 
+  ?????? 
 **************************************************************************/
 #define UART_IOCTL_SET_WRITE_CB      		0x7F001000
 #define UART_IOCTL_SET_READ_CB       		0x7F001001
@@ -91,16 +91,16 @@ extern "C"
 #define UART_A_SHELL  (0x5A5A5A5A)
 #define UART_C_SHELL  (0xA5A5A5A5)
 /**************************************************************************
-  枚举定义
+  ????????
 **************************************************************************/
 enum MEM_TYPE_ENUM
 {
-    MEM_TYPE_SYS_DEFINED = 0,            /* 数据块由Linux系统提供*/
-    MEM_TYPE_USER_DEFINED,               /* 数据块由用户管理的内存提供*/
+    MEM_TYPE_SYS_DEFINED = 0,            /* ????????Linux????????*/
+    MEM_TYPE_USER_DEFINED,               /* ??????????????????????????*/
     MEM_TYPE_BUTT
  };
 
-/* UART数据位长*/
+/* UART????????*/
 typedef enum
 {
     WLEN_5_BITS,
@@ -110,7 +110,7 @@ typedef enum
     WLEN_MAX,
 }UART_WLEN_ENUM;
 
-/* UART停止位长*/
+/* UART????????*/
 typedef enum
 {
     STP2_OFF,
@@ -118,14 +118,14 @@ typedef enum
     STP2_MAX,
 }uart_stp2_enum;
 
-/* UART校验方式*/
+/* UART????????*/
 typedef enum
 {
     PARITY_NO_CHECK,
     PARITY_CHECK_ODD,
     PARITY_CHECK_EVEN,
-    PARITY_CHECK_MARK,        /*校验位始终为1*/
-    PARITY_CHECK_SPACE,       /*校验位始终为0*/
+    PARITY_CHECK_MARK,        /*????????????1*/
+    PARITY_CHECK_SPACE,       /*????????????0*/
     PARITY_CHECK_MAX,
 }uart_parity_enum;
 
@@ -136,7 +136,7 @@ typedef enum tagwater_level
 }water_level;
 
 /**************************************************************************
-  STRUCT定义
+  STRUCT????
 **************************************************************************/
 typedef void (*hsuart_free_cb_t)(char* pBuff);
 typedef void (*hsuart_read_cb_t)(void);
@@ -150,7 +150,7 @@ typedef struct tagUART_READ_BUFF_INFO
     unsigned int u32BuffNum;
 }hsuart_read_buff_info;
 
-/* 流控开关结构 */
+/* ???????????? */
 typedef union
 {
    unsigned int      value;

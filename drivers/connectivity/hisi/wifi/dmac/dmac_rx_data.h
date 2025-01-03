@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "oal_ext_if.h"
 #include "frw_ext_if.h"
@@ -35,7 +35,7 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_RX_DATA_H
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #ifdef _PRE_WLAN_DFT_STAT
 #define DMAC_EVALUATED_AVG_PADDING_LEN   2
@@ -45,30 +45,30 @@ extern "C" {
 #define DMAC_STAT_RX_PKT_COUNT_OFFSET (11)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
-/* MAC ERROR函数处理结构体 */
+/* MAC ERROR?????????????? */
 typedef struct
 {
     oal_void      (* p_func)(mac_device_stru *pst_dev, oal_uint32 ul_para);
@@ -77,12 +77,12 @@ typedef struct
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_IP_FILTER
 extern dmac_rx_frame_ctrl_enum_uint8 dmac_rx_ip_filter_process(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_netbuf, dmac_rx_ctl_stru *pst_cb_ctrl);
@@ -103,19 +103,19 @@ OAL_STATIC OAL_INLINE oal_void  dmac_rx_fcs_statistic_info(
                 mac_vap_stru                *pst_vap,
                 dmac_rx_ctl_stru            *pst_cb_ctrl)
 {
-    oal_uint8   *puc_destination_addr;  /* 目的地址 */
-    oal_uint32   ul_mac_addr_cmp;       /* MAC ADDR比较，相等为0 */
+    oal_uint8   *puc_destination_addr;  /* ???????? */
+    oal_uint32   ul_mac_addr_cmp;       /* MAC ADDR????????????0 */
 
-    /* 获取目的地址 */
+    /* ???????????? */
     mac_rx_get_da(pst_frame_hdr, &puc_destination_addr);
 
     g_ast_rx_fcs_statistic[pst_vap->uc_vap_id].ul_total_num++;
 
-    if (HAL_RX_SUCCESS == pst_cb_ctrl->st_rx_status.bit_dscr_status)            /* FCS正确 */
+    if (HAL_RX_SUCCESS == pst_cb_ctrl->st_rx_status.bit_dscr_status)            /* FCS???? */
     {
-        /* 发给自己的帧的数目统计 */
+        /* ?????????????????????? */
         ul_mac_addr_cmp = oal_compare_mac_addr(pst_vap->pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID, puc_destination_addr);
-        if (0 == ul_mac_addr_cmp)   /* 地址相同 */
+        if (0 == ul_mac_addr_cmp)   /* ???????? */
         {
             g_ast_rx_fcs_statistic[pst_vap->uc_vap_id].ul_self_fcs_correct++;
         }
@@ -124,9 +124,9 @@ OAL_STATIC OAL_INLINE oal_void  dmac_rx_fcs_statistic_info(
             g_ast_rx_fcs_statistic[pst_vap->uc_vap_id].ul_other_fcs_correct++;
         }
     }
-    else if (HAL_RX_FCS_ERROR == pst_cb_ctrl->st_rx_status.bit_dscr_status)     /* FCS错误 */
+    else if (HAL_RX_FCS_ERROR == pst_cb_ctrl->st_rx_status.bit_dscr_status)     /* FCS???? */
     {
-        /* 数目统计，该帧是否发给自己未作统计 */
+        /* ?????????????????????????????????? */
         g_ast_rx_fcs_statistic[pst_vap->uc_vap_id].ul_total_fcs_error++;
     }
 }
@@ -143,7 +143,7 @@ OAL_STATIC OAL_INLINE oal_void  dmac_rx_get_dscr_info(
 
     pst_hal_rx_ctl = (hal_rx_ctl_stru *)pst_cb_ctrl;
 
-    /* 获取接收描述符信息 */
+    /* ?????????????????? */
     hal_rx_get_info_dscr(pst_device,
                          pul_dscr,
                          pst_hal_rx_ctl,
@@ -171,8 +171,8 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_data_ps_process(
     if (WLAN_VAP_MODE_BSS_STA == dmac_vap_get_bss_type(&(pst_dmac_vap->st_vap_base_info)))
     {
 #ifdef _PRE_WLAN_FEATURE_STA_PM
-        /* 节能特性处理。
-           限流模式此处可能会丢弃接收到的数据帧，正常业务不应该返回DMAC_RX_FRAME_CTRL_DROP */
+        /* ??????????????
+           ????????????????????????????????????????????????????????DMAC_RX_FRAME_CTRL_DROP */
         if (DMAC_RX_FRAME_CTRL_DROP == dmac_psm_rx_process_data_sta(pst_dmac_vap, pst_netbuf))
         {
             return OAL_FAIL;
@@ -181,17 +181,17 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_data_ps_process(
     }
     else if (WLAN_VAP_MODE_BSS_AP == dmac_vap_get_bss_type(&(pst_dmac_vap->st_vap_base_info)))
     {
-        /* psm节能处理 */
+        /* psm???????? */
         dmac_psm_rx_process(pst_dmac_vap, pst_dmac_user, pst_netbuf);
 
 #ifdef _PRE_WLAN_FEATURE_UAPSD
-        /* uapsd节能特性 */
+        /* uapsd???????? */
         dmac_uapsd_rx_trigger_check( pst_dmac_vap, pst_dmac_user, pst_netbuf);
 #endif
     }
 
 #ifndef _PRE_WLAN_PROFLING_MIPS
-     /* arp offload 过滤代码需要在低功耗处理后 */
+     /* arp offload ?????????????????????????? */
 #ifdef _PRE_WLAN_FEATURE_ARP_OFFLOAD
     if (DMAC_RX_FRAME_CTRL_DROP == dmac_ao_process_arp_and_mcast(pst_dmac_vap, pst_dmac_user, pst_netbuf))
     {
@@ -214,7 +214,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_rx_rssi_rate_stat(dmac_user_stru *pst_dmac_u
 
     pst_hal_device->l_rx_rssi = pst_rx_stats->c_rssi_dbm;
 
-    /* 获取速率大小 */
+    /* ???????????? */
     dmac_alg_get_rate_by_table(&pst_dmac_user->st_user_base_info, pst_rx_stats, &ul_rate_kbps);
 
     pst_hal_device->ul_rx_rate = ul_rate_kbps;
@@ -255,7 +255,7 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_process_data_frame(
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 过滤二:算法过滤，MPDU占用的netbuf数目可以通过mac_rx_ctl_stru结构获得 */
+    /* ??????:??????????MPDU??????netbuf????????????mac_rx_ctl_stru???????? */
     dmac_alg_rx_notify(pst_vap,
                                 &(pst_dmac_user->st_user_base_info),
                                 pst_netbuf,
@@ -270,17 +270,17 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_process_data_frame(
 
     dmac_rx_rssi_rate_stat(pst_dmac_user, &pst_cb_ctrl->st_rx_statistic, pst_mac_device);
 
-    /* 过滤三:DMAC接收低功耗的过滤 */
+    /* ??????:DMAC???????????????? */
     if (OAL_SUCC != dmac_rx_data_ps_process(pst_dmac_vap, pst_dmac_user, pst_netbuf))
     {
         return OAL_FAIL;
     }
 
-    /* 过滤四:删出类型为空帧的MPDU */
+    /* ??????:????????????????MPDU */
     if ((WLAN_NULL_FRAME == pst_frame_hdr->st_frame_control.bit_sub_type)
      || (WLAN_QOS_NULL_FRAME == pst_frame_hdr->st_frame_control.bit_sub_type))
     {
-        /* 统计空帧的数目 */
+        /* ?????????????? */
         //OAM_INFO_LOG0(pst_vap->uc_vap_id, OAM_SF_RX, "dmac_rx_process_data_frame: the frame is a null frame");
         OAM_STAT_VAP_INCR(pst_vap->uc_vap_id, rx_null_frame_dropped, 1);
         DMAC_VAP_DFT_STATS_PKT_INCR(pst_dmac_vap->st_query_stats.ul_rx_null_frame_dropped, 1);
@@ -288,7 +288,7 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_process_data_frame(
         return OAL_FAIL;
     }
 
-    /* 过滤五:删出ip黑名单中的包 */
+    /* ??????:????ip???????????? */
 #ifdef _PRE_WLAN_FEATURE_IP_FILTER
     if (DMAC_RX_FRAME_CTRL_DROP == dmac_rx_ip_filter_process(pst_dmac_vap, pst_netbuf, pst_cb_ctrl))
     {
@@ -311,7 +311,7 @@ OAL_STATIC OAL_INLINE oal_uint32 dmac_rx_record_tid(mac_vap_stru  *pst_vap, mac_
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 不是Qos Data */
+    /* ????Qos Data */
     if((WLAN_DATA_BASICTYPE != pst_frame->st_frame_control.bit_type)
     || (WLAN_QOS_DATA != pst_frame->st_frame_control.bit_sub_type))
     {
@@ -325,7 +325,7 @@ OAL_STATIC OAL_INLINE oal_uint32 dmac_rx_record_tid(mac_vap_stru  *pst_vap, mac_
     }
 
     pucTid = (oal_uint8 *)pst_frame + MAC_80211_FRAME_LEN;
-    ucTid  = (*pucTid & 0xf); /* tid对应QOS Ctl 字段的低4位 */
+    ucTid  = (*pucTid & 0xf); /* tid????QOS Ctl ????????4?? */
     pst_mac_dev->en_tid = ucTid;
     return OAL_SUCC;
 
@@ -347,24 +347,24 @@ OAL_STATIC OAL_INLINE oal_void dmac_rx_update_aggr_mib(mac_vap_stru *pst_vap, oa
 
 OAL_STATIC OAL_INLINE oal_void  dmac_rx_update_mib_11n(mac_vap_stru *pst_vap, dmac_rx_ctl_stru *pst_cb_ctrl)
 {
-    /* 更新ul_dot11ReceivedAMSDUCount值 */
+    /* ????ul_dot11ReceivedAMSDUCount?? */
     if (pst_cb_ctrl->st_rx_info.bit_amsdu_enable)
     {
-        /* 更新receive amsdu nums值*/
+        /* ????receive amsdu nums??*/
         pst_vap->pst_mib_info->st_wlan_mib_counters.ul_dot11ReceivedAMSDUCount++;
 
-        /* 更新receive amsdu nums值*/
+        /* ????receive amsdu nums??*/
         pst_vap->pst_mib_info->st_wlan_mib_counters.ull_dot11dot11ReceivedOctetsInAMSDUCount += pst_cb_ctrl->st_rx_info.us_frame_len;
     }
 }
 
 OAL_STATIC OAL_INLINE oal_void dmac_rx_pingpong_list_lock(hal_to_dmac_device_stru  *pst_device)
 {
-    /*AMP系统锁住CPU中断消耗MIPS较少，而SMP必须锁住MAC RX中断!*/
+    /*AMP????????CPU????????MIPS????????SMP????????MAC RX????!*/
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
     oal_irq_disable();
 #else
-    /*TBD:lock the mac rx irq,对应的偏移是0*/
+    /*TBD:lock the mac rx irq,????????????0*/
     oal_irq_disable();
     #if (_PRE_TEST_MODE_UT != _PRE_TEST_MODE)
     hal_mask_interrupt(pst_device, 0);
@@ -377,7 +377,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_rx_pingpong_list_unlock(hal_to_dmac_device_s
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
     oal_irq_enable();
 #else
-    /*TBD:unlock the mac rx irq,对应的偏移是0*/
+    /*TBD:unlock the mac rx irq,????????????0*/
     #if (_PRE_TEST_MODE_UT != _PRE_TEST_MODE)
     hal_unmask_interrupt(pst_device, 0);
     #endif
@@ -386,7 +386,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_rx_pingpong_list_unlock(hal_to_dmac_device_s
 }
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern oal_uint32  dmac_rx_process_data_event(frw_event_mem_stru *pst_event_mem);
 extern oal_uint32  dmac_mac_error_process_event(frw_event_mem_stru *pst_event_mem);
@@ -395,14 +395,14 @@ extern oal_uint32  dmac_soc_error_process_event(frw_event_mem_stru *pst_event_me
 #endif
 OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_filter_mpdu(dmac_rx_ctl_stru *pst_cb_ctrl, oal_uint16 us_dscr_num)
 {
-    /* 描述符异常:接收到的为A-MSDU帧，同时该描述符非该MPDU的第一个描述符 */
+    /* ??????????:??????????A-MSDU????????????????????MPDU?????????????? */
     if (OAL_UNLIKELY((OAL_TRUE == pst_cb_ctrl->st_rx_info.bit_amsdu_enable) && (OAL_FALSE == pst_cb_ctrl->st_rx_info.bit_is_first_buffer)))
     {
         //OAM_WARNING_LOG0(0, OAM_SF_RX, "{dmac_rx_filter_mpdu::the control netbuf is not the first netbuf of a amsdu.}");
         return OAL_ERR_CODE_RX_DSCR_AMSDU_DISORDER;
     }
 
-    /* 描述符异常:获取的buffer数目大于剩余的描述符的个数 */
+    /* ??????????:??????buffer?????????????????????????? */
     if (OAL_UNLIKELY(pst_cb_ctrl->st_rx_info.bit_buff_nums > us_dscr_num))
     {
         //OAM_WARNING_LOG0(0, OAM_SF_RX, "{dmac_rx_filter_mpdu::the numbers of netbuf exceeds the remianing netbufs.}");

@@ -34,14 +34,14 @@ extern "C" {
 #define INVAILD 	(-4)
 #define COPYFAIL	(-0xFFF)
 
-/* IOCTL入参和出参的SIZE限制 */
+/* IOCTL????????????SIZE???? */
 #ifndef CLT_VOICE
 #define SIZE_LIMIT_PARAM		(256)
 #else
 #define SIZE_LIMIT_PARAM		(512)
 #endif
 
-/* AP侧NV项大小参数 */
+/* AP??NV?????????? */
 #define NVPARAM_COUNT        600         //HIFI NV size is 600
 
 #define NVPARAM_NUMBER       258         //256+2, nv_data(256) + nv_id(2)
@@ -49,7 +49,7 @@ extern "C" {
 #define NVPARAM_TAIL         2           //tail protect_number 0x5a5a5a5a
 #define NVPARAM_TOTAL_SIZE   ((NVPARAM_NUMBER * NVPARAM_COUNT + NVPARAM_START + NVPARAM_TAIL) * sizeof(unsigned short))
 
-/* HIFI专用区 */
+/* HIFI?????? */
 #ifdef CONFIG_HISI_FAMA
 #define HIFI_UNSEC_BASE_ADDR   (HISI_RESERVED_HIFI_DATA_PHYMEM_BASE_FAMA)
 #define ASP_FAMA_PHY_ADDR_DIFF (HISI_RESERVED_HIFI_DATA_PHYMEM_BASE_FAMA - HISI_RESERVED_HIFI_DATA_PHYMEM_BASE)
@@ -201,10 +201,10 @@ extern "C" {
 #define HIFI_SYS_MEM_ADDR                       (HIFI_RUN_LOCATION)
 #define SYS_TIME_STAMP_REG                      (SOC_ACPU_SCTRL_BASE_ADDR + 0x534)
 
-/* 接收HIFI消息，前部cmd_id占用的字节数 */
+/* ????HIFI??????????cmd_id???????????? */
 #define SIZE_CMD_ID 	   (8)
 
-/* notice主动上报一次缓冲 */
+/* notice???????????????? */
 #define REV_MSG_NOTICE_ID_MAX		2
 
 #define ACPU_TO_HIFI_ASYNC_CMD	  0xFFFFFFFF
@@ -218,7 +218,7 @@ extern "C" {
 #define SYSCACHE_QUOTA_SIZE_ALIGN 0x40000
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 typedef enum HIFI_MSG_ID_ {
@@ -230,7 +230,7 @@ typedef enum HIFI_MSG_ID_ {
 	ID_AP_AUDIO_SET_AUDIO_EFFECT_PARAM_CMD    = 0xDD3A,
 	ID_AP_AUDIO_SET_DTS_GEQ_ENABLE_CMD	= 0xDD3B,
 
-	/* AP和HIFI的控制外置耳机HIFI codec交互消息 */
+	/* AP??HIFI??????????????HIFI codec???????? */
 	ID_AP_AUDIO_SET_EXCODEC_ENABLE_CMD    = 0xDD3D,
 
 	/* Voice Record */
@@ -238,28 +238,28 @@ typedef enum HIFI_MSG_ID_ {
 	ID_AP_HIFI_VOICE_RECORD_STOP_CMD	= 0xDD41,
 
 	/* voicePP MSG_ID */
-	ID_AP_VOICEPP_START_REQ				= 0xDD42,						/* 启动VOICEPP通话 */
+	ID_AP_VOICEPP_START_REQ				= 0xDD42,						/* ????VOICEPP???? */
 	ID_VOICEPP_MSG_START				= ID_AP_VOICEPP_START_REQ,
 	ID_VOICEPP_AP_START_CNF				= 0xDD43,
-	ID_AP_VOICEPP_STOP_REQ				= 0xDD44,						/* 终止VOICEPP通话 */
+	ID_AP_VOICEPP_STOP_REQ				= 0xDD44,						/* ????VOICEPP???? */
 	ID_VOICEPP_AP_STOP_CNF				= 0xDD45,
 	ID_VOICEPP_MSG_END					= 0xDD4A,
 
-	ID_AP_AUDIO_PLAY_START_REQ			= 0xDD51,/* AP启动Hifi audio player request命令 */
-	ID_AUDIO_AP_PLAY_START_CNF			= 0xDD52,/* Hifi启动audio player后回复AP confirm命令 */
-	ID_AP_AUDIO_PLAY_PAUSE_REQ			= 0xDD53,/* AP停止Hifi audio player request命令 */
-	ID_AUDIO_AP_PLAY_PAUSE_CNF			= 0xDD54,/* Hifi停止audio player后回复AP confirm命令 */
-	ID_AUDIO_AP_PLAY_DONE_IND			= 0xDD56,/* Hifi通知AP audio player一块数据播放完毕或者播放中断indication */
-	ID_AP_AUDIO_PLAY_UPDATE_BUF_CMD 	= 0xDD57,/* AP通知Hifi新数据块更新command */
-	ID_AP_AUDIO_PLAY_QUERY_TIME_REQ 	= 0xDD59,/* AP查询Hifi audio player播放进度request命令 */
+	ID_AP_AUDIO_PLAY_START_REQ			= 0xDD51,/* AP????Hifi audio player request???? */
+	ID_AUDIO_AP_PLAY_START_CNF			= 0xDD52,/* Hifi????audio player??????AP confirm???? */
+	ID_AP_AUDIO_PLAY_PAUSE_REQ			= 0xDD53,/* AP????Hifi audio player request???? */
+	ID_AUDIO_AP_PLAY_PAUSE_CNF			= 0xDD54,/* Hifi????audio player??????AP confirm???? */
+	ID_AUDIO_AP_PLAY_DONE_IND			= 0xDD56,/* Hifi????AP audio player????????????????????????????indication */
+	ID_AP_AUDIO_PLAY_UPDATE_BUF_CMD 	= 0xDD57,/* AP????Hifi????????????command */
+	ID_AP_AUDIO_PLAY_QUERY_TIME_REQ 	= 0xDD59,/* AP????Hifi audio player????????request???? */
 	ID_AP_AUDIO_PLAY_WAKEUPTHREAD_REQ	= 0xDD5A,
-	ID_AUDIO_AP_PLAY_QUERY_TIME_CNF 	= 0xDD60,/* Hifi回复AP audio player播放进度confirm命令 */
-	ID_AP_AUDIO_PLAY_QUERY_STATUS_REQ	= 0xDD61,/* AP查询Hifi audio player播放状态request命令 */
-	ID_AUDIO_AP_PLAY_QUERY_STATUS_CNF	= 0xDD62,/* Hifi回复AP audio player播放状态confirm命令 */
-	ID_AP_AUDIO_PLAY_SEEK_REQ			= 0xDD63,/* AP seek Hifi audio player到某一位置request命令 */
-	ID_AUDIO_AP_PLAY_SEEK_CNF			= 0xDD64,/* Hifi回复AP seek结果confirm命令 */
-	ID_AP_AUDIO_PLAY_SET_VOL_CMD		= 0xDD70,/* AP设置音量命令 */
-	ID_AP_AUDIO_RECORD_PCM_HOOK_CMD		= 0xDD7A,/* AP 通知HIFI开始抓取PCM数据 */
+	ID_AUDIO_AP_PLAY_QUERY_TIME_CNF 	= 0xDD60,/* Hifi????AP audio player????????confirm???? */
+	ID_AP_AUDIO_PLAY_QUERY_STATUS_REQ	= 0xDD61,/* AP????Hifi audio player????????request???? */
+	ID_AUDIO_AP_PLAY_QUERY_STATUS_CNF	= 0xDD62,/* Hifi????AP audio player????????confirm???? */
+	ID_AP_AUDIO_PLAY_SEEK_REQ			= 0xDD63,/* AP seek Hifi audio player??????????request???? */
+	ID_AUDIO_AP_PLAY_SEEK_CNF			= 0xDD64,/* Hifi????AP seek????confirm???? */
+	ID_AP_AUDIO_PLAY_SET_VOL_CMD		= 0xDD70,/* AP???????????? */
+	ID_AP_AUDIO_RECORD_PCM_HOOK_CMD		= 0xDD7A,/* AP ????HIFI????????PCM???? */
 	ID_AUDIO_AP_UPDATE_PCM_BUFF_CMD      = 0xDD7C,
 	ID_AP_AUDIO_DYN_EFFECT_GET_PARAM     = 0xDD7D,
 	ID_AP_AUDIO_DYN_EFFECT_GET_PARAM_CNF = 0xDD7E,
@@ -281,16 +281,16 @@ typedef enum HIFI_MSG_ID_ {
 	ID_AP_AUDIO_CMD_SET_ANGLE_CMD		= 0xDD99,
 
 	/* for 3mic */
-	ID_AP_AUDIO_ROUTING_COMPLETE_REQ    = 0xDDC0,/*AP 通知HIFI 3Mic/4Mic 通路已建立*/
-	ID_AUDIO_AP_DP_CLK_EN_IND           = 0xDDC1,/* HIFI 通知A核打开或关闭Codec DP时钟 */
-	ID_AP_AUDIO_DP_CLK_STATE_IND        = 0xDDC2,/* A核通知HIFI ，Codec DP时钟状态( 打开或关闭) */
-	ID_AUDIO_AP_OM_DUMP_CMD             = 0xDDC3,/* HIFI 通知A核dump日志 */
-	ID_AUDIO_AP_FADE_OUT_REQ            = 0xDDC4,/* HIFI通知AP做淡出处理 */
-	ID_AP_AUDIO_FADE_OUT_IND            = 0xDDC5,/* AP通知HIFI淡出完毕 */
+	ID_AP_AUDIO_ROUTING_COMPLETE_REQ    = 0xDDC0,/*AP ????HIFI 3Mic/4Mic ??????????*/
+	ID_AUDIO_AP_DP_CLK_EN_IND           = 0xDDC1,/* HIFI ????A????????????Codec DP???? */
+	ID_AP_AUDIO_DP_CLK_STATE_IND        = 0xDDC2,/* A??????HIFI ??Codec DP????????( ??????????) */
+	ID_AUDIO_AP_OM_DUMP_CMD             = 0xDDC3,/* HIFI ????A??dump???? */
+	ID_AUDIO_AP_FADE_OUT_REQ            = 0xDDC4,/* HIFI????AP?????????? */
+	ID_AP_AUDIO_FADE_OUT_IND            = 0xDDC5,/* AP????HIFI???????? */
 
 	ID_AUDIO_AP_OM_CMD                  = 0xDDC9,
-	ID_AP_AUDIO_STR_CMD                 = 0xDDCB,/* AP给HIFI发送一个字符串，具体含义hifi中解析 */
-	ID_AUDIO_AP_VOICE_BSD_PARAM_CMD     = 0xDDCC,/* VOICE BSD 参数上报 */
+	ID_AP_AUDIO_STR_CMD                 = 0xDDCB,/* AP??HIFI????????????????????????hifi?????? */
+	ID_AUDIO_AP_VOICE_BSD_PARAM_CMD     = 0xDDCC,/* VOICE BSD ???????? */
 
 	ID_AP_ENABLE_MODEM_LOOP_REQ         = 0xDDCD,/* the audio hal notify HIFI to start/stop  MODEM LOOP*/
 	ID_AUDIO_AP_3A_CMD                  = 0xDDCE,
@@ -319,12 +319,12 @@ enum hifi_dsp_platform_type {
 	HIFI_DSP_PLATFORM_FPGA,
 };
 
-/*处理hifi回复消息，记录cmd_id和数据*/
+/*????hifi??????????????cmd_id??????*/
 typedef struct {
-	unsigned char *mail_buff;		/* 邮箱数据接收的buff */
+	unsigned char *mail_buff;		/* ??????????????buff */
 	unsigned int mail_buff_len;
-	unsigned int cmd_id;			/* 邮箱接收数据前4个字节是cmd_id */
-	unsigned char *out_buff_ptr;	/* 指向mail_buff cmd_id后的位置 */
+	unsigned int cmd_id;			/* ??????????????4????????cmd_id */
+	unsigned char *out_buff_ptr;	/* ????mail_buff cmd_id???????? */
 	unsigned int out_buff_len;
 } rev_msg_buff;
 
@@ -350,18 +350,18 @@ struct dp_clk_request {
 };
 
 typedef struct {
-	unsigned short	down_cpu_utilization;    /* DDR下调cpu 占用率水线 */
-	unsigned short	up_cpu_utilization;      /* DDR上调cpu 占用率水线 */
-	unsigned short	ddr_freq;               /* 设置ddr频率*/
-	unsigned short	is_vote_ddr;             /* 是否是当前投票的DDR频点 */
+	unsigned short	down_cpu_utilization;    /* DDR????cpu ?????????? */
+	unsigned short	up_cpu_utilization;      /* DDR????cpu ?????????? */
+	unsigned short	ddr_freq;               /* ????ddr????*/
+	unsigned short	is_vote_ddr;             /* ????????????????DDR???? */
 } audio_vote_ddr_freq_stru;
 
 typedef struct {
-	unsigned short	enable_vote_ddr;         /* 是否使能动态DDR投票,设置为0表示只打印cpu占用率,不会投票 */
-	unsigned short	ddr_freq_count;          /* ddr调频列表长度 */
-	unsigned short	check_interval;         /* DDR投票cpu占用率检测间隔,单位毫秒 */
-	unsigned short	report_interval;        /* cpu占用率上报间隔,单位秒 */
-	audio_vote_ddr_freq_stru *pst_vote_ddr_freq;  /* DDR调频策略列表,可变长度,长度即uhwDdrFreqCount */
+	unsigned short	enable_vote_ddr;         /* ????????????DDR????,??????0??????????cpu??????,???????? */
+	unsigned short	ddr_freq_count;          /* ddr???????????? */
+	unsigned short	check_interval;         /* DDR????cpu??????????????,???????? */
+	unsigned short	report_interval;        /* cpu??????????????,?????? */
+	audio_vote_ddr_freq_stru *pst_vote_ddr_freq;  /* DDR????????????,????????,??????uhwDdrFreqCount */
 } audio_cpu_load_cfg_stru;
 
 struct drv_fama_config {

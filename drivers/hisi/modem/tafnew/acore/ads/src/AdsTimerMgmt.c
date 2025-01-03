@@ -46,7 +46,7 @@
 *
 */
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "AdsTimerMgmt.h"
 #include "AdsCtx.h"
@@ -57,12 +57,12 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_ADS_TIMERMGMT_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 ADS_TIMER_OPERATE_STRU                  g_astAdsTmrOperateTbl[] =
@@ -75,7 +75,7 @@ ADS_TIMER_OPERATE_STRU                  g_astAdsTmrOperateTbl[] =
 };
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -116,7 +116,7 @@ VOS_VOID  ADS_StartTimer(
     ADS_TIMER_OPERATE_STRU             *pstTmrOperate = VOS_NULL_PTR;
     VOS_UINT32                          ulRet;
 
-    /* 不在使用的定时器范围内 */
+    /* ?????????????????????? */
     if (enTimerId >= ADS_MAX_TIMER_NUM)
     {
         ADS_ERROR_LOG1(ACPU_PID_ADS_UL,
@@ -125,11 +125,11 @@ VOS_VOID  ADS_StartTimer(
     }
 
 
-    /* 获取定时器上下文 */
+    /* ???????????????? */
     pstTmrOperate = &(g_astAdsTmrOperateTbl[enTimerId]);
     pstTiCtx      = &(g_stAdsCtx.astAdsTiCtx[enTimerId]);
 
-    /* 定时器长度检查 */
+    /* ?????????????? */
     if (0 == ulLen)
     {
         ADS_ERROR_LOG(pstTmrOperate->ulPid,
@@ -137,13 +137,13 @@ VOS_VOID  ADS_StartTimer(
         return;
     }
 
-    /* 定时器已运行 */
+    /* ???????????? */
     if (VOS_NULL_PTR != pstTiCtx->hTimer)
     {
         return;
     }
 
-    /* 启动定时器 */
+    /* ?????????? */
     if (VOS_NULL_PTR == pstTmrOperate->pfnTimerStartCallBack)
     {
         ulRet = VOS_StartRelTimer(&(pstTiCtx->hTimer),
@@ -173,7 +173,7 @@ VOS_VOID  ADS_StartTimer(
         return;
     }
 
-    /*勾包ADS_TIMER_INFO_STRU*/
+    /*????ADS_TIMER_INFO_STRU*/
     ADS_MNTN_TraceTimerOperation(pstTmrOperate->ulPid, enTimerId, ulLen, ADS_TIMER_OPERATION_START, ADS_TIMER_STOP_CAUSE_ENUM_BUTT);
 
     return;
@@ -188,7 +188,7 @@ VOS_VOID ADS_StopTimer(
 {
     ADS_TIMER_CTX_STRU                 *pstTiCtx = VOS_NULL_PTR;
 
-    /* 不在使用的定时器范围内 */
+    /* ?????????????????????? */
     if (enTimerId >= ADS_MAX_TIMER_NUM)
     {
         ADS_ERROR_LOG1(ACPU_PID_ADS_UL,
@@ -196,16 +196,16 @@ VOS_VOID ADS_StopTimer(
         return;
     }
 
-    /* 获取定时器上下文 */
+    /* ???????????????? */
     pstTiCtx = &(g_stAdsCtx.astAdsTiCtx[enTimerId]);
 
-    /* 停止定时器 */
+    /* ?????????? */
     if (VOS_NULL_PTR != pstTiCtx->hTimer)
     {
         (VOS_VOID)VOS_StopRelTimer(&(pstTiCtx->hTimer));
     }
 
-    /*勾包ADS_TIMER_INFO_STRU*/
+    /*????ADS_TIMER_INFO_STRU*/
     ADS_MNTN_TraceTimerOperation(ulPid, enTimerId, 0, ADS_TIMER_OPERATION_STOP, enStopCause);
 
     return;
@@ -219,16 +219,16 @@ ADS_TIMER_STATUS_ENUM_UINT8 ADS_GetTimerStatus(
 {
     ADS_TIMER_CTX_STRU                 *pstTiCtx = VOS_NULL_PTR;
 
-    /* 不在使用的定时器范围内 */
+    /* ?????????????????????? */
     if (enTimerId >= ADS_MAX_TIMER_NUM)
     {
         return ASD_TIMER_STATUS_BUTT;
     }
 
-    /* 获取定时器上下文 */
+    /* ???????????????? */
     pstTiCtx = &(g_stAdsCtx.astAdsTiCtx[enTimerId]);
 
-    /* 检查定时器句柄 */
+    /* ?????????????? */
     if (VOS_NULL_PTR != pstTiCtx->hTimer)
     {
         return ADS_TIMER_STATUS_RUNNING;

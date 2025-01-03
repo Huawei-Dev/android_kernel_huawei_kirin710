@@ -191,12 +191,12 @@ int send_calibrate_data_to_mcu(int tag, uint32_t subcmd, const void *data, int l
 
 /*******************************************************************************
 Function:	write_gsensor_offset_to_nv
-Description:  将temp数据写入NV 项中
-Data Accessed:  无
-Data Updated:   无
-Input:        g-sensor 校准值
-Output:         无
-Return:         成功或者失败信息: 0->成功, -1->失败
+Description:  ??temp????????NV ????
+Data Accessed:  ??
+Data Updated:   ??
+Input:        g-sensor ??????
+Output:         ??
+Return:         ????????????????: 0->????, -1->????
 *******************************************************************************/
 int write_gsensor_offset_to_nv(char *temp, int length)
 {
@@ -222,12 +222,12 @@ int write_gsensor_offset_to_nv(char *temp, int length)
 
 /*******************************************************************************
 Function:	send_gsensor_calibrate_data_to_mcu
-Description:   读取NV项中的gsensor 校准数据，并发送给mcu 侧
-Data Accessed:  无
-Data Updated:   无
-Input:         无
-Output:         无
-Return:         成功或者失败信息: 0->成功, -1->失败
+Description:   ????NV??????gsensor ??????????????????mcu ??
+Data Accessed:  ??
+Data Updated:   ??
+Input:         ??
+Output:         ??
+Return:         ????????????????: 0->????, -1->????
 *******************************************************************************/
 int send_gsensor_calibrate_data_to_mcu(void)
 {

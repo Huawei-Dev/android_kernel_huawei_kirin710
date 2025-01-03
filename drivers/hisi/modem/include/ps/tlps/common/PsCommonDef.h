@@ -60,7 +60,7 @@
 
 
 #ifdef _lint
-/* PCLINT特殊编译开关，只在PCLINT时打开 */
+/* PCLINT??????????????????PCLINT?????? */
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -82,7 +82,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  #pragma pack(*)    设置字节对齐方式
+  #pragma pack(*)    ????????????????
 *****************************************************************************/
 #if (VOS_OS_VER != VOS_WIN32)
 #pragma pack(4)
@@ -101,21 +101,21 @@ extern "C" {
 #define PS_PRINTF
 #endif
 
-/* 内存操作封装 */
+/* ???????????? */
 #ifdef _lint
 
 #define PS_MEM_CMP(pDestBuffer,pSrcBuffer,Count)            memcmp(pDestBuffer,pSrcBuffer, Count )
 
 
-/*申请消息包,申请的长度包括消息报头长度*/
+/*??????????,??????????????????????????*/
 /*lint -emacro({586}, PS_ALLOC_MSG_WITH_HEADER_LEN)*/
 #define PS_ALLOC_MSG_WITH_HEADER_LEN(ulPid , ulLen)         malloc(ulLen)
 
-/*申请消息包,申请的长度不包括消息报头长度*/
+/*??????????,????????????????????????????*/
 /*lint -emacro({586}, PS_ALLOC_MSG)*/
 #define PS_ALLOC_MSG(ulPid , ulLen)                         malloc((ulLen) + VOS_MSG_HEAD_LENGTH)
 
-/*消息发送*/
+/*????????*/
 #ifdef LINUX_PC_LINT
 #define PS_SEND_MSG(ulPid, pMsg)                            (free((VOS_VOID*)pMsg), ulPid)
 #define PS_CHR_RPT_SEND_MSG(ulPid, pMsg)                    (free((VOS_VOID*)pMsg), ulPid)
@@ -134,10 +134,10 @@ extern "C" {
 #define PS_CHR_RPT_SEND_MSG(ulPid, pMsg)                    free(pMsg)
 #endif
 
-/*消息发送,由于PS_POST_MSG之后,需要使用者显示的释放消息包,因此这里不将其转定义为free*/
+/*????????,????PS_POST_MSG????,??????????????????????????,??????????????????????free*/
 #define PS_POST_MSG(ulPid, pMsg)                            VOS_PostMsg( ulPid, pMsg )
 
-/*消息发送*/
+/*????????*/
 #ifdef LINUX_PC_LINT
 #define PS_SEND_URGENT_MSG(ulPid, pMsg)                     (free(pMsg), ulPid)
 
@@ -150,7 +150,7 @@ extern "C" {
 
 #endif
 
-/*消息释放宏定义*/
+/*??????????????*/
 #ifdef LINUX_PC_LINT
 #define PS_FREE_MSG(ulPid, pMsg)                            (free(pMsg), ulPid)
 
@@ -163,11 +163,11 @@ extern "C" {
 
 #endif
 
-/*内存申请宏定义*/
+/*??????????????*/
 /*lint -emacro({586}, PS_MEM_ALLOC)*/
 #define PS_MEM_ALLOC(ulPid , ulSize)                         malloc(ulSize)
 
-/*内存释放宏定义*/
+/*??????????????*/
 #ifdef LINUX_PC_LINT
 #define PS_MEM_FREE(ulPid, pAddr )                          (free(pAddr), ulPid)
 
@@ -180,11 +180,11 @@ extern "C" {
 
 #endif
 
-/*申请静态内存宏定义*/
+/*??????????????????*/
 /*lint -emacro({586}, PS_ALLOC_STATIC_MEM)*/
 #define PS_ALLOC_STATIC_MEM(ulPid , ulSize)                 malloc(ulSize)
 
-/*释放静态内存宏定义*/
+/*??????????????????*/
 #ifdef LINUX_PC_LINT
 #define PS_FREE_STATIC_MEM(ulPid, pAddr )                   (free(pAddr), ulPid)
 
@@ -198,7 +198,7 @@ extern "C" {
 #endif
 
 
-/*内存申请*/
+/*????????*/
 #define PS_ALLOC_MSG_ALL_CHECK(ulPid , ulLen)  \
             VOS_AllocMsg( ulPid, (ulLen)-(VOS_MSG_HEAD_LENGTH) )
 
@@ -235,12 +235,12 @@ extern "C" {
             VOS_MemCmp( pucDestBuffer, pucSrcBuffer, ulBufferLen )
 
 
-/*申请消息包,申请的长度包括消息报头长度*/
+/*??????????,??????????????????????????*/
 /*lint -emacro({586}, PS_ALLOC_MSG_WITH_HEADER_LEN)*/
 #define PS_ALLOC_MSG_WITH_HEADER_LEN(ulPid , ulLen)  \
             VOS_AllocMsg( ulPid, (ulLen)-(VOS_MSG_HEAD_LENGTH) )
 
-/*申请消息包,申请的长度不包括消息报头长度*/
+/*??????????,????????????????????????????*/
 /*lint -emacro({586}, PS_ALLOC_MSG)*/
 #define PS_ALLOC_MSG(ulPid , ulLen)  \
             VOS_AllocMsg( ulPid, ulLen)
@@ -249,24 +249,24 @@ extern "C" {
 #define PS_ALLOC_MSG_ALL_CHECK(ulPid , ulLen)  \
             VOS_AllocMsg( ulPid, (ulLen)-(VOS_MSG_HEAD_LENGTH) )
 
-/*目前,协议栈OSA还不支持WIN32操作系统,在PC环境上测试时仍需要使用miniDOPRA,因此
-  我们在这里将PS_SEND_MSG分别定义,区分WIN32和VXWORKS版本,对于WIN32版本,仍使用原
-  Ps_SendMsg函数,以便于向PC STUB桩转发消息.后续OSA支持WIN32版本后,这里可统一处理*/
+/*????,??????OSA????????WIN32????????,??PC??????????????????????miniDOPRA,????
+  ????????????PS_SEND_MSG????????,????WIN32??VXWORKS????,????WIN32????,????????
+  Ps_SendMsg????,????????PC STUB??????????.????OSA????WIN32??????,??????????????*/
     #if(VOS_OS_VER == VOS_WIN32 )
 
-/*内存拷贝宏定义*/
+/*??????????????*/
 #define PS_MEM_CPY(pucDestBuffer, pucSrcBuffer, ulBufferLen) \
                 (VOS_VOID)memcpy(pucDestBuffer, pucSrcBuffer, ulBufferLen)    // unsafe_function_ignore: memcpy
 
-/*内存内容填充宏定义*/
+/*??????????????????*/
 #define PS_MEM_SET(pucBuffer, ucData, ulBufferLen) \
                 (VOS_VOID)memset(pucBuffer, ucData, ulBufferLen)     // unsafe_function_ignore: memset
 
-/*内存移动宏定义*/
+/*??????????????*/
 #define PS_MEM_MOVE(pucDestBuffer, pucSrcBuffer, ulBufferLen) \
                 memmove(pucDestBuffer, pucSrcBuffer, ulBufferLen)   // unsafe_function_ignore: memmove
 
-        /*消息发送*/
+        /*????????*/
         #ifdef __RECUR_TEST__
 
         #define PS_SEND_MSG(ulPid, pMsg) \
@@ -291,7 +291,7 @@ extern "C" {
 
         #endif
     #else
-    /*消息发送*/
+    /*????????*/
     /*lint --e(683)*/
     #define PS_SEND_MSG(ulPid, pMsg) \
             VOS_SendMsg( ulPid, pMsg)
@@ -299,45 +299,45 @@ extern "C" {
     #define PS_CHR_RPT_SEND_MSG(ulPid, pMsg)  Chr_MsgReport(pMsg)
     #endif
 
-/*消息发送*/
+/*????????*/
 #define PS_POST_MSG(ulPid, pMsg) \
             VOS_PostMsg( ulPid, pMsg)
 
-/*消息发送*/
+/*????????*/
 #define PS_SEND_URGENT_MSG(ulPid, pMsg) \
             VOS_SendUrgentMsg( ulPid, pMsg)
 
 
-/*消息释放宏定义*/
+/*??????????????*/
 #define PS_FREE_MSG(ulPid, pMsg) \
             VOS_FreeMsg( ulPid, pMsg)
 
-/*内存申请宏定义*/
+/*??????????????*/
 #if (VOS_OS_VER != VOS_WIN32)
 
 /*lint -emacro({586}, PS_MEM_ALLOC)*/
 #define PS_MEM_ALLOC(ulPid , ulSize) \
             VOS_MemAlloc( ulPid, (DYNAMIC_MEM_PT), ulSize)
 
-#else   /*WIN32 DOPRA 1.6.1版本DYNAMIC_MEM_PT内存分配算法存在BUG，因此换成BLOCK_MEM_PT */
+#else   /*WIN32 DOPRA 1.6.1????DYNAMIC_MEM_PT????????????????BUG??????????BLOCK_MEM_PT */
 /*lint -emacro({586}, PS_MEM_ALLOC)*/
 #define PS_MEM_ALLOC(ulPid , ulSize) \
             VOS_MemAlloc( ulPid, (BLOCK_MEM_PT), ulSize)
 #endif
 
 
-/*内存释放宏定义*/
+/*??????????????*/
 /*lint -emacro({586}, PS_MEM_FREE)*/
 #define PS_MEM_FREE(ulPid, pAddr ) \
             VOS_MemFree( ulPid, pAddr)
 
-/*申请静态内存宏定义*/
+/*??????????????????*/
 /*lint -emacro({586}, PS_ALLOC_STATIC_MEM)*/
 #define PS_ALLOC_STATIC_MEM(ulPid , ulSize)\
             VOS_MemAlloc(ulPid, (STATIC_MEM_PT), ulSize)
 
 
-/*释放静态内存宏定义*/
+/*??????????????????*/
 /*lint -emacro({586}, PS_FREE_STATIC_MEM)*/
 #define PS_FREE_STATIC_MEM(ulPid, pAddr )\
             VOS_MemFree(ulPid, (pAddr))
@@ -345,9 +345,9 @@ extern "C" {
 
 
 
-/* 定时器封装 */
+/* ?????????? */
 
-/* 启动定时器
+/* ??????????
 Input Parameters
 Pid: The function module ID of application.
 
@@ -410,7 +410,7 @@ When phTm is VOS_NULL_PTR, ucMode is not allowed to be VOS_RELTIMER_LOOP.
 #define PS_RESTART_REL_TIMER(phTm) \
         VOS_RestartRelTimer(phTm)
 
-/*封装钩子函数注册函数*/
+/*????????????????????*/
 #define PS_REGISTER_MSG_GET_HOOK(pfnMsgHook) \
         VOS_RegisterMsgGetHook(pfnMsgHook)
 #if (VOS_WIN32 != VOS_OS_VER)
@@ -424,18 +424,18 @@ When phTm is VOS_NULL_PTR, ucMode is not allowed to be VOS_RELTIMER_LOOP.
 #define PS_SND_MSG_ALL_CHECK(ulPid , pMsg)              PS_SEND_MSG(ulPid, pMsg)
 #endif
 
-/* 发送紧急消息 */
+/* ???????????? */
 #define PS_SND_URGENT_MSG(ulPid , pMsg)                 VOS_SendUrgentMsg(ulPid, pMsg)
 
 #define PS_MEM_ALLOC_All_CHECK(ulPid , ulSize) \
             PS_MEM_ALLOC(ulPid , ulSize)
 
-/*内存释放宏定义*/
+/*??????????????*/
 #define PS_MEM_FREE_ALL_CHECK(ulPid, pAddr )            PS_MEM_FREE(ulPid, pAddr)
 
 #define PS_FREE_MSG_ALL_CHECK(Pid, pMsg)                PS_FREE_MSG(Pid, pMsg)
 
-/*v8r1移植到新的RTOS，C核用的arm A7， flush和clear底层实现一样*/
+/*v8r1??????????RTOS??C??????arm A7?? flush??clear????????????*/
 #if (VOS_WIN32 != VOS_OS_VER)
 #if (VOS_VXWORKS == VOS_OS_VER)
 #define    LPS_CacheClear(pDataAddr, ulDataLen)         (VOS_VOID)cacheClear(DATA_CACHE, (VOS_VOID *)(pDataAddr), (ulDataLen))
@@ -504,7 +504,7 @@ typedef enum   /*CACHE TYPE, copy from BSP*/
 /*****************************************************************************
   8 Fuction Extern
 *****************************************************************************/
-/*v8r1支持新的RTOS需求，cache相关操作，接口来自底软*/
+/*v8r1????????RTOS??????cache??????????????????????*/
 extern int OSAL_CacheInvalid(OSAL_CACHE_TYPE type, void * address, unsigned int bytes);
 extern int OSAL_CacheFlush(OSAL_CACHE_TYPE type, void * address, unsigned int bytes);
 extern VOS_VOID* OSAL_CacheDmaMalloc(unsigned int  bytes);

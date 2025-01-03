@@ -11,16 +11,16 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include <windows.h>
 #include <time.h>
 #include "oal_util.h"
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-/* typedef CRITICAL_SECTION    oal_spin_lock_stru; zouhongliang 保持windows下与linux下大小一致 */
+/* typedef CRITICAL_SECTION    oal_spin_lock_stru; zouhongliang ????windows????linux?????????? */
 typedef struct
 {
     oal_uint8       auc_resv[4];
@@ -46,7 +46,7 @@ typedef struct
 /* Tasklet is scheduled for execution */
 #define TASKLET_STATE_SCHED     (0)
 
-/* tasklet声明 */
+/* tasklet???? */
 #define OAL_DECLARE_TASK(_name, _func, _p_data) \
     struct oal_tasklet_stru _name = {NULL, 0, _func, _p_data, 0, NULL, THREAD_PRIORITY_ABOVE_NORMAL}
 
@@ -82,7 +82,7 @@ OAL_STATIC OAL_INLINE oal_int32  oal_wait_event_timeout(oal_wait_queue_head_stru
 
 #define OAL_WAIT_QUEUE_INIT_HEAD(_pst_wq)
 
-/* 获取毫秒级时间戳 */
+/* ???????????????? */
 #define OAL_TIME_GET_STAMP_MS() clock()
 #define OAL_TIME_GET_HIGH_PRECISION_MS() clock()
 
@@ -90,7 +90,7 @@ OAL_STATIC OAL_INLINE oal_int32  oal_wait_event_timeout(oal_wait_queue_head_stru
 #define OAL_DISABLE_CYCLE_COUNT()
 #define OAL_GET_CYCLE_COUNT()
 
-/* 寄存器反转模块运行时间计算 */
+/* ?????????????????????????? */
 #define OAL_TIME_CALC_RUNTIME(_ul_start, _ul_end)   ((OAL_TIME_US_MAX_LEN) - (_ul_start) + (_ul_end))
 
 #define OAL_TIME_JIFFY  15
@@ -127,17 +127,17 @@ typedef struct
     oal_uint32                  ul_timer_id;
 }oal_timer_list_stru;
 
-/* 模块入口 */
+/* ???????? */
 #define oal_module_init(_module_name)
 
 #define oal_module_license(_license_name)
 
-/* 模块出口 */
+/* ???????? */
 #define oal_module_exit(_module_name)
 
 #define oal_module_param(_symbol, _type, _name)
 
-/* 模块符号导出 */
+/* ???????????? */
 #define oal_module_symbol(_symbol)
 #define OAL_MODULE_DEVICE_TABLE(_type, _name)
 
@@ -146,26 +146,26 @@ typedef struct
 #define IS_ERR_OR_NULL(x) (0)
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  4 全局变量声明
-*****************************************************************************/
-
-
-/*****************************************************************************
-  5 消息头定义
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  6 ????????
+*****************************************************************************/
+
+
+/*****************************************************************************
+  7 STRUCT????
 *****************************************************************************/
 
 typedef int (read_proc_t)(oal_int8 *, oal_int8 **, oal_int,
@@ -174,7 +174,7 @@ typedef int (write_proc_t)(oal_file_stru *, const oal_int8 *,
                                        oal_uint32, oal_void *);
 typedef struct
 {
-    oal_uint32               ul_done; //标志是否已经做完，未做完就是负值，代表等待个数，完成为0
+    oal_uint32               ul_done; //??????????????????????????????????????????????????????0
 
     oal_wait_queue_head_stru st_wait;
 
@@ -193,17 +193,17 @@ typedef union{
     oal_int i_usec;
 }oal_time_t_stru;
 
-/* 线程结构体 */
+/* ?????????? */
 typedef struct
 {
-    LPSECURITY_ATTRIBUTES       lp_thread_attributes;       /* 指向SECURITY_ATTRIBUTES的指针，设定线程的安全性 */
-    oal_uint32                  ul_stack_size;              /* 设置线程初始栈的大小 */
-    oal_defer_func              p_startaddress_func;        /* 线程所要执行的的函数的初始地址 */
-    oal_uint                    ui_parameter;               /* 给新线程所要传递的参数 */
-    oal_uint32                  ul_creationflags;           /* 设置控制线程创建的附加标记 */
-    HANDLE                      threadhead;                 /* 线程操作对象 */
-    oal_int32                   l_npriority;                /* 线程优先级 */
-    oal_int                     i_state;                    /* 线程调度状态 */
+    LPSECURITY_ATTRIBUTES       lp_thread_attributes;       /* ????SECURITY_ATTRIBUTES???????????????????????? */
+    oal_uint32                  ul_stack_size;              /* ???????????????????? */
+    oal_defer_func              p_startaddress_func;        /* ?????????????????????????????? */
+    oal_uint                    ui_parameter;               /* ?????????????????????? */
+    oal_uint32                  ul_creationflags;           /* ?????????????????????????? */
+    HANDLE                      threadhead;                 /* ???????????? */
+    oal_int32                   l_npriority;                /* ?????????? */
+    oal_int                     i_state;                    /* ???????????? */
 }oal_tasklet_stru;
 
 typedef struct
@@ -224,17 +224,17 @@ typedef struct
 }oal_mutex_stru;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 #define SIGHUP		 1
@@ -463,12 +463,12 @@ OAL_STATIC DWORD WINAPI  oal_thread_process(LPVOID p_parameter)
 
 OAL_INLINE oal_void  oal_task_init(oal_tasklet_stru *pst_task, oal_defer_func p_func, oal_uint ui_args)
 {
-    pst_task->lp_thread_attributes      = NULL;                                 /* 该线程使用默认安全性 */
-    pst_task->ul_stack_size             = 0;                                    /* 适用于调用该函数的线程相同大小的栈空间大小 */
-    pst_task->p_startaddress_func       = p_func;                               /* 传递线程须执行的函数首地址 */
-    pst_task->ui_parameter              = ui_args;                              /* 传递线程参数 */
-    pst_task->ul_creationflags          = 0;                                    /* 设置为线程创建立即执行 */
-    pst_task->l_npriority               = THREAD_PRIORITY_ABOVE_NORMAL;         /* 优先级为高于标准 */
+    pst_task->lp_thread_attributes      = NULL;                                 /* ???????????????????? */
+    pst_task->ul_stack_size             = 0;                                    /* ?????????????????????????????????????????? */
+    pst_task->p_startaddress_func       = p_func;                               /* ?????????????????????????? */
+    pst_task->ui_parameter              = ui_args;                              /* ???????????? */
+    pst_task->ul_creationflags          = 0;                                    /* ?????????????????????? */
+    pst_task->l_npriority               = THREAD_PRIORITY_ABOVE_NORMAL;         /* ???????????????? */
 }
 
 

@@ -18,7 +18,7 @@ typedef struct _nv_decompress_ctrl{
     u8 *pcur;
 }nv_decompress_ctrl;
 
-/*************************** nv 产品定制管理结构体 **********************************/
+/*************************** nv ?????????????????? **********************************/
 typedef struct _nv_cust_prdt_info_ctrl{
     xnv_prdt_info      *prdt_info;
     xnv_prdt_info       valid_pinfo;
@@ -60,7 +60,7 @@ typedef struct _nv_customize_ctrl{
     nv_cust_file_ctrl   cust_ctrl;
 }nv_customize_ctrl;
 
-/*************************************函数及变量声明**************************************/
+/*************************************??????????????**************************************/
 extern nv_customize_ctrl g_nv_bcust_ctrl;
 
 u32 nv_cust_init_global(void);

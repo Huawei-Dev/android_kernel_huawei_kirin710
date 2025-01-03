@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 
 #include "PsCommonDef.h"
@@ -63,17 +63,17 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID                 PS_FILE_ID_RNIC_IFACE_CFG_C
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 
@@ -115,11 +115,11 @@ VOS_UINT8 RNIC_IFACE_CalcNapiWeight(VOS_UINT8 ucRmNetId)
     ucWeight           = RNIC_NAPI_POLL_DEFAULT_WEIGHT;
     ulDlNapiRecvPktNum = RNIC_GET_IFACE_PERIOD_RECV_PKT(ucRmNetId);
 
-    /* 分为4档:2/4/8/16
-     * 150M bps每秒收包数在12300左右，小于这个收包数，weight值设置为2。
-     * 300M bps每秒收包数在24600左右，在[12300,24600]这个范围内，weight值设置为4。
-     * 450M bps每秒收包数在38400左右，在[24600,38400]这个范围内，weight值设置为8。
-     * 600M bps每秒收包数在49200左右，大于38400，weight值统一设置为16。
+    /* ????4??:2/4/8/16
+     * 150M bps????????????12300??????????????????????weight????????2??
+     * 300M bps????????????24600????????[12300,24600]????????????weight????????4??
+     * 450M bps????????????38400????????[24600,38400]????????????weight????????8??
+     * 600M bps????????????49200??????????38400??weight????????????16??
      */
 
     if (ulDlNapiRecvPktNum <= RNIC_GET_DL_PKT_NUM_PER_SEC_LEVEL1(ucRmNetId))
@@ -148,7 +148,7 @@ VOS_VOID RNIC_IFACE_AdjustNapiWeight(VOS_UINT8 ucRmNetId)
 {
     VOS_UINT8                           ucWeight;
 
-    /* NAPI Weight动态调整模式，才去计算weight值并调整。其他情况默认采用静态default weight值。 */
+    /* NAPI Weight??????????????????????weight??????????????????????????????default weight???? */
     if (NAPI_WEIGHT_ADJ_DYNAMIC_MODE == RNIC_GET_NAPI_WEIGHT_ADJ_MODE(ucRmNetId))
     {
         ucWeight = RNIC_IFACE_CalcNapiWeight(ucRmNetId);
@@ -185,15 +185,15 @@ VOS_INT RNIC_IFACE_RegRxHandler(
 
     if (RNIC_PS_RAT_TYPE_3GPP == pstIfaceCtx->stPsIfaceInfo.enRatType)
     {
-        /* 注册下行发送函数，ADS调用注册的函数发送下行数据 */
+        /* ??????????????????ADS?????????????????????????? */
         (VOS_VOID)ADS_DL_RegDlDataCallback(ucExRabId,
                                  RNIC_DataRxProc,
                                  pstIfaceCtx->enRmNetId);
 
-        /* NAPI特性打开才执行 */
+        /* NAPI?????????????? */
         if (RNIC_FEATURE_ON == RNIC_GET_NAPI_FEATURE(pstIfaceCtx->enRmNetId))
         {
-            /* 注册下行NAPI处理的回调函数 */
+            /* ????????NAPI?????????????? */
             (VOS_VOID)ADS_DL_RegNapiCallback(ucExRabId,
                                    RNIC_IFACE_NapiSchedule,
                                    pstIfaceCtx->enRmNetId);
@@ -217,7 +217,7 @@ VOS_VOID RNIC_IFACE_SetNetDevUp(
     stPsIfaceCfg.devid     = pstIfaceCtx->enRmNetId;
     stPsIfaceCfg.ip_family = ucIpFamily;
 
-    /* 向网卡驱动挂载上行收包回调 */
+    /* ?????????????????????????? */
     if (RNIC_PS_RAT_TYPE_IWLAN == pstIfaceCtx->stPsIfaceInfo.enRatType)
     {
         stPsIfaceCfg.data_tx_func = RNIC_VoWifiDataTxProc;
@@ -269,7 +269,7 @@ VOS_VOID RNIC_IFACE_SetFeatureCfg(VOS_VOID)
 
     for (ulIndex = 0 ; ulIndex < RNIC_NET_ID_MAX_NUM ; ulIndex++)
     {
-        /* 设置NAPI特性 */
+        /* ????NAPI???? */
         RNIC_IFACE_SetNapiCfg((VOS_UINT8)ulIndex);
 
     }
@@ -281,7 +281,7 @@ VOS_VOID RNIC_IFACE_SetDsFlowStats(VOS_UINT8 ucRmNetId)
 {
     struct rnic_dsflow_stats_s         *pstDsflowStats = VOS_NULL_PTR;
 
-    /* 调用驱动接口获取流量信息 */
+    /* ???????????????????????? */
     pstDsflowStats = rnic_get_dsflow_stats(ucRmNetId);
 
     if (VOS_NULL_PTR == pstDsflowStats)
@@ -294,7 +294,7 @@ VOS_VOID RNIC_IFACE_SetDsFlowStats(VOS_UINT8 ucRmNetId)
     RNIC_SET_IFACE_CUR_SEND_RATE(ucRmNetId, pstDsflowStats->tx_bytes);
     RNIC_SET_IFACE_PERIOD_RECV_PKT(ucRmNetId, pstDsflowStats->rx_packets);
 
-    /* 累加上行发送报文，按需断开定时器超时清零 */
+    /* ???????????????????????????????????????? */
     RNIC_ADD_IFACE_PERIOD_SEND_PKT(ucRmNetId, pstDsflowStats->tx_packets);
 
     RNIC_NORMAL_LOG4(ACPU_PID_RNIC, "RNIC_IFACE_SetDsFlowStats: <rx_bytes, tx_bytes, rx_packets, tx_packets> ",
@@ -334,7 +334,7 @@ VOS_VOID RNIC_IFACE_NetdevNotify(VOS_VOID)
 {
     RNIC_DEV_READY_STRU                *pstSndMsg;
 
-    /* 内存分配 */
+    /* ???????? */
     pstSndMsg = (RNIC_DEV_READY_STRU *)PS_ALLOC_MSG_WITH_HEADER_LEN(ACPU_PID_RNIC, sizeof(RNIC_DEV_READY_STRU));
 
     if (VOS_NULL_PTR == pstSndMsg)
@@ -343,10 +343,10 @@ VOS_VOID RNIC_IFACE_NetdevNotify(VOS_VOID)
         return;
     }
 
-    /* 填写消息 */
+    /* ???????? */
     RNIC_CFG_INTRA_MSG_HDR(pstSndMsg, ID_RNIC_NETDEV_READY_IND);
 
-    /* 发送消息 */
+    /* ???????? */
     if (VOS_OK != PS_SEND_MSG(ACPU_PID_RNIC, pstSndMsg))
     {
         RNIC_ERROR_LOG(ACPU_PID_RNIC, "RNIC_SendNetdevReadyInd: Send msg failed!");
@@ -384,7 +384,7 @@ VOS_VOID RNIC_IFACE_RegTxDropCB(VOS_UINT8 ucRmNetId)
 {
     struct rnic_ps_iface_drop_notifier_s    stDropNotify;
 
-    /* 网卡0上面上行报文触发按需拨号 */
+    /* ????0???????????????????????? */
     if (ucRmNetId == RNIC_DEV_ID_RMNET0)
     {
         stDropNotify.devid              = ucRmNetId;
@@ -404,11 +404,11 @@ VOS_VOID RNIC_IFACE_ResetPsIface(VOS_UINT8 ucRmNetId)
     stPsIfaceCfg.devid        = ucRmNetId;
     stPsIfaceCfg.data_tx_func = VOS_NULL_PTR;
 
-    /* Down V4 网卡 */
+    /* Down V4 ???? */
     stPsIfaceCfg.ip_family    = RNIC_IPV4_ADDR;
     rnic_set_ps_iface_down(&stPsIfaceCfg);
 
-    /* Down V6 网卡 */
+    /* Down V6 ???? */
     stPsIfaceCfg.ip_family    = RNIC_IPV6_ADDR;
     rnic_set_ps_iface_down(&stPsIfaceCfg);
 
@@ -436,7 +436,7 @@ VOS_VOID RNIC_IFACE_PsIfaceUp(
     {
         RNIC_IFACE_SetNetDevUp(pstIfaceCtx, RNIC_IPV4_ADDR);
 
-        /* 停止按需拨号保护定时器 */
+        /* ?????????????????????? */
         if (RNIC_DEV_ID_RMNET0 == ucRmNetId)
         {
             RNIC_StopTimer(TI_RNIC_DEMAND_DIAL_PROTECT);
@@ -475,7 +475,7 @@ VOS_VOID RNIC_IFACE_PsIfaceDown(
     {
         RNIC_IFACE_SetNetDevDown(pstIfaceCtx, RNIC_IPV4_ADDR);
 
-        /* RMNET0为IPV4类型时才会有按需拨号, 网卡down的时候停按需断开定时器 */
+        /* RMNET0??IPV4????????????????????, ????down?????????????????????? */
         if (RNIC_DEV_ID_RMNET0 == ucRmNetId)
         {
             RNIC_StopTimer(TI_RNIC_DEMAND_DIAL_DISCONNECT);
@@ -491,7 +491,7 @@ VOS_VOID RNIC_IFACE_PsIfaceDown(
     if ((RNIC_BIT_OPT_FALSE == RNIC_GET_IFACE_PDN_IPV4_ACT_STATE(ucRmNetId))
      && (RNIC_BIT_OPT_FALSE == RNIC_GET_IFACE_PDN_IPV6_ACT_STATE(ucRmNetId)))
     {
-        /* 停止流量统计定时器，清除流量统计 */
+        /* ???????????????????????????????? */
         enDsFlowTimerId = RNIC_GetDsflowTimerIdByNetId(ucRmNetId);
         RNIC_StopTimer(enDsFlowTimerId);
         RNIC_IFACE_ClearDsFlowStats(ucRmNetId);
@@ -525,20 +525,20 @@ VOS_VOID RNIC_IFACE_TetherInfo(
         return;
     }
 
-    /* 配置指定网卡的GRO功能 */
+    /* ??????????????GRO???? */
     if (AT_RNIC_USB_TETHER_CONNECTED == pstTetherInfo->enTetherConnStat)
     {
-        /* 先保存指定网卡的GRO开关 */
+        /* ????????????????GRO???? */
         RNIC_SET_TETHER_ORIG_GRO_FEATURE(RNIC_GET_GRO_FEATURE(enRmNetId));
 
         RNIC_SET_GRO_FEATURE(enRmNetId, RNIC_FEATURE_OFF);
     }
     else if (AT_RNIC_USB_TETHER_DISCONNECT == pstTetherInfo->enTetherConnStat)
     {
-        /* 恢复指定网卡的GRO开关 */
+        /* ??????????????GRO???? */
         RNIC_SET_GRO_FEATURE(enRmNetId, RNIC_GET_TETHER_ORIG_GRO_FEATURE());
 
-        /* 初始化Tethering信息，避免影响下次的设置 */
+        /* ??????Tethering???????????????????????? */
         RNIC_InitTetherInfo();
     }
     else

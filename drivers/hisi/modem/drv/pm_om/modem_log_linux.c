@@ -76,7 +76,7 @@
 #define modem_log_pr_err_once(fmt, ...) bsp_err(fmt, ##__VA_ARGS__)
 #define modem_log_pr_debug(fmt, ...)   // pr_err("[modem log]: " fmt, ##__VA_ARGS__)
 
-/* Ä£¿é·µ»Ø´íÎóÂë */
+/* ?????????????? */
 enum MODEM_LOG_ERR_TYPE
 {
 	MODEM_LOG_NO_MEM      = -ENOMEM,

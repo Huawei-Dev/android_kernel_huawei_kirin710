@@ -67,10 +67,10 @@ extern unsigned long long g_log_dma_test_mask;
 #define HDS_NULL                    (void*)0
 #define LOG_SRC_BUF_LEN                 0x10000
 
-#define PRINTLOG_CHN_INIT                    ((s32) 1)    /*打印数据通道已经分配*/
-#define PRINTLOG_CHN_UNINIT                  ((s32) 0)    /*打印数据通道没有分配*/
-#define TRANSLOG_CHN_INIT                    ((s32) 1)    /*结构体数据通道已经分配*/
-#define TRANSLOG_CHN_UNINIT                  ((s32) 0)    /*结构体数据通道没有分配*/
+#define PRINTLOG_CHN_INIT                    ((s32) 1)    /*????????????????????*/
+#define PRINTLOG_CHN_UNINIT                  ((s32) 0)    /*????????????????????*/
+#define TRANSLOG_CHN_INIT                    ((s32) 1)    /*??????????????????????*/
+#define TRANSLOG_CHN_UNINIT                  ((s32) 0)    /*??????????????????????*/
 
 #define PRINTLOG_MAX_FILENAME_LEN      15
 #define PRINTLOG_MAX_BUFF_LEN          256

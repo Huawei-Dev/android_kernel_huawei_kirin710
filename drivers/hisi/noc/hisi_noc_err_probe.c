@@ -77,7 +77,7 @@ static void hisi_noc_timeout_handle_work_func(struct work_struct *work)
 }
 
 
-/*输出base+0x14的值的含义*/
+/*????base+0x14??????????*/
 static void print_errlog0(unsigned int idx, unsigned int val)
 {
 	unsigned int value;
@@ -111,7 +111,7 @@ static void print_errlog0(unsigned int idx, unsigned int val)
 	g_err_msg.opc.val = value;
 }
 
-/*输出输出base+0x18的值的含义*/
+/*????????base+0x18??????????*/
 u64 print_errlog1(unsigned int val, unsigned int idx, int *pinitflow)
 
 {
@@ -162,7 +162,7 @@ u64 print_errlog1(unsigned int val, unsigned int idx, int *pinitflow)
 
 }
 
-/*输出base+0x28的值的含义 ERRLOG5*/
+/*????base+0x28?????????? ERRLOG5*/
 void print_errlog5(unsigned int val, unsigned int idx, int initflow)
 {
 	struct noc_mid_info *noc_mid = NULL;
@@ -484,7 +484,7 @@ void noc_err_probe_hanlder(void __iomem *base, struct noc_node *node)
 	/* output error log buffer */
 	print_errlog(base, node->bus_id);
 
-	/*将noc的寄存器信息打印出来 */
+	/*??noc???????????????????? */
 	noc_record_log_pstorememory(base, NOC_PTYPE_UART);
 
 	/* disable corresponding bus node interrupt by clear FAULTEN bit. */

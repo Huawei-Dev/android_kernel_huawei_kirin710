@@ -55,7 +55,7 @@ extern "C"
 #endif /* __cplusplus */
 
 /**************************************************************************
-  头文件包含
+  ??????????
 **************************************************************************/
 #include "hi_ipf.h"
 #include <bsp_shared_ddr.h>
@@ -125,7 +125,7 @@ extern "C"
 
 #define IPF_MEMBLOCK_CNT                (20)
 
-/*IPF描述符地址定义*/
+/*IPF??????????????*/
 
 #define IPF_SHAREMEM_BASE				(unsigned long)((unsigned long)SHM_BASE_ADDR + SHM_OFFSET_IPF)
 
@@ -152,43 +152,43 @@ extern "C"
 #define IPF_OUT_ADDR_LIMIT_SIZE			sizeof(unsigned int)
 #define IPF_ADDR_MEMBLOCK_SIZE			(IPF_MEMBLOCK_CNT*4)
 #define IPF_DLDESC_SIZE					(IPF_DLBD_MEM_SIZE + IPF_DLRD_MEM_SIZE + IPF_DLAD0_MEM_SIZE + IPF_DLAD1_MEM_SIZE + IPF_DLCD_MEM_SIZE)
-#define EXFLITER_NUM					(IPF_TOTAL_FILTER_NUM-IPF_BF_NUM_EX) /* 扩展过滤器数目 */
+#define EXFLITER_NUM					(IPF_TOTAL_FILTER_NUM-IPF_BF_NUM_EX) /* ?????????????? */
 #define IPF_DISABLE_FILTER				0  /* filter disable*/
 
-#define IPF_BF_NUM						64  /* 基本过滤器数目 */
-#define IPF_TOTAL_FILTER_NUM            256  /* 过滤器总数目先使用一半 */
-#define IPF_TAIL_INDEX					511  /* filter标识最后一个filter */
+#define IPF_BF_NUM						64  /* ?????????????? */
+#define IPF_TOTAL_FILTER_NUM            256  /* ?????????????????????? */
+#define IPF_TAIL_INDEX					511  /* filter????????????filter */
 
-#define IPF_BF_NUM_EX					128  /* 基本过滤器数目 */
-#define IPF_TOTAL_FILTER_NUM_EX			IPF_TOTAL_FILTER_NUM  /* 过滤器总数目先使用一半 */
-#define IPF_TAIL_INDEX_EX				1023  /* filter标识最后一个filter */
+#define IPF_BF_NUM_EX					128  /* ?????????????? */
+#define IPF_TOTAL_FILTER_NUM_EX			IPF_TOTAL_FILTER_NUM  /* ?????????????????????? */
+#define IPF_TAIL_INDEX_EX				1023  /* filter????????????filter */
 
-#define TIME_OUT_CFG					65           /* 默认超时时间,时钟频率166MHZ下为0.1ms */
-#define IPF_BDWPTR_MUX					0x100  /*BD写指针互斥量*/
-#define IPF_INT_OPEN0					0x80400C03        /*上行通道中断屏蔽*/
-#define IPF_INT_OPEN1					0x3D030000 /*下行通道中断屏蔽*/
+#define TIME_OUT_CFG					65           /* ????????????,????????166MHZ????0.1ms */
+#define IPF_BDWPTR_MUX					0x100  /*BD????????????*/
+#define IPF_INT_OPEN0					0x80400C03        /*????????????????*/
+#define IPF_INT_OPEN1					0x3D030000 /*????????????????*/
 
-#define IPF_CHANNEL_STATE_IDLE       	0x14 /*通道状态IDLE*/
+#define IPF_CHANNEL_STATE_IDLE       	0x14 /*????????IDLE*/
 #define IPF_ADQ_BUF_EPT_MASK            0x00000004
 #define IPF_ADQ_BUF_FULL_MASK           0x00000008
 #define IPF_ULADQ_PLEN_TH               404
 #define IPF_ACORE_INIT_SUCCESS          0x10000
 
-#define IPF_UL_RPT_INT0					0x1            /*上行结果上报中断0*/
+#define IPF_UL_RPT_INT0					0x1            /*????????????????0*/
 #define IPF_UL_RDQ_FULL					(0x1 << 8)
 
-#define IPF_UL_TIMEOUT_INT0             0x2            /*上行结果上报超时中断0*/
-#define IPF_UL_ADQ0_EPTY_INT0			0x400         /*上行ADQ0空中断0*/
-#define IPF_UL_ADQ1_EPTY_INT0			0x800         /*上行ADQ1空中断0*/
+#define IPF_UL_TIMEOUT_INT0             0x2            /*????????????????????0*/
+#define IPF_UL_ADQ0_EPTY_INT0			0x400         /*????ADQ0??????0*/
+#define IPF_UL_ADQ1_EPTY_INT0			0x800         /*????ADQ1??????0*/
 #define	IPF_UL_BDQ_EPTY_INT1			0x200			/*Upload BD empty interrupt*/
 
-#define IPF_DL_RPT_INT1					0x10000       /*下行结果上报中断0*/
+#define IPF_DL_RPT_INT1					0x10000       /*????????????????0*/
 #define IPF_DL_RDQ_FULL					(0x1 << 24)
 
-#define IPF_DL_TIMEOUT_INT1             0x20000       /*下行结果上报超时中断0*/
-#define IPF_DL_RD_FULL_INT1         	0x1000000	  /*下行rd满中断1*/
-#define IPF_DL_ADQ0_EPTY_INT1			0x4000000    /*下行ADQ0空中断0*/
-#define IPF_DL_ADQ1_EPTY_INT1			0x8000000    /*下行ADQ1空中断0*/
+#define IPF_DL_TIMEOUT_INT1             0x20000       /*????????????????????0*/
+#define IPF_DL_RD_FULL_INT1         	0x1000000	  /*????rd??????1*/
+#define IPF_DL_ADQ0_EPTY_INT1			0x4000000    /*????ADQ0??????0*/
+#define IPF_DL_ADQ1_EPTY_INT1			0x8000000    /*????ADQ1??????0*/
 
 #define SCH_ALL_DESC					1
 #define	IPF_TIMER_RATIO					(32768)					/*one second*/
@@ -237,7 +237,7 @@ typedef union ipf_desc_attr
 	unsigned short u16;
 }ipf_desc_attr_t;
 
-/* RD描述符 */
+/* RD?????? */
 typedef struct
 {
     ipf_desc_attr_t u16Attribute;
@@ -252,7 +252,7 @@ typedef struct
     unsigned int u32UsrField5;
 }ipf_rd_s;
 
-/* BD描述符 */
+/* BD?????? */
 typedef struct
 {
     ipf_desc_attr_t u16Attribute;
@@ -382,26 +382,26 @@ typedef struct {
     {
         struct
         {
-            unsigned int    fltn_fow_lable             : 20; /* [19..0] 过滤表流标签配置寄存器，字节小端排列 */
-            unsigned int    reserved                   : 12; /* [31..20] 保留。 */
+            unsigned int    fltn_fow_lable             : 20; /* [19..0] ???????????????????????????????????? */
+            unsigned int    reserved                   : 12; /* [31..20] ?????? */
         } bits;
         unsigned int    u32;
     }u32FlowLable;
     union{
         struct{
-            unsigned int    fltn_type                  : 8; /* [7..0] 过滤器type域配置值 */
-            unsigned int    reserved_1                 : 8; /* [15..8] 保留。 */
-            unsigned int    fltn_code                  : 8; /* [23..16] 过滤器code域配置值 */
-            unsigned int    reserved_0                 : 8; /* [31..24] 保留。 */
+            unsigned int    fltn_type                  : 8; /* [7..0] ??????type???????? */
+            unsigned int    reserved_1                 : 8; /* [15..8] ?????? */
+            unsigned int    fltn_code                  : 8; /* [23..16] ??????code???????? */
+            unsigned int    reserved_0                 : 8; /* [31..24] ?????? */
         }Bits;
     	unsigned int u32CodeType;
     } unFltCodeType;
     union{
         struct{
-            unsigned int    fltn_next_index            : 10; /* [9..0] 下一个过滤器对应的index */
-            unsigned int    reserved_1                 : 6; /* [15..10] 保留。 */
-            unsigned int    fltn_pri                   : 9; /* [24..16] 过滤器优先级，fltn_pri数值越小优先级越高 */
-            unsigned int    reserved_0                 : 7; /* [31..25] 保留。 */
+            unsigned int    fltn_next_index            : 10; /* [9..0] ??????????????????index */
+            unsigned int    reserved_1                 : 6; /* [15..10] ?????? */
+            unsigned int    fltn_pri                   : 9; /* [24..16] ??????????????fltn_pri?????????????????? */
+            unsigned int    reserved_0                 : 7; /* [31..25] ?????? */
         }Bits;
     	unsigned int u32FltChain;
     } unFltChain;
@@ -452,8 +452,8 @@ typedef enum ipf_enable
 
 typedef enum tagIPF_FORRESET_CONTROL_E
 {
-    IPF_FORRESET_CONTROL_ALLOW = 0xabcd1234,     /*允许发送*/
-    IPF_FORRESET_CONTROL_FORBID,    /*禁止发送*/
+    IPF_FORRESET_CONTROL_ALLOW = 0xabcd1234,     /*????????*/
+    IPF_FORRESET_CONTROL_FORBID,    /*????????*/
     IPF_FORRESET_CONTROL_MAX
 }IPF_FORRESET_CONTROL_E;
 
@@ -615,18 +615,18 @@ typedef struct tagIPF_DL_S
     void* pstIpfCDQ;
 	
 #ifdef __KERNEL__
-    BSP_IPF_WakeupDlCb pFnDlIntCb; /* 中断中唤醒的PS任务 */
-    BSP_IPF_AdqEmptyDlCb pAdqEmptyDlCb;/*下行AD空回调，A核心*/
+    BSP_IPF_WakeupDlCb pFnDlIntCb; /* ????????????PS???? */
+    BSP_IPF_AdqEmptyDlCb pAdqEmptyDlCb;/*????AD????????A????*/
 
-/*ACore硬件使用的物理地址*/
+/*ACore??????????????????*/
     dma_addr_t pstIpfPhyBDQ;
     dma_addr_t pstIpfPhyRDQ;
     dma_addr_t pstIpfPhyADQ0;
     dma_addr_t pstIpfPhyADQ1;
 #endif
-    unsigned int *u32IpfCdRptr; /* 当前可以读出的位置 */
+    unsigned int *u32IpfCdRptr; /* ?????????????????? */
     unsigned int u32IpfCdWptr;
-    unsigned int u32IdleBd; /* 记录上一次获取的空闲BD 数 */
+    unsigned int u32IdleBd; /* ????????????????????BD ?? */
 }IPF_DL_S;
 
 typedef struct tagIPF_LIMIT_ADDR{

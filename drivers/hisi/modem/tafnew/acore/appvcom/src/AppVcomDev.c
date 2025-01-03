@@ -47,7 +47,7 @@
 */
 
 /*****************************************************************************
-   1 头文件包含
+   1 ??????????
 *****************************************************************************/
 #include "PsTypeDef.h"
 #include "vos.h"
@@ -62,21 +62,21 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_APP_VCOM_DEV_C
 
 /*****************************************************************************
-   2 全局变量定义
+   2 ????????????
 *****************************************************************************/
 
-/* VCOM CTX,用于保存VCOM的全局变量*/
+/* VCOM CTX,????????VCOM??????????*/
 APP_VCOM_DEV_CTX_STRU                   g_astVcomCtx[APP_VCOM_MAX_NUM];
 
 APP_VCOM_DEBUG_INFO_STRU                g_stAppVcomDebugInfo;
 
 
-/* 虚拟串口文件操作接口 */
+/* ???????????????????? */
 static const struct file_operations     g_stOperations_Fops =
 {
     .owner = THIS_MODULE,
@@ -88,74 +88,74 @@ static const struct file_operations     g_stOperations_Fops =
 };
 
 
-/* APPVCOM的规格和应用
-APPVCOM ID   缓存大小  用途           是否AT的CLIENT    ModemId   USER版本是否使用(参见g_aemDebugAppPortIndex)
-APPVCOM        4K      RIL(主)               是         MODEM0          Y
-APPVCOM1       4K      RIL(呼叫)             是         MODEM0          Y
-APPVCOM2       4K      工程菜单              是         MODEM0          Y
-APPVCOM3       8K      生产装备(AT SERVER)   是         MODEM0          Y
-APPVCOM4       4K      audio RIL             是         MODEM0          Y
-APPVCOM5       4K      RIL(主)               是         MODEM1          Y
-APPVCOM6       4K      RIL(呼叫)             是         MODEM1          Y
-APPVCOM7       8K      生产装备(AT SERVER)   是         MODEM1          Y
-APPVCOM8       4K      工程菜单/HIDP         是         MODEM1          Y
-APPVCOM9      20K      AGPS                  是         MODEM0          Y
-APPVCOM10      4K      RIL                   是         MODEM0          Y
-APPVCOM11      4K      ISDB                  是         MODEM0          UnCertain
-APPVCOM12      4K      AGPS                  是         MODEM1          Y
-APPVCOM13      4K      RIL(查询)             是         MODEM0          Y
-APPVCOM14      4K      RIL(查询)             是         MODEM1          Y
-APPVCOM15      4K      RIL                   是         MODEM1          Y
-APPVCOM16      4K      HIDP                  是         MODEM0          Y
-APPVCOM17      4K      AGPS-AP               是         MODEM0          Y
-APPVCOM18      4K      NFC                   是         MODEM0          Y
-APPVCOM19      4K      海外运营商写simlock   是         MODEM0          Y
-APPVCOM20      4K      RIL(主)               是         MODEM2          Y
-APPVCOM21      4K      RIL(呼叫)             是         MODEM2          Y
-APPVCOM22      4K      工程菜单              是         MODEM2          Y
-APPVCOM23      8K      生产装备(AT SERVER)   是         MODEM2          Y
-APPVCOM24      4K      AGPS                  是         MODEM2          Y
-APPVCOM25      4K      RIL                   是         MODEM2          Y
-APPVCOM26      4K      RIL(查询)             是         MODEM2          Y
+/* APPVCOM????????????
+APPVCOM ID   ????????  ????           ????AT??CLIENT    ModemId   USER????????????(????g_aemDebugAppPortIndex)
+APPVCOM        4K      RIL(??)               ??         MODEM0          Y
+APPVCOM1       4K      RIL(????)             ??         MODEM0          Y
+APPVCOM2       4K      ????????              ??         MODEM0          Y
+APPVCOM3       8K      ????????(AT SERVER)   ??         MODEM0          Y
+APPVCOM4       4K      audio RIL             ??         MODEM0          Y
+APPVCOM5       4K      RIL(??)               ??         MODEM1          Y
+APPVCOM6       4K      RIL(????)             ??         MODEM1          Y
+APPVCOM7       8K      ????????(AT SERVER)   ??         MODEM1          Y
+APPVCOM8       4K      ????????/HIDP         ??         MODEM1          Y
+APPVCOM9      20K      AGPS                  ??         MODEM0          Y
+APPVCOM10      4K      RIL                   ??         MODEM0          Y
+APPVCOM11      4K      ISDB                  ??         MODEM0          UnCertain
+APPVCOM12      4K      AGPS                  ??         MODEM1          Y
+APPVCOM13      4K      RIL(????)             ??         MODEM0          Y
+APPVCOM14      4K      RIL(????)             ??         MODEM1          Y
+APPVCOM15      4K      RIL                   ??         MODEM1          Y
+APPVCOM16      4K      HIDP                  ??         MODEM0          Y
+APPVCOM17      4K      AGPS-AP               ??         MODEM0          Y
+APPVCOM18      4K      NFC                   ??         MODEM0          Y
+APPVCOM19      4K      ????????????simlock   ??         MODEM0          Y
+APPVCOM20      4K      RIL(??)               ??         MODEM2          Y
+APPVCOM21      4K      RIL(????)             ??         MODEM2          Y
+APPVCOM22      4K      ????????              ??         MODEM2          Y
+APPVCOM23      8K      ????????(AT SERVER)   ??         MODEM2          Y
+APPVCOM24      4K      AGPS                  ??         MODEM2          Y
+APPVCOM25      4K      RIL                   ??         MODEM2          Y
+APPVCOM26      4K      RIL(????)             ??         MODEM2          Y
 
-APPVCOM27      4K      RIL                   是         MODEM0          Y
-APPVCOM28      4K      RIL                   是         MODEM0          Y
-APPVCOM29      4K      RIL                   是         MODEM1          Y
-APPVCOM30      4K      RIL                   是         MODEM1          Y
-APPVCOM31      4K      RIL                   是         MODEM2          Y
+APPVCOM27      4K      RIL                   ??         MODEM0          Y
+APPVCOM28      4K      RIL                   ??         MODEM0          Y
+APPVCOM29      4K      RIL                   ??         MODEM1          Y
+APPVCOM30      4K      RIL                   ??         MODEM1          Y
+APPVCOM31      4K      RIL                   ??         MODEM2          Y
 
-APPVCOM32      4K      RIL                   是         MODEM2          Y
-APPVCOM33      4K      生产装备(AT SERVER)   是         MODEM1          Y
-APPVCOM34      4K      NFC                   是         MODEM1          Y
-APPVCOM35      4K      预留                  是         MODEM0          N
-APPVCOM36      4K      预留                  是         MODEM0          N
-APPVCOM37      4K      预留                  是         MODEM0          N
-APPVCOM38      4K      预留                  是         MODEM0          N
-APPVCOM39      4K      预留                  是         MODEM0          N
-APPVCOM40      4K      预留                  是         MODEM0          N
-APPVCOM41      4K      预留                  是         MODEM0          N
-APPVCOM42      4K      预留                  是         MODEM0          N
-APPVCOM43      4K      预留                  是         MODEM0          N
-APPVCOM44      4K      预留                  是         MODEM0          N
-APPVCOM45      4K      预留                  是         MODEM0          N
-APPVCOM46      4K      预留                  是         MODEM0          N
-APPVCOM47      4K      预留                  是         MODEM0          N
-APPVCOM48      4K      预留                  是         MODEM0          N
-APPVCOM49      4K      预留                  是         MODEM0          N
-APPVCOM50      4K      预留                  是         MODEM0          N
-APPVCOM51      4K      预留                  是         MODEM0          N
-APPVCOM52      4K      预留                  是         MODEM0          N
-APPVCOM53      128K    errlog                是                         Y
-APPVCOM54      4K      T/L装备               否                         UnCertain
-APPVCOM55      2M      log 3.5               否                         Y
-APPVCOM56      2M      log 3.5               否                         UnCertain
-APPVCOM57      4K      预留                  是         MODEM0          N
-APPVCOM58      4K      预留                  是         MODEM0          N
-APPVCOM59      4K      预留                  是         MODEM0          N
-APPVCOM60      4K      预留                  是         MODEM0          N
-APPVCOM61      4K      预留                  是         MODEM0          N
-APPVCOM62      4K      预留                  是         MODEM0          N
-APPVCOM63      4K      预留                  是         MODEM0          N
+APPVCOM32      4K      RIL                   ??         MODEM2          Y
+APPVCOM33      4K      ????????(AT SERVER)   ??         MODEM1          Y
+APPVCOM34      4K      NFC                   ??         MODEM1          Y
+APPVCOM35      4K      ????                  ??         MODEM0          N
+APPVCOM36      4K      ????                  ??         MODEM0          N
+APPVCOM37      4K      ????                  ??         MODEM0          N
+APPVCOM38      4K      ????                  ??         MODEM0          N
+APPVCOM39      4K      ????                  ??         MODEM0          N
+APPVCOM40      4K      ????                  ??         MODEM0          N
+APPVCOM41      4K      ????                  ??         MODEM0          N
+APPVCOM42      4K      ????                  ??         MODEM0          N
+APPVCOM43      4K      ????                  ??         MODEM0          N
+APPVCOM44      4K      ????                  ??         MODEM0          N
+APPVCOM45      4K      ????                  ??         MODEM0          N
+APPVCOM46      4K      ????                  ??         MODEM0          N
+APPVCOM47      4K      ????                  ??         MODEM0          N
+APPVCOM48      4K      ????                  ??         MODEM0          N
+APPVCOM49      4K      ????                  ??         MODEM0          N
+APPVCOM50      4K      ????                  ??         MODEM0          N
+APPVCOM51      4K      ????                  ??         MODEM0          N
+APPVCOM52      4K      ????                  ??         MODEM0          N
+APPVCOM53      128K    errlog                ??                         Y
+APPVCOM54      4K      T/L????               ??                         UnCertain
+APPVCOM55      2M      log 3.5               ??                         Y
+APPVCOM56      2M      log 3.5               ??                         UnCertain
+APPVCOM57      4K      ????                  ??         MODEM0          N
+APPVCOM58      4K      ????                  ??         MODEM0          N
+APPVCOM59      4K      ????                  ??         MODEM0          N
+APPVCOM60      4K      ????                  ??         MODEM0          N
+APPVCOM61      4K      ????                  ??         MODEM0          N
+APPVCOM62      4K      ????                  ??         MODEM0          N
+APPVCOM63      4K      ????                  ??         MODEM0          N
 */
 const APP_VCOM_DEV_CONFIG_STRU g_astAppVcomCogfigTab[] =
 {
@@ -231,9 +231,9 @@ const APP_VCOM_DEV_CONFIG_STRU g_astAppVcomCogfigTab[] =
 
 APP_VCOM_DEBUG_CFG_STRU              g_stAppVcomDebugCfg;
 
-/* user版本不使用端口列表，当前只关闭保留端口，
-   非保留端口大部分当前已经明确使用，当前不确认的端口有:
-   APPVCOM11 APPVCOM54 APPVCOM55 APPVCOM57,由于这几个端口当前不是很明确是否使用，所以user版本默认不关闭
+/* user????????????????????????????????????????
+   ????????????????????????????????????????????????????:
+   APPVCOM11 APPVCOM54 APPVCOM55 APPVCOM57,??????????????????????????????????????????user??????????????
 */
 APP_VCOM_DEV_INDEX_UINT8             g_aemDebugAppPortIndex[] =
 {
@@ -283,11 +283,11 @@ VOS_UINT8 APP_VCOM_IsDebugAppPort(
 }
 
 /*****************************************************************************
-   3 函数、变量声明
+   3 ??????????????
 *****************************************************************************/
 
 /*****************************************************************************
-   4 函数实现
+   4 ????????
 *****************************************************************************/
 
 APP_VCOM_DEV_CTX_STRU* APP_VCOM_GetVcomCtxAddr(VOS_UINT8 ucIndex)
@@ -306,7 +306,7 @@ VOS_UINT32 APP_VCOM_RegDataCallback(VOS_UINT8 ucDevIndex, SEND_UL_AT_FUNC pFunc)
 {
     APP_VCOM_DEV_CTX_STRU              *pstVcomCtx;
 
-    /* 索引号错误*/
+    /* ??????????*/
     if (ucDevIndex >= APP_VCOM_DEV_INDEX_BUTT)
     {
         return VOS_ERR;
@@ -314,7 +314,7 @@ VOS_UINT32 APP_VCOM_RegDataCallback(VOS_UINT8 ucDevIndex, SEND_UL_AT_FUNC pFunc)
 
     pstVcomCtx = APP_VCOM_GetVcomCtxAddr(ucDevIndex);
 
-    /* 函数指针赋给全局变量*/
+    /* ????????????????????*/
     pstVcomCtx->pSendUlAtFunc = pFunc;
 
     return VOS_OK;
@@ -325,7 +325,7 @@ VOS_UINT32 APP_VCOM_RegEvtCallback(VOS_UINT8 ucDevIndex, EVENT_FUNC pFunc)
 {
     APP_VCOM_DEV_CTX_STRU              *pstVcomCtx;
 
-    /* 索引号错误*/
+    /* ??????????*/
     if (ucDevIndex >= APP_VCOM_DEV_INDEX_BUTT)
     {
         return VOS_ERR;
@@ -333,7 +333,7 @@ VOS_UINT32 APP_VCOM_RegEvtCallback(VOS_UINT8 ucDevIndex, EVENT_FUNC pFunc)
 
     pstVcomCtx = APP_VCOM_GetVcomCtxAddr(ucDevIndex);
 
-    /* 函数指针赋给全局变量*/
+    /* ????????????????????*/
     pstVcomCtx->pEventFunc = pFunc;
 
     return VOS_OK;
@@ -436,12 +436,12 @@ VOS_INT __init APP_VCOM_Init(VOS_VOID)
     pstVcomCtx = VOS_NULL_PTR;
     pstVcomDevp  = VOS_NULL_PTR;
 
-    /* 初始化可维可测全局变量 */
+    /* ?????????????????????? */
     TAF_MEM_SET_S(&g_stAppVcomDebugInfo, sizeof(g_stAppVcomDebugInfo), 0x00, sizeof(g_stAppVcomDebugInfo));
 
     TAF_MEM_SET_S(&g_stAppVcomDebugCfg, sizeof(g_stAppVcomDebugCfg), 0x00, sizeof(g_stAppVcomDebugCfg));
 
-    /* 初始化虚拟设备 */
+    /* ?????????????? */
     for (ucIndex = 0; ucIndex < APP_VCOM_MAX_NUM; ucIndex++)
     {
         if (VOS_TRUE == APP_VCOM_IsDebugAppPort(ucIndex))
@@ -450,18 +450,18 @@ VOS_INT __init APP_VCOM_Init(VOS_VOID)
             continue;
         }
 
-        /* 初始化全局变量 */
+        /* ?????????????? */
         APP_VCOM_InitSpecCtx(ucIndex);
 
-        /* 获取全局变量指针 */
+        /* ???????????????? */
         pstVcomCtx = APP_VCOM_GetVcomCtxAddr(ucIndex);
 
-        /* 将设备号转换成dev_t 类型 */
+        /* ??????????????dev_t ???? */
         ulDevno = MKDEV(pstVcomCtx->ulAppVcomMajorId, ucIndex);
 
         iResult1 = register_chrdev_region(ulDevno, 1, pstVcomCtx->aucAppVcomName);
 
-        /* 注册失败则动态申请设备号 */
+        /* ???????????????????????? */
         if (iResult1 < 0)
         {
             iResult2 = alloc_chrdev_region(&ulDevno, 0, 1, pstVcomCtx->aucAppVcomName);
@@ -474,18 +474,18 @@ VOS_INT __init APP_VCOM_Init(VOS_VOID)
             pstVcomCtx->ulAppVcomMajorId = MAJOR(ulDevno);
         }
 
-        /* 动态申请设备结构体内存 */
+        /* ?????????????????????? */
         pstVcomCtx->pstAppVcomDevEntity = kmalloc(sizeof(APP_VCOM_DEV_ENTITY_STRU) , GFP_KERNEL);
 
         if (VOS_NULL_PTR == pstVcomCtx->pstAppVcomDevEntity)
         {
-            /* 去注册该设备，返回错误 */
+            /* ?????????????????????? */
             unregister_chrdev_region(ulDevno, 1);
             APP_VCOM_TRACE_ERR(ucIndex, "APP_VCOM_Init malloc device Entity fail. ");
             return VOS_ERROR;
         }
 
-        /* 获取设备实体指针 */
+        /* ???????????????? */
         pstVcomDevp = pstVcomCtx->pstAppVcomDevEntity;
 
         TAF_MEM_SET_S(pstVcomDevp, sizeof(APP_VCOM_DEV_ENTITY_STRU), 0x00, sizeof(APP_VCOM_DEV_ENTITY_STRU));
@@ -496,7 +496,7 @@ VOS_INT __init APP_VCOM_Init(VOS_VOID)
 
             if (VOS_NULL_PTR == pstVcomDevp->pucAppVcomMem)
             {
-                /* 去注册该设备，返回错误 */
+                /* ?????????????????????? */
                 unregister_chrdev_region(ulDevno, 1);
                 APP_VCOM_TRACE_ERR(ucIndex, "APP_VCOM_Init malloc device buff fail. ");
                 kfree(pstVcomCtx->pstAppVcomDevEntity);
@@ -515,7 +515,7 @@ VOS_INT __init APP_VCOM_Init(VOS_VOID)
 
         APP_VCOM_Setup(pstVcomDevp, ucIndex);
 
-        /* 创建信号量 */
+        /* ?????????? */
         sema_init(&pstVcomDevp->stMsgSendSem,1);
         sema_init(&pstVcomDevp->stWrtSem, 1);
     }
@@ -541,10 +541,10 @@ int APP_VCOM_Release(
         return VOS_ERROR;
     }
 
-    /* 获取主设备号 */
+    /* ???????????? */
     ulDevMajor = imajor(inode);
 
-    /* 根据主设备号得到设备在全局变量中的索引值 */
+    /* ???????????????????????????????????????? */
     ucIndex = APP_VCOM_GetIndexFromMajorDevId(ulDevMajor);
 
     if (ucIndex >= APP_VCOM_MAX_NUM)
@@ -553,7 +553,7 @@ int APP_VCOM_Release(
         return VOS_ERROR;
     }
 
-    /* 获取VCOM全局变量 */
+    /* ????VCOM???????? */
     pstVcomCtx = APP_VCOM_GetVcomCtxAddr(ucIndex);
 
     if (VOS_NULL_PTR == pstVcomCtx->pstAppVcomDevEntity)
@@ -578,7 +578,7 @@ int APP_VCOM_Release(
         up(&pstVcomDevp->stMsgSendSem);
     }
 
-    /* 将设备结构体指针赋值给文件私有数据指针 */
+    /* ?????????????????????????????????????? */
     filp->private_data = pstVcomCtx->pstAppVcomDevEntity;
 
     APP_VCOM_TRACE_INFO(ucIndex, "APP_VCOM_Release enter. ");
@@ -612,10 +612,10 @@ int APP_VCOM_Open(
         return VOS_ERROR;
     }
 
-    /* 获取主设备号 */
+    /* ???????????? */
     ulDevMajor = imajor(inode);
 
-    /* 根据主设备号得到设备在全局变量中的索引值 */
+    /* ???????????????????????????????????????? */
     ucIndex = APP_VCOM_GetIndexFromMajorDevId(ulDevMajor);
 
     if (ucIndex >= APP_VCOM_MAX_NUM)
@@ -624,7 +624,7 @@ int APP_VCOM_Open(
         return VOS_ERROR;
     }
 
-    /* 获取VCOM全局变量 */
+    /* ????VCOM???????? */
     pstVcomCtx = APP_VCOM_GetVcomCtxAddr(ucIndex);
 
     if (VOS_NULL_PTR == pstVcomCtx->pstAppVcomDevEntity)
@@ -635,7 +635,7 @@ int APP_VCOM_Open(
 
     if (APPVCOM_DYNAMIC_MALLOC_MEMORY(ucIndex))
     {
-        /* 获取设备实体指针 */
+        /* ???????????????? */
         pstVcomDevp = pstVcomCtx->pstAppVcomDevEntity;
         if (VOS_NULL_PTR == pstVcomDevp->pucAppVcomMem)
         {
@@ -649,7 +649,7 @@ int APP_VCOM_Open(
             APP_VCOM_TRACE_INFO(ucIndex, "APP_VCOM_Open alloc memory is ok. ");
         }
     }
-    /* 将设备结构体指针赋值给文件私有数据指针 */
+    /* ?????????????????????????????????????? */
     filp->private_data = pstVcomCtx->pstAppVcomDevEntity;
 
     APP_VCOM_TRACE_INFO(ucIndex, "APP_VCOM_Open enter. ");
@@ -678,14 +678,14 @@ ssize_t APP_VCOM_Read(
     VOS_UINT8                           ucIndex;
     APP_VCOM_DEV_CTX_STRU              *pstVcomCtx;
 
-    /* 获得设备结构体指针 */
+    /* ?????????????????? */
     pstVcomDev = stFilp->private_data;
 
-    /* 获得设备主设备号 */
+    /* ???????????????? */
     pstCdev = &(pstVcomDev->stAppVcomDev);
     ulDevMajor = MAJOR(pstCdev->dev);
 
-    /* 获得设备在全局变量中的索引值 */
+    /* ???????????????????????????? */
     ucIndex = APP_VCOM_GetIndexFromMajorDevId(ulDevMajor);
 
     if (ucIndex >= APP_VCOM_MAX_NUM)
@@ -717,7 +717,7 @@ ssize_t APP_VCOM_Read(
 
     APP_VCOM_TRACE_INFO(ucIndex, "APP_VCOM_Read, wait_event 222,flag:%d. ", pstVcomDev->ulReadWakeUpFlg);
 
-    /* 获取信号量 */
+    /* ?????????? */
     down(&pstVcomCtx->pstAppVcomDevEntity->stMsgSendSem);
 
     if (APPVCOM_DYNAMIC_MALLOC_MEMORY(ucIndex)&&(VOS_NULL_PTR == pstVcomDev->pucAppVcomMem))
@@ -735,19 +735,19 @@ ssize_t APP_VCOM_Read(
     {
         APP_VCOM_TRACE_ERR(ucIndex, "APP_VCOM_Read, copy_to_user fail. ");
 
-        /* 释放信号量 */
+        /* ?????????? */
         up(&pstVcomCtx->pstAppVcomDevEntity->stMsgSendSem);
         return APP_VCOM_ERROR;
     }
 
     if ((pstVcomDev->current_len - count) > 0)
     {
-        /* FIFO数据前移 */
+        /* FIFO???????? */
         memmove(pstVcomDev->pucAppVcomMem, (pstVcomDev->pucAppVcomMem + count), (pstVcomDev->current_len - count)); /* unsafe_function_ignore: memmove */
         APP_VCOM_TRACE_INFO(ucIndex, "APP_VCOM_Read, FIFO move. ");
     }
 
-    /* 有效数据长度减小*/
+    /* ????????????????*/
     pstVcomDev->current_len -= count;
 
     APP_VCOM_TRACE_INFO(ucIndex, "APP_VCOM_Read, read %u bytes, current_len:%u. ", count, pstVcomDev->current_len); /*lint !e559 */
@@ -760,7 +760,7 @@ ssize_t APP_VCOM_Read(
         /*lint -restore */
     }
 
-    /* 释放信号量 */
+    /* ?????????? */
     up(&pstVcomCtx->pstAppVcomDevEntity->stMsgSendSem);
 
     return (ssize_t)count;
@@ -782,14 +782,14 @@ ssize_t APP_VCOM_Write(
     VOS_UINT8                           ucIndex;
     APP_VCOM_DEV_CTX_STRU              *pstVcomCtx;
 
-    /* 获得设备结构体指针 */
+    /* ?????????????????? */
     pstVcomDev = stFilp->private_data;
 
-    /* 获得设备主设备号 */
+    /* ???????????????? */
     pstCdev = &(pstVcomDev->stAppVcomDev);
     ulDevMajor = MAJOR(pstCdev->dev);
 
-    /* 获得设备在全局变量中的索引值 */
+    /* ???????????????????????????? */
     ucIndex = APP_VCOM_GetIndexFromMajorDevId(ulDevMajor);
 
     if(ucIndex >= APP_VCOM_MAX_NUM)
@@ -810,10 +810,10 @@ ssize_t APP_VCOM_Write(
         return APP_VCOM_ERROR;
     }
 
-    /* 获得全局变量地址 */
+    /* ???????????????? */
     pstVcomCtx = APP_VCOM_GetVcomCtxAddr(ucIndex);
 
-    /* 申请内存 */
+    /* ???????? */
     pucDataBuf = kmalloc(count, GFP_KERNEL);
     if (VOS_NULL_PTR == pucDataBuf )
     {
@@ -822,7 +822,7 @@ ssize_t APP_VCOM_Write(
         return APP_VCOM_ERROR;
     }
 
-    /* buffer清零 */
+    /* buffer???? */
     TAF_MEM_SET_S(pucDataBuf, count, 0x00, (VOS_SIZE_T)count);
 
     if (copy_from_user(pucDataBuf, buf, (VOS_ULONG)count))
@@ -838,7 +838,7 @@ ssize_t APP_VCOM_Write(
         return (ssize_t)count;/*lint !e429*/
     }
 
-    /* 调用回调函数处理buf中的AT码流*/
+    /* ????????????????buf????AT????*/
     if (VOS_NULL_PTR == pstVcomCtx->pSendUlAtFunc)
     {
         APP_VCOM_TRACE_ERR(ucIndex, "APP_VCOM_Write, pSendUlAtFunc is null. ");
@@ -863,7 +863,7 @@ ssize_t APP_VCOM_Write(
 
     APP_VCOM_TRACE_INFO(ucIndex, "APP_VCOM_Write, write %d bytes, AT_RcvFromAppCom Success.",count);
 
-    /* 释放内存 */
+    /* ???????? */
     kfree(pucDataBuf);
 
     return (ssize_t)count;
@@ -927,7 +927,7 @@ VOS_UINT32  APP_VCOM_Send (
         return VOS_OK;
     }
 
-    /* 获得设备实体指针 */
+    /* ???????????????? */
     pstVcomDev = APP_VCOM_GetAppVcomDevEntity(enDevIndex);
     if (VOS_NULL_PTR == pstVcomDev)
     {
@@ -940,7 +940,7 @@ VOS_UINT32  APP_VCOM_Send (
 
     APP_VCOM_TRACE_INFO(enDevIndex, "APP_VCOM_Send, uslength:%d, current_len:%d. ", uslength, pstVcomDev->current_len);
 
-    /* 获取信号量 */
+    /* ?????????? */
     down(&pstVcomDev->stMsgSendSem);
 
     if (APPVCOM_DYNAMIC_MALLOC_MEMORY(enDevIndex)&&(VOS_NULL_PTR == pstVcomDev->pucAppVcomMem))
@@ -949,7 +949,7 @@ VOS_UINT32  APP_VCOM_Send (
         return VOS_ERR;
     }
 
-    /* 队列满则直接返回 */
+    /* ???????????????? */
     /*lint -e661*/
     if (g_astAppVcomCogfigTab[enDevIndex].ulAppVcomMemSize == pstVcomDev->current_len)
     /*lint +e661*/
@@ -969,7 +969,7 @@ VOS_UINT32  APP_VCOM_Send (
         return VOS_ERR;
     }
 
-    /* 发送数据大于剩余Buffer大小 */
+    /* ????????????????Buffer???? */
     /*lint -e661*/
     if (uslength > (g_astAppVcomCogfigTab[enDevIndex].ulAppVcomMemSize - pstVcomDev->current_len))
     /*lint +e661*/
@@ -986,7 +986,7 @@ VOS_UINT32  APP_VCOM_Send (
         /*lint +e661*/
     }
 
-    /* 复制到BUFFER */
+    /* ??????BUFFER */
     memcpy(pstVcomDev->pucAppVcomMem + pstVcomDev->current_len, pData, uslength); /* unsafe_function_ignore: memcpy */
     pstVcomDev->current_len += uslength;
 
@@ -998,7 +998,7 @@ VOS_UINT32  APP_VCOM_Send (
         __pm_wakeup_event(&pstVcomDev->stRdWakeLock, APP_VCOM_READ_WAKE_LOCK_LEN);
     }
 
-    /* 释放信号量 */
+    /* ?????????? */
     up(&pstVcomDev->stMsgSendSem);
     wake_up_interruptible(&pstVcomDev->Read_Wait);
 
@@ -1064,7 +1064,7 @@ VOS_VOID  APP_VCOM_ProcAgpsPortCache_InSend (
 
     pstVcomCtx = APP_VCOM_GetVcomCtxAddr(enDevIndex);
 
-    /* 获得设备实体指针 */
+    /* ???????????????? */
     pstVcomDev = APP_VCOM_GetAppVcomDevEntity(enDevIndex);
 
     if ((APP_VCOM_DEV_INDEX_9 == enDevIndex) || (APP_VCOM_DEV_INDEX_12 == enDevIndex))
@@ -1128,7 +1128,7 @@ VOS_VOID APP_VCOM_MNTN_LogPrintf(VOS_UINT32 ulLvl, VOS_CHAR *pcFmt, ...)
     VOS_CHAR                            acBuf[APP_VCOM_TRACE_BUF_LEN] = {0};
     VOS_UINT32                          ulPrintLength = 0;
 
-    /* 格式化输出BUFFER */
+    /* ??????????BUFFER */
     /*lint -e713 -e507 -e530*/
     APP_VCOM_LOG_FORMAT(ulPrintLength, acBuf, APP_VCOM_TRACE_BUF_LEN, pcFmt);
     /*lint +e713 +e507 +e530*/

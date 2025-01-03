@@ -58,7 +58,7 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "PsTypeDef.h"
 #include "AtMnInterface.h"
@@ -69,27 +69,27 @@ extern "C" {
 #include "AtParse.h"
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-#define MTA_CPOS_XML_MAX_LEN            (1024)              /* MTA接收AT下发的XML码流最大长度 */
-#define MTA_CPOSR_XML_MAX_LEN           (1024)              /* MTA向AT上报的XML码流最大长度为1024 */
-#define MTA_SIMLOCK_PASSWORD_LEN        (16)                /* 锁网锁卡解锁密码的长度 */
-#define MTA_MAX_EPDU_NAME_LEN           (32)                /* EPDU码流上报中Name的长度 */
-#define MTA_MAX_EPDU_BODY_LEN           (500)               /* EPDU码流大小 */
+#define MTA_CPOS_XML_MAX_LEN            (1024)              /* MTA????AT??????XML???????????? */
+#define MTA_CPOSR_XML_MAX_LEN           (1024)              /* MTA??AT??????XML??????????????1024 */
+#define MTA_SIMLOCK_PASSWORD_LEN        (16)                /* ?????????????????????? */
+#define MTA_MAX_EPDU_NAME_LEN           (32)                /* EPDU??????????Name?????? */
+#define MTA_MAX_EPDU_BODY_LEN           (500)               /* EPDU???????? */
 
 #define MTA_CLIENTID_BROADCAST          (0xFFFF)
 #define MTA_INVALID_TAB_INDEX           (0x00)
 
 
-#define AT_MTA_WRR_AUTOTEST_MAX_PARA_NUM          (10) /* autotest命令下发参数最大个数 */
-#define MTA_AT_WRR_AUTOTEST_MAX_RSULT_NUM         (20) /* autotest命令上报结果最大个数 */
-#define MTA_AT_WRR_ONE_MEANRPT_MAX_CELL_NUM       (8)  /* 一次测量报告中小区最大个数 */
-#define MTA_AT_WRR_MAX_MEANRPT_NUM                (10) /* 上报最近测量报告的最大个数 */
+#define AT_MTA_WRR_AUTOTEST_MAX_PARA_NUM          (10) /* autotest???????????????????? */
+#define MTA_AT_WRR_AUTOTEST_MAX_RSULT_NUM         (20) /* autotest???????????????????? */
+#define MTA_AT_WRR_ONE_MEANRPT_MAX_CELL_NUM       (8)  /* ?????????????????????????? */
+#define MTA_AT_WRR_MAX_MEANRPT_NUM                (10) /* ?????????????????????????? */
 
 #define MTA_AT_WRR_MAX_NCELL_NUM                  (8)
 
 #define AT_MTA_GAS_AUTOTEST_MAX_PARA_NUM          (10)
-#define MTA_AT_GAS_AUTOTEST_MAX_RSULT_NUM         (20) /* autotest命令上报结果最大个数 */
+#define MTA_AT_GAS_AUTOTEST_MAX_RSULT_NUM         (20) /* autotest???????????????????? */
 
 #define AT_MTA_RPT_CFG_MAX_SIZE                   (8)
 
@@ -121,8 +121,8 @@ extern "C" {
 
 #define MTA_PMU_MAX_DIE_SN_LEN              (20)
 
-#define AT_MAX_RS_INFO_NUM                  (32)    /* LRRC最大RS信息个数 */
-#define AT_RS_INFO_MULTI                    (100)   /* LRRC将RSRP、RSRQ的值乘100，再报给MTA */
+#define AT_MAX_RS_INFO_NUM                  (32)    /* LRRC????RS???????? */
+#define AT_RS_INFO_MULTI                    (100)   /* LRRC??RSRP??RSRQ??????100????????MTA */
 
 #define AT_MTA_PSEUCELL_PLMN_LEN_FIVE       (5)
 #define AT_MTA_PSEUCELL_PLMN_LEN_SIX        (6)
@@ -139,31 +139,31 @@ extern "C" {
 #define AT_MTA_EPDU_CONTENT_LENGTH_MAX      (250)
 #define AT_MTA_EPDU_CONTENT_STRING_LEN_MAX  (500)
 
-#define AT_MTA_MAX_BAND_NUM                 (8)     /* 最多支持8个Band */
-#define AT_MTA_BAND_INFO_OFFSET             (3)     /* band信息偏移参数值 */
-#define AT_MTA_MAX_SUB_BAND_NUM             (4)     /* 每个Band的频率可以分为4个子BAND */
-#define AT_MTA_BAND_INFO_LEN                (72)    /* 每个Band信息的长度信息 */
+#define AT_MTA_MAX_BAND_NUM                 (8)     /* ????????8??Band */
+#define AT_MTA_BAND_INFO_OFFSET             (3)     /* band?????????????? */
+#define AT_MTA_MAX_SUB_BAND_NUM             (4)     /* ????Band??????????????4????BAND */
+#define AT_MTA_BAND_INFO_LEN                (72)    /* ????Band?????????????? */
 #define MTA_AT_CA_MAX_CELL_NUM              (8)
 #define MTA_AT_UTC_MAX_LENGTH               (21)
 
-#define MTA_AT_BOOSTER_IND_MAX_NUM          (248)      /* Booster特性最多支持LRRC给MTA上报248字节码流 */
-#define MTA_AT_BOOSTER_QRY_CNF_MAX_NUM      (40)      /* Booster特性最多支持查询结果字节码流 */
+#define MTA_AT_BOOSTER_IND_MAX_NUM          (248)      /* Booster????????????LRRC??MTA????248???????? */
+#define MTA_AT_BOOSTER_QRY_CNF_MAX_NUM      (40)      /* Booster???????????????????????????? */
 
 #define MTA_AT_EPS_NETWORK_BYTE             (2)
 
 #define MTA_AT_MAX_STATEII_LEVEL_ITEM          4
 
-#define AT_MTA_VERSION_INFO_LEN             (10)      /* 机器学习模型中版本号对应的长度 */
+#define AT_MTA_VERSION_INFO_LEN             (10)      /* ?????????????????????????????? */
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum AT_MTA_MSG_TYPE_ENUM
 {
-    /* 消息名称 */                      /* 消息ID */        /* 备注, 生成ASN */
-    /* AT发给MTA的消息 */
+    /* ???????? */                      /* ????ID */        /* ????, ????ASN */
+    /* AT????MTA?????? */
     ID_AT_MTA_CPOS_SET_REQ              = 0x0000,           /* _H2ASN_MsgChoice AT_MTA_CPOS_REQ_STRU        */
     ID_AT_MTA_CGPSCLOCK_SET_REQ         = 0x0001,           /* _H2ASN_MsgChoice AT_MTA_CGPSCLOCK_REQ_STRU   */
     ID_AT_MTA_SIMLOCKUNLOCK_SET_REQ     = 0x0003,           /* _H2ASN_MsgChoice AT_MTA_SIMLOCKUNLOCK_REQ_STRU */
@@ -358,9 +358,9 @@ enum AT_MTA_MSG_TYPE_ENUM
 #endif
     ID_AT_MTA_CDMA_MODEM_CAP_SET_REQ    = 0x0090,
     ID_AT_MTA_CDMA_CAP_RESUME_SET_REQ   = 0x0091,
-    ID_AT_MTA_NV_REFRESH_RSP             = 0x2002,           /* 防止AT->MTA新增消息和ID_MTA_NV_REFRESH_RSP取值重复*/
+    ID_AT_MTA_NV_REFRESH_RSP             = 0x2002,           /* ????AT->MTA??????????ID_MTA_NV_REFRESH_RSP????????*/
 
-    /* MTA发给AT的消息 */
+    /* MTA????AT?????? */
     ID_MTA_AT_CPOS_SET_CNF              = 0x1000,           /* _H2ASN_MsgChoice MTA_AT_CPOS_CNF_STRU        */
     ID_MTA_AT_CGPSCLOCK_SET_CNF         = 0x1001,           /* _H2ASN_MsgChoice MTA_AT_CGPSCLOCK_CNF_STRU   */
     ID_MTA_AT_CPOSR_IND                 = 0x1002,           /* _H2ASN_MsgChoice MTA_AT_CPOSR_IND_STRU       */
@@ -603,7 +603,7 @@ enum AT_MTA_MSG_TYPE_ENUM
 
     ID_MTA_AT_PSEUD_BTS_IDENT_IND       = 0x1102,
 
-    /* 最后一条消息 */
+    /* ???????????? */
     ID_AT_MTA_MSG_TYPE_BUTT
 
 };
@@ -612,33 +612,33 @@ typedef VOS_UINT32 AT_MTA_MSG_TYPE_ENUM_UINT32;
 
 enum MTA_AT_RESULT_ENUM
 {
-    /* 与AT模块对应的标准错误码 */
-    MTA_AT_RESULT_NO_ERROR                      = 0x000000,                     /* 消息处理正常 */
-    MTA_AT_RESULT_ERROR,                                                        /* 消息处理出错 */
+    /* ??AT???????????????????? */
+    MTA_AT_RESULT_NO_ERROR                      = 0x000000,                     /* ???????????? */
+    MTA_AT_RESULT_ERROR,                                                        /* ???????????? */
     MTA_AT_RESULT_INCORRECT_PARAMETERS,
     MTA_AT_RESULT_OPTION_TIMEOUT,
-    MTA_AT_RESULT_FUNC_DISABLE,                                                 /* 消息处理功能关闭 */
-    /* 预留对应AT标准命令错误码 */
+    MTA_AT_RESULT_FUNC_DISABLE,                                                 /* ???????????????? */
+    /* ????????AT?????????????? */
 
-    /* 装备命令特有错误码 */
+    /* ?????????????????? */
     MTA_AT_RESULT_DEVICE_ERROR_BASE             = 0x100000,
-    MTA_AT_RESULT_DEVICE_SEC_IDENTIFY_FAIL,                                     /* 产线鉴权失败 */
-    MTA_AT_RESULT_DEVICE_SEC_SIGNATURE_FAIL,                                    /* 签名校验失败 */
-    MTA_AT_RESULT_DEVICE_SEC_DK_INCORRECT,                                      /* 端口密码错误 */
-    MTA_AT_RESULT_DEVICE_SEC_UNLOCK_KEY_INCORRECT,                              /* 解锁密码错误 */
-    MTA_AT_RESULT_DEVICE_SEC_PH_PHYNUM_LEN_ERROR,                               /* 物理号长度错误 */
-    MTA_AT_RESULT_DEVICE_SEC_PH_PHYNUM_VALUE_ERROR,                             /* 物理号码错误 */
-    MTA_AT_RESULT_DEVICE_SEC_PH_PHYNUM_TYPE_ERROR,                              /* 物理号类型错误 */
-    MTA_AT_RESULT_DEVICE_SEC_RSA_ENCRYPT_FAIL,                                  /* RSA加密失败 */
-    MTA_AT_RESULT_DEVICE_SEC_RSA_DECRYPT_FAIL,                                  /* RSA解密失败 */
-    MTA_AT_RESULT_DEVICE_SEC_GET_RAND_NUMBER_FAIL,                              /* 获取随机数失败(crypto_rand) */
-    MTA_AT_RESULT_DEVICE_SEC_WRITE_HUK_FAIL,                                    /* HUK写入错误 */
-    MTA_AT_RESULT_DEVICE_SEC_FLASH_ERROR,                                       /* Flash错误 */
-    MTA_AT_RESULT_DEVICE_SEC_NV_ERROR,                                          /* NV读写错误 */
-    MTA_AT_RESULT_DEVICE_SEC_OTHER_ERROR,                                       /* 其它错误 */
+    MTA_AT_RESULT_DEVICE_SEC_IDENTIFY_FAIL,                                     /* ???????????? */
+    MTA_AT_RESULT_DEVICE_SEC_SIGNATURE_FAIL,                                    /* ???????????? */
+    MTA_AT_RESULT_DEVICE_SEC_DK_INCORRECT,                                      /* ???????????? */
+    MTA_AT_RESULT_DEVICE_SEC_UNLOCK_KEY_INCORRECT,                              /* ???????????? */
+    MTA_AT_RESULT_DEVICE_SEC_PH_PHYNUM_LEN_ERROR,                               /* ?????????????? */
+    MTA_AT_RESULT_DEVICE_SEC_PH_PHYNUM_VALUE_ERROR,                             /* ???????????? */
+    MTA_AT_RESULT_DEVICE_SEC_PH_PHYNUM_TYPE_ERROR,                              /* ?????????????? */
+    MTA_AT_RESULT_DEVICE_SEC_RSA_ENCRYPT_FAIL,                                  /* RSA???????? */
+    MTA_AT_RESULT_DEVICE_SEC_RSA_DECRYPT_FAIL,                                  /* RSA???????? */
+    MTA_AT_RESULT_DEVICE_SEC_GET_RAND_NUMBER_FAIL,                              /* ??????????????(crypto_rand) */
+    MTA_AT_RESULT_DEVICE_SEC_WRITE_HUK_FAIL,                                    /* HUK???????? */
+    MTA_AT_RESULT_DEVICE_SEC_FLASH_ERROR,                                       /* Flash???? */
+    MTA_AT_RESULT_DEVICE_SEC_NV_ERROR,                                          /* NV???????? */
+    MTA_AT_RESULT_DEVICE_SEC_OTHER_ERROR,                                       /* ???????? */
 
 
-    /* 私有命令特有错误码 */
+    /* ?????????????????? */
     MTA_AT_RESULT_PRICMD_ERROR_BASE             = 0x200000,
 
     MTA_AT_RESULT_BUTT
@@ -667,11 +667,11 @@ typedef VOS_UINT32 MTA_AT_CPOS_OPERATE_TYPE_ENUM_UINT32;
 
 enum AT_MTA_PERS_CATEGORY_ENUM
 {
-    AT_MTA_PERS_CATEGORY_NETWORK                    = 0x00,                     /* Category: 锁网 */
-    AT_MTA_PERS_CATEGORY_NETWORK_SUBSET             = 0x01,                     /* Category: 锁子网 */
-    AT_MTA_PERS_CATEGORY_SERVICE_PROVIDER           = 0x02,                     /* Category: 锁SP */
-    AT_MTA_PERS_CATEGORY_CORPORATE                  = 0x03,                     /* Category: 锁团体 */
-    AT_MTA_PERS_CATEGORY_SIM_USIM                   = 0x04,                     /* Category: 锁(U)SIM卡 */
+    AT_MTA_PERS_CATEGORY_NETWORK                    = 0x00,                     /* Category: ???? */
+    AT_MTA_PERS_CATEGORY_NETWORK_SUBSET             = 0x01,                     /* Category: ?????? */
+    AT_MTA_PERS_CATEGORY_SERVICE_PROVIDER           = 0x02,                     /* Category: ??SP */
+    AT_MTA_PERS_CATEGORY_CORPORATE                  = 0x03,                     /* Category: ?????? */
+    AT_MTA_PERS_CATEGORY_SIM_USIM                   = 0x04,                     /* Category: ??(U)SIM?? */
 
     AT_MTA_PERS_CATEGORY_BUTT
 };
@@ -680,9 +680,9 @@ typedef VOS_UINT8 AT_MTA_PERS_CATEGORY_ENUM_UINT8;
 
 enum AT_MTA_RPT_GENERAL_CTRL_TYPE_ENUM
 {
-    AT_MTA_RPT_GENERAL_CONTROL_NO_REPORT      = 0x00,                           /* 禁止所有的主动上报 */
-    AT_MTA_RPT_GENERAL_CONTROL_REPORT         = 0x01,                           /* 打开所有的主动上报 */
-    AT_MTA_RPT_GENERAL_CONTROL_CUSTOM         = 0x02,                           /* 按BIT位控制对应命令的主动上报 */
+    AT_MTA_RPT_GENERAL_CONTROL_NO_REPORT      = 0x00,                           /* ?????????????????? */
+    AT_MTA_RPT_GENERAL_CONTROL_REPORT         = 0x01,                           /* ?????????????????? */
+    AT_MTA_RPT_GENERAL_CONTROL_CUSTOM         = 0x02,                           /* ??BIT???????????????????????? */
 
     AT_MTA_RPT_GENERAL_CONTROL_BUTT
 };
@@ -691,7 +691,7 @@ typedef VOS_UINT8 AT_MTA_RPT_GENERAL_CTRL_TYPE_ENUM_UINT8;
 
 enum AT_MTA_RPT_SET_TYPE_ENUM
 {
-    AT_MTA_SET_MODE_RPT_TYPE            = 0,                                 /* Category: 设置模式变化是否主动上报 */
+    AT_MTA_SET_MODE_RPT_TYPE            = 0,                                 /* Category: ???????????????????????? */
     AT_MTA_SET_SRVST_RPT_TYPE,
     AT_MTA_SET_RSSI_RPT_TYPE,
     AT_MTA_SET_TIME_RPT_TYPE,
@@ -723,17 +723,17 @@ typedef VOS_UINT32 AT_MTA_RPT_QRY_TYPE_ENUM_UINT32;
 
 enum AT_MTA_CMD_RPT_FLG_ENUM
 {
-    AT_MTA_CMD_RPT_FLG_OFF              = 0,                        /* AT命令不主动上报 */
-    AT_MTA_CMD_RPT_FLG_ON,                                          /* AT命令主动上报 */
+    AT_MTA_CMD_RPT_FLG_OFF              = 0,                        /* AT?????????????? */
+    AT_MTA_CMD_RPT_FLG_ON,                                          /* AT???????????? */
     AT_MTA_CMD_RPT_FLG_BUTT
 };
 typedef VOS_UINT8 AT_MTA_CMD_RPT_FLG_ENUM_UINT8;
 
 enum AT_MTA_CLEAR_FREQ_FLG_ENUM
 {
-    AT_MTA_CLEAR_FREQ_FLG_NOT_CSG_HISTORY_FREQ              = 0,                /* 清除非CSG历史频点 */
-    AT_MTA_CLEAR_FREQ_FLG_CSG_HISTORY_FREQ,                                     /* 清除CSG历史频点 */
-    AT_MTA_CLEAR_FREQ_FLG_ALL_FREQ,                                         /* 清除所有历史频点 */
+    AT_MTA_CLEAR_FREQ_FLG_NOT_CSG_HISTORY_FREQ              = 0,                /* ??????CSG???????? */
+    AT_MTA_CLEAR_FREQ_FLG_CSG_HISTORY_FREQ,                                     /* ????CSG???????? */
+    AT_MTA_CLEAR_FREQ_FLG_ALL_FREQ,                                         /* ???????????????? */
     AT_MTA_CLEAR_FREQ_FLG_BUTT
 };
 typedef VOS_UINT8 AT_MTA_CLEAR_FREQ_FLG_ENUM_UINT8;
@@ -754,8 +754,8 @@ typedef VOS_UINT8 AT_MTA_CMD_RATMODE_ENUM_UINT8;
 
 enum MTA_AT_JAM_RESULT_ENUM
 {
-    MTA_AT_JAM_RESULT_JAM_DISAPPEARED        = 0x00,                            /* 状态正常无干扰 */
-    MTA_AT_JAM_RESULT_JAM_DISCOVERED,                                           /* 干扰存在 */
+    MTA_AT_JAM_RESULT_JAM_DISAPPEARED        = 0x00,                            /* ?????????????? */
+    MTA_AT_JAM_RESULT_JAM_DISCOVERED,                                           /* ???????? */
 
     MTA_AT_JAM_RESULT_BUTT
 };
@@ -839,12 +839,12 @@ typedef VOS_UINT8 MTA_AT_MBMS_SERVICE_EVENT_ENUM_UINT8;
 
 enum AT_MTA_COEX_BW_TYPE_ENUM
 {
-    AT_MTA_COEX_BAND_WIDTH_6RB          = 0,                                    /* 宽带1.4M */
-    AT_MTA_COEX_BAND_WIDTH_15RB         = 1,                                    /* 宽带3M */
-    AT_MTA_COEX_BAND_WIDTH_25RB         = 2,                                    /* 宽带5M */
-    AT_MTA_COEX_BAND_WIDTH_50RB         = 3,                                    /* 宽带10M */
-    AT_MTA_COEX_BAND_WIDTH_75RB         = 4,                                    /* 宽带15M */
-    AT_MTA_COEX_BAND_WIDTH_100RB        = 5,                                    /* 宽带20M */
+    AT_MTA_COEX_BAND_WIDTH_6RB          = 0,                                    /* ????1.4M */
+    AT_MTA_COEX_BAND_WIDTH_15RB         = 1,                                    /* ????3M */
+    AT_MTA_COEX_BAND_WIDTH_25RB         = 2,                                    /* ????5M */
+    AT_MTA_COEX_BAND_WIDTH_50RB         = 3,                                    /* ????10M */
+    AT_MTA_COEX_BAND_WIDTH_75RB         = 4,                                    /* ????15M */
+    AT_MTA_COEX_BAND_WIDTH_100RB        = 5,                                    /* ????20M */
     AT_MTA_COEX_BAND_WIDTH_BUTT
 };
 typedef VOS_UINT16 AT_MTA_COEX_BW_TYPE_ENUM_UINT16;
@@ -888,8 +888,8 @@ typedef VOS_UINT32 AT_MTA_UE_CENTER_TYPE_ENUM_UINT32;
 
 enum AT_MTA_BODY_SAR_STATE_ENUM
 {
-    AT_MTA_BODY_SAR_OFF                 = 0,                                    /* Body SAR功能关闭 */
-    AT_MTA_BODY_SAR_ON,                                                         /* Body SAR功能开启 */
+    AT_MTA_BODY_SAR_OFF                 = 0,                                    /* Body SAR???????? */
+    AT_MTA_BODY_SAR_ON,                                                         /* Body SAR???????? */
     AT_MTA_BODY_SAR_STATE_BUTT
 };
 typedef VOS_UINT16 AT_MTA_BODY_SAR_STATE_ENUM_UINT16;
@@ -897,8 +897,8 @@ typedef VOS_UINT16 AT_MTA_BODY_SAR_STATE_ENUM_UINT16;
 
 enum MTA_AT_REFCLOCK_STATUS_ENUM
 {
-    MTA_AT_REFCLOCK_UNLOCKED            = 0,                                    /* GPS参考时钟频率非锁定状态 */
-    MTA_AT_REFCLOCK_LOCKED,                                                     /* GPS参考时钟频率锁定状态 */
+    MTA_AT_REFCLOCK_UNLOCKED            = 0,                                    /* GPS?????????????????????? */
+    MTA_AT_REFCLOCK_LOCKED,                                                     /* GPS???????????????????? */
     MTA_AT_REFCLOCK_STATUS_BUTT
 };
 typedef VOS_UINT16 MTA_AT_REFCLOCK_STATUS_ENUM_UINT16;
@@ -906,8 +906,8 @@ typedef VOS_UINT16 MTA_AT_REFCLOCK_STATUS_ENUM_UINT16;
 
 enum MTA_AT_GPHY_XPASS_MODE_ENUM
 {
-    MTA_AT_GPHY_XPASS_MODE_DISABLE      = 0,                                    /* 非XPASS模式，类似高铁 */
-    MTA_AT_GPHY_XPASS_MODE_ENABLE,                                              /* XPASS模式，类似高铁 */
+    MTA_AT_GPHY_XPASS_MODE_DISABLE      = 0,                                    /* ??XPASS?????????????? */
+    MTA_AT_GPHY_XPASS_MODE_ENABLE,                                              /* XPASS?????????????? */
     MTA_AT_GPHY_XPASS_MODE_BUTT
 };
 typedef VOS_UINT16 MTA_AT_GPHY_XPASS_MODE_ENUM_UINT16;
@@ -915,8 +915,8 @@ typedef VOS_UINT16 MTA_AT_GPHY_XPASS_MODE_ENUM_UINT16;
 
 enum MTA_AT_WPHY_HIGHWAY_MODE_ENUM
 {
-    MTA_AT_WPHY_HIGHWAY_MODE_DISABLE    = 0,                                    /* W非高铁模式 */
-    MTA_AT_WPHY_HIGHWAY_MODE_ENABLE,                                            /* W高铁模式 */
+    MTA_AT_WPHY_HIGHWAY_MODE_DISABLE    = 0,                                    /* W?????????? */
+    MTA_AT_WPHY_HIGHWAY_MODE_ENABLE,                                            /* W???????? */
     MTA_AT_WPHY_HIGHWAY_MODE_BUTT
 };
 typedef VOS_UINT16 MTA_AT_WPHY_HIGHWAY_MODE_ENUM_UINT16;
@@ -949,7 +949,7 @@ typedef VOS_UINT32 MTA_AT_NETMON_CELL_INFO_RAT_ENUM_UINT32;
 
 enum MTA_TAF_CTZR_TYPE
 {
-    MTA_TAF_CTZR_OFF            = 0x00,            /* CTZR去使能 */
+    MTA_TAF_CTZR_OFF            = 0x00,            /* CTZR?????? */
     MTA_TAF_CTZR_CTZV           = 0x01,            /* CTZR:CTZV */
     MTA_TAF_CTZR_CTZE           = 0x02,            /* CTZR:CTZE */
     MTA_TAF_CTZR_BUTT
@@ -969,8 +969,8 @@ typedef VOS_UINT32 AT_MTA_AFC_CLK_STATUS_ENUM_UINT32;
 
 enum AT_MTA_XCPOSR_CFG_ENUM
 {
-    AT_MTA_XCPOSR_CFG_DISABLE        = 0,                                       /* 不支持清除缓存 */
-    AT_MTA_XCPOSR_CFG_ENABLE,                                                   /* 支持清除缓存 */
+    AT_MTA_XCPOSR_CFG_DISABLE        = 0,                                       /* ?????????????? */
+    AT_MTA_XCPOSR_CFG_ENABLE,                                                   /* ???????????? */
     AT_MTA_XCPOSR_CFG_BUTT
 };
 typedef VOS_UINT8 AT_MTA_XCPOSR_CFG_ENUM_UNIT8;
@@ -978,8 +978,8 @@ typedef VOS_UINT8 AT_MTA_XCPOSR_CFG_ENUM_UNIT8;
 
 enum AT_MTA_FRAT_IGNITION_ENUM
 {
-    AT_MTA_FRAT_IGNITION_STATT_OFF        = 0,                                  /* 不支持清除缓存 */
-    AT_MTA_FRAT_IGNITION_STATT_ON,                                                   /* 支持清除缓存 */
+    AT_MTA_FRAT_IGNITION_STATT_OFF        = 0,                                  /* ?????????????? */
+    AT_MTA_FRAT_IGNITION_STATT_ON,                                                   /* ???????????? */
     AT_MTA_FRAT_IGNITION_STATT_BUTT
 };
 typedef VOS_UINT8 AT_MTA_FRAT_IGNITION_ENUM_UNIT8;
@@ -1042,8 +1042,8 @@ typedef VOS_UINT8   MTA_AT_TIME_TYPE_ENUM_UINT8;
 
 enum AT_MTA_MODEM_CAP_UPDATE_TYPE_ENUM
 {
-    AT_MTA_MODEM_CAP_UPDATE_TYPE_CDMA_MODEM_SWITCH   = 0x00U,       /* AT^CDMAMODEMSWITCH导致的平台能力更新 */
-    AT_MTA_MODEM_CAP_UPDATE_TYPE_ACTIVE_MODEM        = 0x01U,       /* AT^ACTIVEMODEM导致的平台能力更新 */
+    AT_MTA_MODEM_CAP_UPDATE_TYPE_CDMA_MODEM_SWITCH   = 0x00U,       /* AT^CDMAMODEMSWITCH?????????????????? */
+    AT_MTA_MODEM_CAP_UPDATE_TYPE_ACTIVE_MODEM        = 0x01U,       /* AT^ACTIVEMODEM?????????????????? */
 
     AT_MTA_MODEM_CAP_UPDATE_TYPE_BUTT
 };
@@ -1093,12 +1093,12 @@ typedef VOS_UINT32 AT_MTA_CHR_ALARM_RLAT_OP_ENUM_UINT32;
 
 enum MTA_AT_BAND_WIDTH_ENUM
 {
-    MTA_AT_BAND_WIDTH_1DOT4M                    = 0,            /* 带宽为1.4MHz */
-    MTA_AT_BAND_WIDTH_3M,                                       /* 带宽为3MHz */
-    MTA_AT_BAND_WIDTH_5M,                                       /* 带宽为5MHz */
-    MTA_AT_BAND_WIDTH_10M,                                      /* 带宽为10MHz */
-    MTA_AT_BAND_WIDTH_15M,                                      /* 带宽为15MHz */
-    MTA_AT_BAND_WIDTH_20M,                                      /* 带宽为20MHz */
+    MTA_AT_BAND_WIDTH_1DOT4M                    = 0,            /* ??????1.4MHz */
+    MTA_AT_BAND_WIDTH_3M,                                       /* ??????3MHz */
+    MTA_AT_BAND_WIDTH_5M,                                       /* ??????5MHz */
+    MTA_AT_BAND_WIDTH_10M,                                      /* ??????10MHz */
+    MTA_AT_BAND_WIDTH_15M,                                      /* ??????15MHz */
+    MTA_AT_BAND_WIDTH_20M,                                      /* ??????20MHz */
     MTA_AT_BAND_WIDTH_BUTT
 };
 typedef VOS_UINT8 MTA_AT_BAND_WIDTH_ENUM_UINT8;
@@ -1116,10 +1116,10 @@ enum MTA_AT_FINE_TIME_RAT_ENUM
 typedef VOS_UINT8 MTA_AT_FINE_TIME_RAT_ENUM_UINT8;
 
 /*****************************************************************************
- 结构名    : MTA_AT_PROTOCOL_STATE_ENUM
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 当前的协议状态
+ ??????    : MTA_AT_PROTOCOL_STATE_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  : ??????????????
 *****************************************************************************/
 enum MTA_AT_PROTOCOL_STATE_ENUM
 {
@@ -1131,10 +1131,10 @@ enum MTA_AT_PROTOCOL_STATE_ENUM
 typedef VOS_UINT8 MTA_AT_PROTOCOL_STATE_ENUM_UINT8;
 
 /*****************************************************************************
- 结构名    : AT_MTA_FINETIME_PARA_ENUM
- 协议表格  :
- ASN.1描述 :
- 结构说明  : FINETIME PARA
+ ??????    : AT_MTA_FINETIME_PARA_ENUM
+ ????????  :
+ ASN.1???? :
+ ????????  : FINETIME PARA
 *****************************************************************************/
 enum AT_MTA_FINETIME_PARA_ENUM
 {
@@ -1150,12 +1150,12 @@ typedef VOS_UINT8 AT_MTA_FINETIME_PARA_ENUM_UINT8;
 enum TAF_MTA_NV_CARRIER_OPT_RESULT_ENUM
 {
     TAF_MTA_NV_CARRIER_OPT_NO_ERROR                  = 0x00000000,
-    TAF_MTA_NV_CARRIER_OPT_INVALID_PARA              = 0x10100002, /* 无效的参数 */
-    TAF_MTA_NV_CARRIER_OPT_NOT_FIND_FILE             = 0x10100006, /* 文件不存在 */
-    TAF_MTA_NV_CARRIER_OPT_NOT_FIND_NV               = 0x10100016, /* 没有发现NV */
-    TAF_MTA_NV_CARRIER_OPT_WRITE_NV_TIMEOUT          = 0x10100035, /* 写NV超时,(实际是写入文件系统超时) */
-    TAF_MTA_NV_CARRIER_OPT_WRITE_NV_NOT_SUPPORT_ERR  = 0x10100037, /* 不支持错误 */
-    TAF_MTA_NV_CARRIER_OPT_MODEM_ID_ERROR            = 0x10100039, /* modem id 参数错误 */
+    TAF_MTA_NV_CARRIER_OPT_INVALID_PARA              = 0x10100002, /* ?????????? */
+    TAF_MTA_NV_CARRIER_OPT_NOT_FIND_FILE             = 0x10100006, /* ?????????? */
+    TAF_MTA_NV_CARRIER_OPT_NOT_FIND_NV               = 0x10100016, /* ????????NV */
+    TAF_MTA_NV_CARRIER_OPT_WRITE_NV_TIMEOUT          = 0x10100035, /* ??NV????,(??????????????????????) */
+    TAF_MTA_NV_CARRIER_OPT_WRITE_NV_NOT_SUPPORT_ERR  = 0x10100037, /* ?????????? */
+    TAF_MTA_NV_CARRIER_OPT_MODEM_ID_ERROR            = 0x10100039, /* modem id ???????? */
 
     TAF_MTA_NV_CARRIER_OPT_BUTT
 };
@@ -1174,8 +1174,8 @@ typedef VOS_UINT8 AT_MTA_SMS_DOMAIN_ENUM_UINT8;
 
 enum MTA_AT_TIME_INFO_RPT_OPT_ENUM
 {
-    MTA_AT_TIME_INFO_RPT_OPT_MMINFO                         = 0,                /* ^TIME上报 */
-    MTA_AT_TIME_INFO_RPT_OPT_SIB16TIME                      = 1,                /* ^SIB16TIME上报 */
+    MTA_AT_TIME_INFO_RPT_OPT_MMINFO                         = 0,                /* ^TIME???? */
+    MTA_AT_TIME_INFO_RPT_OPT_SIB16TIME                      = 1,                /* ^SIB16TIME???? */
     MTA_AT_TIME_INFO_RPT_OPT_BUTT
 };
 typedef VOS_UINT8 MTA_AT_TIME_INFO_RPT_OPT_ENUM_UINT8;
@@ -1183,7 +1183,7 @@ typedef VOS_UINT8 MTA_AT_TIME_INFO_RPT_OPT_ENUM_UINT8;
 
 enum AT_MTA_NV_REFRESH_REASON_ENUM
 {
-    AT_MTA_NV_REFRESH_USIM_DEPENDENT                  = 0,       /* 随卡匹配 */
+    AT_MTA_NV_REFRESH_USIM_DEPENDENT                  = 0,       /* ???????? */
     AT_MTA_NV_REFRESH_BUTT
 };
 typedef VOS_UINT8 AT_MTA_NV_REFRESH_REASON_ENUM_UINT8;
@@ -1191,33 +1191,33 @@ typedef VOS_UINT8 AT_MTA_NV_REFRESH_REASON_ENUM_UINT8;
 
 enum AT_MTA_JAM_DETECT_MODE_ENUM
 {
-    AT_MTA_JAM_DETECT_MODE_STOP     = 0,                /* 关闭干扰检测 */
-    AT_MTA_JAM_DETECT_MODE_START    = 1,                /* 启动干扰检测 */
-    AT_MTA_JAM_DETECT_MODE_UPDATE   = 2,                /* 更新干扰检测参数 */
+    AT_MTA_JAM_DETECT_MODE_STOP     = 0,                /* ???????????? */
+    AT_MTA_JAM_DETECT_MODE_START    = 1,                /* ???????????? */
+    AT_MTA_JAM_DETECT_MODE_UPDATE   = 2,                /* ???????????????? */
     AT_MTA_JAM_DETECT_MODE_BUTT
 };
 typedef VOS_UINT8 AT_MTA_JAM_DETECT_MODE_ENUM_UINT8;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *******************************s**********************************************/
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 
 typedef struct
 {
     VOS_MSG_HEADER
-    VOS_UINT32                          ulMsgId;                                /* 消息名 */
+    VOS_UINT32                          ulMsgId;                                /* ?????? */
     AT_APPCTRL_STRU                     stAppCtrl;
-    VOS_UINT8                           aucContent[4];                          /* 消息内容 */
+    VOS_UINT8                           aucContent[4];                          /* ???????? */
 } AT_MTA_MSG_STRU;
 
 
@@ -1231,13 +1231,13 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 命令执行结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????????? */
 } MTA_AT_CPOS_CNF_STRU;
 
 
 typedef struct
 {
-    /* AT向MTA上报的XML码流最大长度为1024，同时还需预留一个字节存放字符串结尾的空字符 */
+    /* AT??MTA??????XML??????????????1024???????????????????????????????????????????? */
     VOS_CHAR                            acXmlText[MTA_CPOSR_XML_MAX_LEN + 1];
     VOS_UINT8                           aucRsv[3];
 } MTA_AT_CPOSR_IND_STRU;
@@ -1251,7 +1251,7 @@ typedef struct
     VOS_UINT8                                    ucID;
     VOS_UINT8                                    ucReserved;
     VOS_UINT8                                    ucNameLength;
-    VOS_UINT8                                    aucName[MTA_MAX_EPDU_NAME_LEN]; /* 预留一位保存'\0' */
+    VOS_UINT8                                    aucName[MTA_MAX_EPDU_NAME_LEN]; /* ????????????'\0' */
     VOS_UINT8                                    ucTotal;
     VOS_UINT8                                    ucIndex;
     VOS_UINT16                                   usDataLength;
@@ -1266,13 +1266,13 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_CGPSCLOCK_ENUM_UINT32        enGpsClockState;                        /* RF芯片GPS时钟状态 */
+    MTA_AT_CGPSCLOCK_ENUM_UINT32        enGpsClockState;                        /* RF????GPS???????? */
 } AT_MTA_CGPSCLOCK_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 命令执行结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????????? */
 
     MTA_AT_MODEM_ID_ENUM_UINT8          enModemId;
     MTA_AT_RAT_MODE_ENUM_UINT8          enRatMode;
@@ -1291,7 +1291,7 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 命令执行结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????????? */
 } MTA_AT_SIMLOCKUNLOCK_CNF_STRU;
 
 
@@ -1299,7 +1299,7 @@ typedef struct
 typedef struct
 {
     VOS_UINT8                           ucRatType;
-    VOS_UINT8                           aucReserve[3];                          /* 预留后续使用 */
+    VOS_UINT8                           aucReserve[3];                          /* ???????????? */
 }AT_MTA_QRY_NMR_REQ_STRU;
 
 
@@ -1308,8 +1308,8 @@ typedef struct
     MTA_AT_RESULT_ENUM_UINT32         enResult;
     VOS_UINT8                         ucTotalIndex;
     VOS_UINT8                         ucCurrIndex;
-    VOS_UINT16                        usNMRLen;                                 /* NMR数据长度 */
-    VOS_UINT8                         aucNMRData[4];                            /* NMR数据首地址 */
+    VOS_UINT16                        usNMRLen;                                 /* NMR???????? */
+    VOS_UINT8                         aucNMRData[4];                            /* NMR?????????? */
 }MTA_AT_QRY_NMR_CNF_STRU;
 
 
@@ -1317,8 +1317,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                                   ucOffsetFlg;                    /* 0:灭屏；1:亮屏*/
-    VOS_UINT8                                   aucReserve[3];                  /* 预留后续使用 */
+    VOS_UINT8                                   ucOffsetFlg;                    /* 0:??????1:????*/
+    VOS_UINT8                                   aucReserve[3];                  /* ???????????? */
 }AT_MTA_RESEL_OFFSET_CFG_SET_NTF_STRU;
 
 
@@ -1381,7 +1381,7 @@ typedef struct
 typedef struct
 {
      VOS_UINT32                     ulCellNum;
-     MTA_AT_WRR_CELLINFO_STRU       astWCellInfo[MTA_AT_WRR_MAX_NCELL_NUM];         /*最多支持W 8个邻区的查询*/
+     MTA_AT_WRR_CELLINFO_STRU       astWCellInfo[MTA_AT_WRR_MAX_NCELL_NUM];         /*????????W 8????????????*/
 
 } MTA_AT_WRR_CELLINFO_RSLT_STRU;
 
@@ -1394,7 +1394,7 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                      usEventId;                                  /*对应的事件类型*/
+    VOS_UINT16                      usEventId;                                  /*??????????????*/
     VOS_UINT16                      usCellNum;
     VOS_UINT16                      ausPrimaryScramCode[MTA_AT_WRR_ONE_MEANRPT_MAX_CELL_NUM];
 }MTA_AT_WRR_MEANRPT_STRU;
@@ -1475,7 +1475,7 @@ typedef struct
     VOS_INT16                           sCpichRscp;
     VOS_INT16                           sCpichEcNo;
     VOS_UINT32                          ulCellId;
-    VOS_UINT8                           ucRssi;                                 /* Rssi, GU下使用*/
+    VOS_UINT8                           ucRssi;                                 /* Rssi, GU??????*/
     VOS_UINT8                           aucReserve[3];
 
 }AT_MTA_ANQUERY_2G_3G_PARA_STRU;
@@ -1483,28 +1483,28 @@ typedef struct
 
 typedef struct
 {
-    VOS_INT16                           sRsrp;                                  /* 范围：(-141,-44), 99为无效 */
-    VOS_INT16                           sRsrq;                                  /* 范围：(-40, -6) , 99为无效 */
-    VOS_INT16                           sRssi;                                  /* Rssi, LTE下使用*/
+    VOS_INT16                           sRsrp;                                  /* ??????(-141,-44), 99?????? */
+    VOS_INT16                           sRsrq;                                  /* ??????(-40, -6) , 99?????? */
+    VOS_INT16                           sRssi;                                  /* Rssi, LTE??????*/
     VOS_UINT8                           aucReserve[2];
 }AT_MTA_ANQUERY_4G_PARA_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                               enServiceSysMode;                       /* 指示上报模式*/
+    VOS_UINT8                               enServiceSysMode;                       /* ????????????*/
     VOS_UINT8                               aucReserve[3];
     union
     {
-        AT_MTA_ANQUERY_2G_3G_PARA_STRU      st2G3GCellSignInfo;                     /* Rssi, GU下使用*/
-        AT_MTA_ANQUERY_4G_PARA_STRU         st4GCellSignInfo;                       /* Rssi, LTE下使用*/
+        AT_MTA_ANQUERY_2G_3G_PARA_STRU      st2G3GCellSignInfo;                     /* Rssi, GU??????*/
+        AT_MTA_ANQUERY_4G_PARA_STRU         st4GCellSignInfo;                       /* Rssi, LTE??????*/
     }u;
 }AT_MTA_ANQUERY_PARA_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* ???????? */
     AT_MTA_ANQUERY_PARA_STRU            stAntennaInfo;
 }MTA_AT_ANTENNA_INFO_QRY_CNF_STRU;
 
@@ -1518,32 +1518,32 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* ???????? */
     AT_MTA_CSNR_PARA_STRU              stCsnrPara;
 }MTA_AT_CSNR_QRY_CNF_STRU;
 
 /*****************************************************************************
- 结构名    : AT_MTA_CSQLVL_PARA_STRU
- 结构说明  : CSQLVL查询操作的结果上报结构
-             包括RSCP 等级和RSCP 的绝对值
+ ??????    : AT_MTA_CSQLVL_PARA_STRU
+ ????????  : CSQLVL??????????????????????
+             ????RSCP ??????RSCP ????????
 *******************************************************************************/
 typedef struct
 {
-    VOS_UINT16                          usRscp;                                 /* RSCP 等级 */
-    VOS_UINT16                          usLevel;                                /* RSCP 的绝对值 */
+    VOS_UINT16                          usRscp;                                 /* RSCP ???? */
+    VOS_UINT16                          usLevel;                                /* RSCP ???????? */
 }AT_MTA_CSQLVL_PARA_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           enRssilv;                         /* CSQLVLEX查询获取到的信号格数 */
-    VOS_UINT8                           enBer;                            /* 比特误码率百分比，暂时不支持BER查询，填99*/
+    VOS_UINT8                           enRssilv;                         /* CSQLVLEX???????????????????? */
+    VOS_UINT8                           enBer;                            /* ????????????????????????????BER????????99*/
 }AT_MTA_CSQLVLEXT_PARA_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* ???????? */
     AT_MTA_CSQLVL_PARA_STRU             stCsqLvlPara;
     AT_MTA_CSQLVLEXT_PARA_STRU          stCsqLvlExtPara;
     VOS_UINT8                           aucReserved[2];
@@ -1552,7 +1552,7 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????? */
     AT_MTA_FRAT_IGNITION_ENUM_UNIT8     enFratIgnitionState;                    /* IgnitionState */
     VOS_UINT8                           aucReserved[3];
 }MTA_AT_FRAT_IGNITION_QRY_CNF_STRU;
@@ -1567,43 +1567,43 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 查询操作结果*/
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ????????????*/
 } MTA_AT_FRAT_IGNITION_SET_CNF_STRU;
 
 
 
 typedef struct
 {
-    AT_MTA_BODY_SAR_STATE_ENUM_UINT16   enState;       /* Body SAR状态 */
-    VOS_UINT16                          usRsv;         /* 保留位 */
-    MTA_BODY_SAR_PARA_STRU              stBodySARPara; /* Body SAR功率门限参数 */
+    AT_MTA_BODY_SAR_STATE_ENUM_UINT16   enState;       /* Body SAR???? */
+    VOS_UINT16                          usRsv;         /* ?????? */
+    MTA_BODY_SAR_PARA_STRU              stBodySARPara; /* Body SAR???????????? */
 }AT_MTA_BODY_SAR_SET_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* ???????? */
 }MTA_AT_RESULT_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           aucReserved[4]; /* 保留位 */
+    VOS_UINT8                           aucReserved[4]; /* ?????? */
 }AT_MTA_RESERVE_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucCssiRptFlg;                           /* 禁止或使能+CSSI的补充业务通知 0:不上报;1:上报 */
-    VOS_UINT8                           ucCssuRptFlg;                           /* 禁止或使能+CSSU的补充业务通知 0:不上报;1:上报 */
+    VOS_UINT8                           ucCssiRptFlg;                           /* ??????????+CSSI?????????????? 0:??????;1:???? */
+    VOS_UINT8                           ucCssuRptFlg;                           /* ??????????+CSSU?????????????? 0:??????;1:???? */
 } AT_MTA_CSSN_RPT_FLG_STRU;
 
 
 typedef struct
 {
-    AT_MTA_RPT_GENERAL_CTRL_TYPE_ENUM_UINT8     enCurcRptType;                  /* 主动上报模式，0:关闭所有的主动上报；1:打开所有的主动上报；2:根据RptCfg参数决定对应的bit位是否主动上报 */
-    VOS_UINT8                                   aucReserve[3];                  /* 保留字段 */
-    VOS_UINT8                                   aucRptCfg[AT_MTA_RPT_CFG_MAX_SIZE];                   /* 64bit主动上报标识 */
+    AT_MTA_RPT_GENERAL_CTRL_TYPE_ENUM_UINT8     enCurcRptType;                  /* ??????????????0:????????????????????1:????????????????????2:????RptCfg??????????????bit?????????????? */
+    VOS_UINT8                                   aucReserve[3];                  /* ???????? */
+    VOS_UINT8                                   aucRptCfg[AT_MTA_RPT_CFG_MAX_SIZE];                   /* 64bit???????????? */
 } AT_MTA_CURC_SET_NOTIFY_STRU;
 
 
@@ -1615,24 +1615,24 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_RPT_SET_TYPE_ENUM_UINT32     enReqType;                              /* 请求类型 */
+    AT_MTA_RPT_SET_TYPE_ENUM_UINT32     enReqType;                              /* ???????? */
 
     union
     {
-        VOS_UINT8                       ucModeRptFlg;                           /* mode是否主动上报标识 0:不上报，1:上报 */
-        VOS_UINT8                       ucSrvstRptFlg;                          /* service status是否主动上报标识 */
-        VOS_UINT8                       ucRssiRptFlg;                           /* rssi是否主动上报标识 */
-        VOS_UINT8                       ucTimeRptFlg;                           /* time是否主动上报标识 */
-        VOS_UINT8                       ucCtzrRptFlg;                           /* ctzr是否主动上报标识 */
-        VOS_UINT8                       ucDsFlowRptFlg;                         /* 流量是否主动上报标识 */
-        VOS_UINT8                       ucSimstRptFlg;                          /* sim卡状态是否主动上报标识 */
-        VOS_UINT8                       ucCregRptFlg;                           /* cs域注册状态是否主动上报标识 */
-        VOS_UINT8                       ucCgregRptFlg;                          /* ps域注册状态是否主动上报标识 */
-        VOS_UINT8                       ucCeregRptFlg;                          /* L注册状态是否主动上报标识 */
-        VOS_UINT8                       ucCsidRptFlg;                           /* CSID是否主动上报标识 */
-        VOS_UINT8                       ucClocinfoRptFlg;                       /* CLOCINFO是否主动上报标识 */
-        VOS_UINT8                       ucMtReattachRptFlg;                     /* MTREATTACH是否主动上报标识 */
-        VOS_UINT8                       ucCenfsRptFlg;                          /* ^CENFS是否主动上报标识 0:不上报，1:上报 */
+        VOS_UINT8                       ucModeRptFlg;                           /* mode???????????????? 0:????????1:???? */
+        VOS_UINT8                       ucSrvstRptFlg;                          /* service status???????????????? */
+        VOS_UINT8                       ucRssiRptFlg;                           /* rssi???????????????? */
+        VOS_UINT8                       ucTimeRptFlg;                           /* time???????????????? */
+        VOS_UINT8                       ucCtzrRptFlg;                           /* ctzr???????????????? */
+        VOS_UINT8                       ucDsFlowRptFlg;                         /* ???????????????????? */
+        VOS_UINT8                       ucSimstRptFlg;                          /* sim?????????????????????? */
+        VOS_UINT8                       ucCregRptFlg;                           /* cs?????????????????????????? */
+        VOS_UINT8                       ucCgregRptFlg;                          /* ps?????????????????????????? */
+        VOS_UINT8                       ucCeregRptFlg;                          /* L???????????????????????? */
+        VOS_UINT8                       ucCsidRptFlg;                           /* CSID???????????????? */
+        VOS_UINT8                       ucClocinfoRptFlg;                       /* CLOCINFO???????????????? */
+        VOS_UINT8                       ucMtReattachRptFlg;                     /* MTREATTACH???????????????? */
+        VOS_UINT8                       ucCenfsRptFlg;                          /* ^CENFS???????????????? 0:????????1:???? */
     }u;
 
     VOS_UINT8                           aucReserve[3];
@@ -1676,7 +1676,7 @@ typedef struct
 
 typedef struct
 {
-    MODEM_ID_ENUM_UINT16                enCdmaModemId;       /* cdma能力所在的modem id */
+    MODEM_ID_ENUM_UINT16                enCdmaModemId;       /* cdma??????????modem id */
     VOS_UINT8                           aucRsv[2];
     PLATAFORM_RAT_CAPABILITY_STRU       stModem0Platform;
     PLATAFORM_RAT_CAPABILITY_STRU       stModem1Platform;
@@ -1694,7 +1694,7 @@ typedef struct
 {
     VOS_UINT16                          usPidIndex;
     VOS_UINT8                           aucRsv[2];
-    VOS_UINT32                          ulLen; /* 有效字符的个数 */
+    VOS_UINT32                          ulLen; /* ?????????????? */
     VOS_UINT8                           aucDate[AT_CMD_COMM_BOOSTER_BS_MAX_LENGTH];
 } AT_MTA_COMM_BOOSTER_SET_REQ_STRU;
 
@@ -1703,17 +1703,17 @@ typedef struct
 {
     VOS_UINT16                          usPidIndex;
     VOS_UINT8                           aucRsv[2];
-    VOS_UINT32                          ulLen; /* 有效字符的个数 */
+    VOS_UINT32                          ulLen; /* ?????????????? */
     VOS_UINT8                           aucDate[AT_CMD_COMM_BOOSTER_BS_MAX_LENGTH];
 } AT_MTA_COMM_BOOSTER_QUERY_REQ_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucInternalResultFlag;      /* 内部原因标识 */
-    VOS_UINT8                           ucExternalResultFlag;      /* 外部原因标识 */
-    VOS_UINT8                           aucRsv[2];                 /* 保留位 */
-    VOS_UINT32                          ulResult;                  /* 结果 */
+    VOS_UINT8                           ucInternalResultFlag;      /* ???????????? */
+    VOS_UINT8                           ucExternalResultFlag;      /* ???????????? */
+    VOS_UINT8                           aucRsv[2];                 /* ?????? */
+    VOS_UINT32                          ulResult;                  /* ???? */
 }MTA_AT_COMM_BOOSTER_SET_CNF_STRU;
 
 
@@ -1721,7 +1721,7 @@ typedef struct
 {
     VOS_UINT8                           ucResult;
     VOS_UINT8                           aucRsv[3];
-    VOS_UINT32                          ulLen;  /* 有效字符的个数 */
+    VOS_UINT32                          ulLen;  /* ?????????????? */
     VOS_UINT8                           aucDate[MTA_AT_BOOSTER_QRY_CNF_MAX_NUM];
 }MTA_AT_COMM_BOOSTER_QUERY_CNF_STRU;
 
@@ -1737,7 +1737,7 @@ typedef struct
 {
     VOS_UINT32                          ulPidIndex;
     VOS_UINT32                          ulLen;
-    VOS_UINT8                           aucBoosterIndData[MTA_AT_BOOSTER_IND_MAX_NUM];  /* Booster特性主动上报参数，TLV格式，满足四字节对齐 */
+    VOS_UINT8                           aucBoosterIndData[MTA_AT_BOOSTER_IND_MAX_NUM];  /* Booster??????????????????TLV???????????????????? */
 } MTA_AT_COMM_BOOSTER_IND_STRU;
 
 
@@ -1750,9 +1750,9 @@ typedef struct
 typedef struct
 {
     VOS_UINT16                          usReqType;
-    VOS_UINT16                          usTempRange;                 /*温区范围(极高温，高温，常温，低温，极低温)，"11111"代表所有温区*/
-    VOS_INT16                           sPpmOffset;                  /*样本偏移量*/
-    VOS_INT16                           sTimeOffset;                 /*时间偏移量*/
+    VOS_UINT16                          usTempRange;                 /*????????(????????????????????????????????)??"11111"????????????*/
+    VOS_INT16                           sPpmOffset;                  /*??????????*/
+    VOS_INT16                           sTimeOffset;                 /*??????????*/
 
 }AT_MTA_SET_SAMPLE_REQ_STRU;
 
@@ -1767,8 +1767,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucPseudRat;                            /* 伪基站制式 1.GSM  2.WCDMA  3.LTE */
-    VOS_UINT8                           ucPseudBtsQryType;                     /* 查询参数 1.查询伪基站是否支持  2.查询伪基站拦截次数 */
+    VOS_UINT8                           ucPseudRat;                            /* ?????????? 1.GSM  2.WCDMA  3.LTE */
+    VOS_UINT8                           ucPseudBtsQryType;                     /* ???????? 1.??????????????????  2.?????????????????? */
     VOS_UINT8                           aucRsv[2];
     
 }AT_MTA_SET_PSEUDBTS_REQ_STRU;
@@ -1776,14 +1776,14 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32               enResult;                               /* NO_ERROR:成功，其他:失败 */
-    VOS_UINT8                               ucPseudBtsIdentType;                    /* 查询参数 1.查询伪基站是否支持  2.查询伪基站拦截次数 */
+    MTA_AT_RESULT_ENUM_UINT32               enResult;                               /* NO_ERROR:??????????:???? */
+    VOS_UINT8                               ucPseudBtsIdentType;                    /* ???????? 1.??????????????????  2.?????????????????? */
     VOS_UINT8                               aucRsv[3];
 
     union
     {
-        VOS_UINT32                          ulPseudBtsIdentTimes;                   /* 识别次数 */
-        VOS_UINT8                           ucPseudBtsIdentCap;                     /* 是否支持 */ 
+        VOS_UINT32                          ulPseudBtsIdentTimes;                   /* ???????? */
+        VOS_UINT8                           ucPseudBtsIdentCap;                     /* ???????? */ 
     }u;
 }MTA_AT_PSEUD_BTS_SET_CNF_STRU;
 
@@ -1792,9 +1792,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                          usClfsGroupNum;                         /* AT命令中CLFS参数组数，每4个参数为一组，每组内参数之间以逗号为分隔符 */
-    VOS_UINT16                          usDataLength;                           /* aucClfsData长度 */
-    VOS_UINT8                           aucClfsData[4];                         /* CLFS模型参数数据 */
+    VOS_UINT16                          usClfsGroupNum;                         /* AT??????CLFS????????????4?????????????????????????????????????????? */
+    VOS_UINT16                          usDataLength;                           /* aucClfsData???? */
+    VOS_UINT8                           aucClfsData[4];                         /* CLFS???????????? */
 }AT_MTA_PARA_INFO_STRU;
 
 
@@ -1802,12 +1802,12 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucActiveFlg;                            /* 0:功能关闭，1:功能打开 */
-    VOS_UINT8                           ucSeq;                                  /* 流水号 */
-    VOS_UINT8                           ucType;                                 /* 0:机器学习GSM伪基站模型参数 */
-    VOS_UINT8                           aucVersionId[AT_MTA_VERSION_INFO_LEN]; /* 版本号，固定为xx.xx.xxx */
+    VOS_UINT8                           ucActiveFlg;                            /* 0:??????????1:???????? */
+    VOS_UINT8                           ucSeq;                                  /* ?????? */
+    VOS_UINT8                           ucType;                                 /* 0:????????GSM?????????????? */
+    VOS_UINT8                           aucVersionId[AT_MTA_VERSION_INFO_LEN]; /* ??????????????xx.xx.xxx */
     VOS_UINT8                           aucRsv[3];
-    VOS_UINT32                          ulProbaRate;                            /* 机器学习概率门限参数，范围0~99999。整数99999表示99.999%概率 */
+    VOS_UINT32                          ulProbaRate;                            /* ??????????????????????????0~99999??????99999????99.999%???? */
     AT_MTA_PARA_INFO_STRU               stParaInfo;
 }AT_MTA_SET_SUBCLFSPARAM_REQ_STRU;
 
@@ -1821,7 +1821,7 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32   enResult;
-    VOS_UINT8                   aucVersionId[AT_MTA_VERSION_INFO_LEN];          /* 版本号 */
+    VOS_UINT8                   aucVersionId[AT_MTA_VERSION_INFO_LEN];          /* ?????? */
     VOS_UINT8                   aucRsv[2];
 }MTA_AT_SUBCLFSPARAM_QRY_CNF_STRU;
 
@@ -1845,9 +1845,9 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32                   enResult;
-    AT_MTA_RPT_GENERAL_CTRL_TYPE_ENUM_UINT8     enCurcRptType;                          /* 主动上报模式，0:关闭所有的主动上报；1:打开所有的主动上报；2:根据ReportCfg参数决定对应的bit位是否主动上报 */
+    AT_MTA_RPT_GENERAL_CTRL_TYPE_ENUM_UINT8     enCurcRptType;                          /* ??????????????0:????????????????????1:????????????????????2:????ReportCfg??????????????bit?????????????? */
     VOS_UINT8                                   aucReserve[3];
-    VOS_UINT8                                   aucRptCfg[AT_MTA_RPT_CFG_MAX_SIZE];  /* 主动上报标识 */
+    VOS_UINT8                                   aucRptCfg[AT_MTA_RPT_CFG_MAX_SIZE];  /* ???????????? */
 } MTA_AT_CURC_QRY_CNF_STRU;
 
 
@@ -1864,10 +1864,10 @@ typedef struct
 
     union
     {
-        VOS_UINT8                       ucTimeRptFlg;                           /* time是否主动上报标识 */
-        MTA_TAF_CTZR_TYPE_ENUM_UINT32   ucCtzrRptFlg;                           /* ctzr是否主动上报标识 */
-        AT_MTA_CSSN_RPT_FLG_STRU        stCssnRptFlg;                           /* cssn是否主动上报标识结构体 */
-        VOS_UINT8                       ucCusdRptFlg;                           /* cusd是否主动上报标识结构体 */
+        VOS_UINT8                       ucTimeRptFlg;                           /* time???????????????? */
+        MTA_TAF_CTZR_TYPE_ENUM_UINT32   ucCtzrRptFlg;                           /* ctzr???????????????? */
+        AT_MTA_CSSN_RPT_FLG_STRU        stCssnRptFlg;                           /* cssn?????????????????????? */
+        VOS_UINT8                       ucCusdRptFlg;                           /* cusd?????????????????????? */
     }u;
 
 } MTA_AT_UNSOLICITED_RPT_QRY_CNF_STRU;
@@ -1877,7 +1877,7 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           aucImei[NV_ITEM_IMEI_SIZE]; /* IMEI号码 */
+    VOS_UINT8                           aucImei[NV_ITEM_IMEI_SIZE]; /* IMEI???? */
 }MTA_AT_CGSN_QRY_CNF_STRU;
 
 typedef struct
@@ -1899,115 +1899,115 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_CMD_RPT_FLG_ENUM_UINT8       enRptFlg;                               /* 命令上报开关标志 */
-    VOS_UINT8                           aucReserved1[3];                        /* 保留位 */
+    AT_MTA_CMD_RPT_FLG_ENUM_UINT8       enRptFlg;                               /* ???????????????? */
+    VOS_UINT8                           aucReserved1[3];                        /* ?????? */
 } AT_MTA_REFCLKFREQ_SET_REQ_STRU;
 
 
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_UINT32                          ulFreq;                                 /* GPS参考时钟的频率值，单位Hz */
-    VOS_UINT32                          ulPrecision;                            /* 当前GPS参考时钟的精度，单位ppb */
-    MTA_AT_REFCLOCK_STATUS_ENUM_UINT16  enStatus;                               /* 时钟频率锁定状态 */
-    VOS_UINT8                           aucReserved1[2];                        /* 保留位 */
+    VOS_UINT32                          ulFreq;                                 /* GPS??????????????????????Hz */
+    VOS_UINT32                          ulPrecision;                            /* ????GPS????????????????????ppb */
+    MTA_AT_REFCLOCK_STATUS_ENUM_UINT16  enStatus;                               /* ???????????????? */
+    VOS_UINT8                           aucReserved1[2];                        /* ?????? */
 } MTA_AT_REFCLKFREQ_QRY_CNF_STRU;
 
 
 
 typedef struct
 {
-    VOS_UINT16                          usChannelNo;                            /* 接收端地址 */
+    VOS_UINT16                          usChannelNo;                            /* ?????????? */
     VOS_UINT16                          usRficReg;
 }AT_MTA_RFICSSIRD_REQ_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulRegValue;                             /* 回复的寄存器的值 */
+    VOS_UINT32                          ulRegValue;                             /* ???????????????? */
 } MTA_AT_RFICSSIRD_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulFreq;                                 /* GPS参考时钟的频率值，单位Hz */
-    VOS_UINT32                          ulPrecision;                            /* 当前GPS参考时钟的精度，单位ppb */
-    MTA_AT_REFCLOCK_STATUS_ENUM_UINT16  enStatus;                               /* 时钟频率锁定状态 */
-    VOS_UINT8                           aucReserved1[2];                        /* 保留位 */
+    VOS_UINT32                          ulFreq;                                 /* GPS??????????????????????Hz */
+    VOS_UINT32                          ulPrecision;                            /* ????GPS????????????????????ppb */
+    MTA_AT_REFCLOCK_STATUS_ENUM_UINT16  enStatus;                               /* ???????????????? */
+    VOS_UINT8                           aucReserved1[2];                        /* ?????? */
 } MTA_AT_REFCLKFREQ_IND_STRU;
 
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????? */
 } MTA_AT_HANDLEDECT_SET_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT16                          usHandle;                               /* 左右手类型 */
+    VOS_UINT16                          usHandle;                               /* ?????????? */
     VOS_UINT16                          aucReserved1[1];
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????? */
 } MTA_AT_HANDLEDECT_QRY_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucCause;                                /* PS域迁移原因值 */
-    VOS_UINT8                           aucReserved1[3];                        /* 保留位 */
+    VOS_UINT8                           ucCause;                                /* PS???????????? */
+    VOS_UINT8                           aucReserved1[3];                        /* ?????? */
 } MTA_AT_PS_TRANSFER_IND_STRU;
 
 
 typedef struct
 {
-    VOS_UINT16                          usMipiClk;                              /* 主动上报MIPICLK值 */
-    VOS_UINT8                           aucReserved1[2];                        /* 保留位 */
+    VOS_UINT16                          usMipiClk;                              /* ????????MIPICLK?? */
+    VOS_UINT8                           aucReserved1[2];                        /* ?????? */
 } MTA_AT_RF_LCD_MIPICLK_IND_STRU;
 
 
 typedef struct
 {
-    VOS_UINT16                          usMipiClk;                              /* 主动上报MIPICLK值 */
+    VOS_UINT16                          usMipiClk;                              /* ????????MIPICLK?? */
     VOS_UINT16                          usResult;
 } MTA_AT_RF_LCD_MIPICLK_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulVersion;                              /* 命令版本号 */
+    VOS_UINT32                          ulVersion;                              /* ?????????? */
 }AT_MTA_ECID_SET_REQ_STRU;
 
 
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_UINT8                           aucCellInfoStr[4];                      /* 增强型小区信息字符串 */
+    VOS_UINT8                           aucCellInfoStr[4];                      /* ???????????????????? */
 }MTA_AT_ECID_SET_CNF_STRU;
 
 
 typedef struct
 {
     PS_BOOL_ENUM_UINT8                  enPsProtectFlg;
-    VOS_UINT8                           aucReserve[3];                          /* 预留后续使用 */
+    VOS_UINT8                           aucReserve[3];                          /* ???????????? */
 }AT_MTA_RRC_PROTECT_PS_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                          /* 返回给AT的结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                          /* ??????AT?????? */
 }MTA_AT_RRC_PROTECT_PS_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           aucReserve[4];                          /* 预留后续使用 */
+    VOS_UINT8                           aucReserve[4];                          /* ???????????? */
 }AT_MTA_PHY_INIT_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                          /* 返回给AT的结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                          /* ??????AT?????? */
 }MTA_AT_PHY_INIT_CNF_STRU;
 
 
@@ -2056,28 +2056,28 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucThreshold;                            /* 检测需要达到的频点测量值，取值范围:[0,70] */
-    VOS_UINT8                           ucFreqNum;                              /* 检测需要达到的频点个数，取值范围:[0,255] */
+    VOS_UINT8                           ucThreshold;                            /* ??????????????????????????????????:[0,70] */
+    VOS_UINT8                           ucFreqNum;                              /* ????????????????????????????????:[0,255] */
     VOS_UINT8                           aucReserved[2];
 } AT_MTA_GSM_JAM_DETECT_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucRssiSrhThreshold;                     /* 测量RSSI时，检测需要达到的频点测量值，取值范围[0,70]，实际用的时候减70使用 */
-    VOS_UINT8                           ucRssiSrhFreqPercent;                   /* 测量RSSI时检测需要达到的频点个数占频点总数（BAND和干扰信号取交集）的百分比，取值范围：[0,100] */
-    VOS_UINT16                          usPschSrhThreshold;                     /* 测量PSCH时检测需要小于或等于的频点测量值，取值范围:[0,65535] */
-    VOS_UINT8                           ucPschSrhFreqPercent;                   /* 测量PSCH时检测需要达到的频点个数占频点总数（BAND和干扰信号取交集）的百分比，取值范围:[0,100] */
+    VOS_UINT8                           ucRssiSrhThreshold;                     /* ????RSSI??????????????????????????????????????[0,70]????????????????70???? */
+    VOS_UINT8                           ucRssiSrhFreqPercent;                   /* ????RSSI????????????????????????????????????BAND??????????????????????????????????????[0,100] */
+    VOS_UINT16                          usPschSrhThreshold;                     /* ????PSCH??????????????????????????????????????????:[0,65535] */
+    VOS_UINT8                           ucPschSrhFreqPercent;                   /* ????PSCH????????????????????????????????????BAND????????????????????????????????????:[0,100] */
     VOS_UINT8                           aucReserved[3];
 } AT_MTA_WCDMA_JAM_DETECT_STRU;
 
 
 typedef struct
 {
-    VOS_INT16                           sRssiThresh;                            /* 测量RSSI时，检测需要达到的频点测量值，取值范围[0,70]，实际用的时候减70使用 */              
-    VOS_UINT16                          usPssratioThresh;                       /* 测量PSS Ratio小于该阈值的频点判断为干扰频点，取值范围:[0,100] */
-    VOS_UINT8                           ucRssiPercent;                          /* 测量RSSI时检测需要达到的频点个数占频点总数（BAND和干扰信号取交集）的百分比，取值范围：[0,100] */
-    VOS_UINT8                           ucPssratioPercent;                      /* 测量PSS Ratio时，干扰频点个数占可疑干扰范围内频点个数的百分比，取值范围:[0,100] */
+    VOS_INT16                           sRssiThresh;                            /* ????RSSI??????????????????????????????????????[0,70]????????????????70???? */              
+    VOS_UINT16                          usPssratioThresh;                       /* ????PSS Ratio????????????????????????????????????????:[0,100] */
+    VOS_UINT8                           ucRssiPercent;                          /* ????RSSI????????????????????????????????????BAND??????????????????????????????????????[0,100] */
+    VOS_UINT8                           ucPssratioPercent;                      /* ????PSS Ratio??????????????????????????????????????????????????????????:[0,100] */
     VOS_UINT8                           aucReserved[2];
 } AT_MTA_LTE_JAM_DETECT_STRU;
 
@@ -2092,10 +2092,10 @@ typedef union
 
 typedef struct
 {
-    VOS_UINT8                           ucMode;                                 /* 干扰检测功能开关 */
+    VOS_UINT8                           ucMode;                                 /* ???????????????? */
     VOS_UINT8                           aucReserved[2];
-    AT_MTA_CMD_RATMODE_ENUM_UINT8       ucRat;                                  /* 接入制式 */
-    AT_MTA_JAM_DETECT_UNION             unJamPara;                              /* 干扰检测配置参数 */
+    AT_MTA_CMD_RATMODE_ENUM_UINT8       ucRat;                                  /* ???????? */
+    AT_MTA_JAM_DETECT_UNION             unJamPara;                              /* ???????????????? */
 }AT_MTA_SET_JAM_DETECT_REQ_STRU;
 
 
@@ -2107,9 +2107,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucGsmJamMode;                           /* GSM制式下，干扰检测开关状态 */
-    VOS_UINT8                           ucWcdmaJamMode;                         /* WCDMA制式下，干扰检测开关状态 */
-    VOS_UINT8                           ucLteJamMode;                           /* LTE制式下，干扰检测开关状态 */
+    VOS_UINT8                           ucGsmJamMode;                           /* GSM???????????????????????? */
+    VOS_UINT8                           ucWcdmaJamMode;                         /* WCDMA???????????????????????? */
+    VOS_UINT8                           ucLteJamMode;                           /* LTE???????????????????????? */
     VOS_UINT8                           ucReserved;
     AT_MTA_GSM_JAM_DETECT_STRU          stGsmPara;
     AT_MTA_WCDMA_JAM_DETECT_STRU        stWcdmaPara;
@@ -2127,7 +2127,7 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucEnableFlg;                            /* 1:锁频功能打开，0:功能关闭 */
+    VOS_UINT8                           ucEnableFlg;                            /* 1:??????????????0:???????? */
     AT_MTA_FREQLOCK_RATMODE_ENUM_UINT8  enRatMode;
     AT_MTA_GSM_BAND_ENUM_UINT16         enBand;
     VOS_UINT32                          ulLockedFreq;
@@ -2142,10 +2142,10 @@ typedef struct
 
 typedef struct
 {
-    PS_BOOL_ENUM_UINT8                  enableFlag;                             /* PS_TRUE:锁定，PS_FALSE:去锁定 */
-    VOS_UINT8                           aucReserved[3];                         /* 保留位 */
-    VOS_UINT16                          usFreq;                                 /* 频点值 */
-    AT_MTA_GSM_BAND_ENUM_UINT16         enBand;                                 /* GSM频段 */
+    PS_BOOL_ENUM_UINT8                  enableFlag;                             /* PS_TRUE:??????PS_FALSE:?????? */
+    VOS_UINT8                           aucReserved[3];                         /* ?????? */
+    VOS_UINT16                          usFreq;                                 /* ?????? */
+    AT_MTA_GSM_BAND_ENUM_UINT16         enBand;                                 /* GSM???? */
 } AT_MTA_SET_GSM_FREQLOCK_REQ_STRU;
 
 
@@ -2159,10 +2159,10 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           ulResult;
-    PS_BOOL_ENUM_UINT8                  enLockFlg;                              /* PS_TRUE: 执行了锁频命令,PS_FALSE: 没有执行锁频命令 */
-    VOS_UINT8                           aucReserved[3];                         /* 保留位 */
-    VOS_UINT16                          usFreq;                                 /* 绝对频点号 */
-    AT_MTA_GSM_BAND_ENUM_UINT16         enBand;                                 /* GSM频段 */
+    PS_BOOL_ENUM_UINT8                  enLockFlg;                              /* PS_TRUE: ??????????????,PS_FALSE: ???????????????? */
+    VOS_UINT8                           aucReserved[3];                         /* ?????? */
+    VOS_UINT16                          usFreq;                                 /* ?????????? */
+    AT_MTA_GSM_BAND_ENUM_UINT16         enBand;                                 /* GSM???? */
 } MTA_AT_QRY_GSM_FREQLOCK_CNF_STRU;
 
 
@@ -2175,8 +2175,8 @@ typedef struct
 
 enum AT_FREQLOCK_W_TYPE_ENUM
 {
-    AT_MTA_WCDMA_FREQLOCK_CMD_FREQ_ONLY         = 8,                            /* 对应CWAS锁频类型 */
-    AT_MTA_WCDMA_FREQLOCK_CMD_COMBINED          = 9,                            /* 对应CWAS锁频+扰码类型 */
+    AT_MTA_WCDMA_FREQLOCK_CMD_FREQ_ONLY         = 8,                            /* ????CWAS???????? */
+    AT_MTA_WCDMA_FREQLOCK_CMD_COMBINED          = 9,                            /* ????CWAS????+???????? */
     AT_MTA_WCDMA_FREQLOCK_CMD_BUTT
 };
 typedef VOS_UINT8 AT_MTA_WCDMA_FREQLOCK_CMD_ENUM_UINT8;
@@ -2184,8 +2184,8 @@ typedef VOS_UINT8 AT_MTA_WCDMA_FREQLOCK_CMD_ENUM_UINT8;
 
 enum AT_MTA_M2M_FREQLOCK_TYPE_ENUM
 {
-    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_FREQ_ONLY     = 1,                            /* 锁频ONLY类型 */
-    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_FREQ_COMBINED = 2,                            /* 锁频+主扰码/扰码/物理小区ID */
+    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_FREQ_ONLY     = 1,                            /* ????ONLY???? */
+    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_FREQ_COMBINED = 2,                            /* ????+??????/????/????????ID */
     AT_MTA_M2M_FREQLOCK_TYPE_ENUM_BUTT
 };
 typedef VOS_UINT8 AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8;
@@ -2193,45 +2193,45 @@ typedef VOS_UINT8 AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8;
 
 typedef struct
 {
-    VOS_UINT16                                  usFreq;                         /* 频点值 */
-    AT_MTA_GSM_BAND_ENUM_UINT16                 enBand;                         /* GSM频段 */
-    VOS_UINT32                                  ulReserve;                      /* 8字节对齐-代码检视 */
+    VOS_UINT16                                  usFreq;                         /* ?????? */
+    AT_MTA_GSM_BAND_ENUM_UINT16                 enBand;                         /* GSM???? */
+    VOS_UINT32                                  ulReserve;                      /* 8????????-???????? */
 } AT_MTA_M2M_GSM_FREQLOCK_PARA_STRU;
 
 
 typedef struct
 {
-    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8         ucFreqType;                     /* 锁频类型 */
-    VOS_UINT8                                   aucReserved[3];                 /* 保留位 */
-    VOS_UINT16                                  usFreq;                         /* 频点值 */
-    VOS_UINT16                                  usPsc;                          /* WCDMA主扰码 */
+    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8         ucFreqType;                     /* ???????? */
+    VOS_UINT8                                   aucReserved[3];                 /* ?????? */
+    VOS_UINT16                                  usFreq;                         /* ?????? */
+    VOS_UINT16                                  usPsc;                          /* WCDMA?????? */
 }AT_MTA_M2M_WCDMA_FREQLOCK_PARA_STRU;
 
 
 typedef struct
 {
-    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8         ucFreqType;                     /* 锁频类型 */
-    VOS_UINT8                                   aucReserved[3];                 /* 保留位 */
-    VOS_UINT16                                  usFreq;                         /* 频点值 */
-    VOS_UINT16                                  usSc;                           /* TD-SCDMA扰码 */
+    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8         ucFreqType;                     /* ???????? */
+    VOS_UINT8                                   aucReserved[3];                 /* ?????? */
+    VOS_UINT16                                  usFreq;                         /* ?????? */
+    VOS_UINT16                                  usSc;                           /* TD-SCDMA???? */
 }AT_MTA_M2M_TDSCDMA_FREQLOCK_PARA_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                                  ulFreq;                         /* 频点值 */
-    VOS_UINT16                                  usPci;                          /* LTE物理小区ID */
-    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8         ucFreqType;                     /* 锁频类型 */
-    VOS_UINT8                                   ucReserved;                     /* 保留位 */
+    VOS_UINT32                                  ulFreq;                         /* ?????? */
+    VOS_UINT16                                  usPci;                          /* LTE????????ID */
+    AT_MTA_M2M_FREQLOCK_TYPE_ENUM_UINT8         ucFreqType;                     /* ???????? */
+    VOS_UINT8                                   ucReserved;                     /* ?????? */
 }AT_MTA_M2M_LTE_FREQLOCK_PARA_STRU;
 
 
 enum AT_FREQLOCK_FLAG_TYPE_ENUM
 {
-    AT_MTA_M2M_FREQLOCK_MODE_GSM            = 1,                                /* GSM制式 */
-    AT_MTA_M2M_FREQLOCK_MODE_WCDMA          = 2,                                /* WCDMA制式 */
-    AT_MTA_M2M_FREQLOCK_MODE_TDSCDMA        = 3,                                /* TD-SCDMA制式 */
-    AT_MTA_M2M_FREQLOCK_MODE_LTE            = 4,                                /* LTE制式 */
+    AT_MTA_M2M_FREQLOCK_MODE_GSM            = 1,                                /* GSM???? */
+    AT_MTA_M2M_FREQLOCK_MODE_WCDMA          = 2,                                /* WCDMA???? */
+    AT_MTA_M2M_FREQLOCK_MODE_TDSCDMA        = 3,                                /* TD-SCDMA???? */
+    AT_MTA_M2M_FREQLOCK_MODE_LTE            = 4,                                /* LTE???? */
     AT_MTA_M2M_FREQLOCK_MODE_BUTT
 };
 typedef VOS_UINT8 AT_MTA_M2M_FREQLOCK_MODE_ENUM_UINT8;
@@ -2239,8 +2239,8 @@ typedef VOS_UINT8 AT_MTA_M2M_FREQLOCK_MODE_ENUM_UINT8;
 
 enum AT_MTA_M2M_FREQLOCK_FLAG_TYPE_ENUM
 {
-    AT_MTA_M2M_FREQLOCK_FLAG_TYPE_OFF       = 0,                                /* 锁频关闭 */
-    AT_MTA_M2M_FREQLOCK_FLAG_TYPE_ON        = 1,                                /* 锁频开启 */
+    AT_MTA_M2M_FREQLOCK_FLAG_TYPE_OFF       = 0,                                /* ???????? */
+    AT_MTA_M2M_FREQLOCK_FLAG_TYPE_ON        = 1,                                /* ???????? */
     AT_MTA_M2M_FREQLOCK_FLAG_TYPE_BUTT
 };
 typedef VOS_UINT8 AT_MTA_M2M_FREQLOCK_FLAG_ENUM_UINT8;
@@ -2248,13 +2248,13 @@ typedef VOS_UINT8 AT_MTA_M2M_FREQLOCK_FLAG_ENUM_UINT8;
 
 typedef struct
 {
-    AT_MTA_M2M_FREQLOCK_FLAG_ENUM_UINT8         enableFlag;                                 /* 使能标识 */
-    AT_MTA_M2M_FREQLOCK_MODE_ENUM_UINT8         ucMode;                                     /* 锁频制式 */
-    VOS_UINT8                                   aucReserved[6];                             /* 保留 */
-    AT_MTA_M2M_GSM_FREQLOCK_PARA_STRU           stGFreqPara;                                /* G模锁频消息结构 */
-    AT_MTA_M2M_WCDMA_FREQLOCK_PARA_STRU         stWFreqPara;                                /* W模锁频消息结构 */
-    AT_MTA_M2M_TDSCDMA_FREQLOCK_PARA_STRU       stTDFreqPara;                               /* TD模锁频消息结构 */
-    AT_MTA_M2M_LTE_FREQLOCK_PARA_STRU           stLFreqPara;                                /* L模锁频消息结构 */
+    AT_MTA_M2M_FREQLOCK_FLAG_ENUM_UINT8         enableFlag;                                 /* ???????? */
+    AT_MTA_M2M_FREQLOCK_MODE_ENUM_UINT8         ucMode;                                     /* ???????? */
+    VOS_UINT8                                   aucReserved[6];                             /* ???? */
+    AT_MTA_M2M_GSM_FREQLOCK_PARA_STRU           stGFreqPara;                                /* G?????????????? */
+    AT_MTA_M2M_WCDMA_FREQLOCK_PARA_STRU         stWFreqPara;                                /* W?????????????? */
+    AT_MTA_M2M_TDSCDMA_FREQLOCK_PARA_STRU       stTDFreqPara;                               /* TD?????????????? */
+    AT_MTA_M2M_LTE_FREQLOCK_PARA_STRU           stLFreqPara;                                /* L?????????????? */
 } AT_MTA_SET_M2M_FREQLOCK_REQ_STRU;
 
 
@@ -2266,11 +2266,11 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                                   ucFreqState[MTA_FREQLOCK_MAX_MODE];     /* GUTL模式的锁频状态 */
-    AT_MTA_M2M_GSM_FREQLOCK_PARA_STRU           stGFreqLockInfo;                        /* GSM锁频状态查询结果 */
-    AT_MTA_M2M_WCDMA_FREQLOCK_PARA_STRU         stWFreqLockInfo;                        /* WCDMA锁频状态查询结果 */
-    AT_MTA_M2M_TDSCDMA_FREQLOCK_PARA_STRU       stTFreqLockInfo;                        /* TD-SCDMA锁频状态查询结果 */
-    AT_MTA_M2M_LTE_FREQLOCK_PARA_STRU           stLFreqLockInfo;                        /* LTE锁频状态查询结果 */
+    VOS_UINT8                                   ucFreqState[MTA_FREQLOCK_MAX_MODE];     /* GUTL?????????????? */
+    AT_MTA_M2M_GSM_FREQLOCK_PARA_STRU           stGFreqLockInfo;                        /* GSM???????????????? */
+    AT_MTA_M2M_WCDMA_FREQLOCK_PARA_STRU         stWFreqLockInfo;                        /* WCDMA???????????????? */
+    AT_MTA_M2M_TDSCDMA_FREQLOCK_PARA_STRU       stTFreqLockInfo;                        /* TD-SCDMA???????????????? */
+    AT_MTA_M2M_LTE_FREQLOCK_PARA_STRU           stLFreqLockInfo;                        /* LTE???????????????? */
 } MTA_AT_QRY_M2M_FREQLOCK_CNF_STRU;
 #endif
 
@@ -2301,23 +2301,23 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucSecType;                              /* 安全控制类型 */
-    VOS_UINT8                           ucSecStrFlg;                            /* 是否携带安全校验密文 */
+    VOS_UINT8                           ucSecType;                              /* ???????????? */
+    VOS_UINT8                           ucSecStrFlg;                            /* ???????????????????? */
     VOS_UINT8                           aucReserved[2];
-    VOS_UINT8                           aucSecString[AT_RSA_CIPHERTEXT_LEN];    /* 安全校验密文 */
+    VOS_UINT8                           aucSecString[AT_RSA_CIPHERTEXT_LEN];    /* ???????????? */
 } AT_MTA_NVWRSECCTRL_SET_REQ_STRU;
 
 
 typedef struct
 {
-    PS_BOOL_ENUM_UINT8                          enActFrFlag;                    /* 激活FR标志，0:不激活  1:激活 */
-    VOS_UINT8                                   aucRsv[3];                      /* 保留位 */
+    PS_BOOL_ENUM_UINT8                          enActFrFlag;                    /* ????FR??????0:??????  1:???? */
+    VOS_UINT8                                   aucRsv[3];                      /* ?????? */
 }AT_MTA_SET_FR_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32                   enRslt;                         /* FR设置及结果 */
+    MTA_AT_RESULT_ENUM_UINT32                   enRslt;                         /* FR?????????? */
 }MTA_AT_SET_FR_CNF_STRU;
 
 
@@ -2370,7 +2370,7 @@ typedef VOS_UINT8 MTA_AT_ACCESS_STRATUM_REL_ENUM_UINT8;
 
 typedef struct
 {
-    MTA_AT_ACCESS_STRATUM_REL_ENUM_UINT8        enAccessStratumRel; /* 指示AT接入层的协议版本 */
+    MTA_AT_ACCESS_STRATUM_REL_ENUM_UINT8        enAccessStratumRel; /* ????AT???????????????? */
     VOS_UINT8                                   aucRsv[3];
 } MTA_AT_ACCESS_STRATUM_REL_IND_STRU;
 
@@ -2378,24 +2378,24 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucValidflag;        /* 主卡主CC TM1时为TRUE（后续按周期上报）; 其他情况为 其他情况为FALSE(只上报一次，携带内容为全0). */
-    VOS_UINT8                           ucRxAntNum;         /* UE接收天线数：2收、4收 */
-    VOS_UINT8                           ucTmMode;            /*传输模式 。仅当 ucTmMode=0(对应传输模式1)时，透传的相位相关数据有效*/
+    VOS_UINT8                           ucValidflag;        /* ??????CC TM1????TRUE??????????????????; ?????????? ??????????FALSE(????????????????????????0). */
+    VOS_UINT8                           ucRxAntNum;         /* UE????????????2????4?? */
+    VOS_UINT8                           ucTmMode;            /*???????? ?????? ucTmMode=0(????????????1)??????????????????????????*/
     VOS_UINT8                           aucReserved;
-    VOS_UINT32                          ulCorrQR1Data0011;  /* 透传以下6个寄存器数据。具体含义如下： */
+    VOS_UINT32                          ulCorrQR1Data0011;  /* ????????6???????????????????????????? */
     VOS_UINT32                          ulCorrQR1Data01IQ;
-    VOS_UINT32                          ulCorrQR2Data0011;  /* 仅4收时有效； */
-    VOS_UINT32                          ulCorrQR2Data01IQ;  /* 仅4收时有效； */
-    VOS_UINT32                          ulCorrQR3Data0011;  /* 仅4收时有效； */
-    VOS_UINT32                          ulCorrQR3Data01IQ;  /* 仅4收时有效； */
-    VOS_INT16                           sRsrpR0;            /*天线 0 rsrp， 单位 dB*/
-    VOS_INT16                           sRsrpR1;            /*天线 1 rsrp， 单位 dB*/
-    VOS_INT16                           sRsrpR2;            /*天线 2 rsrp， 单位 dB，仅 4收时有效*/
-    VOS_INT16                           sRsrpR3;            /*天线 3 rsrp， 单位 dB，仅 4收时有效*/
-    VOS_INT16                           sRssiR0;            /*天线 0 rssi， 单位 dB*/
-    VOS_INT16                           sRssiR1;            /*天线 1 rssi， 单位 dB*/
-    VOS_INT16                           sRssiR2;            /*天线 2 rssi， 单位 dB，仅 4收时有效*/
-    VOS_INT16                           sRssiR3;            /*天线 3 rssi， 单位 dB，仅 4收时有效*/
+    VOS_UINT32                          ulCorrQR2Data0011;  /* ??4?????????? */
+    VOS_UINT32                          ulCorrQR2Data01IQ;  /* ??4?????????? */
+    VOS_UINT32                          ulCorrQR3Data0011;  /* ??4?????????? */
+    VOS_UINT32                          ulCorrQR3Data01IQ;  /* ??4?????????? */
+    VOS_INT16                           sRsrpR0;            /*???? 0 rsrp?? ???? dB*/
+    VOS_INT16                           sRsrpR1;            /*???? 1 rsrp?? ???? dB*/
+    VOS_INT16                           sRsrpR2;            /*???? 2 rsrp?? ???? dB???? 4????????*/
+    VOS_INT16                           sRsrpR3;            /*???? 3 rsrp?? ???? dB???? 4????????*/
+    VOS_INT16                           sRssiR0;            /*???? 0 rssi?? ???? dB*/
+    VOS_INT16                           sRssiR1;            /*???? 1 rssi?? ???? dB*/
+    VOS_INT16                           sRssiR2;            /*???? 2 rssi?? ???? dB???? 4????????*/
+    VOS_INT16                           sRssiR3;            /*???? 3 rssi?? ???? dB???? 4????????*/
     VOS_INT16                           sRsv[8];
 } MTA_AT_ECC_STATUS_IND_STRU;
 
@@ -2412,8 +2412,8 @@ typedef MTA_AT_RESULT_CNF_STRU MTA_AT_SET_ECC_CFG_CNF_STRU;
 
 typedef struct
 {
-    AT_MTA_CFG_ENUM_UINT8               enCfg;                                  /* 0:去使能，1:使能 */
-    VOS_UINT8                           aucReserved[3];                         /* 保留位 */
+    AT_MTA_CFG_ENUM_UINT8               enCfg;                                  /* 0:????????1:???? */
+    VOS_UINT8                           aucReserved[3];                         /* ?????? */
 } AT_MTA_MBMS_SERVICE_OPTION_SET_REQ_STRU;
 
 
@@ -2434,8 +2434,8 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_MBMS_SERVICE_STATE_SET_ENUM_UINT8    enStateSet;                     /* 状态设置 */
-    VOS_UINT8                                   aucReserved[3];                 /* 保留位 */
+    AT_MTA_MBMS_SERVICE_STATE_SET_ENUM_UINT8    enStateSet;                     /* ???????? */
+    VOS_UINT8                                   aucReserved[3];                 /* ?????? */
     VOS_UINT32                                  ulAreaId;                       /* Area ID */
     AT_MTA_MBMS_TMGI_STRU                       stTMGI;                         /* TMGI */
 } AT_MTA_MBMS_SERVICE_STATE_SET_REQ_STRU;
@@ -2443,8 +2443,8 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_MBMS_CAST_MODE_ENUM_UINT8    enCastMode;                             /* 0:单播,1:组播 */
-    VOS_UINT8                           aucReserved[3];                         /* 保留位 */
+    AT_MTA_MBMS_CAST_MODE_ENUM_UINT8    enCastMode;                             /* 0:????,1:???? */
+    VOS_UINT8                           aucReserved[3];                         /* ?????? */
 } AT_MTA_MBMS_PREFERENCE_SET_REQ_STRU;
 
 
@@ -2458,52 +2458,52 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_UINT8                           ucBSSILevel;                            /* BSSI信号强度,0xFF:表示BSSI信号强度无效 */
-    VOS_UINT8                           aucReserved[3];                         /* 保留位 */
+    VOS_UINT8                           ucBSSILevel;                            /* BSSI????????,0xFF:????BSSI???????????? */
+    VOS_UINT8                           aucReserved[3];                         /* ?????? */
 } MTA_AT_MBMS_BSSI_SIGNAL_LEVEL_QRY_CNF_STRU;
 
 
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_UINT32                          ulCellId;                               /* 小区ID */
+    VOS_UINT32                          ulCellId;                               /* ????ID */
 } MTA_AT_MBMS_NETWORK_INFO_QRY_CNF_STRU;
 
 
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32                   enResult;
-    MTA_AT_EMBMS_FUNTIONALITY_STATUS_ENUM_UINT8 enStatus;                       /* 功能状态 */
-    VOS_UINT8                                   aucReserved[3];                 /* 保留位 */
+    MTA_AT_EMBMS_FUNTIONALITY_STATUS_ENUM_UINT8 enStatus;                       /* ???????? */
+    VOS_UINT8                                   aucReserved[3];                 /* ?????? */
 } MTA_AT_EMBMS_STATUS_QRY_CNF_STRU;
 
 
 typedef struct
 {
-    AT_MTA_CFG_ENUM_UINT8                       enCfg;                          /* 0:关闭,1:打开 */
-    VOS_UINT8                                   aucReserved[3];                 /* 保留位 */
+    AT_MTA_CFG_ENUM_UINT8                       enCfg;                          /* 0:????,1:???? */
+    VOS_UINT8                                   aucReserved[3];                 /* ?????? */
 } AT_MTA_MBMS_UNSOLICITED_CFG_SET_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_MBMS_SERVICE_EVENT_ENUM_UINT8    enEvent;                            /* 服务事件 */
-    VOS_UINT8                               aucReserved[3];                     /* 保留位 */
+    MTA_AT_MBMS_SERVICE_EVENT_ENUM_UINT8    enEvent;                            /* ???????? */
+    VOS_UINT8                               aucReserved[3];                     /* ?????? */
 } MTA_AT_MBMS_SERVICE_EVENT_IND_STRU;
 
 
 typedef struct
 {
     AT_MTA_LTE_LOW_POWER_ENUM_UINT8         enLteLowPowerFlg;                   /* 0: Normal;1: Low Power Consumption */
-    VOS_UINT8                               aucReserved[3];                     /* 保留位 */
+    VOS_UINT8                               aucReserved[3];                     /* ?????? */
 } AT_MTA_LOW_POWER_CONSUMPTION_SET_REQ_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          aulFreqList[AT_MTA_INTEREST_FREQ_MAX_NUM];  /* 频点列表 */
-    AT_MTA_MBMS_PRIORITY_ENUM_UINT8     enMbmsPriority;                             /* VOS_FALSE: 单播优先;VOS_TRUE: MBMS优先 */
-    VOS_UINT8                           aucReserved[3];                             /* 保留位 */
+    VOS_UINT32                          aulFreqList[AT_MTA_INTEREST_FREQ_MAX_NUM];  /* ???????? */
+    AT_MTA_MBMS_PRIORITY_ENUM_UINT8     enMbmsPriority;                             /* VOS_FALSE: ????????;VOS_TRUE: MBMS???? */
+    VOS_UINT8                           aucReserved[3];                             /* ?????? */
 } AT_MTA_MBMS_INTERESTLIST_SET_REQ_STRU;
 
 
@@ -2520,8 +2520,8 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_UINT32                          ulAvlServiceNum;                                    /* 可用服务数,0:表示没有可用服务 */
-    MTA_AT_MBMS_AVL_SERVICE_STRU        astAvlServices[AT_MTA_MBMS_AVL_SERVICE_MAX_NUM];    /* 可用服务列表 */
+    VOS_UINT32                          ulAvlServiceNum;                                    /* ??????????,0:???????????????? */
+    MTA_AT_MBMS_AVL_SERVICE_STRU        astAvlServices[AT_MTA_MBMS_AVL_SERVICE_MAX_NUM];    /* ???????????? */
 } MTA_AT_MBMS_AVL_SERVICE_LIST_QRY_CNF_STRU;
 
 
@@ -2534,7 +2534,7 @@ typedef struct
     VOS_INT16                                   sTxPower;
     VOS_UINT16                                  usRxBegin;
     VOS_UINT16                                  usRxEnd;
-    VOS_UINT8                                   aucReserved[2];                 /* 保留位 */
+    VOS_UINT8                                   aucReserved[2];                 /* ?????? */
 } AT_MTA_COEX_PARA_STRU;
 
 
@@ -2561,7 +2561,7 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 查询操作结果*/
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ????????????*/
     VOS_UINT8                           aucEFRUIMID[MTA_AT_EFRUIMID_OCTET_LEN_EIGHT];
     VOS_UINT8                           aucMeID[MTA_AT_MEID_NV_DATA_LEN_NEW + 1];  /*Data*/
     VOS_UINT8                           aucPEsn[MTA_AT_PESN_NV_DATA_LEN];      /*Data*/
@@ -2575,28 +2575,28 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 查询操作结果*/
-    VOS_UINT8                           ucTransMode;                            /* 传输模式*/
-    VOS_UINT8                           aucReserved[3];                         /*保留位*/
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ????????????*/
+    VOS_UINT8                           ucTransMode;                            /* ????????*/
+    VOS_UINT8                           aucReserved[3];                         /*??????*/
 } MTA_AT_TRANSMODE_QRY_CNF_STRU;
 
 
 typedef struct
 {
-    AT_MTA_UE_CENTER_TYPE_ENUM_UINT32   enUeCenter;                             /*UE模式*/
+    AT_MTA_UE_CENTER_TYPE_ENUM_UINT32   enUeCenter;                             /*UE????*/
 } AT_MTA_SET_UE_CENTER_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 查询操作结果*/
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ????????????*/
 } MTA_AT_SET_UE_CENTER_CNF_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 查询操作结果*/
-    AT_MTA_UE_CENTER_TYPE_ENUM_UINT32   enUeCenter;                             /*UE模式*/
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ????????????*/
+    AT_MTA_UE_CENTER_TYPE_ENUM_UINT32   enUeCenter;                             /*UE????*/
 } MTA_AT_QRY_UE_CENTER_CNF_STRU;
 
 
@@ -2607,15 +2607,15 @@ typedef struct
     VOS_UINT32                          bitOpSpare  :31;
     VOS_UINT16                          usTa;
     VOS_UINT8                           aucReserved[2];
-    VOS_UINT32                          ulMcc;              /* 移动国家码 */
-    VOS_UINT32                          ulMnc;              /* 移动网络码 */
-    VOS_UINT32                          ulCellID;           /* 小区ID */
-    VOS_UINT32                          ulArfcn;            /* 绝对频点号 */
-    VOS_UINT16                          usLac;              /* 位置区码 */
+    VOS_UINT32                          ulMcc;              /* ?????????? */
+    VOS_UINT32                          ulMnc;              /* ?????????? */
+    VOS_UINT32                          ulCellID;           /* ????ID */
+    VOS_UINT32                          ulArfcn;            /* ?????????? */
+    VOS_UINT16                          usLac;              /* ???????? */
     VOS_INT16                           sRssi;              /* Receiving signal strength in dbm */
-    MTA_RRC_GSM_BAND_ENUM_UINT16        enBand;             /* GSM频段(0-3) */
-    VOS_UINT8                           ucBsic;             /* 小区基站码 */
-    VOS_UINT8                           ucRxQuality;        /* IDLE态下或者PS数传态下无效,专用态下填充信道质量值，范围[0,7] ,无效值99*/
+    MTA_RRC_GSM_BAND_ENUM_UINT16        enBand;             /* GSM????(0-3) */
+    VOS_UINT8                           ucBsic;             /* ?????????? */
+    VOS_UINT8                           ucRxQuality;        /* IDLE????????PS????????????,????????????????????????????[0,7] ,??????99*/
 }MTA_AT_NETMON_GSM_SCELL_INFO_STRU;
 
  
@@ -2624,13 +2624,13 @@ typedef struct
     VOS_UINT32                                  bitOpCellID  : 1;
     VOS_UINT32                                  bitOpLAC     : 1;
     VOS_UINT32                                  bitOpSpare   : 30;
-    VOS_UINT32                                  ulMcc;                  /*移动国家码*/
-    VOS_UINT32                                  ulMnc;                  /*移动网络码*/
-    VOS_UINT32                                  ulCellID;               /*小区ID*/
-    VOS_UINT32                                  ulArfcn;                /*频点*/
-    VOS_UINT16                                  usLAC;                  /*位置区码*/
+    VOS_UINT32                                  ulMcc;                  /*??????????*/
+    VOS_UINT32                                  ulMnc;                  /*??????????*/
+    VOS_UINT32                                  ulCellID;               /*????ID*/
+    VOS_UINT32                                  ulArfcn;                /*????*/
+    VOS_UINT16                                  usLAC;                  /*????????*/
     VOS_UINT8                                   aucReserved[2];
-    MTA_NETMON_UTRAN_TYPE_ENUM_UINT32           enCellMeasTypeChoice;   /* NETMON频率信息类型:FDD,TDD */
+    MTA_NETMON_UTRAN_TYPE_ENUM_UINT32           enCellMeasTypeChoice;   /* NETMON????????????:FDD,TDD */
     union
     {
         MTA_NETMON_UTRAN_SCELL_INFO_FDD_STRU    stCellMeasResultsFDD;    /* FDD */
@@ -2641,9 +2641,9 @@ typedef struct
 
 typedef union
 {
-    MTA_AT_NETMON_GSM_SCELL_INFO_STRU       stGsmSCellInfo;    /* GSM服务小区信息 */
-    MTA_AT_NETMON_UTRAN_SCELL_INFO_STRU     stUtranSCellInfo;  /* WCDMA服务小区信息 */
-    MTA_NETMON_EUTRAN_SCELL_INFO_STRU       stLteSCellInfo;    /* LTE服务小区信息*/
+    MTA_AT_NETMON_GSM_SCELL_INFO_STRU       stGsmSCellInfo;    /* GSM???????????? */
+    MTA_AT_NETMON_UTRAN_SCELL_INFO_STRU     stUtranSCellInfo;  /* WCDMA???????????? */
+    MTA_NETMON_EUTRAN_SCELL_INFO_STRU       stLteSCellInfo;    /* LTE????????????*/
 }MTA_AT_NETMON_SCELL_INFO_UN;
 
 
@@ -2653,20 +2653,20 @@ typedef struct
     VOS_UINT32                          bitOpCellID   : 1;
     VOS_UINT32                          bitOpLAC      : 1;
     VOS_UINT32                          bitOpSpare    : 29;
-    VOS_UINT32                          ulCellID;       /*小区ID*/
-    VOS_UINT32                          ulAfrcn;        /*频点*/
-    VOS_UINT16                          usLAC;          /*位置区码*/
-    VOS_INT16                           sRSSI;          /* 频点的RSSI */
+    VOS_UINT32                          ulCellID;       /*????ID*/
+    VOS_UINT32                          ulAfrcn;        /*????*/
+    VOS_UINT16                          usLAC;          /*????????*/
+    VOS_INT16                           sRSSI;          /* ??????RSSI */
     MTA_RRC_GSM_BAND_ENUM_UINT16        enBand;         /* band 0-3 */
-    VOS_UINT8                           ucBsic;         /*小区基站码*/
+    VOS_UINT8                           ucBsic;         /*??????????*/
     VOS_UINT8                           ucReserved;
 }MTA_AT_NETMON_GSM_NCELL_INFO_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulArfcn;          /*频点*/
-    VOS_UINT16                          usPSC;            /*主扰码*/
+    VOS_UINT32                          ulArfcn;          /*????*/
+    VOS_UINT16                          usPSC;            /*??????*/
     VOS_INT16                           sECN0;            /*ECN0*/
     VOS_INT16                           sRSCP;            /*RSCP*/
     VOS_UINT8                           aucReserved[2];
@@ -2675,9 +2675,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulArfcn;          /*频点*/
-    VOS_UINT16                          usSC;             /*扰码*/
-    VOS_UINT16                          usSyncID;         /*下行导频码*/
+    VOS_UINT32                          ulArfcn;          /*????*/
+    VOS_UINT16                          usSC;             /*????*/
+    VOS_UINT16                          usSyncID;         /*??????????*/
     VOS_INT16                           sRSCP;            /*RSCP*/
     VOS_UINT8                           aucReserved[2];
 }MTA_AT_NETMON_UTRAN_NCELL_INFO_TDD_STRU;
@@ -2685,27 +2685,27 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                                               ucGsmNCellCnt;                               /* GSM 临区个数 */
-    VOS_UINT8                                               ucUtranNCellCnt;                             /* WCDMA 临区个数 */
-    VOS_UINT8                                               ucLteNCellCnt;                               /* LTE 临区个数 */
+    VOS_UINT8                                               ucGsmNCellCnt;                               /* GSM ???????? */
+    VOS_UINT8                                               ucUtranNCellCnt;                             /* WCDMA ???????? */
+    VOS_UINT8                                               ucLteNCellCnt;                               /* LTE ???????? */
     VOS_UINT8                                               ucReserved;
-    MTA_AT_NETMON_GSM_NCELL_INFO_STRU                       astGsmNCellInfo[NETMON_MAX_GSM_NCELL_NUM];   /* GSM 临区数据结构*/
-    MTA_NETMON_UTRAN_TYPE_ENUM_UINT32                       enCellMeasTypeChoice;                        /* NETMON频率信息类型:FDD,TDD */
+    MTA_AT_NETMON_GSM_NCELL_INFO_STRU                       astGsmNCellInfo[NETMON_MAX_GSM_NCELL_NUM];   /* GSM ????????????*/
+    MTA_NETMON_UTRAN_TYPE_ENUM_UINT32                       enCellMeasTypeChoice;                        /* NETMON????????????:FDD,TDD */
     union
     {
-        MTA_AT_NETMON_UTRAN_NCELL_INFO_FDD_STRU             astFddNCellInfo[NETMON_MAX_UTRAN_NCELL_NUM]; /* FDD临区数据结构 */
-        MTA_AT_NETMON_UTRAN_NCELL_INFO_TDD_STRU             astTddNCellInfo[NETMON_MAX_UTRAN_NCELL_NUM]; /* TDD临区数据结构 */
+        MTA_AT_NETMON_UTRAN_NCELL_INFO_FDD_STRU             astFddNCellInfo[NETMON_MAX_UTRAN_NCELL_NUM]; /* FDD???????????? */
+        MTA_AT_NETMON_UTRAN_NCELL_INFO_TDD_STRU             astTddNCellInfo[NETMON_MAX_UTRAN_NCELL_NUM]; /* TDD???????????? */
     }u;
-    MTA_NETMON_LTE_NCELL_INFO_STRU                          astLteNCellInfo[NETMON_MAX_LTE_NCELL_NUM];   /* LTE 临区数据结构 */
+    MTA_NETMON_LTE_NCELL_INFO_STRU                          astLteNCellInfo[NETMON_MAX_LTE_NCELL_NUM];   /* LTE ???????????? */
 }MTA_AT_NETMON_NCELL_INFO_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32                   enResult;               /* 查询结果是否成功 */
-    MTA_NETMON_CELL_TYPE_ENUM_UINT32            enCellType;             /* 0:查询服务小区，1:查询临区 */
-    MTA_AT_NETMON_NCELL_INFO_STRU               stNCellInfo;            /*临区信息*/
-    MTA_AT_NETMON_CELL_INFO_RAT_ENUM_UINT32     enRatType;              /* 服务小区的接入技术类型 */
+    MTA_AT_RESULT_ENUM_UINT32                   enResult;               /* ???????????????? */
+    MTA_NETMON_CELL_TYPE_ENUM_UINT32            enCellType;             /* 0:??????????????1:???????? */
+    MTA_AT_NETMON_NCELL_INFO_STRU               stNCellInfo;            /*????????*/
+    MTA_AT_NETMON_CELL_INFO_RAT_ENUM_UINT32     enRatType;              /* ?????????????????????? */
     MTA_AT_NETMON_SCELL_INFO_UN                 unSCellInfo;
 } MTA_AT_NETMON_CELL_INFO_STRU;
 
@@ -2723,15 +2723,15 @@ typedef struct
     MTA_AT_RESULT_ENUM_UINT32           enResult;
 
     AT_MTA_AFC_CLK_STATUS_ENUM_UINT32   enStatus;
-    VOS_INT32                           lDeviation;                                 /* 频偏 */
+    VOS_INT32                           lDeviation;                                 /* ???? */
 
-    /* 温度范围 */
+    /* ???????? */
     VOS_INT16                           sCoeffStartTemp;
     VOS_INT16                           sCoeffEndTemp;
 
-    /* 多项式系数 */
-    VOS_UINT32                          aulCoeffMantissa[AT_MTA_GPS_XO_COEF_NUM];  /* a0,a1,a2,a3尾数 */
-    VOS_UINT16                          ausCoeffExponent[AT_MTA_GPS_XO_COEF_NUM];  /* a0,a1,a2,a3指数 */
+    /* ?????????? */
+    VOS_UINT32                          aulCoeffMantissa[AT_MTA_GPS_XO_COEF_NUM];  /* a0,a1,a2,a3???? */
+    VOS_UINT16                          ausCoeffExponent[AT_MTA_GPS_XO_COEF_NUM];  /* a0,a1,a2,a3???? */
 
 } MTA_AT_QRY_AFC_CLK_FREQ_XOCOEF_CNF_STRU;
 
@@ -2765,14 +2765,14 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_XCPOSR_CFG_ENUM_UNIT8        enXcposrEnableCfg;                            /* GPS芯片是否支持清除辅助定位信息，上电开机默认为不支持 */
+    AT_MTA_XCPOSR_CFG_ENUM_UNIT8        enXcposrEnableCfg;                            /* GPS?????????????????????????????????????????????????? */
     VOS_UINT8                           aucReserved[3];
 } AT_MTA_SET_XCPOSR_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 命令执行结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????????? */
     AT_MTA_XCPOSR_CFG_ENUM_UNIT8        enXcposrEnableCfg;
     VOS_UINT8                           aucReserved[3];
 } MTA_AT_QRY_XCPOSR_CNF_STRU;
@@ -2780,14 +2780,14 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucXcposrRptFlg;                         /* +XCPOSRRPT命令主动上报控制，上电开机默认为不允许主动上报 */
+    VOS_UINT8                           ucXcposrRptFlg;                         /* +XCPOSRRPT?????????????????????????????????????????????? */
     VOS_UINT8                           aucReserved[3];
 } AT_MTA_SET_XCPOSRRPT_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 命令执行结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????????? */
     VOS_UINT8                           ucXcposrRptFlg;
     VOS_UINT8                           aucReserved[3];
 } MTA_AT_QRY_XCPOSRRPT_CNF_STRU;
@@ -2795,7 +2795,7 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulSensorStat;                              /* Sensor Hub 状态 */
+    VOS_UINT32                          ulSensorStat;                              /* Sensor Hub ???? */
 }AT_MTA_SET_SENSOR_REQ_STRU;
 
 typedef struct
@@ -2806,7 +2806,7 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucScreenStat;                              /* Screen 状态 */
+    VOS_UINT8                           ucScreenStat;                              /* Screen ???? */
     VOS_UINT8                           aucReserved[3];
 }AT_MTA_SET_SCREEN_REQ_STRU;
 
@@ -2818,43 +2818,43 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_CFG_ENUM_UINT8               enCfg;                                  /* 0:关闭,1:打开 */
-    VOS_UINT8                           aucReserved[3];                         /* 保留位 */
+    AT_MTA_CFG_ENUM_UINT8               enCfg;                                  /* 0:????,1:???? */
+    VOS_UINT8                           aucReserved[3];                         /* ?????? */
 } AT_MTA_SET_RXTESTMODE_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????? */
 }MTA_AT_SET_RXTESTMODE_CNF_STRU;
 
 typedef struct
 {
     VOS_UINT16                          usCause;
-    VOS_UINT16                          usReserved;        /* 保留位 */
+    VOS_UINT16                          usReserved;        /* ?????? */
 }MTA_AT_AFC_CLK_UNLOCK_IND_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucGroupID;                             /* 器件号 */
-    VOS_UINT8                           ucDeviceID;                            /* 设备号 */
-    VOS_UINT8                           ucCaseID;                              /* 器件最优频率类号 */
-    VOS_UINT8                           ucMode;                                /* 主动上报方式 */
+    VOS_UINT8                           ucGroupID;                             /* ?????? */
+    VOS_UINT8                           ucDeviceID;                            /* ?????? */
+    VOS_UINT8                           ucCaseID;                              /* ???????????????? */
+    VOS_UINT8                           ucMode;                                /* ???????????? */
 } MTA_AT_DEVICE_FREQ_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucRptDeviceNum;                                    /* 要上报的激活器件数目 */
-    VOS_UINT8                           aucReserved[3];                                    /* 保留位 */
-    MTA_AT_DEVICE_FREQ_STRU             astDeviceFreqList[MTA_AT_MAX_BESTFREQ_GROUPNUM];   /* 8组器件最优频率列表 */
+    VOS_UINT8                           ucRptDeviceNum;                                    /* ???????????????????? */
+    VOS_UINT8                           aucReserved[3];                                    /* ?????? */
+    MTA_AT_DEVICE_FREQ_STRU             astDeviceFreqList[MTA_AT_MAX_BESTFREQ_GROUPNUM];   /* 8?????????????????? */
 } MTA_AT_BEST_FREQ_CASE_IND_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 消息处理结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????????? */
     VOS_UINT8                           ucActiveDeviceNum;
     VOS_UINT8                           aucReserved[3];
     MTA_AT_DEVICE_FREQ_STRU             astDeviceInfoList[MTA_AT_MAX_BESTFREQ_GROUPNUM];
@@ -2869,7 +2869,7 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_UINT16                          usRfic0DieIdValid;                       /*1-存在， 0-不存在*/
+    VOS_UINT16                          usRfic0DieIdValid;                       /*1-?????? 0-??????*/
     VOS_UINT16                          usRfic1DieIdValid;
     VOS_UINT16                          usRfic2DieIdValid;
     VOS_UINT16                          usRfic3DieIdValid;
@@ -2882,11 +2882,11 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                          usCmdType;                              /* 命令类型 */
-    VOS_UINT16                          usRatBitmap;                            /* 支持的rat模式，比bitmap */
-    VOS_UINT32                          ulPara1;                                /* 配置参数1 */
-    VOS_UINT32                          ulPara2;                                /* 配置参数2 */
-    VOS_UINT32                          ulPara3;                                /* 配置参数3 */
+    VOS_UINT16                          usCmdType;                              /* ???????? */
+    VOS_UINT16                          usRatBitmap;                            /* ??????rat????????bitmap */
+    VOS_UINT32                          ulPara1;                                /* ????????1 */
+    VOS_UINT32                          ulPara2;                                /* ????????2 */
+    VOS_UINT32                          ulPara3;                                /* ????????3 */
 } AT_MTA_PHY_COM_CFG_SET_REQ_STRU;
 
 
@@ -2898,8 +2898,8 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_CFG_ENUM_UINT8               enEnable;                               /* 0关闭主动上报，1打开主动上报 */
-    VOS_UINT8                           aucReserved[3];                         /* 保留位 */
+    AT_MTA_CFG_ENUM_UINT8               enEnable;                               /* 0??????????????1???????????? */
+    VOS_UINT8                           aucReserved[3];                         /* ?????? */
 }AT_MTA_SET_CRRCONN_REQ_STRU;
 
 
@@ -2908,7 +2908,7 @@ typedef struct
     VOS_UINT8                           ucStatus0;
     VOS_UINT8                           ucStatus1;
     VOS_UINT8                           ucStatus2;
-    VOS_UINT8                           ucReserved;                             /* 保留位 */
+    VOS_UINT8                           ucReserved;                             /* ?????? */
 }MTA_AT_CRRCONN_STATUS_IND_STRU;
 
 
@@ -2927,26 +2927,26 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulEnable;                               /* 0关闭主动上报，1打开主动上报 */
-    VOS_UINT32                          ulThreshold;                            /* LPDCP信息上报阈值 */
+    VOS_UINT32                          ulEnable;                               /* 0??????????????1???????????? */
+    VOS_UINT32                          ulThreshold;                            /* LPDCP???????????? */
 }AT_MTA_SET_VTRLQUALRPT_REQ_STRU;
 
 
 typedef struct
 {
-    VOS_INT16                           sRsrp;                                  /*RSRP测量结果*/
-    VOS_INT16                           sRsrq;                                  /*RSRQ测量结果*/
-    VOS_INT16                           sRssi;                                  /*RSSI测量结果*/
-    VOS_UINT16                          usBler;                                 /*误码率*/
+    VOS_INT16                           sRsrp;                                  /*RSRP????????*/
+    VOS_INT16                           sRsrq;                                  /*RSRQ????????*/
+    VOS_INT16                           sRssi;                                  /*RSSI????????*/
+    VOS_UINT16                          usBler;                                 /*??????*/
 } MTA_AT_RL_QUALITY_INFO_IND_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulCurrBuffTime;                         /*最老数据包缓存时长*/
-    VOS_UINT32                          ulCurrBuffPktNum;                       /*当前缓存数据包个数*/
-    VOS_UINT32                          ulMacUlThrput;                          /*MAC上行速率,只包含上行新授权速率，不包含重传授权。单位:bytes/s*/
-    VOS_UINT32                          ulMaxBuffTime;                          /*最大缓存时间，单位ms*/
+    VOS_UINT32                          ulCurrBuffTime;                         /*??????????????????*/
+    VOS_UINT32                          ulCurrBuffPktNum;                       /*??????????????????*/
+    VOS_UINT32                          ulMacUlThrput;                          /*MAC????????,??????????????????????????????????????????:bytes/s*/
+    VOS_UINT32                          ulMaxBuffTime;                          /*??????????????????ms*/
 }MTA_AT_VIDEO_DIAG_INFO_RPT_STRU;
 
 
@@ -2997,33 +2997,33 @@ typedef struct
 
 typedef struct
 {
-    AT_MTA_MODEM_CAP_UPDATE_TYPE_ENUM_UINT8                 enModemCapUpdateType;   /* MODEM平台能力更新类型 */
+    AT_MTA_MODEM_CAP_UPDATE_TYPE_ENUM_UINT8                 enModemCapUpdateType;   /* MODEM???????????????? */
     VOS_UINT8                                               aucReserved[3];
 } AT_MTA_MODEM_CAP_UPDATE_REQ_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32                               enRslt;                 /* MODEM平台能力更新结果 */
+    MTA_AT_RESULT_ENUM_UINT32                               enRslt;                 /* MODEM???????????????? */
 } MTA_AT_MODEM_CAP_UPDATE_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucDlCategery;                           /* 下行category */
-    VOS_UINT8                           ucUlCategery;                           /* 上行category */
-    VOS_UINT8                           aucReserved[2];                         /* 保留位 */
+    VOS_UINT8                           ucDlCategery;                           /* ????category */
+    VOS_UINT8                           ucUlCategery;                           /* ????category */
+    VOS_UINT8                           aucReserved[2];                         /* ?????? */
 } MTA_AT_LTE_CATEGORY_INFO_IND_STRU;
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 /*****************************************************************************
-  H2ASN顶级消息结构定义
+  H2ASN????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -3063,8 +3063,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT8                           ucDeviceID;      /* 需要设置的干扰器件ID, 0表示全部，1-255分别对应特定器件 */
-    VOS_UINT8                           ucMode;          /* 0表示关闭主动上报，1表示开启主动上报 */
+    VOS_UINT8                           ucDeviceID;      /* ??????????????????ID, 0??????????1-255???????????????? */
+    VOS_UINT8                           ucMode;          /* 0??????????????????1???????????????? */
     VOS_UINT8                           aucReserved[2];
 }AT_MTA_BESTFREQ_SET_REQ_STRU;
 
@@ -3107,10 +3107,10 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT16                          uhwSrcAntTimeLength;                    /* 源(当前)天线时长，单位:ms */
-    VOS_UINT16                          uhwDestAntTimeLength;                   /* 目标天线时长，单位:ms */
-    VOS_INT16                           shwSrcAntTxPowerGain;                   /* 源(当前)天线发射功率提升值，单位:0.1dB */
-    VOS_INT16                           shwDestAntTxPowerGain;                  /* 目标天线发射功率提升值，单位:0.1dB */
+    VOS_UINT16                          uhwSrcAntTimeLength;                    /* ??(????)??????????????:ms */
+    VOS_UINT16                          uhwDestAntTimeLength;                   /* ??????????????????:ms */
+    VOS_INT16                           shwSrcAntTxPowerGain;                   /* ??(????)????????????????????????:0.1dB */
+    VOS_INT16                           shwDestAntTxPowerGain;                  /* ????????????????????????????:0.1dB */
 }MTA_AT_TX_STATEII_LEVEL_STRU;
 
 
@@ -3127,42 +3127,42 @@ typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32               enResult;
     MTA_AT_TAS_TEST_RATMODE_ENUM_UINT32     enRatMode;
-    VOS_UINT32                              ulCurrLevel;                        /* 当前档位索引 */
-    MTA_AT_TX_STATEII_LEVEL_STRU            stLevelInfo;                        /* 当前档位的具体内容 */
-    MTA_AT_TX_STATEII_LEVEL_TABLE_STRU      stUsedTable;                        /* 档位表 */
+    VOS_UINT32                              ulCurrLevel;                        /* ???????????? */
+    MTA_AT_TX_STATEII_LEVEL_STRU            stLevelInfo;                        /* ?????????????????? */
+    MTA_AT_TX_STATEII_LEVEL_TABLE_STRU      stUsedTable;                        /* ?????? */
 }MTA_AT_TAS_TEST_QRY_CNF_STRU;
 
 
 typedef struct
 {
-    AT_MTA_RS_INFO_TYPE_ENUM_UINT32     enRsInfoType;                           /* 0:查询RSRP，1:查询RSRQ */
+    AT_MTA_RS_INFO_TYPE_ENUM_UINT32     enRsInfoType;                           /* 0:????RSRP??1:????RSRQ */
 }AT_MTA_RS_INFO_QRY_REQ_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulCellId;                               /* 小区ID */
-    VOS_UINT32                          ulEarfcn;                               /* 小区频点 */
-    VOS_INT32                           lRsrp;                                  /* 信号接收功率，LRRC乘100后的值，AT上报要带两位小数 */
+    VOS_UINT32                          ulCellId;                               /* ????ID */
+    VOS_UINT32                          ulEarfcn;                               /* ???????? */
+    VOS_INT32                           lRsrp;                                  /* ??????????????LRRC??100????????AT???????????????? */
 }MTA_AT_RSRP_INFO_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulCellId;                               /* 小区ID */
-    VOS_UINT32                          ulEarfcn;                               /* 小区频点 */
-    VOS_INT32                           lRsrq;                                  /* 信号接收质量，LRRC乘100后的值，AT上报要带两位小数 */
+    VOS_UINT32                          ulCellId;                               /* ????ID */
+    VOS_UINT32                          ulEarfcn;                               /* ???????? */
+    VOS_INT32                           lRsrq;                                  /* ??????????????LRRC??100????????AT???????????????? */
 }MTA_AT_RSRQ_INFO_STRU;
 
 
 typedef struct
 {
-    AT_MTA_RS_INFO_TYPE_ENUM_UINT32     enRsInfoType;                           /* 0:查询RSRP，1:查询RSRQ */
+    AT_MTA_RS_INFO_TYPE_ENUM_UINT32     enRsInfoType;                           /* 0:????RSRP??1:????RSRQ */
     VOS_UINT32                          ulRsInfoNum;
     union
     {
-        MTA_AT_RSRP_INFO_STRU           astRsrpInfo[AT_MAX_RS_INFO_NUM];        /* RSRP测量结果 */
-        MTA_AT_RSRQ_INFO_STRU           astRsrqInfo[AT_MAX_RS_INFO_NUM];        /* RSRQ测量结果 */
+        MTA_AT_RSRP_INFO_STRU           astRsrpInfo[AT_MAX_RS_INFO_NUM];        /* RSRP???????? */
+        MTA_AT_RSRQ_INFO_STRU           astRsrqInfo[AT_MAX_RS_INFO_NUM];        /* RSRQ???????? */
     }u;
 }MTA_AT_RS_INFO_RSLT_STRU;
 
@@ -3212,7 +3212,7 @@ typedef struct
     VOS_UINT32                                              ulCellId;
     VOS_UINT32                                              ulLac;
     AT_MTA_SYS_MODE_ENUM_UINT32                             enSysmode;
-    AT_MTA_PSEUCELL_NOTIFY_TYPE_ENUM_UINT8                  enPseucellNotifyType;   /* 0:为短信识别；其他:不支持 */
+    AT_MTA_PSEUCELL_NOTIFY_TYPE_ENUM_UINT8                  enPseucellNotifyType;   /* 0:????????????????:?????? */
     VOS_UINT8                                               aucReserved[3];
 }AT_MTA_PSEUCELL_INFO_SET_REQ_STRU;
 
@@ -3226,8 +3226,8 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_INT16                           sPowerDet;                              /* 功率检测结果，0.1dBm精度 */
-    VOS_UINT8                           aucReserved1[2];                        /* 保留位 */
+    VOS_INT16                           sPowerDet;                              /* ??????????????0.1dBm???? */
+    VOS_UINT8                           aucReserved1[2];                        /* ?????? */
 }MTA_AT_POWER_DET_QRY_CNF_STRU;
 
 
@@ -3246,7 +3246,7 @@ typedef struct
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* 操作结果 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;      /* ???????? */
     VOS_UINT32                          ulValue;
 }MTA_AT_MIPI_READ_CNF_STRU;
 
@@ -3311,8 +3311,8 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                                  ulFreqBegin;                    /* 单位100khz */
-    VOS_UINT32                                  ulFreqEnd;                      /* 单位100khz */
+    VOS_UINT32                                  ulFreqBegin;                    /* ????100khz */
+    VOS_UINT32                                  ulFreqEnd;                      /* ????100khz */
 }AT_MTA_FREQ_RANGE_STRU;
 
 
@@ -3320,57 +3320,57 @@ typedef struct
 {
     VOS_UINT16                                  usBandInd;                      /* Band:1-255 */
     VOS_UINT8                                   ucReserved;
-    VOS_UINT8                                   ucFreqRangeNum;                 /* 0-4,0:表示去激活整个Band，频率范围是协议默认范围 */
+    VOS_UINT8                                   ucFreqRangeNum;                 /* 0-4,0:??????????????Band???????????????????????? */
     AT_MTA_FREQ_RANGE_STRU                      astFreqRange[AT_MTA_MAX_SUB_BAND_NUM];
 }AT_MTA_BAND_INFO_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                                   ucCaA2Flg;                     /* CA A2功能开关 */
-    VOS_UINT8                                   ucCaA4Flg;                     /* CA A4功能开关 */
-    VOS_UINT8                                   ucCaCqiFlg;                    /* CA cqi=0功能开关 */
+    VOS_UINT8                                   ucCaA2Flg;                     /* CA A2???????? */
+    VOS_UINT8                                   ucCaA4Flg;                     /* CA A4???????? */
+    VOS_UINT8                                   ucCaCqiFlg;                    /* CA cqi=0???????? */
     VOS_UINT8                                   aucReserved[3];
-    VOS_UINT16                                  usBandNum;                     /* 0-8,0:表示去使能所有的CA SCell */
+    VOS_UINT16                                  usBandNum;                     /* 0-8,0:????????????????CA SCell */
     AT_MTA_BAND_INFO_STRU                       astBandInfo[AT_MTA_MAX_BAND_NUM];
 }AT_MTA_CA_INFO_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                                   ucCaActFlag;                    /* 使能去使能Ca标志，0:去使能  1:使能 */
-    VOS_UINT8                                   aucReserved[3];                 /* 保留位 */
+    VOS_UINT8                                   ucCaActFlag;                    /* ??????????Ca??????0:??????  1:???? */
+    VOS_UINT8                                   aucReserved[3];                 /* ?????? */
     AT_MTA_CA_INFO_STRU                         stCaInfo;
 }AT_MTA_CA_CFG_SET_REQ_STRU;
 
 
 typedef struct
 {
-    VOS_UINT8                           ucCellIndex;                            /* 小区索引, 0: PCell, 1~7: SCell */
-    MTA_AT_BAND_WIDTH_ENUM_UINT8        enBandWidth;                            /* SCell占用带宽 */
-    VOS_UINT16                          usBandInd;                              /* SCell频段 */
+    VOS_UINT8                           ucCellIndex;                            /* ????????, 0: PCell, 1~7: SCell */
+    MTA_AT_BAND_WIDTH_ENUM_UINT8        enBandWidth;                            /* SCell???????? */
+    VOS_UINT16                          usBandInd;                              /* SCell???? */
 
-    VOS_UINT8                           ucUlConfigured;                         /* CA上行是否被配置，0:未配置，1:已配置 */
-    VOS_UINT8                           ucDlConfigured;                         /* CA下行是否被配置，0:未配置，1:已配置 */
-    VOS_UINT8                           ucActived;                              /* SCell是否被激活，0:去激活，1:激活 */
-    VOS_UINT8                           ucLaaScellFlg;                          /* 本SCell是否为LaaScell, 0:不是, 1:是 */
+    VOS_UINT8                           ucUlConfigured;                         /* CA????????????????0:????????1:?????? */
+    VOS_UINT8                           ucDlConfigured;                         /* CA????????????????0:????????1:?????? */
+    VOS_UINT8                           ucActived;                              /* SCell????????????0:????????1:???? */
+    VOS_UINT8                           ucLaaScellFlg;                          /* ??SCell??????LaaScell, 0:????, 1:?? */
 
-    VOS_UINT32                          ulEarfcn;                               /* SCell频点 */
+    VOS_UINT32                          ulEarfcn;                               /* SCell???? */
 }MTA_AT_CA_CELL_INFO_STRU;
 
 
 typedef struct
 {
-    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* 操作结果 */
-    VOS_UINT32                          ulTotalCellNum;                         /* 上报消息中有效Cell的个数 */
-    MTA_AT_CA_CELL_INFO_STRU            astCellInfo[MTA_AT_CA_MAX_CELL_NUM];    /* 前ulTotalCellNum个元素有效 */
+    MTA_AT_RESULT_ENUM_UINT32           enResult;                               /* ???????? */
+    VOS_UINT32                          ulTotalCellNum;                         /* ??????????????Cell?????? */
+    MTA_AT_CA_CELL_INFO_STRU            astCellInfo[MTA_AT_CA_MAX_CELL_NUM];    /* ??ulTotalCellNum?????????? */
 }MTA_AT_CA_CELL_INFO_CNF_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulTotalCellNum;                         /* 上报消息中有效Cell的个数 */
-    MTA_AT_CA_CELL_INFO_STRU            astCellInfo[MTA_AT_CA_MAX_CELL_NUM];    /* 前ulTotalCellNum个元素有效 */
+    VOS_UINT32                          ulTotalCellNum;                         /* ??????????????Cell?????? */
+    MTA_AT_CA_CELL_INFO_STRU            astCellInfo[MTA_AT_CA_MAX_CELL_NUM];    /* ??ulTotalCellNum?????????? */
 }MTA_AT_CA_CELL_INFO_NTF_STRU;
 
 
@@ -3390,14 +3390,14 @@ typedef struct
 typedef struct
 {
     MTA_AT_RESULT_ENUM_UINT32           enResult;
-    VOS_INT32                           lSinr;                                  /*当前信噪比 */
+    VOS_INT32                           lSinr;                                  /*?????????? */
     VOS_UINT8                           aucUtcTime[MTA_AT_UTC_MAX_LENGTH];      /*(0..549755813887) */
     VOS_UINT8                           aucUtcTimeOffset[MTA_AT_UTC_MAX_LENGTH];/*(0..549755813887) */
-    VOS_INT16                           sTa;                                    /*网侧配置的时间提前量 */
-    VOS_INT16                           sLeapSecond;                            /*闰秒调整值 */
-    VOS_UINT8                           ucLeapSecondValid;                      /*是否存在闰秒调整 */
+    VOS_INT16                           sTa;                                    /*???????????????????? */
+    VOS_INT16                           sLeapSecond;                            /*?????????? */
+    VOS_UINT8                           ucLeapSecondValid;                      /*???????????????? */
     MTA_AT_FINE_TIME_RAT_ENUM_UINT8     enRat;
-    MTA_AT_PROTOCOL_STATE_ENUM_UINT8    enState;                                /*当前LRRC协议状态 */
+    MTA_AT_PROTOCOL_STATE_ENUM_UINT8    enState;                                /*????LRRC???????? */
     VOS_UINT8                           aucReserved[3];
 } MTA_AT_SIB_FINE_TIME_IND_STRU;
 
@@ -3431,10 +3431,10 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32                          ulAckType;                              /* ACK类型 */
-    VOS_UINT32                          ulAckValue1;                            /* ACK值1 */
-    VOS_UINT32                          ulAckValue2;                            /* ACK值2 */
-    VOS_UINT32                          ulAckValue3;                            /* ACK值3 */
+    VOS_UINT32                          ulAckType;                              /* ACK???? */
+    VOS_UINT32                          ulAckValue1;                            /* ACK??1 */
+    VOS_UINT32                          ulAckValue2;                            /* ACK??2 */
+    VOS_UINT32                          ulAckValue3;                            /* ACK??3 */
 }MTA_AT_PHY_COMM_ACK_IND_STRU;
 
 
@@ -3523,7 +3523,7 @@ typedef struct
 }MTA_AT_PSEUD_BTS_IDENT_IND_STRU;
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 
 

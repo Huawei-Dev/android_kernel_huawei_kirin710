@@ -57,13 +57,13 @@ extern "C" {
 #endif
 
 /****************************************************************************
-  1 宏定义
+  1 ??????
 *****************************************************************************/
-/* GUCTTF组件A核相关NVID范围定义,[4850-4949],100个 */
+/* GUCTTF????A??????NVID????????,[4850-4949],100?? */
 #define     GUCTTF_ACORE_NV_ID_MIN      4850
 #define     GUCTTF_ACORE_NV_ID_MAX      4999
 
-/* C核NV_ID定义 */
+/* C??NV_ID???? */
 enum GUCTTF_ACORE_NV_ID_ENUM
 {
     en_NV_Item_PPP_CONFIG                                   = GUCTTF_ACORE_NV_ID_MIN,       /* 4850 */
@@ -71,7 +71,7 @@ enum GUCTTF_ACORE_NV_ID_ENUM
     /* via:CPULOAD_CFG_STRU */
     en_NV_Item_Linux_CPU_Moniter_Timer_Len                  = GUCTTF_ACORE_NV_ID_MIN + 1,   /* 4851 */
 
-    /* via:FC_CPU_DRV_ASSEM_PARA_NV_STRU，动态调整驱动组包方案档位信息 */
+    /* via:FC_CPU_DRV_ASSEM_PARA_NV_STRU?????????????????????????????? */
     en_NV_Item_FC_ACPU_DRV_ASSEMBLE_PARA                    = GUCTTF_ACORE_NV_ID_MIN + 2,   /* 4852 */
 
     en_NV_Item_NETFILTER_HOOK_MASK                          = GUCTTF_ACORE_NV_ID_MIN + 3,   /* 4853 */

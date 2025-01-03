@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_main.h"
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
@@ -29,14 +29,14 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
 void __iomem *g_l2cache_base;
 #endif
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_int32  ATTR_OAL_NO_FUNC_TRACE oal_main_init(oal_void)
@@ -49,12 +49,12 @@ oal_int32  ATTR_OAL_NO_FUNC_TRACE oal_main_init(oal_void)
     }
 #endif
 
-    /* 为了解各模块的启动时间，增加时间戳打印 */
+    /* ?????????????????????????????????????? */
 
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST) && !defined(CONFIG_HI110X_KERNEL_MODULES_BUILD_SUPPORT) && defined(_PRE_CONFIG_CONN_HISI_SYSFS_SUPPORT)
-    /*110X 驱动build in，内存池初始化上移到内核完成，保证大片内存申请成功*/
+    /*110X ????build in??????????????????????????????????????????????????*/
 #else
-    /* 内存池初始化 */
+    /* ???????????? */
     ul_rslt = oal_mem_init_pool();
     if (ul_rslt != OAL_SUCC)
     {
@@ -65,11 +65,11 @@ oal_int32  ATTR_OAL_NO_FUNC_TRACE oal_main_init(oal_void)
 #endif
 
 #if (_PRE_PRODUCT_ID_HI1151 == _PRE_PRODUCT_ID)
-    /* pci驱动注册 */
+    /* pci???????? */
     ul_rslt = oal_pci_init();
     if (OAL_SUCC != ul_rslt)
     {
-        /* 内存池卸载 */
+        /* ?????????? */
         oal_mem_exit();
         OAL_BUG_ON(1);
         return -OAL_EFAIL;
@@ -83,9 +83,9 @@ oal_int32  ATTR_OAL_NO_FUNC_TRACE oal_main_init(oal_void)
         return -OAL_EFAIL;
     }
 #elif ((defined(_PRE_PRODUCT_ID_HI110X_HOST))||(defined(_PRE_PRODUCT_ID_HI110X_DEV)))
-    /* Hi1102 SDIO总线初始化接口 TBD */
+    /* Hi1102 SDIO?????????????? TBD */
 
-    /* 初始化: 总线上的chip数量增加1 */
+    /* ??????: ????????chip????????1 */
     oal_bus_init_chip_num();
     ul_rslt = oal_bus_inc_chip_num();
     if(OAL_SUCC != ul_rslt)
@@ -109,13 +109,13 @@ oal_int32  ATTR_OAL_NO_FUNC_TRACE oal_main_init(oal_void)
     }
 #endif
 
-    /* 启动成功 */
+    /* ???????? */
 #if (_PRE_OS_VERSION_WIN32 == _PRE_OS_VERSION)
     OAL_MEMZERO(g_past_net_device, WLAN_VAP_SUPPORT_MAX_NUM_LIMIT * OAL_SIZEOF(oal_net_device_stru *));
 #endif
 
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST)
-    /* HCC初始化 */
+    /* HCC?????? */
     if (OAL_UNLIKELY(NULL ==hcc_module_init()))
     {
         OAL_IO_PRINT("[ERROR]hcc_module_init return err null\n");
@@ -154,28 +154,28 @@ oal_void  ATTR_OAL_NO_FUNC_TRACE oal_main_exit(oal_void)
 #endif
 
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST)
-    /* HCC卸载*/
+    /* HCC????*/
     hcc_module_exit(hcc_get_default_handler());
 #endif
 
 #if (_PRE_PRODUCT_ID_HI1151 == _PRE_PRODUCT_ID)
 
-    /* pci驱动卸载 */
+    /* pci???????? */
     oal_pci_exit();
 
     oal_5115_pci_exit();
 
 #elif ((defined(_PRE_PRODUCT_ID_HI110X_HOST))||(defined(_PRE_PRODUCT_ID_HI110X_DEV)))
-    /* Hi1102 SDIO总线exit接口(不下电) TBD */
+    /* Hi1102 SDIO????exit????(??????) TBD */
 
-    /* chip num初始化:0 */
+    /* chip num??????:0 */
     oal_bus_init_chip_num();
 #endif
 
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST) && !defined(CONFIG_HI110X_KERNEL_MODULES_BUILD_SUPPORT) && defined(_PRE_CONFIG_CONN_HISI_SYSFS_SUPPORT)
-    /*110X 驱动build in，内存池初始化上移到内核完成，保证大片内存申请成功*/
+    /*110X ????build in??????????????????????????????????????????????????*/
 #else
-    /* 内存池卸载 */
+    /* ?????????? */
     oal_mem_exit();
 #endif
 
@@ -210,7 +210,7 @@ oal_uint32  oal_chip_get_version(oal_void)
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     ul_chip_ver   = WLAN_CHIP_VERSION_HI1151V100H;
 #elif defined(_PRE_PRODUCT_ID_HI110X_DEV) || defined(_PRE_PRODUCT_ID_HI110X_HOST)
-    /* 1102 02需要SOC提供寄存器后实现 */
+    /* 1102 02????SOC???????????????? */
     ul_chip_ver   = WLAN_CHIP_VERSION_HI1151V100H;
 #endif
 
@@ -219,7 +219,7 @@ oal_uint32  oal_chip_get_version(oal_void)
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     ul_chip_ver   = WLAN_CHIP_VERSION_HI1151V100H;
 #elif defined(_PRE_PRODUCT_ID_HI110X_DEV) || defined(_PRE_PRODUCT_ID_HI110X_HOST)
-    /* 1102 02需要SOC提供寄存器后实现 */
+    /* 1102 02????SOC???????????????? */
     ul_chip_ver   = WLAN_CHIP_VERSION_HI1151V100H;
 #endif
 
@@ -256,7 +256,7 @@ oal_void hi_wlan_power_off(void)
 
 oal_void save_nfc_lowpower_log(oal_void)
 {
-    /*读取nfc低电log数据,然后下电*/
+    /*????nfc????log????,????????*/
     save_nfc_lowpower_log_2_sdt();
     hi_wlan_power_off();
 }

@@ -50,7 +50,7 @@
 #define  CSS_AT_INTERFACE_H
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "vos.h"
 
@@ -65,19 +65,19 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define MCC_INFO_VERSION_LEN                 (9)
 #define AT_CSS_MAX_MCC_ID_NUM                (17)
 #define AT_CSS_BLACK_CELL_LIST_VERSION_LEN   (9)
-#define AT_CSS_CLOUD_LINE_VERSION_LEN        (9)                 /* 云端预置高铁线路版本号字符串长度 */
-#define AT_CSS_PLMN_MAX_LINE_NUM             (64)                /* 云端预置高铁线路一个PLMN下包含的最大线路个数 */
-#define AT_CSS_TACLAC_MAX_LINE_NUM           (10)                /* 云端预置高铁线路一个TAC/LAC所对应的最大线路个数 */
+#define AT_CSS_CLOUD_LINE_VERSION_LEN        (9)                 /* ???????????????????????????????? */
+#define AT_CSS_PLMN_MAX_LINE_NUM             (64)                /* ????????????????????PLMN???????????????????? */
+#define AT_CSS_TACLAC_MAX_LINE_NUM           (10)                /* ????????????????????TAC/LAC???????????????????? */
 
-#define AT_CSS_MRU_MAX_NUM                   (10)                /* MRU可以存储的最大个数 */
+#define AT_CSS_MRU_MAX_NUM                   (10)                /* MRU?????????????????? */
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 enum CSS_AT_MSG_TYPE_ENUM
@@ -119,9 +119,9 @@ typedef  VOS_UINT32  CSS_AT_MSG_TYPE_ENUM_UINT32;
 
 enum AT_CSS_RAT_ENUM
 {
-    AT_CSS_RAT_TYPE_GSM = 0,                           /* GSM接入技术 */
-    AT_CSS_RAT_TYPE_WCDMA,                             /* WCDMA接入技术 */
-    AT_CSS_RAT_TYPE_LTE,                               /* LTE接入技术 */
+    AT_CSS_RAT_TYPE_GSM = 0,                           /* GSM???????? */
+    AT_CSS_RAT_TYPE_WCDMA,                             /* WCDMA???????? */
+    AT_CSS_RAT_TYPE_LTE,                               /* LTE???????? */
 
     AT_CSS_RAT_TYPE_BUTT
 };
@@ -129,9 +129,9 @@ typedef  VOS_UINT8  AT_CSS_RAT_ENUM_UINT8;
 
 enum AT_CSS_SET_MCC_OPERATE_TYPE_ENUM
 {
-    AT_CSS_SET_MCC_TYPE_ADD_MCC = 0,                   /* 新增MCC */
-    AT_CSS_SET_MCC_TYPE_DELETE_ALL_MCC,                /* 删除所有MCC信息 */
-    AT_CSS_SET_MCC_TYPE_DELETE_ONE_MCC,                /* 删除一个MCC信息 */
+    AT_CSS_SET_MCC_TYPE_ADD_MCC = 0,                   /* ????MCC */
+    AT_CSS_SET_MCC_TYPE_DELETE_ALL_MCC,                /* ????????MCC???? */
+    AT_CSS_SET_MCC_TYPE_DELETE_ONE_MCC,                /* ????????MCC???? */
 
     AT_CSS_SET_MCC_TYPE_BUTT
 };
@@ -140,69 +140,69 @@ typedef  VOS_UINT8  AT_CSS_SET_MCC_OPERATE_TYPE_ENUM_UINT8;
 
 enum AT_CSS_BLACK_CELL_LIST_OPERATE_TYPE_ENUM
 {
-    AT_CSS_BLACK_CELL_LIST_ADD_ONE      = 0,           /* 新增一条黑小区信息 */
-    AT_CSS_BLACK_CELL_LIST_DELETE_ALL,                 /* 删除所有黑小区信息 */
+    AT_CSS_BLACK_CELL_LIST_ADD_ONE      = 0,           /* ?????????????????? */
+    AT_CSS_BLACK_CELL_LIST_DELETE_ALL,                 /* ?????????????????? */
 
     AT_CSS_BLACK_CELL_LIST_TYPE_BUTT
 };
 typedef  VOS_UINT8  AT_CSS_BLACK_CELL_LIST_OPERATE_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
-枚举名    : AT_CSS_LINE_INDEX_LIST_OPERATE_TYPE_ENUM
-结构说明  : 高铁索引表操作类型
+??????    : AT_CSS_LINE_INDEX_LIST_OPERATE_TYPE_ENUM
+????????  : ??????????????????
 
 *****************************************************************************/
 enum AT_CSS_LINE_INDEX_LIST_OPERATE_TYPE_ENUM
 {
-    AT_CSS_LINE_INDEX_LIST_ADD          = 0,           /* 新增高铁索引信息 */
-    AT_CSS_LINE_INDEX_LIST_DELETE_ALL,                 /* 删除高铁索引信息 */
+    AT_CSS_LINE_INDEX_LIST_ADD          = 0,           /* ???????????????? */
+    AT_CSS_LINE_INDEX_LIST_DELETE_ALL,                 /* ???????????????? */
 
     AT_CSS_LINE_INDEX_LIST_TYPE_BUTT
 };
 typedef  VOS_UINT8  AT_CSS_LINE_INDEX_LIST_OPERATE_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
-枚举名    : AT_CSS_LINE_DETAIL_OPERATE_TYPE_ENUM
-结构说明  : 高铁高铁详细信息表操作类型
+??????    : AT_CSS_LINE_DETAIL_OPERATE_TYPE_ENUM
+????????  : ??????????????????????????
 
 *****************************************************************************/
 enum AT_CSS_LINE_DETAIL_OPERATE_TYPE_ENUM
 {
-    AT_CSS_LINE_DETAIL_ADD              = 0,           /* 新增高铁线路详细信息 */
-    AT_CSS_LINE_DETAIL_DELETE_ALL,                     /* 删除高铁线路详细信息 */
+    AT_CSS_LINE_DETAIL_ADD              = 0,           /* ???????????????????? */
+    AT_CSS_LINE_DETAIL_DELETE_ALL,                     /* ???????????????????? */
 
     AT_CSS_LINE_DETAIL_TYPE_BUTT
 };
 typedef  VOS_UINT8  AT_CSS_LINE_DETAIL_OPERATE_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
-枚举名    : AT_CSS_LINE_DETAIL_INFO_TYPE_ENUM
-结构说明  : 高铁高铁详细信息表类型
+??????    : AT_CSS_LINE_DETAIL_INFO_TYPE_ENUM
+????????  : ??????????????????????
 
 *****************************************************************************/
 enum AT_CSS_LINE_DETAIL_INFO_TYPE_ENUM
 {
-    AT_CSS_LINE_DETAIL_INFO_TACLAC_PAIR     = 0,           /* TACLAC对 */
-    AT_CSS_LINE_DETAIL_INFO_HO_PATH,                       /* HO预置路径 */
-    AT_CSS_LINE_DETAIL_INFO_HO_BAR,                        /* HO预置Bar路径 */
-    AT_CSS_LINE_DETAIL_INFO_LTE_HO_PATH,                   /* LTE预置路径 */
-    AT_CSS_LINE_DETAIL_INFO_NO_INFO         = 0xFF         /* 表示没有消息信息，停止解析 */
+    AT_CSS_LINE_DETAIL_INFO_TACLAC_PAIR     = 0,           /* TACLAC?? */
+    AT_CSS_LINE_DETAIL_INFO_HO_PATH,                       /* HO???????? */
+    AT_CSS_LINE_DETAIL_INFO_HO_BAR,                        /* HO????Bar???? */
+    AT_CSS_LINE_DETAIL_INFO_LTE_HO_PATH,                   /* LTE???????? */
+    AT_CSS_LINE_DETAIL_INFO_NO_INFO         = 0xFF         /* ?????????????????????????? */
 };
 typedef  VOS_UINT8  AT_CSS_LINE_DETAIL_INFO_TYPE_ENUM_UINT8;
 
 /*****************************************************************************
-  4 类型定义
+  4 ????????
 *****************************************************************************/
 
 typedef struct
 {
-    /*MCC在aucMcc[2]中的存放格式,mcc为460:
+    /*MCC??aucMcc[2]????????????,mcc??460:
     ---------------------------------------------------------------------------
                  ||(BIT8)|(BIT7)|(BIT6)|(BIT5)|(BIT4)|(BIT3)|(BIT2)|(BIT1)
     ---------------------------------------------------------------------------
     aucMcc[0]    ||    MCC digit 2 = 6        |           MCC digit 1 = 4
     ---------------------------------------------------------------------------
-    aucMcc[1]    ||    无效                   |           MCC digit 3 = 0
+    aucMcc[1]    ||    ????                   |           MCC digit 3 = 0
     ---------------------------------------------------------------------------*/
     VOS_UINT8                           aucMcc[2];                              /* MCC ID */
     VOS_UINT8                           aucRsv[2];
@@ -237,7 +237,7 @@ typedef struct
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           aucRsv[1];
-    VOS_UINT8                           aucVersionId[MCC_INFO_VERSION_LEN];     /* 版本号，固定为xx.xx.xxx */
+    VOS_UINT8                           aucVersionId[MCC_INFO_VERSION_LEN];     /* ??????????????xx.xx.xxx */
 } CSS_AT_MCC_VERSION_INFO_CNF_STRU;
 
 
@@ -249,20 +249,20 @@ typedef struct
     MODEM_ID_ENUM_UINT16                          usModemId;
 
     VOS_UINT16                                    usClientId;
-    VOS_UINT8                                     ucSeq;                                  /* 流水号 */
-    AT_CSS_SET_MCC_OPERATE_TYPE_ENUM_UINT8        ucOperateType;                          /* 操作类型 */
-    VOS_UINT8                                     aucVersionId[MCC_INFO_VERSION_LEN];     /* 版本号，固定为xx.xx.xxx */
+    VOS_UINT8                                     ucSeq;                                  /* ?????? */
+    AT_CSS_SET_MCC_OPERATE_TYPE_ENUM_UINT8        ucOperateType;                          /* ???????? */
+    VOS_UINT8                                     aucVersionId[MCC_INFO_VERSION_LEN];     /* ??????????????xx.xx.xxx */
 
     VOS_UINT8                                     aucRsv[1];
 
     /*
-        1)aucMccINfoBuff里存储的是MCC的信息，存储区的真实大小是ulMccInfoBuffLen里记录的字节数；
-        2)aucMccINfoBuff里的格式为AT_CSS_MCC_INFO_STRU结构的格式，其中MNC个数,
-          BAND个数，预置频段个数，预置频点的个数都是可变的。
+        1)aucMccINfoBuff??????????MCC??????????????????????????ulMccInfoBuffLen????????????????
+        2)aucMccINfoBuff??????????AT_CSS_MCC_INFO_STRU????????????????MNC????,
+          BAND??????????????????????????????????????????????
 
         typedef struct
         {
-            VOS_UINT8                           ucSupportFlag;    // 1:表示支持GSM 2:表示支持WCDMA 4:表示支持LTE，三者可以自由组合
+            VOS_UINT8                           ucSupportFlag;    // 1:????????GSM 2:????????WCDMA 4:????????LTE??????????????????
             AT_CSS_FREQ_RANGE_STRU              stFreqRange;
         } AT_CSS_FREQ_RANGE_WITH_RAT_STRU;
 
@@ -270,56 +270,56 @@ typedef struct
         {
             VOS_UINT8                                   ucBandInd;
             VOS_UINT8                                   ucFreqRangNum;
-            //后面必须紧跟ucFreqRangNum个AT_CSS_FREQ_RANGE_WITH_RAT_STRU结构
-              的FreqRange信息，如果没有FreqRange，则需要将ucFreqRangNum填为0
+            //????????????ucFreqRangNum??AT_CSS_FREQ_RANGE_WITH_RAT_STRU????
+              ??FreqRange??????????????FreqRange??????????ucFreqRangNum????0
             AT_CSS_FREQ_RANGE_WITH_RAT_STRU             astFreqRangeArray[ucFreqRangNum];
 
             VOS_UINT8                                   ucPreConfigFreqNum;
-            //后面必须紧跟ucPreConfigFreqNum个AT_CSS_FREQ_RANGE_WITH_RAT_STRU结构
-              的PreConfigFreq信息，如果没有PreConfigFreq，则需要将ucPreConfigFreqNum填为0
-            AT_CSS_FREQ_RANGE_WITH_RAT_STRU             astPreConfigFreqArray[ucPreConfigFreqNum];      //预置频点列表
+            //????????????ucPreConfigFreqNum??AT_CSS_FREQ_RANGE_WITH_RAT_STRU????
+              ??PreConfigFreq??????????????PreConfigFreq??????????ucPreConfigFreqNum????0
+            AT_CSS_FREQ_RANGE_WITH_RAT_STRU             astPreConfigFreqArray[ucPreConfigFreqNum];      //????????????
         }AT_CSS_BAND_INFO_STRU;
 
 
         typedef struct
         {
-            MNC在aucMnc[2]中的存放格式，mnc为01:
+            MNC??aucMnc[2]??????????????mnc??01:
             ---------------------------------------------------------------------------
                          ||(BIT8)|(BIT7)|(BIT6)|(BIT5)|(BIT4)|(BIT3)|(BIT2)|(BIT1)
             ---------------------------------------------------------------------------
-            aucMnc[0]    ||    MNC digit 3 = f        |           无效
+            aucMnc[0]    ||    MNC digit 3 = f        |           ????
             ---------------------------------------------------------------------------
             aucMnc[1]    ||    MNC digit 2 = 1        |           MNC digit 1 = 0
             ---------------------------------------------------------------------------
             VOS_UINT8                           aucMnc[2];
-            VOS_UINT8                           ucBandCount;// BAND的个数
-            //后面必须紧跟ucBandCount个band的信息，如果没有BAND，则需要将ucBandCount填为0
+            VOS_UINT8                           ucBandCount;// BAND??????
+            //????????????ucBandCount??band????????????????BAND??????????ucBandCount????0
             AT_CSS_BAND_INFO_STRU               astBandArray[ucBandCount];
         }AT_CSS_MNC_INFO_STRU;
 
 
         typedef struct
         {
-            MCC在aucMcc[2]中的存放格式,mcc为460:
+            MCC??aucMcc[2]????????????,mcc??460:
             ---------------------------------------------------------------------------
                          ||(BIT8)|(BIT7)|(BIT6)|(BIT5)|(BIT4)|(BIT3)|(BIT2)|(BIT1)
             ---------------------------------------------------------------------------
             aucMcc[0]    ||    MCC digit 2 = 6        |           MCC digit 1 = 4
             ---------------------------------------------------------------------------
-            aucMcc[1]    ||    无效                   |           MCC digit 3 = 0
+            aucMcc[1]    ||    ????                   |           MCC digit 3 = 0
             ---------------------------------------------------------------------------
             VOS_UINT8                           aucMcc[2];
-            VOS_UINT8                           ucMncCount;// MNC的个数
-            //后面必须紧跟ucMncCount个AT_CSS_MNC_INFO_STRU结构的mnc信息，如果没有mnc，则需要将ucMncCount填为0
+            VOS_UINT8                           ucMncCount;// MNC??????
+            //????????????ucMncCount??AT_CSS_MNC_INFO_STRU??????mnc??????????????mnc??????????ucMncCount????0
             AT_CSS_MNC_INFO_STRU                astMncAarry[ucMncCount];
         }AT_CSS_MCC_INFO_STRU;
 
 
-        3)aucMccINfoBuff中存储信息的格式AP与CSS直接对接，AT不会进行修改，AP先形成上述的格式，
-          然后转成字符串格式发给AT，AT将字符串格式还原二进制码流，然后发给CSS；
-          例如AP形成某一个字节为0x22，然后转化为字符串'22'，AT收到后再转成0x22;
-        4)aucMccINfoBuff中的格式为小端；
-        5)ulMccInfoBuffLen不能超过1.6K；
+        3)aucMccINfoBuff????????????????AP??CSS??????????AT??????????????AP??????????????????
+          ??????????????????????AT??AT????????????????????????????????????CSS??
+          ????AP????????????????0x22??????????????????'22'??AT????????????0x22;
+        4)aucMccINfoBuff????????????????
+        5)ulMccInfoBuffLen????????1.6K??
     */
     VOS_UINT32                          ulMccInfoBuffLen;
     VOS_UINT8                           aucMccInfoBuff[4];
@@ -331,41 +331,41 @@ typedef struct
     VOS_MSG_HEADER                                                                                              /* _H2ASN_Skip */
     VOS_UINT32                                              ulMsgId;                                            /* _H2ASN_Skip */
     VOS_UINT16                                              usClientId;
-    VOS_UINT8                                               ucSeq;                                              /* 流水号 */
-    AT_CSS_BLACK_CELL_LIST_OPERATE_TYPE_ENUM_UINT8          enOperateType;                                      /* 操作类型 */
-    VOS_UINT8                                               aucVersionId[AT_CSS_BLACK_CELL_LIST_VERSION_LEN];   /* 版本号，固定为xx.xx.xxx */
-    AT_CSS_RAT_ENUM_UINT8                                   enRatType;                                          /* 系统制式 */
+    VOS_UINT8                                               ucSeq;                                              /* ?????? */
+    AT_CSS_BLACK_CELL_LIST_OPERATE_TYPE_ENUM_UINT8          enOperateType;                                      /* ???????? */
+    VOS_UINT8                                               aucVersionId[AT_CSS_BLACK_CELL_LIST_VERSION_LEN];   /* ??????????????xx.xx.xxx */
+    AT_CSS_RAT_ENUM_UINT8                                   enRatType;                                          /* ???????? */
     VOS_UINT8                                               aucRsv[2];
 
     /*
-        1)aucBlackCellListBuff里存储的是黑小区的信息，存储区的真实大小是ulBlackCellListBuffLen里记录的字节数；
-        2)aucBlackCellListBuff里的格式为AT_CSS_GSM_CLOUD_BLACKCELL_STRU结构的格式
+        1)aucBlackCellListBuff??????????????????????????????????????????ulBlackCellListBuffLen????????????????
+        2)aucBlackCellListBuff??????????AT_CSS_GSM_CLOUD_BLACKCELL_STRU??????????
 
-        码流参数BS1,BS2和BS3的编码格式相同，都按AT_CSS_GSM_CLOUD_BLACKCELL_STRU结构的格式编码：
-        其中ucPairCount，astBlackListArray是可以变的
+        ????????BS1,BS2??BS3????????????????????AT_CSS_GSM_CLOUD_BLACKCELL_STRU????????????????
+        ????ucPairCount??astBlackListArray??????????
         typedef struct
         {
             CSS_PLMN_ID_STRU    stPlmn;
             VOS_UNIT8           ucPairCount;
-            //后面必须紧跟ucPairCount个AT_CSS_GSM_CLOUD_BLACKCELL_PAIR_STRU结构的pair信息，
-              如果没有如果该mcc没有黑小区信息，AP不需要下发该MCC的信息，Modem认为该MCC没有黑小区信息，
-              后续不再要求上报^REPORTBLACKCELLMCC来获取黑小区
+            //????????????ucPairCount??AT_CSS_GSM_CLOUD_BLACKCELL_PAIR_STRU??????pair??????
+              ??????????????mcc????????????????AP????????????MCC????????Modem??????MCC????????????????
+              ????????????????^REPORTBLACKCELLMCC????????????
             AT_CSS_GSM_CLOUD_BLACKCELL_PAIR_STRU astBlackListPairArray[ucPairCount];
         }AT_CSS_GSM_CLOUD_BLACKCELL_STRU;
 
         typedef struct
         {
-            VOS_UNIT32  ulMcc; //Modem内部plmn格式;比如460---0x00000604
-            VOS_UNIT32  ulMnc; //Modem内部plmn格式;比如 01---0x000F0100
+            VOS_UNIT32  ulMcc; //Modem????plmn????;????460---0x00000604
+            VOS_UNIT32  ulMnc; //Modem????plmn????;???? 01---0x000F0100
         }CSS_PLMN_ID_STRU;
 
         typedef struct
         {
             VOS_UNIT16  usSourceCellLai;
             VOS_UNIT16  usSourceCellId;
-            VOS_UNIT16  usBlackCellArfcn; //包含了GSM的频段信息，比如0x1029表示GSM900频段,41频点
-            VOS_UNIT8   ucBlackCellBsic;  //包含ncc,bcc;比如0x14表示<2,4>
-            VOS_UNIT8   ucBlackCellReduceVal;//针对本黑小区惩罚时降低能量db值
+            VOS_UNIT16  usBlackCellArfcn; //??????GSM????????????????0x1029????GSM900????,41????
+            VOS_UNIT8   ucBlackCellBsic;  //????ncc,bcc;????0x14????<2,4>
+            VOS_UNIT8   ucBlackCellReduceVal;//??????????????????????????db??
         }AT_CSS_GSM_CLOUD_BLACKCELL_PAIR_STRU;
     */
 
@@ -387,10 +387,10 @@ typedef struct
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
-    VOS_UINT8                           ucSeq;                                  /* 流水号 */
+    VOS_UINT8                           ucSeq;                                  /* ?????? */
     VOS_UINT8                           aucRsv[1];
 
-    VOS_UINT32                          ulResult;                               /*0表示成功，1表示失败*/
+    VOS_UINT32                          ulResult;                               /*0??????????1????????*/
 } CSS_AT_MCC_INFO_SET_CNF_STRU;
 
 typedef struct
@@ -399,16 +399,16 @@ typedef struct
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           aucRsv[1];
-    VOS_UINT8                           aucVersionId[MCC_INFO_VERSION_LEN];     /* 版本号，固定为xx.xx.xxx */
-    VOS_UINT32                          ulMccNum;                               /* MCC 个数 */
-    AT_CSS_MCC_ID_STRU                  astMccId[AT_CSS_MAX_MCC_ID_NUM];        /* MCC ID列表 */
+    VOS_UINT8                           aucVersionId[MCC_INFO_VERSION_LEN];     /* ??????????????xx.xx.xxx */
+    VOS_UINT32                          ulMccNum;                               /* MCC ???? */
+    AT_CSS_MCC_ID_STRU                  astMccId[AT_CSS_MAX_MCC_ID_NUM];        /* MCC ID???? */
 } CSS_AT_QUERY_MCC_INFO_NOTIFY_STRU;
 
 
 typedef struct
 {
-    VOS_UINT32                          ulMccNum;                                               /* MCC 个数 */
-    VOS_UINT32                          aulMcc[AT_CSS_MAX_MCC_ID_NUM];                          /* MCC 列表,Modem内部plmn格式;比如460---0x00000604 */
+    VOS_UINT32                          ulMccNum;                                               /* MCC ???? */
+    VOS_UINT32                          aulMcc[AT_CSS_MAX_MCC_ID_NUM];                          /* MCC ????,Modem????plmn????;????460---0x00000604 */
 } CSS_AT_BLACK_CELL_MCC_INFO_STRU;
 
 
@@ -417,9 +417,9 @@ typedef struct
     VOS_MSG_HEADER                                                          /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                            /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
-    VOS_UINT8                           ucSeq;                              /* 流水号 */
+    VOS_UINT8                           ucSeq;                              /* ?????? */
     VOS_UINT8                           ucReserved;
-    VOS_UINT32                          ulResult;                           /* VOS_OK表示成功，VOS_ERR表示失败 */
+    VOS_UINT32                          ulResult;                           /* VOS_OK??????????VOS_ERR???????? */
 } CSS_AT_BLACK_CELL_LIST_SET_CNF_STRU;
 
 
@@ -429,8 +429,8 @@ typedef struct
     VOS_UINT32                          ulMsgId;                                                /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucReserved;
-    VOS_UINT8                           aucVersionId[AT_CSS_BLACK_CELL_LIST_VERSION_LEN];       /* 版本号，固定为xx.xx.xxx */
-    CSS_AT_BLACK_CELL_MCC_INFO_STRU     stMccInfo;                                              /* 黑小区MCC信息 */
+    VOS_UINT8                           aucVersionId[AT_CSS_BLACK_CELL_LIST_VERSION_LEN];       /* ??????????????xx.xx.xxx */
+    CSS_AT_BLACK_CELL_MCC_INFO_STRU     stMccInfo;                                              /* ??????MCC???? */
 } CSS_AT_BLACK_CELL_LIST_QUERY_CNF_STRU;
 
 
@@ -440,8 +440,8 @@ typedef struct
     VOS_UINT32                          ulMsgId;                                                /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucReserved;
-    VOS_UINT8                           aucVersionId[AT_CSS_BLACK_CELL_LIST_VERSION_LEN];       /* 版本号，固定为xx.xx.xxx */
-    CSS_AT_BLACK_CELL_MCC_INFO_STRU     stMccInfo;                                              /* 黑小区MCC信息 */
+    VOS_UINT8                           aucVersionId[AT_CSS_BLACK_CELL_LIST_VERSION_LEN];       /* ??????????????xx.xx.xxx */
+    CSS_AT_BLACK_CELL_MCC_INFO_STRU     stMccInfo;                                              /* ??????MCC???? */
 } CSS_AT_BLACK_CELL_MCC_NOTIFY_STRU;
 
 
@@ -452,15 +452,15 @@ typedef struct
     VOS_UINT32                                              ulMsgId;                                            /* _H2ASN_Skip */
     VOS_UINT16                                              usClientId;
     MODEM_ID_ENUM_UINT16                                    usModemId;
-    VOS_UINT8                                               ucSeq;                                              /* 流水号 */
-    AT_CSS_LINE_INDEX_LIST_OPERATE_TYPE_ENUM_UINT8          enOperateType;                                      /* 操作类型 */
-    VOS_UINT8                                               aucVersionId[AT_CSS_CLOUD_LINE_VERSION_LEN];        /* 版本号，固定为xx.xx.xxx */
+    VOS_UINT8                                               ucSeq;                                              /* ?????? */
+    AT_CSS_LINE_INDEX_LIST_OPERATE_TYPE_ENUM_UINT8          enOperateType;                                      /* ???????? */
+    VOS_UINT8                                               aucVersionId[AT_CSS_CLOUD_LINE_VERSION_LEN];        /* ??????????????xx.xx.xxx */
     VOS_UINT8                                               ucRsv;
 
     /*
-        1)aucLineIndexListBuff里存储的是高铁线路索引的信息，存储区的真实大小是ulLineIndexListBuffLen里记录的字节数；
-        2)aucLineIndexListBuff里的格式为AT_CSS_CLOUD_LINE_INDEX_LIST_INFO_STRU结构的格式
-        当LineIndex为0xFFFF时表示该PLMN下没有高铁线路信息。
+        1)aucLineIndexListBuff????????????????????????????????????????????????ulLineIndexListBuffLen????????????????
+        2)aucLineIndexListBuff??????????AT_CSS_CLOUD_LINE_INDEX_LIST_INFO_STRU??????????
+        ??LineIndex??0xFFFF????????PLMN????????????????????
 
         typedef struct
         {
@@ -468,9 +468,9 @@ typedef struct
             VOS_UNIT16          usLineIndex;
             VOS_UINT8           ucTacNum;
             VOS_UINT8           ucLacNum;
-            //后面必须紧跟ucTacNum个VOS_UINT16的TAC列表信息。
+            //????????????ucTacNum??VOS_UINT16??TAC??????????
             VOS_UINT16          ausTacList[ucTacNum];
-            //后面必须紧跟ucLacNum个VOS_UINT16的LAC列表信息。
+            //????????????ucLacNum??VOS_UINT16??LAC??????????
             VOS_UINT16          ausLacList[ucLacNum];
         }AT_CSS_CLOUD_LINE_INDEX_INFO_STRU;
 
@@ -485,9 +485,9 @@ typedef struct
     VOS_MSG_HEADER                                                          /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                            /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
-    VOS_UINT8                           ucSeq;                              /* 流水号 */
+    VOS_UINT8                           ucSeq;                              /* ?????? */
     VOS_UINT8                           ucRsv;
-    VOS_UINT32                          ulResult;                           /* VOS_OK表示成功，VOS_ERR表示失败 */
+    VOS_UINT32                          ulResult;                           /* VOS_OK??????????VOS_ERR???????? */
 } CSS_AT_LINE_INDEX_LIST_SET_CNF_STRU;
 
 
@@ -497,15 +497,15 @@ typedef struct
     VOS_UINT32                                              ulMsgId;                                            /* _H2ASN_Skip */
     VOS_UINT16                                              usClientId;
     MODEM_ID_ENUM_UINT16                                    usModemId;
-    VOS_UINT8                                               ucSeq;                                              /* 流水号 */
-    AT_CSS_LINE_DETAIL_OPERATE_TYPE_ENUM_UINT8              enOperateType;                                      /* 操作类型 */
-    VOS_UINT8                                               aucVersionId[AT_CSS_CLOUD_LINE_VERSION_LEN];   /* 版本号，固定为xx.xx.xxx */
+    VOS_UINT8                                               ucSeq;                                              /* ?????? */
+    AT_CSS_LINE_DETAIL_OPERATE_TYPE_ENUM_UINT8              enOperateType;                                      /* ???????? */
+    VOS_UINT8                                               aucVersionId[AT_CSS_CLOUD_LINE_VERSION_LEN];   /* ??????????????xx.xx.xxx */
     VOS_UINT8                                               ucRsv;
 
     /*
-        1)aucLineDetailBuff里存储的是高铁线路索引的信息，存储区的真实大小是ulLineDetailBuffLen里记录的字节数。
+        1)aucLineDetailBuff????????????????????????????????????????????????ulLineDetailBuffLen????????????????
 
-        2)aucLineDetailBuff里的格式为AT_CSS_LINE_DETAIL_INFO_STRU结构的格式:
+        2)aucLineDetailBuff??????????AT_CSS_LINE_DETAIL_INFO_STRU??????????:
         typedef struct
         {
             CSS_PLMN_ID_STRU                             stPlmn;
@@ -514,8 +514,8 @@ typedef struct
             VOS_UINT8                                       aucLeftBuff[ulLineDetailBuffLen-11];
         }AT_CSS_LINE_DETAIL_INFO_STRU;
 
-        3)AT_CSS_LINE_DETAIL_INFO_STRU结构中的aucLeftBuff根据enInfoType的指示进行编码：
-          i.当enInfoType为AT_CSS_LINE_DETAIL_INFO_TACLAC_PAIR时aucLeftBuff里的格式为AT_CSS_CLOUD_LINE_TACLAC_MAP_INFO_STRU结构的格式：
+        3)AT_CSS_LINE_DETAIL_INFO_STRU????????aucLeftBuff????enInfoType????????????????
+          i.??enInfoType??AT_CSS_LINE_DETAIL_INFO_TACLAC_PAIR??aucLeftBuff??????????AT_CSS_CLOUD_LINE_TACLAC_MAP_INFO_STRU????????????
             typedef struct
             {
                 VOS_UITN16                                       usTac;
@@ -524,11 +524,11 @@ typedef struct
             typedef struct
             {
                 VOS_UINT8                                        ucPairNum;
-                //后面必须紧跟ucPairNum个AT_CSS_CLOUD_LINE_TACLAC_PAIR_INFO_STRU的信息。
+                //????????????ucPairNum??AT_CSS_CLOUD_LINE_TACLAC_PAIR_INFO_STRU????????
                 AT_CSS_CLOUD_LINE_TACLAC_PAIR_INFO_STRU          astCloudTacLacPairInfoList[ucPairNum];
             }AT_CSS_CLOUD_LINE_TACLAC_MAP_INFO_STRU;
 
-          ii.当enInfoType为AT_CSS_LINE_DETAIL_INFO_HO_PATH时aucLeftBuff里的格式为AT_CSS_CLOUD_LINE_HO_PATH_INFO_STRU结构的格式：
+          ii.??enInfoType??AT_CSS_LINE_DETAIL_INFO_HO_PATH??aucLeftBuff??????????AT_CSS_CLOUD_LINE_HO_PATH_INFO_STRU????????????
             typedef struct
             {
                 VOS_UINT32                                       usSrcCellId;
@@ -543,7 +543,7 @@ typedef struct
             {
                 VOS_UITN16                                       usLac;
                 VOS_UINT8                                        ucCellNum;
-                //后面必须紧跟ucCellNum个AT_CSS_CLOUD_LINE_HO_PATH_CELL_INFO_STRU的信息。
+                //????????????ucCellNum??AT_CSS_CLOUD_LINE_HO_PATH_CELL_INFO_STRU????????
                 AT_CSS_CLOUD_LINE_HO_PATH_CELL_INFO_STRU         astCellInfoList[ucCellNum];
             }AT_CSS_CLOUD_LINE_HO_PATH_LAC_INFO_STRU;
             typedef struct
@@ -551,10 +551,10 @@ typedef struct
                 VOS_UINT8                                        ucRat;
                 VOS_UINT8                                        ucDirection;
                 VOS_UINT8                                        ucLacNum;
-                //后面必须紧跟ucLacNum个AT_CSS_CLOUD_LINE_HO_PATH_LAC_INFO_STRU的信息。
+                //????????????ucLacNum??AT_CSS_CLOUD_LINE_HO_PATH_LAC_INFO_STRU????????
                 AT_CSS_CLOUD_LINE_HO_PATH_LAC_INFO_STRU          astLacInfoList[ucLacNum];
             }AT_CSS_CLOUD_LINE_HO_PATH_INFO_STRU;
-          iii.当enInfoType为AT_CSS_LINE_DETAIL_INFO_HO_BAR时aucLeftBuff里的格式为AT_CSS_CLOUD_LINE_HO_BAR_INFO_STRU结构的格式：
+          iii.??enInfoType??AT_CSS_LINE_DETAIL_INFO_HO_BAR??aucLeftBuff??????????AT_CSS_CLOUD_LINE_HO_BAR_INFO_STRU????????????
             typedef struct
             {
                 VOS_UINT16                                       usLac;
@@ -568,11 +568,11 @@ typedef struct
             {
                 VOS_UINT8                                        ucRat;
                 VOS_UINT8                                        ucCellNum;
-                //后面必须紧跟ucCellNum个AT_CSS_CLOUD_LINE_HO_BAR_CELL_INFO_STRU的信息。
+                //????????????ucCellNum??AT_CSS_CLOUD_LINE_HO_BAR_CELL_INFO_STRU????????
                 AT_CSS_CLOUD_LINE_HO_BAR_CELL_INFO_STRU          astCellInfoList[ucCellNum];
             }AT_CSS_CLOUD_LINE_HO_BAR_INFO_STRU;
-          iiii.当enInfoType为AT_CSS_LINE_DETAIL_INFO_NO_INFO时表示该PLMN/线路下没有详细信息，停止解析，modem不再向ap查询该PLMN/线路详细信息。
-          iiiii.当enInfoType为以上类型的其他无效类型时，停止解析，直接返回失败。
+          iiii.??enInfoType??AT_CSS_LINE_DETAIL_INFO_NO_INFO????????PLMN/??????????????????????????????modem??????ap??????PLMN/??????????????
+          iiiii.??enInfoType????????????????????????????????????????????????????
     */
     VOS_UINT32                                              ulLineDetailBuffLen;
     VOS_UINT8                                               aucLineDetailBuff[4];
@@ -584,9 +584,9 @@ typedef struct
     VOS_MSG_HEADER                                                          /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                            /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
-    VOS_UINT8                           ucSeq;                              /* 流水号 */
+    VOS_UINT8                           ucSeq;                              /* ?????? */
     VOS_UINT8                           ucRsv;
-    VOS_UINT32                          ulResult;                           /* VOS_OK表示成功，VOS_ERR表示失败 */
+    VOS_UINT32                          ulResult;                           /* VOS_OK??????????VOS_ERR???????? */
 }CSS_AT_LINE_DETAIL_SET_CNF_STRU;
 
 
@@ -604,10 +604,10 @@ typedef struct
     VOS_MSG_HEADER                                                          /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                            /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
-    VOS_UINT8                           aucVersionId[AT_CSS_CLOUD_LINE_VERSION_LEN];   /* 版本号 */
+    VOS_UINT8                           aucVersionId[AT_CSS_CLOUD_LINE_VERSION_LEN];   /* ?????? */
     VOS_UINT8                           ucRsv;
-    CSS_AT_PLMN_ID_STRU                 stRplmnInfo;                        /* rplmn信息 */
-    VOS_UINT32                          ulResult;                           /* 查询结果是否有效 */
+    CSS_AT_PLMN_ID_STRU                 stRplmnInfo;                        /* rplmn???? */
+    VOS_UINT32                          ulResult;                           /* ???????????????? */
 }CSS_AT_LINE_INDEX_LIST_QUERY_CNF_STRU;
 
 
@@ -617,7 +617,7 @@ typedef struct
     VOS_UINT32                          ulMsgId;                            /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           aucRsv[2];
-    CSS_AT_PLMN_ID_STRU                 stRplmnInfo;                        /* rplmn信息 */
+    CSS_AT_PLMN_ID_STRU                 stRplmnInfo;                        /* rplmn???? */
 } CSS_AT_LINE_PLMN_NOTIFY_STRU;
 
 
@@ -626,8 +626,8 @@ typedef struct
     VOS_MSG_HEADER                                                          /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                            /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;                         /* _H2ASN_Skip */
-    VOS_UINT16                          usLineNum;                          /* 线路个数 */
-    VOS_UINT16                          ausLineIndexList[AT_CSS_TACLAC_MAX_LINE_NUM]; /* 线路列表 */
+    VOS_UINT16                          usLineNum;                          /* ???????? */
+    VOS_UINT16                          ausLineIndexList[AT_CSS_TACLAC_MAX_LINE_NUM]; /* ???????? */
     CSS_AT_PLMN_ID_STRU                 stPlmnId;                           /* plmn id */
 } CSS_AT_LINE_INDEX_NOTIFY_STRU;
 
@@ -647,7 +647,7 @@ typedef struct
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           aucRsv[2];
-    VOS_UINT32                          ulResult;                               /* VOS_OK表示成功，VOS_ERR表示失败 */
+    VOS_UINT32                          ulResult;                               /* VOS_OK??????????VOS_ERR???????? */
 } CSS_AT_VZWMRUC_SET_CNF_STRU;
 
 
@@ -677,7 +677,7 @@ typedef struct
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           aucRsv[2];
-    VOS_UINT32                          ulResult;                               /* VOS_OK表示成功，VOS_ERR表示失败 */
+    VOS_UINT32                          ulResult;                               /* VOS_OK??????????VOS_ERR???????? */
 } CSS_AT_VZWMRUE_SET_CNF_STRU;
 
 
@@ -694,7 +694,7 @@ typedef struct
 {
     VOS_MSG_HEADER                                                              /* _H2ASN_Skip */
     VOS_UINT32                          ulMsgId;                                /* _H2ASN_Skip */
-    VOS_UINT32                          ulResult;                               /* VOS_OK表示成功，VOS_ERR表示失败 */
+    VOS_UINT32                          ulResult;                               /* VOS_OK??????????VOS_ERR???????? */
     VOS_UINT16                          usClientId;
     VOS_UINT8                           ucRsv;
     VOS_UINT8                           ucMruNum;
@@ -703,19 +703,19 @@ typedef struct
 
 
 /*****************************************************************************
-  5 全局变量声明
+  5 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 接口函数声明
+  6 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  7 OTHERS定义
+  7 OTHERS????
 *****************************************************************************/
 
-/* ASN解析结构 */
+/* ASN???????? */
 typedef struct
 {
     VOS_UINT32                          ulMsgId;                                /*_H2ASN_MsgChoice_Export CSS_AT_MSG_TYPE_ENUM_UINT32 */

@@ -56,7 +56,7 @@ extern "C" {
 #endif
 #endif
 
-//[NV elf编译项目]去除重复定义 xuziheng/306651 20171207
+//[NV elf????????]???????????? xuziheng/306651 20171207
 #ifndef NV_DEFINE
 
 #ifndef s8
@@ -87,7 +87,7 @@ typedef unsigned long long   u64;
 #endif
 
 /*
- *  NV ID 的添加按从小到大排列
+ *  NV ID ????????????????????
  */
 
 typedef enum
@@ -98,7 +98,7 @@ typedef enum
     NV_ID_DRV_DUMP_FILE                    = 0xd144,    //DUMP_FILE_CFG_STRU
     NV_ID_DRV_DLOCK                        = 0xd155,    //DRV_DLOCK_CFG_STRU
 	
-	//定义在ccore_nv_id_drv.h中 xuziheng/306651 20171207
+	//??????ccore_nv_id_drv.h?? xuziheng/306651 20171207
 #ifndef NV_DEFINE
     NV_ID_DRV_DVS_CONFIG                   = 0xd157,    //ST_DVS_CONFIG_STRU
 #endif

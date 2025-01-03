@@ -10,7 +10,7 @@ extern "C" {
 #ifdef _PRE_SUPPORT_ACS
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "oal_types.h"
 #include "oal_ext_if.h"
@@ -38,10 +38,10 @@ extern "C" {
 //#define _PRE_SUPPORT_DYNA_ACS
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 /***********************************************************
-    device级acs结构体
+    device??acs??????
 ***********************************************************/
 OAL_STATIC dmac_acs_stru g_ast_acs[MAC_RES_MAX_DEV_NUM];
 
@@ -187,7 +187,7 @@ static dmac_acs_rate_table_stru g_ast_11ac_table[64] = {
 };
 #endif
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 
 oal_bool_enum_uint8 dmac_acs_skip_notify(mac_vap_stru *pst_mac_vap, dmac_alg_channel_bw_chg_type_uint8 en_type)
@@ -203,8 +203,8 @@ oal_bool_enum_uint8 dmac_acs_skip_notify(mac_vap_stru *pst_mac_vap, dmac_alg_cha
 
     OAL_IO_PRINT("in scan=%d vap state=%d en=%d\n", pst_mac_dev->en_curr_scan_state,
             pst_mac_vap->en_vap_state, en_in_scan);
-    /* 不启动hostapd时，VAP在WAIT START状态下扫描 */
-    /* 启动hostapd时，VAP在UP状态下扫描 */
+    /* ??????hostapd????VAP??WAIT START?????????? */
+    /* ????hostapd????VAP??UP?????????? */
     if ( (en_in_scan && pst_mac_vap->en_vap_state == MAC_VAP_STATE_AP_WAIT_START)
       || (!en_in_scan && pst_mac_vap->en_vap_state == MAC_VAP_STATE_UP))
     {
@@ -228,7 +228,7 @@ OAL_STATIC oal_void dmac_acs_setup_vap_info(dmac_acs_vap_info_stru *pst_info, ma
     pst_info->en_protocol       = pst_vap->en_protocol;
     pst_info->en_bandwidth      = pst_vap->st_channel.en_bandwidth;
     pst_info->uc_channel        = pst_vap->st_channel.uc_chan_number;
-    pst_info->en_bandwidth_cap  = pst_vap->st_channel.en_bandwidth; // VAP带宽不会改变，初始带宽即为最大带宽
+    pst_info->en_bandwidth_cap  = pst_vap->st_channel.en_bandwidth; // VAP??????????????????????????????????
 }
 
 
@@ -276,8 +276,8 @@ oal_uint32 dmac_acs_reply_ex(oal_uint8 uc_chip_id, oal_uint8 uc_device_id,
     }
 
 
-    /* 抛扫描请求事件到HMAC/WAL, 申请事件内存 */
-    /* 该内存在HMAC和WAL复用，只在本函数最后释放一次 */
+    /* ????????????????HMAC/WAL, ???????????? */
+    /* ????????HMAC??WAL???????????????????????????? */
     pst_event_mem = FRW_EVENT_ALLOC((oal_uint16)ul_size);
     if (OAL_PTR_NULL == pst_event_mem)
     {
@@ -286,7 +286,7 @@ oal_uint32 dmac_acs_reply_ex(oal_uint8 uc_chip_id, oal_uint8 uc_device_id,
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 填写事件 */
+    /* ???????? */
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
     FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
@@ -310,7 +310,7 @@ oal_uint32 dmac_acs_reply_ex(oal_uint8 uc_chip_id, oal_uint8 uc_device_id,
 
     OAL_IO_PRINT("<<< rsp %d:%s\n", en_cmd, g_acs_cmd_type[en_cmd]);
 
-    /* 分发事件 */
+    /* ???????? */
     frw_event_dispatch_event(pst_event_mem);
     FRW_EVENT_FREE(pst_event_mem);
 
@@ -368,7 +368,7 @@ OAL_STATIC oal_void dmac_acs_do_vap_perf(mac_device_stru *pst_mac_dev, oal_void 
     acs_vap_perf_user_stat_stru      *pst_stat;
 
     /***********************************************************************************/
-    /********************************VAP PERF 报文格式**********************************/
+    /********************************VAP PERF ????????**********************************/
     /*---------------------------------------------------------------------------------*/
     /*|VAP perf stru|ACS duration|User1 addr|User1 assoc_id|User1 duration|...|User N| */
     /*---------------------------------------------------------------------------------*/
@@ -404,7 +404,7 @@ OAL_STATIC oal_void dmac_acs_do_vap_perf(mac_device_stru *pst_mac_dev, oal_void 
         return;
     }
 
-    /* 开始统计MPDU个数，TID时延，CSA STA个数 */
+    /* ????????MPDU??????TID??????CSA STA???? */
     ul_mpdu_num    = 0;
     uc_csa_sta_num = 0;
 
@@ -424,16 +424,16 @@ OAL_STATIC oal_void dmac_acs_do_vap_perf(mac_device_stru *pst_mac_dev, oal_void 
             pst_user_internal->c_rx_rssi = pst_dmac_user->c_rx_rssi;
         }
 
-        /* 忽略组播用户 */
+        /* ???????????? */
         if (OAL_TRUE == pst_mac_user->en_is_multi_user)
         {
             continue;
         }
 
-        /* 记录CSA USER个数 */
+        /* ????CSA USER???? */
         uc_csa_sta_num += pst_mac_user->st_cap_info.bit_spectrum_mgmt;
 
-        /* 遍历该USER的所有TID，计算TID最大时延 */
+        /* ??????USER??????TID??????TID???????? */
         for (uc_index = 0; uc_index < WLAN_TID_MAX_NUM; uc_index++)
         {
             pst_tid_queue = &pst_dmac_user->ast_tx_tid_queue[uc_index];
@@ -441,7 +441,7 @@ OAL_STATIC oal_void dmac_acs_do_vap_perf(mac_device_stru *pst_mac_dev, oal_void 
         #ifdef _PRE_WLAN_FEATURE_TX_DSCR_OPT
             if (OAL_TRUE != oal_dlist_is_empty(&pst_tid_queue->st_retry_q))
             {
-                 /* 获得TID中第一个NETBUF */
+                 /* ????TID????????NETBUF */
                 pst_dlist_pos = pst_tid_queue->st_retry_q.pst_next;
                 pst_dscr      = OAL_DLIST_GET_ENTRY(pst_dlist_pos, hal_tx_dscr_stru, st_entry);
                 pst_net_buf   = pst_dscr->pst_skb_start_addr;
@@ -460,18 +460,18 @@ OAL_STATIC oal_void dmac_acs_do_vap_perf(mac_device_stru *pst_mac_dev, oal_void 
                 continue;
             }
 
-             /* 获得TID中第一个NETBUF */
+             /* ????TID????????NETBUF */
             pst_dlist_pos = pst_tid_queue->st_hdr.pst_next;
             pst_dscr      = OAL_DLIST_GET_ENTRY(pst_dlist_pos, hal_tx_dscr_stru, st_entry);
             pst_net_buf   = pst_dscr->pst_skb_start_addr;
         #endif /* _PRE_WLAN_FEATURE_TX_DSCR_OPT */
             ul_mpdu_num += pst_tid_queue->us_mpdu_num;
 
-            /* 获取netbuf对应的CB字段 */
+            /* ????netbuf??????CB???? */
             pst_tx_ctrl = (mac_tx_ctl_stru *)OAL_NETBUF_CB(pst_net_buf);
             oal_time_get_stamp_us(&st_time);
 
-            /* 计算延迟 */
+            /* ???????? */
             ul_time_delta_us = (oal_uint32)((((oal_int64)st_time.i_sec * 1000000) + st_time.i_usec) - (((oal_int64)pst_tx_ctrl->st_timestamp_us.i_sec * 1000000) + pst_tx_ctrl->st_timestamp_us.i_usec));
 
             if ((ul_time_delta_us >> 10) > pst_acs_vap_info->aus_max_delay[uc_index])
@@ -486,18 +486,18 @@ OAL_STATIC oal_void dmac_acs_do_vap_perf(mac_device_stru *pst_mac_dev, oal_void 
     pst_acs_vap_info->ul_mpdu_num    = ul_mpdu_num;
     pst_acs_vap_info->us_sta_nums    = pst_mac_vap->us_user_nums;
 
-    /* TBD赋值全局的TX/RX DURATION记录 */ // TODO
+    /* TBD??????????TX/RX DURATION???? */ // TODO
     pst_acs_vap_info->uc_mac_free_time_rate = 0; // pst_acs->ul_mac_free_time_us;
     pst_acs_vap_info->us_mac_stats_time_ms  = 0;// pst_acs->ul_mac_stats_time_us;
     pst_acs_vap_info->c_phy_free_power      = 0; // pst_acs->ul_phy_free_power;
 
     pst_stat = (acs_vap_perf_user_stat_stru *)(pst_acs_vap_info + 1);
 
-    /* 加入VAP下所有USER的TX/RX DURATION */
+    /* ????VAP??????USER??TX/RX DURATION */
     OAL_DLIST_SEARCH_FOR_EACH(pst_dlist_pos, &pst_vap_internal->st_user_dlist_head)
     {
         pst_user_internal = OAL_DLIST_GET_ENTRY(pst_dlist_pos, dmac_acs_user_internal_stru, st_dlist_head);
-        /* 复制STA 的MAC地址以及ASSOC ID 8-bytes */
+        /* ????STA ??MAC????????ASSOC ID 8-bytes */
         oal_memcopy(pst_stat->auc_user_addr, pst_user_internal->auc_user_addr, WLAN_MAC_ADDR_LEN);
         pst_stat->us_assoc_id = pst_user_internal->us_assoc_id;
         pst_stat->c_rx_rssi   = pst_user_internal->c_rx_rssi;
@@ -528,7 +528,7 @@ OAL_STATIC oal_void  dmac_acs_do_csa(mac_device_stru *pst_mac_dev, oal_void *p_a
     dmac_acs_stru               *pst_acs;
     oal_uint32                   ul_ret;
 
-    /* ARG0 保存需要进行信道切换的VAP ID */
+    /* ARG0 ??????????????????????VAP ID */
     pst_acs     = (dmac_acs_stru *)p_acs;
     pst_mac_vap = mac_res_get_mac_vap(pst_acs_cmd->auc_arg[0]);
     pst_vap_int = dmac_acs_find_internal_vap(pst_acs, pst_acs_cmd->auc_arg[0]);
@@ -537,10 +537,10 @@ OAL_STATIC oal_void  dmac_acs_do_csa(mac_device_stru *pst_mac_dev, oal_void *p_a
         return;
     }
 
-    /* 从pst_acs_cmd中解析命令 */
+    /* ??pst_acs_cmd?????????? */
     pst_csa_info = (dmac_acs_csa_stru *)pst_acs_cmd->auc_data;
 
-    /* 发送信道迁移CSA ACTION帧 */
+    /* ????????????CSA ACTION?? */
     pst_dmac_vap = (dmac_vap_stru *)mac_res_get_dmac_vap(pst_mac_vap->uc_vap_id);
     if (OAL_PTR_NULL == pst_dmac_vap)
     {
@@ -776,7 +776,7 @@ oal_uint32  dmac_config_acs(mac_vap_stru *pst_mac_vap, oal_uint8 us_len, oal_uin
     {
         return OAL_ERR_CODE_PTR_NULL;
     }
-    /* 获取命令类型 */
+    /* ???????????? */
     pc_token = oal_strtok((oal_int8 *)puc_param, pc_sep, &pc_ctx);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pc_token))
     {
@@ -872,7 +872,7 @@ OAL_STATIC dmac_acs_vap_internal_stru*  dmac_acs_add_vap(mac_vap_stru *pst_vap)
         return OAL_PTR_NULL;
     }
 
-    /* 没有找到，是新加入的VAP */
+    /* ????????????????????VAP */
     pst_vap_internal = dmac_acs_find_internal_vap(pst_acs, pst_vap->uc_vap_id);
     if (OAL_PTR_NULL == pst_vap_internal)
     {
@@ -950,7 +950,7 @@ OAL_STATIC dmac_acs_user_internal_stru*  dmac_acs_add_user(mac_vap_stru *pst_vap
     if (OAL_PTR_NULL != pst_vap_internal)
     {
         pst_user_internal = dmac_acs_find_internal_user(pst_acs, pst_vap->uc_vap_id, pst_user->us_assoc_id);
-        /* 没到找到，表示这是一个新用户 */
+        /* ???????????????????????????? */
         if (OAL_PTR_NULL == pst_user_internal)
         {
             pst_user_internal = (dmac_acs_user_internal_stru *)OAL_MEM_ALLOC(OAL_MEM_POOL_ID_ALG_LOCAL, OAL_SIZEOF(dmac_acs_user_internal_stru), OAL_TRUE);
@@ -1152,13 +1152,13 @@ oal_uint32 dmac_acs_add_assoc_user_handler(mac_vap_stru *pst_vap, mac_user_stru 
                    pst_user->auc_user_mac_addr[4]&0xff,
                    pst_user->auc_user_mac_addr[5]&0xff);
 
-    /* 组播用户不会进行ACS管理 */
+    /* ????????????????ACS???? */
     if (OAL_TRUE == pst_user->en_is_multi_user)
     {
         return OAL_SUCC;
     }
 
-    /* 通知ACS记录该USER */
+    /* ????ACS??????USER */
     dmac_acs_add_user(pst_vap, pst_user);
     dmac_acs_setup_user_info(&st_acs_user_info, pst_vap, pst_user);
 
@@ -1204,7 +1204,7 @@ oal_uint32  dmac_acs_req_rescan(mac_device_stru *pst_mac_dev, dmac_acs_req_resca
         return OAL_SUCC;
     }
 
-    /* 申请事件内存 */
+    /* ???????????? */
     pst_event_mem = FRW_EVENT_ALLOC(OAL_SIZEOF(dmac_acs_req_rescan_param_stru));
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
     {
@@ -1214,7 +1214,7 @@ oal_uint32  dmac_acs_req_rescan(mac_device_stru *pst_mac_dev, dmac_acs_req_resca
 
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
                             FRW_EVENT_TYPE_DMAC_MISC,
                             DMAC_MISC_SUB_TYPE_RESCAN,
@@ -1229,14 +1229,14 @@ oal_uint32  dmac_acs_req_rescan(mac_device_stru *pst_mac_dev, dmac_acs_req_resca
 
     oal_memcopy(pst_event->auc_event_data, &st_req, OAL_SIZEOF(dmac_acs_req_rescan_param_stru));
 
-    /* 分发事件 */
+    /* ???????? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
         OAM_WARNING_LOG1(0, OAM_SF_ACS, "{dmac_acs_req_rescan::frw_event_dispatch_event failed[%d].}", ul_ret);
     }
 
-    /* 释放事件 */
+    /* ???????? */
     FRW_EVENT_FREE(pst_event_mem);
 
     return ul_ret;
@@ -1253,7 +1253,7 @@ oal_void  dmac_acs_beacon_tbtt_trace(dmac_vap_stru *pst_dmac_vap)
     oal_uint8                   uc_band;
     dmac_acs_vap_internal_stru *pst_vap_int;
 
-    /* 跟踪信道切换时的TBTT计数 */
+    /* ????????????????TBTT???? */
     pst_mac_dev = mac_res_get_dev(pst_dmac_vap->st_vap_base_info.uc_device_id);
     if (OAL_PTR_NULL == pst_mac_dev)
     {
@@ -1283,7 +1283,7 @@ oal_void  dmac_acs_beacon_tbtt_trace(dmac_vap_stru *pst_dmac_vap)
         }
         else
         {
-            /* TBD fcs 信道切换 */
+            /* TBD fcs ???????? */
 
 
             pst_vap_int->en_in_csa_phase = OAL_FALSE;
@@ -1303,13 +1303,13 @@ oal_uint32 dmac_acs_radar_detected_handler(mac_device_stru *pst_mac_device, hal_
     }
     pst_acs = (dmac_acs_stru *)pst_mac_device->pst_acs;
 
-    /* 如果当前正在扫描，丢弃该雷达检测事件 */
+    /* ???????????????????????????????????? */
     if (OAL_TRUE == pst_acs->en_in_scan)
     {
         return OAL_SUCC;
     }
 
-    /* NETLINK方式通知APP */
+    /* NETLINK????????APP */
     OAL_MEMZERO(&st_dmac_acs_radar_info, OAL_SIZEOF(dmac_acs_radar_info_stru));
     st_dmac_acs_radar_info.uc_channel_number = pst_radar_det_info->uc_channel_num;
     st_dmac_acs_radar_info.en_bandwidth_mode = pst_radar_det_info->uc_working_bw;
@@ -1317,7 +1317,7 @@ oal_uint32 dmac_acs_radar_detected_handler(mac_device_stru *pst_mac_device, hal_
     st_dmac_acs_radar_info.uc_freq_offset    = pst_radar_det_info->uc_radar_freq_offset;
     dmac_acs_reply_ex(pst_mac_device->uc_chip_id, pst_mac_device->uc_device_id, DMAC_ACS_NOTIFY_RADAR_DETECTED, 0, (oal_uint8 *)&st_dmac_acs_radar_info, OAL_SIZEOF(dmac_acs_radar_info_stru));
 
-    /* TBD 由ACS完成信道切换 */
+    /* TBD ??ACS???????????? */
 
 
     return OAL_SUCC;
@@ -1509,7 +1509,7 @@ oal_void  dmac_acs_tx_notify(dmac_acs_stru *pst_acs, oal_uint8 uc_vap_id, oal_ne
         if ((WLAN_MANAGEMENT == mac_frame_get_type_value(oal_netbuf_header(pst_buf)))
             && (OAL_TRUE == mac_ieeee80211_is_action(oal_netbuf_header(pst_buf))))
         {
-            /* 判断是否是CHANNEL SWITCH ANNOUNCEMENT帧 */
+            /* ??????????CHANNEL SWITCH ANNOUNCEMENT?? */
             puc_frame_body  = (oal_uint8 *)OAL_NETBUF_HEADER(pst_buf);
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
             puc_frame_body  = (oal_uint8 *)OAL_NETBUF_DATA(pst_buf);
@@ -1549,19 +1549,19 @@ oal_uint32  dmac_acs_tx_update(mac_user_stru *pst_mac_user, oal_netbuf_stru *pst
         return OAL_SUCC;
     }
 
-    /* 仅仅在动态调整开启时才统计*/
+    /* ??????????????????????????*/
     if (mac_get_acs_switch(pst_mac_device) < MAC_ACS_SW_DYNA)
     {
         return OAL_SUCC;
     }
 
-    /* 跟踪CSA是否成功发送 */
+    /* ????CSA???????????? */
     dmac_acs_tx_notify(pst_acs, pst_mac_user->uc_vap_id, pst_buf);
 
-    /* 找到最后一个速率等级 */
+    /* ???????????????????? */
     uc_last_rank = pst_tx_dscr_one->uc_last_rate_rank;
 
-    /* 累计计算发送时长 */
+    /* ???????????????? */
     ul_bytes       = 0;
     uc_total_tries = 0;
     for (uc_rate_rank = 0; uc_rate_rank <= uc_last_rank; uc_rate_rank++)
@@ -1573,7 +1573,7 @@ oal_uint32  dmac_acs_tx_update(mac_user_stru *pst_mac_user, oal_netbuf_stru *pst
             continue;
         }
 
-        /* 计算以该速率传输该报文的近似时间(含IFS和ACK时间) */
+        /* ????????????????????????????????(??IFS??ACK????) */
         us_ack_time = g_auc_ack_time[en_protocol % WLAN_PROTOCOL_BUTT];
         /* Duration = DIFS +  Payload + SIFS + ACK */
         ul_one_duration =  28
@@ -1587,7 +1587,7 @@ oal_uint32  dmac_acs_tx_update(mac_user_stru *pst_mac_user, oal_netbuf_stru *pst
         ul_bytes       += (pst_tx_dscr_one->us_mpdu_len * pst_tx_dscr_one->uc_mpdu_num) * uc_max_tries;
     }
 
-    /* 更新ACS TX DURATION USER DURATION 统计记录 */
+    /* ????ACS TX DURATION USER DURATION ???????? */
     pst_user_internal = dmac_acs_find_internal_user(pst_acs, pst_mac_user->uc_vap_id, pst_mac_user->us_assoc_id);
     if (OAL_PTR_NULL != pst_user_internal)
     {
@@ -1630,7 +1630,7 @@ oal_uint32  dmac_acs_rx_update(mac_vap_stru *pst_mac_vap,
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 仅仅在动态调整开启时才统计*/
+    /* ??????????????????????????*/
     if (mac_get_acs_switch(pst_mac_device) < MAC_ACS_SW_DYNA)
     {
         return OAL_SUCC;
@@ -1661,7 +1661,7 @@ oal_uint32  dmac_acs_rx_update(mac_vap_stru *pst_mac_vap,
                         + 10
                         + us_ack_time;
 
-        /* 更新该帧对应的USER的 RX 空口占用时间 */
+        /* ??????????????USER?? RX ???????????? */
         pst_user_internal = dmac_acs_find_internal_user(pst_acs, pst_mac_vap->uc_vap_id, pst_mac_user->us_assoc_id);
         if (OAL_PTR_NULL != pst_user_internal)
         {
@@ -1715,10 +1715,10 @@ oal_uint32  dmac_acs_init(mac_device_stru *pst_device)
     pst_acs->apfn_cmd_handler[DMAC_ACS_CMD_DO_DURATION_STATS] = dmac_acs_do_duration_stats;
     pst_acs->apfn_cmd_handler[DMAC_ACS_CMD_GET_NET_INFO]      = dmac_acs_do_get_net_info;
 
-    /* 注册ACS运行需要的钩子: */
-    /* (1)VAP 创建/删除       */
-    /* (2)USER 关联/去关联    */
-    /* (3)设置VAP信道/带宽    */
+    /* ????ACS??????????????: */
+    /* (1)VAP ????/????       */
+    /* (2)USER ????/??????    */
+    /* (3)????VAP????/????    */
     dmac_alg_register_add_vap_notify_func(DMAC_ALG_ADD_VAP_NOTIFY_ACS, dmac_acs_create_vap_handler);
     dmac_alg_register_del_vap_notify_func(DMAC_ALG_DEL_VAP_NOTIFY_ACS, dmac_acs_delete_vap_handler);
     dmac_alg_register_add_user_notify_func(DMAC_ALG_ADD_USER_NOTIFY_ACS, dmac_acs_add_assoc_user_handler);
@@ -1755,7 +1755,7 @@ oal_uint32  dmac_acs_exit(mac_device_stru *pst_device)
     {
         pst_acs = (dmac_acs_stru *)pst_device->pst_acs;
 
-        /* 删除所有内部的VAP/USER */
+        /* ??????????????VAP/USER */
         while(OAL_FALSE == oal_dlist_is_empty(&pst_acs->st_vap_dlist_head))
         {
             pst_dlist_pos1   = oal_dlist_delete_head(&pst_acs->st_vap_dlist_head);
@@ -1771,7 +1771,7 @@ oal_uint32  dmac_acs_exit(mac_device_stru *pst_device)
             OAL_MEM_FREE(pst_vap_internal, OAL_TRUE);
         }
 
-        /* 取消注册钩子 */
+        /* ???????????? */
         dmac_alg_unregister_add_vap_notify_func(DMAC_ALG_ADD_VAP_NOTIFY_ACS);
         dmac_alg_unregister_del_vap_notify_func(DMAC_ALG_DEL_VAP_NOTIFY_ACS);
         dmac_alg_unregister_add_user_notify_func(DMAC_ALG_ADD_USER_NOTIFY_ACS);

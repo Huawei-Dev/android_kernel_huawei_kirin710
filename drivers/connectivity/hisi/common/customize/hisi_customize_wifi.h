@@ -11,11 +11,11 @@ extern "C" {
 
 #ifdef _PRE_PLAT_FEATURE_CUSTOMIZE
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define NVRAM_PARAMS_ARRAY      "nvram_params"
 
@@ -47,51 +47,51 @@ extern "C" {
 #define PSD_THRESHOLD_MAX               (-10)
 #define LNA_GAIN_DB_MIN                 (-40)
 #define LNA_GAIN_DB_MAX                 (80)
-#define NUM_OF_NV_MAX_TXPOWER           (45)                                /* NVRAM中存储的各协议速率最大发射功率参数的个数 From:24G_11b_1M To:5G_VHT80_MCS7 */
-#define NUM_OF_NV_PARAMS                (2 * NUM_OF_NV_MAX_TXPOWER + 1)     /* NVRAM中存储的参数值的总个数:每项power值对应一项scale，加上dpd开关 */
-#define MAX_TXPOWER_MIN                 (130)                               /* 最大发送功率的最小有效值:130 13.0dbm */
-#define MAX_TXPOWER_MAX                 (238)                               /* 最大发送功率的最大有效值:238 23.8dbm */
-#define NUM_OF_BAND_EDGE_LIMIT          (6)                                 /* FCC边带认证参数个数 */
-#define MAX_DBB_SCALE                   (0xEE)                              /* DBB SCALE最大有效值 */
-#define TX_RATIO_MAX                    (2000)                              /* tx占空比的最大有效值 */
-#define TX_PWR_COMP_VAL_MAX             (50)                                /* 发射功率补偿值的最大有效值 */
-#define MORE_PWR_MAX                    (50)                                /* 根据温度额外补偿的发射功率的最大有效值 */
-#define COUNTRY_CODE_LEN                (3)                                 /* 国家码位数 */
-#define MAX_COUNTRY_COUNT               (300)                               /* 支持定制的国家的最大个数 */
-#define DELTA_CCA_ED_HIGH_TH_RANGE      15     /* δ调整上限，最大向上或向下调整15dB */
+#define NUM_OF_NV_MAX_TXPOWER           (45)                                /* NVRAM???????????????????????????????????????? From:24G_11b_1M To:5G_VHT80_MCS7 */
+#define NUM_OF_NV_PARAMS                (2 * NUM_OF_NV_MAX_TXPOWER + 1)     /* NVRAM??????????????????????:????power??????????scale??????dpd???? */
+#define MAX_TXPOWER_MIN                 (130)                               /* ????????????????????????:130 13.0dbm */
+#define MAX_TXPOWER_MAX                 (238)                               /* ????????????????????????:238 23.8dbm */
+#define NUM_OF_BAND_EDGE_LIMIT          (6)                                 /* FCC???????????????? */
+#define MAX_DBB_SCALE                   (0xEE)                              /* DBB SCALE?????????? */
+#define TX_RATIO_MAX                    (2000)                              /* tx?????????????????? */
+#define TX_PWR_COMP_VAL_MAX             (50)                                /* ?????????????????????????? */
+#define MORE_PWR_MAX                    (50)                                /* ?????????????????????????????????????? */
+#define COUNTRY_CODE_LEN                (3)                                 /* ?????????? */
+#define MAX_COUNTRY_COUNT               (300)                               /* ???????????????????????? */
+#define DELTA_CCA_ED_HIGH_TH_RANGE      15     /* ??????????????????????????????15dB */
 
 /*
- * 计算绝对值
+ * ??????????
  */
 #define CUS_ABS(val)                                ((val) > 0 ? (val) : -(val))
 /*
- * 判断CCA能量门限调整值是否超出范围
- * 最大调整幅度:DELTA_CCA_ED_HIGH_TH_RANGE
+ * ????CCA??????????????????????????
+ * ????????????:DELTA_CCA_ED_HIGH_TH_RANGE
  */
 #define CUS_DELTA_CCA_ED_HIGH_TH_OUT_OF_RANGE(val)  (CUS_ABS(val) > DELTA_CCA_ED_HIGH_TH_RANGE ? 1 : 0)
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 typedef enum
 {
    REGDOMAIN_FCC        = 0,
-   REGDOMAIN_ETSI       = 1,    /* CE 区域国家 */
+   REGDOMAIN_ETSI       = 1,    /* CE ???????? */
    REGDOMAIN_JAPAN      = 2,
    REGDOMAIN_COMMON     = 3,
 
    REGDOMAIN_COUNT
 } regdomain_enum;
 
-/* 定制化 DTS CONFIG ID */
+/* ?????? DTS CONFIG ID */
 typedef enum
 {
-    /* 5g开关 */
+    /* 5g???? */
     WLAN_CFG_DTS_BAND_5G_ENABLE = 0,
-    /* 校准 */
+    /* ???? */
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN1,
-    WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_START = WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN1,     /* 校准 2g TXPWR_REF起始配置ID */
+    WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_START = WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN1,     /* ???? 2g TXPWR_REF????????ID */
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN2,
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN3,
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN4,
@@ -105,7 +105,7 @@ typedef enum
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN12,
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_2G_VAL_CHAN13,
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND1,
-    WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_START = WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND1,    /* 校准 5g TXPWR_REF起始配置ID */
+    WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_START = WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND1,    /* ???? 5g TXPWR_REF????????ID */
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND2,
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND3,
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND4,
@@ -113,21 +113,21 @@ typedef enum
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND6,
     WLAN_CFG_DTS_CALI_TXPWR_PA_DC_REF_5G_VAL_BAND7,
     WLAN_CFG_DTS_CALI_TONE_AMP_GRADE,
-    /* FCC认证 */
+    /* FCC???? */
     WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11G_TXPWR,                                                      /* FCC CH1,CH11 band edge limit */      //21
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_TXPWR_START = WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11G_TXPWR,           /* FCC认证:TXPWR 起始配置ID */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_TXPWR_START = WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11G_TXPWR,           /* FCC????:TXPWR ????????ID */
     WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11N_HT20_TXPWR,                                                 /* FCC CH1,CH11 band edge limit */
     WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11N_HT40_TXPWR,                                                 /* FCC CH3,CH9 band edge limit */
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_11A_HT20_VHT20_TXPWR,                                           /* FCC CH36、64、100、149、165, band edge limit */
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_HT40_VHT40_TXPWR,                                               /* FCC CH38,CH62 、102、151，band edge limit */
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_VHT80_TXPWR,                                                    /* FCC CH42、58、106、155，band edge limit */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_11A_HT20_VHT20_TXPWR,                                           /* FCC CH36??64??100??149??165, band edge limit */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_HT40_VHT40_TXPWR,                                               /* FCC CH38,CH62 ??102??151??band edge limit */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_VHT80_TXPWR,                                                    /* FCC CH42??58??106??155??band edge limit */
     WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11G_DBB_SCALING,                                                /* FCC CH1,CH11 dbb scaling */
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_SCALE_START = WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11G_DBB_SCALING,     /* FCC认证:SCALE 起始配置ID */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_SCALE_START = WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11G_DBB_SCALING,     /* FCC????:SCALE ????????ID */
     WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11N_HT20_DBB_SCALING,                                           /* FCC CH1,CH11 dbb scaling */
     WLAN_CFG_DTS_BAND_EDGE_LIMIT_2G_11N_HT40_DBB_SCALING,                                           /* FCC CH3,CH9 dbb scaling */
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_11A_HT20_VHT20_DBB_SCALING,                                     /* FCC CH36、64、100、149、165, dbb scaling */
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_HT40_VHT40_DBB_SCALING,                                         /* FCC CH38,CH62 、102、151，dbb scaling */
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_VHT80_DBB_SCALING,                                              /* FCC CH42、58、106、155，dbb scaling */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_11A_HT20_VHT20_DBB_SCALING,                                     /* FCC CH36??64??100??149??165, dbb scaling */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_HT40_VHT40_DBB_SCALING,                                         /* FCC CH38,CH62 ??102??151??dbb scaling */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_5G_VHT80_DBB_SCALING,                                              /* FCC CH42??58??106??155??dbb scaling */
     /* rf register */
     WLAN_CFG_DTS_RF_REG117,                     //33
     WLAN_CFG_DTS_RF_FIRST = WLAN_CFG_DTS_RF_REG117,
@@ -156,12 +156,12 @@ typedef enum
     WLAN_CFG_DTS_BT_CALI_TXPWR_PA_FRE8,         //53
     WLAN_CFG_DTS_BT_CALI_TONE_AMP_GRADE,
 
-    WLAN_CFG_DTS_BAND_EDGE_LIMIT_TXPWR_FIX,    /* FCC 边带信道发送功率修复是否使能 */
-    WLAN_CFG_DTS_5G_IQ_CALI_AGC_CONTROL,       /* 5g iq cali agc调整配置:全0默认,全f自适应调整;其他,固定增益调整,LNA高3bit,VGA低5bit */
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_TXPWR_FIX,    /* FCC ???????????????????????????? */
+    WLAN_CFG_DTS_5G_IQ_CALI_AGC_CONTROL,       /* 5g iq cali agc????????:??0????,??f??????????;????,????????????,LNA??3bit,VGA??5bit */
     WLAN_CFG_DTS_BUTT,
 }WLAN_CFG_DTS;
 
-/* 定制化 INI CONFIG ID */
+/* ?????? INI CONFIG ID */
 typedef enum
 {
     /* ROAM */
@@ -172,7 +172,7 @@ typedef enum
     WLAN_CFG_INIT_DELTA_B,
     WLAN_CFG_INIT_DELTA_A,
 
-    /* 性能 */
+    /* ???? */
     WLAN_CFG_INIT_AMPDU_TX_MAX_NUM,
     WLAN_CFG_INIT_USED_MEM_FOR_START,
     WLAN_CFG_INIT_USED_MEM_FOR_STOP,
@@ -180,10 +180,10 @@ typedef enum
     WLAN_CFG_INIT_SDIO_D2H_ASSEMBLE_COUNT,
     WLAN_CFG_INIT_SDIO_H2D_ASSEMBLE_COUNT,
     /* LINKLOSS */
-    WLAN_CFG_INIT_LINK_LOSS_THRESHOLD_WLAN_NEAR,    //9,这里不能直接赋值
+    WLAN_CFG_INIT_LINK_LOSS_THRESHOLD_WLAN_NEAR,    //9,????????????????
     WLAN_CFG_INIT_LINK_LOSS_THRESHOLD_WLAN_FAR,
     WLAN_CFG_INIT_LINK_LOSS_THRESHOLD_P2P,
-    /* 自动调频 */
+    /* ???????? */
     WLAN_CFG_INIT_PSS_THRESHOLD_LEVEL_0,            //12
     WLAN_CFG_INIT_CPU_FREQ_LIMIT_LEVEL_0,
     WLAN_CFG_INIT_DDR_FREQ_LIMIT_LEVEL_0,
@@ -200,17 +200,17 @@ typedef enum
     WLAN_CFG_INIT_DEVICE_TYPE_LEVEL_1,
     WLAN_CFG_INIT_DEVICE_TYPE_LEVEL_2,
     WLAN_CFG_INIT_DEVICE_TYPE_LEVEL_3,
-    /* 低功耗 */
+    /* ?????? */
     WLAN_CFG_INIT_POWERMGMT_SWITCH,                 //28
-    /* 可维可测 */
+    /* ???????? */
     WLAN_CFG_INIT_LOGLEVEL,
-    /* PHY算法 */
+    /* PHY???? */
     WLAN_CFG_INIT_CHN_EST_CTRL,
     WLAN_CFG_INIT_POWER_REF_5G,
-    /* 时钟信息 */
+    /* ???????? */
     WLAN_CFG_INIT_RTS_CLK_FREQ,
     WLAN_CFG_INIT_CLK_TYPE,
-    /* 2G RF前端 */
+    /* 2G RF???? */
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND1_MULT4,    //34
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND_START = WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND1_MULT4,
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND1_MULT10,
@@ -219,7 +219,7 @@ typedef enum
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND3_MULT4,
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND3_MULT10,
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND_END = WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_2G_BAND3_MULT10,
-    /* 5G RF前端 */
+    /* 5G RF???? */
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_5G_BAND1_MULT4,  //44
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_5G_BAND_START = WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_5G_BAND1_MULT4,
     WLAN_CFG_INIT_RF_LINE_TXRX_GAIN_DB_5G_BAND1_MULT10,
@@ -244,26 +244,26 @@ typedef enum
     WLAN_CFG_INIT_EXT_LNA_ISEXIST_5G,
     WLAN_CFG_INIT_LNA_ON2OFF_TIME_NS_5G,
     WLAN_CFG_INIT_LNA_OFF2ON_TIME_NS_5G,
-    /* 温度上升导致发射功率下降过多的功率补偿 */
-    WLAN_CFG_INIT_TX_RATIO_LEVEL_0,                 /* tx占空比 */                      //48
-    WLAN_CFG_INIT_TX_PWR_COMP_VAL_LEVEL_0,          /* 发射功率补偿值 */
+    /* ?????????????????????????????????????? */
+    WLAN_CFG_INIT_TX_RATIO_LEVEL_0,                 /* tx?????? */                      //48
+    WLAN_CFG_INIT_TX_PWR_COMP_VAL_LEVEL_0,          /* ?????????????? */
     WLAN_CFG_INIT_TX_RATIO_LEVEL_1,
     WLAN_CFG_INIT_TX_PWR_COMP_VAL_LEVEL_1,
     WLAN_CFG_INIT_TX_RATIO_LEVEL_2,
     WLAN_CFG_INIT_TX_PWR_COMP_VAL_LEVEL_2,
-    WLAN_CFG_INIT_MORE_PWR,                         /* 根据温度额外补偿的发射功率 */
+    WLAN_CFG_INIT_MORE_PWR,                         /* ?????????????????????????? */
     /* SCAN */
     WLAN_CFG_INIT_RANDOM_MAC_ADDR_SCAN,
     /* 11AC2G */
-    WLAN_CFG_INIT_11AC2G_ENABLE,                    /* 11ac2g开关 */                    //56
-    WLAN_CFG_INIT_DISABLE_CAPAB_2GHT40,             /* 2ght40禁止开关 */
-    WLAN_CFG_INIT_DUAL_ANTENNA_ENABLE,              /* 双天线开关 */
-    WLAN_CFG_INIT_FAR_DIST_POW_GAIN_SWITCH,         /* 远距离功率增益开关 */
-    WLAN_CFG_LTE_GPIO_CHECK_SWITCH,                 /* lte管脚检测开关 */
+    WLAN_CFG_INIT_11AC2G_ENABLE,                    /* 11ac2g???? */                    //56
+    WLAN_CFG_INIT_DISABLE_CAPAB_2GHT40,             /* 2ght40???????? */
+    WLAN_CFG_INIT_DUAL_ANTENNA_ENABLE,              /* ?????????? */
+    WLAN_CFG_INIT_FAR_DIST_POW_GAIN_SWITCH,         /* ?????????????????? */
+    WLAN_CFG_LTE_GPIO_CHECK_SWITCH,                 /* lte???????????? */
     WLAN_ATCMDSRV_LTE_ISM_PRIORITY,
     WLAN_ATCMDSRV_LTE_RX_ACT,
     WLAN_ATCMDSRV_LTE_TX_ACT,
-    WLAN_CFG_INIT_FAR_DIST_DSSS_SCALE_PROMOTE_SWITCH,    /* 超远距11b 1m 2m dbb scale提升使能开关 */
+    WLAN_CFG_INIT_FAR_DIST_DSSS_SCALE_PROMOTE_SWITCH,    /* ??????11b 1m 2m dbb scale???????????? */
     WLAN_CFG_INIT_DELTA_CCA_ED_HIGH_20TH_2G,
     WLAN_CFG_INIT_DELTA_CCA_ED_HIGH_40TH_2G,
     WLAN_CFG_INIT_DELTA_CCA_ED_HIGH_20TH_5G,
@@ -271,23 +271,23 @@ typedef enum
 #ifdef _PRE_WLAN_DOWNLOAD_PM
     WLAN_CFG_INIT_DOWNLOAD_RATE_LIMIT_PPS,
 #endif
-    /* TCP ACK 优化 启动、关闭门限 */
+    /* TCP ACK ???? ?????????????? */
     WLAN_CFG_INIT_TCP_ACK_OPT_ON_TH,
     WLAN_CFG_INIT_TCP_ACK_OPT_OFF_TH,
     WLAN_CFG_INIT_BTCOEX_PS_SWITCH,
 
-    /* CE 5G 高频段定制化参数 */
-    WLAN_CFG_INIT_CE_5G_HIGH_BAND_TXPWR,                         /* 最大发送功率 */
+    /* CE 5G ???????????????? */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_TXPWR,                         /* ???????????? */
     WLAN_CFG_INIT_CE_5G_HIGH_BAND_11A_HT20_VHT20_DBB_SCALING,    /* 20 MHz dbbscale */
     WLAN_CFG_INIT_CE_5G_HIGH_BAND_HT40_VHT40_DBB_SCALING,        /* 40 MHz dbbscale */
     WLAN_CFG_INIT_CE_5G_HIGH_BAND_VHT80_DBB_SCALING,             /* 80 MHz dbbscale */
-    WLAN_CFG_INIT_CE_5G_HIGH_BAND_HT40_VHT40_MCS8_9_DBB_COMP,    /* 40 MHz dbbscale MCS8_9 补偿值 */
-    WLAN_CFG_INIT_CE_5G_HIGH_BAND_VHT80_MCS8_9_DBB_COMP,         /* 80 MHz dbbscale MCS8_9 补偿值 */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_HT40_VHT40_MCS8_9_DBB_COMP,    /* 40 MHz dbbscale MCS8_9 ?????? */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_VHT80_MCS8_9_DBB_COMP,         /* 80 MHz dbbscale MCS8_9 ?????? */
 
     WLAN_CFG_INIT_BUTT,
 }WLAN_CFG_INIT;
 
-/* 定制化 NVRAM PARAMS INDEX */
+/* ?????? NVRAM PARAMS INDEX */
 typedef enum
 {
     NVRAM_PARAMS_INDEX_0   = 0,
@@ -321,7 +321,7 @@ typedef enum
 }NVRAM_PARAMS_INDEX;
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 typedef unsigned char countrycode_t[COUNTRY_CODE_LEN];
 typedef struct
@@ -346,12 +346,12 @@ typedef struct
     int     case_entry;
 } wlan_cfg_cmd;
 
-/* 定制化HOST全局变量结构体 */
+/* ??????HOST?????????????? */
 typedef struct
 {
-    /* ba tx 聚合数 */
+    /* ba tx ?????? */
     unsigned int    ul_ampdu_tx_max_num;
-    /* 漫游 */
+    /* ???? */
     unsigned char   uc_roam_switch;
     unsigned char   uc_roam_scan_band;
     unsigned char   uc_roam_scan_orthogonal;

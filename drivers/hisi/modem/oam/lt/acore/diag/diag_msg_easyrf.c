@@ -60,7 +60,7 @@
 
 /*****************************************************************************
  Function Name   : diag_EasyRFMsgProc
- Description     : EasyRF 配置消息透传处理
+ Description     : EasyRF ????????????????
  Input           : None
  Output          : None
  Return          : None
@@ -112,7 +112,7 @@ VOS_UINT32 diag_EasyRfMsgProc(DIAG_FRAME_INFO_STRU *pData)
 
     stDiagInfo.ulMsgType = pData->stID.pri4b;
 
-    /*组包回复*/
+    /*????????*/
     ulRet = DIAG_MsgReport(&stDiagInfo, &stRttCnf, sizeof(stRttCnf));
 
     return ulRet;
@@ -120,7 +120,7 @@ VOS_UINT32 diag_EasyRfMsgProc(DIAG_FRAME_INFO_STRU *pData)
 }
 /*****************************************************************************
  Function Name   : diag_EasyRfMsgInit
- Description     : MSP EasyRF部分初始化
+ Description     : MSP EasyRF??????????
  Input           : None
  Output          : None
  Return          : None
@@ -129,7 +129,7 @@ VOS_UINT32 diag_EasyRfMsgProc(DIAG_FRAME_INFO_STRU *pData)
 *****************************************************************************/
 VOS_VOID diag_EasyRfMsgInit(VOS_VOID)
 {
-    /*注册message消息回调*/
+    /*????message????????*/
 
     return;
 }

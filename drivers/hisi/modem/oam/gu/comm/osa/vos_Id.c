@@ -83,7 +83,7 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_VOS_ID_C
 
@@ -129,7 +129,7 @@ VOS_UINT16      g_usPidInitId;
 extern VOS_VOID V_LogRecord(VOS_UINT32 ulIndex, VOS_UINT32 ulValue);
 
 
-/* 自旋锁，用来作querey pid info 的临界资源保护 */
+/* ??????????????querey pid info ?????????????? */
 VOS_SPINLOCK             g_stVosQuereyPidInfoSpinLock;
 
 /*****************************************************************************
@@ -312,7 +312,7 @@ VOS_UINT32 VOS_PidsInitOnePhase( enum VOS_INIT_PHASE_DEFINE InitPhrase)
         if(ulReturnValue != VOS_OK)
         {
             Print1("# VOS_PidsInitOnePhase Error. Pid 0x%x\r\n",i);
-            /*由于PID扩展后,PID已经扩展超过了0xffff，需要扩展*/
+            /*????PID??????,PID??????????????0xffff??????????*/
             g_ulOmPidInit |= (i & 0xFFFFFF);
             V_LogRecord(9, g_ulOmPidInit);
             ulErrorCounter++;

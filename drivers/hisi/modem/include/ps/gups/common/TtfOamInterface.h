@@ -57,7 +57,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "vos.h"
 #include "TTFLink.h"
@@ -66,46 +66,46 @@ extern "C" {
 #pragma pack(4)
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
-#define GRM_MNTN_TS_TOTAL                           (8)    /* 时隙个数，ts0-ts7共8个 */
-#define GRLC_MNTN_MAX_TBF_NUM                       (1)    /* 当前支持的最大TBF规格为1，不支持多TBF */
-#define  WTTF_MNTN_MAX_AM_RB_NUM                    (8)    /* 3个AM业务RB,外加RB2-RB4 三个信令RB,共计6个AM RB. 25.306 R9协议Table 5.1b升级到8个AM RB */
-#define  WTTF_MNTN_MAX_TM_RB_NUM                    (4)    /* TM RB个数,RB0不计人, 3个AMR语音RB + 1个TM CSD共计4个TM RB, */
-#define  WTTF_MNTN_MAX_UM_RB_NUM                    (6)    /* UM RB个数, CBS所对应的RB和RB0不计入,GCF用例要求三个以上UM业务RB,RB1为UM信令RB,共计3个UM RB ，与AM实体个数对应*/
+#define GRM_MNTN_TS_TOTAL                           (8)    /* ??????????ts0-ts7??8?? */
+#define GRLC_MNTN_MAX_TBF_NUM                       (1)    /* ??????????????TBF??????1??????????TBF */
+#define  WTTF_MNTN_MAX_AM_RB_NUM                    (8)    /* 3??AM????RB,????RB2-RB4 ????????RB,????6??AM RB. 25.306 R9????Table 5.1b??????8??AM RB */
+#define  WTTF_MNTN_MAX_TM_RB_NUM                    (4)    /* TM RB????,RB0??????, 3??AMR????RB + 1??TM CSD????4??TM RB, */
+#define  WTTF_MNTN_MAX_UM_RB_NUM                    (6)    /* UM RB????, CBS????????RB??RB0??????,GCF????????????????UM????RB,RB1??UM????RB,????3??UM RB ????AM????????????*/
 
 #define  WTTF_MNTN_MAX_RB_ID                        (32)    /* INTEGER (1..32) */
-#define  WTTF_MNTN_MAX_FLX_RLC_SIZE_LEVEL_CNT       (10) /*最大可用变长SIZE档位数*/
+#define  WTTF_MNTN_MAX_FLX_RLC_SIZE_LEVEL_CNT       (10) /*????????????SIZE??????*/
 #define  WTTF_MNTN_RLC_AM_MAX_SN_NUM                (4096)
 
-/* 典型的RLP实体的个数 */
+/* ??????RLP?????????? */
 #define CTTF_HRPD_MNTN_DEFAULT_RLP_MAX_NUM   (2)
 
-/* MFPA RLP实体的最大个数 */
+/* MFPA RLP?????????????? */
 #define CTTF_HRPD_MNTN_MF_RLP_MAX_NUM        (6)
 
-/* EMPA RLP实体的最大个数 */
+/* EMPA RLP?????????????? */
 #define CTTF_HRPD_MNTN_EMF_RLP_MAX_NUM       (6)
 
-/* 根据CDMA 5.12s周期, 建议每1.28s上报一次。1.28s=64*20ms, 64作为数组下标,
-（一次上报64帧的情况）, 内存可以接受
-    该宏大小变化时，必须同步更改CTTF_1X_MAC_MNTN_BUF_MAX_SIZE
+/* ????CDMA 5.12s????, ??????1.28s??????????1.28s=64*20ms, 64????????????,
+??????????64??????????, ????????????
+    ????????????????????????????CTTF_1X_MAC_MNTN_BUF_MAX_SIZE
 */
 #define   CTTF_1X_MAC_MNTN_MAX_REPORT_NUM    (64)
 
-/* 因为HIDS不支持动态添加、删除RLP实体, 所以讨论后决定按照协议最大值定义
-    该宏大小变化时，必须同步更改CTTF_1X_RLP_MNTN_BUF_MAX_SIZE
+/* ????HIDS????????????????????RLP????, ????????????????????????????????
+    ????????????????????????????CTTF_1X_RLP_MNTN_BUF_MAX_SIZE
 */
 #define    CTTF_1X_RLP_MNTN_MAX_NUM    (6)
 
-/* 上报的MAC流最大个数，参考标杆设计 */
+/* ??????MAC???????????????????????? */
 #define   CTTF_HRPD_RTC3MAC_MNTN_FLOW_MAX_NUM   (8)
 
 /*
-    按照协议16slot为一个MAC Layer Packet, 每一个子帧记录一次。一个子帧为4个slot,
-    则16个slot会产生16/4=4组数据一个slot为1.28ms，那么16个slot对应26.66ms。
-    因为640ms上报一次消息，那么消息中一个MAC流会产生有24组数据（640=48*26.66ms）。
-    一组数据记录4个子帧的信息，即1.28s中每个流上报24*4= 96组。
+    ????????16slot??????MAC Layer Packet, ??????????????????????????????4??slot,
+    ??16??slot??????16/4=4??????????slot??1.28ms??????16??slot????26.66ms??
+    ????640ms????????????????????????????MAC??????????24????????640=48*26.66ms????
+    ????????????4????????????????1.28s????????????24*4= 96????
 */
 #define   CTTF_HRPD_RTC3MAC_MNTN_MAX_RECORD_PACKET_PER_FLOW     (96)
 #define   CTTF_HRPD_RTC3MAC_MNTN_MAX_RECORD_T2P_PER_FLOW        (96)
@@ -117,13 +117,13 @@ extern "C" {
  */
 #define CTTF_HRPD_MNTN_NUM_SUBFRAME_INFO_INSTANCES              (3)
 
-/* rtc3支持的最大交织(进程)数 */
+/* rtc3??????????????(????)?? */
 #define CTTF_HRPD_MNTN_RTC3MAC_INTERLACE_MAX_NUM       (3)
 
-/* 脱敏开发定义的数据无效值 */
+/* ???????????????????????? */
 #define CTTF_SENSITIVE_INVALID_VALUE                   (0)
 
-/* 勾包PID范围 */
+/* ????PID???? */
 #define IS_WUEPS_PID_RABM(x)            ((I0_WUEPS_PID_RABM == x)  || (I1_WUEPS_PID_RABM == x) || (I2_WUEPS_PID_RABM == x))
 #define IS_WUEPS_PID_PDCP(x)            ((I0_WUEPS_PID_PDCP == x)  || (I1_WUEPS_PID_PDCP == x))
 #define IS_WUEPS_PID_RLC(x)             ((I0_WUEPS_PID_RLC == x)   || (I1_WUEPS_PID_RLC == x))
@@ -142,73 +142,73 @@ extern "C" {
 #define IS_WUEPS_PID_WAS(x)             ((I0_WUEPS_PID_WRR == x)   || (I1_WUEPS_PID_WRR == x) || (I0_WUEPS_PID_WCOM == x) || (I1_WUEPS_PID_WCOM == x))
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 /*****************************************************************************
- 枚举名    : TTF_MNTN_MSG_TYPE_ENUM
- 枚举说明  : 可维可测消息类型(透明消息), 把所有的透明消息的ID都定义在这里
+ ??????    : TTF_MNTN_MSG_TYPE_ENUM
+ ????????  : ????????????????(????????), ??????????????????ID????????????
 *****************************************************************************/
 enum TTF_MNTN_MSG_TYPE_ENUM
 {
 /*****************************************************************************
-    TTF的透明消息目前都不区分MODEM
+    TTF??????????????????????MODEM
 *****************************************************************************/
 
-    /* W模可维可测消息的编号以DO开头 */
-    ID_OM_WTTF_RLC_DATA_TRANS_INFO_REQ          = 0xD001,    /*W模下RLC 实体信息上报请求,其中共包括AM，UM，TM三种模式，根据用户的请求全部或部分显示*/
-    ID_WTTF_OM_RLC_DATA_TRANS_INFO_CNF          = 0xD002,    /*W模下RLC 实体信息上报回复*/
-    ID_WTTF_OM_RLC_DATA_TRANS_INFO_IND          = 0xD003,    /*W模下RLC 实体信息上报指示*/
-    ID_OM_WTTF_ADVANCED_TRACE_CONFIG_REQ        = 0xD004,    /*W模下Trace 高级配置*/
-    ID_WTTF_OM_ADVANCED_TRACE_CONFIG_CNF        = 0xD005,    /*W模下Trace 高级配置指示*/
-    ID_OM_WTTF_RLC_PDU_SIZE_TRANS_INFO_REQ      = 0xD006,    /*W模下RLC PDU SIZE统计信息上报请求*/
-    ID_WTTF_OM_RLC_PDU_SIZE_TRANS_INFO_CNF      = 0xD007,    /*W模下RLC PDU SIZE统计信息上报回复*/
-    ID_WTTF_OM_RLC_PDU_SIZE_TRANS_INFO_IND      = 0xD008,    /*W模下RLC PDU SIZE统计信息上报指示*/
-    ID_OM_WTTF_UPA_DATA_STATUS_G_INFO_REQ       = 0xD009,    /*W模下UPA 要数信息G值上报请求*/
-    ID_WTTF_OM_UPA_DATA_STATUS_G_INFO_CNF       = 0xD00a,    /*W模下UPA 要数信息G值上报回复*/
-    ID_WTTF_OM_UPA_DATA_STATUS_G_INFO_IND       = 0xD00b,    /*W模下UPA 要数信息G值上报指示*/
+    /* W??????????????????????DO???? */
+    ID_OM_WTTF_RLC_DATA_TRANS_INFO_REQ          = 0xD001,    /*W????RLC ????????????????,??????????AM??UM??TM??????????????????????????????????????*/
+    ID_WTTF_OM_RLC_DATA_TRANS_INFO_CNF          = 0xD002,    /*W????RLC ????????????????*/
+    ID_WTTF_OM_RLC_DATA_TRANS_INFO_IND          = 0xD003,    /*W????RLC ????????????????*/
+    ID_OM_WTTF_ADVANCED_TRACE_CONFIG_REQ        = 0xD004,    /*W????Trace ????????*/
+    ID_WTTF_OM_ADVANCED_TRACE_CONFIG_CNF        = 0xD005,    /*W????Trace ????????????*/
+    ID_OM_WTTF_RLC_PDU_SIZE_TRANS_INFO_REQ      = 0xD006,    /*W????RLC PDU SIZE????????????????*/
+    ID_WTTF_OM_RLC_PDU_SIZE_TRANS_INFO_CNF      = 0xD007,    /*W????RLC PDU SIZE????????????????*/
+    ID_WTTF_OM_RLC_PDU_SIZE_TRANS_INFO_IND      = 0xD008,    /*W????RLC PDU SIZE????????????????*/
+    ID_OM_WTTF_UPA_DATA_STATUS_G_INFO_REQ       = 0xD009,    /*W????UPA ????????G??????????*/
+    ID_WTTF_OM_UPA_DATA_STATUS_G_INFO_CNF       = 0xD00a,    /*W????UPA ????????G??????????*/
+    ID_WTTF_OM_UPA_DATA_STATUS_G_INFO_IND       = 0xD00b,    /*W????UPA ????????G??????????*/
     ID_OM_TTF_MNTN_MSG_CTTF_OM_XXX_REQ          = 0xD00c,
     ID_OM_TTF_MNTN_MSG_CTTF_OM_YYY_REQ          = 0xD00d,
     ID_TTF_OM_MNTN_MSG_OM_CTTF_XXX_DATA_IND     = 0xD00e,
     ID_TTF_OM_MNTN_MSG_OM_CTTF_ZZZ_DATA_IND     = 0xD00f,
-    ID_OM_WTTF_MAC_DATA_INFO_REQ                = 0xD010,     /* W模下MAC 实体信息上报 */
-    ID_OM_WTTF_MAC_DATA_INFO_CNF                = 0xD011,     /* W模下MAC 实体信息回复 */
-    ID_OM_WTTF_MAC_DATA_INFO_IND                = 0xD012,     /* W模下MAC 实体信息指示 */
+    ID_OM_WTTF_MAC_DATA_INFO_REQ                = 0xD010,     /* W????MAC ???????????? */
+    ID_OM_WTTF_MAC_DATA_INFO_CNF                = 0xD011,     /* W????MAC ???????????? */
+    ID_OM_WTTF_MAC_DATA_INFO_IND                = 0xD012,     /* W????MAC ???????????? */
 
-    /* G模可维可测消息的编号以D1开头 */
-    ID_GRM_MNTN_OM_GRM_INFO_CFG_REQ             = 0xD104,   /*配置GRM信息观测功能*/
+    /* G??????????????????????D1???? */
+    ID_GRM_MNTN_OM_GRM_INFO_CFG_REQ             = 0xD104,   /*????GRM????????????*/
     ID_GRM_MNTN_GRM_OM_INFO_CFG_CNF             = 0xD105,
     ID_GRM_MNTN_GRM_OM_INFO                     = 0xD106,
-    ID_GRM_MNTN_OM_GRM_THROUGHPUT_CFG_REQ       = 0xD107,   /*OM向GRM请求配置GRM吞吐率统计信息观测功能消息项*/
-    ID_GRM_MNTN_GRM_OM_THROUGHPUT_CFG_CNF       = 0xD108,   /*GRM向OM回复配置GRM吞吐率统计信息观测功能消息项*/
-    ID_GRM_MNTN_GRM_OM_THROUGHPUT_INFO          = 0xD109,   /*GRM向OM上报GRM吞吐率统计信息消息项*/
-    ID_GRM_MNTN_OM_GTTF_ADV_TRACE_SWITCH_REQ    = 0xD10a,   /*G模下Trace 高级配置开关请求*/
-    ID_GRM_MNTN_GTTF_OM_ADV_TRACE_SWITCH_CNF    = 0xD10b,   /*G模下Trace 高级配置开关回复*/
-    ID_SN_MNTN_OM_THROUGHPUT_CFG_REQ            = 0xD10c,   /*OM向SNDCP请求配置SNDCP吞吐率统计信息观测功能消息项*/
-    ID_SN_MNTN_OM_THROUGHPUT_CFG_CNF            = 0xD10d,   /*SNDCP向OM回复配置SNDCP吞吐率统计信息观测功能消息项*/
-    ID_SN_MNTN_OM_THROUGHPUT_INFO               = 0xD10e,   /*SNDCP向OM上报GRM吞吐率统计信息消息项*/
-    ID_LL_MNTN_OM_THROUGHPUT_CFG_REQ            = 0xD10f,   /*OM向LLC请求配置LLC吞吐率统计信息观测功能消息项*/
-    ID_LL_MNTN_OM_THROUGHPUT_CFG_CNF            = 0xD110,   /*LLC向OM回复配置LLC吞吐率统计信息观测功能消息项*/
-    ID_LL_MNTN_OM_THROUGHPUT_INFO               = 0xD111,   /*LLC向OM上报GRM吞吐率统计信息消息项*/
+    ID_GRM_MNTN_OM_GRM_THROUGHPUT_CFG_REQ       = 0xD107,   /*OM??GRM????????GRM????????????????????????????*/
+    ID_GRM_MNTN_GRM_OM_THROUGHPUT_CFG_CNF       = 0xD108,   /*GRM??OM????????GRM????????????????????????????*/
+    ID_GRM_MNTN_GRM_OM_THROUGHPUT_INFO          = 0xD109,   /*GRM??OM????GRM????????????????????*/
+    ID_GRM_MNTN_OM_GTTF_ADV_TRACE_SWITCH_REQ    = 0xD10a,   /*G????Trace ????????????????*/
+    ID_GRM_MNTN_GTTF_OM_ADV_TRACE_SWITCH_CNF    = 0xD10b,   /*G????Trace ????????????????*/
+    ID_SN_MNTN_OM_THROUGHPUT_CFG_REQ            = 0xD10c,   /*OM??SNDCP????????SNDCP????????????????????????????*/
+    ID_SN_MNTN_OM_THROUGHPUT_CFG_CNF            = 0xD10d,   /*SNDCP??OM????????SNDCP????????????????????????????*/
+    ID_SN_MNTN_OM_THROUGHPUT_INFO               = 0xD10e,   /*SNDCP??OM????GRM????????????????????*/
+    ID_LL_MNTN_OM_THROUGHPUT_CFG_REQ            = 0xD10f,   /*OM??LLC????????LLC????????????????????????????*/
+    ID_LL_MNTN_OM_THROUGHPUT_CFG_CNF            = 0xD110,   /*LLC??OM????????LLC????????????????????????????*/
+    ID_LL_MNTN_OM_THROUGHPUT_INFO               = 0xD111,   /*LLC??OM????GRM????????????????????*/
 
-    /* RRM的可维可测消息的编号以D2开头 */
-    ID_RRM_OM_RESOURCE_STATE_INFO_IND           = 0xD210,    /* RRM上报的资源状态信息 */
+    /* RRM??????????????????????D2???? */
+    ID_RRM_OM_RESOURCE_STATE_INFO_IND           = 0xD210,    /* RRM?????????????????? */
 
-    /* AP上的TCP协议栈的可维可测消息, 编号以D3开头 */
-    ID_OM_IPS_ADVANCED_TRACE_CONFIG_REQ         = 0xD313,   /* 捕获TCP/IP协议栈 报文配置*/
-    ID_IPS_OM_ADVANCED_TRACE_CONFIG_CNF         = 0xD314,   /* 捕获TCP/IP协议栈 报文指示*/
-    ID_OM_IPS_MNTN_INFO_CONFIG_REQ              = 0xD315,   /* 周期性捕获TCP/IP协议栈 基础信息配置*/
-    ID_IPS_OM_MNTN_INFO_CONFIG_CNF              = 0xD316,   /* 周期性捕获TCP/IP协议栈 基础信息配置指示*/
-    ID_IPS_TRACE_INPUT_DATA_INFO                = 0xD317,               /*TCP/IP可维可测接收报文*/
-    ID_IPS_TRACE_OUTPUT_DATA_INFO               = 0xD318,               /*TCP/IP可维可测发送报文*/
-    ID_IPS_TRACE_BRIDGE_DATA_INFO               = 0xD319,               /*TCP/IP网桥中转报文*/
-    ID_IPS_TRACE_RECV_ARP_PKT                   = 0xD31A,               /*TCP/IP协议栈接收的ARP控制报文*/
-    ID_IPS_TRACE_SEND_ARP_PKT                   = 0xD31B,               /*TCP/IP协议栈发送的ARP控制报文*/
-    ID_IPS_TRACE_RECV_DHCPC_PKT                 = 0xD31C,               /*TCP/IP协议栈接收的DHCP控制报文*/
-    ID_IPS_TRACE_SEND_DHCPC_PKT                 = 0xD31D,               /*TCP/IP协议栈发送的DHCP控制报文*/
-    ID_IPS_TRACE_RECV_DHCPS_PKT                 = 0xD31E,               /*TCP/IP协议栈接收的DHCP控制报文*/
-    ID_IPS_TRACE_SEND_DHCPS_PKT                 = 0xD31F,               /*TCP/IP协议栈发送的DHCP控制报文*/
-    ID_IPS_TRACE_APP_CMD                        = 0xD320,               /*APP控制命令信息*/
-    ID_IPS_TRACE_MNTN_INFO                      = 0xD321,               /*TCP/IP协议栈基础信息*/
+    /* AP????TCP????????????????????, ??????D3???? */
+    ID_OM_IPS_ADVANCED_TRACE_CONFIG_REQ         = 0xD313,   /* ????TCP/IP?????? ????????*/
+    ID_IPS_OM_ADVANCED_TRACE_CONFIG_CNF         = 0xD314,   /* ????TCP/IP?????? ????????*/
+    ID_OM_IPS_MNTN_INFO_CONFIG_REQ              = 0xD315,   /* ??????????TCP/IP?????? ????????????*/
+    ID_IPS_OM_MNTN_INFO_CONFIG_CNF              = 0xD316,   /* ??????????TCP/IP?????? ????????????????*/
+    ID_IPS_TRACE_INPUT_DATA_INFO                = 0xD317,               /*TCP/IP????????????????*/
+    ID_IPS_TRACE_OUTPUT_DATA_INFO               = 0xD318,               /*TCP/IP????????????????*/
+    ID_IPS_TRACE_BRIDGE_DATA_INFO               = 0xD319,               /*TCP/IP????????????*/
+    ID_IPS_TRACE_RECV_ARP_PKT                   = 0xD31A,               /*TCP/IP????????????ARP????????*/
+    ID_IPS_TRACE_SEND_ARP_PKT                   = 0xD31B,               /*TCP/IP????????????ARP????????*/
+    ID_IPS_TRACE_RECV_DHCPC_PKT                 = 0xD31C,               /*TCP/IP????????????DHCP????????*/
+    ID_IPS_TRACE_SEND_DHCPC_PKT                 = 0xD31D,               /*TCP/IP????????????DHCP????????*/
+    ID_IPS_TRACE_RECV_DHCPS_PKT                 = 0xD31E,               /*TCP/IP????????????DHCP????????*/
+    ID_IPS_TRACE_SEND_DHCPS_PKT                 = 0xD31F,               /*TCP/IP????????????DHCP????????*/
+    ID_IPS_TRACE_APP_CMD                        = 0xD320,               /*APP????????????*/
+    ID_IPS_TRACE_MNTN_INFO                      = 0xD321,               /*TCP/IP??????????????*/
     ID_IPS_TRACE_BRIDGE_PRE_ROUTING_INFO        = 0xD322,
     ID_IPS_TRACE_BRIDGE_POST_ROUTING_INFO       = 0xD323,
     ID_IPS_TRACE_BRIDGE_LOCAL_IN_INFO           = 0xD324,
@@ -224,43 +224,43 @@ enum TTF_MNTN_MSG_TYPE_ENUM
     ID_IPS_TRACE_ADS_UL                         = 0xD330,
     ID_IPS_TRACE_ADS_DL                         = 0xD331,
 
-    /* 1X的可维可测消息的编号以D4开头 */
-    ID_OM_CTTF_1X_MNTN_CONFIG_REQ               = 0xD400,   /* 1X 配置开关请求, 用于下发配置 */
-    ID_CTTF_OM_1X_MNTN_CONFIG_CNF               = 0xD400,   /* 1X 配置开关回复, 用于回复配置结果 */
-    ID_CTTF_OM_1X_MNTN_FWD_LINK_IND             = 0xD402,   /* 1X Forward Link Info上报 */
-    ID_CTTF_OM_1X_MNTN_REV_LINK_IND             = 0xD403,   /* 1X Reverse Link Info上报 */
-    ID_CTTF_OM_1X_MNTN_RLP_STATISTICS_IND       = 0xD404,   /* 1X RLP statistics上报 */
-    ID_CTTF_OM_1X_MNTN_COMMON_CHANNEL_STATISTICS_IND       = 0xD405,   /* Common Channel statistics上报 */
-    ID_OM_CTTF_1X_MNTN_TRACE_CONFIG_REQ         = 0xD406,   /* 控制1x的trace配置开关请求 */
+    /* 1X??????????????????????D4???? */
+    ID_OM_CTTF_1X_MNTN_CONFIG_REQ               = 0xD400,   /* 1X ????????????, ???????????? */
+    ID_CTTF_OM_1X_MNTN_CONFIG_CNF               = 0xD400,   /* 1X ????????????, ???????????????? */
+    ID_CTTF_OM_1X_MNTN_FWD_LINK_IND             = 0xD402,   /* 1X Forward Link Info???? */
+    ID_CTTF_OM_1X_MNTN_REV_LINK_IND             = 0xD403,   /* 1X Reverse Link Info???? */
+    ID_CTTF_OM_1X_MNTN_RLP_STATISTICS_IND       = 0xD404,   /* 1X RLP statistics???? */
+    ID_CTTF_OM_1X_MNTN_COMMON_CHANNEL_STATISTICS_IND       = 0xD405,   /* Common Channel statistics???? */
+    ID_OM_CTTF_1X_MNTN_TRACE_CONFIG_REQ         = 0xD406,   /* ????1x??trace???????????? */
 
-    /* CP上关于IP报文、PPP帧之类的维测都归入D5中 */
-    /* CP上的TCP协议栈的可维可测消息, 编号以D51开头
-       考虑IP类的需求可能比较多, 多预留一些ID空间, D51~D55 */
-    ID_OM_IPS_CCORE_ADVANCED_TRACE_CONFIG_REQ   = 0xD513,               /* 捕获TCP/IP协议栈 报文配置 */
-    ID_IPS_CCORE_OM_ADVANCED_TRACE_CONFIG_CNF   = 0xD514,               /* 捕获TCP/IP协议栈 报文指示 */
-    ID_OM_IPS_CCORE_MNTN_INFO_CONFIG_REQ        = 0xD515,               /* 周期性捕获TCP/IP协议栈 基础信息配置 */
-    ID_IPS_CCORE_OM_MNTN_INFO_CONFIG_CNF        = 0xD516,               /* 周期性捕获TCP/IP协议栈 基础信息配置指示 */
-    ID_IPS_CCORE_TRACE_INPUT_DATA_INFO          = 0xD517,               /* TCP/IP可维可测接收报文 */
-    ID_IPS_CCORE_TRACE_OUTPUT_DATA_INFO         = 0xD518,               /* TCP/IP可维可测发送报文 */
-    ID_IPS_CCORE_TRACE_BRIDGE_DATA_INFO         = 0xD519,               /* TCP/IP网桥中转报文 */
-    ID_IPS_CCORE_TRACE_RECV_ARP_PKT             = 0xD51A,               /* TCP/IP协议栈接收的ARP控制报文 */
-    ID_IPS_CCORE_TRACE_SEND_ARP_PKT             = 0xD51B,               /* TCP/IP协议栈发送的ARP控制报文 */
-    ID_IPS_CCORE_TRACE_RECV_DHCPC_PKT           = 0xD51C,               /* TCP/IP协议栈接收的DHCP控制报文 */
-    ID_IPS_CCORE_TRACE_SEND_DHCPC_PKT           = 0xD51D,               /* TCP/IP协议栈发送的DHCP控制报文 */
-    ID_IPS_CCORE_TRACE_RECV_DHCPS_PKT           = 0xD51E,               /* TCP/IP协议栈接收的DHCP控制报文 */
-    ID_IPS_CCORE_TRACE_SEND_DHCPS_PKT           = 0xD51F,               /* TCP/IP协议栈发送的DHCP控制报文 */
-    ID_IPS_CCORE_TRACE_APP_CMD                  = 0xD520,               /* APP控制命令信息 */
-    ID_IPS_CCORE_TRACE_MNTN_INFO                = 0xD521,               /* TCP/IP协议栈基础信息 */
-    ID_IPS_MNTN_CCORE_IMS_NIC_INFO              = 0xD522,               /* IMS虚拟网卡统计信息 */
-    ID_IPS_CCORE_TRACE_NIC_DATA_IND             = 0xD523,               /* TCP/IP可维可测接收报文 */
-    ID_IPS_CCORE_TRACE_NIC_DATA_REQ             = 0xD524,               /* TCP/IP可维可测发送报文 */
+    /* CP??????IP??????PPP??????????????????D5?? */
+    /* CP????TCP????????????????????, ??????D51????
+       ????IP??????????????????, ??????????ID????, D51~D55 */
+    ID_OM_IPS_CCORE_ADVANCED_TRACE_CONFIG_REQ   = 0xD513,               /* ????TCP/IP?????? ???????? */
+    ID_IPS_CCORE_OM_ADVANCED_TRACE_CONFIG_CNF   = 0xD514,               /* ????TCP/IP?????? ???????? */
+    ID_OM_IPS_CCORE_MNTN_INFO_CONFIG_REQ        = 0xD515,               /* ??????????TCP/IP?????? ???????????? */
+    ID_IPS_CCORE_OM_MNTN_INFO_CONFIG_CNF        = 0xD516,               /* ??????????TCP/IP?????? ???????????????? */
+    ID_IPS_CCORE_TRACE_INPUT_DATA_INFO          = 0xD517,               /* TCP/IP???????????????? */
+    ID_IPS_CCORE_TRACE_OUTPUT_DATA_INFO         = 0xD518,               /* TCP/IP???????????????? */
+    ID_IPS_CCORE_TRACE_BRIDGE_DATA_INFO         = 0xD519,               /* TCP/IP???????????? */
+    ID_IPS_CCORE_TRACE_RECV_ARP_PKT             = 0xD51A,               /* TCP/IP????????????ARP???????? */
+    ID_IPS_CCORE_TRACE_SEND_ARP_PKT             = 0xD51B,               /* TCP/IP????????????ARP???????? */
+    ID_IPS_CCORE_TRACE_RECV_DHCPC_PKT           = 0xD51C,               /* TCP/IP????????????DHCP???????? */
+    ID_IPS_CCORE_TRACE_SEND_DHCPC_PKT           = 0xD51D,               /* TCP/IP????????????DHCP???????? */
+    ID_IPS_CCORE_TRACE_RECV_DHCPS_PKT           = 0xD51E,               /* TCP/IP????????????DHCP???????? */
+    ID_IPS_CCORE_TRACE_SEND_DHCPS_PKT           = 0xD51F,               /* TCP/IP????????????DHCP???????? */
+    ID_IPS_CCORE_TRACE_APP_CMD                  = 0xD520,               /* APP???????????? */
+    ID_IPS_CCORE_TRACE_MNTN_INFO                = 0xD521,               /* TCP/IP?????????????? */
+    ID_IPS_MNTN_CCORE_IMS_NIC_INFO              = 0xD522,               /* IMS???????????????? */
+    ID_IPS_CCORE_TRACE_NIC_DATA_IND             = 0xD523,               /* TCP/IP???????????????? */
+    ID_IPS_CCORE_TRACE_NIC_DATA_REQ             = 0xD524,               /* TCP/IP???????????????? */
 
 
-    /* CP上的PPPC的可维可测消息, 编号以D56开头 */
-    ID_OM_PPP_MNTN_CONFIG_REQ                   = 0xD560,               /*PPP收到om配置信息*/
-    ID_PPP_OM_MNTN_CONFIG_CNF                   = 0xD561,               /*PPP确认收到om配置信息*/
-    ID_PPP_OM_MNTN_STATISTIC_INFO               = 0xD562,               /*PPP返回维测信息*/
-    ID_OM_PPP_MNTN_TRACE_CONFIG_REQ         = 0xD563,               /* PPP收到OM 勾包配置信息*/
+    /* CP????PPPC??????????????, ??????D56???? */
+    ID_OM_PPP_MNTN_CONFIG_REQ                   = 0xD560,               /*PPP????om????????*/
+    ID_PPP_OM_MNTN_CONFIG_CNF                   = 0xD561,               /*PPP????????om????????*/
+    ID_PPP_OM_MNTN_STATISTIC_INFO               = 0xD562,               /*PPP????????????*/
+    ID_OM_PPP_MNTN_TRACE_CONFIG_REQ         = 0xD563,               /* PPP????OM ????????????*/
 
 
     ID_IMS_NIC_MNTN_TRACE_RCV_CONFIG_INFO       = 0xD5F1,
@@ -274,19 +274,19 @@ enum TTF_MNTN_MSG_TYPE_ENUM
     ID_IMS_NIC_MNTN_TRACE_TCPIP_INPUT_LOG       = 0xD5F9,
 
 
-    /* EVDO的可维可测消息(含HRPD和eHRPD)的编号以D6开头 */
-    ID_OM_CTTF_HRPD_MNTN_CONFIG_REQ                     = 0xD600,   /* HRPD 配置开关请求, 用于下发配置 */
-    ID_CTTF_OM_HRPD_MNTN_CONFIG_CNF                     = 0xD601,   /* HRPD 配置开关回复, 用于回复配置结果 */
-    ID_CTTF_OM_HRPD_MNTN_MODULE_PROTOCOL_STATE_IND      = 0xD602,   /* HRPD Module Protocol State上报 */
-    ID_CTTF_OM_HRPD_MNTN_MAC_PROTOCOL_STATISTICS_IND    = 0xD603,   /* HRPD MAC Protocol Statistics上报 */
-    ID_CTTF_OM_HRPD_MNTN_RLP_STATISTICS_IND             = 0xD604,   /* HRPD RLP statistics上报 */
-    ID_CTTF_OM_HRPD_MNTN_MFPA_RLP_STATISTICS_IND        = 0xD605,   /* MFPA RLP statistics上报 */
-    ID_CTTF_OM_HRPD_MNTN_EMPA_RLP_STATISTICS_IND        = 0xD606,   /* EMPA RLP statistics上报 */
-    ID_CTTF_OM_HRPD_MNTN_REV_LINK_PACKET_INFO_IND       = 0xD607,   /* HRPD Reverse Link Packet Info上报 */
-    ID_CTTF_OM_HRPD_MNTN_REV_LINK_T2P_STATISTICS_IND    = 0xD608,   /* HRPD Reverse Link T2P statistics上报 */
-    ID_CTTF_OM_HRPD_MNTN_HARQ_INFO_IND                  = 0xD609,   /* HRPD Harq Info上报 */
-    ID_CTTF_OM_HRPD_MNTN_RTC3MAC_ACK_INFO_IND           = 0xD60A,   /* HRPD RTC3MAC Info上报 */
-    ID_CTTF_OM_HRPD_MNTN_TRACE_MSG_CONFIG_REQ           =0xD60B,    /* HRPD Trace Msg 配置消息*/
+    /* EVDO??????????????(??HRPD??eHRPD)????????D6???? */
+    ID_OM_CTTF_HRPD_MNTN_CONFIG_REQ                     = 0xD600,   /* HRPD ????????????, ???????????? */
+    ID_CTTF_OM_HRPD_MNTN_CONFIG_CNF                     = 0xD601,   /* HRPD ????????????, ???????????????? */
+    ID_CTTF_OM_HRPD_MNTN_MODULE_PROTOCOL_STATE_IND      = 0xD602,   /* HRPD Module Protocol State???? */
+    ID_CTTF_OM_HRPD_MNTN_MAC_PROTOCOL_STATISTICS_IND    = 0xD603,   /* HRPD MAC Protocol Statistics???? */
+    ID_CTTF_OM_HRPD_MNTN_RLP_STATISTICS_IND             = 0xD604,   /* HRPD RLP statistics???? */
+    ID_CTTF_OM_HRPD_MNTN_MFPA_RLP_STATISTICS_IND        = 0xD605,   /* MFPA RLP statistics???? */
+    ID_CTTF_OM_HRPD_MNTN_EMPA_RLP_STATISTICS_IND        = 0xD606,   /* EMPA RLP statistics???? */
+    ID_CTTF_OM_HRPD_MNTN_REV_LINK_PACKET_INFO_IND       = 0xD607,   /* HRPD Reverse Link Packet Info???? */
+    ID_CTTF_OM_HRPD_MNTN_REV_LINK_T2P_STATISTICS_IND    = 0xD608,   /* HRPD Reverse Link T2P statistics???? */
+    ID_CTTF_OM_HRPD_MNTN_HARQ_INFO_IND                  = 0xD609,   /* HRPD Harq Info???? */
+    ID_CTTF_OM_HRPD_MNTN_RTC3MAC_ACK_INFO_IND           = 0xD60A,   /* HRPD RTC3MAC Info???? */
+    ID_CTTF_OM_HRPD_MNTN_TRACE_MSG_CONFIG_REQ           =0xD60B,    /* HRPD Trace Msg ????????*/
 
     TTF_MNTN_MSG_TYPE_BUTT                      = 0xFFFF
 };
@@ -294,31 +294,31 @@ typedef VOS_UINT16 TTF_MNTN_MSG_TYPE_ENUM_UINT16;
 
 enum TTF_MNTN_RPT_CMD_ENUM
 {
-    TTF_MNTN_RPT_CMD_STOP     = 0x00, /*停止上报*/
-    TTF_MNTN_RPT_CMD_START    = 0x01  /*开始上报*/
+    TTF_MNTN_RPT_CMD_STOP     = 0x00, /*????????*/
+    TTF_MNTN_RPT_CMD_START    = 0x01  /*????????*/
 };
 typedef VOS_UINT8 TTF_MNTN_RPT_CMD_ENUM_UINT8;
 
 enum TTF_MNTN_RLP_RPT_CMD_ENUM
 {
-    TTF_MNTN_RLP_RPT_CMD_STOP   = 0x00, /*停止上报*/
-    TTF_MNTN_RLP_RPT_CMD_START  = 0x01, /*开始上报*/
-    TTF_MNTN_RLP_RPT_CMD_CLEAR  = 0x02  /*清除*/
+    TTF_MNTN_RLP_RPT_CMD_STOP   = 0x00, /*????????*/
+    TTF_MNTN_RLP_RPT_CMD_START  = 0x01, /*????????*/
+    TTF_MNTN_RLP_RPT_CMD_CLEAR  = 0x02  /*????*/
 };
 typedef VOS_UINT8 TTF_MNTN_RLP_RPT_CMD_ENUM_UINT8;
 
 enum TTF_MNTN_COMM_RPT_CMD_ENUM
 {
-    TTF_MNTN_COMM_RPT_CMD_STOP  = 0x00, /*停止上报*/
-    TTF_MNTN_COMM_RPT_CMD_START = 0x01, /*开始上报*/
-    TTF_MNTN_COMM_RPT_CMD_CLEAR = 0x02  /*清除*/
+    TTF_MNTN_COMM_RPT_CMD_STOP  = 0x00, /*????????*/
+    TTF_MNTN_COMM_RPT_CMD_START = 0x01, /*????????*/
+    TTF_MNTN_COMM_RPT_CMD_CLEAR = 0x02  /*????*/
 };
 typedef VOS_UINT8 TTF_MNTN_COMM_RPT_CMD_ENUM_UINT8;
 
 enum IPS_MNTN_INFO_ACTION_ENUM
 {
-    IPS_MNTN_INFO_REPORT_STOP           = 0,                    /*开启周期性捕获TCP/IP协议栈基础信息*/
-    IPS_MNTN_INFO_REPORT_START          = 1                     /*关闭周期性捕获TCP/IP协议栈基础信息*/
+    IPS_MNTN_INFO_REPORT_STOP           = 0,                    /*??????????????TCP/IP??????????????*/
+    IPS_MNTN_INFO_REPORT_START          = 1                     /*??????????????TCP/IP??????????????*/
 };
 typedef VOS_UINT16 IPS_MNTN_INFO_ACTION_ENUM_UINT16;
 
@@ -417,10 +417,10 @@ typedef VOS_UINT16 GRM_TBF_INFO_EDGE_CODE_SCHEME_ENUM_UINT16;
 
 enum GRM_TBF_INFO_TEST_MODE_ENUM
 {
-    Test_Mode_A_Infinite      = 0, /*A模式，PDU个数无限*/
-    Test_Mode_A_Normal        = 1, /*A模式，PDU个数有限*/
-    Test_Mode_B               = 2, /*B模式*/
-    Test_Mode_SRB_LoopBack    = 3  /*EGPRS 小环回模式*/
+    Test_Mode_A_Infinite      = 0, /*A??????PDU????????*/
+    Test_Mode_A_Normal        = 1, /*A??????PDU????????*/
+    Test_Mode_B               = 2, /*B????*/
+    Test_Mode_SRB_LoopBack    = 3  /*EGPRS ??????????*/
 };
 typedef VOS_UINT8 GRM_TBF_INFO_TEST_MODE_ENUM_UINT8;
 
@@ -433,8 +433,8 @@ typedef VOS_UINT8 GRM_TBF_INFO_TIMESLOT_FLAG_ENUM_UINT8;
 
 enum IPS_MNTN_CCORE_INFO_ACTION_ENUM
 {
-    IPS_MNTN_CCORE_INFO_REPORT_STOP           = 0,                    /*开启周期性捕获TCP/IP协议栈基础信息*/
-    IPS_MNTN_CCORE_INFO_REPORT_START          = 1                     /*关闭周期性捕获TCP/IP协议栈基础信息*/
+    IPS_MNTN_CCORE_INFO_REPORT_STOP           = 0,                    /*??????????????TCP/IP??????????????*/
+    IPS_MNTN_CCORE_INFO_REPORT_START          = 1                     /*??????????????TCP/IP??????????????*/
 };
 typedef VOS_UINT16 IPS_MNTN_CCORE_INFO_ACTION_ENUM_UINT16;
 
@@ -449,7 +449,7 @@ enum IPS_MNTN_CCORE_RESULT_TYPE_ENUM
 };
 typedef VOS_UINT32  IPS_MNTN_CCORE_RESULT_TYPE_ENUM_UINT32;
 
-enum WTTF_TRACE_PHY_MAC_SUB_ATTRIB_ENUM     /*用于标识PHY-->MAC   ID_WTTF_PHY_MAC_DATA_IND
+enum WTTF_TRACE_PHY_MAC_SUB_ATTRIB_ENUM     /*????????PHY-->MAC   ID_WTTF_PHY_MAC_DATA_IND
                                                   MAC-->PHY  ID_WTTF_MAC_PHY_DATA_REQ*/
 {
     WTTF_TRACE_PHY_MAC_NULL = 0,
@@ -467,41 +467,41 @@ typedef VOS_UINT8   WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8;
 
 enum IPS_MNTN_CCORE_TRACE_CHOSEN_ENUM
 {
-    IPS_MNTN_CCORE_TRACE_NULL_CHOSEN               =   0,             /*不捕获报文信息*/
-    IPS_MNTN_CCORE_TRACE_MSG_HEADER_CHOSEN         =   1,             /*捕获报文头部*/
-    IPS_MNTN_CCORE_TRACE_CONFIGURABLE_LEN_CHOSEN   =   2,             /*按照配置捕获报文*/
-    IPS_MNTN_CCORE_TRACE_WHOLE_DATA_LEN_CHOSEN     =   3              /*捕获报文全部内容*/
+    IPS_MNTN_CCORE_TRACE_NULL_CHOSEN               =   0,             /*??????????????*/
+    IPS_MNTN_CCORE_TRACE_MSG_HEADER_CHOSEN         =   1,             /*????????????*/
+    IPS_MNTN_CCORE_TRACE_CONFIGURABLE_LEN_CHOSEN   =   2,             /*????????????????*/
+    IPS_MNTN_CCORE_TRACE_WHOLE_DATA_LEN_CHOSEN     =   3              /*????????????????*/
 };
 typedef VOS_UINT32   IPS_MNTN_CCORE_TRACE_CHOSEN_ENUM_UINT32;
 
 enum IPS_MNTN_TRACE_CHOSEN_ENUM
 {
-    IPS_MNTN_TRACE_NULL_CHOSEN               =   0,             /*不捕获报文信息*/
-    IPS_MNTN_TRACE_MSG_HEADER_CHOSEN         =   1,             /*捕获报文头部*/
-    IPS_MNTN_TRACE_CONFIGURABLE_LEN_CHOSEN   =   2,             /*按照配置捕获报文*/
-    IPS_MNTN_TRACE_WHOLE_DATA_LEN_CHOSEN     =   3              /*捕获报文全部内容*/
+    IPS_MNTN_TRACE_NULL_CHOSEN               =   0,             /*??????????????*/
+    IPS_MNTN_TRACE_MSG_HEADER_CHOSEN         =   1,             /*????????????*/
+    IPS_MNTN_TRACE_CONFIGURABLE_LEN_CHOSEN   =   2,             /*????????????????*/
+    IPS_MNTN_TRACE_WHOLE_DATA_LEN_CHOSEN     =   3              /*????????????????*/
 };
 typedef VOS_UINT32   IPS_MNTN_TRACE_CHOSEN_ENUM_UINT32;
 
 enum TTF_MNTN_TRACE_CHOSEN_ENUM
 {
-    TTF_MNTN_TRACE_NULL_CHOSEN               =   0,             /*不捕获报文信息*/
-    TTF_MNTN_TRACE_MSG_HEADER_CHOSEN         =   1,             /*捕获报文头部*/
-    TTF_MNTN_TRACE_CONFIGURABLE_LEN_CHOSEN   =   2,             /*按照配置捕获报文*/
-    TTF_MNTN_TRACE_WHOLE_DATA_LEN_CHOSEN     =   3              /*捕获报文全部内容*/
+    TTF_MNTN_TRACE_NULL_CHOSEN               =   0,             /*??????????????*/
+    TTF_MNTN_TRACE_MSG_HEADER_CHOSEN         =   1,             /*????????????*/
+    TTF_MNTN_TRACE_CONFIGURABLE_LEN_CHOSEN   =   2,             /*????????????????*/
+    TTF_MNTN_TRACE_WHOLE_DATA_LEN_CHOSEN     =   3              /*????????????????*/
 };
 typedef VOS_UINT32   TTF_MNTN_TRACE_CHOSEN_ENUM_UINT32;
 
 enum WTTF_RLC_MNTN_RB_CHOSEN_ENUM
 {
-    WTTF_RLC_MNTN_RB_NULL_CHOSEN                = 0x0,                  /* 取消跟踪 */
-    WTTF_RLC_MNTN_RB_SIGNALLING_CHOSEN          = 0x0000000F,           /* 信令RB */
-    WTTF_RLC_MNTN_RB_PS_CHOSEN                  = 0xFFFFFFF0,           /* 业务RB */
+    WTTF_RLC_MNTN_RB_NULL_CHOSEN                = 0x0,                  /* ???????? */
+    WTTF_RLC_MNTN_RB_SIGNALLING_CHOSEN          = 0x0000000F,           /* ????RB */
+    WTTF_RLC_MNTN_RB_PS_CHOSEN                  = 0xFFFFFFF0,           /* ????RB */
     WTTF_RLC_MNTN_RB_ALL_CHOSEN                 = 0xFFFFFFFF            /* ALL RB */
 };
 typedef VOS_UINT32   WTTF_RLC_MNTN_RB_CHOSEN_ENUM_UINT32;
 
-/* HIDS工具, 要求每个枚举值都必须显示定义其值, 否则不能解析 */
+/* HIDS????, ????????????????????????????????, ???????????? */
 enum CTTF_1X_MAC_MNTN_RATE_ENUM
 {
     CTTF_1X_MAC_MNTN_RATE_BLANK    = 0,
@@ -531,13 +531,13 @@ typedef VOS_UINT32 CTTF_1X_MAC_MNTN_RESULT_TYPE_ENUM_UINT32;
 
 enum CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM
 {
-    CTTF_1X_MAC_MNTN_RPT_PERIOD_1280          = 1280,                    /* 上报周期1280ms */
+    CTTF_1X_MAC_MNTN_RPT_PERIOD_1280          = 1280,                    /* ????????1280ms */
 };
 typedef VOS_UINT32 CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM_UINT32;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_RPT_PERIOD_ENUM_UINT32
- * Description : hrpd上报结果
+ * Description : hrpd????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_RESULT_TYPE_ENUM
 {
@@ -552,27 +552,27 @@ typedef VOS_UINT32 CTTF_HRPD_MNTN_RESULT_TYPE_ENUM_UINT32;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_RPT_PERIOD_ENUM_UINT32
- * Description : hrpd上报周期
+ * Description : hrpd????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_RPT_PERIOD_ENUM
 {
-    CTTF_HRPD_MNTN_RPT_PERIOD_1280              = 1280                          /* 上报周期1280ms */
+    CTTF_HRPD_MNTN_RPT_PERIOD_1280              = 1280                          /* ????????1280ms */
 };
 
 typedef VOS_UINT32 CTTF_HRPD_MNTN_RPT_PERIOD_ENUM_UINT32;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_RTC_RPT_PERIOD_ENUM_UINT32
- * Description : hrpd RTC 画图上报周期
+ * Description : hrpd RTC ????????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_RTC_RPT_PERIOD_ENUM
 {
-    CTTF_HRPD_MNTN_RTC_RPT_PERIOD_640           = 640                           /* 上报周期640ms */
+    CTTF_HRPD_MNTN_RTC_RPT_PERIOD_640           = 640                           /* ????????640ms */
 };
 typedef VOS_UINT32 CTTF_HRPD_MNTN_RTC_RPT_PERIOD_ENUM_UINT32;
 
 
-/*定义VISP日志的输出等级*/
+/*????VISP??????????????*/
 enum IPS_MNTN_CCORE_TCPIP_LOG_LEVEL_E_ENUM
 {
     IPS_MNTN_CCORE_TCPIP_LOG_LEVEL_CRITICAL = 0,
@@ -587,7 +587,7 @@ typedef VOS_UINT8 IPS_MNTN_CCORE_TCPIP_LOG_LEVEL_E_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM
- * Description : HRPD子协议类型
+ * Description : HRPD??????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM
 {
@@ -625,7 +625,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MAC_TRANS_MODE_ENUM_UINT8
- * Description : 传输模式
+ * Description : ????????
 *******************************************************************************/
 enum CTTF_HRPD_MAC_TRANS_MODE_ENUM
 {
@@ -653,28 +653,28 @@ typedef VOS_UINT16 CSDR_HRPD_MNTN_SUBPACKET_TYPE_ENUM_UINT16;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_RTC3MAC_WORK_MODE_ENUM_UINT8
- * Description : T2P工作模式
+ * Description : T2P????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_RTC3MAC_WORK_MODE_ENUM
 {
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_NORMAL                  = 0x00, /* 通常模式 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_PHY_FORBIDDEN           = 0x01, /* PHY禁止发送 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_SUPERVISION_FAILED      = 0x02, /* supervision failed之后，与网络失去联系 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_SILENCE_DURATION        = 0x03, /* 静默 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_TEST_LOOP               = 0x04, /* 测试模式 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_PREEMPT                 = 0x05, /* 被抢占 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_RTC_SETUP_STATUS        = 0x06, /* RTC3处于setup状态 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_ATTR_PARA_CHANGE_NEGO   = 0x07, /* 重协商改变协商参数 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_ATTR_PARA_CHANGE_GAUP   = 0x08, /* GAUP改变协商参数 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_TCH_PARA_CHANGE         = 0x09, /* TCH参数改变 */
-    CTTF_HRPD_MNTN_RTC3MAC_MODE_OTHER                   = 0x0A, /* 其它 */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_NORMAL                  = 0x00, /* ???????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_PHY_FORBIDDEN           = 0x01, /* PHY???????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_SUPERVISION_FAILED      = 0x02, /* supervision failed???????????????????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_SILENCE_DURATION        = 0x03, /* ???? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_TEST_LOOP               = 0x04, /* ???????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_PREEMPT                 = 0x05, /* ?????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_RTC_SETUP_STATUS        = 0x06, /* RTC3????setup???? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_ATTR_PARA_CHANGE_NEGO   = 0x07, /* ?????????????????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_ATTR_PARA_CHANGE_GAUP   = 0x08, /* GAUP???????????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_TCH_PARA_CHANGE         = 0x09, /* TCH???????? */
+    CTTF_HRPD_MNTN_RTC3MAC_MODE_OTHER                   = 0x0A, /* ???? */
     CTTF_HRPD_MNTN_RTC3MAC_WORK_MODE_BUTT               = 0x0B
 };
 typedef VOS_UINT8 CTTF_HRPD_MNTN_RTC3MAC_WORK_MODE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_CC_STATE_ENUM
- * Description : DCC和ECC的状态,按照工具的要求, DCC和ECC的状态要定义在一起
+ * Description : DCC??ECC??????,??????????????, DCC??ECC??????????????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_CC_STATE_ENUM
 {
@@ -686,7 +686,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_CC_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_CC_STATE_ENUM
- * Description : SDAC和EAC的状态,按照工具的要求, DAC和EAC的状态要定义在一起
+ * Description : SDAC??EAC??????,??????????????, DAC??EAC??????????????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_AC_STATE_ENUM
 {
@@ -698,7 +698,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_AC_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_FTC_STATE_ENUM
- * Description : DFTC和EFTC的状态,按照工具的要求, DFTC和EFTC的状态要定义在一起
+ * Description : DFTC??EFTC??????,??????????????, DFTC??EFTC??????????????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_FTC_STATE_ENUM
 {
@@ -711,7 +711,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_FTC_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_RTC_STATE_ENUM
- * Description : DRTC和ST3 RTC的状态,按照工具的要求, DRTC和ST3 RTC的状态要定义在一起
+ * Description : DRTC??ST3 RTC??????,??????????????, DRTC??ST3 RTC??????????????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_RTC_STATE_ENUM
 {
@@ -725,7 +725,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_RTC_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM
- * Description : 安全层协议状态
+ * Description : ??????????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM
 {
@@ -736,7 +736,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_STREAM_FLOW_CTRL_PROTOCOL_STATE_ENUM
- * Description : 流控层协议状态
+ * Description : ??????????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_STREAM_FLOW_CTRL_PROTOCOL_STATE_ENUM
 {
@@ -748,10 +748,10 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_STREAM_FLOW_CTRL_PROTOCOL_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_STREAM_APP_PROTOCOL_STATE_ENUM
- * Description : 流应用层协议状态
-                 工具要求Default Packet Application, Multi-flow Packet Application,
+ * Description : ????????????????
+                 ????????Default Packet Application, Multi-flow Packet Application,
                  Enhanced Multi-flow Packet Application, Data Over Signalling,
-                 Test Application, 以及Enhanced Test Application定义在一起
+                 Test Application, ????Enhanced Test Application??????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_STREAM_APP_PROTOCOL_STATE_ENUM
 {
@@ -764,7 +764,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_STREAM_APP_PROTOCOL_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_SNP_UP_TX_STATE_ENUM
- * Description : SNP协议状态
+ * Description : SNP????????
 *******************************************************************************/
 enum CTTF_HRPD_MNTN_SNP_UP_TX_STATE_ENUM
 {
@@ -776,7 +776,7 @@ typedef  VOS_UINT8 CTTF_HRPD_MNTN_SNP_UP_TX_STATE_ENUM_UINT8;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_RTCMAC_MNTN_RATE_ENUM_UINT8
- * Description : Default RTC 速率限制枚举
+ * Description : Default RTC ????????????
 *******************************************************************************/
 enum CTTF_HRPD_RTCMAC_MNTN_RATE_ENUM
 {
@@ -786,14 +786,14 @@ enum CTTF_HRPD_RTCMAC_MNTN_RATE_ENUM
     CTTF_HRPD_RTCMAC_MNTN_RATE_38K4              = 3,
     CTTF_HRPD_RTCMAC_MNTN_RATE_76K8              = 4,
     CTTF_HRPD_RTCMAC_MNTN_RATE_153K6             = 5,
-    CTTF_HRPD_RTCMAC_MNTN_RATE_NO_LIMITATION     = 6,   /* 表示对Rate无限制 */
-    CTTF_HRPD_RTCMAC_MNTN_RATE_BUTT              = 7    /* 表示无效 */
+    CTTF_HRPD_RTCMAC_MNTN_RATE_NO_LIMITATION     = 6,   /* ??????Rate?????? */
+    CTTF_HRPD_RTCMAC_MNTN_RATE_BUTT              = 7    /* ???????? */
 };
 typedef VOS_UINT8 CTTF_HRPD_RTCMAC_MNTN_RATE_ENUM_UINT8;
 
 /*****************************************************************************
- 结构名     :  PPP_MNTN_OM_RESULT_TYPE_ENUM_UINT8
- 说明:     ppp维测信息通知结果
+ ??????     :  PPP_MNTN_OM_RESULT_TYPE_ENUM_UINT8
+ ????:     ppp????????????????
 *****************************************************************************/
 enum PPP_MNTN_OM_RESULT_TYPE_ENUM
 {
@@ -841,31 +841,31 @@ enum CTTF_HRPD_PA_MNTN_ROUTE_PROTOCOL_ENUM
 typedef VOS_UINT8 CTTF_HRPD_PA_MNTN_ROUTE_PROTOCOL_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : CTTF_HRPD_MNTN_RTC3MAC_PAKETSIZE_INDEX_ENUM_UINT8
- 枚举说明  : 物理层支持的PacketSize类型
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_PAKETSIZE_INDEX_ENUM_UINT8
+ ????????  : ????????????PacketSize????
 *****************************************************************************/
 enum CTTF_HRPD_MNTN_RTC3MAC_PAKETSIZE_INDEX_ENUM
 {
-    CTTF_HRPD_MNTN_RTC3MAC_PS_0         = 0x00,  /* PS大小为0bit<-->0Byte */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_128       = 0x01,  /* PS大小为128bit<-->16BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_256       = 0x02,  /* PS大小为256bit<-->32BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_512       = 0x03,  /* PS大小为512bit<-->64BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_768       = 0x04,  /* PS大小为768bit<-->96BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_1024      = 0x05,  /* PS大小为1024bit<-->128BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_1536      = 0x06,  /* PS大小为1536bit<-->192BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_2048      = 0x07,  /* PS大小为2048bit<-->256BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_3072      = 0x08,  /* PS大小为3072bit<-->384BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_4096      = 0x09,  /* PS大小为4096bit<-->512BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_6144      = 0x0A,  /* PS大小为6144bit<-->768BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_8192      = 0x0B,  /* PS大小为8192bit<-->1024BYTE */
-    CTTF_HRPD_MNTN_RTC3MAC_PS_12288     = 0x0C,  /* PS大小为12288bit<-->1536BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_0         = 0x00,  /* PS??????0bit<-->0Byte */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_128       = 0x01,  /* PS??????128bit<-->16BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_256       = 0x02,  /* PS??????256bit<-->32BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_512       = 0x03,  /* PS??????512bit<-->64BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_768       = 0x04,  /* PS??????768bit<-->96BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_1024      = 0x05,  /* PS??????1024bit<-->128BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_1536      = 0x06,  /* PS??????1536bit<-->192BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_2048      = 0x07,  /* PS??????2048bit<-->256BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_3072      = 0x08,  /* PS??????3072bit<-->384BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_4096      = 0x09,  /* PS??????4096bit<-->512BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_6144      = 0x0A,  /* PS??????6144bit<-->768BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_8192      = 0x0B,  /* PS??????8192bit<-->1024BYTE */
+    CTTF_HRPD_MNTN_RTC3MAC_PS_12288     = 0x0C,  /* PS??????12288bit<-->1536BYTE */
     CTTF_HRPD_MNTN_RTC3MAC_PS_BUTT      = 0x0D
 };
 typedef  VOS_UINT8 CTTF_HRPD_MNTN_RTC3MAC_PAKETSIZE_INDEX_ENUM_UINT8;
 
 /*****************************************************************************
- 枚举名    : GTTF_SENSITIVE_TRACE_CHOSEN_ENUM_UINT8
- 枚举说明  : 脱敏信息状态
+ ??????    : GTTF_SENSITIVE_TRACE_CHOSEN_ENUM_UINT8
+ ????????  : ????????????
 *****************************************************************************/
 enum TTF_SENSITIVE_TRACE_STAUS_ENUM
 {
@@ -875,11 +875,11 @@ enum TTF_SENSITIVE_TRACE_STAUS_ENUM
 typedef  VOS_UINT32 TTF_SENSITIVE_TRACE_STATUS_ENUM_UINT32;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 typedef struct
 {
@@ -894,23 +894,23 @@ typedef struct
 }DIAG_TRANS_MSG_HDR_STRU;
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 /*****************************************************************************
-   W模可维可测消息
+   W??????????????
 *****************************************************************************/
 typedef struct
 {
-    WTTF_RLC_MNTN_RB_CHOSEN_ENUM_UINT32     enConfig;       /* 共32bit,从低到高分别代表RB1~RB32,RB0默认钩取  */
-                                                            /* 信令RB: 0x000F */
-                                                            /* 业务RB: 0xFFF0 */
+    WTTF_RLC_MNTN_RB_CHOSEN_ENUM_UINT32     enConfig;       /* ??32bit,????????????????RB1~RB32,RB0????????  */
+                                                            /* ????RB: 0x000F */
+                                                            /* ????RB: 0xFFF0 */
                                                             /* ALL RB: 0xFFFF */
-                                                            /* 取消跟踪: 0x0000 */
+                                                            /* ????????: 0x0000 */
     VOS_UINT16                              usTracePduSize;
     VOS_UINT16                              usTraceCipherPduSize;
     VOS_UINT16                              usTracePduCnt;
@@ -937,7 +937,7 @@ typedef struct
 typedef struct
 {
     TTF_MNTN_TRACE_CHOSEN_ENUM_UINT32           enChoice;
-    VOS_UINT32                                  ulTraceDataLen;              /* 当选择TTF_MNTN_TRACE_CONFIGURABLE_LEN_CHOSEN时，此值有效 */
+    VOS_UINT32                                  ulTraceDataLen;              /* ??????TTF_MNTN_TRACE_CONFIGURABLE_LEN_CHOSEN???????????? */
 }TTF_MNTN_TRACE_DATA_CONFIG_STRU;
 
 typedef TTF_MNTN_TRACE_DATA_CONFIG_STRU WTTF_TRACE_PDCP_RABM_DATA_IND_CONFIG_STRU;
@@ -946,7 +946,7 @@ typedef TTF_MNTN_TRACE_DATA_CONFIG_STRU WTTF_TRACE_RABM_PDCP_DATA_REQ_CONFIG_STR
 typedef struct
 {
     IPS_MNTN_TRACE_CHOSEN_ENUM_UINT32   ulChoice;
-    VOS_UINT32                          ulTraceDataLen;         /* 当选择TRACE_CONFIGURABLE_LEN_CHOSEN时，此值有效 */
+    VOS_UINT32                          ulTraceDataLen;         /* ??????TRACE_CONFIGURABLE_LEN_CHOSEN???????????? */
 }IPS_MNTN_TRACE_CONFIG_STRU;
 
 typedef IPS_MNTN_TRACE_CONFIG_STRU  IPS_MNTN_BRIDGE_TRACE_CFG_STRU;
@@ -957,7 +957,7 @@ typedef IPS_MNTN_TRACE_CONFIG_STRU  IPS_MNTN_LOCAL_TRACE_CFG_STRU;
 typedef struct
 {
     IPS_MNTN_CCORE_TRACE_CHOSEN_ENUM_UINT32   ulChoice;
-    VOS_UINT32                                ulTraceDataLen;         /* 当选择TRACE_CONFIGURABLE_LEN_CHOSEN时，此值有效 */
+    VOS_UINT32                                ulTraceDataLen;         /* ??????TRACE_CONFIGURABLE_LEN_CHOSEN???????????? */
 }IPS_MNTN_CCORE_TRACE_CONFIG_STRU;
 
 typedef IPS_MNTN_CCORE_TRACE_CONFIG_STRU  IPS_MNTN_CCORE_BRIDGE_TRACE_CFG_STRU;
@@ -966,57 +966,57 @@ typedef IPS_MNTN_CCORE_TRACE_CONFIG_STRU  IPS_MNTN_CCORE_OUTPUT_TRACE_CFG_STRU;
 
 
 /*****************************************************************************
- 结构名     : OM_TTF_WCDMA_RLC_DATA_TRANS_INFO_REQ_STRU
- 对应消息: ID_OM_WTTF_RLC_DATA_TRANS_INFO_REQ
+ ??????     : OM_TTF_WCDMA_RLC_DATA_TRANS_INFO_REQ_STRU
+ ????????: ID_OM_WTTF_RLC_DATA_TRANS_INFO_REQ
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                     stTransHdr;
-    TTF_MNTN_RPT_CMD_ENUM_UINT8                 enCommand;        /*开始或停止上报*/
+    TTF_MNTN_RPT_CMD_ENUM_UINT8                 enCommand;        /*??????????????*/
     WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8     enRptAM;
     WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8     enRptUM;
     WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8     enRptTM;
-    VOS_UINT32                                  ulRptPeriod;      /*【1..5】单位：秒,报告周期*/
+    VOS_UINT32                                  ulRptPeriod;      /*??1..5??????????,????????*/
 } OM_TTF_WCDMA_RLC_DATA_TRANS_INFO_REQ_STRU;
 
 /*****************************************************************************
- 结构名     : OM_TTF_WCDMA_MAC_DATA_INFO_REQ_STRU
- 对应消息: ID_OM_WTTF_MAC_DATA_INFO_REQ
+ ??????     : OM_TTF_WCDMA_MAC_DATA_INFO_REQ_STRU
+ ????????: ID_OM_WTTF_MAC_DATA_INFO_REQ
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                     stTransHdr;
-    TTF_MNTN_RPT_CMD_ENUM_UINT8                 enCommand;        /*开始或停止上报*/
+    TTF_MNTN_RPT_CMD_ENUM_UINT8                 enCommand;        /*??????????????*/
     VOS_UINT8                                   aucReserve[3];
-    VOS_UINT32                                  ulRptPeriod;      /*【1..5】单位：秒,报告周期*/
+    VOS_UINT32                                  ulRptPeriod;      /*??1..5??????????,????????*/
 } OM_TTF_WCDMA_MAC_DATA_INFO_REQ_STRU;
 
 /*****************************************************************************
- 结构名     : TTF_OM_WCDMA_MAC_DATA_INFO_CNF_STRU
- 对应消息: ID_OM_WTTF_MAC_DATA_INFO_CNF
+ ??????     : TTF_OM_WCDMA_MAC_DATA_INFO_CNF_STRU
+ ????????: ID_OM_WTTF_MAC_DATA_INFO_CNF
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU           stTransHdr;
-    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* 返回查询结构成功或失败 */
+    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* ?????????????????????? */
 } TTF_OM_WCDMA_MAC_DATA_INFO_CNF_STRU;
 
 /*****************************************************************************
- 结构名     : TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_CNF_STRU
- 对应消息: ID_WTTF_OM_RLC_DATA_TRANS_INFO_CNF
+ ??????     : TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_CNF_STRU
+ ????????: ID_WTTF_OM_RLC_DATA_TRANS_INFO_CNF
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU           stTransHdr;
-    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* 返回查询结构成功或失败 */
+    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* ?????????????????????? */
 } TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_CNF_STRU;
 
 typedef TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_CNF_STRU TTF_OM_RLC_PDU_SIZE_TRANS_INFO_CNF_STRU;
 typedef TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_CNF_STRU TTF_OM_UPA_DATA_STATUS_G_INFO_CNF_STRU;
 
 /*****************************************************************************
- 结构名     : WTTF_TRACE_MSG_CONFIG_STRU
- 对应消息: WTTF_TRACE_MSG_CONFIG_STRU
+ ??????     : WTTF_TRACE_MSG_CONFIG_STRU
+ ????????: WTTF_TRACE_MSG_CONFIG_STRU
 *****************************************************************************/
 typedef struct
 {
@@ -1051,32 +1051,32 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名     : TTF_OM_WCDMA_ADVANCED_TRACE_CONFIG_CNF_STRU
- 对应消息: ID_WTTF_OM_ADVANCED_TRACE_CONFIG_CNF
+ ??????     : TTF_OM_WCDMA_ADVANCED_TRACE_CONFIG_CNF_STRU
+ ????????: ID_WTTF_OM_ADVANCED_TRACE_CONFIG_CNF
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU           stTransHdr;
-    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* 返回查询结构成功或失败 */
+    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* ?????????????????????? */
 
 } TTF_OM_WCDMA_ADVANCED_TRACE_CONFIG_CNF_STRU;
 
 
 /*****************************************************************************
- 结构名     :  OM_TTF_WCDMA_RLC_PDU_SIZE_TRANS_INFO_REQ_STRU
- 对应消息:  ID_OM_WTTF_RLC_PDU_SIZE_TRANS_INFO_REQ
+ ??????     :  OM_TTF_WCDMA_RLC_PDU_SIZE_TRANS_INFO_REQ_STRU
+ ????????:  ID_OM_WTTF_RLC_PDU_SIZE_TRANS_INFO_REQ
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU             stTransHdr;
-    TTF_MNTN_RPT_CMD_ENUM_UINT8         enCommand;        /*开始或停止上报*/
+    TTF_MNTN_RPT_CMD_ENUM_UINT8         enCommand;        /*??????????????*/
     VOS_UINT8                           aucReserve[3];
-    VOS_UINT32                          ulRptPeriod;    /*【1..5】单位：秒,报告周期*/
+    VOS_UINT32                          ulRptPeriod;    /*??1..5??????????,????????*/
 } OM_TTF_WCDMA_RLC_PDU_SIZE_TRANS_INFO_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_PDU_SIZE_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_PDU_SIZE_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_PDU_SIZE_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_PDU_SIZE_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
@@ -1086,24 +1086,24 @@ typedef struct
 }WTTF_MNTN_RLC_PDU_SIZE_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_STRU
- 对应消息:  TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_STRU
+ ??????     :  TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_STRU
+ ????????:  TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT8                           ucRbId;
-    PS_BOOL_ENUM_UINT8                  enExist;                  /*PS_TRUE:表示此RbId存在并且支持RLC PDU SIZE可变。*/
-    VOS_UINT8                           ucRlcSizeLevelCnt;        /*有效的档位等级*/
+    PS_BOOL_ENUM_UINT8                  enExist;                  /*PS_TRUE:??????RbId????????????RLC PDU SIZE??????*/
+    VOS_UINT8                           ucRlcSizeLevelCnt;        /*??????????????*/
     VOS_UINT8                           aucReserve1[1];
-    WTTF_MNTN_RLC_PDU_SIZE_INFO_STRU    astMntnRlcPduSizeInfo[WTTF_MNTN_MAX_FLX_RLC_SIZE_LEVEL_CNT];/*有效的RLC SIZE,下标对应ucPduSizeIdx*/
+    WTTF_MNTN_RLC_PDU_SIZE_INFO_STRU    astMntnRlcPduSizeInfo[WTTF_MNTN_MAX_FLX_RLC_SIZE_LEVEL_CNT];/*??????RLC SIZE,????????ucPduSizeIdx*/
 } TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_STRU;
 
 
 /*****************************************************************************
- 结构名    :WTTF_MNTN_RLC_PDU_SIZE_TRANS_INFO_OBJ_STRU
- 协议表格  :可维可测实现上行RLC PDU Size选择统计
- ASN.1描述 :
- 结构说明  : WTTF MNTN RLC Data Trans Info 对象
+ ??????    :WTTF_MNTN_RLC_PDU_SIZE_TRANS_INFO_OBJ_STRU
+ ????????  :????????????????RLC PDU Size????????
+ ASN.1???? :
+ ????????  : WTTF MNTN RLC Data Trans Info ????
 *****************************************************************************/
 typedef struct{
     VOS_UINT32                                          ulSimuClock;
@@ -1112,101 +1112,101 @@ typedef struct{
 } WTTF_MNTN_RLC_PDU_SIZE_TRANS_INFO_OBJ_STRU;
 
 /*****************************************************************************
- 结构名     : TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_CNF_STRU
- 对应消息: ID_WTTF_OM_RLC_PDU_SIZE_TRANS_INFO_CNF
+ ??????     : TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_CNF_STRU
+ ????????: ID_WTTF_OM_RLC_PDU_SIZE_TRANS_INFO_CNF
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU           stTransHdr;
-    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* 返回查询结构成功或失败 */
+    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* ?????????????????????? */
 } TTF_OM_WCDMA_RLC_PDU_SIZE_TRANS_INFO_CNF_STRU;
 
 
 /*****************************************************************************
- 结构名     :  OM_TTF_WCDMA_UPA_DATA_STATUS_G_INFO_REQ_STRU
- 对应消息:  ID_OM_WTTF_UPA_DATA_STATUS_G_INFO_REQ
+ ??????     :  OM_TTF_WCDMA_UPA_DATA_STATUS_G_INFO_REQ_STRU
+ ????????:  ID_OM_WTTF_UPA_DATA_STATUS_G_INFO_REQ
 *****************************************************************************/
 typedef OM_TTF_WCDMA_RLC_PDU_SIZE_TRANS_INFO_REQ_STRU OM_TTF_WCDMA_UPA_DATA_STATUS_G_INFO_REQ_STRU;
 
 
 /*****************************************************************************
- 结构名     :  TTF_OM_WCDMA_UPA_DATA_STATUS_G_INFO_CNF_STRU
- 对应消息:  ID_WTTF_OM_UPA_DATA_STATUS_G_INFO_CNF
+ ??????     :  TTF_OM_WCDMA_UPA_DATA_STATUS_G_INFO_CNF_STRU
+ ????????:  ID_WTTF_OM_UPA_DATA_STATUS_G_INFO_CNF
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU           stTransHdr;
-    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* 返回查询结构成功或失败 */
+    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* ?????????????????????? */
 
 } TTF_OM_WCDMA_UPA_DATA_STATUS_G_INFO_CNF_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_AM_UL_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_AM_UL_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_AM_UL_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_AM_UL_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulRlcResetNum;          /* 发生Reset次数 */
-                                                                /* 以下三种情况发送方会发起Reset
+    VOS_UINT32                          ulRlcResetNum;          /* ????Reset???? */
+                                                                /* ????????????????????????Reset
                                                                 1)"No_Discard after MaxDAT number of transmissions" is configured and VT(DAT) equals the value MaxDAT (see subclause 9.7.3.4);
                                                                 2)VT(MRW) equals the value MaxMRW;
                                                                 3)A STATUS PDU or a piggybacked STATUS PDU including "erroneous Sequence Number" is received (see clause 10);
                                                                 */
 
-    VOS_UINT32                          ulLowRlcPduTxBytes;     /*低位:发送的RLC PDU字节数：统计的是从查询时刻开始计时，总共发送到MAC层的RLC PDUs的字节数（其中包括新产成的数据和控制PDU，重传的PDU，Reset PDU）*/
-    VOS_UINT32                          ulHighRlcPduTxBytes;    /*高位:发送的RLC PDU字节数：统计的是从查询时刻开始计时，总共发送到MAC层的RLC PDUs的字节数（其中包括新产成的数据和控制PDU，重传的PDU，Reset PDU）*/
+    VOS_UINT32                          ulLowRlcPduTxBytes;     /*????:??????RLC PDU??????????????????????????????????????????????MAC????RLC PDUs????????????????????????????????????PDU????????PDU??Reset PDU??*/
+    VOS_UINT32                          ulHighRlcPduTxBytes;    /*????:??????RLC PDU??????????????????????????????????????????????MAC????RLC PDUs????????????????????????????????????PDU????????PDU??Reset PDU??*/
 
-    VOS_UINT32                          ulLowRlcSduTxBytes;        /*低位:发送的RLC SDU字节数：统计的是从查询时刻开始计时，总共被分段成PDU的SDUs的字节数*/
-    VOS_UINT32                          ulHighRlcSduTxBytes;    /*高位:发送的RLC SDU字节数：统计的是从查询时刻开始计时，总共被分段成PDU的SDUs的字节数*/
+    VOS_UINT32                          ulLowRlcSduTxBytes;        /*????:??????RLC SDU????????????????????????????????????????????????PDU??SDUs????????*/
+    VOS_UINT32                          ulHighRlcSduTxBytes;    /*????:??????RLC SDU????????????????????????????????????????????????PDU??SDUs????????*/
 
-    VOS_UINT32                          ulCurPrdRlcSduTxBytes;  /* 当前上报周期内发送RLC SDU字节数 */
-    VOS_UINT32                          ulRlcDataPduTxNum;        /* 发送的数据PDU个数：统计的是从查询时刻开始计时，总共发送的到MAC层的新产生的数据PDUs块数（其中不包括重传的数据PDU）*/
-    VOS_UINT32                          ulRlcDataPduRetxNum;    /* 发生重传的数据PDU个数：统计的是从查询时刻开始计时，总共发生重传的PDU个数（同一个PDU重传多次，则当多次累加）,新产生的数据PDU个数＝发送的数据PDU个数 － 发生重传的数据PDU个数*/
-    VOS_UINT32                          ulRlcNackedPduNum;      /* 负确认的PDU个数:统计的是从查询时刻开始计时,总共从对端收到负确认的PDU个数*/
-    VOS_UINT32                          ulRlcCtrlPduTxNum;        /* 发送的控制PDU个数:统计的是从查询时刻开始计时,总共发送到MAC层的控制PDU个数(其中包括状态PDU，Reset，Reset Ack PDU)*/
-    VOS_UINT16                          usRlcLastTxPduSn;       /* [0..4095]最近一次发送的SN值:VtS-1 */
-    VOS_UINT16                          usRlcLastAckInseqPduSn; /* [0..4095]最后一个按序被确认的SN:VtA */
-    VOS_UINT16                          usRlcVacantTxWinSize;   /* [1..4095]指VtMs-VtS */
+    VOS_UINT32                          ulCurPrdRlcSduTxBytes;  /* ??????????????????RLC SDU?????? */
+    VOS_UINT32                          ulRlcDataPduTxNum;        /* ??????????PDU??????????????????????????????????????????????MAC????????????????PDUs??????????????????????????PDU??*/
+    VOS_UINT32                          ulRlcDataPduRetxNum;    /* ??????????????PDU????????????????????????????????????????????????PDU????????????PDU????????????????????????,????????????PDU????????????????PDU???? ?? ??????????????PDU????*/
+    VOS_UINT32                          ulRlcNackedPduNum;      /* ????????PDU????:??????????????????????????,??????????????????????PDU????*/
+    VOS_UINT32                          ulRlcCtrlPduTxNum;        /* ??????????PDU????:??????????????????????????,??????????MAC????????PDU????(????????????PDU??Reset??Reset Ack PDU)*/
+    VOS_UINT16                          usRlcLastTxPduSn;       /* [0..4095]??????????????SN??:VtS-1 */
+    VOS_UINT16                          usRlcLastAckInseqPduSn; /* [0..4095]????????????????????SN:VtA */
+    VOS_UINT16                          usRlcVacantTxWinSize;   /* [1..4095]??VtMs-VtS */
     VOS_UINT8                           aucReserve2[2];
-    VOS_UINT32                          ulRlcBo;                /* 实体BO */
-    VOS_UINT32                          ulRlcDataPdu3ReTxNum;   /* 重传次数达到三次的数据PDU个数*/
-    VOS_UINT32                          ulRlcDataPdu4ReTxNum;   /* 重传次数达到四次的数据PDU个数*/
-    VOS_UINT32                          ulRlcDataPdu5ReTxNum;   /* 重传次数达到五次的数据PDU个数*/
-    VOS_UINT32                          ulRlcDataPdu6ReTxNum;   /* 重传次数达到六次的数据PDU个数*/
-    VOS_UINT32                          ulRlcDataPduMore7ReTxNum;/* 重传次数达到七次以上（包括七次）的数据PDU个数*/
-    VOS_UINT32                          ulReserve[7];           /* RTSOck cache-line32字节对齐，防止伪共享 */
+    VOS_UINT32                          ulRlcBo;                /* ????BO */
+    VOS_UINT32                          ulRlcDataPdu3ReTxNum;   /* ??????????????????????PDU????*/
+    VOS_UINT32                          ulRlcDataPdu4ReTxNum;   /* ??????????????????????PDU????*/
+    VOS_UINT32                          ulRlcDataPdu5ReTxNum;   /* ??????????????????????PDU????*/
+    VOS_UINT32                          ulRlcDataPdu6ReTxNum;   /* ??????????????????????PDU????*/
+    VOS_UINT32                          ulRlcDataPduMore7ReTxNum;/* ??????????????????????????????????????PDU????*/
+    VOS_UINT32                          ulReserve[7];           /* RTSOck cache-line32???????????????????? */
 } WTTF_MNTN_RLC_AM_UL_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_AM_DL_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_AM_DL_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_AM_DL_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_AM_DL_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulRlcResetNum;          /* 发生Reset次数 */
-    VOS_UINT32                          ulLowRlcPduRxBytes;        /* 低位:接收到的RLC PDU 字节数: 统计的是从查询时刻开始计时，总共从MAC层接收到的RLC PDUs的字节数（其中包括了正确或错误的数据PDU和控制PDU，以及重复接收或不在接收窗内的数据PDU，甚至是CRC错误），所指的是MAC接收的吞吐量*/
-    VOS_UINT32                          ulHighRlcPduRxBytes;    /* 高位:接收到的RLC PDU 字节数: 统计的是从查询时刻开始计时，总共从MAC层接收到的RLC PDUs的字节数（其中包括了正确或错误的数据PDU和控制PDU，以及重复接收或不在接收窗内的数据PDU，甚至是CRC错误），所指的是MAC接收的吞吐量*/
+    VOS_UINT32                          ulRlcResetNum;          /* ????Reset???? */
+    VOS_UINT32                          ulLowRlcPduRxBytes;        /* ????:????????RLC PDU ??????: ??????????????????????????????????MAC??????????RLC PDUs????????????????????????????????????PDU??????PDU??????????????????????????????????PDU????????CRC????????????????MAC????????????*/
+    VOS_UINT32                          ulHighRlcPduRxBytes;    /* ????:????????RLC PDU ??????: ??????????????????????????????????MAC??????????RLC PDUs????????????????????????????????????PDU??????PDU??????????????????????????????????PDU????????CRC????????????????MAC????????????*/
 
-    VOS_UINT32                          ulLowRlcSduRxBytes;     /* 低位:接收到的SDU字节数: 统计的是从查询时刻开始计时，总共重组完成的SDU字节数 */
-    VOS_UINT32                          ulHighRlcSduRxBytes;    /* 高位:接收到的SDU字节数: 统计的是从查询时刻开始计时，总共重组完成的SDU字节数 */
-    VOS_UINT32                          ulCurPrdRlcSduRxBytes;    /* 当前上报周期内接收RLC SDU字节数 */
-    VOS_UINT32                          ulRlcCrcErrPduRxNum;    /* Crc Error PDU个数：统计的是从查询时刻开始计时，总共从MAC接收上来的CRC错误的PDU个数*/
-    VOS_UINT32                          ulRlcInvalidDataPduRxNum;    /* 无效数据PDU个数: 统计的是从查询时刻开始计时，总共从MAC接收上来的无效数据PDU个数（其中包括解析错误的数据PDU，重复接收或不在接收窗内的数据PDU）*/
-    VOS_UINT32                          ulRlcDataPduRxNum;      /* 接收到的数据PDU个数：统计的是从查询时刻开始计时,总共从MAC接收上来的有效数据PDU个数（其中不包括重复接收或窗外的数据PDU）*/
-    VOS_UINT32                          ulRlcCtrlPduRxNum;      /* 接收到的控制PDU个数：统计的是从查询时刻开始计时，总共从MAC接收上来的控制PDU个数（其中包括了解析错误的控制PDU）*/
-    VOS_UINT32                          ulRlcNackedPduNum;      /* 负确认的PDU个数:统计的是从查询时刻开始计时,总共发送到对端负确认的PDU个数*/
-    VOS_UINT16                          usRlcLastRxInseqPduSn;  /*[0..4095]，下一个要接收的SN值  */
-    VOS_UINT16                          usRlcHighestPduSn;      /*[0..4095]，最高接收的PDU序号*/
-    VOS_UINT32                          ulReserve[4];          /* RTSOck cache-line32字节对齐，防止伪共享 */
+    VOS_UINT32                          ulLowRlcSduRxBytes;     /* ????:????????SDU??????: ??????????????????????????????????????????SDU?????? */
+    VOS_UINT32                          ulHighRlcSduRxBytes;    /* ????:????????SDU??????: ??????????????????????????????????????????SDU?????? */
+    VOS_UINT32                          ulCurPrdRlcSduRxBytes;    /* ??????????????????RLC SDU?????? */
+    VOS_UINT32                          ulRlcCrcErrPduRxNum;    /* Crc Error PDU????????????????????????????????????????MAC??????????CRC??????PDU????*/
+    VOS_UINT32                          ulRlcInvalidDataPduRxNum;    /* ????????PDU????: ??????????????????????????????????MAC??????????????????PDU????????????????????????????PDU??????????????????????????????PDU??*/
+    VOS_UINT32                          ulRlcDataPduRxNum;      /* ????????????PDU????????????????????????????????,??????MAC??????????????????PDU????????????????????????????????????PDU??*/
+    VOS_UINT32                          ulRlcCtrlPduRxNum;      /* ????????????PDU????????????????????????????????????????MAC??????????????PDU??????????????????????????????PDU??*/
+    VOS_UINT32                          ulRlcNackedPduNum;      /* ????????PDU????:??????????????????????????,??????????????????????PDU????*/
+    VOS_UINT16                          usRlcLastRxInseqPduSn;  /*[0..4095]????????????????SN??  */
+    VOS_UINT16                          usRlcHighestPduSn;      /*[0..4095]????????????PDU????*/
+    VOS_UINT32                          ulReserve[4];          /* RTSOck cache-line32???????????????????? */
 } WTTF_MNTN_RLC_AM_DL_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_AM_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_AM_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_AM_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_AM_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    PS_BOOL_ENUM_UINT8                          enExist;                /* 表示此实体是否存在，0表示不存在，1表示存在 */
+    PS_BOOL_ENUM_UINT8                          enExist;                /* ????????????????????0????????????1???????? */
     VOS_UINT8                                   ucRbId;
     VOS_UINT8                                   aucReserve2[2];
     WTTF_MNTN_RLC_AM_UL_DATA_TRANS_INFO_STRU    stRlcMntnAmUlDataTransInfo;
@@ -1214,45 +1214,45 @@ typedef struct
 } WTTF_MNTN_RLC_AM_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_UM_UL_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_UM_UL_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_UM_UL_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_UM_UL_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulLowRlcPduTxBytes;     /*低位: 发送的RLC PDU字节数：统计的是从查询时刻开始计时，总共发送到MAC层的RLC PDUs的字节数*/
-    VOS_UINT32                          ulHighRlcPduTxBytes;    /*高位: 发送的RLC PDU字节数：统计的是从查询时刻开始计时，总共发送到MAC层的RLC PDUs的字节数*/
-    VOS_UINT32                          ulLowRlcSduTxBytes;        /*低位: 发送的RLC SDU字节数：统计的是从查询时刻开始计时，总共被分段成PDU的SDUs的字节数*/
-    VOS_UINT32                          ulHighRlcSduTxBytes;    /*高位: 发送的RLC SDU字节数：统计的是从查询时刻开始计时，总共被分段成PDU的SDUs的字节数*/
-    VOS_UINT32                          ulRlcPduTxNum;            /*发送的RLC PDU 个数，统计的是从查询时刻开始计时，总共发送到MAC层的RLC PDUs个数*/
-    VOS_UINT16                          usRlcLastTxPduSn;       /*[0..4095]，最近一次发送的SN值:VtUs-1*/
+    VOS_UINT32                          ulLowRlcPduTxBytes;     /*????: ??????RLC PDU??????????????????????????????????????????????MAC????RLC PDUs????????*/
+    VOS_UINT32                          ulHighRlcPduTxBytes;    /*????: ??????RLC PDU??????????????????????????????????????????????MAC????RLC PDUs????????*/
+    VOS_UINT32                          ulLowRlcSduTxBytes;        /*????: ??????RLC SDU????????????????????????????????????????????????PDU??SDUs????????*/
+    VOS_UINT32                          ulHighRlcSduTxBytes;    /*????: ??????RLC SDU????????????????????????????????????????????????PDU??SDUs????????*/
+    VOS_UINT32                          ulRlcPduTxNum;            /*??????RLC PDU ????????????????????????????????????????????MAC????RLC PDUs????*/
+    VOS_UINT16                          usRlcLastTxPduSn;       /*[0..4095]????????????????SN??:VtUs-1*/
     VOS_UINT8                           aucReserve[2];
-    VOS_UINT32                          ulRlcBo;                /* 实体BO */
+    VOS_UINT32                          ulRlcBo;                /* ????BO */
 } WTTF_MNTN_RLC_UM_UL_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_UM_DL_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_UM_DL_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_UM_DL_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_UM_DL_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulLowRlcPduRxBytes;        /*低位: 接收的RLC PDU字节数：统计的是从查询时刻开始计时，总共从MAC层接收到的RLC PDUs的字节数，包括解析错误的PDU*/
-    VOS_UINT32                          ulHighRlcPduRxBytes;    /*高位: 接收的RLC PDU字节数：统计的是从查询时刻开始计时，总共从MAC层接收到的RLC PDUs的字节数，包括解析错误的PDU*/
-    VOS_UINT32                          ulLowRlcSduRxBytes;     /*低位: 接收到的SDU字节数:统计的是从查询时刻开始计时，总共重组完成的SDU字节数 */
-    VOS_UINT32                          ulHighRlcSduRxBytes;    /*高位: 接收到的SDU字节数:统计的是从查询时刻开始计时，总共重组完成的SDU字节数 */
-    VOS_UINT32                          ulRlcCrcErrPduRxNum;    /* Crc Error PDU个数：统计的是从查询时刻开始计时，总共从MAC接收上来的CRC错误的PDU个数*/
-    VOS_UINT32                          ulRlcInvalidPduRxNum;   /* 无效PDU个数: 统计的是从查询时刻开始计时，总共从MAC接收上来的无效PDU个数（其中包括序号不连续、Li错误、指示前一个PDU有误的PDU）*/
-    VOS_UINT32                          ulRlcValidPduRxNum;     /* 有效PDU个数: 统计的是从查询时刻开始计时，总共从MAC接收上来的有效PDU个数(除CrcError,和invalid PDU外的PDU) */
-    VOS_UINT16                          usRlcLastRxInseqPduSn;  /*[0..4095]，最近一次接收到的SN值:VrUs - 1 */
+    VOS_UINT32                          ulLowRlcPduRxBytes;        /*????: ??????RLC PDU??????????????????????????????????????????MAC??????????RLC PDUs????????????????????????PDU*/
+    VOS_UINT32                          ulHighRlcPduRxBytes;    /*????: ??????RLC PDU??????????????????????????????????????????MAC??????????RLC PDUs????????????????????????PDU*/
+    VOS_UINT32                          ulLowRlcSduRxBytes;     /*????: ????????SDU??????:??????????????????????????????????????????SDU?????? */
+    VOS_UINT32                          ulHighRlcSduRxBytes;    /*????: ????????SDU??????:??????????????????????????????????????????SDU?????? */
+    VOS_UINT32                          ulRlcCrcErrPduRxNum;    /* Crc Error PDU????????????????????????????????????????MAC??????????CRC??????PDU????*/
+    VOS_UINT32                          ulRlcInvalidPduRxNum;   /* ????PDU????: ??????????????????????????????????MAC??????????????PDU??????????????????????????Li????????????????PDU??????PDU??*/
+    VOS_UINT32                          ulRlcValidPduRxNum;     /* ????PDU????: ??????????????????????????????????MAC??????????????PDU????(??CrcError,??invalid PDU????PDU) */
+    VOS_UINT16                          usRlcLastRxInseqPduSn;  /*[0..4095]??????????????????SN??:VrUs - 1 */
     VOS_UINT8                           aucReserve1[2];
 } WTTF_MNTN_RLC_UM_DL_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_UM_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_UM_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_UM_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_UM_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    PS_BOOL_ENUM_UINT8                          enExist;                /* 表示此实体是否存在，0表示不存在，1表示存在 */
+    PS_BOOL_ENUM_UINT8                          enExist;                /* ????????????????????0????????????1???????? */
     VOS_UINT8                                   ucRbId;
     VOS_UINT8                                   aucReserve2[2];
     WTTF_MNTN_RLC_UM_UL_DATA_TRANS_INFO_STRU    stRlcMntnUmUlDataTransInfo;
@@ -1260,41 +1260,41 @@ typedef struct
 } WTTF_MNTN_RLC_UM_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_TM_UL_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_TM_UL_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_TM_UL_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_TM_UL_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulLowRlcSduTxBytes;     /*低位: 发送的RLC PDU字节数：统计的是从查询时刻开始计时，总共发送到MAC层的RLC SDUs的字节数，不是8bit的按8整除并向上取整*/
-    VOS_UINT32                          ulHighRlcSduTxBytes;    /*高位: 发送的RLC PDU字节数：统计的是从查询时刻开始计时，总共发送到MAC层的RLC SDUs的字节数，不是8bit的按8整除并向上取整*/
-    VOS_UINT32                          ulLowRlcDiscardSduTxBytes;  /*低位: Discard RLC SDU字节数：统计的是从查询时刻开始计时，总共丢弃的RLC SDUs的字节数，不是8bit的按8整除并向上取整*/
-    VOS_UINT32                          ulHightRlcDiscardSduTxBytes;  /*高位: Discard RLC SDU字节数：统计的是从查询时刻开始计时，总共丢弃的RLC SDUs的字节数，不是8bit的按8整除并向上取整*/
-    VOS_UINT32                          ulRlcPduTxNum;            /* 发送的RLC PDU个数：统计的是从查询时刻开始计时，总共发送到MAC层的RLC PDUs的个数*/
+    VOS_UINT32                          ulLowRlcSduTxBytes;     /*????: ??????RLC PDU??????????????????????????????????????????????MAC????RLC SDUs??????????????8bit????8??????????????*/
+    VOS_UINT32                          ulHighRlcSduTxBytes;    /*????: ??????RLC PDU??????????????????????????????????????????????MAC????RLC SDUs??????????????8bit????8??????????????*/
+    VOS_UINT32                          ulLowRlcDiscardSduTxBytes;  /*????: Discard RLC SDU??????????????????????????????????????????????RLC SDUs??????????????8bit????8??????????????*/
+    VOS_UINT32                          ulHightRlcDiscardSduTxBytes;  /*????: Discard RLC SDU??????????????????????????????????????????????RLC SDUs??????????????8bit????8??????????????*/
+    VOS_UINT32                          ulRlcPduTxNum;            /* ??????RLC PDU????????????????????????????????????????????MAC????RLC PDUs??????*/
     VOS_UINT32                          ulReserve[2];
 } WTTF_MNTN_RLC_TM_UL_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_TM_DL_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_TM_DL_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_TM_DL_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_TM_DL_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                          ulLowRlcSduRxBytes;     /*低位: 接收到的SDU字节数:统计的是从查询时刻开始计时，总共接收到的SDU字节数，不是8bit的按8整除并向上取整 */
-    VOS_UINT32                          ulHighRlcSduRxBytes;    /*高位: 接收到的SDU字节数:统计的是从查询时刻开始计时，总共接收到的SDU字节数，不是8bit的按8整除并向上取整 */
-    VOS_UINT32                          ulLowRlcPduRxBytes;        /* 低位:接收到的RLC PDU 字节数: 统计的是从查询时刻开始计时，总共从MAC层接收到的RLC PDUs的字节数（其中包括了CrcError的PDU），所指的是MAC接收的吞吐量，不是8bit的按8整除并向上取整*/
-    VOS_UINT32                          ulHighRlcPduRxBytes;    /* 高位:接收到的RLC PDU 字节数: 统计的是从查询时刻开始计时，总共从MAC层接收到的RLC PDUs的字节数（其中包括了CrcError的PDU），所指的是MAC接收的吞吐量，不是8bit的按8整除并向上取整*/
-    VOS_UINT32                          ulRlcCrcErrPduRxNum;    /* Crc Error PDU个数：统计的是从查询时刻开始计时，总共从MAC接收上来的CRC错误的PDU个数*/
-    VOS_UINT32                          ulRlcValidPduRxNum;     /* 有效PDU个数: 统计的是从查询时刻开始计时，总共从MAC接收上来的有效PDU个数(除CrcError外的PDU) */
-    VOS_UINT32                          ulReserve[2];          /* RTSOck cache-line32字节对齐，防止伪共享 */
+    VOS_UINT32                          ulLowRlcSduRxBytes;     /*????: ????????SDU??????:????????????????????????????????????????SDU????????????8bit????8?????????????? */
+    VOS_UINT32                          ulHighRlcSduRxBytes;    /*????: ????????SDU??????:????????????????????????????????????????SDU????????????8bit????8?????????????? */
+    VOS_UINT32                          ulLowRlcPduRxBytes;        /* ????:????????RLC PDU ??????: ??????????????????????????????????MAC??????????RLC PDUs????????????????????CrcError??PDU????????????MAC??????????????????8bit????8??????????????*/
+    VOS_UINT32                          ulHighRlcPduRxBytes;    /* ????:????????RLC PDU ??????: ??????????????????????????????????MAC??????????RLC PDUs????????????????????CrcError??PDU????????????MAC??????????????????8bit????8??????????????*/
+    VOS_UINT32                          ulRlcCrcErrPduRxNum;    /* Crc Error PDU????????????????????????????????????????MAC??????????CRC??????PDU????*/
+    VOS_UINT32                          ulRlcValidPduRxNum;     /* ????PDU????: ??????????????????????????????????MAC??????????????PDU????(??CrcError????PDU) */
+    VOS_UINT32                          ulReserve[2];          /* RTSOck cache-line32???????????????????? */
 } WTTF_MNTN_RLC_TM_DL_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  WTTF_MNTN_RLC_TM_DATA_TRANS_INFO_STRU
- 对应消息:  WTTF_MNTN_RLC_TM_DATA_TRANS_INFO_STRU
+ ??????     :  WTTF_MNTN_RLC_TM_DATA_TRANS_INFO_STRU
+ ????????:  WTTF_MNTN_RLC_TM_DATA_TRANS_INFO_STRU
 *****************************************************************************/
 typedef struct
 {
-    PS_BOOL_ENUM_UINT8                          enExist;                /* 表示此实体是否存在，0表示不存在，1表示存在 */
+    PS_BOOL_ENUM_UINT8                          enExist;                /* ????????????????????0????????????1???????? */
     VOS_UINT8                                   ucRbId;
     VOS_UINT8                                   aucReserve2[2];
     WTTF_MNTN_RLC_TM_UL_DATA_TRANS_INFO_STRU    stRlcMntnTmUlDataTransInfo;
@@ -1302,8 +1302,8 @@ typedef struct
 } WTTF_MNTN_RLC_TM_DATA_TRANS_INFO_STRU;
 
 /*****************************************************************************
- 实体名称  : WTTFMNTN_AMR_TYPE_ENUM
- 功能描述  : 语音类型
+ ????????  : WTTFMNTN_AMR_TYPE_ENUM
+ ????????  : ????????
 *****************************************************************************/
 enum WTTFMNTN_AMR_TYPE_ENUM
 {
@@ -1315,8 +1315,8 @@ enum WTTFMNTN_AMR_TYPE_ENUM
 typedef VOS_UINT16 WTTFMNTN_AMR_TYPE_ENUM_UINT16;
 
 /*****************************************************************************
- 实体名称  : WTTFMNTN_AMR_BANDWIDTH_TYPE_ENUM
- 功能描述  : AMR窄带和宽带定义, 参见3GPP TS 26.101
+ ????????  : WTTFMNTN_AMR_BANDWIDTH_TYPE_ENUM
+ ????????  : AMR??????????????, ????3GPP TS 26.101
 *****************************************************************************/
 enum WTTFMNTN_AMR_BANDWIDTH_TYPE_ENUM
 {
@@ -1328,37 +1328,37 @@ typedef VOS_UINT16 WTTFMNTN_AMR_BANDWIDTH_TYPE_ENUM_UINT16;
 
 
 /*****************************************************************************
- 结构名  :TTF_OM_WCDMA_MAC_VOCODER_INFO_STRU
- 对应消息:ID_WTTF_OM_RLC_DATA_TRANS_INFO_IND
+ ??????  :TTF_OM_WCDMA_MAC_VOCODER_INFO_STRU
+ ????????:ID_WTTF_OM_RLC_DATA_TRANS_INFO_IND
 *****************************************************************************/
 typedef struct
 {
-    WTTFMNTN_AMR_TYPE_ENUM_UINT16                enAmrType;     /* AMR 类型 */
+    WTTFMNTN_AMR_TYPE_ENUM_UINT16                enAmrType;     /* AMR ???? */
     WTTFMNTN_AMR_BANDWIDTH_TYPE_ENUM_UINT16      enCodecType;   /* 0: NB;  1: WB */
-    VOS_UINT16                                   usFrameType;   /* AMR编码帧类型 取值范围:0-15 */
-    VOS_UINT8                                    aucReserve2[2];/* 保留位 */
+    VOS_UINT16                                   usFrameType;   /* AMR?????????? ????????:0-15 */
+    VOS_UINT8                                    aucReserve2[2];/* ?????? */
 } TTF_OM_WCDMA_MAC_VOCODER_INFO_STRU;
 
 /*****************************************************************************
- 结构名    :TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_IND_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : ID_WTTF_OM_RLC_DATA_TRANS_INFO_IND上报查询内容
+ ??????    :TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_IND_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ID_WTTF_OM_RLC_DATA_TRANS_INFO_IND????????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                              ulCurPrdRlcSduTxRate;  /* 当前上报周期内发送RLC SDU字节数 */
-    VOS_UINT32                              ulCurPrdRlcSduRxRate;  /* 当前上报周期内发送RLC SDU字节数 */
+    VOS_UINT32                              ulCurPrdRlcSduTxRate;  /* ??????????????????RLC SDU?????? */
+    VOS_UINT32                              ulCurPrdRlcSduRxRate;  /* ??????????????????RLC SDU?????? */
     WTTF_MNTN_RLC_AM_DATA_TRANS_INFO_STRU   astMntnRlcAmDataTransInfo[WTTF_MNTN_MAX_AM_RB_NUM];
     WTTF_MNTN_RLC_UM_DATA_TRANS_INFO_STRU   astMntnRlcUmDataTransInfo[WTTF_MNTN_MAX_UM_RB_NUM];
     WTTF_MNTN_RLC_TM_DATA_TRANS_INFO_STRU   astMntnRlcTmDataTransInfo[WTTF_MNTN_MAX_TM_RB_NUM];
 } TTF_OM_WCDMA_RLC_DATA_TRANS_INFO_IND_STRU;
 
 /*****************************************************************************
- 结构名    :WTTF_MNTN_RLC_DATA_TRANS_INFO_OBJ_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : WTTF MNTN RLC Data Trans Info 对象
+ ??????    :WTTF_MNTN_RLC_DATA_TRANS_INFO_OBJ_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : WTTF MNTN RLC Data Trans Info ????
 *****************************************************************************/
 typedef struct{
     VOS_UINT32                                     ulSimuClock;
@@ -1367,36 +1367,36 @@ typedef struct{
 } WTTF_MNTN_RLC_DATA_TRANS_INFO_OBJ_STRU;
 
 /*****************************************************************************
- 结构名    :WTTF_MNTN_MAC_DATA_INFO_OBJ_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : WTTF MNTN MAC Data Info 对象
+ ??????    :WTTF_MNTN_MAC_DATA_INFO_OBJ_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : WTTF MNTN MAC Data Info ????
 *****************************************************************************/
 typedef struct{
     VOS_UINT32                                     ulSimuClock;
-    VOS_UINT32                                     ulRptPeriod;      /*【1..5】单位：秒,报告周期*/
+    VOS_UINT32                                     ulRptPeriod;      /*??1..5??????????,????????*/
     TTF_MNTN_RPT_CMD_ENUM_UINT8                    enCommand;
-    VOS_UINT8                                      aucReserve3[3];/* 保留位 */
-    TTF_OM_WCDMA_MAC_VOCODER_INFO_STRU             astMntnRlcUlVocoderInfo; /* 增加上行vocoder 帧类型和帧速率上报，下行帧类型和帧速率由HIFI上报 */
+    VOS_UINT8                                      aucReserve3[3];/* ?????? */
+    TTF_OM_WCDMA_MAC_VOCODER_INFO_STRU             astMntnRlcUlVocoderInfo; /* ????????vocoder ????????????????????????????????????????HIFI???? */
 } WTTF_MNTN_MAC_DATA_INFO_OBJ_STRU;
 
 /*****************************************************************************
- 结构名     :  OM_IPS_ADVANCED_TRACE_CONFIG_REQ_STRU
- 对应消息:  ID_OM_IPS_ADVANCED_TRACE_CONFIG_REQ
+ ??????     :  OM_IPS_ADVANCED_TRACE_CONFIG_REQ_STRU
+ ????????:  ID_OM_IPS_ADVANCED_TRACE_CONFIG_REQ
 *****************************************************************************/
 typedef struct
 {
-    IPS_MNTN_BRIDGE_TRACE_CFG_STRU              stBridgeArpTraceCfg;        /*配置捕获网桥消息*/
-    IPS_MNTN_INPUT_TRACE_CFG_STRU               stPreRoutingTraceCfg;       /*配置捕获TCP/IP协议栈接收消息*/
-    IPS_MNTN_OUTPUT_TRACE_CFG_STRU              stPostRoutingTraceCfg;      /*配置捕获TCP/IP协议栈发送消息*/
-    IPS_MNTN_LOCAL_TRACE_CFG_STRU               stLocalTraceCfg;            /*配置捕获TCP/IP协议栈发送消息*/
+    IPS_MNTN_BRIDGE_TRACE_CFG_STRU              stBridgeArpTraceCfg;        /*????????????????*/
+    IPS_MNTN_INPUT_TRACE_CFG_STRU               stPreRoutingTraceCfg;       /*????????TCP/IP??????????????*/
+    IPS_MNTN_OUTPUT_TRACE_CFG_STRU              stPostRoutingTraceCfg;      /*????????TCP/IP??????????????*/
+    IPS_MNTN_LOCAL_TRACE_CFG_STRU               stLocalTraceCfg;            /*????????TCP/IP??????????????*/
     WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8     enAdsIPConfig;
-    VOS_UINT8                                   aucRsv[3];                  /* 保留位 */
+    VOS_UINT8                                   aucRsv[3];                  /* ?????? */
 }IPS_MNTN_TRACE_CONFIG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  OM_IPS_ADVANCED_TRACE_CONFIG_REQ_STRU
- 对应消息:  OM_IPS_ADVANCED_TRACE_CONFIG_REQ_STRU
+ ??????     :  OM_IPS_ADVANCED_TRACE_CONFIG_REQ_STRU
+ ????????:  OM_IPS_ADVANCED_TRACE_CONFIG_REQ_STRU
 *****************************************************************************/
 typedef struct
 {
@@ -1406,12 +1406,12 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名     :  IPS_OM_ADVANCED_TRACE_CONFIG_CNF_STRU
- 对应消息:  ID_IPS_OM_ADVANCED_TRACE_CONFIG_CNF
+ ??????     :  IPS_OM_ADVANCED_TRACE_CONFIG_CNF_STRU
+ ????????:  ID_IPS_OM_ADVANCED_TRACE_CONFIG_CNF
 *****************************************************************************/
 typedef struct
 {
-    PS_RSLT_CODE_ENUM_UINT32           enRslt;                 /* 返回查询结构成功或失败，PS_SUCC表示成功，PS_FAIL表示失败 */
+    PS_RSLT_CODE_ENUM_UINT32           enRslt;                 /* ????????????????????????PS_SUCC??????????PS_FAIL???????? */
 }IPS_MNTN_TRACE_CONFIG_CNF_STRU;
 
 typedef struct
@@ -1422,13 +1422,13 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名     :  OM_IPS_MNTN_INFO_CONFIG_REQ_STRU
- 对应消息:  ID_OM_IPS_MNTN_INFO_CONFIG_REQ
+ ??????     :  OM_IPS_MNTN_INFO_CONFIG_REQ_STRU
+ ????????:  ID_OM_IPS_MNTN_INFO_CONFIG_REQ
 *****************************************************************************/
 typedef struct
 {
     IPS_MNTN_INFO_ACTION_ENUM_UINT16    enCommand;
-    VOS_UINT16                          usTimeLen;              /*单位：秒 */
+    VOS_UINT16                          usTimeLen;              /*???????? */
 }IPS_MNTN_INFO_CFG_REQ_STRU;
 
 typedef struct
@@ -1439,8 +1439,8 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名     :  IPS_OM_MNTN_INFO_CONFIG_CNF_STRU
- 对应消息:  ID_IPS_OM_MNTN_INFO_CONFIG_CNF
+ ??????     :  IPS_OM_MNTN_INFO_CONFIG_CNF_STRU
+ ????????:  ID_IPS_OM_MNTN_INFO_CONFIG_CNF
 *****************************************************************************/
 typedef struct
 {
@@ -1457,53 +1457,53 @@ typedef struct
 
 
 /*****************************************************************************
-   G模可维可测消息
+   G??????????????
 *****************************************************************************/
 /*****************************************************************************
- 结构名     :  GRM_MNTN_COM_INFO_STRU
- 对应消息:  GRM_MNTN_GRM_OM_INFO
+ ??????     :  GRM_MNTN_COM_INFO_STRU
+ ????????:  GRM_MNTN_GRM_OM_INFO
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                           ulTlli;                 /* 0xffffffff:无效值 */
-    GRM_TBF_INFO_TEST_MODE_ENUM_UINT8    ucTestMode;             /* GPRS环回时的实际工作模式, 0xff:无效值 */
+    VOS_UINT32                           ulTlli;                 /* 0xffffffff:?????? */
+    GRM_TBF_INFO_TEST_MODE_ENUM_UINT8    ucTestMode;             /* GPRS????????????????????, 0xff:?????? */
     VOS_UINT8                            aucRsv[1];
-    VOS_UINT16                           usLlcPduNum;            /* a模式下待环回的LLC PDU数目, 0xffff:无效值 */
+    VOS_UINT16                           usLlcPduNum;            /* a??????????????LLC PDU????, 0xffff:?????? */
 }GRM_MNTN_COM_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_UL_TBF_STRU
- 对应消息:  GRM_MNTN_GRM_OM_INFO
+ ??????     :  GRM_MNTN_UL_TBF_STRU
+ ????????:  GRM_MNTN_GRM_OM_INFO
 *****************************************************************************/
 typedef struct
 {
-    GRM_TBF_INFO_RLC_MODE_ENUM_UINT8              ucUlRlcMode;        /* 0:GRLC_MODE_AM, 1:GRLC_MODE_UM, 0xff:无效值 */
-    GRM_TBF_INFO_COUNTDOWN_FLAG_ENUM_UINT8        ucCountdownFlag;    /* 此标志只在非扩展上行TBF下使用，表示:是否进入倒计数过程.
-                                                                         VOS_YES:进入了倒计数, VOS_NO:没有进入, 0xff:无效值 */
-    GRM_TBF_INFO_EDGE_CODE_SCHEME_ENUM_UINT16     usUlCodeType;       /* EDGE_CODE_SCHEME_BUTT: 0xffff 无效值 */
-    VOS_UINT8                                     ucUlTfi;            /* 0xff: 无效值 */
-    GRM_TBF_INFO_TI_ENUM_UINT8                    ucTi;               /* 1: 冲突解决未完成, 0: 冲突解决完成, 0xff: 无效值 */
+    GRM_TBF_INFO_RLC_MODE_ENUM_UINT8              ucUlRlcMode;        /* 0:GRLC_MODE_AM, 1:GRLC_MODE_UM, 0xff:?????? */
+    GRM_TBF_INFO_COUNTDOWN_FLAG_ENUM_UINT8        ucCountdownFlag;    /* ????????????????????TBF????????????:??????????????????.
+                                                                         VOS_YES:????????????, VOS_NO:????????, 0xff:?????? */
+    GRM_TBF_INFO_EDGE_CODE_SCHEME_ENUM_UINT16     usUlCodeType;       /* EDGE_CODE_SCHEME_BUTT: 0xffff ?????? */
+    VOS_UINT8                                     ucUlTfi;            /* 0xff: ?????? */
+    GRM_TBF_INFO_TI_ENUM_UINT8                    ucTi;               /* 1: ??????????????, 0: ????????????, 0xff: ?????? */
     VOS_UINT8                                     aucRsv[2];
 }GRM_MNTN_UL_TBF_STRU;
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_UL_ENTITY_INFO_STRU 上行信息
- 对应消息:  GRM_MNTN_GRM_OM_INFO
+ ??????     :  GRM_MNTN_UL_ENTITY_INFO_STRU ????????
+ ????????:  GRM_MNTN_GRM_OM_INFO
 *****************************************************************************/
 typedef struct
 {
-    /*====================*/ /* 状态信息 */
-    GRM_TBF_INFO_TBF_MODE_ENUM_UINT8         ucUlTbfMode;                    /* 1:Extend 扩展TBF, 0: no-extend 非扩展, 0xff:无效值*/
-    VOS_UINT8                                ucBsCvMax;                      /* Range: 0 to 15. 0xff:无效值 */
-    GRM_TBF_INFO_TIMESLOT_FLAG_ENUM_UINT8    aucUlTsFlag[GRM_MNTN_TS_TOTAL]; /* 0xff: 无效值 */
+    /*====================*/ /* ???????? */
+    GRM_TBF_INFO_TBF_MODE_ENUM_UINT8         ucUlTbfMode;                    /* 1:Extend ????TBF, 0: no-extend ??????, 0xff:??????*/
+    VOS_UINT8                                ucBsCvMax;                      /* Range: 0 to 15. 0xff:?????? */
+    GRM_TBF_INFO_TIMESLOT_FLAG_ENUM_UINT8    aucUlTsFlag[GRM_MNTN_TS_TOTAL]; /* 0xff: ?????? */
     VOS_UINT8                                aucRsv[2];
-    GRM_MNTN_UL_TBF_STRU                     astTbf[GRLC_MNTN_MAX_TBF_NUM];  /* Tbf信息 */
+    GRM_MNTN_UL_TBF_STRU                     astTbf[GRLC_MNTN_MAX_TBF_NUM];  /* Tbf???? */
 }GRM_MNTN_UL_ENTITY_INFO_STRU;
 
-/*================*/  /*下行信息*/
+/*================*/  /*????????*/
 /*****************************************************************************
- 结构名     :  GRM_MNTN_TIMESLOTS_CODE_TYPE_STRU
- 对应消息:  GRM_MNTN_GRM_OM_INFO
+ ??????     :  GRM_MNTN_TIMESLOTS_CODE_TYPE_STRU
+ ????????:  GRM_MNTN_GRM_OM_INFO
 *****************************************************************************/
 typedef struct
 {
@@ -1526,74 +1526,74 @@ typedef struct
     VOS_FLOAT     af8PSKData;      /* Percentage occupied by each 8PSK time slot. */
 }GRM_MNTN_CODE_MODULATE_PERCENTAGE_STRU;
 /*****************************************************************************
- 结构名     :  GRM_MNTN_DL_TBF_STRU
- 对应消息:  GRM_MNTN_GRM_OM_INFO
+ ??????     :  GRM_MNTN_DL_TBF_STRU
+ ????????:  GRM_MNTN_GRM_OM_INFO
 *****************************************************************************/
 typedef struct
 {
-    /*AM:用于可维可测
-    UM模式:最后接收的块的编码方式，提供给UM模式下填充使用，
-    初始值为EDGE_CODE_SCHEME_BUTT，代表尚未收到正确的下行块 */
-    GRM_TBF_INFO_EDGE_CODE_SCHEME_ENUM_UINT16     usDlCodeType;       /* EDGE_CODE_SCHEME_BUTT: 0xffff 无效值 */
-    GRM_TBF_INFO_FINALBLKRXED_ENUM_UINT8          ucFinalBlkRxed;     /* FBI=1的块是否已经接收到, 0xff: 无效值 */
-    GRM_TBF_INFO_RLC_MODE_ENUM_UINT8              ucDlRlcMode;        /* 0:AM, 1:UM, 0xff: 无效值 */
-    VOS_UINT8                                     ucDlTfi;            /* TFI value 0xff: 无效值 */
+    /*AM:????????????
+    UM????:??????????????????????????????UM????????????????
+    ????????EDGE_CODE_SCHEME_BUTT?????????????????????????? */
+    GRM_TBF_INFO_EDGE_CODE_SCHEME_ENUM_UINT16     usDlCodeType;       /* EDGE_CODE_SCHEME_BUTT: 0xffff ?????? */
+    GRM_TBF_INFO_FINALBLKRXED_ENUM_UINT8          ucFinalBlkRxed;     /* FBI=1??????????????????, 0xff: ?????? */
+    GRM_TBF_INFO_RLC_MODE_ENUM_UINT8              ucDlRlcMode;        /* 0:AM, 1:UM, 0xff: ?????? */
+    VOS_UINT8                                     ucDlTfi;            /* TFI value 0xff: ?????? */
     VOS_UINT8                                     aucRsv[3];
     GRM_MNTN_CODE_MODULATE_PERCENTAGE_STRU        astDlCodeType[GRM_MNTN_TS_TOTAL];
 }GRM_MNTN_DL_TBF_STRU;
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_DL_ENTITY_INFO_STRU
- 对应消息:  GRM_MNTN_GRM_OM_INFO
+ ??????     :  GRM_MNTN_DL_ENTITY_INFO_STRU
+ ????????:  GRM_MNTN_GRM_OM_INFO
 *****************************************************************************/
 typedef struct
 {
-	GRM_TBF_INFO_TIMESLOT_FLAG_ENUM_UINT8    aucDlTsFlag[GRM_MNTN_TS_TOTAL];                 /* 下行时隙掩码 0xff: 无效值*/
-    GRM_MNTN_DL_TBF_STRU                     astTbf[GRLC_MNTN_MAX_TBF_NUM];   /* 当前只支持单TBF */
+	GRM_TBF_INFO_TIMESLOT_FLAG_ENUM_UINT8    aucDlTsFlag[GRM_MNTN_TS_TOTAL];                 /* ???????????? 0xff: ??????*/
+    GRM_MNTN_DL_TBF_STRU                     astTbf[GRLC_MNTN_MAX_TBF_NUM];   /* ????????????TBF */
 }GRM_MNTN_DL_ENTITY_INFO_STRU;
 
-/*================*/  /*上报OM的总体结构信息*/
+/*================*/  /*????OM??????????????*/
 /*****************************************************************************
- 结构名     :  GRM_MNTN_GRM_OM_INFO_STRU
- 对应消息:  GRM_MNTN_GRM_OM_INFO
+ ??????     :  GRM_MNTN_GRM_OM_INFO_STRU
+ ????????:  GRM_MNTN_GRM_OM_INFO
 *****************************************************************************/
 typedef struct
 {
-    GRM_MNTN_COM_INFO_STRU          stGrmMntnComInfo;   /*公共信息*/
-    GRM_MNTN_UL_ENTITY_INFO_STRU    stGrmMntnUlInfo;    /*上行信息*/
-    GRM_MNTN_DL_ENTITY_INFO_STRU    stGrmMntnDlInfo;    /*下行信息*/
+    GRM_MNTN_COM_INFO_STRU          stGrmMntnComInfo;   /*????????*/
+    GRM_MNTN_UL_ENTITY_INFO_STRU    stGrmMntnUlInfo;    /*????????*/
+    GRM_MNTN_DL_ENTITY_INFO_STRU    stGrmMntnDlInfo;    /*????????*/
 }GRM_MNTN_GRM_OM_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_OM_GRM_INFO_CFG_REQ_STRU
- 对应消息:  ID_GRM_MNTN_OM_GRM_INFO_CFG_REQ
+ ??????     :  GRM_MNTN_OM_GRM_INFO_CFG_REQ_STRU
+ ????????:  ID_GRM_MNTN_OM_GRM_INFO_CFG_REQ
 *****************************************************************************/
 typedef struct
 {
-    DIAG_TRANS_MSG_HDR_STRU                 stDiagHdr;      /* 透传消息头*/
+    DIAG_TRANS_MSG_HDR_STRU                 stDiagHdr;      /* ??????????*/
 
     GTTF_MNTN_OM_REPORT_ACTION_ENUM_UINT16   enStartOrStop;
-    VOS_UINT16                              usRptPeriod;    /* 单位: s */
+    VOS_UINT16                              usRptPeriod;    /* ????: s */
 }GRM_MNTN_OM_GRM_INFO_CFG_REQ_STRU;
 
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_GRM_OM_INFO_CFG_CNF_STRU
- 对应消息:  ID_GRM_MNTN_GRM_OM_INFO_CFG_CNF
+ ??????     :  GRM_MNTN_GRM_OM_INFO_CFG_CNF_STRU
+ ????????:  ID_GRM_MNTN_GRM_OM_INFO_CFG_CNF
 *****************************************************************************/
 typedef struct
 {
-    DIAG_TRANS_MSG_HDR_STRU                 stDiagHdr;     /* 透传消息头*/
+    DIAG_TRANS_MSG_HDR_STRU                 stDiagHdr;     /* ??????????*/
 
     GTTF_RESULT_TYPE_ENUM_UINT32            enRslt;
     GTTF_MNTN_OM_REPORT_ACTION_ENUM_UINT16   enStartOrStop;
-    VOS_UINT16                              usRptPeriod;   /* 单位: s */
+    VOS_UINT16                              usRptPeriod;   /* ????: s */
 }GRM_MNTN_GRM_OM_INFO_CFG_CNF_STRU;
 
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_OM_GRM_THROUGHPUT_CFG_REQ_STRU
- 对应消息:  ID_GRM_MNTN_OM_GRM_THROUGHPUT_CFG_REQ
+ ??????     :  GRM_MNTN_OM_GRM_THROUGHPUT_CFG_REQ_STRU
+ ????????:  ID_GRM_MNTN_OM_GRM_THROUGHPUT_CFG_REQ
 *****************************************************************************/
 typedef struct
 {
@@ -1605,8 +1605,8 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_GRM_OM_THROUGHPUT_CFG_CNF_STRU
- 对应消息:  ID_GRM_MNTN_GRM_OM_THROUGHPUT_CFG_CNF
+ ??????     :  GRM_MNTN_GRM_OM_THROUGHPUT_CFG_CNF_STRU
+ ????????:  ID_GRM_MNTN_GRM_OM_THROUGHPUT_CFG_CNF
 *****************************************************************************/
 typedef struct
 {
@@ -1622,8 +1622,8 @@ typedef TTF_MNTN_TRACE_DATA_CONFIG_STRU GTTF_MNTN_SN_LL_TRACE_CONFIG_STRU;
 typedef TTF_MNTN_TRACE_DATA_CONFIG_STRU GTTF_MNTN_RABM_SN_TRACE_CONFIG_STRU;
 
 /*****************************************************************************
- 结构名     : GTTF_TRACE_MSG_CONFIG_STRU
- 对应消息: GTTF_TRACE_MSG_CONFIG_STRU
+ ??????     : GTTF_TRACE_MSG_CONFIG_STRU
+ ????????: GTTF_TRACE_MSG_CONFIG_STRU
 *****************************************************************************/
 typedef struct
 {
@@ -1633,50 +1633,50 @@ typedef struct
 }GTTF_TRACE_MSG_CONFIG_STRU;
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_OM_GTTF_ADV_TRACE_SWITCH_REQ_STRU
- 对应消息:  ID_GRM_MNTN_OM_GTTF_ADV_TRACE_SWITCH_REQ
+ ??????     :  GRM_MNTN_OM_GTTF_ADV_TRACE_SWITCH_REQ_STRU
+ ????????:  ID_GRM_MNTN_OM_GTTF_ADV_TRACE_SWITCH_REQ
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                     stTransHdr;
-    TOOL_GTTF_CFG_SWITCH_ENUM_UINT32            enL2CfgSwitch;          /* TRACE开关0:关闭1:打开*/
+    TOOL_GTTF_CFG_SWITCH_ENUM_UINT32            enL2CfgSwitch;          /* TRACE????0:????1:????*/
     GTTF_TRACE_MSG_CONFIG_STRU                  stAdvancedConfig;
 }GRM_MNTN_OM_GTTF_ADV_TRACE_SWITCH_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  GRM_MNTN_GTTF_OM_ADV_TRACE_SWITCH_CNF_STRU
- 对应消息:  ID_GRM_MNTN_GTTF_OM_ADV_TRACE_SWITCH_CNF
+ ??????     :  GRM_MNTN_GTTF_OM_ADV_TRACE_SWITCH_CNF_STRU
+ ????????:  ID_GRM_MNTN_GTTF_OM_ADV_TRACE_SWITCH_CNF
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU           stTransHdr;
-    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* 返回查询结构成功或失败 */
+    PS_RSLT_CODE_ENUM_UINT32          enRslt;         /* ?????????????????????? */
 }GRM_MNTN_GTTF_OM_ADV_TRACE_SWITCH_CNF_STRU;
 
 /*****************************************************************************
-   CP上关于IP报文、PPP帧之类的维测
+   CP??????IP??????PPP????????????
 *****************************************************************************/
 /*****************************************************************************
- 结构名     :  IPS_MNTN_CCORE_VISP_LOG_CONFIG_REQ_STRU
- 对应消息:
+ ??????     :  IPS_MNTN_CCORE_VISP_LOG_CONFIG_REQ_STRU
+ ????????:
 *****************************************************************************/
 typedef struct
 {
-    WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8         enVISPLogOutConfig;             /* VISP日志总开关 */
-    IPS_MNTN_CCORE_TCPIP_LOG_LEVEL_E_ENUM_UINT8     enVISPRunLogLevelConfig;        /* VISP RUN日志级别配置 */
-    WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8         enVISPUnEncryptPktCapConfig;    /* VISP非加密报文抓包开关 */
-    WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8         enVISPEncryptPktCapConfig;      /* VISP加密报文抓包开关 */
+    WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8         enVISPLogOutConfig;             /* VISP?????????? */
+    IPS_MNTN_CCORE_TCPIP_LOG_LEVEL_E_ENUM_UINT8     enVISPRunLogLevelConfig;        /* VISP RUN???????????? */
+    WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8         enVISPUnEncryptPktCapConfig;    /* VISP?????????????????? */
+    WTTF_TRACE_MSG_SIMPLE_ATTRIB_ENUM_UINT8         enVISPEncryptPktCapConfig;      /* VISP???????????????? */
 }IPS_MNTN_CCORE_VISP_LOG_CONFIG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  OM_IPS_CCORE_ADVANCED_TRACE_CONFIG_REQ_STRU
- 对应消息:  ID_OM_IPS_CCORE_ADVANCED_TRACE_CONFIG_REQ
+ ??????     :  OM_IPS_CCORE_ADVANCED_TRACE_CONFIG_REQ_STRU
+ ????????:  ID_OM_IPS_CCORE_ADVANCED_TRACE_CONFIG_REQ
 *****************************************************************************/
 typedef struct
 {
-    IPS_MNTN_CCORE_BRIDGE_TRACE_CFG_STRU        stBridgeTraceCfg;       /*配置捕获网桥消息*/
-    IPS_MNTN_CCORE_INPUT_TRACE_CFG_STRU         stInputTraceCfg;        /*配置捕获TCP/IP协议栈接收消息*/
-    IPS_MNTN_CCORE_OUTPUT_TRACE_CFG_STRU        stOutputTraceCfg;       /*配置捕获TCP/IP协议栈发送消息*/
+    IPS_MNTN_CCORE_BRIDGE_TRACE_CFG_STRU        stBridgeTraceCfg;       /*????????????????*/
+    IPS_MNTN_CCORE_INPUT_TRACE_CFG_STRU         stInputTraceCfg;        /*????????TCP/IP??????????????*/
+    IPS_MNTN_CCORE_OUTPUT_TRACE_CFG_STRU        stOutputTraceCfg;       /*????????TCP/IP??????????????*/
     IPS_MNTN_CCORE_VISP_LOG_CONFIG_REQ_STRU     stVispLogConfig;
 }IPS_MNTN_CCORE_TRACE_CONFIG_REQ_STRU;
 
@@ -1687,12 +1687,12 @@ typedef struct
 }OM_IPS_CCORE_ADVANCED_TRACE_CONFIG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  IPS_CCORE_OM_ADVANCED_TRACE_CONFIG_CNF_STRU
- 对应消息:  ID_IPS_CCORE_OM_ADVANCED_TRACE_CONFIG_CNF
+ ??????     :  IPS_CCORE_OM_ADVANCED_TRACE_CONFIG_CNF_STRU
+ ????????:  ID_IPS_CCORE_OM_ADVANCED_TRACE_CONFIG_CNF
 *****************************************************************************/
 typedef struct
 {
-    PS_RSLT_CODE_ENUM_UINT32            enRslt;                 /* 返回查询结构成功或失败，PS_SUCC表示成功，PS_FAIL表示失败 */
+    PS_RSLT_CODE_ENUM_UINT32            enRslt;                 /* ????????????????????????PS_SUCC??????????PS_FAIL???????? */
 }IPS_MNTN_CCORE_TRACE_CONFIG_CNF_STRU;
 
 typedef struct
@@ -1702,13 +1702,13 @@ typedef struct
 }IPS_CCORE_OM_ADVANCED_TRACE_CONFIG_CNF_STRU;
 
 /*****************************************************************************
- 结构名     :  OM_IPS_CCORE_MNTN_INFO_CONFIG_REQ_STRU
- 对应消息:  ID_OM_IPS_CCORE_MNTN_INFO_CONFIG_REQ
+ ??????     :  OM_IPS_CCORE_MNTN_INFO_CONFIG_REQ_STRU
+ ????????:  ID_OM_IPS_CCORE_MNTN_INFO_CONFIG_REQ
 *****************************************************************************/
 typedef struct
 {
     IPS_MNTN_CCORE_INFO_ACTION_ENUM_UINT16    enCommand;
-    VOS_UINT16                                usTimeLen;              /*单位：秒 */
+    VOS_UINT16                                usTimeLen;              /*???????? */
 }IPS_MNTN_CCORE_INFO_CFG_REQ_STRU;
 
 typedef struct
@@ -1718,8 +1718,8 @@ typedef struct
 }OM_IPS_CCORE_MNTN_INFO_CONFIG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  IPS_CCORE_OM_MNTN_INFO_CONFIG_CNF_STRU
- 对应消息:  ID_IPS_CCORE_OM_MNTN_INFO_CONFIG_CNF
+ ??????     :  IPS_CCORE_OM_MNTN_INFO_CONFIG_CNF_STRU
+ ????????:  ID_IPS_CCORE_OM_MNTN_INFO_CONFIG_CNF
 *****************************************************************************/
 typedef struct
 {
@@ -1735,8 +1735,8 @@ typedef struct
 }IPS_CCORE_OM_MNTN_INFO_CONFIG_CNF_STRU;
 
 /*****************************************************************************
- 结构名     :  SNDCP_MNTN_OM_THROUGHPUT_CFG_REQ_STRU
- 对应消息:  ID_SN_MNTN_OM_THROUGHPUT_CFG_REQ
+ ??????     :  SNDCP_MNTN_OM_THROUGHPUT_CFG_REQ_STRU
+ ????????:  ID_SN_MNTN_OM_THROUGHPUT_CFG_REQ
 *****************************************************************************/
 typedef struct
 {
@@ -1746,8 +1746,8 @@ typedef struct
 }SNDCP_MNTN_OM_THROUGHPUT_CFG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  SNDCP_MNTN_OM_THROUGHPUT_CFG_CNF_STRU
- 对应消息:  ID_SN_MNTN_OM_THROUGHPUT_CFG_CNF
+ ??????     :  SNDCP_MNTN_OM_THROUGHPUT_CFG_CNF_STRU
+ ????????:  ID_SN_MNTN_OM_THROUGHPUT_CFG_CNF
 *****************************************************************************/
 typedef struct
 {
@@ -1758,19 +1758,19 @@ typedef struct
 }SNDCP_MNTN_OM_THROUGHPUT_CFG_CNF_STRU;
 
 /*****************************************************************************
- 结构名     :  SNDCP_MNTN_OM_THROUGHPUT_INFO_STRU
- 对应消息:  ID_SN_MNTN_OM_THROUGHPUT_INFO
+ ??????     :  SNDCP_MNTN_OM_THROUGHPUT_INFO_STRU
+ ????????:  ID_SN_MNTN_OM_THROUGHPUT_INFO
 *****************************************************************************/
-/*SNDCP可维可测消息实体*/
+/*SNDCP????????????????*/
 typedef struct
 {
-    VOS_UINT32                              ulUlThroughput;   /*上行吞吐率信息*/
-    VOS_UINT32                              ulDlThroughput;   /*下行吞吐率信息*/
+    VOS_UINT32                              ulUlThroughput;   /*??????????????*/
+    VOS_UINT32                              ulDlThroughput;   /*??????????????*/
 }SNDCP_MNTN_OM_THROUGHPUT_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  LLC_MNTN_OM_THROUGHPUT_CFG_REQ_STRU
- 对应消息:  ID_LL_MNTN_OM_THROUGHPUT_CFG_REQ
+ ??????     :  LLC_MNTN_OM_THROUGHPUT_CFG_REQ_STRU
+ ????????:  ID_LL_MNTN_OM_THROUGHPUT_CFG_REQ
 *****************************************************************************/
 typedef struct
 {
@@ -1780,8 +1780,8 @@ typedef struct
 }LLC_MNTN_OM_THROUGHPUT_CFG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  LLC_MNTN_GRM_OM_THROUGHPUT_CFG_CNF_STRU
- 对应消息:  ID_LL_MNTN_OM_THROUGHPUT_CFG_CNF
+ ??????     :  LLC_MNTN_GRM_OM_THROUGHPUT_CFG_CNF_STRU
+ ????????:  ID_LL_MNTN_OM_THROUGHPUT_CFG_CNF
 *****************************************************************************/
 typedef struct
 {
@@ -1792,182 +1792,182 @@ typedef struct
 }LLC_MNTN_OM_THROUGHPUT_CFG_CNF_STRU;
 
 /*****************************************************************************
- 结构名     :  LLC_MNTN_OM_THROUGHPUT_INFO_STRU
- 对应消息:  ID_LL_MNTN_OM_THROUGHPUT_INFO
+ ??????     :  LLC_MNTN_OM_THROUGHPUT_INFO_STRU
+ ????????:  ID_LL_MNTN_OM_THROUGHPUT_INFO
 *****************************************************************************/
-/*LLC可维可测消息实体*/
+/*LLC????????????????*/
 typedef struct
 {
-    VOS_UINT32                              ulUlThroughput;        /*上行吞吐率信息*/
-    VOS_UINT32                              ulDlThroughput;        /*下行吞吐率信息*/
-    VOS_UINT32                              ulUlRetransPduNumber;  /*确认模式上行重传PDU个数*/
-    VOS_UINT32                              ulUlTotalNumber;       /*确认模式上行发送总的PDU个数*/
-    VOS_UINT32                              ulDlRetransPduNumber;  /*确认模式下行重传PDU个数*/
-    VOS_UINT32                              ulDlTotalNumber;       /*确认模式下行发送总的PDU个数*/
+    VOS_UINT32                              ulUlThroughput;        /*??????????????*/
+    VOS_UINT32                              ulDlThroughput;        /*??????????????*/
+    VOS_UINT32                              ulUlRetransPduNumber;  /*????????????????PDU????*/
+    VOS_UINT32                              ulUlTotalNumber;       /*????????????????????PDU????*/
+    VOS_UINT32                              ulDlRetransPduNumber;  /*????????????????PDU????*/
+    VOS_UINT32                              ulDlTotalNumber;       /*????????????????????PDU????*/
 }LLC_MNTN_OM_THROUGHPUT_INFO_STRU;
 
 /*****************************************************************************
-   1X的可维可测消息
+   1X??????????????
 *****************************************************************************/
 /*****************************************************************************
- 结构名    : OM_CTTF_1X_MNTN_GENERIC_CONFIG_STRU
- 结构说明  : 1X下通用配置命令结构
+ ??????    : OM_CTTF_1X_MNTN_GENERIC_CONFIG_STRU
+ ????????  : 1X??????????????????
 *****************************************************************************/
 typedef struct
 {
-    TTF_MNTN_RPT_CMD_ENUM_UINT8             enCommand;      /* 开始或停止上报 */
+    TTF_MNTN_RPT_CMD_ENUM_UINT8             enCommand;      /* ?????????????? */
     VOS_UINT8                               aucReserve[3];
-    CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM_UINT32 enRptPeriod;    /* 上报周期, 单位: ms */
+    CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM_UINT32 enRptPeriod;    /* ????????, ????: ms */
 } OM_CTTF_1X_MNTN_GENERIC_CONFIG_STRU;
 
 /*****************************************************************************
- 结构名    : OM_CTTF_1X_MNTN_RLP_GENERIC_CONFIG_STRU
- 结构说明  : 1X下RLP配置命令结构
+ ??????    : OM_CTTF_1X_MNTN_RLP_GENERIC_CONFIG_STRU
+ ????????  : 1X??RLP????????????
 *****************************************************************************/
 typedef struct
 {
-    TTF_MNTN_RLP_RPT_CMD_ENUM_UINT8         enCommand;      /* 开始或停止上报或清除 */
+    TTF_MNTN_RLP_RPT_CMD_ENUM_UINT8         enCommand;      /* ???????????????????? */
     VOS_UINT8                               aucReserve[3];
-    CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM_UINT32 enRptPeriod;    /* 上报周期, 单位: ms */
+    CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM_UINT32 enRptPeriod;    /* ????????, ????: ms */
 } OM_CTTF_1X_MNTN_RLP_GENERIC_CONFIG_STRU;
 
 /*****************************************************************************
- 结构名    : OM_CTTF_1X_MNTN_COMM_GENERIC_CONFIG_STRU
- 结构说明  : 1X下通用配置命令结构
+ ??????    : OM_CTTF_1X_MNTN_COMM_GENERIC_CONFIG_STRU
+ ????????  : 1X??????????????????
 *****************************************************************************/
 typedef struct
 {
-    TTF_MNTN_COMM_RPT_CMD_ENUM_UINT8        enCommand;      /* 开始或停止上报或清除 */
+    TTF_MNTN_COMM_RPT_CMD_ENUM_UINT8        enCommand;      /* ???????????????????? */
     VOS_UINT8                               aucReserve[3];
-    CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM_UINT32 enRptPeriod;    /* 上报周期, 单位: ms */
+    CTTF_1X_MAC_MNTN_RPT_PERIOD_ENUM_UINT32 enRptPeriod;    /* ????????, ????: ms */
 } OM_CTTF_1X_MNTN_COMM_GENERIC_CONFIG_STRU;
 
 /*****************************************************************************
- 结构名    : OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU
- 结构说明  : HRPD通用配置命令结构
+ ??????    : OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU
+ ????????  : HRPD????????????????
 *****************************************************************************/
 typedef struct
 {
-    TTF_MNTN_COMM_RPT_CMD_ENUM_UINT8        enCommand;      /* 开始或停止上报或清除 */
+    TTF_MNTN_COMM_RPT_CMD_ENUM_UINT8        enCommand;      /* ???????????????????? */
     VOS_UINT8                               aucReserve[3];
-    CTTF_HRPD_MNTN_RPT_PERIOD_ENUM_UINT32   enRptPeriod;    /* 上报周期, 单位: ms */
+    CTTF_HRPD_MNTN_RPT_PERIOD_ENUM_UINT32   enRptPeriod;    /* ????????, ????: ms */
 } OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU;
 
 /*****************************************************************************
- 结构名    : OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU
- 结构说明  : HRPD通用配置命令结构
+ ??????    : OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU
+ ????????  : HRPD????????????????
 *****************************************************************************/
 typedef struct
 {
-    TTF_MNTN_RPT_CMD_ENUM_UINT8                 enCommand;      /* 开始或停止上报 */
+    TTF_MNTN_RPT_CMD_ENUM_UINT8                 enCommand;      /* ?????????????? */
     VOS_UINT8                                   aucReserve[3];
-    CTTF_HRPD_MNTN_RTC_RPT_PERIOD_ENUM_UINT32   enRptPeriod; /* 上报周期, 单位: ms */
+    CTTF_HRPD_MNTN_RTC_RPT_PERIOD_ENUM_UINT32   enRptPeriod; /* ????????, ????: ms */
 } OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU;
 
 /*****************************************************************************
- 结构名     :  OM_CTTF_1X_MNTN_CONFIG_REQ_STRU
- 对应消息:  ID_OM_CTTF_1X_MNTN_CONFIG_REQ
+ ??????     :  OM_CTTF_1X_MNTN_CONFIG_REQ_STRU
+ ????????:  ID_OM_CTTF_1X_MNTN_CONFIG_REQ
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                     stTransHdr;
 
-    /* 根据CDMA 5.12s周期, 参考QXDM, 建议每1.28s上报一次 */
-    OM_CTTF_1X_MNTN_GENERIC_CONFIG_STRU         stFwdLinkInfo;    /* 1X Forward Link Info, 上报周期: 1280ms */
-    OM_CTTF_1X_MNTN_GENERIC_CONFIG_STRU         stRevLinkInfo;    /* 1X Reverse Link Info, 上报周期: 1280ms */
-    OM_CTTF_1X_MNTN_RLP_GENERIC_CONFIG_STRU     stRlpStatistics;  /* 1X RLP statistics, 上报周期: 1280ms */
-    OM_CTTF_1X_MNTN_COMM_GENERIC_CONFIG_STRU    stCommonStatistics;    /* Common Channel statistics, 上报周期: 1280ms */
+    /* ????CDMA 5.12s????, ????QXDM, ??????1.28s???????? */
+    OM_CTTF_1X_MNTN_GENERIC_CONFIG_STRU         stFwdLinkInfo;    /* 1X Forward Link Info, ????????: 1280ms */
+    OM_CTTF_1X_MNTN_GENERIC_CONFIG_STRU         stRevLinkInfo;    /* 1X Reverse Link Info, ????????: 1280ms */
+    OM_CTTF_1X_MNTN_RLP_GENERIC_CONFIG_STRU     stRlpStatistics;  /* 1X RLP statistics, ????????: 1280ms */
+    OM_CTTF_1X_MNTN_COMM_GENERIC_CONFIG_STRU    stCommonStatistics;    /* Common Channel statistics, ????????: 1280ms */
 } OM_CTTF_1X_MNTN_CONFIG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  OM_CTTF_HRPD_MNTN_CONFIG_REQ_STRU
- 对应消息:  ID_OM_CTTF_HRPD_MNTN_CONFIG_REQ
+ ??????     :  OM_CTTF_HRPD_MNTN_CONFIG_REQ_STRU
+ ????????:  ID_OM_CTTF_HRPD_MNTN_CONFIG_REQ
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                     stTransHdr;
 
-    /* 根据CDMA 5.12s周期, 建议每1.28s上报一次 */
-    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stMacStatistics;    /* HRPD MAC Statistics, 上报周期: 1280ms */
-    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stRlpStatistics;    /* HRPD RLP Statistics, 上报周期: 1280ms */
-    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stMfpaStatistics;   /* MFPA RLP Statistics, 上报周期: 1280ms */
-    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stEmpaStatistics;   /* EMPA RLP Statistics, 上报周期: 1280ms */
-    OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU          stRtc3PktInfo;      /* RTC3 Packet Info, 上报周期: 640ms */
-    OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU          stT2pStatistics;    /* T2P Statistics, 上报周期: 640ms */
-    OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU          stRtc3HarqInfo;     /* RTC3 Harq Info, 上报周期: 640ms */
-    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stRtc3AckInfo;      /* RTC3 ACK Info, 上报周期: 1280ms */
+    /* ????CDMA 5.12s????, ??????1.28s???????? */
+    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stMacStatistics;    /* HRPD MAC Statistics, ????????: 1280ms */
+    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stRlpStatistics;    /* HRPD RLP Statistics, ????????: 1280ms */
+    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stMfpaStatistics;   /* MFPA RLP Statistics, ????????: 1280ms */
+    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stEmpaStatistics;   /* EMPA RLP Statistics, ????????: 1280ms */
+    OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU          stRtc3PktInfo;      /* RTC3 Packet Info, ????????: 640ms */
+    OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU          stT2pStatistics;    /* T2P Statistics, ????????: 640ms */
+    OM_CTTF_HRPD_MNTN_COMM_CONFIG_STRU          stRtc3HarqInfo;     /* RTC3 Harq Info, ????????: 640ms */
+    OM_CTTF_HRPD_MNTN_GENERIC_CONFIG_STRU       stRtc3AckInfo;      /* RTC3 ACK Info, ????????: 1280ms */
 } OM_CTTF_HRPD_MNTN_CONFIG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_HRPD_MNTN_CONFIG_CNF_STRU
- 对应消息:  ID_CTTF_OM_HRPD_MNTN_CONFIG_CNF
+ ??????     :  CTTF_OM_HRPD_MNTN_CONFIG_CNF_STRU
+ ????????:  ID_CTTF_OM_HRPD_MNTN_CONFIG_CNF
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                 stDiagHdr;
 
-    PS_RSLT_CODE_ENUM_UINT32                enRslt;         /* 配置成功或失败 */
-    VOS_UINT32                              ulReason;       /* 带具体失败的原因 */
+    PS_RSLT_CODE_ENUM_UINT32                enRslt;         /* ?????????????? */
+    VOS_UINT32                              ulReason;       /* ???????????????? */
 } CTTF_OM_HRPD_MNTN_CONFIG_CNF_STRU;
 
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_1X_MNTN_CONFIG_CNF_STRU
- 对应消息:  ID_CTTF_OM_1X_MNTN_CONFIG_CNF
- 说明: 注意OM融合后, HIDS对X模的配置开关消息处理, 不同于GU模
-       上报的CNF消息
+ ??????     :  CTTF_OM_1X_MNTN_CONFIG_CNF_STRU
+ ????????:  ID_CTTF_OM_1X_MNTN_CONFIG_CNF
+ ????: ????OM??????, HIDS??X????????????????????, ??????GU??
+       ??????CNF????
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                 stDiagHdr;
 
-    PS_RSLT_CODE_ENUM_UINT32                enRslt;         /* 配置成功或失败 */
-    VOS_UINT32                              ulReason;       /* 带具体失败的原因 */
+    PS_RSLT_CODE_ENUM_UINT32                enRslt;         /* ?????????????? */
+    VOS_UINT32                              ulReason;       /* ???????????????? */
 } CTTF_OM_1X_MNTN_CONFIG_CNF_STRU;
 
 
 /*****************************************************************************
- 结构名    : CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU
- 结构说明  : 某Forward信道的统计值
-             该结构体大小变化时，必须同步更改CTTF_1X_MAC_MNTN_BUF_MAX_SIZE
+ ??????    : CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU
+ ????????  : ??Forward????????????
+             ????????????????????????????????CTTF_1X_MAC_MNTN_BUF_MAX_SIZE
 *****************************************************************************/
 typedef struct
 {
-    CTTF_1X_MAC_MNTN_RATE_ENUM_UINT8       enRate;  /* 无效值为BUTT */
-    VOS_UINT8                              ucPercentage;    /* 成功解析的块百分比分子, [0..100], 无效值0xFF */
-    VOS_UINT8                              aucReserved[2];  /* 保留字节, 按照无效值填写, 值为0 */
+    CTTF_1X_MAC_MNTN_RATE_ENUM_UINT8       enRate;  /* ????????BUTT */
+    VOS_UINT8                              ucPercentage;    /* ??????????????????????, [0..100], ??????0xFF */
+    VOS_UINT8                              aucReserved[2];  /* ????????, ??????????????, ????0 */
 }CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_1X_MNTN_FWD_LINK_IND_STRU
- 对应消息:  ID_CTTF_OM_1X_MNTN_FWD_LINK_IND
- 说明:  主动上报消息, 在API调用时用指针指向上报内容即可
- 结构说明  : 各Forward信道的统计值
+ ??????     :  CTTF_OM_1X_MNTN_FWD_LINK_IND_STRU
+ ????????:  ID_CTTF_OM_1X_MNTN_FWD_LINK_IND
+ ????:  ????????????, ??API????????????????????????????
+ ????????  : ??Forward????????????
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT16                                  usPrimId;
     VOS_UINT16                                  usToolId;
 
-    CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU     astFch[CTTF_1X_MAC_MNTN_MAX_REPORT_NUM];   /* FCH统计值 */
-    CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU     astDcch[CTTF_1X_MAC_MNTN_MAX_REPORT_NUM];  /* DCCH统计值 */
-    CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU     astSch0[CTTF_1X_MAC_MNTN_MAX_REPORT_NUM];  /* SCH统计值 */
+    CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU     astFch[CTTF_1X_MAC_MNTN_MAX_REPORT_NUM];   /* FCH?????? */
+    CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU     astDcch[CTTF_1X_MAC_MNTN_MAX_REPORT_NUM];  /* DCCH?????? */
+    CTTF_1X_MAC_MNTN_FWD_LINK_PER_INFO_STRU     astSch0[CTTF_1X_MAC_MNTN_MAX_REPORT_NUM];  /* SCH?????? */
 } CTTF_OM_1X_MNTN_FWD_LINK_IND_STRU;
 /*****************************************************************************
- 结构名     :  CTTF_OM_PPP_MNTN_CONFIG_REQ_STRU
- 对应消息:  ID_OM_PPP_MNTN_CONFIG_REQ
+ ??????     :  CTTF_OM_PPP_MNTN_CONFIG_REQ_STRU
+ ????????:  ID_OM_PPP_MNTN_CONFIG_REQ
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                     stTransHdr;
 
-    TTF_MNTN_COMM_RPT_CMD_ENUM_UINT8            enCommand;      /* 开始、停止或清除 */
+    TTF_MNTN_COMM_RPT_CMD_ENUM_UINT8            enCommand;      /* ???????????????? */
     VOS_UINT8                                   aucReserve[3];
 } CTTF_OM_PPP_MNTN_CONFIG_REQ_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_HRPD_MNTN_PPPC_STATISTICS_REPORT_STRU
- 对应消息:  pppc接口
+ ??????     :  CTTF_HRPD_MNTN_PPPC_STATISTICS_REPORT_STRU
+ ????????:  pppc????
 *****************************************************************************/
 typedef struct
 {
@@ -1980,10 +1980,10 @@ typedef struct
 }CTTF_HRPD_MNTN_PPP_STATISTICS_REPORT_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_PPPC_MNTN_STATISTICS_IND_STRU
- 对应消息:  ID_PPP_OM_MNTN_STATISTIC_INFO
- 说明:  主动上报消息, 在API调用时用指针指向上报内容即可
- 结构说明  : 1X公共信道的统计值
+ ??????     :  CTTF_OM_PPPC_MNTN_STATISTICS_IND_STRU
+ ????????:  ID_PPP_OM_MNTN_STATISTIC_INFO
+ ????:  ????????????, ??API????????????????????????????
+ ????????  : 1X????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -1993,42 +1993,42 @@ typedef struct
 } CTTF_OM_PPPC_MNTN_STATISTICS_IND_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_PPP_MNTN_CONFIG_CNF_STRU
- 对应消息:  ID_CTTF_OM_PPP_MNTN_CONFIG_CNF
- 说明:
+ ??????     :  CTTF_OM_PPP_MNTN_CONFIG_CNF_STRU
+ ????????:  ID_CTTF_OM_PPP_MNTN_CONFIG_CNF
+ ????:
 *****************************************************************************/
 typedef struct
 {
     DIAG_TRANS_MSG_HDR_STRU                 stDiagHdr;
 
-    PS_RSLT_CODE_ENUM_UINT32                enRslt;         /* 配置成功或失败 */
-    VOS_UINT32                              ulReason;       /* 带具体失败的原因 */
+    PS_RSLT_CODE_ENUM_UINT32                enRslt;         /* ?????????????? */
+    VOS_UINT32                              ulReason;       /* ???????????????? */
 } CTTF_OM_PPP_MNTN_CONFIG_CNF_STRU;
 
 
-/* CTTF_OM_1X_MNTN_xxx_IND_STRU上报消息中头的长度，sizeof(usPrimId)+sizeof(usToolId) */
+/* CTTF_OM_1X_MNTN_xxx_IND_STRU????????????????????sizeof(usPrimId)+sizeof(usToolId) */
 #define  CTTF_OM_1X_MNTN_IND_HEAD_BYTE_SIZE     (4)
 
-/* CTTF_OM_HRPD_MNTN_xxx_IND_STRU上报消息中头的长度，sizeof(usPrimId)+sizeof(usToolId) */
+/* CTTF_OM_HRPD_MNTN_xxx_IND_STRU????????????????????sizeof(usPrimId)+sizeof(usToolId) */
 #define  CTTF_OM_HRPD_MNTN_IND_HEAD_BYTE_SIZE   (4)
 
 
 /*****************************************************************************
- 结构名    : CTTF_1X_MAC_MNTN_REV_LINK_PER_INFO_STRU
- 结构说明  : 某Reverse信道的统计值
-             该结构体大小变化时，必须同步更改CTTF_1X_MAC_MNTN_BUF_MAX_SIZE
+ ??????    : CTTF_1X_MAC_MNTN_REV_LINK_PER_INFO_STRU
+ ????????  : ??Reverse????????????
+             ????????????????????????????????CTTF_1X_MAC_MNTN_BUF_MAX_SIZE
 *****************************************************************************/
 typedef struct
 {
-    CTTF_1X_MAC_MNTN_RATE_ENUM_UINT8       enRate;  /* 无效值为BUTT */
-    VOS_UINT8                              aucReserved[3]; /* 保留字节, 按照无效值填写, 值为0 */
+    CTTF_1X_MAC_MNTN_RATE_ENUM_UINT8       enRate;  /* ????????BUTT */
+    VOS_UINT8                              aucReserved[3]; /* ????????, ??????????????, ????0 */
 } CTTF_1X_MAC_MNTN_REV_LINK_PER_INFO_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_1X_MNTN_REV_LINK_IND_STRU
- 对应消息:  ID_CTTF_OM_1X_MNTN_REV_LINK_IND
- 说明:  主动上报消息, 在API调用时用指针指向上报内容即可
- 结构说明  : 各Reverse信道的统计值
+ ??????     :  CTTF_OM_1X_MNTN_REV_LINK_IND_STRU
+ ????????:  ID_CTTF_OM_1X_MNTN_REV_LINK_IND
+ ????:  ????????????, ??API????????????????????????????
+ ????????  : ??Reverse????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2042,76 +2042,76 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名    : CTTF_1X_RLP_MNTN_REV_STATISTICS_PER_ENTITY_STRU
- 结构说明  : 某RLP实体的REV方向统计值
+ ??????    : CTTF_1X_RLP_MNTN_REV_STATISTICS_PER_ENTITY_STRU
+ ????????  : ??RLP??????REV??????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulFrameTotalByteHigh;  /* 发送的帧的总字节数（高32bit）, 2015年工具不支持64bit类型, 故分拆开上报。无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulFrameTotalByte;   /* 发送的帧的总字节数（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulUpperTotalByteHigh;   /* 上层软件发送的总字节（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulUpperTotalByte;   /* 上层软件发送的总字节（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulIdleFrameCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulFchNewDataFrameCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulFchRetxFrameCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulSchNewDataFrameCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulSchRetxFrameCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakSingle;    /* 重传一次后接收成功的次数, 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakDouble;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakTriple;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakAbove;    /* 重传超过3次的次数, 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulFrameTotalByteHigh;  /* ??????????????????????32bit??, 2015????????????64bit????, ????????????????????: 0xFFFFFFFF */
+    VOS_UINT32    ulFrameTotalByte;   /* ??????????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulUpperTotalByteHigh;   /* ????????????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulUpperTotalByte;   /* ????????????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulIdleFrameCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulFchNewDataFrameCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulFchRetxFrameCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulSchNewDataFrameCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulSchRetxFrameCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakSingle;    /* ????????????????????????, ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakDouble;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakTriple;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakAbove;    /* ????????3????????, ??????: 0xFFFFFFFF */
 } CTTF_1X_RLP_MNTN_REV_STATISTICS_PER_ENTITY_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_1X_RLP_MNTN_FWD_STATISTICS_PER_ENTITY_STRU
- 结构说明  : 某RLP实体的FWD方向统计值
+ ??????    : CTTF_1X_RLP_MNTN_FWD_STATISTICS_PER_ENTITY_STRU
+ ????????  : ??RLP??????FWD??????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulFrameTotalByteHigh;  /* 接收的帧的总字节数（高32bit）, 2015年工具不支持64bit类型。无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulFrameTotalByte;  /* 接收的帧的总字节数（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulUpperTotalByteHigh;   /* 上层软件接收的总字节（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulUpperTotalByte;   /* 上层软件总接收的总字节（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulIdleFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulFillFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulBlankFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNullFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulFchNewDataFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulFchRetxFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulSchNewDataFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulSchRetxFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakCtrlFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakAbortTimes;   /* NAK abort次数, 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulInsufficentQualityFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulInvalidFcsFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulInvalidTypeFieldFrameCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulInvalidCtlFieldFrameCnt;    /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulFrameTotalByteHigh;  /* ??????????????????????32bit??, 2015????????????64bit????????????: 0xFFFFFFFF */
+    VOS_UINT32    ulFrameTotalByte;  /* ??????????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulUpperTotalByteHigh;   /* ????????????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulUpperTotalByte;   /* ??????????????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulIdleFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulFillFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulBlankFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNullFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulFchNewDataFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulFchRetxFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulSchNewDataFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulSchRetxFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakCtrlFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakAbortTimes;   /* NAK abort????, ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulInsufficentQualityFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulInvalidFcsFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulInvalidTypeFieldFrameCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulInvalidCtlFieldFrameCnt;    /* ??????: 0xFFFFFFFF */
 } CTTF_1X_RLP_MNTN_FWD_STATISTICS_PER_ENTITY_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_1X_RLP_MNTN_STATISTICS_PER_ENTITY_STRU
- 结构说明  : 某RLP实体的统计值
-            该结构体大小变化时，必须同步更改CTTF_1X_RLP_MNTN_BUF_MAX_SIZE
+ ??????    : CTTF_1X_RLP_MNTN_STATISTICS_PER_ENTITY_STRU
+ ????????  : ??RLP????????????
+            ????????????????????????????????CTTF_1X_RLP_MNTN_BUF_MAX_SIZE
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8            ucSrId;   /* 区分RLP实体的唯一编号, 无效值: 0xFF */
-    VOS_UINT8            ucMeasuredRtt;  /* 最近一次测量的RTT, 无效值: 0xFF */
-    VOS_UINT8            aucReserved[2];  /* 保留字节, 按照无效值填写, 值为0 */
-    VOS_UINT16           usBSTriggeredResetTimes;  /* AT收到AN的复位RLP请求而复位RLP的次数，无效值: 0xFFFF */
-    VOS_UINT16           usMSTriggeredResetTimes;   /* AT主动复位RLP的次数，无效值: 0xFFFF */
-    VOS_UINT32           ulCurrentBo;  /* 实时BO, 无效值: 0xFFFFFFFF */
+    VOS_UINT8            ucSrId;   /* ????RLP??????????????, ??????: 0xFF */
+    VOS_UINT8            ucMeasuredRtt;  /* ??????????????RTT, ??????: 0xFF */
+    VOS_UINT8            aucReserved[2];  /* ????????, ??????????????, ????0 */
+    VOS_UINT16           usBSTriggeredResetTimes;  /* AT????AN??????RLP??????????RLP??????????????: 0xFFFF */
+    VOS_UINT16           usMSTriggeredResetTimes;   /* AT????????RLP??????????????: 0xFFFF */
+    VOS_UINT32           ulCurrentBo;  /* ????BO, ??????: 0xFFFFFFFF */
     CTTF_1X_RLP_MNTN_REV_STATISTICS_PER_ENTITY_STRU  stRevInfo;
     CTTF_1X_RLP_MNTN_FWD_STATISTICS_PER_ENTITY_STRU  stFwdInfo;
 }CTTF_1X_RLP_MNTN_STATISTICS_PER_ENTITY_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_1X_MNTN_RLP_STATISTICS_IND_STRU
- 对应消息:  ID_CTTF_OM_1X_MNTN_RLP_STATISTICS_IND
- 结构说明  : 各RLP实体的统计值
- 说明:  主动上报消息, 在API调用时用指针指向上报内容即可
+ ??????     :  CTTF_OM_1X_MNTN_RLP_STATISTICS_IND_STRU
+ ????????:  ID_CTTF_OM_1X_MNTN_RLP_STATISTICS_IND
+ ????????  : ??RLP????????????
+ ????:  ????????????, ??API????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2123,56 +2123,56 @@ typedef struct
 
 
 /*****************************************************************************
- 结构名    : CTTF_1X_MNTN_PCH_STATISTIC_STRU
- 结构说明  : PCH的统计值
-            该结构体大小变化时，必须同步更改CTTF_1X_LAC_MNTN_BUF_MAX_SIZE
+ ??????    : CTTF_1X_MNTN_PCH_STATISTIC_STRU
+ ????????  : PCH????????
+            ????????????????????????????????CTTF_1X_LAC_MNTN_BUF_MAX_SIZE
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32    ulTotalEncapPduFragCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ul96BitEncapPduFragCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ul192BitEncapPduFragCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalEncapPduCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulInvalidCrcEncapPduCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulChanLostCnt;   /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalEncapPduFragCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ul96BitEncapPduFragCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ul192BitEncapPduFragCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalEncapPduCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulInvalidCrcEncapPduCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulChanLostCnt;   /* ??????: 0xFFFFFFFF */
 } CTTF_1X_MNTN_PCH_STATISTIC_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_1X_MNTN_ACH_STATISTIC_STRU
- 结构说明  : ACH的统计值
-             该结构体大小变化时，必须同步更改CTTF_1X_LAC_MNTN_BUF_MAX_SIZE
+ ??????    : CTTF_1X_MNTN_ACH_STATISTIC_STRU
+ ????????  : ACH????????
+             ????????????????????????????????CTTF_1X_LAC_MNTN_BUF_MAX_SIZE
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32    ulRequestTypeSduCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulResponseTypeSduCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAccessProbe1Cnt;   /* 接入1次成功的次数, 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAccessProbe2Cnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAccessProbe3Cnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAccessProbe4Cnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAccessProbe5Cnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAccessProbeAboveCnt;    /* 接入5次以上才成功的次数, 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulUnsucessfulAccessAttemptCnt;   /* 接入attempt失败次数, 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulRequestTypeSduCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulResponseTypeSduCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAccessProbe1Cnt;   /* ????1????????????, ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAccessProbe2Cnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAccessProbe3Cnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAccessProbe4Cnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAccessProbe5Cnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAccessProbeAboveCnt;    /* ????5??????????????????, ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulUnsucessfulAccessAttemptCnt;   /* ????attempt????????, ??????: 0xFFFFFFFF */
 } CTTF_1X_MNTN_ACH_STATISTIC_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_1X_MNTN_PAGE_MSG_STATISTIC_STRU
- 结构说明  : PAGE的统计值
-             该结构体大小变化时，必须同步更改CTTF_1X_LAC_MNTN_BUF_MAX_SIZE
+ ??????    : CTTF_1X_MNTN_PAGE_MSG_STATISTIC_STRU
+ ????????  : PAGE????????
+             ????????????????????????????????CTTF_1X_LAC_MNTN_BUF_MAX_SIZE
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32    ulGpmMatchedCnt;   /* 匹配上的GPM，无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulSlotPageMatchedCnt;   /* Slot模式匹配的Page，无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulMismatchedPageCnt;    /* 所有的不匹配的Page，无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAddrMatchedOtherMsgCnt; /* 除了Page消息外，所有的地址匹配的消息数，无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulGpmMatchedCnt;   /* ????????GPM????????: 0xFFFFFFFF */
+    VOS_UINT32    ulSlotPageMatchedCnt;   /* Slot??????????Page????????: 0xFFFFFFFF */
+    VOS_UINT32    ulMismatchedPageCnt;    /* ??????????????Page????????: 0xFFFFFFFF */
+    VOS_UINT32    ulAddrMatchedOtherMsgCnt; /* ????Page??????????????????????????????????????: 0xFFFFFFFF */
 } CTTF_1X_MNTN_PAGE_MSG_STATISTIC_STRU;
 
 /*****************************************************************************
- 结构名     :  CTTF_OM_1X_MNTN_COMMON_CHANNEL_STATISTICS_IND_STRU
- 对应消息:  ID_CTTF_OM_1X_MNTN_COMMON_CHANNEL_STATISTICS_IND
- 说明:  主动上报消息, 在API调用时用指针指向上报内容即可
- 结构说明  : 1X公共信道的统计值
+ ??????     :  CTTF_OM_1X_MNTN_COMMON_CHANNEL_STATISTICS_IND_STRU
+ ????????:  ID_CTTF_OM_1X_MNTN_COMMON_CHANNEL_STATISTICS_IND
+ ????:  ????????????, ??API????????????????????????????
+ ????????  : 1X????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2186,44 +2186,44 @@ typedef struct
 } CTTF_OM_1X_MNTN_COMMON_CHANNEL_STATISTICS_IND_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_PER_MAC_FLOW_STRU
- 结构说明  : HRPD RTC3MAC 每个MAC Flow的包统计
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_PER_MAC_FLOW_STRU
+ ????????  : HRPD RTC3MAC ????MAC Flow????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8       ucFlowId;               /* MAC流ID，无效值: 0xFF */
-    VOS_UINT8       aucReserved[1];         /* 保留字节, 按照无效值填写, 值为0xFF */
-    VOS_UINT16      usActualAllocation;     /* 单位: 字节，无效值: 0xFFFF */
-    VOS_UINT16      usSuggestAllocation;    /* 单位: 字节，无效值: 0xFFFF */
-    VOS_UINT16      usRequiredQueueSize;    /* 单位: 字节，无效值: 0xFFFF */
-    VOS_UINT16      usQOutflow;             /* 单位: 字节，无效值: 0xFFFF */
-    VOS_UINT8       aucReserved1[2];        /* 保留字节, 按照无效值填写, 值为0xFF */
+    VOS_UINT8       ucFlowId;               /* MAC??ID????????: 0xFF */
+    VOS_UINT8       aucReserved[1];         /* ????????, ??????????????, ????0xFF */
+    VOS_UINT16      usActualAllocation;     /* ????: ????????????: 0xFFFF */
+    VOS_UINT16      usSuggestAllocation;    /* ????: ????????????: 0xFFFF */
+    VOS_UINT16      usRequiredQueueSize;    /* ????: ????????????: 0xFFFF */
+    VOS_UINT16      usQOutflow;             /* ????: ????????????: 0xFFFF */
+    VOS_UINT8       aucReserved1[2];        /* ????????, ??????????????, ????0xFF */
 }CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_PER_MAC_FLOW_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_STRU
- 结构说明  : HRPD RTC3MAC 包信息统计,PacketId定义为有符号数，可以初始化为-128，
-             从-128，图行看起来更自然。从0xFFFF跳到正数(0...9),看起来不习惯。
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_STRU
+ ????????  : HRPD RTC3MAC ??????????,PacketId????????????????????????????-128??
+             ??-128??????????????????????0xFFFF????????(0...9),??????????????
 *****************************************************************************/
 typedef  struct
 {
-    CTTF_HRPD_MAC_TRANS_MODE_ENUM_UINT8                     enTransMode;        /* 无效值: BUTT */
-    CTTF_HRPD_MNTN_RTC3MAC_PAKETSIZE_INDEX_ENUM_UINT8       enPktSize;          /* 无效值: BUTT */
-    VOS_UINT16                                              usPaddingByteSize;  /* 单位: 字节，无效值: 0xFFFF */
-    VOS_INT8                                                cPacketId;          /* 无效值: -128,有效值0-9 */
-    VOS_INT8                                                cTxT2pMax;          /* 单位:dB,无效值: -128 */
-    VOS_INT8                                                cPotentialT2p;      /* 单位:dB, 无效值: -128 */
-    VOS_UINT8                                               aucReserved[1];     /* 保留字节, 按照无效值填写, 值为0xFF */
+    CTTF_HRPD_MAC_TRANS_MODE_ENUM_UINT8                     enTransMode;        /* ??????: BUTT */
+    CTTF_HRPD_MNTN_RTC3MAC_PAKETSIZE_INDEX_ENUM_UINT8       enPktSize;          /* ??????: BUTT */
+    VOS_UINT16                                              usPaddingByteSize;  /* ????: ????????????: 0xFFFF */
+    VOS_INT8                                                cPacketId;          /* ??????: -128,??????0-9 */
+    VOS_INT8                                                cTxT2pMax;          /* ????:dB,??????: -128 */
+    VOS_INT8                                                cPotentialT2p;      /* ????:dB, ??????: -128 */
+    VOS_UINT8                                               aucReserved[1];     /* ????????, ??????????????, ????0xFF */
 
-    /* 各个MAC流的数据 */
+    /* ????MAC???????? */
     CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_PER_MAC_FLOW_STRU    astMacFlow[CTTF_HRPD_RTC3MAC_MNTN_FLOW_MAX_NUM];
 }CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_OM_HRPD_MNTN_RTC3MAC_LINK_PACKET_REPORT_STRU
- 结构说明  : HRPD RTC3MAC 包信息统计上报
- 对应消息  : ID_CTTF_OM_HRPD_MNTN_REV_LINK_PACKET_INFO_IND
- 说明      : 主动上报消息, 在API调用时用指针指向上报内容即可
+ ??????    : CTTF_OM_HRPD_MNTN_RTC3MAC_LINK_PACKET_REPORT_STRU
+ ????????  : HRPD RTC3MAC ??????????????
+ ????????  : ID_CTTF_OM_HRPD_MNTN_REV_LINK_PACKET_INFO_IND
+ ????      : ????????????, ??API????????????????????????????
 *****************************************************************************/
 typedef  struct
 {
@@ -2233,40 +2233,40 @@ typedef  struct
 } CTTF_OM_HRPD_MNTN_RTC3MAC_LINK_PACKET_REPORT_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_STRU
- 结构说明  : HRPD RTC3MAC 每个MAC Flow的T2P信息统计
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_LINK_PACKET_STRU
+ ????????  : HRPD RTC3MAC ????MAC Flow??T2P????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT8       ucFlowId;       /* MAC流ID，无效值: 0xFF */
-    VOS_INT8        cQrab;          /* -1:为unloaded, 1:loaded, 无效值: -128 */
-    VOS_INT8        cDeltaT2p;      /* 无效值: -128 */
-    VOS_INT8        cBucketFactor;  /* 无效值: -128 */
-    VOS_INT16       sT2pInflow;     /* 无效值: -32768 */
-    VOS_INT16       sT2pOutflow;    /* 无效值: -32768 */
-    VOS_INT16       sBucketLevel;   /* 无效值: -32768 */
-    VOS_INT16       sBucketLevelSat;/* Saturation Bucket Level, 无效值: -32768 */
+    VOS_UINT8       ucFlowId;       /* MAC??ID????????: 0xFF */
+    VOS_INT8        cQrab;          /* -1:??unloaded, 1:loaded, ??????: -128 */
+    VOS_INT8        cDeltaT2p;      /* ??????: -128 */
+    VOS_INT8        cBucketFactor;  /* ??????: -128 */
+    VOS_INT16       sT2pInflow;     /* ??????: -32768 */
+    VOS_INT16       sT2pOutflow;    /* ??????: -32768 */
+    VOS_INT16       sBucketLevel;   /* ??????: -32768 */
+    VOS_INT16       sBucketLevelSat;/* Saturation Bucket Level, ??????: -32768 */
 } CTTF_HRPD_MNTN_RTC3MAC_LINK_T2P_PER_MAC_FLOW_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_LINK_T2P_STRU
- 结构说明  : HRPD RTC3MAC T2P信息统计
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_LINK_T2P_STRU
+ ????????  : HRPD RTC3MAC T2P????????
 *****************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_RTC3MAC_WORK_MODE_ENUM_UINT8         enWorkMode;     /* 无效值: BUTT */
-    VOS_INT8                                            cQRABn;         /* -1:为unloaded, 1:loaded, 无效值: -128 */
-    VOS_INT16                                           sFrab;          /* 无效值: -32768 */
+    CTTF_HRPD_MNTN_RTC3MAC_WORK_MODE_ENUM_UINT8         enWorkMode;     /* ??????: BUTT */
+    VOS_INT8                                            cQRABn;         /* -1:??unloaded, 1:loaded, ??????: -128 */
+    VOS_INT16                                           sFrab;          /* ??????: -32768 */
 
-    /* 各个MAC流的数据 */
+    /* ????MAC???????? */
     CTTF_HRPD_MNTN_RTC3MAC_LINK_T2P_PER_MAC_FLOW_STRU   astMacFlow[CTTF_HRPD_RTC3MAC_MNTN_FLOW_MAX_NUM];
 }CTTF_HRPD_MNTN_RTC3MAC_LINK_T2P_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_OM_HRPD_MNTN_RTC3MAC_LINK_T2P_REPORT_STRU
- 结构说明  : HRPD RTC3MAC T2P信息统计上报
- 对应消息  : ID_CTTF_OM_HRPD_MNTN_REV_LINK_T2P_STATISTICS_IND
- 说明      : 主动上报消息, 在API调用时用指针指向上报内容即可
+ ??????    : CTTF_OM_HRPD_MNTN_RTC3MAC_LINK_T2P_REPORT_STRU
+ ????????  : HRPD RTC3MAC T2P????????????
+ ????????  : ID_CTTF_OM_HRPD_MNTN_REV_LINK_T2P_STATISTICS_IND
+ ????      : ????????????, ??API????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2276,10 +2276,10 @@ typedef struct
 }CTTF_OM_HRPD_MNTN_RTC3MAC_LINK_T2P_REPORT_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_HARQ_INFO_STRU
- 结构说明  : HRPD RTC3MAC Harq信息，ProcessId等定义为有符号数，可以初始化为-128，
-             从-128到正数符号一般思维，图形看起来更自然。从0xFF跳到正数(0...9),
-             看起来不习惯。
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_HARQ_INFO_STRU
+ ????????  : HRPD RTC3MAC Harq??????ProcessId??????????????????????????????-128??
+             ??-128????????????????????????????????????????0xFF????????(0...9),
+             ??????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2290,8 +2290,8 @@ typedef struct
 } CTTF_HRPD_MNTN_RTC3MAC_HARQ_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_SUBFRAME_HARQ_STRU
- 结构说明  : 一个子帧内(4slots)Harq信息
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_SUBFRAME_HARQ_STRU
+ ????????  : ??????????(4slots)Harq????
 *****************************************************************************/
 typedef struct
 {
@@ -2299,10 +2299,10 @@ typedef struct
 } CTTF_HRPD_MNTN_RTC3MAC_SUBFRAME_HARQ_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_OM_HRPD_MNTN_RTC3MAC_HARQ_REPORT_STRU
- 结构说明  : HRPD RTC3MAC Harq信息统计上报
- 对应消息  : ID_CTTF_OM_HRPD_MNTN_HARQ_INFO_IND
- 说明      : 主动上报消息, 在API调用时用指针指向上报内容即可
+ ??????    : CTTF_OM_HRPD_MNTN_RTC3MAC_HARQ_REPORT_STRU
+ ????????  : HRPD RTC3MAC Harq????????????
+ ????????  : ID_CTTF_OM_HRPD_MNTN_HARQ_INFO_IND
+ ????      : ????????????, ??API????????????????????????????
 *****************************************************************************/
 typedef struct
 {
@@ -2312,72 +2312,72 @@ typedef struct
 } CTTF_OM_HRPD_MNTN_RTC3MAC_HARQ_REPORT_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_DEFAULT_RLP_REV_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 板侧上报的发送方向的统计
+ ??????    : CTTF_HRPD_MNTN_PER_DEFAULT_RLP_REV_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ????????????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulTotalByteCntHigh;   /* 发送的总字节数（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCnt;       /* 发送的总字节数（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCntHigh;     /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCnt;         /*（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCntHigh;    /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCnt;        /*（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalPacketCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewPacketCnt;       /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxPacketCnt;      /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTxNakRequestCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulIgnoredAnNakCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRlpFlushCnt;        /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCntHigh;   /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCnt;       /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCntHigh;     /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCnt;         /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCntHigh;    /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCnt;        /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalPacketCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewPacketCnt;       /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxPacketCnt;      /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTxNakRequestCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulIgnoredAnNakCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRlpFlushCnt;        /* ??????: 0xFFFFFFFF */
 } CTTF_HRPD_MNTN_PER_DEFAULT_RLP_REV_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_DEFAULT_RLP_FWD_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : 板侧上报的接收方向的统计
+ ??????    : CTTF_HRPD_MNTN_PER_DEFAULT_RLP_FWD_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : ????????????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulTotalByteCntHigh;   /* 接收的总字节数（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCnt;       /* 接收的总字节数（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCntHigh;     /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCnt;         /*（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCntHigh;    /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCnt;        /*（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulDuplicateByteCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalPacketCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewPacketCnt;       /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxPacketCnt;      /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRxedNakRequestCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakAbortCnt;        /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCntHigh;   /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCnt;       /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCntHigh;     /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCnt;         /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCntHigh;    /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCnt;        /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulDuplicateByteCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalPacketCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewPacketCnt;       /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxPacketCnt;      /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRxedNakRequestCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakAbortCnt;        /* ??????: 0xFFFFFFFF */
 } CTTF_HRPD_MNTN_PER_DEFAULT_RLP_FWD_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_DEFAULT_RLP_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : Default RLP每个实体的统计信息
+ ??????    : CTTF_HRPD_MNTN_PER_DEFAULT_RLP_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : Default RLP??????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT8            ucStreamId;                    /* 区分RLP实体的唯一编号, 无效值: 0xFF */
-    VOS_UINT8            aucReserved[3];                /* 保留字节，按照无效值填写，值为0 */
-    VOS_UINT32           ulAnResetRequestCnt;           /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32           ulAtResetRequestCnt;           /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32           ulRxAnResetAckCnt;             /* 无效值: 0xFFFFFFFF */
+    VOS_UINT8            ucStreamId;                    /* ????RLP??????????????, ??????: 0xFF */
+    VOS_UINT8            aucReserved[3];                /* ??????????????????????????????0 */
+    VOS_UINT32           ulAnResetRequestCnt;           /* ??????: 0xFFFFFFFF */
+    VOS_UINT32           ulAtResetRequestCnt;           /* ??????: 0xFFFFFFFF */
+    VOS_UINT32           ulRxAnResetAckCnt;             /* ??????: 0xFFFFFFFF */
     CTTF_HRPD_MNTN_PER_DEFAULT_RLP_REV_STATISTICS_STRU  stRevInfo;
     CTTF_HRPD_MNTN_PER_DEFAULT_RLP_FWD_STATISTICS_STRU  stFwdInfo;
 }CTTF_HRPD_MNTN_PER_DEFAULT_RLP_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_DEFAULT_RLP_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : Default RLP的统计信息
- 对应消息  : ID_CTTF_OM_HRPD_MNTN_RLP_STATISTICS_IND
+ ??????    : CTTF_HRPD_MNTN_DEFAULT_RLP_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : Default RLP??????????
+ ????????  : ID_CTTF_OM_HRPD_MNTN_RLP_STATISTICS_IND
 *****************************************************************************/
 typedef  struct
 {
@@ -2387,75 +2387,75 @@ typedef  struct
 } CTTF_OM_HRPD_MNTN_DEFAULT_RLP_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_MF_RLP_REV_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : MFPA板侧上报的发送方向的统计
+ ??????    : CTTF_HRPD_MNTN_PER_MF_RLP_REV_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : MFPA????????????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulTotalByteCntHigh;   /* 发送的总字节数（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCnt;       /* 发送的总字节数（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCntHigh;     /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCnt;         /*（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCntHigh;    /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCnt;        /*（低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalPacketCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewPacketCnt;       /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxPacketCnt;      /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTxNakRequestCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulIgnoredAnNakCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRlpFlushCnt;        /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAnResetRequestCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAtResetRequestCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRxedAnResetAckCnt;  /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCntHigh;   /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCnt;       /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCntHigh;     /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCnt;         /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCntHigh;    /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCnt;        /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalPacketCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewPacketCnt;       /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxPacketCnt;      /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTxNakRequestCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulIgnoredAnNakCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRlpFlushCnt;        /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAnResetRequestCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAtResetRequestCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRxedAnResetAckCnt;  /* ??????: 0xFFFFFFFF */
 }CTTF_HRPD_MNTN_PER_MF_RLP_REV_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_MF_RLP_FWD_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : MFPA板侧上报的接收方向的统计
+ ??????    : CTTF_HRPD_MNTN_PER_MF_RLP_FWD_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : MFPA????????????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulTotalByteCntHigh;  /* 接收的总字节数（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCnt;    /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCntHigh;   /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCnt;    /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCntHigh;    /* （高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCnt;    /* （低32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulDuplicateByteCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalPacketCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewPacketCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxPacketCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRxedNakRequestCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakAbortCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAnResetRequestCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAtResetRequestCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRxedAnResetAckCnt; /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCntHigh;  /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCnt;    /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCntHigh;   /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCnt;    /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCntHigh;    /* ????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCnt;    /* ????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulDuplicateByteCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalPacketCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewPacketCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxPacketCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRxedNakRequestCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakAbortCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAnResetRequestCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAtResetRequestCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRxedAnResetAckCnt; /* ??????: 0xFFFFFFFF */
 } CTTF_HRPD_MNTN_PER_MF_RLP_FWD_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_MF_RLP_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : MFPA每个RLP实体的统计信息
+ ??????    : CTTF_HRPD_MNTN_PER_MF_RLP_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : MFPA????RLP??????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT8            ucRlpFlowId;   /* 区分RLP实体的唯一编号, 无效值: 0xFF */
-    VOS_UINT8            aucReserved[3]; /* 保留字节，按照无效值填写，值为0 */
+    VOS_UINT8            ucRlpFlowId;   /* ????RLP??????????????, ??????: 0xFF */
+    VOS_UINT8            aucReserved[3]; /* ??????????????????????????????0 */
     CTTF_HRPD_MNTN_PER_MF_RLP_REV_STATISTICS_STRU  stRevInfo;
     CTTF_HRPD_MNTN_PER_MF_RLP_FWD_STATISTICS_STRU  stFwdInfo;
 }CTTF_HRPD_MNTN_PER_MF_RLP_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_MF_RLP_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : MFPA的可维可测信息
- 对应消息  : ID_CTTF_OM_HRPD_MNTN_MFPA_RLP_STATISTICS_IND
+ ??????    : CTTF_HRPD_MNTN_MF_RLP_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : MFPA??????????????
+ ????????  : ID_CTTF_OM_HRPD_MNTN_MFPA_RLP_STATISTICS_IND
 *****************************************************************************/
 typedef  struct
 {
@@ -2466,81 +2466,81 @@ typedef  struct
 
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_EMF_RLP_REV_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : EMPA板侧上报的发送方向的统计
+ ??????    : CTTF_HRPD_MNTN_PER_EMF_RLP_REV_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : EMPA????????????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulSelectRouteACnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulSelectRouteBCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCntHigh;   /* 发送的总字节数（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCnt;       /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCntHigh;     /* （高32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCnt;         /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCntHigh;    /* （高32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCnt;        /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalPacketCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewPacketCnt;       /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxPacketCnt;      /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTxNakReportCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulIgnoreAnNakCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRlpFlushCnt;        /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAnResetRequestCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAtResetRequestCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRxedAnResetAckCnt;  /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulSelectRouteACnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulSelectRouteBCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCntHigh;   /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCnt;       /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCntHigh;     /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCnt;         /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCntHigh;    /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCnt;        /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalPacketCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewPacketCnt;       /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxPacketCnt;      /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTxNakReportCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulIgnoreAnNakCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRlpFlushCnt;        /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAnResetRequestCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAtResetRequestCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRxedAnResetAckCnt;  /* ??????: 0xFFFFFFFF */
 } CTTF_HRPD_MNTN_PER_EMF_RLP_REV_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_EMF_RLP_REV_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : EMPA板侧上报的发送方向的统计
+ ??????    : CTTF_HRPD_MNTN_PER_EMF_RLP_REV_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : EMPA????????????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT32    ulSelectRouteACnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulSelectRouteBCnt;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCntHigh;   /* 接收的总字节数（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalByteCnt;       /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCntHigh;     /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewByteCnt;         /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCntHigh;    /*（高32bit）无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxByteCnt;        /* （低32bit） 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulDuplicateByteCnt;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulTotalPacketCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNewPacketCnt;       /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRetxPacketCnt;      /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRxNakReportCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulNakAbortCnt;        /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAnResetRequestCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulAtResetRequestCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32    ulRxedAnResetAckCnt;  /* 无效值: 0xFFFFFFFF */
+    VOS_UINT32    ulSelectRouteACnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulSelectRouteBCnt;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCntHigh;   /* ??????????????????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalByteCnt;       /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCntHigh;     /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewByteCnt;         /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCntHigh;    /*????32bit????????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxByteCnt;        /* ????32bit?? ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulDuplicateByteCnt;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulTotalPacketCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNewPacketCnt;       /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRetxPacketCnt;      /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRxNakReportCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulNakAbortCnt;        /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAnResetRequestCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulAtResetRequestCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32    ulRxedAnResetAckCnt;  /* ??????: 0xFFFFFFFF */
 } CTTF_HRPD_MNTN_PER_EMF_RLP_FWD_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_PER_EMF_RLP_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : EMPA 每个RLP实体的可维可测信息
+ ??????    : CTTF_HRPD_MNTN_PER_EMF_RLP_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : EMPA ????RLP??????????????????
 *****************************************************************************/
 typedef  struct
 {
-    VOS_UINT8                                     ucLinkFlowId;    /* 区分RLP实体的唯一编号, 无效值: 0xFF */
-    CTTF_HRPD_PA_MNTN_FLOW_PROTOCOL_ENUM_UINT8    enFlowProtocol;    /* 不支持FlowProtocol时，按照无效值上报，值为0xFF */
-    CTTF_HRPD_PA_MNTN_ROUTE_PROTOCOL_ENUM_UINT8   enRouteProtocol;   /* 不支持RouteProtocol时，按照无效值上报，值为0xFF */
-    VOS_UINT8                                     aucReserved[1];    /* 保留字节，按照无效值填写，值为0 */
+    VOS_UINT8                                     ucLinkFlowId;    /* ????RLP??????????????, ??????: 0xFF */
+    CTTF_HRPD_PA_MNTN_FLOW_PROTOCOL_ENUM_UINT8    enFlowProtocol;    /* ??????FlowProtocol????????????????????????0xFF */
+    CTTF_HRPD_PA_MNTN_ROUTE_PROTOCOL_ENUM_UINT8   enRouteProtocol;   /* ??????RouteProtocol????????????????????????0xFF */
+    VOS_UINT8                                     aucReserved[1];    /* ??????????????????????????????0 */
     CTTF_HRPD_MNTN_PER_EMF_RLP_REV_STATISTICS_STRU   stRevInfo;
     CTTF_HRPD_MNTN_PER_EMF_RLP_FWD_STATISTICS_STRU   stFwdInfo;
 } CTTF_HRPD_MNTN_PER_EMF_RLP_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_EMF_RLP_STATISTICS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : EMPA的可维可测信息
- 对应消息  : ID_CTTF_OM_HRPD_MNTN_EMPA_RLP_STATISTICS_IND
+ ??????    : CTTF_HRPD_MNTN_EMF_RLP_STATISTICS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : EMPA??????????????
+ ????????  : ID_CTTF_OM_HRPD_MNTN_EMPA_RLP_STATISTICS_IND
 *****************************************************************************/
 typedef  struct
 {
@@ -2550,108 +2550,108 @@ typedef  struct
 } CTTF_OM_HRPD_MNTN_EMF_RLP_STATISTICS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_ACMAC_MNTN_STATISTIC_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : Acmac可维可测信息统计
+ ??????    : CTTF_HRPD_ACMAC_MNTN_STATISTIC_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : Acmac????????????????
 *****************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;                   /* C.H1001中subprotocol的值，无效值0xFF */
-    VOS_UINT8                               aucReserve[3];                   /* 保留字节，按照无效值填写，值为0xFF */
-    VOS_UINT32                              ulSuccAttemptCnt;                /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulMaxProbeFailCnt;               /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulAdjacentProbeTimerExpiredCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulMailboxFailCnt;                /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulCprocFailCnt;                  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulSndErrorIndCnt;                /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulAccessProbe1Cnt;               /* Access Probe 1成功次数, 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulAccessProbe2Cnt;               /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulAccessProbe3Cnt;               /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulAccessProbe4Cnt;               /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulAccessProbe5Cnt;               /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulAccessProbeAboveCnt;           /* 多于Access Probe 5才成功次数, 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt256BitCnt;               /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt512BitCnt;               /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt1024BitCnt;              /* 无效值: 0xFFFFFFFF */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;                   /* C.H1001??subprotocol????????????0xFF */
+    VOS_UINT8                               aucReserve[3];                   /* ??????????????????????????????0xFF */
+    VOS_UINT32                              ulSuccAttemptCnt;                /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulMaxProbeFailCnt;               /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulAdjacentProbeTimerExpiredCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulMailboxFailCnt;                /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulCprocFailCnt;                  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulSndErrorIndCnt;                /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulAccessProbe1Cnt;               /* Access Probe 1????????, ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulAccessProbe2Cnt;               /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulAccessProbe3Cnt;               /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulAccessProbe4Cnt;               /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulAccessProbe5Cnt;               /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulAccessProbeAboveCnt;           /* ????Access Probe 5??????????, ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt256BitCnt;               /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt512BitCnt;               /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt1024BitCnt;              /* ??????: 0xFFFFFFFF */
 }CTTF_HRPD_ACMAC_MNTN_STATISTIC_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_CCMAC_MNTN_STATISTIC_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : Ccmac可维可测信息统计
+ ??????    : CTTF_HRPD_CCMAC_MNTN_STATISTIC_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : Ccmac????????????????
 *****************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;      /* C.H1001中subprotocol的值，无效值0xFF */
-    VOS_UINT8                               aucReserve[3];      /* 保留字节，按照无效值填写，值为0xFF */
-    VOS_UINT32                              ulPhyPkt128BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt256BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt512BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt1024BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulMacLayerPktCnt;   /* 无效值: 0xFFFFFFFF */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;      /* C.H1001??subprotocol????????????0xFF */
+    VOS_UINT8                               aucReserve[3];      /* ??????????????????????????????0xFF */
+    VOS_UINT32                              ulPhyPkt128BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt256BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt512BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt1024BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulMacLayerPktCnt;   /* ??????: 0xFFFFFFFF */
 }CTTF_HRPD_CCMAC_MNTN_STATISTIC_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_RTCMAC_MNTN_STATISTIC_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : RTCMAC可维可测信息统计
+ ??????    : CTTF_HRPD_RTCMAC_MNTN_STATISTIC_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : RTCMAC????????????????
 *****************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;      /* C.H1001中subprotocol的值，无效值0xFF */
-    CTTF_HRPD_RTCMAC_MNTN_RATE_ENUM_UINT8   enRateLimit;        /* 无效值0xFF  */
-    VOS_UINT8                               aucReserve[2];      /* 保留字节，按照无效值填写，值为0xFF */
-    VOS_UINT32                              ulPhyPkt128BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt256BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt512BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt768BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt1024BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt1536BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt2048BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt3072BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt4096BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt6144BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt8192BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt12288BitCnt;/* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulSndErrorIndCnt;   /* 无效值: 0xFFFFFFFF */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;      /* C.H1001??subprotocol????????????0xFF */
+    CTTF_HRPD_RTCMAC_MNTN_RATE_ENUM_UINT8   enRateLimit;        /* ??????0xFF  */
+    VOS_UINT8                               aucReserve[2];      /* ??????????????????????????????0xFF */
+    VOS_UINT32                              ulPhyPkt128BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt256BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt512BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt768BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt1024BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt1536BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt2048BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt3072BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt4096BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt6144BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt8192BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt12288BitCnt;/* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulSndErrorIndCnt;   /* ??????: 0xFFFFFFFF */
 } CTTF_HRPD_RTCMAC_MNTN_STATISTIC_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_FTCMAC_MNTN_STATISTIC_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : FTCMAC可维可测信息统计
+ ??????    : CTTF_HRPD_FTCMAC_MNTN_STATISTIC_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : FTCMAC????????????????
 *****************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;      /* C.H1001中subprotocol的值，无效值0xFF */
-    VOS_UINT8                               aucReserve[3];      /* 保留字节，按照无效值填写，值为0xFF */
-    VOS_UINT32                              ulPhyPkt128BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt256BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt512BitCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt1024BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt2048BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt3072BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt4096BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulPhyPkt5120BitCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulTotPhyPktCnt;     /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulTotMacLayPktCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulTotSingUserPktCnt;  /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulTotMultiUserPktCnt; /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulMaxSecLayPktNum;    /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulTotalMacPacketBytes;      /* MAC Packet Byte Size,不包含2bits MAC trailer；无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulTotMyAtMacPayloadBytes;   /* 无效值: 0xFFFFFFFF */
-    VOS_UINT32                              ulTotOtherAtMacPayloadBytes;/* 无效值: 0xFFFFFFFF */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8  enSubProtocol;      /* C.H1001??subprotocol????????????0xFF */
+    VOS_UINT8                               aucReserve[3];      /* ??????????????????????????????0xFF */
+    VOS_UINT32                              ulPhyPkt128BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt256BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt512BitCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt1024BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt2048BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt3072BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt4096BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulPhyPkt5120BitCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulTotPhyPktCnt;     /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulTotMacLayPktCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulTotSingUserPktCnt;  /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulTotMultiUserPktCnt; /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulMaxSecLayPktNum;    /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulTotalMacPacketBytes;      /* MAC Packet Byte Size,??????2bits MAC trailer????????: 0xFFFFFFFF */
+    VOS_UINT32                              ulTotMyAtMacPayloadBytes;   /* ??????: 0xFFFFFFFF */
+    VOS_UINT32                              ulTotOtherAtMacPayloadBytes;/* ??????: 0xFFFFFFFF */
 }CTTF_HRPD_FTCMAC_MNTN_STATISTIC_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_OM_HRPD_MAC_MNTN_STATISTIC_STRU
- 结构说明  : HRPD MAC 信息统计上报
- 对应消息  : ID_CTTF_OM_HRPD_MNTN_MAC_PROTOCOL_STATISTICS_IND
- 说明      : 主动上报消息, 在API调用时用指针指向上报内容即可
+ ??????    : CTTF_OM_HRPD_MAC_MNTN_STATISTIC_STRU
+ ????????  : HRPD MAC ????????????
+ ????????  : ID_CTTF_OM_HRPD_MNTN_MAC_PROTOCOL_STATISTICS_IND
+ ????      : ????????????, ??API????????????????????????????
 *****************************************************************************/
 typedef  struct
 {
@@ -2666,118 +2666,118 @@ typedef  struct
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_CC_MAC_PROTOCL_STATE_STRU
- * Description : DCC和ECC协议状态结构
+ * Description : DCC??ECC????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                  enSubProtocol;      /*无效值: BUTT */
-    CTTF_HRPD_MNTN_CC_STATE_ENUM_UINT8                      enState;            /* 无效值: BUTT */
-    VOS_UINT8                                               aucReserve[2];      /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                  enSubProtocol;      /*??????: BUTT */
+    CTTF_HRPD_MNTN_CC_STATE_ENUM_UINT8                      enState;            /* ??????: BUTT */
+    VOS_UINT8                                               aucReserve[2];      /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_CC_MAC_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_AC_MAC_PROTOCL_STATE_STRU
- * Description : DAC和EAC协议状态结构
+ * Description : DAC??EAC????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                  enSubProtocol;      /*无效值: BUTT */
-    CTTF_HRPD_MNTN_AC_STATE_ENUM_UINT8                      enState;            /* 无效值: BUTT */
-    VOS_UINT8                                               aucReserve[2];      /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                  enSubProtocol;      /*??????: BUTT */
+    CTTF_HRPD_MNTN_AC_STATE_ENUM_UINT8                      enState;            /* ??????: BUTT */
+    VOS_UINT8                                               aucReserve[2];      /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_AC_MAC_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_FTC_MAC_PROTOCL_STATE_STRU
- * Description : DFTC和EFTC协议状态结构
+ * Description : DFTC??EFTC????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                  enSubProtocol;      /*无效值: BUTT */
-    CTTF_HRPD_MNTN_FTC_STATE_ENUM_UINT8                     enState;            /* 无效值: BUTT */
-    VOS_UINT8                                               aucReserve[2];      /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                  enSubProtocol;      /*??????: BUTT */
+    CTTF_HRPD_MNTN_FTC_STATE_ENUM_UINT8                     enState;            /* ??????: BUTT */
+    VOS_UINT8                                               aucReserve[2];      /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_FTC_MAC_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_RTC_MAC_PROTOCL_STATE_STRU
- * Description : DRTC和ST3 RTC协议状态结构
+ * Description : DRTC??ST3 RTC????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*无效值: BUTT */
-    CTTF_HRPD_MNTN_RTC_STATE_ENUM_UINT8                         enState;        /* 无效值: BUTT */
-    VOS_UINT8                                                   aucReserve[2];  /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*??????: BUTT */
+    CTTF_HRPD_MNTN_RTC_STATE_ENUM_UINT8                         enState;        /* ??????: BUTT */
+    VOS_UINT8                                                   aucReserve[2];  /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_RTC_MAC_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_AUTHENTICATION_PROTOCL_STATE_STRU
- * Description : 鉴权协议状态结构
+ * Description : ????????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*无效值: BUTT */
-    CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM_UINT8     enState;        /* 无效值: BUTT */
-    VOS_UINT8                                                   aucReserve[2];  /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*??????: BUTT */
+    CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM_UINT8     enState;        /* ??????: BUTT */
+    VOS_UINT8                                                   aucReserve[2];  /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_AUTHENTICATION_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_ENCRYPTION_PROTOCL_STATE_STRU
- * Description : 加密协议状态结构
+ * Description : ????????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*无效值: BUTT */
-    CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM_UINT8     enState;        /* 无效值: BUTT */
-    VOS_UINT8                                                   aucReserve[2];  /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*??????: BUTT */
+    CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM_UINT8     enState;        /* ??????: BUTT */
+    VOS_UINT8                                                   aucReserve[2];  /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_ENCRYPTION_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_SECURITY_PROTOCL_STATE_STRU
- * Description : 安全协议状态结构
+ * Description : ????????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*无效值: BUTT */
-    CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM_UINT8     enState;        /* 无效值: BUTT */
-    VOS_UINT8                                                   aucReserve[2];  /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*??????: BUTT */
+    CTTF_HRPD_MNTN_SECURITY_LAYER_PROTOCOL_STATE_ENUM_UINT8     enState;        /* ??????: BUTT */
+    VOS_UINT8                                                   aucReserve[2];  /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_SECURITY_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_STREAM_FLOW_CTRL_PROTOCL_STATE_STRU
- * Description : 流控协议状态结构
+ * Description : ????????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*无效值: BUTT */
-    CTTF_HRPD_MNTN_STREAM_FLOW_CTRL_PROTOCOL_STATE_ENUM_UINT8   enState;        /* 无效值: BUTT */
-    VOS_UINT8                                                   aucReserve[2];  /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*??????: BUTT */
+    CTTF_HRPD_MNTN_STREAM_FLOW_CTRL_PROTOCOL_STATE_ENUM_UINT8   enState;        /* ??????: BUTT */
+    VOS_UINT8                                                   aucReserve[2];  /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_STREAM_FLOW_CTRL_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_STREAM_APP_PROTOCL_STATE_STRU
- * Description : 流应用协议状态结构
+ * Description : ??????????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*无效值: BUTT */
-    CTTF_HRPD_MNTN_STREAM_APP_PROTOCOL_STATE_ENUM_UINT8         enState;        /* 无效值: BUTT */
-    VOS_UINT8                                                   aucReserve[2];  /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*??????: BUTT */
+    CTTF_HRPD_MNTN_STREAM_APP_PROTOCOL_STATE_ENUM_UINT8         enState;        /* ??????: BUTT */
+    VOS_UINT8                                                   aucReserve[2];  /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_STREAM_APP_PROTOCL_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_SNP_UP_TX_STATE_STRU
- * Description : SNP协议状态结构
+ * Description : SNP????????????
 *******************************************************************************/
 typedef struct
 {
-    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*无效值: BUTT */
-    CTTF_HRPD_MNTN_SNP_UP_TX_STATE_ENUM_UINT8                   enState;        /* 无效值: BUTT */
-    VOS_UINT8                                                   aucReserve[2];  /* 保留字节，按照无效值填写，值为0 */
+    CTTF_HRPD_MNTN_SUB_PROTOCOL_ENUM_UINT8                      enSubProtocol;  /*??????: BUTT */
+    CTTF_HRPD_MNTN_SNP_UP_TX_STATE_ENUM_UINT8                   enState;        /* ??????: BUTT */
+    VOS_UINT8                                                   aucReserve[2];  /* ??????????????????????????????0 */
 }CTTF_HRPD_MNTN_MODULE_SNP_UP_TX_STATE_STRU;
 
 /*******************************************************************************
  * Name        : CTTF_HRPD_MNTN_MODULE_PROTOCOL_STATE_STRU
- * Description : 模块协议状态结构
- * 对应消息  : ID_CTTF_OM_HRPD_MNTN_MODULE_PROTOCOL_STATE_IND
+ * Description : ????????????????
+ * ????????  : ID_CTTF_OM_HRPD_MNTN_MODULE_PROTOCOL_STATE_IND
 *******************************************************************************/
 typedef struct
 {
@@ -2803,64 +2803,64 @@ typedef struct
 }CTTF_OM_HRPD_MNTN_MODULE_PROTOCOL_STATE_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : RTC维测上报的ACK信息
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : RTC??????????ACK????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32      aulACKsNum[CTTF_HRPD_MAC_TRANS_MODE_BUTT];                                          /* ulInterlace[interlacenumber]中数字之和,对应不同传输模式 */
-    VOS_UINT32      aulPktNumOnInterlace[CTTF_HRPD_MNTN_RTC3MAC_INTERLACE_MAX_NUM][CTTF_HRPD_MAC_TRANS_MODE_BUTT];  /* 对应交织号收到的ACK个数，是累加值。对应不同的传输模式 */
+    VOS_UINT32      aulACKsNum[CTTF_HRPD_MAC_TRANS_MODE_BUTT];                                          /* ulInterlace[interlacenumber]??????????,???????????????? */
+    VOS_UINT32      aulPktNumOnInterlace[CTTF_HRPD_MNTN_RTC3MAC_INTERLACE_MAX_NUM][CTTF_HRPD_MAC_TRANS_MODE_BUTT];  /* ????????????????ACK?????????????????????????????????? */
 }CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STATIS_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : RTC Reverse Link Metrics 统计信息
+ ??????    : CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STATIS_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : RTC Reverse Link Metrics ????????
 *****************************************************************************/
 typedef struct
 {
-    VOS_UINT32                              ulGoodPacketNumSum;                                         /* ulGoodPacketNum[CTTF_HRPD_RTC3MAC_TRANS_MODE_BUTT]求和 */
-    VOS_UINT32                              aulGoodPacketNum[CTTF_HRPD_MAC_TRANS_MODE_BUTT];            /* 总发送成功的Packet个数，值包含ACK的个数 */
-    VOS_UINT32                              ulAvgPacketTerminationSum;                                  /* ulAvgPacketTermination[CTTF_HRPD_RTC3MAC_TRANS_MODE_BUTT]求和 */
-    VOS_UINT32                              aulAvgPacketTermination[CTTF_HRPD_MAC_TRANS_MODE_BUTT]; /* 以子帧为单位，求Packet平均发送的子帧数 */
-    VOS_UINT32                              ulTotlPktTxTimeSum;                                         /* ulTotlPktTxTime[CTTF_HRPD_RTC3MAC_TRANS_MODE_BUTT]求和 */
-    VOS_UINT32                              aulTotlPktTxTime[CTTF_HRPD_MAC_TRANS_MODE_BUTT];            /* 数据包总的发送时间，以ms为单位 */
+    VOS_UINT32                              ulGoodPacketNumSum;                                         /* ulGoodPacketNum[CTTF_HRPD_RTC3MAC_TRANS_MODE_BUTT]???? */
+    VOS_UINT32                              aulGoodPacketNum[CTTF_HRPD_MAC_TRANS_MODE_BUTT];            /* ????????????Packet????????????ACK?????? */
+    VOS_UINT32                              ulAvgPacketTerminationSum;                                  /* ulAvgPacketTermination[CTTF_HRPD_RTC3MAC_TRANS_MODE_BUTT]???? */
+    VOS_UINT32                              aulAvgPacketTermination[CTTF_HRPD_MAC_TRANS_MODE_BUTT]; /* ????????????????Packet???????????????? */
+    VOS_UINT32                              ulTotlPktTxTimeSum;                                         /* ulTotlPktTxTime[CTTF_HRPD_RTC3MAC_TRANS_MODE_BUTT]???? */
+    VOS_UINT32                              aulTotlPktTxTime[CTTF_HRPD_MAC_TRANS_MODE_BUTT];            /* ??????????????????????ms?????? */
 }CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STATIS_STRU;
 
 /*****************************************************************************
- 结构名    : CTTF_OM_HRPD_MNTN_RTC3MAC_ACK_INFO_REPORT_STRU
- 协议表格  :
- ASN.1描述 :
- 结构说明  : RTC Reverse Link Metrics信息
+ ??????    : CTTF_OM_HRPD_MNTN_RTC3MAC_ACK_INFO_REPORT_STRU
+ ????????  :
+ ASN.1???? :
+ ????????  : RTC Reverse Link Metrics????
 *****************************************************************************/
 typedef struct
 {
     VOS_UINT16                                      usPrimId;
     VOS_UINT16                                      usToolId;
 
-    CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STRU            astRtc3MacAckInfo[CTTF_HRPD_MNTN_RTC3MAC_PS_BUTT][CSDR_HARQ_MNTN_SUBPACKET_BUTT];   /* 每种PS类型对应的ACK info, PS0对应的位置不会用到，将该位置用来存放"所有PS类型的ACK info之和" */
-    CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STATIS_STRU     astRtc3MacAckInfoStatis[CTTF_HRPD_MNTN_RTC3MAC_PS_BUTT];    /* 每种PS类型对应的ACK统计信息, PS0对应的位置不会用到，将该位置用来存放"所有PS类型对应的ACK统计信息之和" */
-    VOS_UINT32                                      ulTotalParqNAKsNum;                                     /* 收到PARQ NAK的个数，累加值。不区分传输模式也不区分PS类型 */
-    VOS_UINT32                                      ulTotalPacketSentNum;                                   /* 总发送的Packet个数，包括ACK和PARQ中的NAK。不区分传输模式也不区分PS类型 */
-    VOS_UINT32                                      ulTotalPer;                                             /* 表示中的误包率，改数值已经放大100倍，显示的时候以%的形式显示 */
+    CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STRU            astRtc3MacAckInfo[CTTF_HRPD_MNTN_RTC3MAC_PS_BUTT][CSDR_HARQ_MNTN_SUBPACKET_BUTT];   /* ????PS??????????ACK info, PS0????????????????????????????????????"????PS??????ACK info????" */
+    CTTF_HRPD_MNTN_RTC3MAC_ACK_INFO_STATIS_STRU     astRtc3MacAckInfoStatis[CTTF_HRPD_MNTN_RTC3MAC_PS_BUTT];    /* ????PS??????????ACK????????, PS0????????????????????????????????????"????PS??????????ACK????????????" */
+    VOS_UINT32                                      ulTotalParqNAKsNum;                                     /* ????PARQ NAK??????????????????????????????????????PS???? */
+    VOS_UINT32                                      ulTotalPacketSentNum;                                   /* ????????Packet??????????ACK??PARQ????NAK????????????????????????PS???? */
+    VOS_UINT32                                      ulTotalPer;                                             /* ??????????????????????????????100????????????????%?????????? */
 }CTTF_OM_HRPD_MNTN_RTC3MAC_ACK_INFO_REPORT_STRU;
 
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 #ifndef COMM_ITT
 extern VOS_VOID TTF_TraceModuleSet(VOS_UINT8 *paucModuleId);

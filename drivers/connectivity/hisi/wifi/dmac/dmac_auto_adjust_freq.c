@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_AUTO_FREQ
 #include "pm_extern.h"
@@ -29,13 +29,13 @@ extern "C" {
 
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
 dmac_pps_statistics_stru g_device_pps_statistics = {0};
 
 #ifdef _PRE_WLAN_FEATURE_AUTO_FREQ
 
-/*device主频类型*/
+/*device????????*/
 oal_uint16 g_device_speed_freq[][FREQ_BUTT] = {
     {PM_40MHZ,PM_160MHZ,PM_240MHZ,PM_480MHZ},     /*WLAN_BW_20*/
     {PM_40MHZ,PM_160MHZ,PM_240MHZ,PM_480MHZ},    /*WLAN_HT_BW_40*/
@@ -43,27 +43,27 @@ oal_uint16 g_device_speed_freq[][FREQ_BUTT] = {
     {PM_80MHZ,PM_160MHZ,PM_240MHZ,PM_480MHZ},   /*WLAN_VHT_BW_80*/
 };
 
-/*由定制化进行初始化*/
+/*??????????????????*/
 device_pps_freq_level_stru g_device_ba_pps_freq_level[] = {
-    /*pps门限                   CPU主频level */
+    /*pps????                   CPU????level */
     {PPS_VALUE_0,          FREQ_IDLE},
     {PPS_VALUE_1,          FREQ_MIDIUM},
     {PPS_VALUE_2,          FREQ_HIGHER},
     {PPS_VALUE_3,          FREQ_HIGHEST},
 };
 device_pps_freq_level_stru g_device_no_ba_pps_freq_level[] = {
-    /*pps门限                   CPU主频level */
+    /*pps????                   CPU????level */
     {NO_BA_PPS_VALUE_0,    FREQ_IDLE},
     {NO_BA_PPS_VALUE_1,    FREQ_MIDIUM},
     {NO_BA_PPS_VALUE_2,    FREQ_HIGHER},
     {NO_BA_PPS_VALUE_3,    FREQ_HIGHEST},
 };
 
-/* device调频控制结构体 */
+/* device?????????????? */
 dmac_freq_control_stru g_device_freq_type = {0};
 
 /*****************************************************************************
-  3 函数实现
+  3 ????????
 *****************************************************************************/
 dmac_freq_control_stru* dmac_get_auto_freq_handle(oal_void)
 {
@@ -104,7 +104,7 @@ oal_uint8 dmac_get_device_freq_level(void)
         }
 
         if ((pst_mac_vap->en_protocol != WLAN_VHT_MODE) &&
-            (pst_mac_vap->en_protocol != WLAN_VHT_ONLY_MODE))   /*非11ac*/
+            (pst_mac_vap->en_protocol != WLAN_VHT_ONLY_MODE))   /*??11ac*/
         {
             if ((WLAN_BAND_WIDTH_40MINUS == pst_mac_vap->st_channel.en_bandwidth) ||
                 (WLAN_BAND_WIDTH_40PLUS == pst_mac_vap->st_channel.en_bandwidth))
@@ -159,7 +159,7 @@ oal_void dmac_auto_set_device_freq(oal_void)
     oal_uint16                   us_device_freq = PM_40MHZ;
     oal_uint32                    uc_ret;
 
-    /* 相等不需要调频 */
+    /* ?????????????? */
     if(g_device_freq_type.uc_curr_freq_level == g_device_freq_type.uc_req_freq_level)
     {
         return;
@@ -214,18 +214,18 @@ oal_void dmac_auto_freq_netbuf_notify(oal_uint32 ul_free_cnt)
 {
     dmac_freq_control_stru   *pst_freq_handle = &g_device_freq_type;
 
-    /* 如果不使能，则不设置 */
+    /* ???????????????????? */
     if(OAL_FALSE == pst_freq_handle->uc_auto_freq_enable)
     {
         return;
     }
-    /* 如果低功耗睡眠，则不设置 */
+    /* ???????????????????????? */
     if(OAL_FALSE == pst_freq_handle->uc_pm_enable)
     {
         return;
     }
 
-    /* 触发高优先级流控时，调高频率 */
+    /* ???????????????????????????? */
     if ((ul_free_cnt <= (WLAN_AUTO_FREQ_NETBUF_THRESHOLD + 1)) && (pst_freq_handle->uc_curr_freq_level != FREQ_HIGHEST))
     {
         //OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_auto_freq_netbuf_notify:ul_free_cnt[%d].}", ul_free_cnt);
@@ -240,7 +240,7 @@ oal_void dmac_auto_freq_set_pps_level(oal_uint32 ul_pps_rate)
     dmac_freq_control_stru   *pst_freq_handle = &g_device_freq_type;
     oal_uint8 level_idx = 0;
 
-    if(dmac_is_ba_setup())/* 已经建立BA */
+    if(dmac_is_ba_setup())/* ????????BA */
     {
         if (ul_pps_rate <= g_device_ba_pps_freq_level[1].ul_speed_level)
         {
@@ -298,7 +298,7 @@ oal_void dmac_auto_freq_pps_process(oal_uint32 ul_pkt_count)
     {
         if(pst_freq_handle->uc_req_freq_level < pst_freq_handle->uc_curr_freq_level)
         {
-            /*连续MAX_DEGRADE_FREQ_TIME_THRESHOLD后才降频，保证性能*/
+            /*????MAX_DEGRADE_FREQ_TIME_THRESHOLD??????????????????*/
             pst_freq_handle->ul_pps_loop_count++;
             if(0 != ul_pkt_count)
             {
@@ -319,10 +319,10 @@ oal_void dmac_auto_freq_pps_process(oal_uint32 ul_pkt_count)
         }
         else
         {
-            /*升频不等待，立即执行保证性能*/
+            /*????????????????????????????*/
             pst_freq_handle->ul_pps_loop_count = 0;
 
-            /* 当需要升频时，一次性burst到最高频;然后再根据流量下调频率 */
+            /* ????????????????????burst????????;?????????????????????? */
             if(FREQ_HIGHEST != pst_freq_handle->uc_curr_freq_level)
             {
                 pst_freq_handle->uc_req_freq_level = FREQ_HIGHEST;
@@ -348,14 +348,14 @@ oal_void dmac_set_auto_freq_init(oal_void)
     pst_freq_handle->uc_auto_freq_enable = OAL_TRUE;
     pst_freq_handle->uc_pm_enable = OAL_FALSE;
     pst_freq_handle->uc_curr_freq_level = FREQ_HIGHEST;
-    pst_freq_handle->uc_req_freq_level = FREQ_IDLE; /* 默认处于最低工作频率 */
+    pst_freq_handle->uc_req_freq_level = FREQ_IDLE; /* ???????????????????? */
     pst_freq_handle->ul_pps_loop_count = 0;
 
     pst_pps_handle->ul_pps_rate = 0;
     pst_pps_handle->ul_last_timeout = 0;
     pst_pps_handle->ul_hcc_rxtx_total = 0;
 
-    /* 初始设为level0 */
+    /* ????????level0 */
     dmac_auto_set_device_freq();
 
     if(OAL_FALSE == pst_timer->en_is_registerd)
@@ -385,7 +385,7 @@ oal_void dmac_set_auto_freq_deinit(oal_void)
     {
         g_device_pps_statistics.uc_timer_reuse_count --;
 
-        /* 由最后退出的模块删除定时器 */
+        /* ?????????????????????????? */
         if (0 == g_device_pps_statistics.uc_timer_reuse_count)
         {
             FRW_TIMER_IMMEDIATE_DESTROY_TIMER(pst_timer);
@@ -440,7 +440,7 @@ oal_uint32 dmac_auto_freq_pps_timeout(void *prg)
 #ifdef _PRE_WLAN_FEATURE_AUTO_FREQ
     if (OAL_TRUE == pst_freq_handle->uc_auto_freq_enable)
     {
-        /* 根据吞吐量获取调频级别 */
+        /* ?????????????????????? */
         dmac_auto_freq_set_pps_level(pst_pps_handle->ul_pps_rate);
 
         dmac_auto_freq_pps_process(ul_return_total_count);
@@ -448,7 +448,7 @@ oal_uint32 dmac_auto_freq_pps_timeout(void *prg)
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_GREEN_AP
-    /* green ap处理函数 */
+    /* green ap???????? */
     dmac_green_ap_pps_process(pst_pps_handle->ul_pps_rate);
 #endif
 
@@ -487,7 +487,7 @@ oal_void dmac_set_auto_freq_pps_reuse_deinit(oal_void)
     {
         g_device_pps_statistics.uc_timer_reuse_count --;
 
-        /* 由最后退出的模块删除定时器 */
+        /* ?????????????????????????? */
         if (0 == g_device_pps_statistics.uc_timer_reuse_count)
         {
             FRW_TIMER_IMMEDIATE_DESTROY_TIMER(pst_timer);

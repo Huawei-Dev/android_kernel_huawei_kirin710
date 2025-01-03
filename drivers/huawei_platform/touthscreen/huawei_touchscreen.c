@@ -7137,7 +7137,7 @@ static int ts_destory_client(void)
 
 /******************************************************************************
  Prototype       : lon ts_thread_bindtocpu
- Description     : °ó¶¨ts_thread  µ½CPU1~3 ÉÏÃæ
+ Description     : ????????ts_thread  ????CPU1~3 ????????
 ******************************************************************************/
 void ts_thread_bindtocpu(void)
 {
@@ -7147,10 +7147,10 @@ void ts_thread_bindtocpu(void)
 	struct cpumask  orig_mask;
 	struct cpumask  curr_mask;
 
-	/* »ñÈ¡µ±Ç°Ïß³ÌµÄPid */
+	/* ????????????????????????????Pid */
 	target_pid = current->pid;
 
-	/* »ñÈ¡µ±Ç°Ïß³ÌµÄaffinity */
+	/* ????????????????????????????affinity */
 	ret = sched_getaffinity(target_pid, &(orig_mask));
 	if (ret < 0)
 	{
@@ -7160,10 +7160,10 @@ void ts_thread_bindtocpu(void)
 
 	memset(&(curr_mask), 0, cpumask_size());
 
-	/* ÉèÖÃµ±Ç°Ïß³ÌµÄaffinity */
+	/* ????????????????????????????affinity */
 	for_each_cpu(cpu, &(orig_mask))
 	{
-        /* È¥°ó¶¨CPU0 */
+        /* ????????????CPU0 */
 		if ((0 < cpu) && (cpumask_test_cpu(cpu, &(orig_mask))))
 		{
 			cpumask_set_cpu((unsigned int)cpu, &(curr_mask));

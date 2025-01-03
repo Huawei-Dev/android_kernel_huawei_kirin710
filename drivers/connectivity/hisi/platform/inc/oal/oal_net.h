@@ -11,7 +11,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "platform_spec.h"
 #include "oal_types.h"
@@ -21,16 +21,16 @@ extern "C" {
 #include "oal_list.h"
 #include "arch/oal_net.h"
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 #define OAL_IF_NAME_SIZE   16
-#define OAL_NETBUF_DEFAULT_DATA_OFFSET 48  /* 5115上实际测得data比head大48，用于netbuf data指针复位 */
+#define OAL_NETBUF_DEFAULT_DATA_OFFSET 48  /* 5115??????????data??head??48??????netbuf data???????? */
 
-#define OAL_ASSOC_REQ_IE_OFFSET        28    /* 上报内核关联请求帧偏移量 */
-#define OAL_ASSOC_RSP_IE_OFFSET        30    /* 上报内核关联响应帧偏移量 */
+#define OAL_ASSOC_REQ_IE_OFFSET        28    /* ???????????????????????? */
+#define OAL_ASSOC_RSP_IE_OFFSET        30    /* ???????????????????????? */
 #define OAL_AUTH_IE_OFFSET             30
 #define OAL_FT_ACTION_IE_OFFSET        40
-#define OAL_ASSOC_RSP_FIXED_OFFSET     6     /* 关联响应帧帧长FIXED PARAMETERS偏移量 */
+#define OAL_ASSOC_RSP_FIXED_OFFSET     6     /* ??????????????FIXED PARAMETERS?????? */
 #define OAL_MAC_ADDR_LEN               6
 #define OAL_PMKID_LEN                  16
 #define OAL_WPA_KEY_LEN                32
@@ -45,7 +45,7 @@ extern "C" {
 #define OAL_BYTE_ORDER OAL_BIG_ENDIAN
 
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) && defined (_PRE_WLAN_FEATURE_DFR)
-/* NETLINK_WIFI_DFR_HISI(27) 和 NETLINK_WIFI_SDT_HISI(28) 分别在4.1&4.4内核文件中申明 */
+/* NETLINK_WIFI_DFR_HISI(27) ?? NETLINK_WIFI_SDT_HISI(28) ??????4.1&4.4?????????????? */
 #ifdef NETLINK_WIFI_DFR_HISI
 #define NETLINK_DEV_ERROR NETLINK_WIFI_DFR_HISI
 #else
@@ -53,7 +53,7 @@ extern "C" {
 #endif
 #endif
 /*****************************************************************************
-  2.10 IP宏定义
+  2.10 IP??????
 *****************************************************************************/
 
 #define WLAN_DSCP_PRI_SHIFT         2
@@ -62,12 +62,12 @@ extern "C" {
 #define WLAN_IPV6_PRIORITY_SHIFT    20
 
 /*****************************************************************************
-  2.11 VLAN宏定义
+  2.11 VLAN??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  2.12 LLC SNAP宏定义
+  2.12 LLC SNAP??????
 *****************************************************************************/
 #define LLC_UI                  0x3
 #define SNAP_LLC_FRAME_LEN      8
@@ -80,7 +80,7 @@ extern "C" {
 #define SNAP_BTEP_ORGCODE_2     0xf8
 
 /*****************************************************************************
-  2.13 ETHER宏定义
+  2.13 ETHER??????
 *****************************************************************************/
 #define ETHER_ADDR_LEN  6   /* length of an Ethernet address */
 #define ETHER_TYPE_LEN  2   /* length of the Ethernet type field */
@@ -118,11 +118,11 @@ OAL_STATIC OAL_INLINE oal_uint8 a2x(const char c)
     } while(0)
 /* #endif */
 
-/* ip头到协议类型字段的偏移 */
+/* ip?????????????????????? */
 #define IP_PROTOCOL_TYPE_OFFSET  9
 #define IP_HDR_LEN               20
 
-/* CCMP加密字节数 */
+/* CCMP?????????? */
 #define WLAN_CCMP_ENCRYP_LEN 16
 
 
@@ -165,19 +165,19 @@ OAL_STATIC OAL_INLINE oal_uint8 a2x(const char c)
 #define OAL_IP_ADDR_MAX_SIZE                  OAL_IPV6_ADDR_SIZE
 
 
-/* IPv4多播范围: 224.0.0.0--239.255.255.255 */
+/* IPv4????????: 224.0.0.0--239.255.255.255 */
 #define OAL_IPV4_IS_MULTICAST(_a)             ((oal_uint8)((_a)[0]) >= 224 && ((oal_uint8)((_a)[0]) <= 239))
 
-/* IPv4永久组地址判断: 224.0.0.0～224.0.0.255为永久组地址 */
+/* IPv4??????????????: 224.0.0.0??224.0.0.255???????????? */
 #define OAL_IPV4_PERMANET_GROUP_ADDR           0x000000E0
 #define OAL_IPV4_IS_PERMANENT_GROUP(_a)       ((((_a) & 0x00FFFFFF) ^ OAL_IPV4_PERMANET_GROUP_ADDR) == 0)
 
-/* IPv6组播地址: FFXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX(第一个字节全一) */
+/* IPv6????????: FFXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX(??????????????) */
 #define OAL_IPV6_IS_MULTICAST(_a)             ((oal_uint8)((_a)[0]) == 0xff)
 
 
-/* IPv6未指定地址: ::/128 ,该地址仅用于接口还没有被分配IPv6地址时与其它节点
-   通讯作为源地址,例如在重复地址检测DAD中会出现. */
+/* IPv6??????????: ::/128 ,????????????????????????????IPv6????????????????
+   ??????????????,??????????????????DAD????????. */
 #define OAL_IPV6_IS_UNSPECIFIED_ADDR(_a)   \
      ((_a)[0]  == 0x00 &&          \
       (_a)[1]  == 0x00 &&          \
@@ -197,31 +197,31 @@ OAL_STATIC OAL_INLINE oal_uint8 a2x(const char c)
       (_a)[15] == 0x00)
 
 
-/* IPv6链路本地地址: 最高10位值为1111111010, 例如:FE80:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX  */
+/* IPv6????????????: ????10??????1111111010, ????:FE80:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX  */
 #define OAL_IPV6_IS_LINK_LOCAL_ADDR(_a)       (((_a)[0] == 0xFE) && ((_a)[1] >> 6 == 2))
 
 
 
 
  /*****************************************************************************
-   枚举名  : oal_mem_state_enum_uint8
-   协议表格:
-   枚举说明: 内存块状态
+   ??????  : oal_mem_state_enum_uint8
+   ????????:
+   ????????: ??????????
  *****************************************************************************/
 typedef enum
 {
-    OAL_MEM_STATE_FREE  = 0,            /* 该内存空闲 */
-    OAL_MEM_STATE_ALLOC,                /* 该内存已分配 */
+    OAL_MEM_STATE_FREE  = 0,            /* ?????????? */
+    OAL_MEM_STATE_ALLOC,                /* ???????????? */
 
     OAL_MEM_STATE_BUTT
 }oal_mem_state_enum;
 typedef oal_uint8 oal_mem_state_enum_uint8;
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
-/* 以下不区分操作系统 */
-/* 内核下发的扫描类型 */
+/* ?????????????????? */
+/* ?????????????????? */
 typedef enum
 {
     OAL_PASSIVE_SCAN        = 0,
@@ -231,7 +231,7 @@ typedef enum
 }oal_scan_enum;
 typedef oal_uint8 oal_scan_enum_uint8;
 
-/* 内核下发的扫描频段 */
+/* ?????????????????? */
 typedef enum
 {
     OAL_SCAN_2G_BAND        = 1,
@@ -242,30 +242,30 @@ typedef enum
 }oal_scan_band_enum;
 typedef oal_uint8 oal_scan_band_enum_uint8;
 
-/* hostapd 下发私有命令 */
+/* hostapd ???????????? */
 enum HWIFI_IOCTL_CMD
 {
     /*
-     *IOCTL_CMD的起始值由0修改为0x8EE0，修改原因：51 WiFi模块和类似于dhdutil之类的其他模块共用同一个ioctl通道，
-     *而51命令的枚举值从0开始，其他模块下发的ioctl命令也包含从0开始的这部分，这样就会同时“组播”到自己的模块和WiFi模块，
-     *从而对WiFi模块的功能产生影响。所以将51 WiFi模块命令的枚举值调整到0x8EE0起，便规避了其他模块命令的影响。
+     *IOCTL_CMD??????????0??????0x8EE0????????????51 WiFi????????????dhdutil????????????????????????ioctl??????
+     *??51??????????????0????????????????????ioctl????????????0????????????????????????????????????????????????WiFi??????
+     *??????WiFi??????????????????????????51 WiFi??????????????????????0x8EE0????????????????????????????????
      */
     HWIFI_IOCTL_CMD_GET_STA_ASSOC_REQ_IE = 0x8EE0,       /* get sta assocate request ie */
     HWIFI_IOCTL_CMD_SET_AP_AUTH_ALG,            /* set auth alg to driver */
-    HWIFI_IOCTL_CMD_SET_COUNTRY,                /* 设置国家码 */
-    HWIFI_IOCTL_CMD_SET_SSID,                   /* 设置ssid */
-    HWIFI_IOCTL_CMD_SET_MAX_USER,               /* 设置最大用户数 */
-    HWIFI_IOCTL_CMD_SET_FREQ,                   /* 设置频段 */
-    HWIFI_IOCTL_CMD_SET_WPS_IE,                 /* 设置AP WPS 信息元素 */
-    HWIFI_IOCTL_CMD_PRIV_CONNECT,               /* linux-2.6.30 sta发起connect */
-    HWIFI_IOCTL_CMD_PRIV_DISCONNECT,            /* linux-2.6.30 sta发起disconnect */
-    HWIFI_IOCTL_CMD_SET_FRAG,                   /* 设置分片门限值 */
-    HWIFI_IOCTL_CMD_SET_RTS,                    /* 设置RTS 门限值 */
+    HWIFI_IOCTL_CMD_SET_COUNTRY,                /* ?????????? */
+    HWIFI_IOCTL_CMD_SET_SSID,                   /* ????ssid */
+    HWIFI_IOCTL_CMD_SET_MAX_USER,               /* ?????????????? */
+    HWIFI_IOCTL_CMD_SET_FREQ,                   /* ???????? */
+    HWIFI_IOCTL_CMD_SET_WPS_IE,                 /* ????AP WPS ???????? */
+    HWIFI_IOCTL_CMD_PRIV_CONNECT,               /* linux-2.6.30 sta????connect */
+    HWIFI_IOCTL_CMD_PRIV_DISCONNECT,            /* linux-2.6.30 sta????disconnect */
+    HWIFI_IOCTL_CMD_SET_FRAG,                   /* ?????????????? */
+    HWIFI_IOCTL_CMD_SET_RTS,                    /* ????RTS ?????? */
 #ifdef _PRE_WLAN_FEATURE_HILINK
-    HWIFI_IOCTL_CMD_PRIV_KICK_USER,             /* AP剔除用户 */
-    HWIFI_IOCTL_CMD_SET_OKC_IE,                 /* AP 添加hilink接口 */
-    HWIFI_IOCTL_CMD_START_FBT_SCAN,             /* 启动hilink fbt侦听*/
-    HWIFI_IOCTL_CMD_GET_ALL_STA_INFO,           /* 获取所有已关联STA链路信息 */
+    HWIFI_IOCTL_CMD_PRIV_KICK_USER,             /* AP???????? */
+    HWIFI_IOCTL_CMD_SET_OKC_IE,                 /* AP ????hilink???? */
+    HWIFI_IOCTL_CMD_START_FBT_SCAN,             /* ????hilink fbt????*/
+    HWIFI_IOCTL_CMD_GET_ALL_STA_INFO,           /* ??????????????STA???????? */
 #endif
     HWIFI_IOCTL_CMD_NUM
 };
@@ -304,34 +304,34 @@ typedef enum _wlan_net_queue_type_
 } wlan_net_queue_type;
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
-/* net_device ioctl结构体定义 */
-/* hostapd/wpa_supplicant 下发的信息元素结构 */
-/* 该结构为事件内存池大小，保存从hostapd/wpa_supplicant下发的ie 信息 */
-/* 注意: 整个结构体长度为事件内存池大小，如果事件内存池有修改，则需要同步修改app 数据结构 */
+/* net_device ioctl?????????? */
+/* hostapd/wpa_supplicant ?????????????????? */
+/* ??????????????????????????????hostapd/wpa_supplicant??????ie ???? */
+/* ????: ????????????????????????????????????????????????????????????????????app ???????? */
 struct oal_app_ie
 {
     oal_uint32              ul_ie_len;
     en_app_ie_type_uint8    en_app_ie_type;
     oal_uint8               auc_rsv[3];
-    /* auc_ie 中保存信息元素，长度 = (事件内存池大小 - 保留长度) */
+    /* auc_ie ???????????????????? = (?????????????? - ????????) */
     oal_uint8               auc_ie[WLAN_WPS_IE_MAX_SIZE];
 };
 typedef struct oal_app_ie oal_app_ie_stru;
@@ -389,7 +389,7 @@ typedef struct
 }oal_udp_header_stru;
 
 
-/* WIN32和linux共用结构体  */
+/* WIN32??linux??????????  */
 typedef struct
 {
     oal_uint8 uc_type;
@@ -416,7 +416,7 @@ typedef struct
     oal_uint8           options[4];  /* variable-length options field */
 }oal_dhcp_packet_stru;
 
-/* 不分平台通用结构体 */
+/* ?????????????????? */
 typedef struct
 {
     oal_uint8   auc_ssid[OAL_IEEE80211_MAX_SSID_LEN];       /* ssid array */
@@ -450,19 +450,19 @@ struct hostap_all_sta_link_info{
 };
 typedef struct hostap_sta_link_info oal_net_sta_link_info_stru;
 #endif
-/* net_device ioctl结构体定义 */
+/* net_device ioctl?????????? */
 typedef struct oal_net_dev_ioctl_data_tag
 {
-    oal_int32 l_cmd;                                  /* 命令号 */
+    oal_int32 l_cmd;                                  /* ?????? */
     union
     {
         struct
         {
             oal_uint8    auc_mac[OAL_MAC_ADDR_LEN];
             oal_uint8    auc_rsv[2];
-            oal_uint32   ul_buf_size;            /* 用户空间ie 缓冲大小 */
-            oal_uint8   *puc_buf;               /* 用户空间ie 缓冲地址 */
-        }assoc_req_ie;                          /* AP 模式，用于获取STA 关联请求ie 信息 */
+            oal_uint32   ul_buf_size;            /* ????????ie ???????? */
+            oal_uint8   *puc_buf;               /* ????????ie ???????? */
+        }assoc_req_ie;                          /* AP ??????????????STA ????????ie ???? */
 
         struct
         {
@@ -493,27 +493,27 @@ typedef struct oal_net_dev_ioctl_data_tag
 
         struct
         {
-            oal_int32                           l_freq;              /* ap所在频段，与linux-2.6.34内核中定义不同 */
-            oal_uint32                          ssid_len;            /* SSID 长度 */
+            oal_int32                           l_freq;              /* ap????????????linux-2.6.34?????????????? */
+            oal_uint32                          ssid_len;            /* SSID ???? */
             oal_uint32                          ie_len;
 
             oal_uint8                          *puc_ie;
-            OAL_CONST oal_uint8                *puc_ssid;               /* 期望关联的AP SSID  */
-            OAL_CONST oal_uint8                *puc_bssid;              /* 期望关联的AP BSSID  */
+            OAL_CONST oal_uint8                *puc_ssid;               /* ??????????AP SSID  */
+            OAL_CONST oal_uint8                *puc_bssid;              /* ??????????AP BSSID  */
 
-            oal_uint8                           en_privacy;             /* 是否加密标志 */
-            oal_nl80211_auth_type_enum_uint8    en_auth_type;           /* 认证类型，OPEN or SHARE-KEY */
+            oal_uint8                           en_privacy;             /* ???????????? */
+            oal_nl80211_auth_type_enum_uint8    en_auth_type;           /* ??????????OPEN or SHARE-KEY */
 
-            oal_uint8                           uc_wep_key_len;         /* WEP KEY长度 */
-            oal_uint8                           uc_wep_key_index;       /* WEP KEY索引 */
-            OAL_CONST oal_uint8                *puc_wep_key;            /* WEP KEY密钥 */
+            oal_uint8                           uc_wep_key_len;         /* WEP KEY???? */
+            oal_uint8                           uc_wep_key_index;       /* WEP KEY???? */
+            OAL_CONST oal_uint8                *puc_wep_key;            /* WEP KEY???? */
 
-            oal_cfg80211_crypto_settings_stru   st_crypto;              /* 密钥套件信息 */
+            oal_cfg80211_crypto_settings_stru   st_crypto;              /* ???????????? */
         }cfg80211_connect_params;
         struct
         {
             oal_uint8            auc_mac[OAL_MAC_ADDR_LEN];
-            oal_uint16           us_reason_code;                        /* 去关联 reason code */
+            oal_uint16           us_reason_code;                        /* ?????? reason code */
         }kick_user_params;
 #ifdef _PRE_WLAN_FEATURE_HILINK
         struct hostap_all_sta_link_info all_sta_link_info;
@@ -521,37 +521,37 @@ typedef struct oal_net_dev_ioctl_data_tag
         struct
         {
             oal_uint8               auc_mac[OAL_MAC_ADDR_LEN];
-            oal_uint16              us_reason_code;                        /* 去关联 reason code */
-            oal_uint8               uc_rej_user;                           /* 禁止sta连接的时间 */
-            oal_uint8               uc_kick_user;                          /* 类型:允许/禁止连接 */
+            oal_uint16              us_reason_code;                        /* ?????? reason code */
+            oal_uint8               uc_rej_user;                           /* ????sta?????????? */
+            oal_uint8               uc_kick_user;                          /* ????:????/???????? */
             oal_uint8               auc_rsv[2];
         }fbt_kick_user_params;
 
         struct
         {
-            oal_uint8       mac[OAL_MAC_ADDR_LEN];                  /* 需要侦听的sta的mac地址 */
-            oal_uint32      ul_channel;                                /* 需要侦听的信道号 */
-            oal_uint32      ul_interval;                               /* 需要侦听时间 */
-            oal_uint8       en_is_on;                                  /* 是否开启侦听 */
+            oal_uint8       mac[OAL_MAC_ADDR_LEN];                  /* ??????????sta??mac???? */
+            oal_uint32      ul_channel;                                /* ???????????????? */
+            oal_uint32      ul_interval;                               /* ???????????? */
+            oal_uint8       en_is_on;                                  /* ???????????? */
         }fbt_scan_params;
 #endif
 
-        oal_int32                l_frag;                                /* 分片门限值 */
-        oal_int32                l_rts;                                 /* RTS 门限值 */
+        oal_int32                l_frag;                                /* ?????????? */
+        oal_int32                l_rts;                                 /* RTS ?????? */
     }pri_data;
 }oal_net_dev_ioctl_data_stru;
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  10 函数声明
+  10 ????????
 *****************************************************************************/
 extern oal_bool_enum_uint8 oal_netbuf_is_dhcp_port(oal_udp_header_stru *pst_udp_hdr);
 extern oal_bool_enum_uint8 oal_netbuf_is_nd(oal_ipv6hdr_stru  *pst_ipv6hdr);

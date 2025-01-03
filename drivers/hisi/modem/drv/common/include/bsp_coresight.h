@@ -79,7 +79,7 @@ struct coresight_etb_data_head_info
 };
 
 #ifdef CONFIG_CORESIGHT
-#if defined(BSP_CONFIG_PHONE_TYPE) && defined(__KERNEL__) /*linux“‘º∞PHONE–ŒÃ¨*/
+#if defined(BSP_CONFIG_PHONE_TYPE) && defined(__KERNEL__) /*linux????PHONE????*/
 static void inline bsp_coresight_enable(void) {  return;   }
 static void inline bsp_coresight_disable(void){  return;   }
 static void inline bsp_coresight_suspend(void){  return;   }

@@ -84,11 +84,11 @@ extern "C" {
 #endif /* __cpluscplus */
 
 
-/* VOS编程模式下PID与FID对应关系 */
+/* VOS??????????PID??FID???????? */
 typedef  struct ID_PID_to_FID
 {
     unsigned long ulPID;    /* PID */
-    unsigned long ulFID;    /* PID隶属的FID */
+    unsigned long ulFID;    /* PID??????FID */
 }PID_to_FID_Type;
 
 /************************* MACRO & TYPE DEFINITION ***************************/
@@ -109,26 +109,26 @@ typedef  struct ID_PID_to_FID
 #define ON_DECLARE(pid, fid, pri, ModemId) \
     MOD_RegFidPidRSP(pid , fid, pri, ModemId);
 
-/* VOS编程模式下功能模块静态描述表 */
+/* VOS???????????????????????????? */
 #define FID_NAME_LENGTH         (16)
 
 typedef struct ID_Static_Table_Type
 {
     VOS_FID       ulFID;                       /* FID           */
-    VOS_UINT8     achFIDName[FID_NAME_LENGTH]; /* FID名称       */
-    Init_Fun_Type       pfnInitFun;                  /* FID初始化函数 */
-    VOS_UINT32    ulStartOrder;                /* FID启动顺序   */
+    VOS_UINT8     achFIDName[FID_NAME_LENGTH]; /* FID????       */
+    Init_Fun_Type       pfnInitFun;                  /* FID?????????? */
+    VOS_UINT32    ulStartOrder;                /* FID????????   */
     VOS_UINT32    ulStackSize ;
     /* which should be del when only one FID exists */
     VOS_UINT32    ulQueueSize;
 } FID_Static_Table_Type;
 
 
-/* 应用模块初始化顺序表 */
+/* ???????????????????? */
 typedef struct APP_Start_Order_Type
 {
     VOS_VOID (*pfnInit)(VOS_VOID);
-    VOS_UINT32  ulStartOrder;    /*FID启动顺序*/
+    VOS_UINT32  ulStartOrder;    /*FID????????*/
 } APP_Start_Order_Type;
 
 
@@ -137,7 +137,7 @@ enum VOS_DOPRA_Function_ID
 
     DOPRA_FID_SYS=0,
 
-    VOS_FID_DOPRAEND /* 系统FID定义结束标志 */
+    VOS_FID_DOPRAEND /* ????FID???????????? */
 };
 
 

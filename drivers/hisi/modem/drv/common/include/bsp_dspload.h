@@ -63,12 +63,12 @@ extern "C" {
 
 struct bbe_dump_proc_flag
 {
-    unsigned int dsp_dump_flag;         /* 异常流程中，记录dsp保存tcm的过程标志 */
+    unsigned int dsp_dump_flag;         /* ????????????????dsp????tcm?????????? */
 };
 
 struct dsp_img_head_info
 {
-    u8 dsp_img_type :4;                 /*dsp镜像类型*/
+    u8 dsp_img_type :4;                 /*dsp????????*/
     u8 reserved :4;
 };
 
@@ -79,30 +79,30 @@ typedef enum{
 
 typedef struct
 {
-    u8                          ucLoadType  :2;             /* 加载类型: 0-每次上电时都加载; 1-上电时只加载一次; 2-不需要底软加载 */
-    u8                          ucStoreType :2;             /* 保存类型 */
-    u8                          ucSectOnSite:2;             /* 段在位标志 */
-    u8                          ucRsv       :2;             /* 保留比特 */
+    u8                          ucLoadType  :2;             /* ????????: 0-????????????????; 1-????????????????; 2-?????????????? */
+    u8                          ucStoreType :2;             /* ???????? */
+    u8                          ucSectOnSite:2;             /* ?????????? */
+    u8                          ucRsv       :2;             /* ???????? */
 }UNIPHY_SECT_LOAD_STORE_TYPE_STRU;
 
 struct dsp_sect_desc_stru
 {
-    u8                               usNo;                   /* 段序号 */
-    u8                               ucCrc8;                 /* 改为校验和 2017/08/25 */
-    u8                               ucTcmType;              /* 段类型: 0-代码(text); 1-rodata; 2-data; 3-bss */
-    UNIPHY_SECT_LOAD_STORE_TYPE_STRU ucLoadStoreType;   /* 扩展为结构体 */
-    u32                              ulFileOffset;           /* 段在文件内的偏移 */
-    u32                              ulTargetAddr;           /* 加载的目标地址 */
-    u32                              ulSectSize;             /* 段的大小 */
+    u8                               usNo;                   /* ?????? */
+    u8                               ucCrc8;                 /* ?????????? 2017/08/25 */
+    u8                               ucTcmType;              /* ??????: 0-????(text); 1-rodata; 2-data; 3-bss */
+    UNIPHY_SECT_LOAD_STORE_TYPE_STRU ucLoadStoreType;   /* ???????????? */
+    u32                              ulFileOffset;           /* ???????????????? */
+    u32                              ulTargetAddr;           /* ?????????????? */
+    u32                              ulSectSize;             /* ???????? */
 };
 /*lint -e43*/
-/* TLBBE16/CBBE16镜像头 */
+/* TLBBE16/CBBE16?????? */
 struct dsp_bin_header_stru
 {
-    s8                          acDescription[24];      /* 由工具生成，内容为处理器标记和日期、时间 */
-    u32                         ulFileSize;             /* 文件大小 */
-    u32                         ulSectNum;              /* 段个数 */
-    struct dsp_sect_desc_stru   astSect[0];             /* 段信息 */
+    s8                          acDescription[24];      /* ???????????????????????????????????????? */
+    u32                         ulFileSize;             /* ???????? */
+    u32                         ulSectNum;              /* ?????? */
+    struct dsp_sect_desc_stru   astSect[0];             /* ?????? */
 };
 /*lint +e43*/
 #ifndef CONFIG_CBBE

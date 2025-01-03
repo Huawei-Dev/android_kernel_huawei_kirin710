@@ -48,7 +48,7 @@
 
 
 /*****************************************************************************
-  1 其他头文件包含
+  1 ??????????????
 *****************************************************************************/
 #include "AtMntn.h"
 #include "AtInputProc.h"
@@ -61,22 +61,22 @@
 
 
 /*****************************************************************************
-    协议栈打印打点方式下的.C文件宏定义
+    ??????????????????????.C??????????
 *****************************************************************************/
 #define    THIS_FILE_ID        PS_FILE_ID_AT_MNTN_C
 
 /*****************************************************************************
-  2 宏定义
+  2 ??????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  3 枚举定义
+  3 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  4 全局变量声明
+  4 ????????????
 *****************************************************************************/
 AT_DEBUG_INFO_STRU                      g_stAtDebugInfo = {VOS_FALSE};
 
@@ -85,33 +85,33 @@ AT_MNTN_STATS_STRU                      g_stAtStatsInfo;
 AT_MNTN_MSG_RECORD_INFO_STRU            g_stAtMsgRecordInfo;
 
 /*****************************************************************************
-  5 消息头定义
+  5 ??????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  6 消息定义
+  6 ????????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  7 STRUCT定义
+  7 STRUCT????
 *****************************************************************************/
 
 /*****************************************************************************
-  8 UNION定义
+  8 UNION????
 *****************************************************************************/
 
 
 /*****************************************************************************
-  9 OTHERS定义
+  9 OTHERS????
 *****************************************************************************/
 extern VOS_VOID* GUNAS_FilterAtToAtMsg(
     PS_MSG_HEADER_STRU                 *pstMsg
 );
 
 /*****************************************************************************
-  10 函数实现
+  10 ????????
 *****************************************************************************/
 
 VOS_VOID AT_InitMntnCtx(VOS_VOID)
@@ -221,7 +221,7 @@ VOS_VOID AT_MNTN_TraceEvent(VOS_VOID *pMsg)
 {
     VOS_VOID                           *pLogPrivacyMsg  = VOS_NULL_PTR;
 
-    /* at模块内部维测消息, 增加脱敏处理 */
+    /* at????????????????, ???????????? */
     pLogPrivacyMsg  = pMsg;
 
     if (VOS_TRUE == AT_GetPrivacyFilterEnableFlg())
@@ -231,7 +231,7 @@ VOS_VOID AT_MNTN_TraceEvent(VOS_VOID *pMsg)
             return;
         }
 
-        /* cnas at命令脱敏过滤函数处理 */
+        /* cnas at???????????????????? */
         pLogPrivacyMsg = AT_PrivacyMatchAtCmd(pMsg);
         if (VOS_NULL_PTR == pLogPrivacyMsg)
         {
@@ -241,7 +241,7 @@ VOS_VOID AT_MNTN_TraceEvent(VOS_VOID *pMsg)
 
     DIAG_TraceReport(pLogPrivacyMsg);
 
-    /* 如果脱敏处理函数申请了新的at命令字符串，释放掉 */
+    /* ??????????????????????????at?????????????????? */
     if (pLogPrivacyMsg != pMsg)
     {
         VOS_MemFree(WUEPS_PID_AT, pLogPrivacyMsg);
@@ -258,14 +258,14 @@ VOS_VOID AT_MNTN_TraceInputMsc(
 {
     AT_MNTN_MSC_STRU                    stMntnMsc;
 
-    /* 填写消息头 */
+    /* ?????????? */
     AT_MNTN_CFG_MSG_HDR(&stMntnMsc, ID_AT_MNTN_INPUT_MSC, (sizeof(AT_MNTN_MSC_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     stMntnMsc.ulPortId = ucIndex;
     TAF_MEM_CPY_S(&(stMntnMsc.stDceMscInfo), sizeof(stMntnMsc.stDceMscInfo), pstDceMsc, sizeof(AT_DCE_MSC_STRU));
 
-    /* 发送消息 */
+    /* ???????? */
     AT_MNTN_TraceEvent(&stMntnMsc);
 
     return;
@@ -279,14 +279,14 @@ VOS_VOID AT_MNTN_TraceOutputMsc(
 {
     AT_MNTN_MSC_STRU                    stMntnMsc;
 
-    /* 填写消息头 */
+    /* ?????????? */
     AT_MNTN_CFG_MSG_HDR(&stMntnMsc, ID_AT_MNTN_OUTPUT_MSC, (sizeof(AT_MNTN_MSC_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     stMntnMsc.ulPortId = ucIndex;
     TAF_MEM_CPY_S(&(stMntnMsc.stDceMscInfo), sizeof(stMntnMsc.stDceMscInfo), pstDceMsc, sizeof(AT_DCE_MSC_STRU));
 
-    /* 发送消息 */
+    /* ???????? */
     AT_MNTN_TraceEvent(&stMntnMsc);
 
     return;
@@ -300,14 +300,14 @@ VOS_VOID AT_MNTN_TraceStartFlowCtrl(
 {
     AT_MNTN_FLOW_CTRL_STRU              stMntnFlowCtrl;
 
-    /* 填写消息头 */
+    /* ?????????? */
     AT_MNTN_CFG_MSG_HDR(&stMntnFlowCtrl, ID_AT_MNTN_START_FLOW_CTRL, (sizeof(AT_MNTN_FLOW_CTRL_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     stMntnFlowCtrl.ulPortId = ucIndex;
     stMntnFlowCtrl.enDevice = enFcDevive;
 
-    /* 发送消息 */
+    /* ???????? */
     AT_MNTN_TraceEvent(&stMntnFlowCtrl);
 
     return;
@@ -321,14 +321,14 @@ VOS_VOID AT_MNTN_TraceStopFlowCtrl(
 {
     AT_MNTN_FLOW_CTRL_STRU              stMntnFlowCtrl;
 
-    /* 填写消息头 */
+    /* ?????????? */
     AT_MNTN_CFG_MSG_HDR(&stMntnFlowCtrl, ID_AT_MNTN_STOP_FLOW_CTRL, (sizeof(AT_MNTN_FLOW_CTRL_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     stMntnFlowCtrl.ulPortId = ucIndex;
     stMntnFlowCtrl.enDevice = enFcDevive;
 
-    /* 发送消息 */
+    /* ???????? */
     AT_MNTN_TraceEvent(&stMntnFlowCtrl);
 
     return;
@@ -342,14 +342,14 @@ VOS_VOID AT_MNTN_TraceRegFcPoint(
 {
     AT_MNTN_FC_POINT_STRU               stMntnFcPoint;
 
-    /* 填写消息头 */
+    /* ?????????? */
     AT_MNTN_CFG_MSG_HDR(&stMntnFcPoint, ID_AT_MNTN_REG_FC_POINT, (sizeof(AT_MNTN_FC_POINT_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     stMntnFcPoint.ulPortId = ucIndex;
     stMntnFcPoint.enPoint  = enFcPoint;
 
-    /* 发送消息 */
+    /* ???????? */
     AT_MNTN_TraceEvent(&stMntnFcPoint);
 
     return;
@@ -363,14 +363,14 @@ VOS_VOID AT_MNTN_TraceDeregFcPoint(
 {
     AT_MNTN_FC_POINT_STRU               stMntnFcPoint;
 
-    /* 填写消息头 */
+    /* ?????????? */
     AT_MNTN_CFG_MSG_HDR(&stMntnFcPoint, ID_AT_MNTN_DEREG_FC_POINT, (sizeof(AT_MNTN_FC_POINT_STRU) - VOS_MSG_HEAD_LENGTH));
 
-    /* 填写消息内容 */
+    /* ???????????? */
     stMntnFcPoint.ulPortId = ucIndex;
     stMntnFcPoint.enPoint  = enFcPoint;
 
-    /* 发送消息 */
+    /* ???????? */
     AT_MNTN_TraceEvent(&stMntnFcPoint);
 
     return;
@@ -390,7 +390,7 @@ VOS_VOID AT_MNTN_TraceCmdResult(
 
     AT_GetAtMsgStruMsgLength(usDataLen, &ulLength);
 
-    /* 申请消息内存 */
+    /* ???????????? */
     pstMsg = (AT_MSG_STRU *)PS_MEM_ALLOC(WUEPS_PID_AT, (ulLength + VOS_MSG_HEAD_LENGTH));
     if (VOS_NULL_PTR == pstMsg)
     {
@@ -398,11 +398,11 @@ VOS_VOID AT_MNTN_TraceCmdResult(
         return;
     }
 
-    /* 填写消息头 */
+    /* ?????????? */
     enEventId       = AT_GetResultMsgID(ucIndex);
     AT_MNTN_CFG_MSG_HDR(pstMsg, enEventId, ulLength);
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->ucType  = 0x1;
     pstMsg->ucIndex = ucIndex;
     pstMsg->usLen   = usDataLen;
@@ -422,10 +422,10 @@ VOS_VOID AT_MNTN_TraceCmdResult(
 
     TAF_MEM_CPY_S((TAF_VOID*)pstMsg->aucValue, usDataLen, pucData, usDataLen);
 
-    /* 填写消息内容 */
+    /* ???????????? */
     AT_MNTN_TraceEvent(pstMsg);
 
-    /* 释放消息内存 */
+    /* ???????????? */
     /*lint -save -e830 */
     PS_MEM_FREE(WUEPS_PID_AT, pstMsg);
     /*lint -restore */
@@ -446,7 +446,7 @@ VOS_VOID AT_MNTN_TraceCmdBuffer(
 
     AT_GetAtMsgStruMsgLength(usDataLen, &ulLength);
 
-    /* 申请消息内存 */
+    /* ???????????? */
     pstMsg = (AT_MSG_STRU *)PS_MEM_ALLOC(WUEPS_PID_AT, (ulLength + VOS_MSG_HEAD_LENGTH));
     if (VOS_NULL_PTR == pstMsg)
     {
@@ -454,11 +454,11 @@ VOS_VOID AT_MNTN_TraceCmdBuffer(
         return;
     }
 
-    /* 填写消息头 */
+    /* ?????????? */
     enEventId       = AT_GetResultMsgID(ucIndex);
     AT_MNTN_CFG_MSG_HDR(pstMsg, enEventId, ulLength);
 
-    /* 填写消息内容 */
+    /* ???????????? */
     pstMsg->ucType          = 0x2;
     pstMsg->ucIndex         = ucIndex;
     pstMsg->usLen           = usDataLen;
@@ -477,10 +477,10 @@ VOS_VOID AT_MNTN_TraceCmdBuffer(
 
     TAF_MEM_CPY_S((TAF_VOID*)pstMsg->aucValue, usDataLen, pucData, usDataLen);
 
-    /* 填写消息内容 */
+    /* ???????????? */
     AT_MNTN_TraceEvent(pstMsg);
 
-    /* 释放消息内存 */
+    /* ???????????? */
     PS_FREE_MSG(WUEPS_PID_AT, pstMsg);
 
     return;
@@ -709,17 +709,17 @@ VOS_VOID AT_ShowPsEntityInfo(VOS_UINT8 ucCallId)
         PS_PRINTF("################MODEM ID is %d################\n", enModemId);
         pstCallEntity = &(AT_GetModemPsCtxAddrFromModemId(enModemId)->astCallEntity[ucCallId]);
 
-        PS_PRINTF("********************PS拨号实体信息***********************\n");
+        PS_PRINTF("********************PS????????????***********************\n");
         PS_PRINTF("Active Flag                             %d\n", pstCallEntity->ulUsedFlg);
         PS_PRINTF("Current Call Type                       %d\n", pstCallEntity->enCurrPdpType);
         PS_PRINTF("Wlan Call Type                          %d\n", pstCallEntity->enWlanPdpType);
         PS_PRINTF("HandOver Call Type                      %d\n", pstCallEntity->enHoPdpType);
-        PS_PRINTF("********************用户拨号信息*************************\n");
+        PS_PRINTF("********************????????????*************************\n");
         PS_PRINTF("User Actual Index                       %d\n", pstCallEntity->stUserInfo.enPortIndex);
         PS_PRINTF("User Expect Index                       %d\n", pstCallEntity->stUserInfo.enUserIndex);
         PS_PRINTF("User Type                               %d\n", pstCallEntity->stUserInfo.ucUsrType);
         PS_PRINTF("User CID                                %d\n", pstCallEntity->stUserInfo.ucUsrCid);
-        PS_PRINTF("********************IPv4连接信息*************************\n");
+        PS_PRINTF("********************IPv4????????*************************\n");
         PS_PRINTF("IPv4 Bearer CID                         %d\n", pstCallEntity->ucIpv4Cid);
         PS_PRINTF("IPv4 Bearer State                       %d\n", pstCallEntity->enIpv4State);
         PS_PRINTF("IPv4 Bearer Wlan State                  %d\n", pstCallEntity->enWlanIpv4State);
@@ -747,7 +747,7 @@ VOS_VOID AT_ShowPsEntityInfo(VOS_UINT8 ucCallId)
                                           pstCallEntity->stIpv6DhcpInfo.aucIpv6SecDNS,
                                           TAF_IPV6_STR_RFC2373_TOKENS);
 
-        PS_PRINTF("********************IPv6连接信息*************************\n");
+        PS_PRINTF("********************IPv6????????*************************\n");
         PS_PRINTF("IPv6 Bearer CID                         %d\n", pstCallEntity->ucIpv6Cid);
         PS_PRINTF("IPv6 Bearer State                       %d\n", pstCallEntity->enIpv6State);
         PS_PRINTF("IPv6 Bearer Wlan State                  %d\n", pstCallEntity->enWlanIpv6State);
@@ -757,7 +757,7 @@ VOS_VOID AT_ShowPsEntityInfo(VOS_UINT8 ucCallId)
         PS_PRINTF("IPv6 Bearer Primary DNS                 %s\n", aucIpv6PrimDnsStr);
         PS_PRINTF("IPv6 Bearer Secondary DNS               %s\n", aucIpv6SecDnsStr);
         PS_PRINTF("***********************************************************\n");
-        PS_PRINTF("********************域选信息*************************\n");
+        PS_PRINTF("********************????????*************************\n");
         PS_PRINTF("DataSysInfoFlg                         %d\n", pstCallEntity->stApnDataSysInfo.ucDataSysInfoFlg);
         PS_PRINTF("DataSysPolicyIndex                     %d\n", pstCallEntity->stApnDataSysInfo.ucDataSysPolicyIndex);
         PS_PRINTF("CurrentDataSys                         %d\n", pstCallEntity->stApnDataSysInfo.enCurrentDataSys);
@@ -777,10 +777,10 @@ VOS_VOID AT_ShowPsFcIdState(VOS_UINT32 ulFcid)
         return;
     }
 
-    PS_PRINTF("指定FCID对应的结点是否有效                  %d\n", g_stFcIdMaptoFcPri[ulFcid].ulUsed);
-    PS_PRINTF("指定FCID对应的结点的优先级                  %d\n", g_stFcIdMaptoFcPri[ulFcid].enFcPri);
-    PS_PRINTF("指定FCID对应的结点的RABID掩码               %d\n", g_stFcIdMaptoFcPri[ulFcid].ulRabIdMask);
-    PS_PRINTF("指定FCID对应的结点的ModemId                 %d\n", g_stFcIdMaptoFcPri[ulFcid].enModemId);
+    PS_PRINTF("????FCID??????????????????                  %d\n", g_stFcIdMaptoFcPri[ulFcid].ulUsed);
+    PS_PRINTF("????FCID??????????????????                  %d\n", g_stFcIdMaptoFcPri[ulFcid].enFcPri);
+    PS_PRINTF("????FCID????????????RABID????               %d\n", g_stFcIdMaptoFcPri[ulFcid].ulRabIdMask);
+    PS_PRINTF("????FCID????????????ModemId                 %d\n", g_stFcIdMaptoFcPri[ulFcid].enModemId);
     PS_PRINTF("\r\n");
 
     return;
@@ -789,16 +789,16 @@ VOS_VOID AT_ShowPsFcIdState(VOS_UINT32 ulFcid)
 
 VOS_VOID AT_ShowResetStatsInfo(VOS_VOID)
 {
-    PS_PRINTF("模块初始化标识                              %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulSemInitFlg);
-    PS_PRINTF("当前的二进制信号量                          %u\n", AT_GetResetSem()); /*lint !e559 */
-    PS_PRINTF("创建的二进制信号量                          %u\n", g_stAtStatsInfo.stCCpuResetStatsInfo.hBinarySemId); /*lint !e559 */
-    PS_PRINTF("创建二进制信号量失败次数                    %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulCreateBinarySemFailNum);
-    PS_PRINTF("锁二进制信号量失败次数                      %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulLockBinarySemFailNum);
-    PS_PRINTF("最后一次锁二进制信号量失败原因              %x\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulLastBinarySemErrRslt);
-    PS_PRINTF("C核复位前的次数                             %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulResetBeforeNum);
-    PS_PRINTF("C核复位后的次数                             %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulResetAfterNum);
-    PS_PRINTF("HIFI复位成功的次数                          %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulHifiResetNum);
-    PS_PRINTF("AT复位状态                                  %d\n", AT_GetResetFlag());
+    PS_PRINTF("??????????????                              %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulSemInitFlg);
+    PS_PRINTF("??????????????????                          %u\n", AT_GetResetSem()); /*lint !e559 */
+    PS_PRINTF("??????????????????                          %u\n", g_stAtStatsInfo.stCCpuResetStatsInfo.hBinarySemId); /*lint !e559 */
+    PS_PRINTF("????????????????????????                    %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulCreateBinarySemFailNum);
+    PS_PRINTF("??????????????????????                      %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulLockBinarySemFailNum);
+    PS_PRINTF("??????????????????????????????              %x\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulLastBinarySemErrRslt);
+    PS_PRINTF("C??????????????                             %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulResetBeforeNum);
+    PS_PRINTF("C??????????????                             %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulResetAfterNum);
+    PS_PRINTF("HIFI??????????????                          %d\n", g_stAtStatsInfo.stCCpuResetStatsInfo.ulHifiResetNum);
+    PS_PRINTF("AT????????                                  %d\n", AT_GetResetFlag());
     PS_PRINTF("\r\n");
 
     return;
@@ -932,29 +932,29 @@ VOS_VOID AT_ShowIPv6IIDMgrInfo(VOS_VOID)
 VOS_VOID AT_Help(VOS_VOID)
 {
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("PS软调信息                                              \n");
+    PS_PRINTF("PS????????                                              \n");
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("AT_ShowPsEntityInfo         显示拨号实体信息            \n");
-    PS_PRINTF("AT_ShowPsFcIdState(ulFcid)  显示流控点状态信息          \n");
+    PS_PRINTF("AT_ShowPsEntityInfo         ????????????????            \n");
+    PS_PRINTF("AT_ShowPsFcIdState(ulFcid)  ??????????????????          \n");
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("UART软调信息                                            \n");
+    PS_PRINTF("UART????????                                            \n");
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("AT_ShowHsUartConfigInfo     显示HSUART的配置信息        \n");
-    PS_PRINTF("AT_ShowHsUartNvStats        显示HSUART的NV读写统计信息  \n");
-    PS_PRINTF("AT_ShowHsUartIoctlStats     显示HSUART的IOCTL统计信息   \n");
-    PS_PRINTF("AT_ShowHsUartDataStats      显示HSUART的数据统计信息    \n");
-    PS_PRINTF("AT_ShowHsUartFcState        显示HSUART的流控状态信息    \n");
+    PS_PRINTF("AT_ShowHsUartConfigInfo     ????HSUART??????????        \n");
+    PS_PRINTF("AT_ShowHsUartNvStats        ????HSUART??NV????????????  \n");
+    PS_PRINTF("AT_ShowHsUartIoctlStats     ????HSUART??IOCTL????????   \n");
+    PS_PRINTF("AT_ShowHsUartDataStats      ????HSUART??????????????    \n");
+    PS_PRINTF("AT_ShowHsUartFcState        ????HSUART??????????????    \n");
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("MODEM软调信息                                           \n");
+    PS_PRINTF("MODEM????????                                           \n");
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("AT_ShowModemDataStats       显示MODEM的数据统计信息     \n");
+    PS_PRINTF("AT_ShowModemDataStats       ????MODEM??????????????     \n");
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("其他软调信息                                            \n");
+    PS_PRINTF("????????????                                            \n");
     PS_PRINTF("********************************************************\n");
-    PS_PRINTF("AT_ShowResetStatsInfo       显示AT复位状态信息          \n");
-    PS_PRINTF("AT_ShowAllClientState       查看端口状态信息            \n");
-    PS_PRINTF("AT_ShowClientCtxInfo        查看Client配置的上下文信息  \n");
-    PS_PRINTF("AT_ShowIPv6IIDMgrInfo       查看IPv6接口ID管理信息      \n");
+    PS_PRINTF("AT_ShowResetStatsInfo       ????AT????????????          \n");
+    PS_PRINTF("AT_ShowAllClientState       ????????????????            \n");
+    PS_PRINTF("AT_ShowClientCtxInfo        ????Client????????????????  \n");
+    PS_PRINTF("AT_ShowIPv6IIDMgrInfo       ????IPv6????ID????????      \n");
 
     return;
 }
@@ -967,7 +967,7 @@ VOS_VOID AT_ShowCurrentDataSys(VOS_UINT16 usModemId)
     pstDataSystemStatus = &(g_stAtCommCtx.stPsCtx.astDataSystemStatus[usModemId]);
 
     PS_PRINTF("====================================\r\n");
-    PS_PRINTF("         AT系统域状态信息           \r\n");
+    PS_PRINTF("         AT??????????????           \r\n");
     PS_PRINTF("====================================\r\n");
     PS_PRINTF("CellularPowerState:      %d\r\n", pstDataSystemStatus->bCellularPowerState);
     PS_PRINTF("CellularRoamingStatus:   %d\r\n", pstDataSystemStatus->bCellularRoamingStatus);

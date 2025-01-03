@@ -9,7 +9,7 @@ extern "C" {
 
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include "mac_ie.h"
 #include "mac_regdomain.h"
@@ -29,11 +29,11 @@ extern "C" {
 #define THIS_FILE_ID OAM_FILE_ID_HMAC_CHAN_MGMT_C
 
 /*****************************************************************************
-  2 全局变量定义
+  2 ????????????
 *****************************************************************************/
-#define HMAC_CENTER_FREQ_2G_40M_OFFSET    2   /* 中心频点相对于主信道idx的偏移量 */
-#define HMAC_AFFECTED_CH_IDX_OFFSET       5   /* 2.4GHz下，40MHz带宽所影响的信道半径，中心频点 +/- 5个信道 */
-/* 5G频段 信道与中心频率映射 */
+#define HMAC_CENTER_FREQ_2G_40M_OFFSET    2   /* ????????????????????idx???????? */
+#define HMAC_AFFECTED_CH_IDX_OFFSET       5   /* 2.4GHz????40MHz?????????????????????????????? +/- 5?????? */
+/* 5G???? ?????????????????? */
 OAL_CONST mac_freq_channel_map_stru g_ast_freq_map_5g[MAC_CHANNEL_FREQ_5_BUTT] =
 {
     { 5180, 36, 0},
@@ -68,7 +68,7 @@ OAL_CONST mac_freq_channel_map_stru g_ast_freq_map_5g[MAC_CHANNEL_FREQ_5_BUTT] =
     { 4980, 196, 28},
 };
 
-/* 2.4G频段 信道与中心频率映射 */
+/* 2.4G???? ?????????????????? */
 OAL_CONST mac_freq_channel_map_stru g_ast_freq_map_2g[MAC_CHANNEL_FREQ_2_BUTT] =
 {
     { 2412, 1, 0},
@@ -88,13 +88,13 @@ OAL_CONST mac_freq_channel_map_stru g_ast_freq_map_2g[MAC_CHANNEL_FREQ_2_BUTT] =
 };
 
 /*****************************************************************************
-  3 函数声明
+  3 ????????
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
 OAL_STATIC oal_void hmac_chan_stop_40M_recovery_timer(mac_vap_stru *pst_mac_vap);
 #endif
 /*****************************************************************************
-  4 函数实现
+  4 ????????
 *****************************************************************************/
 
 oal_uint32 hmac_dump_chan(mac_vap_stru *pst_mac_vap, oal_uint8* puc_param)
@@ -150,7 +150,7 @@ oal_uint32 hmac_send_ht_notify_chan_width(mac_vap_stru *pst_mac_vap, oal_uint8 *
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    /* 申请ht_notify_chan_width 帧空间 */
+    /* ????ht_notify_chan_width ?????? */
     pst_netbuf = (oal_netbuf_stru *)OAL_MEM_NETBUF_ALLOC(OAL_NORMAL_NETBUF, MAC_80211_FRAME_LEN + MAC_HT_NOTIFY_CHANNEL_WIDTH_LEN, OAL_NETBUF_PRIORITY_MID);
     if(OAL_PTR_NULL == pst_netbuf)
     {
@@ -158,13 +158,13 @@ oal_uint32 hmac_send_ht_notify_chan_width(mac_vap_stru *pst_mac_vap, oal_uint8 *
        return OAL_ERR_CODE_ALLOC_MEM_FAIL;
     }
 
-    /* 封装SA Query request帧*/
+    /* ????SA Query request??*/
     OAL_MEMZERO(oal_netbuf_cb(pst_netbuf), OAL_NETBUF_CB_SIZE());
     us_frame_len = hmac_encap_notify_chan_width(pst_mac_vap, (oal_uint8 *)OAL_NETBUF_HEADER(pst_netbuf), puc_data);
 
-    pst_tx_ctl = (mac_tx_ctl_stru *)oal_netbuf_cb(pst_netbuf); /* 获取cb结构体 */
-    pst_tx_ctl->us_mpdu_len     = us_frame_len;               /* dmac发送需要的mpdu长度 */
-    pst_tx_ctl->us_tx_user_idx  = MAC_INVALID_USER_ID;        /* 发送完成需要获取user结构体 */
+    pst_tx_ctl = (mac_tx_ctl_stru *)oal_netbuf_cb(pst_netbuf); /* ????cb?????? */
+    pst_tx_ctl->us_mpdu_len     = us_frame_len;               /* dmac??????????mpdu???? */
+    pst_tx_ctl->us_tx_user_idx  = MAC_INVALID_USER_ID;        /* ????????????????user?????? */
     oal_netbuf_put(pst_netbuf, us_frame_len);
 
     /* Buffer this frame in the Memory Queue for transmission */
@@ -194,7 +194,7 @@ oal_void  hmac_chan_multi_switch_to_20MHz_ap(hmac_vap_stru *pst_hmac_vap)
             "{hmac_chan_multi_switch_to_20MHz_ap::bit_2040_channel_switch_prohibited=%d}",
             pst_hmac_vap->en_2040_switch_prohibited);
 
-    /* 如果不允许切换带宽，则直接返回 */
+    /* ?????????????????????????????? */
     if (OAL_TRUE == pst_hmac_vap->en_2040_switch_prohibited)
     {
         return;
@@ -230,7 +230,7 @@ oal_void  hmac_chan_multi_switch_to_20MHz_ap(hmac_vap_stru *pst_hmac_vap)
         return;
     }
 
-    /* 遍历device下所有vap，设置VAP信道参数，准备切换至20MHz运行 */
+    /* ????device??????vap??????VAP????????????????????20MHz???? */
     for (uc_vap_idx = 0; uc_vap_idx < pst_device->uc_vap_num; uc_vap_idx++)
     {
         pst_mac_vap = (mac_vap_stru *)mac_res_get_mac_vap(pst_device->auc_vap_id[uc_vap_idx]);
@@ -252,7 +252,7 @@ oal_void  hmac_chan_multi_switch_to_20MHz_ap(hmac_vap_stru *pst_hmac_vap)
             continue;
         }
 
-        /* 40M切20M前记录40M带宽，40M恢复定时器将会使用这个信道进行恢复 */
+        /* 40M??20M??????40M??????40M?????????????????????????????????? */
         pst_hmac_vap_iter->en_40M_bandwidth = pst_mac_vap->st_channel.en_bandwidth;
 #endif
 
@@ -276,12 +276,12 @@ OAL_STATIC oal_void  hmac_chan_initiate_switch_to_new_channel(mac_vap_stru *pst_
     dmac_set_ch_switch_info_stru  *pst_ch_switch_info;
     mac_device_stru               *pst_mac_device;
 
-    /* AP准备切换信道 */
+    /* AP???????????? */
     pst_mac_vap->st_ch_switch_info.en_ch_switch_status    = WLAN_CH_SWITCH_STATUS_1;
     pst_mac_vap->st_ch_switch_info.uc_announced_channel   = uc_channel;
     pst_mac_vap->st_ch_switch_info.en_announced_bandwidth = en_bandwidth;
 
-    /* 在Beacon帧中添加Channel Switch Announcement IE */
+    /* ??Beacon????????Channel Switch Announcement IE */
     pst_mac_vap->st_ch_switch_info.en_csa_present_in_bcn  = OAL_TRUE;
 
     OAM_INFO_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_2040,
@@ -295,7 +295,7 @@ OAL_STATIC oal_void  hmac_chan_initiate_switch_to_new_channel(mac_vap_stru *pst_
                        "{hmac_chan_initiate_switch_to_new_channel::pst_mac_device null.}");
         return;
     }
-    /* 申请事件内存 */
+    /* ???????????? */
     pst_event_mem = FRW_EVENT_ALLOC(OAL_SIZEOF(dmac_set_ch_switch_info_stru));
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
     {
@@ -306,7 +306,7 @@ OAL_STATIC oal_void  hmac_chan_initiate_switch_to_new_channel(mac_vap_stru *pst_
 
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
                     FRW_EVENT_TYPE_WLAN_CTX,
                     DMAC_WLAN_CTX_EVENT_SUB_TYPE_SWITCH_TO_NEW_CHAN,
@@ -316,7 +316,7 @@ OAL_STATIC oal_void  hmac_chan_initiate_switch_to_new_channel(mac_vap_stru *pst_
                     pst_mac_vap->uc_device_id,
                     pst_mac_vap->uc_vap_id);
 
-    /* 填写事件payload */
+    /* ????????payload */
     pst_ch_switch_info = (dmac_set_ch_switch_info_stru *)pst_event->auc_event_data;
     pst_ch_switch_info->en_ch_switch_status    = WLAN_CH_SWITCH_STATUS_1;
     pst_ch_switch_info->uc_announced_channel   = uc_channel;
@@ -326,7 +326,7 @@ OAL_STATIC oal_void  hmac_chan_initiate_switch_to_new_channel(mac_vap_stru *pst_
     pst_ch_switch_info->uc_csa_vap_cnt         = pst_mac_device->uc_csa_vap_cnt;
 
 
-    /* 分发事件 */
+    /* ???????? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
@@ -336,7 +336,7 @@ OAL_STATIC oal_void  hmac_chan_initiate_switch_to_new_channel(mac_vap_stru *pst_
         return;
     }
 
-    /* 释放事件 */
+    /* ???????? */
     FRW_EVENT_FREE(pst_event_mem);
 }
 
@@ -373,7 +373,7 @@ oal_void hmac_dfs_set_channel(mac_vap_stru *pst_mac_vap, oal_uint8 uc_channel)
 
     pst_mac_device->uc_csa_vap_cnt = 0;
 
-    /* 遍历device下所有ap，设置ap信道参数，发送CSA帧，准备切换至新信道运行 */
+    /* ????device??????ap??????ap??????????????CSA???????????????????????? */
     for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
     {
         pst_vap = (mac_vap_stru *)mac_res_get_mac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -384,7 +384,7 @@ oal_void hmac_dfs_set_channel(mac_vap_stru *pst_mac_vap, oal_uint8 uc_channel)
             continue;
         }
 
-        /* 只有running AP需要发送CSA帧 */
+        /* ????running AP????????CSA?? */
         if ((WLAN_VAP_MODE_BSS_AP == pst_vap->en_vap_mode) &&
             (MAC_VAP_STATE_UP     == pst_vap->en_vap_state))
         {
@@ -433,7 +433,7 @@ oal_void  hmac_chan_multi_switch_to_new_channel(mac_vap_stru *pst_mac_vap, oal_u
 
     pst_mac_device->uc_csa_vap_cnt = 0;
 
-    /* 遍历device下所有ap，设置ap信道参数，发送CSA帧，准备切换至新信道运行 */
+    /* ????device??????ap??????ap??????????????CSA???????????????????????? */
     for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
     {
         pst_vap = (mac_vap_stru *)mac_res_get_mac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
@@ -444,16 +444,16 @@ oal_void  hmac_chan_multi_switch_to_new_channel(mac_vap_stru *pst_mac_vap, oal_u
             continue;
         }
 
-        /* 只有running AP需要发送CSA帧 */
+        /* ????running AP????????CSA?? */
         if ((WLAN_VAP_MODE_BSS_AP == pst_vap->en_vap_mode) &&
             (MAC_VAP_STATE_UP     == pst_vap->en_vap_state))
         {
             pst_mac_device->uc_csa_vap_cnt++;
             hmac_chan_initiate_switch_to_new_channel(pst_vap, uc_channel, en_bandwidth);
         }
-        else  /* 其它站点只需要更新信道信息 */
+        else  /* ?????????????????????????? */
         {
-            /* 更新VAP下的主20MHz信道号、带宽模式、信道索引 */
+            /* ????VAP??????20MHz?????????????????????????? */
             pst_vap->st_channel.uc_chan_number = uc_channel;
             pst_vap->st_channel.uc_idx         = uc_chan_idx;
             pst_vap->st_channel.en_bandwidth   = en_bandwidth;
@@ -486,7 +486,7 @@ oal_void  hmac_chan_multi_switch_to_new_channel(mac_vap_stru *pst_mac_vap, oal_u
         return;
     }
 
-    /* 遍历device下所有ap，设置ap信道参数，准备切换至新信道运行 */
+    /* ????device??????ap??????ap?????????????????????????????? */
     for (uc_vap_idx = 0; uc_vap_idx < pst_device->uc_vap_num; uc_vap_idx++)
     {
         pst_ap = (mac_vap_stru *)mac_res_get_mac_vap(pst_device->auc_vap_id[uc_vap_idx]);
@@ -497,7 +497,7 @@ oal_void  hmac_chan_multi_switch_to_new_channel(mac_vap_stru *pst_mac_vap, oal_u
             continue;
         }
 
-        /* 只更新AP侧的信道切换信息 */
+        /* ??????AP???????????????? */
         if (WLAN_VAP_MODE_BSS_AP != pst_ap->en_vap_mode)
         {
             continue;
@@ -527,7 +527,7 @@ oal_void  hmac_chan_do_sync(mac_vap_stru *pst_mac_vap, dmac_set_chan_stru *pst_s
     oal_uint8                 uc_idx;
 
     hmac_dump_chan(pst_mac_vap, (oal_uint8*)pst_set_chan);
-    /* 更新VAP下的主20MHz信道号、带宽模式、信道索引 */
+    /* ????VAP??????20MHz?????????????????????????? */
     ul_ret = mac_get_channel_idx_from_num(pst_mac_vap->st_channel.en_band, pst_set_chan->st_channel.uc_chan_number, &uc_idx);
     if (OAL_SUCC != ul_ret)
     {
@@ -541,7 +541,7 @@ oal_void  hmac_chan_do_sync(mac_vap_stru *pst_mac_vap, dmac_set_chan_stru *pst_s
     pst_mac_vap->st_channel.uc_idx         = uc_idx;
 
 
-    /* 申请事件内存 */
+    /* ???????????? */
     pst_event_mem = FRW_EVENT_ALLOC(OAL_SIZEOF(dmac_set_chan_stru));
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
     {
@@ -551,7 +551,7 @@ oal_void  hmac_chan_do_sync(mac_vap_stru *pst_mac_vap, dmac_set_chan_stru *pst_s
 
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
                     FRW_EVENT_TYPE_WLAN_CTX,
                     DMAC_WALN_CTX_EVENT_SUB_TYPR_SELECT_CHAN,
@@ -563,7 +563,7 @@ oal_void  hmac_chan_do_sync(mac_vap_stru *pst_mac_vap, dmac_set_chan_stru *pst_s
 
     oal_memcopy(frw_get_event_payload(pst_event_mem), (oal_uint8 *)pst_set_chan, OAL_SIZEOF(dmac_set_chan_stru));
 
-    /* 分发事件 */
+    /* ???????? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
@@ -573,7 +573,7 @@ oal_void  hmac_chan_do_sync(mac_vap_stru *pst_mac_vap, dmac_set_chan_stru *pst_s
         return;
     }
 
-    /* 释放事件 */
+    /* ???????? */
     FRW_EVENT_FREE(pst_event_mem);
 }
 
@@ -623,7 +623,7 @@ oal_void  hmac_chan_multi_select_channel_mac(mac_vap_stru *pst_mac_vap, oal_uint
         return;
     }
 
-    /* 遍历device下所有vap， */
+    /* ????device??????vap?? */
     for (uc_vap_idx = 0; uc_vap_idx < pst_device->uc_vap_num; uc_vap_idx++)
     {
         pst_vap = (mac_vap_stru *)mac_res_get_mac_vap(pst_device->auc_vap_id[uc_vap_idx]);
@@ -673,7 +673,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_this_40MHz_set_possible(
 
     if (MAC_SCA == en_sec_chan_offset)
     {
-        /* 计算次信道索引 */
+        /* ?????????????? */
         if (uc_num_supp_chan > uc_pri_chan_idx + uc_sec_ch_idx_offset)
         {
             uc_sec_chan_idx = uc_pri_chan_idx + uc_sec_ch_idx_offset;
@@ -686,17 +686,17 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_this_40MHz_set_possible(
         en_network_type = HMAC_NETWORK_SCA;
         en_allowed_bit  = HMAC_SCA_ALLOWED;
 
-        /* 计算受影响的信道下限索引 */
+        /* ???????????????????????? */
         uc_affected_chan_lo = (uc_pri_chan_idx >= uc_affected_ch_idx_offset) ?
                         (uc_pri_chan_idx - uc_affected_ch_idx_offset) : 0;
 
-        /* 计算受影响的信道上限索引 */
+        /* ???????????????????????? */
         uc_affected_chan_hi = (uc_num_supp_chan > uc_sec_chan_idx + uc_affected_ch_idx_offset) ?
                         (uc_sec_chan_idx + uc_affected_ch_idx_offset) : (uc_num_supp_chan - 1);
     }
     else if (MAC_SCB == en_sec_chan_offset)
     {
-        /* 计算次信道索引 */
+        /* ?????????????? */
         if (uc_pri_chan_idx >= uc_sec_ch_idx_offset)
         {
             uc_sec_chan_idx = uc_pri_chan_idx - uc_sec_ch_idx_offset;
@@ -709,11 +709,11 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_this_40MHz_set_possible(
         en_network_type = HMAC_NETWORK_SCB;
         en_allowed_bit  = HMAC_SCB_ALLOWED;
 
-        /* 计算受影响的信道下限索引 */
+        /* ???????????????????????? */
         uc_affected_chan_lo = (uc_sec_chan_idx >= uc_affected_ch_idx_offset) ?
                         (uc_sec_chan_idx - uc_affected_ch_idx_offset) : 0;
 
-        /* 计算受影响的信道上限索引 */
+        /* ???????????????????????? */
         uc_affected_chan_hi = (uc_num_supp_chan > uc_pri_chan_idx + uc_affected_ch_idx_offset) ?
                         (uc_pri_chan_idx + uc_affected_ch_idx_offset) : (uc_num_supp_chan - 1);
     }
@@ -733,7 +733,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_this_40MHz_set_possible(
         return OAL_FALSE;
     }
 
-    /* 对于给定的"主信道 + 次信道偏移量"所波及的范围内(中心频点 +/- 5个信道)，判断能否建立40MHz BSS */
+    /* ??????????"?????? + ????????????"??????????????(???????? +/- 5??????)??????????????40MHz BSS */
     for (uc_ch_idx = uc_affected_chan_lo; uc_ch_idx <= uc_affected_chan_hi; uc_ch_idx++)
     {
         ul_ret = mac_is_channel_idx_valid(en_band, uc_ch_idx);
@@ -744,13 +744,13 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_this_40MHz_set_possible(
 
         pst_ap_channel_list = &(pst_mac_device->st_ap_channel_list[uc_ch_idx]);
 
-        /* 如果这条信道上存在BSS */
+        /* ??????????????????BSS */
         if (MAC_CH_TYPE_NONE != pst_ap_channel_list->en_ch_type)
         {
-            /* 累加这条信道上扫描到的BSS个数 */
+            /* ??????????????????????BSS???? */
             pst_chan_scan_report[uc_pri_chan_idx].aus_num_networks[en_network_type] += pst_ap_channel_list->us_num_networks;
 
-            /* 新BSS的主信道可以与已有的20/40MHz BSS的主信道重合 */
+            /* ??BSS????????????????????20/40MHz BSS???????????? */
             if (uc_ch_idx == uc_pri_chan_idx)
             {
                 if (MAC_CH_TYPE_PRIMARY == pst_ap_channel_list->en_ch_type)
@@ -759,7 +759,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_this_40MHz_set_possible(
                 }
             }
 
-            /* 新BSS的次信道可以与已有的20/40MHz BSS的次信道重合 */
+            /* ??BSS????????????????????20/40MHz BSS???????????? */
             if (uc_ch_idx == uc_sec_chan_idx)
             {
                 if (MAC_CH_TYPE_SECONDARY == pst_ap_channel_list->en_ch_type)
@@ -772,13 +772,13 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_this_40MHz_set_possible(
         }
     }
 
-    /* 如果20/40MHz共存没有使能，则认为可以建立40MHz BSS，除非用户设置了"40MHz不允许"位 */
+    /* ????20/40MHz????????????????????????????40MHz BSS????????????????"40MHz??????"?? */
     if ((OAL_FALSE == mac_mib_get_2040BSSCoexistenceManagementSupport(pst_mac_vap)) &&
         (OAL_FALSE == mac_mib_get_FortyMHzIntolerant(pst_mac_vap)))
     {
         en_flag_2040_op_permitted = OAL_TRUE;
     }
-    /* 5GHz情况下不关心20/40M共存配置和40M不允许设置，一定建立40MHz BSS */
+    /* 5GHz????????????20/40M??????????40M????????????????????40MHz BSS */
     else if (WLAN_BAND_5G == en_band)
     {
         en_flag_2040_op_permitted = OAL_TRUE;
@@ -816,14 +816,14 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_get_2040_op_chan_list(
 
     for (uc_chan_idx = 0; uc_chan_idx < uc_num_supp_chan; uc_chan_idx++)
     {
-        /* 判断能否建立SCA类型的40MHz BSS */
+        /* ????????????SCA??????40MHz BSS */
         en_flag = hmac_chan_is_this_40MHz_set_possible(pst_mac_device, pst_mac_vap, uc_chan_idx, MAC_SCA, pst_chan_scan_report);
         if (OAL_TRUE == en_flag)
         {
             en_fortyMHz_poss = OAL_TRUE;
         }
 
-        /* 判断能否建立SCB类型的40MHz BSS */
+        /* ????????????SCB??????40MHz BSS */
         en_flag = hmac_chan_is_this_40MHz_set_possible(pst_mac_device, pst_mac_vap, uc_chan_idx, MAC_SCB, pst_chan_scan_report);
         if (OAL_TRUE == en_flag)
         {
@@ -831,7 +831,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_get_2040_op_chan_list(
         }
     }
 
-    /* 2.4GHz下，如果"40MHz不允许"位是否被设置，则不允许建立40MHz BSS */
+    /* 2.4GHz????????"40MHz??????"??????????????????????????40MHz BSS */
     if (WLAN_BAND_2G == pst_mac_vap->st_channel.en_band)
     {
         if ((OAL_TRUE == pst_mac_device->en_40MHz_intol_bit_recd) ||
@@ -903,12 +903,12 @@ OAL_STATIC oal_uint32 hmac_chan_prepare_for_40M_recovery(hmac_vap_stru *pst_hmac
     }
     pst_mac_device->en_40MHz_intol_bit_recd = OAL_FALSE;
 
-    //st_ap_channel_list信道?????????????
+    //st_ap_channel_list?????????????????
 
-    /* 设置VAP带宽模式为20MHz */
+    /* ????VAP??????????20MHz */
     pst_hmac_vap->st_vap_base_info.st_channel.en_bandwidth = en_bandwidth;
 
-    /* 设置带宽切换状态变量，表明在下一个DTIM时刻切换至20MHz运行 */
+    /* ??????????????????????????????????DTIM??????????20MHz???? */
     pst_hmac_vap->st_vap_base_info.st_ch_switch_info.en_bw_switch_status = WLAN_BW_SWITCH_20_TO_40;
 
     return OAL_SUCC;
@@ -929,8 +929,8 @@ OAL_STATIC oal_uint32  hmac_chan_40M_recovery_timeout_fn(void *p_arg)
         return OAL_FAIL;
     }
 
-    /* 清除20M相关的信息 */
-    if (pst_hmac_vap->en_40M_bandwidth == WLAN_BAND_WIDTH_20M) /* 如果ap初始带宽为20M, 则*/
+    /* ????20M?????????? */
+    if (pst_hmac_vap->en_40M_bandwidth == WLAN_BAND_WIDTH_20M) /* ????ap??????????20M, ??*/
     {
         OAM_WARNING_LOG0(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_2040,
                 "{hmac_chan_40M_recovery_timeout_fn::no need 40M recovery because init 20M.}");
@@ -970,7 +970,7 @@ oal_void hmac_chan_start_40M_recovery_timer(mac_vap_stru *pst_mac_vap)
     hmac_vap_stru                 *pst_hmac_vap;
     oal_uint32                     ul_timeout;
 
-    /* 根据发起扫描的vap id获取hmac vap */
+    /* ??????????????vap id????hmac vap */
     pst_hmac_vap = mac_res_get_hmac_vap(pst_mac_vap->uc_vap_id);
     if (OAL_PTR_NULL == pst_hmac_vap)
     {
@@ -1254,7 +1254,7 @@ oal_uint32  hmac_chan_select_channel_for_operation(
 
     hmac_chan_init_chan_scan_report(pst_mac_device, pst_chan_scan_report, uc_num_supp_chan);
 
-    /* 如自动信道选择没有开启，则获取用户选择的主信道号，以及带宽模式 */
+    /* ?????????????????????????????????????????????????????????????? */
     if (OAL_FALSE == mac_device_is_auto_chan_sel_enabled(pst_mac_device))
     {
 #ifdef _PRE_WLAN_FEATURE_DBAC
@@ -1285,13 +1285,13 @@ oal_uint32  hmac_chan_select_channel_for_operation(
                       uc_user_chan_idx, en_user_chan_offset);
     }
 
-    /* 判断在当前环境下是否能够建立40MHz BSS */
+    /* ????????????????????????????40MHz BSS */
     en_fortyMHz_poss = hmac_chan_get_40MHz_possibility(pst_mac_vap, pst_chan_scan_report);
 
-    /* 用户选择了主信道 */
+    /* ???????????????? */
     if (uc_user_chan_idx != 0xFF)
     {
-        /* 如果能够建立40MHz BSS，并且用户也希望建立40MHz */
+        /* ????????????40MHz BSS????????????????????40MHz */
         if ((OAL_TRUE == en_fortyMHz_poss) && (MAC_SCN != en_user_chan_offset))
         {
             if (MAC_SCA == en_user_chan_offset)
@@ -1311,7 +1311,7 @@ oal_uint32  hmac_chan_select_channel_for_operation(
 
         uc_least_busy_chan_idx = uc_user_chan_idx;
     }
-    /* 用户没有选择信道，自动选择一条最不繁忙的信道(对) */
+    /* ????????????????????????????????????????????(??) */
     else
     {
         for (uc_chan_idx = 0; uc_chan_idx < uc_num_supp_chan; uc_chan_idx++)
@@ -1321,21 +1321,21 @@ oal_uint32  hmac_chan_select_channel_for_operation(
                 continue;
             }
 
-            /* 判断主信道索引号是否有效 */
+            /* ???????????????????????? */
             ul_ret = mac_is_channel_idx_valid(pst_mac_vap->st_channel.en_band, uc_chan_idx);
             if (OAL_SUCC != ul_ret)
             {
                 continue;
             }
 
-            /* 能够建立40MHz BSS */
+            /* ????????40MHz BSS */
             if ((OAL_TRUE == en_fortyMHz_poss))
             {
-                /* 判断主信道上(右)面的信道是否可作为次信道 */
+                /* ????????????(??)???????????????????????? */
                 en_rslt = hmac_chan_is_40MHz_sca_allowed(pst_mac_vap, pst_chan_scan_report, uc_chan_idx, en_user_chan_offset);
                 if (OAL_TRUE == en_rslt)
                 {
-                    /* 如果这条信道最不繁忙，则选择这条信道作为"当前最不繁忙信道" */
+                    /* ????????????????????????????????????????"????????????????" */
                     if (pst_chan_scan_report[uc_chan_idx].aus_num_networks[HMAC_NETWORK_SCA] < us_least_networks)
                     {
                         us_least_networks      = pst_chan_scan_report[uc_chan_idx].aus_num_networks[HMAC_NETWORK_SCA];
@@ -1344,11 +1344,11 @@ oal_uint32  hmac_chan_select_channel_for_operation(
                     }
                 }
 
-                /* 判断主信道下(左)面的信道是否可作为次信道 */
+                /* ????????????(??)???????????????????????? */
                 en_rslt = hmac_chan_is_40MHz_scb_allowed(pst_mac_vap, pst_chan_scan_report, uc_chan_idx, en_user_chan_offset);
                 if (OAL_TRUE == en_rslt)
                 {
-                    /* 如果这条信道最不繁忙，则选择这条信道作为"当前最不繁忙信道" */
+                    /* ????????????????????????????????????????"????????????????" */
                     if (pst_chan_scan_report[uc_chan_idx].aus_num_networks[HMAC_NETWORK_SCB] < us_least_networks)
                     {
                         us_least_networks      = pst_chan_scan_report[uc_chan_idx].aus_num_networks[HMAC_NETWORK_SCB];
@@ -1357,14 +1357,14 @@ oal_uint32  hmac_chan_select_channel_for_operation(
                     }
                 }
             }
-            /* 不能够建立40MHz BSS */
+            /* ??????????40MHz BSS */
             else
             {
-                /* 获取当前信道邻近的BSS个数 */
+                /* ??????????????????BSS???? */
                 us_cumulative_networks = hmac_chan_get_cumulative_networks(pst_mac_device,
                                 pst_mac_vap->st_channel.en_band, uc_chan_idx);
 
-                /* 选择邻近BSS最少的一条信道作为"当前最不繁忙信道" */
+                /* ????????BSS??????????????????"????????????????" */
                 if (us_cumulative_networks < us_least_networks)
                 {
                     us_least_networks      = us_cumulative_networks;
@@ -1402,7 +1402,7 @@ oal_void  hmac_chan_reval_status(mac_device_stru *pst_mac_device, mac_vap_stru *
         return;
     }
 
-    /* 如果AP已经准备进行信道切换，则直接返回，不做任何处理 */
+    /* ????AP?????????????????????????????????????????????? */
     if (WLAN_CH_SWITCH_STATUS_1 == pst_mac_vap->st_ch_switch_info.en_ch_switch_status)
     {
         return;
@@ -1423,13 +1423,13 @@ oal_void  hmac_chan_reval_status(mac_device_stru *pst_mac_device, mac_vap_stru *
         return;
     }
 
-    /* 主20MHz信道改变(按照目前的算法，主信道号应该不会改变，可能会改变的只是带宽模式) */
+    /* ??20MHz????????(??????????????????????????????????????????????????????????????) */
     if (uc_new_channel != pst_mac_vap->st_channel.uc_chan_number)
     {
         pst_mac_vap->st_ch_switch_info.uc_ch_switch_cnt = WLAN_CHAN_SWITCH_DEFAULT_CNT;
         hmac_chan_multi_switch_to_new_channel(pst_mac_vap, uc_new_channel, en_new_bandwidth);
     }
-    /* 主20MHz信道不变，次20MHz or 40MHz信道改变 */
+    /* ??20MHz????????????20MHz or 40MHz???????? */
     else if (en_new_bandwidth != pst_mac_vap->st_channel.en_bandwidth)
     {
         hmac_chan_multi_select_channel_mac(pst_mac_vap, pst_mac_vap->st_channel.uc_chan_number, en_new_bandwidth);
@@ -1450,7 +1450,7 @@ oal_void  hmac_chan_reval_bandwidth_sta(mac_vap_stru *pst_mac_vap, oal_uint32 ul
         return;
     }
 
-    /* 需要进行带宽切换 */
+    /* ???????????????? */
     if (MAC_BW_CHANGE & ul_change)
     {
         hmac_chan_multi_select_channel_mac(pst_mac_vap, pst_mac_vap->st_channel.uc_chan_number, pst_mac_vap->st_channel.en_bandwidth);
@@ -1465,7 +1465,7 @@ OAL_STATIC oal_void  hmac_chan_ctrl_machw_tx(mac_vap_stru *pst_mac_vap, oal_uint
     frw_event_stru           *pst_event;
     oal_uint32                ul_ret;
 
-    /* 申请事件内存 */
+    /* ???????????? */
     pst_event_mem = FRW_EVENT_ALLOC(0);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
     {
@@ -1475,7 +1475,7 @@ OAL_STATIC oal_void  hmac_chan_ctrl_machw_tx(mac_vap_stru *pst_mac_vap, oal_uint
 
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
                     FRW_EVENT_TYPE_WLAN_CTX,
                     uc_sub_type,
@@ -1485,7 +1485,7 @@ OAL_STATIC oal_void  hmac_chan_ctrl_machw_tx(mac_vap_stru *pst_mac_vap, oal_uint
                     pst_mac_vap->uc_device_id,
                     pst_mac_vap->uc_vap_id);
 
-    /* 分发事件 */
+    /* ???????? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
@@ -1494,7 +1494,7 @@ OAL_STATIC oal_void  hmac_chan_ctrl_machw_tx(mac_vap_stru *pst_mac_vap, oal_uint
         return;
     }
 
-    /* 释放事件 */
+    /* ???????? */
     FRW_EVENT_FREE(pst_event_mem);
 }
 
@@ -1520,7 +1520,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_chan_check_channnel_avaible(
     oal_uint8    uc_num_supp_chan = mac_get_num_supp_channel(en_band);
     oal_uint32   ul_ret;
 
-    /* 取低有效信道 */
+    /* ???????????? */
     for (l_ch_idx = *puc_start_ch_idx; l_ch_idx < uc_num_supp_chan; l_ch_idx++)
     {
         ul_ret = mac_is_channel_idx_valid(en_band, (oal_uint8)l_ch_idx);
@@ -1536,7 +1536,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_chan_check_channnel_avaible(
         return OAL_FALSE;
     }
 
-    /* 取高有效信道 */
+    /* ???????????? */
     for (l_ch_idx = *puc_end_ch_idx; l_ch_idx >= 0; l_ch_idx--)
     {
         ul_ret = mac_is_channel_idx_valid(en_band, (oal_uint8)l_ch_idx);
@@ -1564,9 +1564,9 @@ OAL_STATIC OAL_INLINE oal_uint32  hmac_chan_get_affected_channels(
                 oal_uint8                           *puc_end_ch_idx)
 {
     oal_uint8    uc_num_supp_chan = mac_get_num_supp_channel(en_band);
-    oal_uint8    uc_pll_div_idx = 0;   /* 中心频点 */
+    oal_uint8    uc_pll_div_idx = 0;   /* ???????? */
 
-    /* 计算中心频点 */
+    /* ???????????? */
     if (WLAN_BAND_WIDTH_40PLUS == en_user_pref_bandwidth)
     {
         uc_pll_div_idx = uc_user_pri_ch_idx + HMAC_CENTER_FREQ_2G_40M_OFFSET;
@@ -1581,11 +1581,11 @@ OAL_STATIC OAL_INLINE oal_uint32  hmac_chan_get_affected_channels(
         return OAL_ERR_CODE_INVALID_CONFIG;
     }
 
-    /* 计算需要扫描的信道索引下限 */
+    /* ?????????????????????????? */
     *puc_start_ch_idx = (uc_pll_div_idx >= HMAC_AFFECTED_CH_IDX_OFFSET) ?
                     (uc_pll_div_idx - HMAC_AFFECTED_CH_IDX_OFFSET) : 0;
 
-    /* 计算需要扫描的信道索引上限 */
+    /* ?????????????????????????? */
     *puc_end_ch_idx   = (uc_num_supp_chan > uc_pll_div_idx + HMAC_AFFECTED_CH_IDX_OFFSET) ?
                     (uc_pll_div_idx + HMAC_AFFECTED_CH_IDX_OFFSET) : (uc_num_supp_chan - 1);
 
@@ -1600,7 +1600,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_scan_needed_for_multi_vap(
     mac_vap_stru   *pst_vap;
     oal_uint8       uc_vap_idx;
 
-    /* 第一个VAP(AP)启动前，可能需要进行信道扫描，直接返回 */
+    /* ??????VAP(AP)?????????????????????????????????????? */
     if (1 == pst_mac_device->uc_vap_num)
     {
         return OAL_TRUE;
@@ -1617,7 +1617,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_scan_needed_for_multi_vap(
             continue;
         }
 
-        /* 跳过本VAP */
+        /* ??????VAP */
         if (pst_vap->uc_vap_id == pst_mac_vap->uc_vap_id)
         {
             continue;
@@ -1647,7 +1647,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_chan_scan_needed(
     oal_uint32                      ul_ret;
 #endif
 
-    /* 5g频段没有20/40共存,如果开启，BSS启动时直接配置信道，不需要进行扫描，避免出错 */
+    /* 5g????????20/40????,??????????BSS???????????????????????????????????????????? */
     if ((OAL_TRUE == mac_mib_get_2040BSSCoexistenceManagementSupport(pst_mac_vap)) &&
         (WLAN_BAND_5G == en_band))
     {
@@ -1655,7 +1655,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_chan_scan_needed(
         return OAL_FALSE;
     }
 
-    /* 如果开启自动信道选择，则BSS启动时需要进行扫描 */
+    /* ????????????????????????BSS?????????????????? */
     if (OAL_TRUE == mac_device_is_auto_chan_sel_enabled(pst_mac_device))
     {
         OAM_INFO_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_SCAN, "{hmac_chan_is_chan_scan_needed::Auto Channel Selection in progress.}");
@@ -1686,9 +1686,9 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_chan_scan_needed(
     }
 
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
-    /* 进行信道扫描，当且仅当: */
-    /* (1) 20/40MHz共存使能 */
-    /* (2) 准备建立40MHz BSS */
+    /* ??????????????????????: */
+    /* (1) 20/40MHz???????? */
+    /* (2) ????????40MHz BSS */
     /* (3) 2.4GHz */
     if ((OAL_TRUE     == mac_mib_get_2040BSSCoexistenceManagementSupport(pst_mac_vap)) &&
         (OAL_TRUE     == mac_mib_get_FortyMHzOperationImplemented(pst_mac_vap))        &&
@@ -1703,7 +1703,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_chan_is_chan_scan_needed(
             return OAL_FALSE;
         }
 
-        /* 获取需要扫描的信道范围 */
+        /* ?????????????????????? */
         ul_ret = hmac_chan_get_affected_channels(en_band, uc_user_ch_idx, hmac_chan_get_user_pref_bandwidth(pst_mac_vap), puc_start_ch_idx, puc_end_ch_idx);
         if (OAL_SUCC != ul_ret)
         {
@@ -1730,7 +1730,7 @@ oal_uint32  hmac_start_bss_in_available_channel(hmac_vap_stru *pst_hmac_vap)
     hmac_ap_start_rsp_stru          st_ap_start_rsp;
     oal_uint32                      ul_ret;
 
-    /* 调用hmac_config_start_vap_event，启动BSS */
+    /* ????hmac_config_start_vap_event??????BSS */
     ul_ret = hmac_config_start_vap_event(&(pst_hmac_vap->st_vap_base_info), OAL_TRUE);
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
     {
@@ -1740,10 +1740,10 @@ oal_uint32  hmac_start_bss_in_available_channel(hmac_vap_stru *pst_hmac_vap)
         return ul_ret;
     }
 
-    /* 设置bssid */
+    /* ????bssid */
     mac_vap_set_bssid(&pst_hmac_vap->st_vap_base_info, pst_hmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
-    /* 入网优化，不同频段下的能力不一样 */
+    /* ???????????????????????????????? */
     if (WLAN_BAND_2G == pst_hmac_vap->st_vap_base_info.st_channel.en_band)
     {
         mac_mib_set_ShortPreambleOptionImplemented(&(pst_hmac_vap->st_vap_base_info), WLAN_LEGACY_11B_MIB_SHORT_PREAMBLE);
@@ -1755,10 +1755,10 @@ oal_uint32  hmac_start_bss_in_available_channel(hmac_vap_stru *pst_hmac_vap)
         mac_mib_set_SpectrumManagementRequired(&(pst_hmac_vap->st_vap_base_info), OAL_TRUE);
     }
 
-    /* 设置AP侧状态机为 UP */
+    /* ????AP?????????? UP */
     hmac_fsm_change_state(pst_hmac_vap, MAC_VAP_STATE_UP);
 
-    /* 将结果上报至sme */
+    /* ????????????sme */
     st_ap_start_rsp.en_result_code = HMAC_MGMT_SUCCESS;
     hmac_send_rsp_to_sme_ap(pst_hmac_vap, HMAC_AP_SME_START_RSP, (oal_uint8 *)&st_ap_start_rsp);
 
@@ -1782,7 +1782,7 @@ oal_uint32  hmac_chan_start_bss(hmac_vap_stru *pst_hmac_vap, mac_channel_stru *p
 
     pst_mac_vap = &(pst_hmac_vap->st_vap_base_info);
 
-    /* 获取mac device指针 */
+    /* ????mac device???? */
     pst_mac_device = mac_res_get_dev(pst_mac_vap->uc_device_id);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_device))
     {
@@ -1798,7 +1798,7 @@ oal_uint32  hmac_chan_start_bss(hmac_vap_stru *pst_hmac_vap, mac_channel_stru *p
 #ifdef _PRE_SUPPORT_ACS
     else // use acs-channel only if no channel input
     {
-        /* 使用acs选择的信道和带宽 */
+        /* ????acs???????????????? */
         if (MAC_ACS_SW_INIT == mac_get_acs_switch(pst_mac_device) || MAC_ACS_SW_BOTH == mac_get_acs_switch(pst_mac_device))
         {
             hmac_device_stru   *pst_hmac_device = hmac_res_get_mac_dev(pst_mac_device->uc_device_id);
@@ -1840,8 +1840,8 @@ oal_uint32  hmac_chan_start_bss(hmac_vap_stru *pst_hmac_vap, mac_channel_stru *p
                   st_prot_param.en_channel_idx, st_prot_param.en_bandwidth);
 
 #ifdef _PRE_WLAN_FEATURE_DBAC
-    /* 同时更改多个VAP的信道，此时需要强制清除记录 */
-    /* 若启动了DBAC，则按照原始流程进行 */
+    /* ????????????VAP???????????????????????????? */
+    /* ????????DBAC???????????????????? */
     if (!mac_is_dbac_enabled(pst_mac_device))
 #endif
     {
@@ -1897,10 +1897,10 @@ oal_uint32  hmac_chan_ch_av_chk_timeout_fn(void *p_arg)
         return OAL_SUCC;
     }
 
-    /* 继续进行信道扫描 */
+    /* ???????????????? */
     en_status = hmac_chan_do_channel_availability_check(pst_mac_device, pst_mac_vap, OAL_FALSE);
 
-    /* 如果信道扫描已完成，则选择一条信道(对)并启动BSS */
+    /* ??????????????????????????????????(??)??????BSS */
     if (MAC_CHNL_AV_CHK_COMPLETE == en_status)
     {
         hmac_chan_start_bss(pst_hmac_vap, OAL_PTR_NULL, WLAN_PROTOCOL_BUTT);
@@ -1926,7 +1926,7 @@ mac_chnl_av_chk_enum_uint8  hmac_chan_do_channel_availability_check(
     {
         if (en_first_time)
         {
-            /* 判断是否需要进行信道扫描 */
+            /* ???????????????????????? */
 	     en_need_for_scan = hmac_chan_is_chan_scan_needed(pst_mac_device, pst_mac_vap, &(pst_csi->uc_start_chan_idx), &(pst_csi->uc_end_chan_idx));
             if (OAL_FALSE == en_need_for_scan)
             {
@@ -1941,34 +1941,34 @@ mac_chnl_av_chk_enum_uint8  hmac_chan_do_channel_availability_check(
                               pst_csi->uc_start_chan_idx, pst_csi->uc_end_chan_idx);
             }
 
-            /* 初始化信道扫描索引，从第一条需要扫描的信道开始 */
+            /* ?????????????????????????????????????????????? */
             pst_mac_device->uc_ap_chan_idx = pst_csi->uc_start_chan_idx;
 
-            /* 清信道扫描结果列表 */
+            /* ?????????????????? */
             OAL_MEMZERO(pst_mac_device->st_ap_channel_list, OAL_SIZEOF(pst_mac_device->st_ap_channel_list));
 
-            /* 清'40MHz不允许位' */
+            /* ??'40MHz????????' */
             pst_mac_device->en_40MHz_intol_bit_recd = OAL_FALSE;
 
-            /* 当前信道下扫描到的BSS个数清零 */
+            /* ??????????????????BSS???????? */
             pst_mac_device->st_bss_id_list.us_num_networks = 0;
         }
         else
         {
-            /* 保存当前信道扫描到的BSS个数 */
+            /* ????????????????????BSS???? */
             pst_mac_device->st_ap_channel_list[pst_mac_device->uc_ap_chan_idx].us_num_networks =
                             pst_mac_device->st_bss_id_list.us_num_networks;
 
-            /* 清零，为扫描下一条信道做准备 */
+            /* ???????????????????????????? */
             pst_mac_device->st_bss_id_list.us_num_networks = 0;
 
-            /* 扫到最后一条信道，扫描结束 */
+            /* ?????????????????????????? */
             if (pst_mac_device->uc_ap_chan_idx == pst_csi->uc_end_chan_idx)
             {
                 en_scan_itr_over = OAL_TRUE;
             }
 
-            /* 本次扫描完成，要扫描的信道索引+1 */
+            /* ??????????????????????????????+1 */
             pst_mac_device->uc_ap_chan_idx++;
 
             if (pst_mac_device->uc_ap_chan_idx >= uc_num_supp_chan)
@@ -1994,14 +1994,14 @@ mac_chnl_av_chk_enum_uint8  hmac_chan_do_channel_availability_check(
         if (OAL_TRUE == hmac_chan_scan_availability(pst_mac_device,
                         &pst_mac_device->st_ap_channel_list[pst_mac_device->uc_ap_chan_idx]))
         {
-            /* 切换至当前信道 */
+            /* ?????????????? */
             OAM_INFO_LOG0(0, OAM_SF_2040, "hmac_chan_do_channel_availability_check");
             hmac_chan_sync(pst_mac_vap, uc_channel, WLAN_BAND_WIDTH_20M, OAL_TRUE);
 
-            /* 设置信道扫描超时时间 */
+            /* ???????????????????? */
             pst_mac_device->st_scan_params.us_scan_time = WLAN_DEFAULT_PASSIVE_SCAN_TIME;
 
-            /* 启动定时器 */
+            /* ?????????? */
             FRW_TIMER_CREATE_TIMER(&pst_mac_device->st_scan_timer,
                                    hmac_chan_ch_av_chk_timeout_fn,
                                    pst_mac_device->st_scan_params.us_scan_time,
@@ -2090,7 +2090,7 @@ oal_uint32  hmac_chan_restart_network_after_switch(mac_vap_stru *pst_mac_vap)
 
     OAM_INFO_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_2040, "{hmac_chan_restart_network_after_switch}");
 
-    /* 申请事件内存 */
+    /* ???????????? */
     pst_event_mem = FRW_EVENT_ALLOC(0);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
     {
@@ -2101,7 +2101,7 @@ oal_uint32  hmac_chan_restart_network_after_switch(mac_vap_stru *pst_mac_vap)
 
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    /* 填写事件头 */
+    /* ?????????? */
     FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
                     FRW_EVENT_TYPE_WLAN_CTX,
                     DMAC_WLAN_CTX_EVENT_SUB_TYPR_RESTART_NETWORK,
@@ -2111,7 +2111,7 @@ oal_uint32  hmac_chan_restart_network_after_switch(mac_vap_stru *pst_mac_vap)
                     pst_mac_vap->uc_device_id,
                     pst_mac_vap->uc_vap_id);
 
-    /* 分发事件 */
+    /* ???????? */
     ul_ret = frw_event_dispatch_event(pst_event_mem);
     if (OAL_SUCC != ul_ret)
     {
@@ -2195,13 +2195,13 @@ oal_uint32  hmac_chan_switch_to_new_chan_complete(frw_event_mem_stru *pst_event_
     pst_mac_vap->st_ch_switch_info.en_ch_switch_status = pst_set_chan->st_ch_switch_info.en_ch_switch_status;
     pst_mac_vap->st_ch_switch_info.en_bw_switch_status = pst_set_chan->st_ch_switch_info.en_bw_switch_status;
 
-    /* aput切完信道同步切信道的标志位,防止再有用户关联,把此变量又同步下去 */
+    /* aput??????????????????????????,????????????????,?????????????????? */
     pst_mac_vap->st_ch_switch_info.uc_ch_switch_cnt   = pst_set_chan->st_ch_switch_info.uc_ch_switch_cnt;
     pst_mac_vap->st_ch_switch_info.en_csa_present_in_bcn = pst_set_chan->st_ch_switch_info.en_csa_present_in_bcn;
 
 
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
-    /* 带宽已成功切换到40M, 停止40M恢复定时器 */
+    /* ????????????????40M, ????40M?????????? */
     if ((pst_mac_vap->st_channel.en_bandwidth > WLAN_BAND_WIDTH_20M) &&
          (WLAN_VAP_MODE_BSS_AP == pst_mac_vap->en_vap_mode))
     {

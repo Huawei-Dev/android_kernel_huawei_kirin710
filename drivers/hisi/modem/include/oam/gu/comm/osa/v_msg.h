@@ -199,9 +199,9 @@ typedef struct
 
 typedef struct
 {
-    VOS_UINT32 ulMailBoxCode;   /*邮箱编码*/
-    VOS_UINT32 ulFileID;        /*函数调用的文件ID*/
-    VOS_INT32 lLineNo;          /*函数调用的行号*/
+    VOS_UINT32 ulMailBoxCode;   /*????????*/
+    VOS_UINT32 ulFileID;        /*??????????????ID*/
+    VOS_INT32 lLineNo;          /*??????????????*/
 }VOS_DRVMB_MSG_PARA_STRU;
 
 #ifdef __DART__

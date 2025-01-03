@@ -47,7 +47,7 @@
  */
 
 /*****************************************************************************
-  1 头文件包含
+  1 ??????????
 *****************************************************************************/
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -150,15 +150,15 @@ bsp_log_swt_cfg_s  g_mod_peint_level_info[BSP_MODU_MAX]    =
 };
 
 /*****************************************************************************
-* 函 数 名  : bsp_log_module_cfg_get
+* ?? ?? ??  : bsp_log_module_cfg_get
 *
-* 功能描述  : 查询模块当前设置的打印级别
+* ????????  : ??????????????????????????
 *
-* 输入参数  : mod_id:被查询模块ID
+* ????????  : mod_id:??????????ID
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : 打印级别
+* ?? ?? ??  : ????????
 *****************************************************************************/
 u32 bsp_log_module_cfg_get(bsp_module_e mod_id)
 {
@@ -171,15 +171,15 @@ u32 bsp_log_module_cfg_get(bsp_module_e mod_id)
 }
 
 /*****************************************************************************
-* 函 数 名  : bsp_mod_level_set
+* ?? ?? ??  : bsp_mod_level_set
 *
-* 功能描述  : 设置单个模块的打印级别
+* ????????  : ??????????????????????
 *
-* 输入参数  : mod_id:模块ID
-*             print_level: 打印级别
-* 输出参数  : 无
+* ????????  : mod_id:????ID
+*             print_level: ????????
+* ????????  : ??
 *
-* 返 回 值  : BSP_OK 设置成功，其他 设置失败
+* ?? ?? ??  : BSP_OK ?????????????? ????????
 *****************************************************************************/
 u32 bsp_mod_level_set(bsp_module_e  mod_id ,u32 print_level)
 {
@@ -199,15 +199,15 @@ u32 bsp_mod_level_set(bsp_module_e  mod_id ,u32 print_level)
 }
 
 /*****************************************************************************
-* 函 数 名  : bsp_log_level_set
+* ?? ?? ??  : bsp_log_level_set
 *
-* 功能描述  : 设置所有模块的打印级别
+* ????????  : ??????????????????????
 *
-* 输入参数  : print_level: 打印级别
+* ????????  : print_level: ????????
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : BSP_OK 设置成功，其他 设置失败
+* ?? ?? ??  : BSP_OK ?????????????? ????????
 *****************************************************************************/
 u32 bsp_log_level_set(bsp_log_level_e log_level)
 {
@@ -227,15 +227,15 @@ u32 bsp_log_level_set(bsp_log_level_e log_level)
 }
 
 /*****************************************************************************
-* 函 数 名  : bsp_log_level_reset
+* ?? ?? ??  : bsp_log_level_reset
 *
-* 功能描述  : 将所有模块的打印级别设置为默认值
+* ????????  : ????????????????????????????????
 *
-* 输入参数  : 无
+* ????????  : ??
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *****************************************************************************/
 void bsp_log_level_reset(void)
 {
@@ -249,17 +249,17 @@ void bsp_log_level_reset(void)
 }
 
 /*****************************************************************************
-* 函 数 名  : bsp_trace
+* ?? ?? ??  : bsp_trace
 *
-* 功能描述  : 底软打印输出处理接口
+* ????????  : ????????????????????
 *
-* 输入参数  :  mod_id: 输出模块
-*              log_level: 打印级别
-*              fmt :打印输入参数
+* ????????  :  mod_id: ????????
+*              log_level: ????????
+*              fmt :????????????
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : 无
+* ?? ?? ??  : ??
 *****************************************************************************/
 void bsp_trace(bsp_log_level_e log_level,bsp_module_e mod_id,char *fmt,...)
 {
@@ -267,7 +267,7 @@ void bsp_trace(bsp_log_level_e log_level,bsp_module_e mod_id,char *fmt,...)
     va_list arglist;
     u32 modid_u32 = (u32)mod_id,level_u32=(u32)log_level;
     char *print_p = bsp_print_buffer;
-    /*打印级别过滤*/
+    /*????????????*/
     if(mod_id >= BSP_MODU_MAX )
     {
         return ;
@@ -280,7 +280,7 @@ void bsp_trace(bsp_log_level_e log_level,bsp_module_e mod_id,char *fmt,...)
     /*lint -save -e530*/
     va_start(arglist, fmt);
     /*lint -restore +e530*/
-    vsnprintf(bsp_print_buffer, BSP_PRINT_BUF_LEN,fmt, arglist);/* unsafe_function_ignore: vsnprintf */ /* [false alarm]:屏蔽Fortify错误 */
+    vsnprintf(bsp_print_buffer, BSP_PRINT_BUF_LEN,fmt, arglist);/* unsafe_function_ignore: vsnprintf */ /* [false alarm]:????Fortify???? */
     va_end(arglist);
 
     bsp_print_buffer[BSP_PRINT_BUF_LEN - 1] = '\0';
@@ -297,15 +297,15 @@ void bsp_trace(bsp_log_level_e log_level,bsp_module_e mod_id,char *fmt,...)
 EXPORT_SYMBOL_GPL(bsp_trace);
 /*new print start*/
 /*****************************************************************************
-* 函 数 名  : bsp_print_control
+* ?? ?? ??  : bsp_print_control
 *
-* 功能描述  : 查询模块当前设置的打印级别
+* ????????  : ??????????????????????????
 *
-* 输入参数  : sel:sel = 0 close print; sel = 1 open print
+* ????????  : sel:sel = 0 close print; sel = 1 open print
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : 打印级别
+* ?? ?? ??  : ????????
 *****************************************************************************/
 void bsp_print_control(u32 sel)
 {
@@ -313,30 +313,30 @@ void bsp_print_control(u32 sel)
     return;
 }
 /*****************************************************************************
-* 函 数 名  : bsp_print_control
+* ?? ?? ??  : bsp_print_control
 *
-* 功能描述  : 获取开关状态
+* ????????  : ????????????
 *
-* 输入参数  : NA
+* ????????  : NA
 *
-* 输出参数  : 无
+* ????????  : ??
 *
-* 返 回 值  : 打印级别
+* ?? ?? ??  : ????????
 *****************************************************************************/
 u32 bsp_get_print_status(void)
 {
     return g_print_close;
 }
 /*****************************************************************************
-* 函 数 名  : logs
+* ?? ?? ??  : logs
 *
-* 功能描述  : 系统级别设置
+* ????????  : ????????????
 *
-* 输入参数  : u32 console：控制台打印级别；u32 logbuf：default for acore
+* ????????  : u32 console??????????????????u32 logbuf??default for acore
 *
-* 输出参数  : BSP_OK/BSP_ERROR
+* ????????  : BSP_OK/BSP_ERROR
 *
-* 返 回 值  :
+* ?? ?? ??  :
 *****************************************************************************/
 s32 logs( u32 console,u32 logbuf)
 {
@@ -347,15 +347,15 @@ s32 logs( u32 console,u32 logbuf)
     return BSP_OK;
 }
 /*****************************************************************************
-* 函 数 名  : set_all_module
+* ?? ?? ??  : set_all_module
 *
-* 功能描述  : set all modules' level
+* ????????  : set all modules' level
 *
-* 输入参数  : u32 level: mod_level
+* ????????  : u32 level: mod_level
 *
-* 输出参数  : NA
+* ????????  : NA
 *
-* 返 回 值  :
+* ?? ?? ??  :
 *****************************************************************************/
 void set_all_module(u32 level)
 {
@@ -368,15 +368,15 @@ void set_all_module(u32 level)
 	return ;
 }
 /*****************************************************************************
-* 函 数 名	: logm
+* ?? ?? ??	: logm
 *
-* 功能描述	: set module's level according to modid
+* ????????	: set module's level according to modid
 *
-* 输入参数	: u32 modid: module's id, u32 level: mod_level
+* ????????	: u32 modid: module's id, u32 level: mod_level
 *
-* 输出参数	: BSP_OK/BSP_ERROR
+* ????????	: BSP_OK/BSP_ERROR
 *
-* 返 回 值	: 成功/失败
+* ?? ?? ??	: ????/????
 *****************************************************************************/
 s32 logm(u32 modid, u32 level)
 {
@@ -398,15 +398,15 @@ s32 logm(u32 modid, u32 level)
 
 }
 /*****************************************************************************
-* 函 数 名	: logc
+* ?? ?? ??	: logc
 *
-* 功能描述	: inquire module's level according to modid
+* ????????	: inquire module's level according to modid
 *
-* 输入参数	: u32 modid: module's id
+* ????????	: u32 modid: module's id
 *
-* 输出参数	: NA
+* ????????	: NA
 *
-* 返 回 值	:
+* ?? ?? ??	:
 *****************************************************************************/
 void logc(u32 modid)
 {
@@ -418,15 +418,15 @@ void logc(u32 modid)
 	return ;
 }
 /*****************************************************************************
-* 函 数 名	: bsp_print
+* ?? ?? ??	: bsp_print
 *
-* 功能描述	: print
+* ????????	: print
 *
-* 输入参数	: u32 modid: module's id, BSP_LOG_LEVEL level: print level, char *fmt: string
+* ????????	: u32 modid: module's id, BSP_LOG_LEVEL level: print level, char *fmt: string
 *
-* 输出参数	:
+* ????????	:
 *
-* 返 回 值	:
+* ?? ?? ??	:
 *****************************************************************************/
 void bsp_print(module_tag modid, BSP_LOG_LEVEL level, char *fmt, ...)
 {
@@ -440,7 +440,7 @@ void bsp_print(module_tag modid, BSP_LOG_LEVEL level, char *fmt, ...)
         return ;
     }
 
-    if(g_print_tag[modid].modlevel < level)  //传入级别低于模块默认级别，返回
+    if(g_print_tag[modid].modlevel < level)  //??????????????????????????????
     {
         return;
     }
@@ -469,7 +469,7 @@ EXPORT_SYMBOL_GPL(logc);
 /*new print end*/
 
 
-/*debug 接口*/
+/*debug ????*/
 void bsp_log_show(void)
 {
     bsp_err("trace level = %d\n",g_mod_peint_level_info[0].print_level);
