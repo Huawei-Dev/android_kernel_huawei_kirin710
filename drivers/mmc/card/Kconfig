@@ -105,8 +105,3 @@ config MMC_FFU_SAMSUNG45
 	  This is an option to run firmware update on Samsung eMMC 4.5.
 	  Field firmware updates (FFU) enables features enhancment
 	  in the field.
-
-config HW_SYSTEM_HW_WR_PROTECT
-	bool "emmc hardware write protection function of system/cust partitions."
-	depends on HW_SYSTEM_WR_PROTECT
-	default n
