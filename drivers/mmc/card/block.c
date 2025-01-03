@@ -65,11 +65,6 @@
 #include <linux/hisi/rpmb.h>
 #endif
 
-
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-#include <linux/mmc/hw_write_protect.h>
-#endif
-
 #include "hisi_partition.h"
 
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
@@ -1078,12 +1073,6 @@ cmd_err:
 static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 	unsigned int cmd, unsigned long arg)
 {
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-	int ret = -EINVAL;
-
-	struct mmc_blk_data *md = NULL;
-	struct mmc_card *card = NULL;
-#endif
 	switch (cmd) {
 	case MMC_IOC_CMD:
 		return mmc_blk_ioctl_cmd(bdev,
@@ -1091,14 +1080,6 @@ static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 	case MMC_IOC_MULTI_CMD:
 		return mmc_blk_ioctl_multi_cmd(bdev,
 				(struct mmc_ioc_multi_cmd __user *)arg);
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-	case MMC_IOC_WP_CMD:
-		/* software protection */
-		ret = blk_set_ro_secure_debuggable(arg);
-		if (ret)
-			pr_err("%s: blk_set_ro_secure_debuggable failed.\n", __func__);
-		return ret;
-#endif
 	default:
 		return -EINVAL;
 	}
