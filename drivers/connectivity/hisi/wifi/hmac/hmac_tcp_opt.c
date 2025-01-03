@@ -59,7 +59,7 @@ hmac_tcp_ack_opt_th_params g_st_tcp_ack_opt_th_params = {0, 0, 0, 0};
 /*****************************************************************************
   5 ????????????????
 *****************************************************************************/
-oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(hmac_vap_stru    *pst_hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head);
+oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(hmac_vap_stru    *hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head);
 
 /*****************************************************************************
   4 ????????
@@ -576,7 +576,7 @@ oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_tx_get_tcp_ack(oal_netbuf_stru *skb, h
 
 oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(hmac_vap_stru    *hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head)
 {
-    hmac_vap_stru *pst_hmac_vap;
+    hmac_vap_stru *pst_hmac_vap = NULL;
     struct tcp_list_node *node;
     oal_netbuf_stru * skb;
     oal_netbuf_head_stru  head_t;
