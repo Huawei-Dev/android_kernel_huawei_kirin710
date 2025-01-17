@@ -74,12 +74,14 @@ oal_int32  plat_init(oal_void)
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
 #ifdef HI110X_DRV_VERSION
     OAL_IO_PRINT("HI110X_DRV_VERSION: %s\r\n", HI110X_DRV_VERSION);
-    OAL_IO_PRINT("HI110X_DRV compileTime: %s, %s\r\n", __DATE__,__TIME__);
 #endif
     if(false == is_my_chip())
     {
         return OAL_SUCC;
     }
+#endif
+#ifdef CONFIG_HUAWEI_DSM
+    hw_1102_register_wifi_dsm_client();
 #endif
 
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
@@ -268,6 +270,10 @@ oal_void plat_exit(oal_void)
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
     ini_cfg_exit();
 #endif
+#ifdef CONFIG_HUAWEI_DSM
+    hw_1102_unregister_wifi_dsm_client();
+#endif
+
     return;
 }
 
@@ -275,8 +281,8 @@ oal_void plat_exit(oal_void)
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST) && !defined(CONFIG_HI110X_KERNEL_MODULES_BUILD_SUPPORT) && defined(_PRE_CONFIG_CONN_HISI_SYSFS_SUPPORT)
 oal_int32 g_plat_init_flag = 0;
 oal_int32 g_plat_init_ret;
-/*built-in*/
-OAL_STATIC ssize_t  plat_sysfs_set_init(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+/* built-in */
+OAL_STATIC ssize_t plat_sysfs_set_init(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     char            mode[128] = {0};
     OAL_BUG_ON(NULL == dev);
@@ -310,7 +316,7 @@ OAL_STATIC ssize_t  plat_sysfs_set_init(struct device *dev, struct device_attrib
     return count;
 }
 
-OAL_STATIC ssize_t  plat_sysfs_get_init(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t plat_sysfs_get_init(struct kobject *dev, struct kobj_attribute *attr, char *buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -335,7 +341,8 @@ OAL_STATIC ssize_t  plat_sysfs_get_init(struct device *dev, struct device_attrib
 
     return ret;
 }
-OAL_STATIC DEVICE_ATTR(plat, S_IRUGO | S_IWUSR, plat_sysfs_get_init, plat_sysfs_set_init);
+STATIC struct kobj_attribute dev_attr_plat =
+    __ATTR(plat, S_IRUGO | S_IWUSR, plat_sysfs_get_init, plat_sysfs_set_init);
 OAL_STATIC struct attribute *plat_init_sysfs_entries[] = {
         &dev_attr_plat.attr,
         NULL

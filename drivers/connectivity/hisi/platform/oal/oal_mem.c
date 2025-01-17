@@ -243,6 +243,7 @@ OAL_STATIC  oal_mem_pool_cfg_stru g_ast_mem_pool_cfg_table[] =
     {OAL_MEM_POOL_ID_SDT_NETBUF,      OAL_ARRAY_SIZE(g_ast_sdt_netbuf_cfg_table),  {0, 0}, g_ast_sdt_netbuf_cfg_table}
 };
 
+#ifdef WIN32
 OAL_STATIC oal_uint8 *g_pauc_mem_pool[OAL_MEM_POOL_ID_BUTT] = {0};
 OAL_STATIC oal_uint8 g_auc_mem_pool_event[TOTAL_WLAN_MEM_EVENT_SIZE];
 OAL_STATIC oal_uint8 g_auc_mem_pool_shared_data_pkt[TOTAL_WLAN_MEM_SHARED_DATA_PKT_SIZE];
@@ -250,8 +251,15 @@ OAL_STATIC oal_uint8 g_auc_mem_pool_shared_mgmt_pkt[TOTAL_WLAN_MEM_SHARED_MGMT_P
 OAL_STATIC oal_uint8 g_auc_mem_pool_local[TOTAL_WLAN_MEM_LOCAL_SIZE];
 OAL_STATIC oal_uint8 g_auc_mem_pool_mib[TOTAL_WLAN_MEM_MIB_SIZE];
 OAL_STATIC oal_uint8 g_auc_mem_pool_shared_dscr[TOTAL_WLAN_MEM_SHARED_DSCR_SIZE];
-
-
+#else
+OAL_STATIC oal_uint8 *g_pauc_mem_pool[OAL_MEM_POOL_ID_BUTT] = {0};
+OAL_STATIC oal_uint8 g_auc_mem_pool_event[TOTAL_WLAN_MEM_EVENT_SIZE] __attribute__((aligned(8)));
+OAL_STATIC oal_uint8 g_auc_mem_pool_shared_data_pkt[TOTAL_WLAN_MEM_SHARED_DATA_PKT_SIZE] __attribute__((aligned(8)));
+OAL_STATIC oal_uint8 g_auc_mem_pool_shared_mgmt_pkt[TOTAL_WLAN_MEM_SHARED_MGMT_PKT_SIZE] __attribute__((aligned(8)));
+OAL_STATIC oal_uint8 g_auc_mem_pool_local[TOTAL_WLAN_MEM_LOCAL_SIZE] __attribute__((aligned(8)));
+OAL_STATIC oal_uint8 g_auc_mem_pool_mib[TOTAL_WLAN_MEM_MIB_SIZE] __attribute__((aligned(8)));
+OAL_STATIC oal_uint8 g_auc_mem_pool_shared_dscr[TOTAL_WLAN_MEM_SHARED_DSCR_SIZE] __attribute__((aligned(8)));
+#endif
 /******************************************************************************
     ????????netbuf??????????????ID??????????
 *******************************************************************************/
@@ -484,7 +492,7 @@ OAL_STATIC oal_netbuf_stru* oal_mem_find_available_netbuf(oal_mem_subpool_stru *
     {
         us_top--;
         pst_netbuf = (oal_netbuf_stru *)pst_mem_subpool->ppst_free_stack[us_top];
-        if (1 == oal_atomic_read(&pst_netbuf->users))
+        if (1 == oal_netbuf_read_user(pst_netbuf))
         {
             break;
         }
@@ -595,7 +603,7 @@ OAL_STATIC oal_void  oal_mem_netbuf_release(oal_void)
         }
 
         /* ????netbuf??????????????????????????????1 */
-        oal_atomic_set(&g_pst_netbuf_base_addr[ul_loop]->users, 1);
+        oal_netbuf_set_user(g_pst_netbuf_base_addr[ul_loop], 1);
 
         oal_netbuf_free(g_pst_netbuf_base_addr[ul_loop]);
 
@@ -616,7 +624,7 @@ OAL_STATIC oal_void  oal_mem_sdt_netbuf_release(oal_void)
         }
 
         /* ????netbuf??????????????????????????????1 */
-        oal_atomic_set(&g_pst_sdt_netbuf_base_addr[ul_loop]->users, 1);
+        oal_netbuf_set_user(g_pst_sdt_netbuf_base_addr[ul_loop], 1);
 
         oal_netbuf_free(g_pst_sdt_netbuf_base_addr[ul_loop]);
 

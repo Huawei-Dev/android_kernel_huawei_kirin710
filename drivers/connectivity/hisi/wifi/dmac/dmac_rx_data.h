@@ -31,6 +31,10 @@ extern "C" {
 #ifdef _PRE_WLAN_FEATURE_STA_PM
 #include "dmac_psm_sta.h"
 #endif
+#if _PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE
+#include "pm_extern.h"
+#endif
+
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_RX_DATA_H
 
@@ -163,9 +167,11 @@ OAL_STATIC OAL_INLINE oal_void  dmac_rx_get_dscr_info(
 
 
 OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_data_ps_process(
+                mac_device_stru        *pst_mac_device,
                 dmac_vap_stru          *pst_dmac_vap,
                 dmac_user_stru         *pst_dmac_user,
-                oal_netbuf_stru        *pst_netbuf)
+                oal_netbuf_stru        *pst_netbuf,
+                dmac_rx_ctl_stru       *pst_cb_ctrl)
 {
 
     if (WLAN_VAP_MODE_BSS_STA == dmac_vap_get_bss_type(&(pst_dmac_vap->st_vap_base_info)))
@@ -178,6 +184,21 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_data_ps_process(
             return OAL_FAIL;
         }
 #endif
+
+#if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
+        if ((pst_cb_ctrl->st_rx_info.bit_amsdu_enable != OAL_TRUE) &&
+            (PM_WLAN_IsHostSleep() == OAL_TRUE) &&
+            (pst_mac_device->uc_arpoffload_switch == OAL_TRUE))
+        {
+            mac_llc_snap_stru           *pst_snap;
+
+            pst_snap = (mac_llc_snap_stru *)oal_netbuf_data(pst_netbuf);
+            if ((pst_snap != OAL_PTR_NULL) && (pst_snap->uc_llc_dsap != SNAP_LLC_LSAP))
+            {
+                return OAL_FAIL;
+            }
+        }
+#endif /* _PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE */
     }
     else if (WLAN_VAP_MODE_BSS_AP == dmac_vap_get_bss_type(&(pst_dmac_vap->st_vap_base_info)))
     {
@@ -271,7 +292,7 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_process_data_frame(
     dmac_rx_rssi_rate_stat(pst_dmac_user, &pst_cb_ctrl->st_rx_statistic, pst_mac_device);
 
     /* ??????:DMAC???????????????? */
-    if (OAL_SUCC != dmac_rx_data_ps_process(pst_dmac_vap, pst_dmac_user, pst_netbuf))
+    if (OAL_SUCC != dmac_rx_data_ps_process(pst_mac_device, pst_dmac_vap, pst_dmac_user, pst_netbuf, pst_cb_ctrl))
     {
         return OAL_FAIL;
     }

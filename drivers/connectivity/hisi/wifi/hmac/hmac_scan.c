@@ -63,11 +63,12 @@ OAL_STATIC oal_bool_enum_uint8 hmac_parse_cipher_suit(mac_bss_dscr_stru *pst_bss
 #endif
 
 #if defined(_PRE_WLAN_CHIP_TEST_ALG) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) && defined(_PRE_DEBUG_MODE)
-OAL_STATIC oal_ssize_t  hmac_scan_ct_proc_read(oal_device_stru *dev, oal_device_attribute_stru *attr, char *buf);
-OAL_STATIC OAL_DEVICE_ATTR(alg_test_result, OAL_S_IRUGO|OAL_S_IWUSR, hmac_scan_ct_proc_read, OAL_PTR_NULL);
+OAL_STATIC oal_ssize_t  hmac_scan_ct_proc_read(struct kobject *dev, struct kobj_attribute *attr, char *buf);
+OAL_STATIC struct kobj_attribute dev_attr_alg_test_result =
+    __ATTR(alg_test_result, OAL_S_IRUGO|OAL_S_IWUSR, hmac_scan_ct_proc_read, OAL_PTR_NULL);
 
 
-OAL_STATIC oal_ssize_t hmac_scan_ct_proc_read(oal_device_stru *dev, oal_device_attribute_stru *attr, char *buf)
+OAL_STATIC oal_ssize_t hmac_scan_ct_proc_read(struct kobject *dev, struct kobj_attribute *attr, char *buf)
 
 {
     hmac_device_stru                *pst_hmac_device;
@@ -1932,7 +1933,7 @@ oal_void  hmac_scan_set_sour_mac_addr_in_probe_req(hmac_vap_stru        *pst_hma
         if ((OAL_TRUE == en_is_rand_mac_addr_scan) && (IS_LEGACY_VAP(&(pst_hmac_vap->st_vap_base_info)))
             && ((pst_mac_device->auc_mac_oui[0] != 0) || (pst_mac_device->auc_mac_oui[1] != 0) || (pst_mac_device->auc_mac_oui[2] != 0)))
         {
-            /* Android ????wps??????hilink????????????,??mac oui??0 */
+            /* ????????wps??????hilink????????????,??mac oui??0 */
             /* ????????mac ????,????????????MAC OUI ??????????mac ?????????????? */
             oal_set_mac_addr(puc_sour_mac_addr, pst_hmac_device->st_scan_mgmt.auc_random_mac);
         }

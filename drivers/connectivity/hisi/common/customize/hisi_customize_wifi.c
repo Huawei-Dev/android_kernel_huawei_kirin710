@@ -22,7 +22,11 @@ extern "C" {
 #include "oal_sdio_comm.h"
 
 /* ?????????? */
+#ifdef CONFIG_ARCH_PLATFORM
+#include <linux/mtd/nve_ap_kernel_interface.h>
+#else
 #include <linux/mtd/hisi_nve_interface.h>
+#endif
 #include <linux/etherdevice.h>
 
 #undef  THIS_FILE_ID
@@ -888,7 +892,11 @@ OAL_STATIC int char2byte( char* strori, char* outbuf )
 
 int32 hwifi_get_mac_addr(uint8 *puc_buf)
 {
+#ifdef CONFIG_ARCH_PLATFORM
+    struct opt_nve_info_user st_info;
+#else
     struct hisi_nve_info_user st_info;
+#endif
     int32 l_ret = -1;
     int32 l_sum = 0;
 
@@ -915,7 +923,11 @@ int32 hwifi_get_mac_addr(uint8 *puc_buf)
         return INI_SUCC;
     }
 
+#ifdef CONFIG_ARCH_PLATFORM
+    l_ret = nve_direct_access_interface(&st_info);
+#else
     l_ret = hisi_nve_direct_access(&st_info);
+#endif
 
     if (!l_ret)
     {

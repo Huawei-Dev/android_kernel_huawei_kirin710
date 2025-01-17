@@ -543,7 +543,7 @@ oal_uint32  frw_event_dispatch_event(frw_event_mem_stru *pst_event_mem)
 }
 
 #if defined(_PRE_CONFIG_CONN_HISI_SYSFS_SUPPORT) && defined(_PRE_CONFIG_HISI_PANIC_DUMP_SUPPORT)
-OAL_STATIC ssize_t  frw_get_event_trace(struct device *dev, struct device_attribute *attr, char* buf)
+OAL_STATIC ssize_t  frw_get_event_trace(struct kobject *dev, struct kobj_attribute *attr, char* buf)
 {
     int ret = 0;
 
@@ -553,7 +553,8 @@ OAL_STATIC ssize_t  frw_get_event_trace(struct device *dev, struct device_attrib
     ret += frw_print_panic_stat(NULL,buf,PAGE_SIZE - ret);
     return ret;
 }
-OAL_STATIC DEVICE_ATTR(event_trace, S_IRUGO, frw_get_event_trace, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_event_trace =
+     __ATTR(event_trace, S_IRUGO, frw_get_event_trace, NULL);
 
 
 OAL_STATIC struct attribute *frw_sysfs_entries[] = {

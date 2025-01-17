@@ -146,10 +146,8 @@ oal_uint32  dmac_ba_filter_serv(
 
         if ((OAL_PTR_NULL != pst_frame_hdr) && (OAL_PTR_NULL == pst_dmac_user))
         {
-            OAM_ERROR_LOG3(0, OAM_SF_BA, "{dmac_ba_filter_serv:: source addr[0-2] %02X:%02X:%02X}",
-                           pst_frame_hdr->auc_address2[0], pst_frame_hdr->auc_address2[1], pst_frame_hdr->auc_address2[2]);
-            OAM_ERROR_LOG3(0, OAM_SF_BA, "{dmac_ba_filter_serv:: source addr[3-5] %02X:%02X:%02X}",
-                           pst_frame_hdr->auc_address2[3], pst_frame_hdr->auc_address2[4], pst_frame_hdr->auc_address2[5]);
+            OAM_ERROR_LOG3(0, OAM_SF_BA, "{dmac_ba_filter_serv:: source addr[%02X:XX:XX:XX:%02X:%02X]}",
+                           pst_frame_hdr->auc_address2[0], pst_frame_hdr->auc_address2[4], pst_frame_hdr->auc_address2[5]);
         }
 
         return OAL_ERR_CODE_PTR_NULL;

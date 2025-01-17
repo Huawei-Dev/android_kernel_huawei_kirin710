@@ -18,6 +18,7 @@ extern "C" {
 #include "hmac_encap_frame.h"
 #include "hmac_encap_frame_ap.h"
 #include "hmac_mgmt_bss_comm.h"
+#include "hmac_mgmt_sta.h"
 #include "mac_frame.h"
 #include "hmac_rx_data.h"
 #include "hmac_uapsd.h"
@@ -119,14 +120,10 @@ oal_void  hmac_handle_disconnect_rsp_ap(hmac_vap_stru *pst_hmac_vap, hmac_user_s
     /* ???????? */
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
-                       FRW_EVENT_TYPE_HOST_CTX,
-                       HMAC_HOST_CTX_EVENT_SUB_TYPE_STA_DISCONNECT_AP,
-                       WLAN_MAC_ADDR_LEN,
-                       FRW_EVENT_PIPELINE_STAGE_0,
-                       pst_hmac_vap->st_vap_base_info.uc_chip_id,
-                       pst_hmac_vap->st_vap_base_info.uc_device_id,
-                       pst_hmac_vap->st_vap_base_info.uc_vap_id);
+    FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr), FRW_EVENT_TYPE_HOST_CTX,
+                       HMAC_HOST_CTX_EVENT_SUB_TYPE_STA_DISCONNECT_AP, WLAN_MAC_ADDR_LEN,
+                       FRW_EVENT_PIPELINE_STAGE_0, pst_hmac_vap->st_vap_base_info.uc_chip_id,
+                       pst_hmac_vap->st_vap_base_info.uc_device_id, pst_hmac_vap->st_vap_base_info.uc_vap_id);
 
     /* ????????STA mac???? */
     oal_memcopy(frw_get_event_payload(pst_event_mem), (oal_uint8 *)pst_hmac_user->st_user_base_info.auc_user_mac_addr, WLAN_MAC_ADDR_LEN);
@@ -167,14 +164,10 @@ OAL_STATIC oal_void  hmac_handle_connect_rsp_ap(hmac_vap_stru *pst_hmac_vap, hma
     /* ???????? */
     pst_event = (frw_event_stru *)pst_event_mem->puc_data;
 
-    FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr),
-                       FRW_EVENT_TYPE_HOST_CTX,
-                       HMAC_HOST_CTX_EVENT_SUB_TYPE_STA_CONNECT_AP,
-                       WLAN_MAC_ADDR_LEN,
-                       FRW_EVENT_PIPELINE_STAGE_0,
-                       pst_hmac_vap->st_vap_base_info.uc_chip_id,
-                       pst_hmac_vap->st_vap_base_info.uc_device_id,
-                       pst_hmac_vap->st_vap_base_info.uc_vap_id);
+    FRW_EVENT_HDR_INIT(&(pst_event->st_event_hdr), FRW_EVENT_TYPE_HOST_CTX,
+                       HMAC_HOST_CTX_EVENT_SUB_TYPE_STA_CONNECT_AP, WLAN_MAC_ADDR_LEN,
+                       FRW_EVENT_PIPELINE_STAGE_0, pst_hmac_vap->st_vap_base_info.uc_chip_id,
+                       pst_hmac_vap->st_vap_base_info.uc_device_id, pst_hmac_vap->st_vap_base_info.uc_vap_id);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
     pst_asoc_user_req_info = (hmac_asoc_user_req_ie_stru *)(pst_event->auc_event_data);
@@ -267,10 +260,7 @@ OAL_STATIC oal_void  hmac_ap_rx_auth_req(hmac_vap_stru *pst_hmac_vap, oal_netbuf
 
     OAL_MEMZERO(oal_netbuf_cb(pst_auth_rsp), OAL_NETBUF_CB_SIZE());
 
-    us_auth_rsp_len = hmac_encap_auth_rsp(&pst_hmac_vap->st_vap_base_info,
-                                          pst_auth_rsp,
-                                          pst_auth_req,
-                                          puc_chtxt);
+    us_auth_rsp_len = hmac_encap_auth_rsp(&pst_hmac_vap->st_vap_base_info, pst_auth_rsp, pst_auth_req, puc_chtxt);
     if (0 == us_auth_rsp_len)
     {
         oal_netbuf_free(pst_auth_rsp);
@@ -351,9 +341,7 @@ OAL_STATIC oal_bool_enum hmac_ap_is_olbc_present(oal_uint8 *puc_payload, oal_uin
 
 
 OAL_STATIC oal_uint32 hmac_ap_process_obss_erp_ie(
-                hmac_vap_stru                  *pst_hmac_vap,
-                oal_uint8                      *puc_payload,
-                oal_uint32                      ul_payload_len)
+    hmac_vap_stru *pst_hmac_vap, oal_uint8 *puc_payload, oal_uint32 ul_payload_len)
 {
     /*????non erp????*/
     if (OAL_TRUE == hmac_ap_is_olbc_present(puc_payload, ul_payload_len))
@@ -1193,6 +1181,7 @@ OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
 #ifdef _PRE_WLAN_FEATURE_TXBF
     oal_uint8                  *puc_vendor_ie;
 #endif
+    oal_uint8                  *puc_ssid_ie;
 
     *pen_status_code = MAC_SUCCESSFUL_STATUSCODE;
     us_offset        = MAC_CAP_INFO_LEN + MAC_LISTEN_INT_LEN;
@@ -1226,7 +1215,8 @@ OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
     }
 
     /* ????SSID,??????????????????,??????SSID?????? */
-    if (MAC_EID_SSID == puc_payload[us_msg_idx])
+    puc_ssid_ie = mac_find_ie(MAC_EID_SSID, puc_payload + us_msg_idx, (oal_int32)(ul_msg_len - us_msg_idx));
+    if (OAL_PTR_NULL != puc_ssid_ie)
     {
         us_ssid_len = 0;
 
@@ -1234,7 +1224,7 @@ OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
 
         hmac_config_get_ssid(pst_mac_vap, &us_ssid_len, (oal_uint8 *)(&st_cfg_ssid));
 
-        if (st_cfg_ssid.uc_ssid_len != puc_payload[(us_msg_idx + 1)])
+        if (st_cfg_ssid.uc_ssid_len != puc_ssid_ie[1])
         {
             *pen_status_code = MAC_UNSPEC_FAIL;
             OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ASSOC,
@@ -1242,7 +1232,7 @@ OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
             return OAL_FAIL;
         }
 
-        if (0 != oal_memcmp(&puc_payload[(us_msg_idx + 2)], st_cfg_ssid.ac_ssid, st_cfg_ssid.uc_ssid_len))
+        if (0 != oal_memcmp(&puc_ssid_ie[2], st_cfg_ssid.ac_ssid, st_cfg_ssid.uc_ssid_len))
         {
             *pen_status_code = MAC_UNSPEC_FAIL;
             OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ASSOC,
@@ -1250,8 +1240,6 @@ OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
             return OAL_FAIL;
         }
     }
-
-    us_msg_idx += puc_payload[(us_msg_idx + 1)] + MAC_IE_HDR_LEN;
 
     /* ?????????????? */
     ul_rslt = hmac_ap_up_update_sta_sup_rates(puc_payload, pst_hmac_user, pen_status_code, ul_msg_len, us_msg_idx, &uc_num_rates, &us_rate_len);
@@ -1261,8 +1249,6 @@ OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
                          "{hmac_ap_up_update_sta_user::AP refuse STA assoc, update support rates failed, status_code[%d] ul_rslt[%d].}", *pen_status_code, ul_rslt);
         return ul_rslt;
     }
-
-    us_msg_idx += us_rate_len;
 
 #if defined(_PRE_WLAN_FEATURE_WPA) || defined(_PRE_WLAN_FEATURE_WPA2)
     /* ????????????ASOC REQ????????SECURITY????.??????,?????????????????? */
@@ -1467,14 +1453,45 @@ OAL_STATIC oal_uint32 hmac_ap_set_is_wavetest_sta(hmac_vap_stru *pst_hmac_vap, o
 }
 #endif
 
+#if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
+OAL_STATIC oal_uint32 hmac_ap_up_rx_asoc_req_pmf_process(hmac_vap_stru *hmac_vap,
+    hmac_user_stru *hmac_user, mac_status_code_enum_uint16 *status_code)
+{
+    oal_uint32 rslt;
 
-OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
-                hmac_vap_stru                  *pst_hmac_vap,
-                oal_uint8                       uc_mgmt_frm_type,
-                oal_uint8                      *puc_mac_hdr,
-                oal_uint32                      ul_mac_hdr_len,
-                oal_uint8                      *puc_payload,
-                oal_uint32                      ul_payload_len)
+    if ((OAL_TRUE != hmac_user->st_sa_query_info.st_sa_query_interval_timer.en_is_enabled) &&
+        (MAC_USER_STATE_ASSOC == hmac_user->st_user_base_info.en_user_asoc_state) &&
+        (OAL_TRUE == hmac_user->st_user_base_info.st_cap_info.bit_pmf_active)) {
+        OAM_INFO_LOG0(hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+            "{hmac_ap_up_rx_asoc_req_pmf_process::AP rx STA assoc req ,and start sa query process.}");
+        rslt = hmac_start_sa_query(&hmac_vap->st_vap_base_info, hmac_user,
+                                   hmac_user->st_user_base_info.st_cap_info.bit_pmf_active);
+        if (OAL_SUCC != rslt) {
+            OAM_ERROR_LOG1(hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+                "{hmac_ap_up_rx_asoc_req_pmf_process::hmac_start_sa_query failed[%d].}", rslt);
+            return rslt;
+        }
+        OAM_INFO_LOG0(hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+            "{hmac_ap_up_rx_asoc_req_pmf_process::set status_code is MAC_REJECT_TEMP.}");
+        *status_code = MAC_REJECT_TEMP;
+    }
+    return OAL_SUCC;
+}
+#endif
+
+OAL_STATIC void hmac_ap_up_rx_asoc_req_change_user_state_to_auth(hmac_vap_stru *hmac_vap, hmac_user_stru *hmac_user)
+{
+    if (hmac_user->assoc_ap_up_tx_auth_req) {
+        OAM_WARNING_LOG0(hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
+                         "{hmac_ap_up_rx_asoc_req::RX (re)assoc req, change user to auth.}");
+        hmac_user->assoc_ap_up_tx_auth_req = OAL_FALSE;
+        hmac_user_set_asoc_state(&(hmac_vap->st_vap_base_info), &hmac_user->st_user_base_info,
+            MAC_USER_STATE_AUTH_COMPLETE);
+    }
+}
+
+OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(hmac_vap_stru *pst_hmac_vap, oal_uint8 uc_mgmt_frm_type,
+    oal_uint8 *puc_mac_hdr, oal_uint32 ul_mac_hdr_len, oal_uint8 *puc_payload, oal_uint32 ul_payload_len)
 {
     oal_uint32                      ul_rslt;
     oal_netbuf_stru                *pst_asoc_rsp;
@@ -1497,8 +1514,7 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
     mac_get_address2(puc_mac_hdr, auc_sta_addr);
 
     ul_rslt = mac_vap_find_user_by_macaddr(&(pst_hmac_vap->st_vap_base_info), auc_sta_addr, &us_user_idx);
-    if (OAL_SUCC != ul_rslt)
-    {
+    if (OAL_SUCC != ul_rslt) {
         OAM_WARNING_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
                          "{hmac_ap_up_rx_asoc_req::mac_vap_find_user_by_macaddr failed[%d].}", ul_rslt);
         OAM_WARNING_LOG4(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
@@ -1514,10 +1530,8 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
 
     pst_hmac_user = (hmac_user_stru *)mac_res_get_hmac_user(us_user_idx);
 
-    if (OAL_PTR_NULL == pst_hmac_user)
-    {
-        OAM_ERROR_LOG0(0, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::pst_hmac_user null.}");
+    if (OAL_PTR_NULL == pst_hmac_user) {
+        OAM_ERROR_LOG0(0, OAM_SF_ASSOC, "{hmac_ap_up_rx_asoc_req::pst_hmac_user null.}");
 
         /* ??????????????USER,?????????????? */
         hmac_mgmt_send_deauth_frame(&(pst_hmac_vap->st_vap_base_info), auc_sta_addr, MAC_ASOC_NOT_AUTH, OAL_FALSE);
@@ -1525,43 +1539,33 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    if (pst_hmac_user->st_mgmt_timer.en_is_registerd == OAL_TRUE)
-    {
+    if (pst_hmac_user->st_mgmt_timer.en_is_registerd == OAL_TRUE) {
         FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&pst_hmac_user->st_mgmt_timer);
     }
 
 #ifdef _PRE_WLAN_FEATURE_SMPS
     uc_user_prev_smpsmode = (oal_uint8)pst_hmac_user->st_user_base_info.st_ht_hdl.bit_sm_power_save;
 #endif
+    hmac_ap_up_rx_asoc_req_change_user_state_to_auth(pst_hmac_vap, pst_hmac_user);
     en_status_code = MAC_SUCCESSFUL_STATUSCODE;
 
     /* ????????????SA query?????????? */
 #if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
-    if ((OAL_TRUE != pst_hmac_user->st_sa_query_info.st_sa_query_interval_timer.en_is_enabled) &&
-        (MAC_USER_STATE_ASSOC == pst_hmac_user->st_user_base_info.en_user_asoc_state) &&
-        (OAL_TRUE == pst_hmac_user->st_user_base_info.st_cap_info.bit_pmf_active))
-    {
-        OAM_INFO_LOG0(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::AP rx STA assoc req ,and start sa query process.}");
-        ul_rslt = hmac_start_sa_query(&pst_hmac_vap->st_vap_base_info, pst_hmac_user, pst_hmac_user->st_user_base_info.st_cap_info.bit_pmf_active);
-        if (OAL_SUCC != ul_rslt)
-        {
-             OAM_ERROR_LOG1(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::hmac_start_sa_query failed[%d].}", ul_rslt);
-             return ul_rslt;
-        }
-        OAM_INFO_LOG0(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::set en_status_code is MAC_REJECT_TEMP.}");
-        en_status_code = MAC_REJECT_TEMP;
+    ul_rslt = hmac_ap_up_rx_asoc_req_pmf_process(pst_hmac_vap, pst_hmac_user, &en_status_code);
+    if (ul_rslt != OAL_SUCC) {
+        return ul_rslt;
     }
 #endif
 
-    if (MAC_REJECT_TEMP != en_status_code)
-    {
+    if (MAC_REJECT_TEMP != en_status_code) {
         /* ??????????????????,????????USER?????????????????????????? */
+        if (pst_hmac_user->st_user_base_info.en_user_asoc_state == MAC_USER_STATE_ASSOC) {
+            OAM_WARNING_LOG0(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+                             "{hmac_ap_up_rx_asoc_req::user associated, unexpected (re)assoc req no handle!}");
+            return OAL_FAIL;
+        }
         ul_rslt = hmac_ap_up_update_sta_user(pst_hmac_vap, puc_mac_hdr, puc_payload, ul_payload_len, pst_hmac_user, &en_status_code);
-        if (MAC_SUCCESSFUL_STATUSCODE != en_status_code)
-        {
+        if (MAC_SUCCESSFUL_STATUSCODE != en_status_code) {
             OAM_WARNING_LOG1(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
                        "{hmac_ap_up_rx_asoc_req::hmac_ap_up_update_sta_user failed[%d].}", en_status_code);
         #ifdef _PRE_DEBUG_MODE_USER_TRACK
@@ -1583,17 +1587,14 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
 
         /* ??????????????????????????????????????dmac offload??????????????????????device */
         ul_rslt = hmac_config_user_info_syn(&(pst_hmac_vap->st_vap_base_info), &pst_hmac_user->st_user_base_info);
-        if (OAL_SUCC != ul_rslt)
-        {
+        if (OAL_SUCC != ul_rslt) {
             OAM_ERROR_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
                         "{hmac_ap_up_rx_asoc_req::usr_info_syn failed[%d].}", ul_rslt);
         }
 
-        if (MAC_SUCCESSFUL_STATUSCODE == en_status_code)
-        {
+        if (MAC_SUCCESSFUL_STATUSCODE == en_status_code) {
             ul_rslt = hmac_init_security(&(pst_hmac_vap->st_vap_base_info),auc_sta_addr);
-            if (OAL_SUCC != ul_rslt)
-            {
+            if (OAL_SUCC != ul_rslt) {
                 OAM_ERROR_LOG2(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
                                 "{hmac_ap_up_rx_asoc_req::hmac_init_security failed[%d] status_code[%d].}", ul_rslt, MAC_UNSPEC_FAIL);
                 en_status_code = MAC_UNSPEC_FAIL;
@@ -1601,17 +1602,14 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
 
         #if defined (_PRE_WLAN_FEATURE_WPA) || defined(_PRE_WLAN_FEATURE_WPA2)
             ul_rslt = hmac_init_user_security_port(&(pst_hmac_vap->st_vap_base_info), &(pst_hmac_user->st_user_base_info));
-            if (OAL_SUCC != ul_rslt)
-            {
+            if (OAL_SUCC != ul_rslt) {
                 OAM_ERROR_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
                                "{hmac_ap_up_rx_asoc_req::hmac_init_user_security_port failed[%d].}", ul_rslt);
             }
         #endif /* defined(_PRE_WLAN_FEATURE_WPA) ||??defined(_PRE_WLAN_FEATURE_WPA2) */
         }
 
-        if ((OAL_SUCC != ul_rslt)
-         || (MAC_SUCCESSFUL_STATUSCODE != en_status_code))
-        {
+        if ((OAL_SUCC != ul_rslt) || (MAC_SUCCESSFUL_STATUSCODE != en_status_code)) {
             OAM_WARNING_LOG2(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_CFG,
                              "{hmac_ap_up_rx_asoc_req::hmac_ap_up_update_sta_user fail rslt[%d] status_code[%d].", ul_rslt, en_status_code);
         #ifdef _PRE_DEBUG_MODE_USER_TRACK
@@ -1668,6 +1666,8 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
                                                       en_status_code,
                                                       OAL_NETBUF_HEADER(pst_asoc_rsp),
                                                       WLAN_FC0_SUBTYPE_REASSOC_RSP);
+        // ????????????????user????????????????????????????rekey????????????????
+        hmac_user_clear_defrag_res(pst_hmac_user);
     }
 
     if (0 == ul_asoc_rsp_len)
@@ -2264,9 +2264,13 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
     oal_uint8                      *puc_data;
     mac_ieee80211_frame_stru       *pst_frame_hdr;          /* ????mac???????? */
     hmac_user_stru                 *pst_hmac_user;
+    oal_uint32                      frame_body_len = hmac_get_frame_body_len(pst_netbuf);
 
     pst_rx_ctrl = (dmac_rx_ctl_stru *)oal_netbuf_cb(pst_netbuf);
-
+    if (frame_body_len < MAC_ACTION_CATEGORY_AND_CODE_LEN) {
+        OAM_WARNING_LOG1(0, OAM_SF_RX, "{ap_up::frame len too short[%d].}", pst_rx_ctrl->st_rx_info.us_frame_len);
+        return;
+    }
     /* ???????????? */
     pst_frame_hdr = (mac_ieee80211_frame_stru *)pst_rx_ctrl->st_rx_info.pul_mac_hdr_start_addr;
 
@@ -2289,15 +2293,15 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
             switch(puc_data[MAC_ACTION_OFFSET_ACTION])
             {
                 case MAC_BA_ACTION_ADDBA_REQ:
-                    hmac_mgmt_rx_addba_req(pst_hmac_vap, pst_hmac_user, puc_data);
+                    hmac_mgmt_rx_addba_req(pst_hmac_vap, pst_hmac_user, puc_data, frame_body_len);
                     break;
 
                 case MAC_BA_ACTION_ADDBA_RSP:
-                    hmac_mgmt_rx_addba_rsp(pst_hmac_vap, pst_hmac_user, puc_data);
+                    hmac_mgmt_rx_addba_rsp(pst_hmac_vap, pst_hmac_user, puc_data, frame_body_len);
                     break;
 
                 case MAC_BA_ACTION_DELBA:
-                    hmac_mgmt_rx_delba(pst_hmac_vap, pst_hmac_user, puc_data);
+                    hmac_mgmt_rx_delba(pst_hmac_vap, pst_hmac_user, puc_data, frame_body_len);
                     break;
 
                 default:
@@ -2316,8 +2320,12 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
                     hmac_ap_up_rx_2040_coext(pst_hmac_vap, pst_netbuf);
                     break;
             #endif  /* _PRE_WLAN_FEATURE_20_40_80_COEXIST */
-			    case MAC_PUB_VENDOR_SPECIFIC:
-			    {
+                case MAC_PUB_VENDOR_SPECIFIC:
+                {
+                    if (frame_body_len <= MAC_ACTION_CATEGORY_AND_CODE_LEN + MAC_OUI_LEN) {
+                        OAM_WARNING_LOG1(0, OAM_SF_RX, "{hmac_action_category_public::frame_body_len %d.}", frame_body_len);
+                        return;
+                    }
             #ifdef _PRE_WLAN_FEATURE_P2P
                     /*????OUI-OUI type???? 50 6F 9A - 09 (WFA P2P v1.0)  */
                     /* ????hmac_rx_mgmt_send_to_host???????? */
@@ -2391,6 +2399,10 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
 
         case MAC_ACTION_CATEGORY_VENDOR:
         {
+            if (frame_body_len <= MAC_ACTION_CATEGORY_AND_CODE_LEN + MAC_OUI_LEN) {
+                OAM_WARNING_LOG1(0, OAM_SF_RX, "{hmac_action_category_vendor::frame_body_len %d.}", frame_body_len);
+                return;
+            }
     #ifdef _PRE_WLAN_FEATURE_P2P
         /*????OUI-OUI type???? 50 6F 9A - 09 (WFA P2P v1.0)  */
         /* ????hmac_rx_mgmt_send_to_host???????? */
@@ -2431,13 +2443,31 @@ OAL_STATIC oal_void  hmac_ap_up_rx_probe_req(hmac_vap_stru *pst_hmac_vap, oal_ne
 {
     dmac_rx_ctl_stru           *pst_rx_ctrl;
     mac_rx_ctl_stru            *pst_rx_info;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+    enum nl80211_band           en_band;
+#else
     enum ieee80211_band         en_band;
+#endif
     oal_int                     l_freq;
 
     pst_rx_ctrl     = (dmac_rx_ctl_stru *)oal_netbuf_cb(pst_netbuf);
     pst_rx_info     = (mac_rx_ctl_stru *)(&(pst_rx_ctrl->st_rx_info));
 
     /* ????AP ???????? */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+    if (WLAN_BAND_2G == pst_hmac_vap->st_vap_base_info.st_channel.en_band)
+    {
+        en_band = NL80211_BAND_2GHZ;
+    }
+    else if(WLAN_BAND_5G == pst_hmac_vap->st_vap_base_info.st_channel.en_band)
+    {
+        en_band = NL80211_BAND_5GHZ;
+    }
+    else
+    {
+        en_band = NUM_NL80211_BANDS;
+    }
+#else
     if (WLAN_BAND_2G == pst_hmac_vap->st_vap_base_info.st_channel.en_band)
     {
         en_band = IEEE80211_BAND_2GHZ;
@@ -2450,6 +2480,7 @@ OAL_STATIC oal_void  hmac_ap_up_rx_probe_req(hmac_vap_stru *pst_hmac_vap, oal_ne
     {
         en_band = IEEE80211_NUM_BANDS;
     }
+#endif
     l_freq = oal_ieee80211_channel_to_frequency(pst_hmac_vap->st_vap_base_info.st_channel.uc_chan_number,
                                                 en_band);
 

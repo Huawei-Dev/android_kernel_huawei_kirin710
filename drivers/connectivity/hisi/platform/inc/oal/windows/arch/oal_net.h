@@ -2837,6 +2837,29 @@ OAL_INLINE oal_uint32  oal_netbuf_decrease_user(oal_netbuf_stru *pst_buf)
 }
 
 
+OAL_STATIC OAL_INLINE oal_uint32  oal_netbuf_read_user(oal_netbuf_stru *pst_buf)
+{
+    if (OAL_UNLIKELY(OAL_PTR_NULL == pst_buf))
+    {
+        return OAL_ERR_CODE_PTR_NULL;
+    }
+
+    return pst_buf->users;
+}
+
+
+
+OAL_STATIC OAL_INLINE oal_void  oal_netbuf_set_user(oal_netbuf_stru *pst_buf, oal_uint32 refcount)
+{
+    if (OAL_UNLIKELY(OAL_PTR_NULL == pst_buf))
+    {
+        return;
+    }
+
+    pst_buf->users = refcount;
+}
+
+
 OAL_STATIC OAL_INLINE oal_uint32  oal_netbuf_increase_user(oal_netbuf_stru *pst_buf)
 {
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_buf))

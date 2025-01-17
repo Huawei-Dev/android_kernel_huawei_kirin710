@@ -1086,7 +1086,7 @@ typedef struct
     oal_uint8                           uc_wapi;
     oal_uint8                           uc_reserve;
     oal_bool_enum_uint8                 en_is_random_mac_addr_scan;            /* ????mac????????,??hmac???? */
-    oal_uint8                           auc_mac_oui[WLAN_RANDOM_MAC_OUI_LEN];  /* ????mac????OUI,??Android???? */
+    oal_uint8                           auc_mac_oui[WLAN_RANDOM_MAC_OUI_LEN];  /* ????mac????OUI,?????????? */
     oal_uint8                           auc_rsv[2];
 
 #ifdef _PRE_WLAN_FEATURE_DFS

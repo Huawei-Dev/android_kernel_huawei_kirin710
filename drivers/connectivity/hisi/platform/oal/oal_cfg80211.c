@@ -550,7 +550,10 @@ nla_put_failure:
 
 oal_void  oal_cfg80211_sched_scan_result(oal_wiphy_stru *pst_wiphy)
 {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
+    cfg80211_sched_scan_results(pst_wiphy, 0);
+    return;
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
     return cfg80211_sched_scan_results(pst_wiphy);
 #else
     /* 51????????do nothing */
@@ -562,9 +565,9 @@ oal_void  oal_cfg80211_sched_scan_result(oal_wiphy_stru *pst_wiphy)
 oal_void oal_kobject_uevent_env_sta_join(oal_net_device_stru *pst_net_device, const oal_uint8 *puc_mac_addr)
 {
     oal_memset(&env, 0, sizeof(env));
-	/* Android????????STA_JOIN??mac??????????????????????????????4?????? */
-	add_uevent_var(&env, "SOFTAP=STA_JOIN wlan0 wlan0 %02x:%02x:%02x:%02x:%02x:%02x",
-				puc_mac_addr[0], puc_mac_addr[1], puc_mac_addr[2], puc_mac_addr[3], puc_mac_addr[4], puc_mac_addr[5]);
+    /* ????????STA_JOIN??mac??????????????????????????????4?????? */
+    add_uevent_var(&env, "SOFTAP=STA_JOIN wlan0 wlan0 %02x:%02x:%02x:%02x:%02x:%02x",
+                puc_mac_addr[0], puc_mac_addr[1], puc_mac_addr[2], puc_mac_addr[3], puc_mac_addr[4], puc_mac_addr[5]);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0))
     kobject_uevent_env(&(pst_net_device->dev.kobj), KOBJ_CHANGE, env.envp);
 #else
@@ -575,9 +578,9 @@ oal_void oal_kobject_uevent_env_sta_join(oal_net_device_stru *pst_net_device, co
 oal_void oal_kobject_uevent_env_sta_leave(oal_net_device_stru *pst_net_device, const oal_uint8 *puc_mac_addr)
 {
     oal_memset(&env, 0, sizeof(env));
-	/* Android????????STA_LEAVE??mac??????????????????????????????4?????? */
-	add_uevent_var(&env, "SOFTAP=STA_LEAVE wlan0 wlan0 %02x:%02x:%02x:%02x:%02x:%02x",
-				puc_mac_addr[0], puc_mac_addr[1], puc_mac_addr[2], puc_mac_addr[3], puc_mac_addr[4], puc_mac_addr[5]);
+    /* ????????STA_LEAVE??mac??????????????????????????????4?????? */
+    add_uevent_var(&env, "SOFTAP=STA_LEAVE wlan0 wlan0 %02x:%02x:%02x:%02x:%02x:%02x",
+                puc_mac_addr[0], puc_mac_addr[1], puc_mac_addr[2], puc_mac_addr[3], puc_mac_addr[4], puc_mac_addr[5]);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0))
     kobject_uevent_env(&(pst_net_device->dev.kobj), KOBJ_CHANGE, env.envp);
 #else
@@ -737,7 +740,17 @@ oal_uint32  oal_cfg80211_roamed(
                               oal_uint32             ul_resp_ie_len,
                         oal_gfp_enum_uint8           en_gfp)
 {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
+    struct cfg80211_roam_info info = {0};
+    info.channel     = pst_channel;
+    info.bssid       = puc_bssid;
+    info.req_ie      = puc_req_ie;
+    info.req_ie_len  = ul_req_ie_len;
+    info.resp_ie     = puc_resp_ie;
+    info.resp_ie_len = ul_resp_ie_len;
+    cfg80211_roamed(pst_net_device, &info, en_gfp);
+    return OAL_SUCC;
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34))
     cfg80211_roamed(pst_net_device, pst_channel, puc_bssid,
                     puc_req_ie, ul_req_ie_len,
                     puc_resp_ie, ul_resp_ie_len, en_gfp);

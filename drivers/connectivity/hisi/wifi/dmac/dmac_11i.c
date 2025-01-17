@@ -555,6 +555,8 @@ OAL_STATIC oal_uint32  dmac_11i_del_ptk_key(mac_vap_stru *pst_mac_vap, oal_uint8
 
         return ul_ret;
     }
+    /* ????ptk????????tid */
+    dmac_clear_tid_by_rm_ptk_key(pst_mac_vap, &pst_current_dmac_user->st_user_base_info);
 
     /*4.1 ????1X????????????*/
     mac_user_set_port(&pst_current_dmac_user->st_user_base_info, OAL_FALSE);
@@ -563,7 +565,6 @@ OAL_STATIC oal_uint32  dmac_11i_del_ptk_key(mac_vap_stru *pst_mac_vap, oal_uint8
 
     /*5.1 ????????????????????????*/
     pst_current_dmac_user->st_user_base_info.st_user_tx_info.st_security.en_cipher_key_type = HAL_KEY_TYPE_BUTT;
-
 
     return OAL_SUCC;
 }

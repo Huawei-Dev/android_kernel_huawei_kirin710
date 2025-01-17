@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <linux/debugfs.h>
+#include "plat_type.h"
 
 /*****************************************************************************
   2 CHR????????
@@ -45,17 +46,6 @@
 #define CHR_MAX_NR                  1
 #define chr_ERRNO_WRITE_NR          1
 #define CHR_ERRNO_WRITE             _IOW(CHR_MAGIC, 1, int32)
-/*****************************************************************************
-  3 ????????????
-*****************************************************************************/
-typedef unsigned char               uint8;
-typedef char                        int8;
-typedef unsigned short              uint16;
-typedef short                       int16;
-typedef unsigned int                uint32;
-typedef int                         int32;
-typedef unsigned long               uint64;
-typedef long                        int64;
 
 /*****************************************************************************
   4 ????????????

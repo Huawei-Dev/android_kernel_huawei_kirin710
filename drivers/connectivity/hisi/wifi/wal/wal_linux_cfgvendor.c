@@ -12,12 +12,13 @@ extern "C" {
 #include "frw_ext_if.h"
 #include "wal_linux_cfgvendor.h"
 #include "wal_linux_ioctl.h"
+#include "wal_linux_cfg80211.h"
 
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_WAL_LINUX_CFGVENDOR_C
 
-#define OUI_GOOGLE  0x001A11
-#define OUI_HISI    0x001018
+#define OUI_VENDOR      0x001A11
+#define OUI_HISI        0x001018
 
 #if (defined(_PRE_PRODUCT_ID_HI110X_HOST) || (LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0))) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
 extern oal_uint32 band_5g_enabled;
@@ -82,7 +83,11 @@ OAL_STATIC oal_uint32 wal_cfgvendor_copy_channel_list(mac_vendor_cmd_channel_lis
         puc_chanel_list = pst_channel_list->auc_channel_list_2g;
         for (ul_loop = 0; ul_loop < pst_channel_list->uc_channel_num_2g; ul_loop++)
         {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+            pl_channel_list[ul_channel_num++] = oal_ieee80211_channel_to_frequency(puc_chanel_list[ul_loop],NL80211_BAND_2GHZ);
+#else
             pl_channel_list[ul_channel_num++] = oal_ieee80211_channel_to_frequency(puc_chanel_list[ul_loop],IEEE80211_BAND_2GHZ);
+#endif
         }
     }
 
@@ -93,7 +98,11 @@ OAL_STATIC oal_uint32 wal_cfgvendor_copy_channel_list(mac_vendor_cmd_channel_lis
 
         for (ul_loop = 0; ul_loop < pst_channel_list->uc_channel_num_5g; ul_loop++)
         {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+            pl_channel_list[ul_channel_num++] = oal_ieee80211_channel_to_frequency(puc_chanel_list[ul_loop],NL80211_BAND_5GHZ);
+#else
             pl_channel_list[ul_channel_num++] = oal_ieee80211_channel_to_frequency(puc_chanel_list[ul_loop],IEEE80211_BAND_5GHZ);
+#endif
         }
     }
 
@@ -257,7 +266,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_set_country(oal_wiphy_stru *wiphy,
         type = oal_nla_type(iter);
         switch (type)
         {
-            case ANDR_WIFI_ATTRIBUTE_COUNTRY:
+            case VENDOR_WIFI_ATTRIBUTE_COUNTRY:
 #ifdef _PRE_WLAN_FEATURE_11D
                 oal_memcopy(auc_country_code, oal_nla_data(iter),
                             OAL_MIN(oal_nla_len(iter), OAL_SIZEOF(auc_country_code)));
@@ -378,9 +387,9 @@ OAL_STATIC oal_int32 wal_cfgvendor_set_random_mac_oui(oal_wiphy_stru *pst_wiphy,
 
     l_type = oal_nla_type(p_data);
 
-    if (ANDR_WIFI_ATTRIBUTE_RANDOM_MAC_OUI == l_type)
+    if (VENDOR_WIFI_ATTRIBUTE_RANDOM_MAC_OUI == l_type)
     {
-        /* ????mac??????3????(mac oui)??Android????,wps pbc??????hilink??????????????3??????0 */
+        /* ????mac??????3????(mac oui)??????????,wps pbc??????hilink??????????????3??????0 */
         oal_memcopy(auc_random_mac_oui, oal_nla_data(p_data), WLAN_RANDOM_MAC_OUI_LEN);
         OAM_WARNING_LOG3(0, OAM_SF_ANY, "{wal_cfgvendor_set_random_mac_oui::mac_ou:0x%.2x:%.2x:%.2x}\r\n",
                          auc_random_mac_oui[0], auc_random_mac_oui[1], auc_random_mac_oui[2]);
@@ -509,6 +518,59 @@ OAL_STATIC oal_int32 wal_cfgvendor_dbg_get_ring_data(oal_wiphy_stru *wiphy,
     return 0;
 }
 
+/*
+ * Vendor CFG80211??????????/??????????
+ */
+OAL_STATIC oal_int32 wal_cfgvendor_lstats_get_station_info(oal_wiphy_stru *pst_wiphy,
+                                                          oal_wireless_dev_stru *pst_wdev,
+                                                          wal_wifi_iface_stat_stru *pst_iface_stat)
+{
+    oal_net_device_stru *pst_dev;
+    mac_vap_stru *pst_mac_vap;
+    mac_user_stru *pst_mac_user;
+    oal_station_info_stru st_sta_info;
+    oal_int32 l_ret;
+
+    pst_dev = pst_wdev->netdev;
+    if (pst_dev == OAL_PTR_NULL) {
+        OAM_WARNING_LOG0(0, OAM_SF_ANY, "{wal_cfgvendor_lstats_get_station_info::net device is null!}");
+        return -OAL_EINVAL;
+    }
+
+    pst_mac_vap = OAL_NET_DEV_PRIV(pst_dev);
+    if (pst_mac_vap == OAL_PTR_NULL) {
+        OAM_WARNING_LOG0(0, OAM_SF_ANY, "{wal_cfgvendor_lstats_get_station_info::OAL_NET_DEV_PRIV, return null!}");
+        return -OAL_EINVAL;
+    }
+
+    if (!IS_STA(pst_mac_vap)) {
+        OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{wal_cfgvendor_lstats_get_station_info:: not sta mode!}");
+        return -OAL_EINVAL;
+    }
+
+    pst_mac_user = (mac_user_stru *)mac_res_get_mac_user(pst_mac_vap->uc_assoc_vap_id);
+    if (pst_mac_user == OAL_PTR_NULL) {
+        OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY,
+                        "{wal_cfgvendor_lstats_get_station_info:: can not get user[%d]!}",
+                        pst_mac_vap->uc_assoc_vap_id);
+        return -OAL_EINVAL;
+    }
+
+    OAL_MEMZERO(&st_sta_info, OAL_SIZEOF(st_sta_info));
+    l_ret = wal_cfg80211_get_station(pst_wiphy, pst_dev, pst_mac_user->auc_user_mac_addr, &st_sta_info);
+    if (l_ret != OAL_SUCC) {
+        OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_cfgvendor_lstats_get_station_info::get station info fail %d}", l_ret);
+        return l_ret;
+    }
+
+    pst_iface_stat->ac[0].ul_tx_mpdu = st_sta_info.tx_packets;
+    pst_iface_stat->ac[0].ul_rx_mpdu = st_sta_info.rx_packets;
+    pst_iface_stat->ac[0].ul_retries = st_sta_info.tx_retries;
+    pst_iface_stat->ac[0].ul_mpdu_lost = st_sta_info.tx_failed;
+
+    return OAL_SUCC;
+}
+
 
 OAL_STATIC oal_int32 wal_cfgvendor_lstats_get_info(oal_wiphy_stru *pst_wiphy,
         oal_wireless_dev_stru *pst_wdev, OAL_CONST oal_void  *p_data, oal_int32 l_len)
@@ -550,7 +612,14 @@ OAL_STATIC oal_int32 wal_cfgvendor_lstats_get_info(oal_wiphy_stru *pst_wiphy,
     pst_iface_stat->ul_num_peers           = VENDOR_NUM_PEER;
     pst_iface_stat->peer_info->ul_num_rate = VENDOR_NUM_RATE;
 
-    /* ????link ???? */
+    /* ????cfg80211 vendor???????????????????? */
+    l_err = wal_cfgvendor_lstats_get_station_info(pst_wiphy, pst_wdev, pst_iface_stat);
+    if(l_err != OAL_SUCC) {
+        oal_free(p_out_data);
+        return -OAL_EFAIL;
+    }
+
+    /* ????link???? */
     pst_skb = oal_cfg80211_vendor_cmd_alloc_reply_skb(pst_wiphy, ul_reply_len);
     if (OAL_UNLIKELY(!pst_skb))
     {
@@ -561,11 +630,11 @@ OAL_STATIC oal_int32 wal_cfgvendor_lstats_get_info(oal_wiphy_stru *pst_wiphy,
 
     oal_nla_put_nohdr(pst_skb, ul_reply_len, p_out_data);
 
-    l_err =  oal_cfg80211_vendor_cmd_reply(pst_skb);
-    OAM_WARNING_LOG4(0, OAM_SF_ANY, "{wal_cfgvendor_lstats_get_info::on_time %d, tx_time %d, rx_time %d, err %d",
+    l_err = oal_cfg80211_vendor_cmd_reply(pst_skb);
+    OAM_WARNING_LOG4(0, OAM_SF_ANY, "{wal_cfgvendor_lstats_get_info::on_time %d, tx_pkts %d, rx_pkts %d, err %d",
                     pst_radio_stat->ul_on_time,
-                    pst_radio_stat->ul_tx_time,
-                    pst_radio_stat->ul_rx_time,
+                    pst_iface_stat->ac[0].ul_tx_mpdu,
+                    pst_iface_stat->ac[0].ul_rx_mpdu,
                     l_err);
     oal_free(p_out_data);
     return l_err;
@@ -575,7 +644,7 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
 {
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = GSCAN_SUBCMD_GET_CHANNEL_LIST
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
@@ -584,31 +653,31 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
 
     {
         {
-            .vendor_id = OUI_GOOGLE,
-            .subcmd = ANDR_WIFI_SET_COUNTRY
+            .vendor_id = OUI_VENDOR,
+            .subcmd = VENDOR_WIFI_SET_COUNTRY
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
         .doit = wal_cfgvendor_set_country
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
-            .subcmd = ANDR_WIFI_SUBCMD_GET_FEATURE_SET
+            .vendor_id = OUI_VENDOR,
+            .subcmd = VENDOR_WIFI_SUBCMD_GET_FEATURE_SET
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
         .doit = wal_cfgvendor_get_feature_set
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
-            .subcmd = ANDR_WIFI_RANDOM_MAC_OUI
+            .vendor_id = OUI_VENDOR,
+            .subcmd = VENDOR_WIFI_RANDOM_MAC_OUI
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
         .doit = wal_cfgvendor_set_random_mac_oui
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = DEBUG_GET_FEATURE
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
@@ -616,7 +685,7 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = DEBUG_GET_VER
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
@@ -624,7 +693,7 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = DEBUG_GET_RING_STATUS
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
@@ -632,7 +701,7 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = DEBUG_TRIGGER_MEM_DUMP
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
@@ -640,7 +709,7 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = DEBUG_START_LOGGING
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
@@ -648,7 +717,7 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = DEBUG_GET_RING_DATA
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
@@ -656,7 +725,7 @@ OAL_STATIC OAL_CONST oal_wiphy_vendor_command_stru wal_vendor_cmds[] =
     },
     {
         {
-            .vendor_id = OUI_GOOGLE,
+            .vendor_id = OUI_VENDOR,
             .subcmd = LSTATS_SUBCMD_GET_INFO
         },
         .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,

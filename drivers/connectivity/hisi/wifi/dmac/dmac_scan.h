@@ -43,7 +43,8 @@ extern "C" {
 /*****************************************************************************
   4 ????????????
 ****************************************************************************/
-
+extern frw_timeout_stru g_csa_stop_timer;
+extern oal_uint8 g_csa_scan_flag;
 /*****************************************************************************
   6 ????????
 *****************************************************************************/
@@ -101,6 +102,7 @@ extern oal_void dmac_scan_end(mac_device_stru *pst_mac_device);
 extern oal_void  dmac_scan_abort(mac_device_stru *pst_mac_device);
 extern oal_uint32  dmac_scan_after_p2pgo_send_noa(void *p_arg);
 extern oal_void  dmac_scan_switch_home_channel_work(mac_device_stru *pst_mac_device);
+extern oal_uint32 dmac_sta_csa_stop_timeout_fn(void *arg);
 
 /* ???????????????? */
 extern oal_uint32 dmac_scan_channel_statistics_complete(frw_event_mem_stru *pst_event_mem);

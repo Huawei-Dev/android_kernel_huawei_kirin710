@@ -33,6 +33,7 @@
 #define FILE_COUNT_PER_SEND           (1)
 #define MIN_FIRMWARE_FILE_TX_BUF_LEN  (4096)
 
+#include "oal_util.h"
 /*****************************************************************************
   3 ????????????
 *****************************************************************************/
@@ -1308,7 +1309,7 @@ int32 exec_file_type_cmd(uint8 *Key, uint8 *Value)
     {
         for (i = 0; i < send_count; i++)
         {
-            rdlen = kernel_read(fp, fp->f_pos, g_pucDataBuf, per_send_len);
+            rdlen = oal_file_read_ext(fp, fp->f_pos, g_pucDataBuf, per_send_len);
             if (rdlen > 0)
             {
                 PS_PRINT_DBG("len of kernel_read is [%d], i=%d\n", rdlen, i);
@@ -1498,7 +1499,9 @@ int32 firmware_read_cfg(uint8 *puc_CfgPatch, uint8 *puc_read_buffer)
     }
 
     OS_MEM_SET(puc_read_buffer, 0, READ_CFG_BUF_LEN);
-    l_ret = kernel_read(fp, fp->f_pos, puc_read_buffer, READ_CFG_BUF_LEN);
+
+    l_ret = oal_file_read_ext(fp, fp->f_pos, puc_read_buffer, READ_CFG_BUF_LEN);
+
 
     filp_close(fp, NULL);
     fp = NULL;

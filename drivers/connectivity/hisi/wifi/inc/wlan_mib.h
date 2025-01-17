@@ -929,7 +929,6 @@ typedef enum
     WLAN_CFGID_SET_STA_PM_ON                = 232,      /* STA?????????????? */
 #endif
 
-    WLAN_CFGID_PACKET_XMIT                  = 240,      /* ???????????????? */
     WLAN_CFGID_DUMP_BA_BITMAP               = 241,      /* ???????????????? */
     WLAN_CFGID_VAP_PKT_STAT                 = 242,      /* vap???????? */
     WLAN_CFGID_TIMER_START                  = 244,
@@ -1332,7 +1331,7 @@ typedef enum
 #endif
 #endif
 
-    WLAN_CFGID_PCIE_PM_LEVEL                = 643,
+    WLAN_CFGID_RX_FILTER_FRAG               = 643,
 
 #ifdef _PRE_WLAN_FEATURE_11K
     WLAN_CFGID_SEND_NEIGHBOR_REQ            = 644,

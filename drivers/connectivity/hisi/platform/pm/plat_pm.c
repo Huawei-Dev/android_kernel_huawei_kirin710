@@ -11,7 +11,6 @@
 #include <linux/platform_device.h>
 #include <linux/kobject.h>
 #include <linux/irq.h>
-#include <linux/wakelock.h>
 #include <linux/mmc/sdio.h>
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
@@ -914,6 +913,9 @@ int firmware_download_function(uint32 which_cfg)
         oal_sdio_release_host(pm_data->pst_wlan_pm_info->pst_sdio);
         oal_sdio_wake_unlock(pm_data->pst_wlan_pm_info->pst_sdio);
         PS_PRINT_ERR("sdio reinit failed, ret:%d!\n", ret);
+#ifdef CONFIG_HUAWEI_DSM
+        hw_1102_dsm_client_notify(DSM_110x_DOWNLOAD_FIRMWARE, "%s: sdio reinit failed, ret %d \n", __FUNCTION__, ret);
+#endif
         return -FAILURE;
     }
 
@@ -935,6 +937,9 @@ int firmware_download_function(uint32 which_cfg)
         else
         {
             CHR_EXCEPTION(CHR_WIFI_DRV(CHR_WIFI_DRV_EVENT_PLAT, CHR_PLAT_DRV_ERROR_FIRMWARE_DOWN));
+#ifdef CONFIG_HUAWEI_DSM
+            hw_1102_dsm_client_notify(DSM_110x_DOWNLOAD_FIRMWARE, "%s: failed to download firmware\n", __FUNCTION__);
+#endif
         }
         return -FAILURE;
     }
@@ -1120,6 +1125,9 @@ int32 wlan_power_on(void)
             PS_PRINT_ERR("wlan_pm_wait_device_ready timeout %d !!!!!!\n", HOST_WAIT_BOTTOM_INIT_TIMEOUT);
             error = WIFI_POWER_BFGX_OFF_BOOT_UP_FAIL;
             CHR_EXCEPTION(CHR_WIFI_DRV(CHR_WIFI_DRV_EVENT_PLAT, CHR_PLAT_DRV_ERROR_WCPU_BOOTUP));
+#ifdef CONFIG_HUAWEI_DSM
+            hw_1102_dsm_client_notify(DSM_110x_HALT, "%s: wlan power on dev ready by gpio fail\n", __FUNCTION__);
+#endif
             goto wifi_power_fail;
         }
     }
@@ -1130,6 +1138,9 @@ int32 wlan_power_on(void)
             DECLARE_DFT_TRACE_KEY_INFO("wlan_poweron_by_uart_fail", OAL_DFT_TRACE_FAIL);
             error = WIFI_POWER_BFGX_DERESET_WCPU_FAIL;
             CHR_EXCEPTION(CHR_WIFI_DRV(CHR_WIFI_DRV_EVENT_PLAT, CHR_PLAT_DRV_ERROR_OPEN_WCPU));
+#ifdef CONFIG_HUAWEI_DSM
+            hw_1102_dsm_client_notify(DSM_110x_HALT, "%s: wlan power on by uart fail\n", __FUNCTION__);
+#endif
             goto wifi_power_fail;
         }
         else
@@ -1153,6 +1164,9 @@ int32 wlan_power_on(void)
                 PS_PRINT_ERR("wlan_pm_wait_device_ready timeout %d !!!!!!",HOST_WAIT_BOTTOM_INIT_TIMEOUT);
                 error = WIFI_POWER_BFGX_ON_BOOT_UP_FAIL;
                 CHR_EXCEPTION(CHR_WIFI_DRV(CHR_WIFI_DRV_EVENT_PLAT, CHR_PLAT_DRV_ERROR_WCPU_BOOTUP));
+#ifdef CONFIG_HUAWEI_DSM
+                hw_1102_dsm_client_notify(DSM_110x_HALT, "%s: wlan power on dev ready by uart fail\n", __FUNCTION__);
+#endif
                 goto wifi_power_fail;
             }
         }

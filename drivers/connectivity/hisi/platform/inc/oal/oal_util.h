@@ -193,7 +193,7 @@ extern "C" {
 *****************************************************************************/
 #ifdef _PRE_CONFIG_HISI_PANIC_DUMP_SUPPORT
 typedef  struct _hwifi_panic_log_   hwifi_panic_log;
-typedef oal_int32 (* hwifi_panic_log_cb)(oal_void* data,oal_uint8*pst_buf,oal_int32 buf_len);
+typedef oal_int32 (* hwifi_panic_log_cb)(oal_void* data,char *pst_buf,oal_int32 buf_len);
 struct _hwifi_panic_log_
 {
     struct list_head list;

@@ -491,7 +491,7 @@ OAL_STATIC oal_int32 hmac_print_vap_stat(oal_void* data, char* buf, oal_int32 bu
     return ret;
 }
 
-OAL_STATIC ssize_t  hmac_get_vap_stat(struct device *dev, struct device_attribute *attr, char* buf)
+OAL_STATIC ssize_t  hmac_get_vap_stat(struct kobject *dev, struct kobj_attribute *attr, char* buf)
 {
     int ret = 0;
 
@@ -501,9 +501,10 @@ OAL_STATIC ssize_t  hmac_get_vap_stat(struct device *dev, struct device_attribut
     ret += hmac_print_vap_stat(NULL,buf,PAGE_SIZE - ret);
     return ret;
 }
-OAL_STATIC DEVICE_ATTR(vap_info, S_IRUGO, hmac_get_vap_stat, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_vap_info =
+    __ATTR(vap_info, S_IRUGO, hmac_get_vap_stat, NULL);
 
-OAL_STATIC ssize_t  hmac_get_adapt_info(struct device *dev, struct device_attribute *attr, char* buf)
+OAL_STATIC ssize_t  hmac_get_adapt_info(struct kobject *dev, struct kobj_attribute *attr, char* buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -531,7 +532,7 @@ oal_int32 hmac_wakelock_info_print(char* buf, oal_int32 buf_len)
     return ret;
 }
 
-OAL_STATIC ssize_t  hmac_get_wakelock_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hmac_get_wakelock_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -543,10 +544,12 @@ OAL_STATIC ssize_t  hmac_get_wakelock_info(struct device *dev, struct device_att
     return ret;
 }
 
-OAL_STATIC DEVICE_ATTR(adapt_info, S_IRUGO, hmac_get_adapt_info, NULL);
-OAL_STATIC DEVICE_ATTR(wakelock, S_IRUGO, hmac_get_wakelock_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_adapt_info =
+    __ATTR(adapt_info, S_IRUGO, hmac_get_adapt_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_wakelock =
+    __ATTR(wakelock, S_IRUGO, hmac_get_wakelock_info, NULL);
 
-OAL_STATIC ssize_t  hmac_show_roam_status(struct device *dev, struct device_attribute *attr, char* buf)
+OAL_STATIC ssize_t  hmac_show_roam_status(struct kobject *dev, struct kobj_attribute *attr, char* buf)
 {
     oal_int32               ret = 0;
     oal_uint8               uc_vap_id;
@@ -629,10 +632,11 @@ OAL_STATIC ssize_t  hmac_show_roam_status(struct device *dev, struct device_attr
     return ret;
 }
 
-OAL_STATIC DEVICE_ATTR(roam_status, S_IRUGO, hmac_show_roam_status, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_roam_status =
+    __ATTR(roam_status, S_IRUGO, hmac_show_roam_status, NULL);
 
 
-OAL_STATIC ssize_t hmac_set_rxthread_enable(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t hmac_set_rxthread_enable(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     oal_uint32 ul_val;
 
@@ -650,7 +654,7 @@ OAL_STATIC ssize_t hmac_set_rxthread_enable(struct device *dev, struct device_at
 
     return count;
 }
-OAL_STATIC ssize_t hmac_get_rxthread_info(struct device *dev, struct device_attribute *attr, char* buf)
+OAL_STATIC ssize_t hmac_get_rxthread_info(struct kobject *dev, struct kobj_attribute *attr, char* buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -662,7 +666,8 @@ OAL_STATIC ssize_t hmac_get_rxthread_info(struct device *dev, struct device_attr
 
     return ret;
 }
-OAL_STATIC DEVICE_ATTR(rxdata_info, S_IRUGO|S_IWUSR, hmac_get_rxthread_info, hmac_set_rxthread_enable);
+OAL_STATIC struct kobj_attribute dev_attr_rxdata_info =
+    __ATTR(rxdata_info, S_IRUGO|S_IWUSR, hmac_get_rxthread_info, hmac_set_rxthread_enable);
 
 OAL_STATIC struct attribute *hmac_sysfs_entries[] = {
         &dev_attr_vap_info.attr,

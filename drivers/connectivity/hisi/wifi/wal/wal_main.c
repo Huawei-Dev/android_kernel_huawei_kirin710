@@ -156,7 +156,7 @@ oal_int32 wal_wakelock_info_print(char* buf, oal_int32 buf_len)
     return ret;
 }
 
-OAL_STATIC ssize_t  wal_get_wakelock_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  wal_get_wakelock_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -169,7 +169,7 @@ OAL_STATIC ssize_t  wal_get_wakelock_info(struct device *dev, struct device_attr
 }
 
 extern oal_int32 wal_atcmsrv_ioctl_get_rx_pckg(oal_net_device_stru *pst_net_dev, oal_int32 *pl_rx_pckg_succ_num);
-OAL_STATIC ssize_t  wal_get_packet_statistics_wlan0_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  wal_get_packet_statistics_wlan0_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     ssize_t                     ret = 0;
     oal_net_device_stru*        pst_net_dev;
@@ -222,8 +222,10 @@ OAL_STATIC ssize_t  wal_get_packet_statistics_wlan0_info(struct device *dev, str
     return ret;
 }
 
-OAL_STATIC DEVICE_ATTR(wakelock, S_IRUGO, wal_get_wakelock_info, NULL);
-OAL_STATIC DEVICE_ATTR(packet_statistics_wlan0, S_IRUGO, wal_get_packet_statistics_wlan0_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_wakelock =
+    __ATTR(wakelock, S_IRUGO, wal_get_wakelock_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_packet_statistics_wlan0 =
+    __ATTR(packet_statistics_wlan0, S_IRUGO, wal_get_packet_statistics_wlan0_info, NULL);
 
 oal_int32 wal_msg_queue_info_print(char* buf, oal_int32 buf_len)
 {
@@ -234,7 +236,7 @@ oal_int32 wal_msg_queue_info_print(char* buf, oal_int32 buf_len)
     return ret;
 }
 
-OAL_STATIC ssize_t  wal_get_msg_queue_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  wal_get_msg_queue_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -295,7 +297,7 @@ OAL_STATIC ssize_t  wal_get_dev_wifi_info_print(char* buf, oal_int32 buf_len)
 
     return ret;
 }
-OAL_STATIC ssize_t  wal_get_dev_wifi_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  wal_get_dev_wifi_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -306,9 +308,11 @@ OAL_STATIC ssize_t  wal_get_dev_wifi_info(struct device *dev, struct device_attr
 
     return ret;
 }
-OAL_STATIC DEVICE_ATTR(dev_wifi_info, S_IRUGO, wal_get_dev_wifi_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_dev_wifi_info =
+    __ATTR(dev_wifi_info, S_IRUGO, wal_get_dev_wifi_info, NULL);
 
-OAL_STATIC DEVICE_ATTR(msg_queue, S_IRUGO, wal_get_msg_queue_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_msg_queue =
+    __ATTR(msg_queue, S_IRUGO, wal_get_msg_queue_info, NULL);
 
 OAL_STATIC struct attribute *wal_sysfs_entries[] = {
         &dev_attr_wakelock.attr,

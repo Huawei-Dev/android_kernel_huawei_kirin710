@@ -9,7 +9,6 @@
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
 #include <linux/mutex.h>
 #include <linux/kernel.h>
-#include <linux/wakelock.h>
 
 #include <linux/mmc/host.h>
 #include <linux/mmc/sdio_func.h>
@@ -19,8 +18,6 @@
 #endif
 
 #include "oal_ext_if.h"
-
-
 
 #define HOST_WAIT_BOTTOM_INIT_TIMEOUT   (20000)
 #define WLAN_WAKUP_MSG_WAIT_TIMEOUT     (100)
@@ -60,6 +57,9 @@ enum WLAN_PM_SLEEP_STAGE
     SLEEP_CMD_SND       = 4,  //????????reg????????
 };
 
+#ifdef CONFIG_HUAWEI_DSM
+#define DSM_DEV_BUFF_SIZE       1024
+#endif
 /*****************************************************************************
   3 STRUCT DEFINE
 *****************************************************************************/
@@ -183,6 +183,10 @@ extern oal_int32 wlan_device_mem_check(void);
 extern oal_int32 wlan_device_mem_check_result(unsigned long long *time);
 extern oal_void wlan_device_mem_check_work(oal_work_stru *pst_worker);
 
+#endif
+#ifdef CONFIG_HUAWEI_DSM
+extern void hw_1102_register_wifi_dsm_client(void);
+extern void hw_1102_unregister_wifi_dsm_client(void);
 #endif
 
 #endif

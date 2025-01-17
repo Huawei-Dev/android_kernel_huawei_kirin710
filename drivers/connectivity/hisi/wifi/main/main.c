@@ -688,7 +688,7 @@ oal_void  hi1151_main_exit(oal_void)
 oal_int32 g_wifi_init_flag = 0;
 oal_int32 g_wifi_init_ret;
 /*built-in*/
-OAL_STATIC ssize_t  wifi_sysfs_set_init(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  wifi_sysfs_set_init(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     char            mode[128] = {0};
     OAL_BUG_ON(NULL == dev);
@@ -722,7 +722,7 @@ OAL_STATIC ssize_t  wifi_sysfs_set_init(struct device *dev, struct device_attrib
     return count;
 }
 
-OAL_STATIC ssize_t  wifi_sysfs_get_init(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  wifi_sysfs_get_init(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -747,7 +747,8 @@ OAL_STATIC ssize_t  wifi_sysfs_get_init(struct device *dev, struct device_attrib
 
     return ret;
 }
-OAL_STATIC DEVICE_ATTR(wifi, S_IRUGO | S_IWUSR, wifi_sysfs_get_init, wifi_sysfs_set_init);
+STATIC struct kobj_attribute dev_attr_wifi =
+    __ATTR(wifi, S_IRUGO | S_IWUSR, wifi_sysfs_get_init, wifi_sysfs_set_init);
 OAL_STATIC struct attribute *wifi_init_sysfs_entries[] = {
         &dev_attr_wifi.attr,
         NULL

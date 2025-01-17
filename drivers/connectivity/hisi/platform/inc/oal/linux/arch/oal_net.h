@@ -62,7 +62,6 @@ extern "C" {
 #endif
 
 #include <linux/kernel_stat.h>
-#include <asm/cputime.h>
 
 /* E5 spe module relation */
 #if (defined(CONFIG_BALONG_SPE) && defined(_PRE_WLAN_SPE_SUPPORT))
@@ -171,15 +170,23 @@ typedef iw_handler                                  oal_iw_handler;
 #define OAL_NETDEVICE_OPS_DO_IOCTL(_pst_netdev_ops)         ((_pst_netdev_ops)->ndo_do_ioctl)
 #define OAL_NETDEVICE_OPS_CHANGE_MTU(_pst_netdev_ops)       ((_pst_netdev_ops)->ndo_change_mtu)
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0))
 #define OAL_NETDEVICE_LAST_RX(_pst_dev)                     ((_pst_dev)->last_rx)
+#endif
+#ifdef CONFIG_WIRELESS_EXT
 #define OAL_NETDEVICE_WIRELESS_HANDLERS(_pst_dev)           ((_pst_dev)->wireless_handlers)
+#endif
 #define OAL_NETDEVICE_RTNL_LINK_OPS(_pst_dev)               ((_pst_dev)->rtnl_link_ops)
 #define OAL_NETDEVICE_RTNL_LINK_STATE(_pst_dev)             ((_pst_dev)->rtnl_link_state)
 #define OAL_NETDEVICE_MAC_ADDR(_pst_dev)                    ((_pst_dev)->dev_addr)
 #define OAL_NETDEVICE_TX_QUEUE_LEN(_pst_dev)                ((_pst_dev)->tx_queue_len)
 #define OAL_NETDEVICE_TX_QUEUE_NUM(_pst_dev)                ((_pst_dev)->num_tx_queues)
 #define OAL_NETDEVICE_TX_QUEUE(_pst_dev, _index)            ((_pst_dev)->_tx[_index])
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0)
+#define OAL_NETDEVICE_DESTRUCTOR(_pst_dev)                  ((_pst_dev)->priv_destructor)
+#else
 #define OAL_NETDEVICE_DESTRUCTOR(_pst_dev)                  ((_pst_dev)->destructor)
+#endif
 #define OAL_NETDEVICE_TYPE(_pst_dev)                        ((_pst_dev)->type)
 #define OAL_NETDEVICE_NAME(_pst_dev)                        ((_pst_dev)->name)
 #define OAL_NETDEVICE_MASTER(_pst_dev)                      ((_pst_dev)->master)
@@ -599,14 +606,14 @@ typedef struct ieee80211_iface_combination  oal_ieee80211_iface_combination;
 /* WiFi ????????linux4.9 */
 /* Linux 4.7 ????enum ieee80211_band????enum nl80211_band ??????
    WiFi ????????enum ieee80211_band ???? */
-enum ieee80211_band {
-    IEEE80211_BAND_2GHZ = NL80211_BAND_2GHZ,
-    IEEE80211_BAND_5GHZ = NL80211_BAND_5GHZ,
-    IEEE80211_BAND_60GHZ = NL80211_BAND_60GHZ,
+//enum ieee80211_band {
+//    IEEE80211_BAND_2GHZ = NL80211_BAND_2GHZ,
+//    IEEE80211_BAND_5GHZ = NL80211_BAND_5GHZ,
+//    IEEE80211_BAND_60GHZ = NL80211_BAND_60GHZ,
 
-    /* keep last */
-    IEEE80211_NUM_BANDS
-};
+//    /* keep last */
+//    IEEE80211_NUM_BANDS
+//};
 #define HISI_IEEE80211_BAND_2GHZ    NL80211_BAND_2GHZ
 #define HISI_IEEE80211_BAND_5GHZ    NL80211_BAND_5GHZ
 #else
@@ -652,7 +659,11 @@ OAL_STATIC OAL_INLINE oal_uint8* oal_netbuf_pull(oal_netbuf_stru *pst_netbuf, oa
     return (pst_netbuf->data += ul_len);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+OAL_STATIC OAL_INLINE oal_int32 oal_ieee80211_channel_to_frequency(oal_int32 l_channel, enum nl80211_band band)
+#else
 OAL_STATIC OAL_INLINE oal_int32 oal_ieee80211_channel_to_frequency(oal_int32 l_channel, enum ieee80211_band band)
+#endif
 {
     /* see 802.11 17.3.8.3.2 and Annex J
         * there are overlapping channel numbers in 5GHz and 2GHz bands */
@@ -663,7 +674,11 @@ OAL_STATIC OAL_INLINE oal_int32 oal_ieee80211_channel_to_frequency(oal_int32 l_c
 
     switch (band)
     {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+        case NL80211_BAND_2GHZ:
+#else
         case IEEE80211_BAND_2GHZ:
+#endif
         {
             if (14 == l_channel)
             {
@@ -676,7 +691,11 @@ OAL_STATIC OAL_INLINE oal_int32 oal_ieee80211_channel_to_frequency(oal_int32 l_c
             break;
         }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+        case NL80211_BAND_5GHZ:
+#else
         case IEEE80211_BAND_5GHZ:
+#endif
         {
             if (l_channel >= 182 && l_channel <= 196)
             {
@@ -1532,7 +1551,11 @@ OAL_STATIC OAL_INLINE oal_uint32  oal_netbuf_decrease_user(oal_netbuf_stru *pst_
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    oal_atomic_dec(&(pst_buf->users));
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+    refcount_dec(&(pst_buf->users));
+#else
+    atomic_dec(&(pst_buf->users));
+#endif
 
     return OAL_SUCC;
 }
@@ -1545,10 +1568,46 @@ OAL_STATIC OAL_INLINE oal_uint32  oal_netbuf_increase_user(oal_netbuf_stru *pst_
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    oal_atomic_inc(&(pst_buf->users));
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+    refcount_inc(&(pst_buf->users));
+#else
+    atomic_inc(&(pst_buf->users));
+#endif
 
     return OAL_SUCC;
 }
+
+
+OAL_STATIC OAL_INLINE oal_uint32  oal_netbuf_read_user(oal_netbuf_stru *pst_buf)
+{
+    if (OAL_UNLIKELY(OAL_PTR_NULL == pst_buf))
+    {
+        return OAL_ERR_CODE_PTR_NULL;
+    }
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+    return refcount_read(&(pst_buf->users));
+#else
+    return (oal_uint32)atomic_read(&(pst_buf->users));
+#endif
+}
+
+
+
+OAL_STATIC OAL_INLINE oal_void  oal_netbuf_set_user(oal_netbuf_stru *pst_buf, oal_uint32 refcount)
+{
+    if (OAL_UNLIKELY(OAL_PTR_NULL == pst_buf))
+    {
+        return;
+    }
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+    refcount_set(&(pst_buf->users), refcount);
+#else
+    atomic_set(&(pst_buf->users), (oal_int32)refcount);
+#endif
+}
+
 
 
 OAL_STATIC OAL_INLINE oal_uint32  oal_netbuf_get_buf_num(oal_netbuf_head_stru *pst_netbuf_head)
@@ -1635,7 +1694,7 @@ OAL_STATIC OAL_INLINE oal_sock_stru* oal_netlink_kernel_create(
                 oal_mutex_stru *pst_cb_mutex, oal_module_stru *pst_module)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
-    // host evn android 4.4 netlink_kernel_create API is changed
+    // host evn netlink_kernel_create API is changed
     struct netlink_kernel_cfg cfg;
 
     oal_memset(&cfg, 0, OAL_SIZEOF(cfg));

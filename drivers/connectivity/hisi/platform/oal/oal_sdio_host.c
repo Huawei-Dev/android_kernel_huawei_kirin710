@@ -10,9 +10,14 @@ extern "C" {
 #include "oal_sdio_host_if.h"
 #include "oal_net.h"
 #include "oal_ext_if.h"
+
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+#include <linux/sched/debug.h>
+#endif
 #include "board.h"
 #endif
+
 #ifdef CONFIG_MMC
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -2003,6 +2008,9 @@ OAL_STATIC oal_int32 _oal_sdio_transfer_scatt(struct oal_sdio *hi_sdio, oal_int3
         sdio_release_host(func);
         return -OAL_EFAIL;
     }
+#ifdef CONFIG_HISI_SDIO_TIME_DEBUG
+    time_start = ktime_get();
+#endif
     ret = oal_mmc_io_rw_scat_extended(hi_sdio, write,
                                    hi_sdio->func->num, addr,
                                    0, sg,
@@ -2266,7 +2274,7 @@ OAL_STATIC oal_int32 oal_sdio_suspend(struct device *dev)
     }
 #endif
 
-    DECLARE_DFT_TRACE_KEY_INFO("sdio_android_suspend", OAL_DFT_TRACE_SUCC);
+    DECLARE_DFT_TRACE_KEY_INFO("sdio_system_suspend", OAL_DFT_TRACE_SUCC);
     hi_sdio->ul_sdio_suspend++;
     return OAL_SUCC;
 }
@@ -2295,7 +2303,7 @@ OAL_STATIC oal_int32 oal_sdio_resume(struct device *dev)
     up(&sdio_wake_sema);
 
     hi_sdio->ul_sdio_resume++;
-    DECLARE_DFT_TRACE_KEY_INFO("sdio_android_resume", OAL_DFT_TRACE_SUCC);
+    DECLARE_DFT_TRACE_KEY_INFO("sdio_system_resume", OAL_DFT_TRACE_SUCC);
 
     return OAL_SUCC;
 }
@@ -2314,7 +2322,7 @@ OAL_STATIC const struct dev_pm_ops oal_sdio_pm_ops = {
 
 oal_void oal_sdio_dev_shutdown(struct device *dev)
 {
-    /*android poweroff*/
+    /*poweroff*/
     struct oal_sdio *hi_sdio = oal_get_sdio_default_handler();
     if(NULL == hi_sdio)
         return;
@@ -2325,7 +2333,7 @@ oal_void oal_sdio_dev_shutdown(struct device *dev)
         return;
     }
 
-    /*disable sdio/gpio interrupt before android poweroff*/
+    /*disable sdio/gpio interrupt before poweroff*/
     if(hisdio_intr_mode)
     {
         /*gpio interrupt*/
@@ -2437,6 +2445,9 @@ oal_int32 oal_sdio_func_probe(struct oal_sdio* hi_sdio)
     else
     {
         OAL_IO_PRINT("sdio enum timeout, reason[%s]\n", sdio_enum_err_str);
+#ifdef CONFIG_HUAWEI_DSM
+        hw_1102_dsm_client_notify(DSM_SDIO_PROBE_FAIL, "%s: sdio probe fail\n", __FUNCTION__);
+#endif
         goto failed_sdio_enum;
     }
 

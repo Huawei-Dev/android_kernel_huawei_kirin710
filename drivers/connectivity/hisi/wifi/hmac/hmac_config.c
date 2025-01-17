@@ -156,9 +156,10 @@ alg_test_main_hmac_stru g_st_alg_test_hmac;
 
 
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) && defined(_PRE_WLAN_CHIP_TEST_ALG)
-OAL_STATIC oal_ssize_t  hmac_alg_test_result_proc_read(oal_device_stru *dev, oal_device_attribute_stru *attr, char *buf);
+OAL_STATIC oal_ssize_t  hmac_alg_test_result_proc_read(struct kobject *dev, struct kobj_attribute *attr, char *buf);
 
-OAL_STATIC OAL_DEVICE_ATTR(alg_test_result, OAL_S_IRUGO|OAL_S_IWUSR, hmac_alg_test_result_proc_read, OAL_PTR_NULL);
+OAL_STATIC struct kobj_attribute dev_attr_alg_test_result =
+    __ATTR(alg_test_result, OAL_S_IRUGO|OAL_S_IWUSR, hmac_alg_test_result_proc_read, OAL_PTR_NULL);
 
 #endif
 
@@ -5176,7 +5177,7 @@ oal_uint32 hmac_config_set_random_mac_oui(mac_vap_stru *pst_mac_vap, oal_uint16 
 
     oal_memcopy(pst_mac_device->auc_mac_oui, puc_param, WLAN_RANDOM_MAC_OUI_LEN);
 
-    /* Android ????????wifi ??????????mac_oui, wps??????hilink????????????,??mac_oui??0,
+    /* ????????????wifi ??????????mac_oui, wps??????hilink????????????,??mac_oui??0,
      * mac_oui ??????????????????MAC, wifi ????????????MAC?????????????? */
     if ((pst_mac_device->auc_mac_oui[0] != 0) || (pst_mac_device->auc_mac_oui[1] != 0) || (pst_mac_device->auc_mac_oui[2] != 0))
     {
@@ -6256,14 +6257,14 @@ oal_uint32  hmac_config_adjust_ppm(mac_vap_stru *pst_mac_vap, oal_uint16 us_len,
 #endif //#ifdef _PRE_DEBUG_MODE
 
 
-oal_uint32  hmac_config_pcie_pm_level(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
+oal_uint32  hmac_config_rx_filter_frag(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32          ul_ret;
 
     /***************************************************************************
         ????????DMAC??, ????DMAC????
     ***************************************************************************/
-    ul_ret = hmac_config_send_event(pst_mac_vap, WLAN_CFGID_PCIE_PM_LEVEL, us_len, puc_param);
+    ul_ret = hmac_config_send_event(pst_mac_vap, WLAN_CFGID_RX_FILTER_FRAG, us_len, puc_param);
 
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
     {
@@ -6731,14 +6732,19 @@ oal_uint32  hmac_config_reduce_sar(mac_vap_stru *pst_mac_vap, oal_uint16 us_len,
 
 oal_uint32  hmac_config_get_country(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
-#if 1
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
     oal_int8      ac_tmp_buff[OAM_PRINT_FORMAT_LENGTH];
     mac_regdomain_info_stru *pst_regdomain_info                     = OAL_PTR_NULL;
+    mac_cfg_get_country_stru *pst_param;
 
+    pst_param = (mac_cfg_get_country_stru *)puc_param;
 
     mac_get_regdomain_info(&pst_regdomain_info);
 
+    pst_param->ac_country[0] = pst_regdomain_info->ac_country[0];
+    pst_param->ac_country[1] = pst_regdomain_info->ac_country[1];
+    pst_param->ac_country[2] = pst_regdomain_info->ac_country[2];
+    *pus_len = WLAN_COUNTRY_STR_LEN;
     OAL_SPRINTF(ac_tmp_buff, sizeof(ac_tmp_buff), "getcountry code is : %c%c.\n", pst_regdomain_info->ac_country[0], pst_regdomain_info->ac_country[1]);
     oam_print(ac_tmp_buff);
 #else
@@ -6757,7 +6763,6 @@ oal_uint32  hmac_config_get_country(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_l
 
     OAM_INFO_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_CFG, "{hmac_config_get_country::country[0]=%c, country[1]=%c.}",
                   (oal_uint8)pst_param->ac_country[0], (oal_uint8)pst_param->ac_country[1]);
-#endif
 #endif
     OAM_INFO_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_CFG, "hmac_config_get_country");
 
@@ -11006,7 +11011,7 @@ oal_uint32  hmac_config_mcs_set_check_enable(mac_vap_stru *pst_mac_vap, oal_uint
 
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) && defined(_PRE_WLAN_CHIP_TEST_ALG)
 
-OAL_STATIC oal_ssize_t hmac_alg_test_result_proc_read(oal_device_stru *dev, oal_device_attribute_stru *attr, char *buf)
+OAL_STATIC oal_ssize_t hmac_alg_test_result_proc_read(struct kobject *dev, struct kobj_attribute *attr, char *buf)
 {
 #define ALG_READ_STR  "test read"
     oal_uint32                 ul_ret;
@@ -13999,7 +14004,6 @@ oal_module_symbol(hmac_config_set_freq_skew);
 #ifdef _PRE_DEBUG_MODE
 oal_module_symbol(hmac_config_adjust_ppm);
 #endif //#ifdef _PRE_DEBUG_MODE
-oal_module_symbol(hmac_config_pcie_pm_level);
 oal_module_symbol(hmac_config_delba_req);
 oal_module_symbol(hmac_config_ampdu_end);
 oal_module_symbol(hmac_config_ampdu_start);

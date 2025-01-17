@@ -29,6 +29,10 @@ extern "C" {
 #include <linux/ktime.h>
 #include <linux/pm_wakeup.h>
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+#include <uapi/linux/sched/types.h>
+#endif
+
 /*lint +e322*/
 
 /*****************************************************************************
@@ -69,7 +73,11 @@ typedef oal_void                    (*oal_defer_func)(oal_uint);
 /* tasklet???? */
 #define OAL_DECLARE_TASK    DECLARE_TASKLET
 
-typedef wait_queue_t         oal_wait_queue_stru;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+    typedef wait_queue_entry_t   oal_wait_queue_stru;
+#else
+    typedef wait_queue_t         oal_wait_queue_stru;
+#endif
 typedef wait_queue_head_t    oal_wait_queue_head_stru;
 
 /**

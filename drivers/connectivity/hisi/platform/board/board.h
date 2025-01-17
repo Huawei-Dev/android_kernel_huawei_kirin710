@@ -12,7 +12,15 @@
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
+#ifdef CONFIG_HUAWEI_DSM
+#include <dsm/dsm_pub.h>
+#define DSM_110x_DOWNLOAD_FIRMWARE (909030033)
+#define DSM_110x_HALT              (909030035)
+#define DSM_WIFI_FEMERROR          (909030036)
+#define DSM_SDIO_PROBE_FAIL        (909030006)
 
+extern void hw_1102_dsm_client_notify(int dsm_id, const char *fmt, ...);
+#endif
 /*****************************************************************************
   2 Define macro
 *****************************************************************************/

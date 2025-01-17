@@ -36,6 +36,7 @@ extern "C" {
 typedef LONG                    oal_bitops;
 
 typedef FILE                    oal_file_stru;
+typedef long                    oal_file_pos;
 
 typedef struct _stat            oal_file_stat_stru;
 
@@ -263,6 +264,15 @@ OAL_STATIC OAL_INLINE oal_int32  oal_file_read(oal_file_stru *file,
 		                                         oal_uint32 ul_count)
 {
     return (oal_int32)fread(puc_buf, 1, ul_count, file);
+}
+
+OAL_STATIC OAL_INLINE oal_int32  oal_file_read_ext(oal_file_stru *file,
+                                                oal_file_pos pos,
+                                                oal_int8 *pc_buf,
+                                                oal_uint32 ul_count)
+{
+    fseek(file, pos, SEEK_SET);
+    return (oal_int32)fread(pc_buf, 1, ul_count, file);
 }
 
 

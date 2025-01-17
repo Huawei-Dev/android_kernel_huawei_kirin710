@@ -175,8 +175,11 @@ oal_uint32  hmac_proc_query_response_event(mac_vap_stru *pst_mac_vap, oal_uint8 
         }
 #endif
         pst_hmac_vap->station_info.txrate.flags = uc_flag;
-
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+        pst_hmac_vap->center_freq  = oal_ieee80211_channel_to_frequency(pst_mac_vap->st_channel.uc_chan_number,(enum nl80211_band)pst_mac_vap->st_channel.en_band);
+#else
         pst_hmac_vap->center_freq  = oal_ieee80211_channel_to_frequency(pst_mac_vap->st_channel.uc_chan_number,(enum ieee80211_band)pst_mac_vap->st_channel.en_band);
+#endif
         pst_hmac_vap->s_free_power = pst_query_station_reponse_event->s_free_power;
         pst_hmac_vap->st_station_info_extend.uc_distance = pst_query_station_reponse_event->st_station_info_extend.uc_distance;
         pst_hmac_vap->st_station_info_extend.uc_cca_intr = pst_query_station_reponse_event->st_station_info_extend.uc_cca_intr;

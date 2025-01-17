@@ -16,6 +16,7 @@ extern "C" {
 /*lint -e322*/
 #include <linux/compiler.h>
 #include <linux/kernel.h>
+#include <linux/version.h>
 #include <linux/kallsyms.h>
 #include <asm/string.h>
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
@@ -62,6 +63,7 @@ extern "C" {
 typedef oal_uint    oal_bitops;
 
 typedef struct file              oal_file_stru;
+typedef loff_t                   oal_file_pos;
 #define OAL_FILE_FAIL            OAL_PTR_NULL
 
 #define OAL_LIKELY(_expr)       likely(_expr)
@@ -279,7 +281,7 @@ OAL_STATIC OAL_INLINE oal_file_stru* oal_file_write(oal_file_stru *file, oal_int
 
     i_ret = file->f_op->write(file, pc_string, ul_length, &file->f_pos);
 
-    return OAL_SUCC;
+    return file;
 }
 
 
@@ -302,7 +304,24 @@ OAL_STATIC OAL_INLINE oal_int32  oal_file_read(oal_file_stru *file,
 		                                         oal_int8 *pc_buf,
 		                                         oal_uint32 ul_count)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+    loff_t pos = 0;
+    return kernel_read(file, pc_buf, ul_count, &pos);
+#else
     return kernel_read(file, 0, pc_buf, ul_count);
+#endif
+}
+
+OAL_STATIC OAL_INLINE oal_int32  oal_file_read_ext(oal_file_stru *file,
+                                                oal_file_pos pos,
+                                                oal_int8 *pc_buf,
+                                                oal_uint32 ul_count)
+{
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+    return kernel_read(file, pc_buf, ul_count, &pos);
+#else
+    return kernel_read(file, pos, pc_buf, ul_count);
+#endif
 }
 
 

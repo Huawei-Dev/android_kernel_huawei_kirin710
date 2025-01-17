@@ -85,11 +85,11 @@ OAL_STATIC LIST_HEAD(wifi_panic_log_head);
 #endif
 
 #ifdef _PRE_CONFIG_HISI_PANIC_DUMP_SUPPORT
-extern oal_int32 hcc_assem_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len);
-extern oal_int32 hcc_flowctrl_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len);
-extern oal_int32 hcc_queues_len_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len);
-extern oal_int32 hcc_queues_pkts_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len);
-extern oal_int32 hsdio_sysfs_info_print(struct oal_sdio *hi_sdio,char* buf, oal_int32 buf_len);
+extern oal_int32 hcc_assem_info_print(oal_void* data,char* buf, oal_int32 buf_len);
+extern oal_int32 hcc_flowctrl_info_print(oal_void* data,char* buf, oal_int32 buf_len);
+extern oal_int32 hcc_queues_len_info_print(oal_void* data,char* buf, oal_int32 buf_len);
+extern oal_int32 hcc_queues_pkts_info_print(oal_void* data,char* buf, oal_int32 buf_len);
+extern oal_int32 hsdio_sysfs_info_print(oal_void* data,char* buf, oal_int32 buf_len);
 OAL_STATIC DECLARE_WIFI_PANIC_STRU(hcc_panic_assem_info,hcc_assem_info_print);
 OAL_STATIC DECLARE_WIFI_PANIC_STRU(hcc_panic_flowctrl,hcc_flowctrl_info_print);
 OAL_STATIC DECLARE_WIFI_PANIC_STRU(hcc_panic_queues_len,hcc_queues_len_info_print);
@@ -158,10 +158,11 @@ void hwifi_panic_log_dump(char* print_level)
 oal_module_symbol(hwifi_panic_log_dump);
 #endif
 
-oal_int32 hcc_flowctrl_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len)
+oal_int32 hcc_flowctrl_info_print(oal_void* data,char* buf, oal_int32 buf_len)
 {
     oal_int32 ret = 0;
     struct oal_sdio* hi_sdio;
+    struct hcc_handler* hcc = (struct hcc_handler*)data;
     if(NULL == hcc)
     {
         return ret;
@@ -189,11 +190,14 @@ oal_int32 hcc_flowctrl_info_print(struct hcc_handler* hcc,char* buf, oal_int32 b
     return ret;
 }
 
-oal_int32 hcc_assem_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len)
+oal_int32 hcc_assem_info_print(oal_void* data,char* buf, oal_int32 buf_len)
 {
     oal_int32 ret = 0;
     oal_int32 i;
     oal_int32 total = 0;
+
+    struct hcc_handler* hcc = (struct hcc_handler*)data;
+
     if(NULL == hcc)
     {
         return ret;
@@ -227,12 +231,13 @@ oal_int32 hcc_assem_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_
     return ret;
 }
 
-oal_int32 hcc_queues_pkts_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len)
+oal_int32 hcc_queues_pkts_info_print(oal_void* data,char* buf, oal_int32 buf_len)
 {
     oal_int32 ret = 0;
     int i,j;
     oal_uint64 total;
     hcc_trans_queue *pst_hcc_queue;
+    struct hcc_handler* hcc = (struct hcc_handler*)data;
     if(NULL == hcc)
     {
         return ret;
@@ -290,10 +295,12 @@ oal_int32 hcc_queues_pkts_info_print(struct hcc_handler* hcc,char* buf, oal_int3
     return ret;
 }
 
-oal_int32 hcc_queues_len_info_print(struct hcc_handler* hcc,char* buf, oal_int32 buf_len)
+oal_int32 hcc_queues_len_info_print(oal_void* data,char* buf, oal_int32 buf_len)
 {
     oal_int32 ret = 0;
     oal_int32 i ,j;
+    struct hcc_handler* hcc = (struct hcc_handler*)data;
+
     if(NULL == hcc)
     {
         return ret;
@@ -311,7 +318,7 @@ oal_int32 hcc_queues_len_info_print(struct hcc_handler* hcc,char* buf, oal_int32
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_get_assem_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_get_assem_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     struct hcc_handler* hcc;
@@ -331,7 +338,7 @@ OAL_STATIC ssize_t  hcc_get_assem_info(struct device *dev, struct device_attribu
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_set_assem_info(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  hcc_set_assem_info(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     struct hcc_handler* hcc;
 
@@ -354,7 +361,7 @@ OAL_STATIC ssize_t  hcc_set_assem_info(struct device *dev, struct device_attribu
     return count;
 }
 
-OAL_STATIC ssize_t  hcc_get_queues_pkts_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_get_queues_pkts_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     struct hcc_handler* hcc;
@@ -374,7 +381,7 @@ OAL_STATIC ssize_t  hcc_get_queues_pkts_info(struct device *dev, struct device_a
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_get_queues_len_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_get_queues_len_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     struct hcc_handler* hcc;
@@ -394,7 +401,7 @@ OAL_STATIC ssize_t  hcc_get_queues_len_info(struct device *dev, struct device_at
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_get_flowctrl_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_get_flowctrl_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     struct hcc_handler* hcc;
@@ -434,7 +441,7 @@ oal_int32 hcc_wakelock_info_print(struct hcc_handler* hcc,char* buf, oal_int32 b
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_get_wakelock_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_get_wakelock_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     struct hcc_handler* hcc;
@@ -454,11 +461,16 @@ OAL_STATIC ssize_t  hcc_get_wakelock_info(struct device *dev, struct device_attr
     return ret;
 }
 
-OAL_STATIC DEVICE_ATTR(flowctrl, S_IRUGO, hcc_get_flowctrl_info, NULL);
-OAL_STATIC DEVICE_ATTR(assem_info, S_IRUGO|S_IWUSR, hcc_get_assem_info, hcc_set_assem_info);
-OAL_STATIC DEVICE_ATTR(queues_pkts, S_IRUGO, hcc_get_queues_pkts_info, NULL);
-OAL_STATIC DEVICE_ATTR(queues_len, S_IRUGO, hcc_get_queues_len_info, NULL);
-OAL_STATIC DEVICE_ATTR(wakelock, S_IRUGO, hcc_get_wakelock_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_flowctrl =
+     __ATTR(flowctrl, S_IRUGO, hcc_get_flowctrl_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_assem_info =
+     __ATTR(assem_info, S_IRUGO|S_IWUSR, hcc_get_assem_info, hcc_set_assem_info);
+OAL_STATIC struct kobj_attribute dev_attr_queues_pkts =
+     __ATTR(queues_pkts, S_IRUGO, hcc_get_queues_pkts_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_queues_len =
+     __ATTR(queues_len, S_IRUGO, hcc_get_queues_len_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_wakelock =
+     __ATTR(wakelock, S_IRUGO, hcc_get_wakelock_info, NULL);
 
 
 
@@ -903,7 +915,7 @@ oal_void hcc_test_work(struct work_struct *work)
 }
 
 
-OAL_STATIC ssize_t  hcc_test_get_para(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_test_get_para(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     const char *mode_str;
@@ -937,12 +949,12 @@ OAL_STATIC ssize_t  hcc_test_get_para(struct device *dev, struct device_attribut
                                                             g_hcc_test_event->test_data.total_rcvd_bytes,
                                                             g_hcc_test_event->test_data.trans_info.total_d2h_trans_bytes);
     /*SDIO??????????*/
-    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "Hcc Utilization Ratio %llu ??\n",
+    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "Hcc Utilization Ratio %llu\n",
                             hcc_test_utilization_ratio_gen(g_hcc_test_event->test_data.total_sent_bytes + g_hcc_test_event->test_data.total_rcvd_bytes,
                                                             g_hcc_test_event->test_data.trans_info.total_h2d_trans_bytes +
                                                              g_hcc_test_event->test_data.trans_info.total_d2h_trans_bytes));
     /*????????????????*/
-    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "TxPackageLoss %u ??, pkt_sent: %d actual_tx_pkts: %u\n",
+    ret +=  snprintf(buf + ret,  PAGE_SIZE-1, "TxPackageLoss %u, pkt_sent: %d actual_tx_pkts: %u\n",
                                     hcc_test_tx_pkt_loss_gen(g_hcc_test_event->test_data.pkt_sent,g_hcc_test_event->test_data.trans_info.actual_tx_pkts),
                                     g_hcc_test_event->test_data.pkt_sent,
                                     g_hcc_test_event->test_data.trans_info.actual_tx_pkts);
@@ -957,7 +969,7 @@ OAL_STATIC ssize_t  hcc_test_get_para(struct device *dev, struct device_attribut
 }
 
 
-OAL_STATIC ssize_t  hcc_test_set_para(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  hcc_test_set_para(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     hcc_test_data  data = {0};
     oal_int32              tmp_pkt_len;
@@ -1005,9 +1017,10 @@ OAL_STATIC ssize_t  hcc_test_set_para(struct device *dev, struct device_attribut
     return count;
 }
 
-OAL_STATIC DEVICE_ATTR(test, S_IRUGO | S_IWUSR, hcc_test_get_para, hcc_test_set_para);
+OAL_STATIC struct kobj_attribute dev_attr_test =
+    __ATTR(test, S_IRUGO | S_IWUSR, hcc_test_get_para, hcc_test_set_para);
 
-OAL_STATIC ssize_t  hcc_test_set_abort_test(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  hcc_test_set_abort_test(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     struct hcc_handler* hcc;
     hcc = hcc_get_default_handler();
@@ -1017,9 +1030,10 @@ OAL_STATIC ssize_t  hcc_test_set_abort_test(struct device *dev, struct device_at
     return count;
 }
 
-OAL_STATIC DEVICE_ATTR(abort_test, S_IWUSR, NULL, hcc_test_set_abort_test);
+OAL_STATIC struct kobj_attribute dev_attr_abort_test =
+    __ATTR(abort_test, S_IWUSR, NULL, hcc_test_set_abort_test);
 
-OAL_STATIC ssize_t  hcc_test_set_value(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  hcc_test_set_value(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     oal_uint32      value;
 
@@ -1038,7 +1052,7 @@ OAL_STATIC ssize_t  hcc_test_set_value(struct device *dev, struct device_attribu
     return count;
 }
 
-OAL_STATIC ssize_t  hcc_test_get_value(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_test_get_value(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -1049,7 +1063,7 @@ OAL_STATIC ssize_t  hcc_test_get_value(struct device *dev, struct device_attribu
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_test_set_queue_id(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  hcc_test_set_queue_id(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     oal_uint32      queue_id;
 
@@ -1072,7 +1086,7 @@ OAL_STATIC ssize_t  hcc_test_set_queue_id(struct device *dev, struct device_attr
     return count;
 }
 
-OAL_STATIC ssize_t  hcc_test_get_queue_id(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_test_get_queue_id(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -1083,7 +1097,7 @@ OAL_STATIC ssize_t  hcc_test_get_queue_id(struct device *dev, struct device_attr
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_test_set_pad_payload(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  hcc_test_set_pad_payload(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     oal_uint32      pad_payload;
 
@@ -1102,7 +1116,7 @@ OAL_STATIC ssize_t  hcc_test_set_pad_payload(struct device *dev, struct device_a
     return count;
 }
 
-OAL_STATIC ssize_t  hcc_test_get_pad_payload(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_test_get_pad_payload(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -1113,7 +1127,7 @@ OAL_STATIC ssize_t  hcc_test_get_pad_payload(struct device *dev, struct device_a
     return ret;
 }
 
-OAL_STATIC ssize_t  hcc_test_set_verified(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+OAL_STATIC ssize_t  hcc_test_set_verified(struct kobject *dev, struct kobj_attribute *attr, const char *buf, size_t count)
 {
     oal_uint32      verified;
 
@@ -1132,7 +1146,7 @@ OAL_STATIC ssize_t  hcc_test_set_verified(struct device *dev, struct device_attr
     return count;
 }
 
-OAL_STATIC ssize_t  hcc_test_get_verified(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hcc_test_get_verified(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     OAL_BUG_ON(NULL == dev);
@@ -1143,10 +1157,14 @@ OAL_STATIC ssize_t  hcc_test_get_verified(struct device *dev, struct device_attr
     return ret;
 }
 
-OAL_STATIC DEVICE_ATTR(value, S_IRUGO | S_IWUSR, hcc_test_get_value, hcc_test_set_value);
-OAL_STATIC DEVICE_ATTR(queue_id, S_IRUGO | S_IWUSR, hcc_test_get_queue_id, hcc_test_set_queue_id);
-OAL_STATIC DEVICE_ATTR(pad_payload, S_IRUGO | S_IWUSR, hcc_test_get_pad_payload, hcc_test_set_pad_payload);
-OAL_STATIC DEVICE_ATTR(verified, S_IRUGO | S_IWUSR, hcc_test_get_verified, hcc_test_set_verified);
+OAL_STATIC struct kobj_attribute dev_attr_value =
+    __ATTR(value, S_IRUGO | S_IWUSR, hcc_test_get_value, hcc_test_set_value);
+OAL_STATIC struct kobj_attribute dev_attr_queue_id =
+    __ATTR(queue_id, S_IRUGO | S_IWUSR, hcc_test_get_queue_id, hcc_test_set_queue_id);
+OAL_STATIC struct kobj_attribute dev_attr_pad_payload =
+    __ATTR(pad_payload, S_IRUGO | S_IWUSR, hcc_test_get_pad_payload, hcc_test_set_pad_payload);
+OAL_STATIC struct kobj_attribute dev_attr_verified =
+    __ATTR(verified, S_IRUGO | S_IWUSR, hcc_test_get_verified, hcc_test_set_verified);
 
 OAL_STATIC struct attribute *hcc_test_sysfs_entries[] = {
         &dev_attr_test.attr,
@@ -1177,10 +1195,15 @@ OAL_STATIC struct attribute_group hcc_attribute_group = {
         .attrs = hcc_sysfs_entries,
 };
 
-oal_int32 hsdio_sysfs_info_print(struct oal_sdio *hi_sdio,char* buf, oal_int32 buf_len)
+oal_int32 hsdio_sysfs_info_print(oal_void* data,char* buf, oal_int32 buf_len)
 {
     oal_int32 ret = 0;
     oal_int32 bit;
+    struct oal_sdio *hi_sdio = (struct oal_sdio *)data;
+    if(hi_sdio == NULL)
+    {
+        return 0;
+    }
     ret +=  snprintf(buf + ret , buf_len - ret, "sdio info, state:0x%4x\n",hi_sdio->state);
     ret +=  snprintf(buf + ret , buf_len - ret,"gpio_int_count:%llu \n",  hi_sdio->gpio_int_count);
     ret +=  snprintf(buf + ret , buf_len - ret,"wakeup_int_count:%llu \n", hi_sdio->wakeup_int_count);
@@ -1206,7 +1229,7 @@ oal_int32 hsdio_sysfs_info_print(struct oal_sdio *hi_sdio,char* buf, oal_int32 b
     return ret;
 }
 
-OAL_STATIC ssize_t  hsdio_get_sdio_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hsdio_get_sdio_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     struct hcc_handler* hcc;
@@ -1243,7 +1266,7 @@ oal_int32 hsdio_wakelock_info_print(struct oal_sdio *hi_sdio,char* buf, oal_int3
     return ret;
 }
 
-OAL_STATIC ssize_t  hsdio_get_wakelock_info(struct device *dev, struct device_attribute *attr, char*buf)
+OAL_STATIC ssize_t  hsdio_get_wakelock_info(struct kobject *dev, struct kobj_attribute *attr, char*buf)
 {
     int ret = 0;
     struct hcc_handler* hcc;
@@ -1264,8 +1287,8 @@ OAL_STATIC ssize_t  hsdio_get_wakelock_info(struct device *dev, struct device_at
     return ret;
 }
 
-OAL_STATIC DEVICE_ATTR(sdio_info, S_IRUGO, hsdio_get_sdio_info, NULL);
-OAL_STATIC struct device_attribute dev_attr_sdio_wakelock = __ATTR(wakelock, S_IRUGO, hsdio_get_wakelock_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_sdio_info = __ATTR(sdio_info, S_IRUGO, hsdio_get_sdio_info, NULL);
+OAL_STATIC struct kobj_attribute dev_attr_sdio_wakelock = __ATTR(wakelock, S_IRUGO, hsdio_get_wakelock_info, NULL);
 OAL_STATIC struct attribute *hsdio_sysfs_entries[] = {
         &dev_attr_sdio_info.attr,
         &dev_attr_sdio_wakelock.attr,

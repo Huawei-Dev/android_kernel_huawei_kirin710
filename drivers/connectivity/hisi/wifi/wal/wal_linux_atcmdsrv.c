@@ -1178,6 +1178,9 @@ oal_void  wal_atcmsrv_ioctl_get_fem_pa_status(oal_net_device_stru *pst_net_dev, 
     {
         OAM_ERROR_LOG1(0, OAM_SF_ANY, "{wal_atcmsrv_ioctl_get_fem_pa_status::fem_pa_status[bit0-bit1],lna_status[bit2-bit3],gpio[bit4];ul_check_hw_status[0x%x]}", *pl_fem_pa_status);
         CHR_EXCEPTION(CHR_WIFI_DEV(CHR_WIFI_DEV_EVENT_CHIP, CHR_WIFI_DEV_ERROR_FEM_FAIL));
+#ifdef CONFIG_HUAWEI_DSM
+        hw_1102_dsm_client_notify(DSM_WIFI_FEMERROR, "%s: fem error",  __FUNCTION__);
+#endif
     }
 
 
@@ -2235,11 +2238,11 @@ oal_int32 wal_atcmdsrv_wifi_priv_cmd(oal_net_device_stru *pst_net_dev, oal_ifreq
         case WAL_ATCMDSRV_IOCTL_CMD_GET_CONN_INFO:
             l_ret = wal_atcmsrv_ioctl_get_wifi_connect_info(pst_net_dev, &st_priv_cmd.pri_data.st_connect_info);
 
-            OAL_IO_PRINT("wal_atcmsrv_ioctl_get_wifi_connect_info::status %d, %.32s,%02x:%02x:%02x:%02x:%02x:%02x,%d",
+            OAL_IO_PRINT("wal_atcmsrv_ioctl_get_wifi_connect_info::status %d, %.32s,%02x:%02x:xx:xx:%02x:%02x,%d",
                          st_priv_cmd.pri_data.st_connect_info.en_status,
                          st_priv_cmd.pri_data.st_connect_info.auc_ssid,
-                         st_priv_cmd.pri_data.st_connect_info.auc_bssid[0], st_priv_cmd.pri_data.st_connect_info.auc_bssid[1], st_priv_cmd.pri_data.st_connect_info.auc_bssid[2],
-                         st_priv_cmd.pri_data.st_connect_info.auc_bssid[3], st_priv_cmd.pri_data.st_connect_info.auc_bssid[4], st_priv_cmd.pri_data.st_connect_info.auc_bssid[5],
+                         st_priv_cmd.pri_data.st_connect_info.auc_bssid[0], st_priv_cmd.pri_data.st_connect_info.auc_bssid[1],
+                         st_priv_cmd.pri_data.st_connect_info.auc_bssid[4], st_priv_cmd.pri_data.st_connect_info.auc_bssid[5],
                          st_priv_cmd.pri_data.st_connect_info.c_rssi);
 
             oal_copy_to_user(pst_ifr->ifr_data, &st_priv_cmd, sizeof(wal_atcmdsrv_wifi_priv_cmd_stru));

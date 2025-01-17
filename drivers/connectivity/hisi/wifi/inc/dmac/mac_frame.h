@@ -120,6 +120,14 @@ extern "C" {
 #define MAC_P2P_LISTEN_CHN_ATTR_LEN  5   /* LISTEN CHANNEL ATTRIBUTE???? */
 #define MAC_P2P_MIN_IE_LEN           4   /* P2P IE?????????? */
 
+#define MAC_ADDBA_REQ_FRAME_BODY_LEN 9   /* addba req?? ???????? */
+#define MAC_ADDBA_RSP_FRAME_BODY_LEN 9   /* addba rsp?? ???????? */
+#define MAC_ADDBA_DEL_FRAME_BODY_LEN 6   /* addba del?? ???????? */
+
+#define MAC_ADDTS_RSP_FRAME_BODY_LEN 12   /* addts rsp?? ???????? */
+#define MAC_DELTS_FRAME_BODY_LEN 12   /* delts ?? ???????? */
+#define MAC_ACTION_CATEGORY_AND_CODE_LEN 2
+
 /* Quiet ???? */
 #define MAC_QUIET_PERIOD            0
 #define MAC_QUIET_COUNT             MAC_QUIET_PERIOD
@@ -133,7 +141,6 @@ extern "C" {
 
 /* WPA ???????????????? */
 #define MAC_WPA_IE_VERSION          1
-#define WLAN_AKM_SUITE_WAPI_CERT    0x000FAC12
 
 /* OUI???????? */
 #define MAC_OUI_LEN                 3
@@ -458,6 +465,7 @@ typedef oal_uint8 mac_txbf_clb_enum_uint8;
 /* Spectrum Management Category????Action?????? */
 typedef enum
 {
+    MAC_SPEC_TPC_REQUEST        = 2,
     MAC_SPEC_CH_SWITCH_ANNOUNCE = 4   /*  Channel Switch Announcement */
 }mac_specmgmt_action_type_enum;
 typedef oal_uint8 mac_specmgmt_action_type_enum_uint8;

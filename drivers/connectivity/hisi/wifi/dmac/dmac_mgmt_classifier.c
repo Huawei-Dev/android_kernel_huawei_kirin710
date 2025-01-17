@@ -339,6 +339,11 @@ OAL_STATIC oal_void  dmac_sta_up_rx_ch_switch(mac_vap_stru *pst_mac_vap, oal_uin
         return;
     }
 
+    if (pst_mac_vap->st_ch_switch_info.uc_switch_fail) {
+        OAM_WARNING_LOG0(0, OAM_SF_ANY, "{dmac_sta_up_rx_ch_switch::CSA no handle csa action!}");
+        return;
+    }
+
     if (us_framebody_len <= (MAC_ACTION_OFFSET_ACTION + 1))
     {
         OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_sta_up_rx_ch_switch::framebody_len[%d]}", us_framebody_len);
@@ -614,6 +619,9 @@ oal_uint8 dmac_sta_up_rx_action(dmac_vap_stru *pst_dmac_vap,oal_netbuf_stru *pst
                     dmac_sta_up_rx_ch_switch(pst_mac_vap,puc_data,us_frame_len);
                     break;
 
+                case MAC_SPEC_TPC_REQUEST:
+                    uc_go_on = OAL_FALSE;
+                    break;
                 default:
                     break;
             }
@@ -1807,7 +1815,7 @@ oal_void  dmac_mgmt_connect_set_channel(
             OAM_WARNING_LOG2(pst_up_vap->uc_vap_id, OAM_SF_SCAN, "dmac_mgmt_connect_set_channel:  same chan_num[%d], switch to bw[%d].",
                             pst_channel->uc_chan_number,
                             pst_channel->en_bandwidth);
-            /* ?????????Vvap????????????????????????FIFO */
+            /* ????????vap????????????????????????FIFO */
             dmac_mgmt_switch_channel(pst_mac_device, pst_channel, OAL_FALSE);
         }
     }

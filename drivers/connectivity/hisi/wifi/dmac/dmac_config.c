@@ -2177,41 +2177,37 @@ oal_uint32  dmac_config_set_shortgi(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len,
 
 OAL_STATIC oal_uint32  dmac_config_vap_state_syn(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param)
 {
-//#if defined(_PRE_WLAN_FEATURE_STA_PM) || defined(_PRE_WLAN_FEATURE_20_40_80_COEXIST)
     dmac_vap_stru *pst_dmac_vap;
     pst_dmac_vap = (dmac_vap_stru *)mac_res_get_dmac_vap(pst_mac_vap->uc_vap_id);
-    if (OAL_PTR_NULL == pst_dmac_vap)
-    {
-        OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_PWR, "{dmac_config_vap_state_syn::mac_res_get_dmac_vap fail,vap_id:%u.}",
-                         pst_mac_vap->uc_vap_id);
+    if (pst_dmac_vap == OAL_PTR_NULL) {
+        OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_PWR,
+                        "{dmac_config_vap_state_syn::mac_res_get_dmac_vap fail,vap_id:%u.}",
+                        pst_mac_vap->uc_vap_id);
         return OAL_FAIL;
     }
 
-//#endif
+    pst_mac_vap->en_vap_state = (mac_vap_state_enum_uint8)(*puc_param);
 
-    //OAM_INFO_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_CFG, "{dmac_config_vap_state_syn::uc_len = %d, en state = %d.}", uc_len, *puc_param);
-
-    /* ????vap???? */
-    //if (!(IS_P2P_CL(pst_mac_vap) && (pst_mac_vap->us_user_nums > 0)))
-    {
-        pst_mac_vap->en_vap_state = (mac_vap_state_enum_uint8)(*puc_param);
-    }
-
-    /* STA ??????????UP??????????keepalive?????? */
-    if ((MAC_VAP_STATE_UP == pst_mac_vap->en_vap_state)
-        && (pst_mac_vap->en_vap_mode == WLAN_VAP_MODE_BSS_STA))
-    {
+    if (pst_mac_vap->en_vap_mode == WLAN_VAP_MODE_BSS_STA) {
 #ifdef _PRE_WLAN_FEATURE_STA_PM
-        dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_KEEPALIVE, 0, OAL_PTR_NULL);
+        /* STA ??????????UP??????????keepalive?????? */
+        if (pst_mac_vap->en_vap_state == MAC_VAP_STATE_UP) {
+            dmac_pm_sta_post_event(pst_dmac_vap, STA_PWR_EVENT_KEEPALIVE, 0, OAL_PTR_NULL);
+        }
 #endif
-    }
-    /* STA ??????????UP??????????keepalive?????? */
-    if ((MAC_VAP_STATE_UP != pst_mac_vap->en_vap_state)
-    && (pst_mac_vap->en_vap_mode == WLAN_VAP_MODE_BSS_STA))
-    {
-        /* ????????keepalive */
-        pst_dmac_vap->st_vap_base_info.st_cap_flag.bit_keepalive   =  OAL_FALSE;
 
+        /* STA ??????????UP??????????keepalive?????? */
+        if (pst_mac_vap->en_vap_state != MAC_VAP_STATE_UP) {
+            /* ????????keepalive */
+            pst_dmac_vap->st_vap_base_info.st_cap_flag.bit_keepalive = OAL_FALSE;
+        }
+
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
+        if ((pst_mac_vap->en_vap_state == MAC_VAP_STATE_STA_FAKE_UP) &&
+            (pst_dmac_vap->pst_hal_device != OAL_PTR_NULL)) {
+            dmac_btcoex_ps_pause_check_and_notify(pst_dmac_vap->pst_hal_device);
+        }
+#endif
     }
 
     return OAL_SUCC;
@@ -4875,8 +4871,8 @@ OAL_STATIC oal_uint32  dmac_config_set_country(mac_vap_stru *pst_mac_vap, oal_ui
     pst_hal_device = pst_mac_device->pst_device_stru;
     /* ????????FCC???????????????????????? */
     pst_hal_device->en_current_reg_domain = (hal_regdomain_enum)pst_mac_regdom->uc_regdomain_type;
-    OAM_WARNING_LOG3(0, OAM_SF_DFS, "{dmac_config_set_country::set country %c%c, reg_domain: %d}",
-                pst_mac_regdom->ac_country[0], pst_mac_regdom->ac_country[1], pst_hal_device->en_current_reg_domain);
+    OAM_WARNING_LOG1(0, OAM_SF_DFS, "{dmac_config_set_country::set country, reg_domain: %d}",
+                pst_hal_device->en_current_reg_domain);
 #endif
 
     return OAL_SUCC;
@@ -5863,7 +5859,7 @@ OAL_STATIC oal_void  dmac_config_report_efuse_reg(mac_vap_stru *pst_mac_vap)
 
 #endif
 
-OAL_STATIC oal_uint32  dmac_config_pcie_pm_level(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param)
+oal_uint32  dmac_config_pcie_pm_level(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param)
 {
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
     mac_cfg_pcie_pm_level_stru      *pst_pcie_pm_level;
@@ -7338,9 +7334,9 @@ OAL_STATIC oal_uint32 dmac_config_offload_start_vap(mac_vap_stru *pst_mac_vap, o
 
 OAL_STATIC oal_uint32  dmac_config_del_vap(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param)
 {
-    dmac_vap_stru                  *pst_dmac_vap = OAL_PTR_NULL;
-    hal_to_dmac_device_stru        *pst_hal_device;
-    oal_uint8                       uc_vap_id;
+    dmac_vap_stru                  *pst_dmac_vap = (dmac_vap_stru *)pst_mac_vap;
+    hal_to_dmac_device_stru        *pst_hal_device = pst_dmac_vap->pst_hal_device;
+    oal_uint8                       uc_vap_id = pst_dmac_vap->st_vap_base_info.uc_vap_id;
 #ifdef _PRE_WLAN_FEATURE_P2P
     mac_cfg_del_vap_param_stru     *pst_del_vap_param;
     wlan_p2p_mode_enum_uint8        en_p2p_mode = WLAN_LEGACY_VAP_MODE;
@@ -7350,24 +7346,21 @@ OAL_STATIC oal_uint32  dmac_config_del_vap(mac_vap_stru *pst_mac_vap, oal_uint8 
     OAM_WARNING_LOG3(pst_mac_vap->uc_vap_id, OAM_SF_CFG, "{dmac_config_del_vap::del vap. mode[%d] state[%d] p2p_mode[%d].}",
                       pst_mac_vap->en_vap_mode, pst_mac_vap->en_vap_state, pst_mac_vap->en_p2p_mode);
 
-    pst_dmac_vap   = (dmac_vap_stru *)pst_mac_vap;
-    pst_hal_device = pst_dmac_vap->pst_hal_device;
-    uc_vap_id      = pst_dmac_vap->st_vap_base_info.uc_vap_id;
-
 #if(_PRE_WLAN_FEATURE_PMF == _PRE_PMF_HW_CCMP_BIP)
     pst_dmac_vap->ul_user_pmf_status = 0;
 #endif /* #if(_PRE_WLAN_FEATURE_PMF == _PRE_PMF_HW_CCMP_BIP) */
+    // ????CSA??????????
+    if (g_csa_stop_timer.en_is_registerd) {
+        FRW_TIMER_DESTROY_TIMER(&g_csa_stop_timer);
+    }
 
 #ifdef _PRE_WLAN_FEATURE_P2P
     pst_del_vap_param = (mac_cfg_del_vap_param_stru *)puc_param;
     en_p2p_mode       = pst_del_vap_param->en_p2p_mode;
-    if (WLAN_P2P_CL_MODE == en_p2p_mode)
-    {
+    if (WLAN_P2P_CL_MODE == en_p2p_mode) {
         return dmac_del_p2p_cl_vap(pst_mac_vap, uc_len, puc_param);
     }
-    if (WLAN_P2P_GO_MODE == en_p2p_mode)
-    {
-
+    if (WLAN_P2P_GO_MODE == en_p2p_mode) {
         pst_mac_device = mac_res_get_dev(pst_hal_device->uc_device_id);
         if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_device))
         {
@@ -7392,8 +7385,7 @@ OAL_STATIC oal_uint32  dmac_config_del_vap(mac_vap_stru *pst_mac_vap, oal_uint8 
     {
         /* STA??????????????*/
 #ifdef _PRE_WLAN_FEATURE_STA_PM
-        if (WLAN_VAP_MODE_BSS_STA == pst_dmac_vap->st_vap_base_info.en_vap_mode)
-        {
+        if (WLAN_VAP_MODE_BSS_STA == pst_dmac_vap->st_vap_base_info.en_vap_mode) {
             dmac_pm_sta_detach(pst_dmac_vap);
         }
 #endif
@@ -10058,6 +10050,15 @@ oal_uint32 dmac_config_customize_info(mac_vap_stru *pst_mac_vap, oal_uint8 uc_le
 }
 #endif /* #ifdef _PRE_PLAT_FEATURE_CUSTOMIZE */
 
+/* ???????????????????? */
+OAL_STATIC oal_uint32 dmac_config_rx_filter_frag(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param)
+{
+    g_rx_filter_frag = !!(*puc_param);
+    OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_config_rx_filter_frag::filter frag[%d].}",
+        g_rx_filter_frag);
+    return OAL_SUCC;
+}
+
 /*****************************************************************************
     HMAC??DMAC??????????????????????
 *****************************************************************************/
@@ -10191,7 +10192,7 @@ OAL_STATIC OAL_CONST dmac_config_syn_stru g_ast_dmac_config_syn[] =
     {WLAN_CFGID_SET_ALWAYS_TX_1102,{0, 0},              dmac_config_set_always_tx_1102},
 #endif
     {WLAN_CFGID_SET_ALWAYS_RX,     {0, 0},              dmac_config_set_always_rx},
-    {WLAN_CFGID_PCIE_PM_LEVEL,     {0, 0},              dmac_config_pcie_pm_level},
+    {WLAN_CFGID_RX_FILTER_FRAG,    {0, 0},              dmac_config_rx_filter_frag},
     {WLAN_CFGID_REG_INFO,          {0, 0},              dmac_config_reg_info},
 
 #if (defined(_PRE_PRODUCT_ID_HI110X_DEV) || defined(_PRE_PRODUCT_ID_HI110X_HOST))

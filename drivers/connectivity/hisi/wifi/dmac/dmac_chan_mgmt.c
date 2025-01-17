@@ -1064,20 +1064,9 @@ oal_uint32  dmac_ie_proc_wide_bandwidth_ie(mac_vap_stru *pst_mac_vap, oal_uint8 
     return OAL_SUCC;
 }
 
-oal_uint32  dmac_ie_proc_ch_switch_ie(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_payload, mac_eid_enum_uint8 en_eid_type)
+oal_uint32 dmac_get_csa_ie(mac_eid_enum_uint8 en_eid_type, oal_uint8 *puc_payload,
+    oal_uint8 *uc_ch_sw_mode, oal_uint8 *uc_new_chan, oal_uint8 *uc_sw_cnt)
 {
-    oal_uint8    uc_ch_sw_mode = 0;
-    oal_uint8    uc_new_chan   = 0;
-    oal_uint8    uc_sw_cnt     = 0;
-    oal_uint32   ul_check      = OAL_FAIL;
-
-    if (OAL_UNLIKELY((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == puc_payload)))
-    {
-        OAM_ERROR_LOG0(0, OAM_SF_ANY, "{dmac_ie_proc_ch_switch_ie::param null.}");
-
-        return OAL_ERR_CODE_PTR_NULL;
-    }
-
     /*************************************************************************/
     /*                    Channel Switch Announcement element                */
     /* --------------------------------------------------------------------- */
@@ -1099,29 +1088,49 @@ oal_uint32  dmac_ie_proc_ch_switch_ie(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_
     {
         if (puc_payload[1] < MAC_CHANSWITCHANN_IE_LEN)
         {
-            OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_ie_proc_ch_switch_ie::invalid chan switch ann ie len[%d]}", puc_payload[1]);
+            OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_get_csa_ie::invalid csa ie len[%d]}", puc_payload[1]);
             return OAL_FAIL;
         }
         /* Channel Switch Announcement element */
-        uc_ch_sw_mode = puc_payload[MAC_IE_HDR_LEN];
-        uc_new_chan   = puc_payload[MAC_IE_HDR_LEN + 1];
-        uc_sw_cnt     = puc_payload[MAC_IE_HDR_LEN + 2];
+        *uc_ch_sw_mode = puc_payload[MAC_IE_HDR_LEN];
+        *uc_new_chan   = puc_payload[MAC_IE_HDR_LEN + 1];
+        *uc_sw_cnt     = puc_payload[MAC_IE_HDR_LEN + 2];
     }
     else if (MAC_EID_EXTCHANSWITCHANN == en_eid_type)
     {
         if (puc_payload[1] < MAC_EXT_CHANSWITCHANN_IE_LEN)
         {
-            OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_ie_proc_ch_switch_ie::invalid ext chan switch ann ie len[%d]}", puc_payload[1]);
+            OAM_WARNING_LOG1(0, OAM_SF_ANY, "{dmac_get_csa_ie::invalid ext csa ie len[%d]}", puc_payload[1]);
             return OAL_FAIL;
         }
         /* Extended Channel Switch Announcement element */
-        uc_ch_sw_mode = puc_payload[MAC_IE_HDR_LEN];
+        *uc_ch_sw_mode = puc_payload[MAC_IE_HDR_LEN];
         /* Skip New Operating Class = puc_payload[MAC_IE_HDR_LEN + 1]; */
-        uc_new_chan   = puc_payload[MAC_IE_HDR_LEN + 2];
-        uc_sw_cnt     = puc_payload[MAC_IE_HDR_LEN + 3];
+        *uc_new_chan   = puc_payload[MAC_IE_HDR_LEN + 2];
+        *uc_sw_cnt     = puc_payload[MAC_IE_HDR_LEN + 3];
     }
     else
     {
+        return OAL_FAIL;
+    }
+    return OAL_SUCC;
+}
+
+oal_uint32  dmac_ie_proc_ch_switch_ie(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_payload, mac_eid_enum_uint8 en_eid_type)
+{
+    oal_uint8    uc_ch_sw_mode = 0;
+    oal_uint8    uc_new_chan   = 0;
+    oal_uint8    uc_sw_cnt     = 0;
+    oal_uint32   ul_check      = OAL_FAIL;
+
+    if (OAL_UNLIKELY((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == puc_payload)))
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_ANY, "{dmac_ie_proc_ch_switch_ie::param null.}");
+
+        return OAL_ERR_CODE_PTR_NULL;
+    }
+
+    if (OAL_SUCC != dmac_get_csa_ie(en_eid_type, puc_payload, &uc_ch_sw_mode, &uc_new_chan, &uc_sw_cnt)) {
         return OAL_FAIL;
     }
 
@@ -1132,6 +1141,11 @@ oal_uint32  dmac_ie_proc_ch_switch_ie(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_
         OAM_WARNING_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_ie_proc_ch_switch_ie::mac_is_channel_num_valid failed[%d], uc_new_chan=%d.}",
                       ul_check, uc_sw_cnt);
         return ul_check;
+    }
+
+    if (OAL_TRUE == g_csa_scan_flag) {
+        OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{dmac_ie_proc_ch_switch_ie::csa_scan not complete.}");
+        return OAL_FAIL;
     }
 
     /* ??????????CSA,????ap???????????????????????????? */

@@ -17,6 +17,10 @@ extern "C" {
 #include "frw_task.h"
 #include "hal_ext_if.h"
 
+#if ((_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)))
+#include <linux/sched/signal.h>
+#endif
+
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_FRW_TASK_C
 

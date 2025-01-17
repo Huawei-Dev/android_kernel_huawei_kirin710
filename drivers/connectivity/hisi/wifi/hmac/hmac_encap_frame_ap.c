@@ -402,26 +402,24 @@ oal_err_code_enum  hmac_encap_auth_rsp_get_user_idx(mac_vap_stru *pst_mac_vap,
 
 
 hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq1(
-                                                        mac_vap_stru *pst_mac_vap,
-                                                        hmac_auth_rsp_param_stru *pst_auth_rsp_param,
-                                                        oal_uint8 *puc_code,
-                                                        mac_user_asoc_state_enum_uint8 *pst_usr_ass_stat)
+    mac_vap_stru *pst_mac_vap, hmac_auth_rsp_param_stru *pst_auth_rsp_param,
+    oal_uint8 *puc_code, hmac_user_stru *hmac_user_sta)
 {
     *puc_code = MAC_SUCCESSFUL_STATUSCODE;
-    *pst_usr_ass_stat = MAC_USER_STATE_BUTT;
+    hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_BUTT;
     /* ???????????? */
     if(OAL_TRUE != pst_auth_rsp_param->uc_auth_resend)
     {
         if(pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM)
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
 
             return HMAC_AP_AUTH_SEQ1_OPEN_ANY;
         }
 
         if(OAL_TRUE == pst_auth_rsp_param->en_is_wep_allowed)
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_KEY_SEQ1;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_KEY_SEQ1;
             /* ??????????????wep?????? */
             return HMAC_AP_AUTH_SEQ1_WEP_NOT_RESEND;
         }
@@ -434,21 +432,18 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq1(
     /* ???????????? */
     if((pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_ASSOC) && (pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM))
     {
-        if (OAL_TRUE == pst_mac_vap->pst_mib_info->st_wlan_mib_privacy.en_dot11RSNAMFPC)
-        {
-            *pst_usr_ass_stat = MAC_USER_STATE_ASSOC;
-        }
-        else
-        {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
-        }
+        OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_AUTH,
+            "{hmac_encap_auth_rsp_seq1::user assiociated rx auth req, do not change user[%d] state.}",
+            hmac_user_sta->st_user_base_info.us_assoc_id);
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_ASSOC;
+        hmac_user_sta->assoc_ap_up_tx_auth_req = OAL_TRUE;
 
         return HMAC_AP_AUTH_DUMMY;
     }
 
     if(pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
 
         return HMAC_AP_AUTH_SEQ1_OPEN_ANY;
     }
@@ -456,7 +451,7 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq1(
     if(OAL_TRUE == pst_auth_rsp_param->en_is_wep_allowed)
     {
         /* seq??1 ???????????? */
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         return HMAC_AP_AUTH_SEQ1_WEP_RESEND;
     }
     /* ?????????? */
@@ -469,14 +464,14 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq3(
                                                 mac_vap_stru *pst_mac_vap,
                                                 hmac_auth_rsp_param_stru *pst_auth_rsp_param,
                                                 oal_uint8 *puc_code,
-                                                mac_user_asoc_state_enum_uint8 *pst_usr_ass_stat)
+                                                hmac_user_stru *hmac_user_sta)
 {
 
 
     /* ???????????????????? */
     if (OAL_FALSE == pst_auth_rsp_param->uc_auth_resend)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_BUTT;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_BUTT;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_BUTT;
     }
@@ -485,11 +480,11 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq3(
     {
         if (OAL_TRUE == pst_mac_vap->pst_mib_info->st_wlan_mib_privacy.en_dot11RSNAMFPC)
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_ASSOC;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_ASSOC;
         }
         else
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         }
 
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
@@ -498,34 +493,34 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq3(
 
     if(pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_OPEN_ANY;
     }
 
     if(pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_AUTH_KEY_SEQ1)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_WEP_COMPLETE;
     }
 
     if(pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_AUTH_COMPLETE)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_WEP_COMPLETE;
     }
 
     if(pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_ASSOC)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_KEY_SEQ1;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_KEY_SEQ1;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_WEP_ASSOC;
     }
 
     /* ?????????? */
-    *pst_usr_ass_stat = MAC_USER_STATE_BUTT;
+    hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_BUTT;
     *puc_code = MAC_UNSUPT_ALG;
     return HMAC_AP_AUTH_BUTT;
 }
@@ -665,6 +660,29 @@ oal_void hmac_tid_clear(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_user
     }
 }
 
+static void hmac_process_auth_resp_get_user_idx_fail(oal_uint8 *frame, mac_vap_stru *mac_vap,
+                                                     mac_tx_ctl_stru *tx_ctl, oal_uint32 errorcode,
+                                                     oal_uint16 auth_rsp_len)
+{
+    OAM_WARNING_LOG1(mac_vap->uc_vap_id, OAM_SF_AUTH,
+                     "{hmac_encap_auth_rsp::hmac_ap_get_user_idx fail[%d]! (1002:exceed config spec)}", errorcode);
+
+    frame[4] = (errorcode == OAL_ERR_CODE_CONFIG_EXCEED_SPEC) ? MAC_AP_FULL : MAC_UNSPEC_FAIL;
+
+    tx_ctl->us_tx_user_idx = 0xffff;
+    tx_ctl->us_mpdu_len    = auth_rsp_len;
+}
+
+oal_uint8 hmac_check_any_null_ptr3(mac_vap_stru *ptr1, oal_netbuf_stru *ptr2, oal_netbuf_stru *ptr3)
+{
+    return (((ptr1) == OAL_PTR_NULL) || ((ptr2) == OAL_PTR_NULL) || ((ptr3) == OAL_PTR_NULL));
+}
+
+oal_uint8 hmac_check_any_null_ptr4(mac_vap_stru *ptr1, oal_netbuf_stru *ptr2, oal_netbuf_stru *ptr3, oal_uint8 *ptr4)
+{
+    return (((ptr1) == OAL_PTR_NULL) || ((ptr2) == OAL_PTR_NULL) ||
+        ((ptr3) == OAL_PTR_NULL) || ((ptr4) == OAL_PTR_NULL));
+}
 
 oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_auth_rsp, oal_netbuf_stru *pst_auth_req, oal_uint8 *puc_chtxt)
 {
@@ -686,14 +704,14 @@ oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_
     /* ???????? */
     hmac_ap_auth_process_code_enum_uint8       ul_auth_proc_rst;
 
-    oal_uint8       *puc_data;
-    mac_tx_ctl_stru *pst_tx_ctl;
+    oal_uint8       *puc_data = OAL_PTR_NULL;
+    mac_tx_ctl_stru *pst_tx_ctl = OAL_PTR_NULL;
     hmac_auth_rsp_handle_stru              st_auth_rsp_handle;
     oal_uint32                      ul_alg_suppt = 0;
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-    if (OAL_PTR_NULL == pst_mac_vap || OAL_PTR_NULL == pst_auth_rsp || OAL_PTR_NULL == pst_auth_req)
+    if (hmac_check_any_null_ptr3(pst_mac_vap, pst_auth_rsp, pst_auth_req))
 #else
-    if (OAL_PTR_NULL == pst_mac_vap || OAL_PTR_NULL == pst_auth_rsp || OAL_PTR_NULL == pst_auth_req || OAL_PTR_NULL == puc_chtxt)
+    if (hmac_check_any_null_ptr4(pst_mac_vap, pst_auth_rsp, pst_auth_req, puc_chtxt))
 #endif
     {
         OAM_ERROR_LOG4(0, OAM_SF_AUTH,"{hmac_encap_auth_rsp::pst_mac_vap[0x%x], puc_data[0x%x], puc_auth_req[0x%x] and puc_chtxt[0x%x]}", pst_mac_vap, pst_auth_rsp, pst_auth_req, puc_chtxt);
@@ -796,18 +814,7 @@ oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_
                                         &us_user_index);
     if(OAL_SUCC != ul_ret)
     {
-        if(OAL_ERR_CODE_CONFIG_EXCEED_SPEC == ul_ret)
-        {
-            OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_AUTH,"{hmac_encap_auth_rsp::hmac_ap_get_user_idx fail, users exceed config spec!}");
-            puc_frame[4] = MAC_AP_FULL;
-        }
-        else
-        {
-            OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_AUTH,"{hmac_encap_auth_rsp::hmac_ap_get_user_idx Err!}");
-            puc_frame[4] = MAC_UNSPEC_FAIL;
-        }
-        pst_tx_ctl->us_tx_user_idx = 0xffff;
-        pst_tx_ctl->us_mpdu_len    = us_auth_rsp_len;
+        hmac_process_auth_resp_get_user_idx_fail(puc_frame, pst_mac_vap, pst_tx_ctl, ul_ret, us_auth_rsp_len);
         return us_auth_rsp_len;
     }
 
@@ -845,6 +852,14 @@ oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_
     pst_tx_ctl->us_tx_user_idx = us_user_index;
     pst_tx_ctl->us_mpdu_len    = us_auth_rsp_len;
 
+    if (pst_hmac_user_sta->st_user_base_info.en_user_asoc_state == MAC_USER_STATE_ASSOC &&
+        (us_auth_type != WLAN_WITP_AUTH_OPEN_SYSTEM ||
+        (us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM && us_auth_seq != WLAN_AUTH_TRASACTION_NUM_ONE))) {
+        OAM_WARNING_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_AUTH,
+            "{hmac_encap_auth_rsp::auth recv invalid seq, auth seq [%d], auth type[%d]}", us_auth_seq, us_auth_type);
+        return 0;
+    }
+
     /* ???????????????? */
     ul_alg_suppt = hmac_encap_auth_rsp_support(pst_hmac_vap, us_auth_type);
     if(OAL_SUCC != ul_alg_suppt)
@@ -874,9 +889,7 @@ oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_
         en_old_asoc_state = pst_hmac_user_sta->st_user_base_info.en_user_asoc_state;
     #endif
         ul_auth_proc_rst = st_auth_rsp_handle.st_auth_rsp_fun(pst_mac_vap,
-                                                &st_auth_rsp_handle.st_auth_rsp_param,
-                                                &puc_frame[4],
-                                                &pst_hmac_user_sta->st_user_base_info.en_user_asoc_state);
+            &st_auth_rsp_handle.st_auth_rsp_param, &puc_frame[4], pst_hmac_user_sta);
     #ifdef _PRE_DEBUG_MODE_USER_TRACK
         mac_user_change_info_event(pst_hmac_user_sta->st_user_base_info.auc_user_mac_addr,
                                    pst_mac_vap->uc_vap_id,

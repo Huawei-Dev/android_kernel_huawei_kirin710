@@ -468,6 +468,7 @@ int32 free_seperted_rx_buf(uint8 subsys,uint8 alloctype)
 {
     struct ps_core_s *ps_core_d = NULL;
     struct bfgx_sepreted_rx_st *pst_sepreted_data = NULL;
+    uint8 *buf_ptr = NULL;
 
     if (subsys >= BFGX_BUTT)
     {
@@ -488,23 +489,20 @@ int32 free_seperted_rx_buf(uint8 subsys,uint8 alloctype)
     }
     pst_sepreted_data = &ps_core_d->bfgx_info[subsys].sepreted_rx;
 
+    buf_ptr = pst_sepreted_data->rx_buf_org_ptr;
     spin_lock(&pst_sepreted_data->sepreted_rx_lock);
-    if (NULL != pst_sepreted_data->rx_buf_org_ptr)
-    {
-        if (KZALLOC == alloctype)
-        {
-            kfree(pst_sepreted_data->rx_buf_org_ptr);
-        }
-        else if (VMALLOC == alloctype)
-        {
-            vfree(pst_sepreted_data->rx_buf_org_ptr);
-        }
-    }
     pst_sepreted_data->rx_prev_seq = RX_SEQ_NULL;
     pst_sepreted_data->rx_buf_all_len = 0;
     pst_sepreted_data->rx_buf_ptr = NULL;
     pst_sepreted_data->rx_buf_org_ptr = NULL;
     spin_unlock(&pst_sepreted_data->sepreted_rx_lock);
+    if (buf_ptr != NULL) {
+        if (alloctype == KZALLOC) {
+            kfree(buf_ptr);
+        } else if (alloctype == VMALLOC) {
+            vfree(buf_ptr);
+        }
+    }
 
     return 0;
 }

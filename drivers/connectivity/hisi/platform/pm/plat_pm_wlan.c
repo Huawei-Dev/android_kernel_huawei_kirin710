@@ -10,7 +10,6 @@
 #include <linux/platform_device.h>
 #include <linux/kobject.h>
 #include <linux/irq.h>
-#include <linux/wakelock.h>
 #include <linux/mmc/sdio.h>
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
@@ -19,8 +18,8 @@
 #include <linux/mmc/sdio_func.h>
 #include <linux/mmc/host.h>
 #include <linux/gpio.h>
-#ifdef CONFIG_HISI_IDLE_SLEEP
-#include <linux/hisi/hisi_idle_sleep.h>
+#ifdef CONFIG_LPCPU_IDLE_SLEEP
+#include <linux/hisi/lpcpu_idle_sleep.h>
 #endif
 #include "oal_sdio.h"
 #include "oal_sdio_comm.h"
@@ -66,7 +65,7 @@ void wlan_pm_wakeup_work(oal_work_stru *pst_worker);
 void wlan_pm_sleep_work(oal_work_stru *pst_worker);
 void wlan_pm_freq_adjust_work(oal_work_stru *pst_worker);
 
-void wlan_pm_wdg_timeout(struct wlan_pm_s *pm_data);
+void wlan_pm_wdg_timeout(unsigned long data);
 
 int32 wlan_pm_wakeup_done_callback(void *data);
 int32 wlan_pm_close_done_callback(void *data);
@@ -82,10 +81,61 @@ EXPORT_SYMBOL_GPL(g_us_download_rate_limit_pps);
 int32 wlan_pm_stop_wdg(struct wlan_pm_s *pst_wlan_pm_info);
 oal_int wlan_pm_work_submit(struct wlan_pm_s    *pst_wlan_pm, oal_work_stru* pst_worker);
 void wlan_pm_info_clean(void);
-void wlan_pm_deepsleep_delay_timeout_02(struct wlan_pm_s *pm_data);
+void wlan_pm_deepsleep_delay_timeout_02(unsigned long data);
 int32 wlan_pm_stop_deepsleep_delay_timer_02(struct wlan_pm_s *pm_data);
 
 extern oal_atomic g_wakeup_dev_wait_ack;
+#ifdef CONFIG_HUAWEI_DSM
+
+static struct dsm_dev dsm_wifi = {
+    .name = "dsm_wifi",
+    .device_name = NULL,
+    .ic_name = NULL,
+    .module_name = NULL,
+    .fops = NULL,
+    .buff_size = DSM_DEV_BUFF_SIZE,
+};
+
+struct dsm_client *hw_1102_dsm_client = NULL;
+
+void hw_1102_register_wifi_dsm_client(void)
+{
+    if (hw_1102_dsm_client == NULL) {
+        hw_1102_dsm_client = dsm_register_client(&dsm_wifi);
+    }
+}
+void hw_1102_unregister_wifi_dsm_client(void)
+{
+    if (hw_1102_dsm_client != NULL) {
+        dsm_unregister_client(hw_1102_dsm_client, &dsm_wifi);
+        hw_1102_dsm_client = NULL;
+    }
+}
+#define LOG_BUF_SIZE 512
+void hw_1102_dsm_client_notify(int dsm_id, const char *fmt, ...)
+{
+    char buf[LOG_BUF_SIZE] = {0};
+    va_list ap;
+
+    DECLARE_DFT_TRACE_KEY_INFO("hw_1102_dsm_client_notify", OAL_DFT_TRACE_FAIL);
+    va_start(ap, fmt);
+    if (hw_1102_dsm_client && !dsm_client_ocuppy(hw_1102_dsm_client)) {
+        if (fmt) {
+            vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
+            dsm_client_record(hw_1102_dsm_client, buf);
+        }
+        dsm_client_notify(hw_1102_dsm_client, dsm_id);
+        OAM_WARNING_LOG0(0, OAM_SF_PWR, "wifi dsm_client_notify success");
+        OAL_IO_PRINT("[I]wifi dsm_client_notify success,dsm_id=%d[%s]\n", dsm_id, buf);
+    } else {
+        OAM_WARNING_LOG0(0, OAM_SF_PWR, "wifi dsm_client_notify failed");
+        OAL_IO_PRINT("[E]wifi dsm_client_notify failed,dsm_id=%d\n", dsm_id);
+    }
+    va_end(ap);
+}
+EXPORT_SYMBOL(hw_1102_dsm_client_notify);
+#endif
+
 
 struct wlan_pm_s*  wlan_pm_get_drv(oal_void)
 {
@@ -242,6 +292,7 @@ struct wlan_pm_s*  wlan_pm_init(oal_void)
     pst_wlan_pm->pst_sdio->data_int_count = 0;
     pst_wlan_pm->pst_sdio->wakeup_int_count = 0;
 
+
     OAL_IO_PRINT("[plat_pm]wlan_pm_init ok!");
     return  pst_wlan_pm;
 }
@@ -312,7 +363,7 @@ struct wifi_srv_callback_handler* wlan_pm_get_wifi_srv_handler(oal_void)
 
     if(OAL_PTR_NULL == pst_wlan_pm)
     {
-        return OAL_FALSE;
+        return NULL;
     }
 
     return &pst_wlan_pm->st_wifi_srv_handler;
@@ -342,9 +393,9 @@ oal_int32 wlan_pm_open(oal_void)
         OAM_WARNING_LOG0(0, OAM_SF_PWR, "wlan_pm_open::aleady opened");
         return OAL_ERR_CODE_ALREADY_OPEN;
     }
-#ifdef CONFIG_HISI_IDLE_SLEEP
-    hisi_idle_sleep_vote(ID_WIFI,1);
-    OAM_WARNING_LOG0(0, OAM_SF_PWR, "wlan_pm_open::hisi_idle_sleep_vote value 1!");
+#ifdef CONFIG_LPCPU_IDLE_SLEEP
+    lpcpu_idle_sleep_vote(ID_WIFI, 1);
+    OAM_WARNING_LOG0(0, OAM_SF_PWR, "wlan_pm_open::lpcpu_idle_sleep_vote value 1!");
 #endif
     if(!pst_wlan_pm->pst_sdio->st_sdio_wakelock.lock_count)
     {
@@ -363,9 +414,9 @@ oal_int32 wlan_pm_open(oal_void)
 		oal_sdio_wake_unlock(pst_wlan_pm->pst_sdio);
 		mutex_unlock(&pm_data->host_mutex);
 		DECLARE_DFT_TRACE_KEY_INFO("wlan_power_on_fail",OAL_DFT_TRACE_FAIL);
-       #ifdef CONFIG_HISI_IDLE_SLEEP
-        hisi_idle_sleep_vote(ID_WIFI,0);
-       #endif
+        #ifdef CONFIG_LPCPU_IDLE_SLEEP
+        lpcpu_idle_sleep_vote(ID_WIFI, 0);
+        #endif
         return OAL_FAIL;
     }
 
@@ -377,8 +428,8 @@ oal_int32 wlan_pm_open(oal_void)
         {
             OAM_ERROR_LOG0(0,OAM_SF_PWR, "wlan_pm_open::NO g_pst_custom_process_func registered");
             mutex_unlock(&pm_data->host_mutex);
-            #ifdef CONFIG_HISI_IDLE_SLEEP
-            hisi_idle_sleep_vote(ID_WIFI,0);
+            #ifdef CONFIG_LPCPU_IDLE_SLEEP
+            lpcpu_idle_sleep_vote(ID_WIFI, 0);
             #endif
             return OAL_FAIL;
         }
@@ -397,8 +448,8 @@ oal_int32 wlan_pm_open(oal_void)
                 {
                     OAL_IO_PRINT("dump device mem when cali custom failed!\n");
                 }
-                #ifdef CONFIG_HISI_IDLE_SLEEP
-                hisi_idle_sleep_vote(ID_WIFI,0);
+                #ifdef CONFIG_LPCPU_IDLE_SLEEP
+                lpcpu_idle_sleep_vote(ID_WIFI, 0);
                 #endif
                 return OAL_FAIL;
             }
@@ -551,9 +602,9 @@ oal_uint32 wlan_pm_close(oal_void)
     mutex_unlock(&pm_data->host_mutex);
 
     hcc_dev_flowctrl_on(hcc_get_default_handler(), 0);
-#ifdef CONFIG_HISI_IDLE_SLEEP
-    hisi_idle_sleep_vote(ID_WIFI,0);
-    OAM_WARNING_LOG0(0, OAM_SF_PWR, "wlan_pm_close::hisi_idle_sleep_vote 0!");
+#ifdef CONFIG_LPCPU_IDLE_SLEEP
+    lpcpu_idle_sleep_vote(ID_WIFI, 0);
+    OAM_WARNING_LOG0(0, OAM_SF_PWR, "wlan_pm_close::lpcpu_idle_sleep_vote 0!");
 #endif
     OAM_WARNING_LOG0(0,OAM_SF_PWR,"wlan_pm_close succ!\n");
     DECLARE_DFT_TRACE_KEY_INFO("wlan_close_succ",OAL_DFT_TRACE_SUCC);
@@ -582,8 +633,16 @@ oal_uint32 wlan_pm_enable(oal_void)
         return OAL_SUCC;
     }
 
+    if ((pst_wlan_pm->ul_wlan_dev_state == HOST_DISALLOW_TO_SLEEP) &&
+        (pst_wlan_pm->pst_sdio->st_sdio_wakelock.lock_count == 0))
+    {
+        oal_sdio_wake_lock(pst_wlan_pm->pst_sdio);
+        OAM_WARNING_LOG0(0, OAM_SF_PWR, "wlan pm status error, and set status back!");
+    }
+
     pst_wlan_pm->ul_wlan_pm_enable = OAL_TRUE;
 
+    wlan_pm_feed_wdg();
 
 #ifdef _PRE_WLAN_FEATURE_AUTO_FREQ
      if(OAL_PTR_NULL != g_pst_alg_process_func.p_auto_freq_set_lock_mod_func)
@@ -1368,12 +1427,9 @@ int32 wlan_pm_stop_wdg(struct wlan_pm_s *pst_wlan_pm_info)
 
 
 
-void wlan_pm_wdg_timeout(struct wlan_pm_s *pm_data)
+void wlan_pm_wdg_timeout(unsigned long data)
 {
-
-
-    //OAL_IO_PRINT("wlan_pm_wdg_timeout.... \r\n");
-
+    struct wlan_pm_s *pm_data = (struct wlan_pm_s *)data;
     if(NULL == pm_data)
     {
         return;
@@ -1397,7 +1453,7 @@ void wlan_pm_wdg_timeout(struct wlan_pm_s *pm_data)
 		if(0 == pm_data->ul_packet_cnt)
 		{
 			pm_data->ul_wdg_timeout_curr_cnt++;
-			if((pm_data->ul_wdg_timeout_curr_cnt == pm_data->ul_wdg_timeout_cnt))
+			if(pm_data->ul_wdg_timeout_curr_cnt == pm_data->ul_wdg_timeout_cnt)
 			{
                 if(0 != wlan_pm_work_submit(pm_data, &pm_data->st_sleep_work))
                 {
@@ -1435,8 +1491,14 @@ restart_timer:
 }
 
 
-void wlan_pm_deepsleep_delay_timeout_02(struct wlan_pm_s *pm_data)
+void wlan_pm_deepsleep_delay_timeout_02(unsigned long data)
 {
+    struct wlan_pm_s *pm_data = (struct wlan_pm_s *)(uintptr_t)data;
+    if(NULL == pm_data)
+    {
+        return;
+    }
+
     oal_wake_unlock(&pm_data->st_deepsleep_wakelock);
 
     OAL_IO_PRINT("wlan_pm_deepsleep_delay_timeout release wakelock....%lu", pm_data->st_deepsleep_wakelock.lock_count);

@@ -292,7 +292,11 @@ wal_cfg80211_default_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 OAL_STATIC struct ieee80211_supported_band hi1151_band_2ghz = {
     hi1151_2ghz_channels,
     hi1151_g_rates,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+    NL80211_BAND_2GHZ,
+#else
     IEEE80211_BAND_2GHZ,
+#endif
     sizeof(hi1151_2ghz_channels)/sizeof(oal_ieee80211_channel),
     hi1151_g_rates_size,
     {
@@ -305,7 +309,11 @@ OAL_STATIC struct ieee80211_supported_band hi1151_band_2ghz = {
 OAL_STATIC oal_ieee80211_supported_band hi1151_band_5ghz = {
     hi1151_5ghz_channels,
     hi1151_a_rates,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+    NL80211_BAND_5GHZ,
+#else
     IEEE80211_BAND_5GHZ,
+#endif
     sizeof(hi1151_5ghz_channels)/sizeof(oal_ieee80211_channel),
     hi1151_a_rates_size,
     {
@@ -323,26 +331,19 @@ cookie_arry_stru        g_cookie_array[WAL_COOKIE_ARRAY_SIZE];
 *****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_UAPSD
 
-oal_uint32 wal_find_wmm_uapsd(oal_uint8 *puc_frame_body, oal_int32 l_len)
+OAL_STATIC oal_bool_enum_uint8 wal_find_wmm_uapsd(oal_uint8 *puc_wmm_ie)
 {
-    oal_int32    l_index = 0;
 
     /* ???? WMM UAPSD ???????? */
-    while (l_index < l_len)
+    if (puc_wmm_ie[1] < MAC_WMM_QOS_INFO_POS)
     {
-        if ((MAC_EID_WMM == puc_frame_body[l_index])
-            && (0 == oal_memcmp(puc_frame_body + l_index + 2, g_auc_wpa_oui, MAC_OUI_LEN))
-            && (MAC_OUITYPE_WMM == puc_frame_body[l_index + 2 + MAC_OUI_LEN])
-            && (puc_frame_body[l_index + MAC_WMM_QOS_INFO_POS] & BIT7))
-        {
-            return OAL_TRUE;
-        }
-        else
-        {
-            l_index += (MAC_IE_HDR_LEN + puc_frame_body[l_index + 1]);
-        }
+        return OAL_FALSE;
     }
 
+    if (puc_wmm_ie[MAC_WMM_QOS_INFO_POS] & BIT7)
+    {
+        return OAL_TRUE;
+    }
     return OAL_FALSE;
 }
 #endif
@@ -677,7 +678,7 @@ oal_uint32 wal_parse_wmm_ie(oal_net_device_stru *pst_dev,
     /*  ????wmm ie????????????uapsd???????? */
     else
     {
-        if(OAL_FALSE == wal_find_wmm_uapsd(pst_beacon_info->tail, pst_beacon_info->tail_len))
+        if(OAL_FALSE == wal_find_wmm_uapsd(puc_wmm_ie))
         {
         /* ????UAPSD ??*/
             uc_uapsd = OAL_FALSE;
@@ -1182,9 +1183,16 @@ OAL_STATIC oal_uint32 wal_parse_beacon_wps_ie(mac_vap_stru *pst_mac_vap, oal_bea
 }
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
 OAL_STATIC oal_int32 wal_cfg80211_sched_scan_stop(oal_wiphy_stru          *pst_wiphy,
-                                                           oal_net_device_stru     *pst_netdev);
+                                                  oal_net_device_stru     *pst_netdev,
+                                                  oal_uint64               ul_reqid);
+
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
+OAL_STATIC oal_int32 wal_cfg80211_sched_scan_stop(oal_wiphy_stru          *pst_wiphy,
+                                                  oal_net_device_stru     *pst_netdev);
+#else
+/* do nothing */
 #endif
 
 
@@ -1288,7 +1296,11 @@ OAL_STATIC oal_int32  wal_cfg80211_scan(
     if (OAL_PTR_NULL != pst_scan_mgmt->pst_sched_scan_req)
     {
         OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_CFG, "{wal_cfg80211_scan::stop sched scan, before normal scan.}");
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+        wal_cfg80211_sched_scan_stop(pst_wiphy, pst_netdev, 0);
+#else
         wal_cfg80211_sched_scan_stop(pst_wiphy, pst_netdev);
+#endif
     }
 #endif
 
@@ -2872,17 +2884,23 @@ OAL_STATIC oal_int32 wal_cfg80211_fill_beacon_param(mac_vap_stru               *
 
     ul_beacon_head_len = (oal_uint32)pst_beacon_info->head_len;
     ul_beacon_tail_len = (oal_uint32)pst_beacon_info->tail_len;
+
+    if ((ul_beacon_head_len + ul_beacon_tail_len) < ul_beacon_head_len) {
+        OAM_ERROR_LOG2(0, OAM_SF_CFG,
+            "{wal_cfg80211_fill_beacon_param::beacon_head_len[%d], beacon_tail_len[%d]. len abnormal.}",
+            ul_beacon_head_len,
+            ul_beacon_tail_len);
+        return -OAL_EINVAL;
+    }
+
     puc_beacon_info_tmp = (oal_uint8 *)(oal_memalloc(ul_beacon_head_len + ul_beacon_tail_len));
-    if (OAL_PTR_NULL == puc_beacon_info_tmp)
-    {
+    if (OAL_PTR_NULL == puc_beacon_info_tmp) {
         OAM_ERROR_LOG0(uc_vap_id, OAM_SF_ANY, "{wal_cfg80211_fill_beacon_param::puc_beacon_info_tmp memalloc failed.}");
         return -OAL_EINVAL;
     }
-    else
-    {
-        oal_memcopy(puc_beacon_info_tmp, pst_beacon_info->head, ul_beacon_head_len);
-        oal_memcopy(puc_beacon_info_tmp + ul_beacon_head_len, pst_beacon_info->tail, ul_beacon_tail_len);
-    }
+
+    oal_memcopy(puc_beacon_info_tmp, pst_beacon_info->head, ul_beacon_head_len);
+    oal_memcopy(puc_beacon_info_tmp + ul_beacon_head_len, pst_beacon_info->tail, ul_beacon_tail_len);
 
     /* ????????51??????????????????????????????????????51?????????????????????????????????? */
     OAL_MEMZERO(&st_beacon_info_tmp, sizeof(st_beacon_info_tmp));
@@ -3868,8 +3886,15 @@ OAL_STATIC oal_int32 wal_cfg80211_sched_scan_start(oal_wiphy_stru               
 }
 
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+OAL_STATIC oal_int32 wal_cfg80211_sched_scan_stop(oal_wiphy_stru          *pst_wiphy,
+                                                  oal_net_device_stru     *pst_netdev,
+                                                  oal_uint64               ul_reqid)
+
+#else
 OAL_STATIC oal_int32 wal_cfg80211_sched_scan_stop(oal_wiphy_stru          *pst_wiphy,
                                                   oal_net_device_stru     *pst_netdev)
+#endif
 {
     /* ?????????????? */
     if ((OAL_PTR_NULL == pst_wiphy) || (OAL_PTR_NULL == pst_netdev))
@@ -3894,7 +3919,12 @@ OAL_STATIC oal_int32 wal_cfg80211_sched_scan_stop(oal_wiphy_stru          *pst_w
 #endif
 
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
+oal_int32 wal_cfg80211_change_virtual_intf(oal_wiphy_stru        *pst_wiphy,
+                                           oal_net_device_stru   *pst_net_dev,
+                                           enum nl80211_iftype    en_type,
+                                           oal_vif_params_stru   *pst_params)
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34))
 oal_int32 wal_cfg80211_change_virtual_intf(oal_wiphy_stru        *pst_wiphy,
                                            oal_net_device_stru   *pst_net_dev,
                                            enum nl80211_iftype    en_type,
@@ -4324,13 +4354,13 @@ oal_uint8 wal_cfg80211_get_station_filter(mac_vap_stru *pst_mac_vap, oal_uint8 *
 }
 
 
-OAL_STATIC oal_int32 wal_cfg80211_get_station(oal_wiphy_stru        *pst_wiphy,
-                                                   oal_net_device_stru   *pst_dev,
+oal_int32 wal_cfg80211_get_station(oal_wiphy_stru *pst_wiphy,
+                                   oal_net_device_stru *pst_dev,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0))
-                                                   const
+                                   const
 #endif
-                                                   oal_uint8             *puc_mac,
-                                                   oal_station_info_stru *pst_sta_info)
+                                   oal_uint8 *puc_mac,
+                                   oal_station_info_stru *pst_sta_info)
 {
     mac_vap_stru                          *pst_mac_vap;
     hmac_vap_stru                         *pst_hmac_vap;
@@ -4558,14 +4588,26 @@ oal_void wal_cfg80211_unregister_netdev(oal_net_device_stru *pst_net_dev)
 }
 
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0))
 OAL_STATIC oal_wireless_dev_stru * wal_cfg80211_add_virtual_intf(oal_wiphy_stru     *pst_wiphy,
                                                                 const char          *puc_name,
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
                                                                 unsigned char name_assign_type,
-#endif
+                                                                enum nl80211_iftype  en_type,
+                                                                oal_vif_params_stru *pst_params)
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
+OAL_STATIC oal_wireless_dev_stru * wal_cfg80211_add_virtual_intf(oal_wiphy_stru     *pst_wiphy,
+                                                                const char          *puc_name,
+                                                                unsigned char name_assign_type,
                                                                 enum nl80211_iftype  en_type,
                                                                 oal_uint32          *pul_flags,
                                                                 oal_vif_params_stru *pst_params)
+#else
+OAL_STATIC oal_wireless_dev_stru * wal_cfg80211_add_virtual_intf(oal_wiphy_stru     *pst_wiphy,
+                                                                const char          *puc_name,
+                                                                enum nl80211_iftype  en_type,
+                                                                oal_uint32          *pul_flags,
+                                                                oal_vif_params_stru *pst_params)
+#endif
 {
     oal_wireless_dev_stru      *pst_wdev    = OAL_PTR_NULL;
     wlan_p2p_mode_enum_uint8    en_p2p_mode;
@@ -4772,7 +4814,9 @@ OAL_STATIC oal_wireless_dev_stru * wal_cfg80211_add_virtual_intf(oal_wiphy_stru 
 
     /* ??netdevice???????? */
     /* ??????????net_device ?????????????? */
+#ifdef CONFIG_WIRELESS_EXT
     pst_net_dev->wireless_handlers             = &g_st_iw_handler_def;
+#endif /* CONFIG_WIRELESS_EXT */
     /* OAL_NETDEVICE_OPS(pst_net_dev)             = &g_st_wal_net_dev_ops; */
     pst_net_dev->netdev_ops                    = &g_st_wal_net_dev_ops;
 
@@ -4892,6 +4936,23 @@ ERR_STEP:
     return ERR_PTR(-EAGAIN);
 }
 
+OAL_STATIC oal_bool_enum_uint8 wal_cfg80211_check_is_primary_netdev(oal_wiphy_stru *wiphy, oal_net_device_stru *net_dev)
+{
+    mac_device_stru *mac_device;
+    mac_wiphy_priv_stru *wiphy_priv;
+    wiphy_priv = oal_wiphy_priv(wiphy);
+    if (wiphy_priv == OAL_PTR_NULL) {
+        OAM_WARNING_LOG0(0, OAM_SF_CFG, "{wal_cfg80211_check_is_primary_netdev::pst_wiphy_priv is null!}");
+        return OAL_FALSE;
+    }
+    mac_device = wiphy_priv->pst_mac_device;
+    if (mac_device == OAL_PTR_NULL) {
+        OAM_WARNING_LOG0(0, OAM_SF_CFG, "{wal_cfg80211_check_is_primary_netdev::pst_mac_device is null!}");
+        return OAL_FALSE;
+    }
+    return mac_device->st_p2p_info.pst_primary_net_device == net_dev;
+}
+
 
 OAL_STATIC oal_int32 wal_cfg80211_del_virtual_intf(oal_wiphy_stru           *pst_wiphy,
                                                    oal_wireless_dev_stru    *pst_wdev)
@@ -4900,9 +4961,6 @@ OAL_STATIC oal_int32 wal_cfg80211_del_virtual_intf(oal_wiphy_stru           *pst
     wal_msg_write_stru           st_write_msg;
     wal_msg_stru               *pst_rsp_msg;
     oal_int32                    l_ret;
-#ifdef _PRE_WLAN_FEATURE_P2P
-    wlan_p2p_mode_enum_uint8     en_p2p_mode = WLAN_LEGACY_VAP_MODE;
-#endif
     oal_net_device_stru         *pst_net_dev;
     mac_vap_stru                *pst_mac_vap;
     hmac_vap_stru               *pst_hmac_vap;
@@ -4944,7 +5002,10 @@ OAL_STATIC oal_int32 wal_cfg80211_del_virtual_intf(oal_wiphy_stru           *pst
         OAM_ERROR_LOG1(0,OAM_SF_ANY,"{wal_cfg80211_del_virtual_intf::mac_res_get_hmac_vap fail.vap_id[%u]}",pst_mac_vap->uc_vap_id);
         return -OAL_EINVAL;
     }
-
+    if (wal_cfg80211_check_is_primary_netdev(pst_wiphy, pst_net_dev)) {
+        OAM_ERROR_LOG0(0, OAM_SF_ANY, "{wal_cfg80211_del_virtual_intf::cannot del primary netdev}");
+        return -OAL_EINVAL;
+    }
 
     oal_net_tx_stop_all_queues(pst_net_dev);
     wal_netdev_stop(pst_net_dev);
@@ -4959,8 +5020,7 @@ OAL_STATIC oal_int32 wal_cfg80211_del_virtual_intf(oal_wiphy_stru           *pst
     ((mac_cfg_del_vap_param_stru *)st_write_msg.auc_value)->pst_net_dev = pst_net_dev;
 #ifdef _PRE_WLAN_FEATURE_P2P
     pst_wdev = pst_net_dev->ieee80211_ptr;
-    en_p2p_mode = wal_wireless_iftype_to_mac_p2p_mode(pst_wdev->iftype);
-    if (WLAN_P2P_BUTT == en_p2p_mode)
+    if (wal_wireless_iftype_to_mac_p2p_mode(pst_wdev->iftype) == WLAN_P2P_BUTT)
     {
         OAM_ERROR_LOG0(0, OAM_SF_ANY, "{wal_cfg80211_del_virtual_intf::wal_wireless_iftype_to_mac_p2p_mode return BUTT}\r\n");
         return -OAL_EINVAL;
@@ -4975,7 +5035,7 @@ OAL_STATIC oal_int32 wal_cfg80211_del_virtual_intf(oal_wiphy_stru           *pst
     pst_hmac_device = hmac_res_get_mac_dev(pst_mac_vap->uc_device_id);
     if (pst_hmac_device == OAL_PTR_NULL)
     {
-        OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_cfg80211_add_virtual_intf::hmac_device is null!}\r\n", pst_mac_vap->uc_device_id);
+        OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_cfg80211_del_virtual_intf::hmac_device is null!}\r\n", pst_mac_vap->uc_device_id);
         return -OAL_EINVAL;
     }
     hmac_set_p2p_status(&pst_hmac_device->ul_p2p_intf_status, P2P_STATUS_IF_DELETING);
@@ -6409,9 +6469,13 @@ oal_uint32  wal_cfg80211_init(oal_void)
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST)
             /* 1102????????pno???????????????????? */
             pst_wiphy->max_sched_scan_ssids  = MAX_PNO_SSID_COUNT;
-	        pst_wiphy->max_match_sets        = MAX_PNO_SSID_COUNT;
-	        pst_wiphy->max_sched_scan_ie_len = WAL_MAX_SCAN_IE_LEN;
+            pst_wiphy->max_match_sets        = MAX_PNO_SSID_COUNT;
+            pst_wiphy->max_sched_scan_ie_len = WAL_MAX_SCAN_IE_LEN;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,12,0))
+            pst_wiphy->max_sched_scan_reqs  = 1;
+#else
             pst_wiphy->flags |= WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44) */
 #endif   /* _PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1102_HOST */
 
 #else    /* ??p2p??????????vap */
@@ -6448,12 +6512,19 @@ oal_uint32  wal_cfg80211_init(oal_void)
              /* linux-2.6.30  ?????????? */
             pst_wiphy->custom_regulatory |= WIPHY_FLAG_CUSTOM_REGULATORY;
 #endif
-
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+            pst_wiphy->bands[NL80211_BAND_2GHZ] = &hi1151_band_2ghz;        /* ?????????????? 2.4G */
+            if(band_5g_enabled)
+            {
+                pst_wiphy->bands[NL80211_BAND_5GHZ] = &hi1151_band_5ghz;        /* ?????????????? 5G */
+            }
+#else
             pst_wiphy->bands[IEEE80211_BAND_2GHZ] = &hi1151_band_2ghz;        /* ?????????????? 2.4G */
             if(band_5g_enabled)
             {
                 pst_wiphy->bands[IEEE80211_BAND_5GHZ] = &hi1151_band_5ghz;        /* ?????????????? 5G */
             }
+#endif
             pst_wiphy->signal_type                = CFG80211_SIGNAL_TYPE_MBM;
 
             oal_wiphy_apply_custom_regulatory(pst_wiphy, &g_st_default_regdom);

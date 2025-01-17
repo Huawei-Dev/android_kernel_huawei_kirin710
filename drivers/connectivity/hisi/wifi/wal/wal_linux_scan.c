@@ -120,7 +120,11 @@ oal_void wal_update_bss(oal_wiphy_stru      *pst_wiphy,
     oal_dlist_head_stru          *pst_entry;
     mac_bss_dscr_stru            *pst_bss_dscr;
     oal_uint8                     uc_chan_number;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+    enum nl80211_band             en_band;
+#else
     enum ieee80211_band           en_band;
+#endif
 
     if (pst_wiphy == OAL_PTR_NULL || pst_bss_mgmt == OAL_PTR_NULL || puc_bssid == OAL_PTR_NULL)
     {
@@ -172,7 +176,11 @@ oal_void wal_update_bss(oal_wiphy_stru      *pst_wiphy,
     else
     {
         uc_chan_number = pst_bss_dscr->st_channel.uc_chan_number;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+        en_band        = (enum nl80211_band)pst_bss_dscr->st_channel.en_band;
+#else
         en_band        = (enum ieee80211_band)pst_bss_dscr->st_channel.en_band;
+#endif
 
         /* ?????? */
         oal_memset(&st_scanned_bss_info, 0, OAL_SIZEOF(wal_scanned_bss_info_stru));
@@ -216,7 +224,11 @@ oal_void  wal_inform_all_bss(oal_wiphy_stru  *pst_wiphy, hmac_bss_mgmt_stru  *ps
     oal_uint32                      ul_ret;
     oal_uint32                      ul_bss_num_not_in_regdomain = 0;
     oal_uint8                       uc_chan_number;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+    enum nl80211_band               en_band;
+#else
     enum ieee80211_band             en_band;
+#endif
 
     /* ?????? */
     oal_spin_lock(&(pst_bss_mgmt->st_lock));
@@ -234,7 +246,11 @@ oal_void  wal_inform_all_bss(oal_wiphy_stru  *pst_wiphy, hmac_bss_mgmt_stru  *ps
         }
 
         uc_chan_number = pst_bss_dscr->st_channel.uc_chan_number;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0))
+        en_band        = (enum nl80211_band)pst_bss_dscr->st_channel.en_band;
+#else
         en_band        = (enum ieee80211_band)pst_bss_dscr->st_channel.en_band;
+#endif
 
         /* ???????????????????????????????????????????????? */
         ul_ret = mac_is_channel_num_valid(en_band, uc_chan_number);

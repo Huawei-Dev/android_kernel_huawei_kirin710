@@ -247,7 +247,7 @@ oal_uint8 oal_chip_get_device_num(oal_uint32   ul_chip_ver)
     return uc_device_nums;
 }
 
-#if defined(_PRE_PRODUCT_ID_HI110X_HOST)
+#if defined(_PRE_PRODUCT_ID_HI110X_HOST) && defined(HAVE_HISI_NFC)
 #ifndef WIN32
 oal_void hi_wlan_power_off(void)
 {

@@ -13,11 +13,17 @@
 #include <linux/of.h>
 
 #ifdef HISI_NVRAM_SUPPORT
+#ifdef CONFIG_ARCH_PLATFORM
+#include <linux/mtd/nve_ap_kernel_interface.h>
+#else
 #include <linux/mtd/hisi_nve_interface.h>
+#endif
 #endif
 
 #include "hisi_ini.h"
 #include "board.h"
+
+#include "oal_util.h"
 
 /*
  * 2 Global Variable Definition
@@ -44,7 +50,8 @@ static int32 ko_read_line(INI_FILE *fp, char *addr)
     int8  auc_tmp[MAX_READ_LINE_NUM] = {0};
     int32 cnt = 0;
 
-    l_ret = kernel_read(fp, fp->f_pos, auc_tmp, MAX_READ_LINE_NUM);
+    l_ret = oal_file_read_ext(fp, fp->f_pos, auc_tmp, MAX_READ_LINE_NUM);
+
     if (0 > l_ret)
     {
         INI_ERROR("kernel_line read l_ret < 0");
@@ -620,7 +627,11 @@ int32 get_ini_file_name_from_dts(int8 *dts_prop, int8 *prop_value, uint32 size)
 
 int32 read_conf_from_nvram(int8 * name, int8 * pc_out, uint32 size)
 {
-    struct hisi_nve_info_user  info;
+#ifdef CONFIG_ARCH_PLATFORM
+    struct opt_nve_info_user info;
+#else
+    struct hisi_nve_info_user info;
+#endif
     uint32 len = 0;
     int32 ret = -1;
 
@@ -631,7 +642,11 @@ int32 read_conf_from_nvram(int8 * name, int8 * pc_out, uint32 size)
     info.valid_size = HISI_CUST_NVRAM_LEN;
     info.nv_operation = HISI_CUST_NVRAM_READ;
 
-    ret = hisi_nve_direct_access( &info );
+#ifdef CONFIG_ARCH_PLATFORM
+    ret = nve_direct_access_interface(&info);
+#else
+    ret = hisi_nve_direct_access(&info);
+#endif
     if (ret < -1) {
         INI_ERROR("read nvm failed");
         return INI_FAILED;
@@ -648,7 +663,11 @@ int32 read_conf_from_nvram(int8 * name, int8 * pc_out, uint32 size)
 
 int32 write_conf_to_nvram(int8 * name, int8 * pc_arr)
 {
-    struct hisi_nve_info_user  info;
+#ifdef CONFIG_ARCH_PLATFORM
+    struct opt_nve_info_user info;
+#else
+    struct hisi_nve_info_user info;
+#endif
     int32 ret = -1;
 
     memset(&info, 0, sizeof(info));
@@ -659,7 +678,11 @@ int32 write_conf_to_nvram(int8 * name, int8 * pc_arr)
     info.nv_operation = HISI_CUST_NVRAM_WRITE;
     memcpy(info.nv_data, pc_arr, HISI_CUST_NVRAM_LEN);
 
-    ret = hisi_nve_direct_access( &info );
+#ifdef CONFIG_ARCH_PLATFORM
+    ret = nve_direct_access_interface(&info);
+#else
+    ret = hisi_nve_direct_access(&info);
+#endif
     if (ret < -1) {
         INI_ERROR("write nvm failed");
         return INI_FAILED;

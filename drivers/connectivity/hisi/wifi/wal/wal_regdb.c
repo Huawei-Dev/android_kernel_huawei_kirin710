@@ -232,8 +232,9 @@ static const struct ieee80211_regdomain regdom_AZ = {
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 0, 18,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
-    .n_reg_rules = 4
+    .n_reg_rules = 5
 };
 
 static const struct ieee80211_regdomain regdom_BA = {
@@ -300,6 +301,20 @@ static const struct ieee80211_regdomain regdom_BH = {
         REG_RULE(5735, 5835, 80, 0, 20, 0),
     },
     .n_reg_rules = 4
+};
+
+static const struct ieee80211_regdomain regdom_BJ = {
+    .alpha2 = "BJ",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
+    },
+    .n_reg_rules = 5
 };
 
 static const struct ieee80211_regdomain regdom_BM = {
@@ -381,6 +396,19 @@ static const struct ieee80211_regdomain regdom_BS = {
     .n_reg_rules = 5
 };
 
+static const struct ieee80211_regdomain regdom_BW = {
+    .alpha2 = "BW",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+    },
+    .n_reg_rules = 4
+};
+
 static const struct ieee80211_regdomain regdom_BY = {
     .alpha2 = "BY",
     .reg_rules = {
@@ -415,11 +443,26 @@ static const struct ieee80211_regdomain regdom_CA = {
         REG_RULE(5170, 5250, 80, 3, 17, 0),
         REG_RULE(5250, 5330, 80, 3, 24,
             NL80211_RRF_DFS | 0),
-        REG_RULE(5490, 5730, 80, 3, 24,
+        REG_RULE(5490, 5590, 80, 3, 24,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5650, 5730, 80, 3, 24,
             NL80211_RRF_DFS | 0),
         REG_RULE(5735, 5835, 80, 3, 30, 0),
     },
-    .n_reg_rules = 5
+    .n_reg_rules = 6
+};
+
+static const struct ieee80211_regdomain regdom_CD = {
+    .alpha2 = "CD",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+    },
+    .n_reg_rules = 4
 };
 
 static const struct ieee80211_regdomain regdom_CH = {
@@ -436,8 +479,8 @@ static const struct ieee80211_regdomain regdom_CH = {
     .n_reg_rules = 5
 };
 
-static const struct ieee80211_regdomain regdom_CL = {
-    .alpha2 = "CL",
+static const struct ieee80211_regdomain regdom_CI = {
+    .alpha2 = "CI",
     .reg_rules = {
         REG_RULE(2402, 2482, 40, 0, 20, 0),
         REG_RULE(5170, 5250, 80, 0, 23, 0),
@@ -445,7 +488,34 @@ static const struct ieee80211_regdomain regdom_CL = {
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 0, 23,
             NL80211_RRF_DFS | 0),
+    },
+    .n_reg_rules = 4
+};
+
+static const struct ieee80211_regdomain regdom_CL = {
+    .alpha2 = "CL",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5730, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
         REG_RULE(5735, 5835, 80, 0, 20, 0),
+    },
+    .n_reg_rules = 5
+};
+
+static const struct ieee80211_regdomain regdom_CM = {
+    .alpha2 = "CM",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
     .n_reg_rules = 5
 };
@@ -693,6 +763,22 @@ static const struct ieee80211_regdomain regdom_FI = {
     .n_reg_rules = 5
 };
 
+static const struct ieee80211_regdomain regdom_FJ = {
+    .alpha2 = "FJ",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5710, 5730, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
+    },
+    .n_reg_rules = 6
+};
+
 static const struct ieee80211_regdomain regdom_FR = {
     .alpha2 = "FR",
     .reg_rules = {
@@ -748,6 +834,19 @@ static const struct ieee80211_regdomain regdom_GF = {
     .n_reg_rules = 4
 };
 
+static const struct ieee80211_regdomain regdom_GH = {
+    .alpha2 = "GH",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+    },
+    .n_reg_rules = 4
+};
+
 static const struct ieee80211_regdomain regdom_GL = {
     .alpha2 = "GL",
     .reg_rules = {
@@ -785,8 +884,9 @@ static const struct ieee80211_regdomain regdom_GE = {
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 0, 18,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
-    .n_reg_rules = 4
+    .n_reg_rules = 5
 };
 
 static const struct ieee80211_regdomain regdom_GR = {
@@ -815,6 +915,19 @@ static const struct ieee80211_regdomain regdom_GT = {
         REG_RULE(5735, 5835, 80, 3, 30, 0),
     },
     .n_reg_rules = 5
+};
+
+static const struct ieee80211_regdomain regdom_GY = {
+    .alpha2 = "GY",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+    },
+    .n_reg_rules = 4
 };
 
 static const struct ieee80211_regdomain regdom_HK = {
@@ -877,9 +990,12 @@ static const struct ieee80211_regdomain regdom_ID = {
     .alpha2 = "ID",
     .reg_rules = {
         REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
         REG_RULE(5735, 5815, 40, 0, 20, 0),
     },
-    .n_reg_rules = 2
+    .n_reg_rules = 4
 };
 
 static const struct ieee80211_regdomain regdom_IE = {
@@ -986,9 +1102,11 @@ static const struct ieee80211_regdomain regdom_JM = {
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 3, 20,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5710, 5730, 80, 3, 20,
+            NL80211_RRF_DFS | 0),
         REG_RULE(5735, 5835, 80, 3, 30, 0),
     },
-    .n_reg_rules = 5
+    .n_reg_rules = 6
 };
 
 static const struct ieee80211_regdomain regdom_JO = {
@@ -1077,9 +1195,9 @@ static const struct ieee80211_regdomain regdom_KR = {
         REG_RULE(5170, 5250, 80, 3, 30, 0),
         REG_RULE(5250, 5330, 80, 3, 30,
             NL80211_RRF_DFS | 0),
-        REG_RULE(5490, 5630, 80, 3, 30,
+        REG_RULE(5490, 5710, 80, 3, 30,
             NL80211_RRF_DFS | 0),
-        REG_RULE(5735, 5815, 80, 3, 30, 0),
+        REG_RULE(5735, 5835, 80, 3, 30, 0),
     },
     .n_reg_rules = 5
 };
@@ -1088,13 +1206,15 @@ static const struct ieee80211_regdomain regdom_KW = {
     .alpha2 = "KW",
     .reg_rules = {
         REG_RULE(2402, 2482, 40, 0, 20, 0),
-        REG_RULE(5170, 5250, 80, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 20,
+            NL80211_RRF_NO_INDOOR | 0),
         REG_RULE(5250, 5330, 80, 0, 20,
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 0, 20,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
-    .n_reg_rules = 4
+    .n_reg_rules = 5
 };
 
 static const struct ieee80211_regdomain regdom_KZ = {
@@ -1259,8 +1379,9 @@ static const struct ieee80211_regdomain regdom_MD = {
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 0, 27,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
-    .n_reg_rules = 4
+    .n_reg_rules = 5
 };
 
 static const struct ieee80211_regdomain regdom_ME = {
@@ -1275,6 +1396,19 @@ static const struct ieee80211_regdomain regdom_ME = {
         REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
     .n_reg_rules = 5
+};
+
+static const struct ieee80211_regdomain regdom_MG = {
+    .alpha2 = "MG",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+    },
+    .n_reg_rules = 4
 };
 
 static const struct ieee80211_regdomain regdom_MH = {
@@ -1443,11 +1577,27 @@ static const struct ieee80211_regdomain regdom_MY = {
         REG_RULE(5170, 5250, 80, 3, 24, 0),
         REG_RULE(5250, 5330, 80, 0, 24,
             NL80211_RRF_DFS | 0),
-        REG_RULE(5490, 5710, 80, 0, 24,
+        REG_RULE(5490, 5650, 80, 0, 24,
             NL80211_RRF_DFS | 0),
         REG_RULE(5735, 5835, 80, 0, 24, 0),
     },
     .n_reg_rules = 5
+};
+
+static const struct ieee80211_regdomain regdom_NA = {
+    .alpha2 = "NA",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5710, 5730, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
+    },
+    .n_reg_rules = 6
 };
 
 static const struct ieee80211_regdomain regdom_NG = {
@@ -1572,6 +1722,22 @@ static const struct ieee80211_regdomain regdom_PE = {
         REG_RULE(5735, 5835, 80, 0, 30, 0),
     },
     .n_reg_rules = 5
+};
+
+static const struct ieee80211_regdomain regdom_PF = {
+    .alpha2 = "PF",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5710, 5730, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
+    },
+    .n_reg_rules = 6
 };
 
 static const struct ieee80211_regdomain regdom_PG = {
@@ -1704,8 +1870,9 @@ static const struct ieee80211_regdomain regdom_RE = {
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 0, 27,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
-    .n_reg_rules = 4
+    .n_reg_rules = 5
 };
 
 /**
@@ -1726,8 +1893,9 @@ static const struct ieee80211_regdomain regdom_RS = {
             NL80211_RRF_DFS | 0),
         REG_RULE(5490, 5710, 80, 0, 20,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5735, 5835, 80, 0, 14, 0),
     },
-    .n_reg_rules = 4
+    .n_reg_rules = 5
 };
 
 static const struct ieee80211_regdomain regdom_RU = {
@@ -1845,6 +2013,18 @@ static const struct ieee80211_regdomain regdom_SK = {
     .n_reg_rules = 5
 };
 
+static const struct ieee80211_regdomain regdom_SR = {
+    .alpha2 = "SR",
+    .reg_rules = {
+        REG_RULE(2402, 2482, 40, 0, 20, 0),
+        REG_RULE(5170, 5250, 80, 0, 23, 0),
+        REG_RULE(5250, 5330, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5710, 80, 0, 23,
+            NL80211_RRF_DFS | 0),
+    },
+    .n_reg_rules = 4
+};
 static const struct ieee80211_regdomain regdom_SV = {
     .alpha2 = "SV",
     .reg_rules = {
@@ -1894,8 +2074,10 @@ static const struct ieee80211_regdomain regdom_TN = {
         REG_RULE(5170, 5250, 80, 0, 23, 0),
         REG_RULE(5250, 5330, 80, 0, 23,
             NL80211_RRF_DFS | 0),
+        REG_RULE(5490, 5650, 80, 0, 24,
+            NL80211_RRF_DFS | 0),
     },
-    .n_reg_rules = 3
+    .n_reg_rules = 4
 };
 
 static const struct ieee80211_regdomain regdom_TR = {
@@ -2174,17 +2356,22 @@ const struct ieee80211_regdomain *reg_regdb[] = {
     &regdom_BE,
     &regdom_BG,
     &regdom_BH,
+    &regdom_BJ,
     &regdom_BM,
     &regdom_BL,
     &regdom_BN,
     &regdom_BO,
     &regdom_BR,
     &regdom_BS,
+    &regdom_BW,
     &regdom_BY,
     &regdom_BZ,
     &regdom_CA,
+    &regdom_CD,
     &regdom_CH,
+    &regdom_CI,
     &regdom_CL,
+    &regdom_CM,
     &regdom_CN,
     &regdom_CO,
     &regdom_CU,
@@ -2202,15 +2389,18 @@ const struct ieee80211_regdomain *reg_regdb[] = {
     &regdom_ES,
     &regdom_ET,
     &regdom_FI,
+    &regdom_FJ,
     &regdom_FR,
     &regdom_GB,
     &regdom_GD,
     &regdom_GF,
+    &regdom_GH,
     &regdom_GL,
     &regdom_GU,
     &regdom_GE,
     &regdom_GR,
     &regdom_GT,
+    &regdom_GY,
     &regdom_HK,
     &regdom_HN,
     &regdom_HR,
@@ -2245,6 +2435,7 @@ const struct ieee80211_regdomain *reg_regdb[] = {
     &regdom_MC,
     &regdom_MD,
     &regdom_ME,
+    &regdom_MG,
     &regdom_MH,
     &regdom_MK,
     &regdom_MM,
@@ -2257,6 +2448,7 @@ const struct ieee80211_regdomain *reg_regdb[] = {
     &regdom_MT,
     &regdom_MX,
     &regdom_MY,
+    &regdom_NA,
     &regdom_NG,
     &regdom_NI,
     &regdom_NL,
@@ -2266,6 +2458,7 @@ const struct ieee80211_regdomain *reg_regdb[] = {
     &regdom_OM,
     &regdom_PA,
     &regdom_PE,
+    &regdom_PF,
     &regdom_PG,
     &regdom_PH,
     &regdom_PK,
@@ -2285,6 +2478,7 @@ const struct ieee80211_regdomain *reg_regdb[] = {
     &regdom_SG,
     &regdom_SI,
     &regdom_SK,
+    &regdom_SR,
     &regdom_SV,
     &regdom_SY,
     &regdom_TH,

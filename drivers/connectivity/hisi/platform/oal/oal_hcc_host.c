@@ -24,6 +24,9 @@ extern "C" {
 #include <linux/wait.h>
 #include <linux/workqueue.h>
 #include <linux/kthread.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+#include <linux/signal.h>
+#endif
 #endif
 
 #undef  THIS_FILE_ID
@@ -646,7 +649,7 @@ oal_int32 hcc_tx(struct hcc_handler* hcc, oal_netbuf_stru* netbuf,
                             hdr->pay_len, 8, "hcc payload");
 #endif
 
-    /*android wakelock,one netbuf one lock*/
+    /* wakelock,one netbuf one lock*/
     oal_wake_lock(&hcc->tx_wake_lock);
 
     pst_cb_stru = (struct hcc_tx_cb_stru*)OAL_NETBUF_CB(netbuf);

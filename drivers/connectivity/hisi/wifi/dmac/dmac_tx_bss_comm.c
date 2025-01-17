@@ -582,8 +582,8 @@ oal_void  dmac_tx_pause_info(hal_to_dmac_device_stru *pst_hal_device, dmac_vap_s
     */
     OAM_WARNING_LOG_ALTER(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_TX, "{dmac_tx_pause_info:TX_pkts: total = %u, tx_dropped = %u, tx_succ = %u, total_retry = %u, hw_tx_fail = %u.}", 5,
         pst_query_stats->ul_tx_total, pst_query_stats->ul_tx_failed, pst_query_stats->ul_hw_tx_pkts, pst_query_stats->ul_tx_retries, pst_query_stats->ul_hw_tx_failed);
-    OAM_WARNING_LOG_ALTER(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_TX, "{dmac_tx_pause_info:RSSI = %d ; RX_pkts: total = %u, drv_dropped = %u, hcc_flowctrl_miss = %u, replay = %u, replay_droped = %u.}", 6,
-        pst_dmac_vap->st_query_stats.ul_signal, pst_query_stats->ul_drv_rx_pkts, pst_query_stats->ul_rx_dropped_misc,g_sdio_stats.ulHccPktMiss, pst_query_stats->ul_rx_replay, pst_query_stats->ul_rx_replay_droped);
+    OAM_WARNING_LOG_ALTER(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_TX, "{dmac_tx_pause_info:RSSI = %d ; RX_pkts: total = %u, drv_dropped = %u, hcc_flowctrl_miss = %u, replay = %u, replay_droped = %u, rx_filter_encrypt_cnt = %u.}", 7,
+        pst_dmac_vap->st_query_stats.ul_signal, pst_query_stats->ul_drv_rx_pkts, pst_query_stats->ul_rx_dropped_misc,g_sdio_stats.ulHccPktMiss, pst_query_stats->ul_rx_replay, pst_query_stats->ul_rx_replay_droped, pst_query_stats->ul_rx_filter_encrypt_cnt);
 
     dmac_config_get_tx_rate_info(&(pst_dmac_vap->st_tx_alg), &(pst_mac_device->st_mac_rates_11g[0]), &st_txrate);
     OAM_WARNING_LOG_ALTER(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_TX, "{dmac_tx_pause_info: tx rate info legacy = %d, mcs = %d, flags = %d, nss = %d, rx rate(kbps) = %d}", 5,
@@ -2222,6 +2222,23 @@ OAL_STATIC oal_bool_enum_uint8 dmac_frame_is_null_data(oal_netbuf_stru *pst_net_
 }
 #endif
 
+OAL_STATIC oal_uint32 dmac_tx_check_user_state(dmac_vap_stru *pst_dmac_vap, mac_tx_ctl_stru *pst_tx_ctl_first,
+                                               dmac_user_stru *pst_dmac_user)
+{
+#ifdef _PRE_WLAN_FEATURE_ROAM
+    /* ??????????port??????????????eapol??????,????????????????????tid???? */
+    if (pst_dmac_vap->st_vap_base_info.en_vap_state != MAC_VAP_STATE_ROAMING &&
+        mac_user_get_port(&(pst_dmac_user->st_user_base_info)) == OAL_FALSE &&
+        MAC_GET_CB_IS_EAPOL(pst_tx_ctl_first) == OAL_FALSE &&
+        dmac_is_al_tx(pst_dmac_vap) != OAL_TRUE) {
+        OAM_WARNING_LOG1(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_TX,
+            "{dmac_tx_check_state::port not valid.user idx [%d]}", MAC_GET_CB_TX_USER_IDX(pst_tx_ctl_first));
+        return OAL_ERR_CODE_SECURITY_PORT_INVALID;
+    }
+#endif
+    return OAL_SUCC;
+}
+
 
 OAL_INLINE oal_uint32  dmac_tx_process_data(hal_to_dmac_device_stru *pst_hal_device, dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_netbuf)
 {
@@ -2273,6 +2290,11 @@ OAL_INLINE oal_uint32  dmac_tx_process_data(hal_to_dmac_device_stru *pst_hal_dev
             dmac_tx_excp_free_netbuf(pst_netbuf);
             return OAL_SUCC;
         }
+    }
+
+    ul_ret = dmac_tx_check_user_state(pst_dmac_vap, pst_tx_ctl_first, pst_dmac_user);
+    if (ul_ret != OAL_SUCC) {
+        return ul_ret;
     }
 
     /* ?????????????? */
@@ -2692,7 +2714,8 @@ oal_uint32  dmac_tx_process_data_event(frw_event_mem_stru *pst_event_mem)
 
         /* ???????????????????????????? */
 #ifdef _PRE_WLAN_FEATURE_ROAM
-        if (MAC_VAP_STATE_ROAMING == pst_dmac_vap->st_vap_base_info.en_vap_state)
+        if (pst_dmac_vap->st_vap_base_info.en_vap_state == MAC_VAP_STATE_ROAMING &&
+            MAC_GET_CB_IS_EAPOL(pst_tx_ctl) == OAL_TRUE)
         {
             OAM_WARNING_LOG2(0, OAM_SF_TX, "{dmac_tx_process_data_event::dmac_tx_process_data statel[%d] len[%d].}", pst_dmac_vap->st_vap_base_info.en_vap_state, pst_tx_event->us_frame_len);
             ul_ret = dmac_tx_force(pst_dmac_vap, pst_netbuf, pst_tx_event->us_frame_len, 0);
@@ -3855,7 +3878,7 @@ oal_uint32  dmac_tid_tx_queue_remove_ampdu(
     pst_tid_stats = pst_tid_queue->pst_tid_stats;
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_tid_stats))
     {
-        OAM_ERROR_LOG0(0, OAM_SF_TX, "{dmac_tid_tx_queue_remove::tid_stats is null.}");
+        OAM_ERROR_LOG0(0, OAM_SF_TX, "{dmac_tid_tx_queue_remove_ampdu::tid_stats is null.}");
         return OAL_ERR_CODE_PTR_NULL;
     }
 #endif
