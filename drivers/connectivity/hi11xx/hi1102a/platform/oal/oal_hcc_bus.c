@@ -85,9 +85,6 @@ oal_debug_module_param(g_hcc_bus_current_pps, uint, S_IRUGO);
 OAL_STATIC oal_uint32 g_hcc_bus_wakelock_debug = 0x0;
 oal_debug_module_param(g_hcc_bus_wakelock_debug, uint, S_IRUGO | S_IWUSR);
 
-OAL_STATIC oal_uint32 g_hcc_bus_auto_switch_limit = OAL_BUS_SWITCH_LIMIT;
-oal_debug_module_param(g_hcc_bus_auto_switch_limit, uint, S_IRUGO | S_IWUSR);
-
 OAL_STATIC char g_str_ini_hcc_bus_switch[OAL_BUS_INI_STR_LEN] = {0};
 oal_debug_module_param_string(ini_hcc_bus_switch, g_str_ini_hcc_bus_switch,
                               sizeof(g_str_ini_hcc_bus_switch), S_IRUGO | S_IWUSR);
@@ -111,15 +108,12 @@ OAL_STATIC oal_uint32 g_hcc_bus_wakelock_debug = 0x0;
 /* pps ???????????? */
 OAL_STATIC oal_uint32 g_hcc_bus_auto_sdio_bindcpu_limit = OAL_BUS_SDIO_BINDCPU_LIMIT;
 OAL_STATIC oal_uint32 g_hcc_bus_auto_pcie_bindcpu_limit = OAL_BUS_PCIE_BINDCPU_LIMIT;
-OAL_STATIC oal_uint32 g_hcc_bus_auto_switch_limit = OAL_BUS_SWITCH_LIMIT;
 #endif
-
-OAL_STATIC oal_uint32 g_switch_ip_pwrdown_bypass = 1;
 
 #ifdef WIN32
 oal_uint32 jiffies;
 #else
-oal_debug_module_param(g_switch_ip_pwrdown_bypass, uint, S_IRUGO | S_IWUSR);
+oal_debug_module_param(1, uint, S_IRUGO | S_IWUSR);
 #endif
 
 OAL_STATIC oal_int32 g_switch_total_count = 0;

@@ -333,7 +333,6 @@ oal_void hmac_thread_bindcpu(oal_uint32 ul_total_pps)
         /* ??????????200ms,??????????????CPU?????????????? */
 #if defined(_PRE_FEATURE_PLAT_LOCK_CPUFREQ) && !defined(CONFIG_HI110X_KERNEL_MODULES_BUILD_SUPPORT)
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
-        core_ctl_set_boost(2 * WLAN_STATIS_DATA_TIMER_PERIOD); /* 2 * 100ms */
         pm_qos_update_request(&g_st_pmqos_requset, PM_QOS_THOUGHTPUT_VALUE);
 #endif
 #endif

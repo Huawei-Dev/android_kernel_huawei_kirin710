@@ -936,9 +936,9 @@ int32 get_cust_conf_int32(int32 tag_index, int8 *puc_var, int32 *puc_value)
 
     if (!strncmp(out_str, "0x", strlen("0x")) || !strncmp(out_str, "0X", strlen("0X"))) {
         ini_debug("get hex of:%s.", puc_var);
-        ret = sscanf_s(out_str, "%x", puc_value);
+        ret = sscanf(out_str, "%x", puc_value);
     } else {
-        ret = sscanf_s(out_str, "%d", puc_value);
+        ret = sscanf(out_str, "%d", puc_value);
     }
 
     if (ret < 0) {

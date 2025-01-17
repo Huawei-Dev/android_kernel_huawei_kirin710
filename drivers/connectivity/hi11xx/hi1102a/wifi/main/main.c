@@ -551,7 +551,7 @@ OAL_STATIC ssize_t  wifi_sysfs_set_init(struct kobject *dev, struct kobj_attribu
         OAL_IO_PRINT("dev is null r failed!%s\n", __FUNCTION__);
         return 0;
     }
-    if ((sscanf_s(buf, "%20s", mode, sizeof(mode)) != 1)) {
+    if ((sscanf(buf, "%20s", mode, sizeof(mode)) != 1)) {
         OAL_IO_PRINT("set value one param!\n");
         return -OAL_EINVAL;
     }

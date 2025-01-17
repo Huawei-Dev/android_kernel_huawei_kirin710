@@ -13,7 +13,6 @@
 #include <linux/core_ctl.h>
 #else
 #include <linux/hisi/hisi_cpufreq_req.h>
-#include <linux/hisi/hisi_core_ctl.h>
 #endif /* end for CONFIG_ARCH_PLATFORM */
 #include <linux/pm_qos.h>
 #endif
@@ -662,7 +661,7 @@ OAL_STATIC ssize_t hmac_set_rxthread_enable(struct kobject *dev, struct kobj_att
         return 0;
     }
 
-    if (sscanf_s(buf, "%u", &ul_val) != 1) {
+    if (sscanf(buf, "%u", &ul_val) != 1) {
         OAL_IO_PRINT("set value one char!\n");
         return -OAL_EINVAL;
     }

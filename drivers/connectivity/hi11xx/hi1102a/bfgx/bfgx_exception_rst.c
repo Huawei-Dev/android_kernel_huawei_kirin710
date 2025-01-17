@@ -233,7 +233,6 @@ OAL_STATIC exception_bcpu_dump_msg g_sdio_read_all[BFGX_PUB_REG_NUM + BFGX_SHARE
 };
 
 OAL_STATIC uint8 g_plat_beattimer_timeout_reset_cfg = 0;
-OAL_STATIC uint8 g_gst_excp_test_cfg[EXCP_TEST_CFG_BOTT] = { DFR_TEST_DISABLE, DFR_TEST_DISABLE, DFR_TEST_DISABLE };
 #ifdef HI110X_HAL_MEMDUMP_ENABLE
 memdump_info_t g_bcpu_memdump_cfg;
 memdump_info_t g_wcpu_memdump_cfg;
@@ -2939,11 +2938,6 @@ int32 is_dfr_test_en(enum excp_test_cfg_em excp_cfg)
     if (excp_cfg >= EXCP_TEST_CFG_BOTT) {
         return -1;
     }
-
-    if (g_gst_excp_test_cfg[excp_cfg] == DFR_TEST_ENABLE) {
-        g_gst_excp_test_cfg[excp_cfg] = DFR_TEST_DISABLE;
-        return 0;
-    }
     return -1;
 }
 
@@ -2954,8 +2948,6 @@ void set_excp_test_en(enum excp_test_cfg_em excp_cfg)
     if (excp_cfg >= EXCP_TEST_CFG_BOTT) {
         return;
     }
-
-    g_gst_excp_test_cfg[excp_cfg] = DFR_TEST_ENABLE;
 }
 #endif
 

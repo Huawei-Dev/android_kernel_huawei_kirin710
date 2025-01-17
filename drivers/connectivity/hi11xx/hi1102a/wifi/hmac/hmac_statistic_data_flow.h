@@ -22,7 +22,6 @@
 #include <linux/core_ctl.h>
 #else
 #include <linux/hisi/hisi_cpufreq_req.h>
-#include <linux/hisi/hisi_core_ctl.h>
 #endif /* end for CONFIG_ARCH_PLATFORM */
 #endif
 #endif
