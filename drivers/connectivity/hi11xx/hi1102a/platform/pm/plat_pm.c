@@ -44,6 +44,10 @@
 #include "oam_ext_if.h"
 #include "lpcpu_feature.h"
 
+#ifndef ASYNCB_SUSPENDED
+#define ASYNCB_SUSPENDED	30
+#endif
+
 /*****************************************************************************
   2 Global Variable Definition
 *****************************************************************************/
