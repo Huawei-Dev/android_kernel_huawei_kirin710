@@ -1,8 +1,3 @@
-#ifdef CONFIG_MPTCP
-#include <net/mptcp.h>
-#include <net/mptcp_v4.h>
-#include <net/mptcp_v6.h>
-#endif
 #include <linux/highmem.h>
 #include "huawei_platform/emcom/smartcare/network_measurement/nm.h"
 #include "huawei_platform/emcom/smartcare/nse/psr_pub.h"

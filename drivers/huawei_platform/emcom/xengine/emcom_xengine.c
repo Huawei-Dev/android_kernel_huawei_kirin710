@@ -27,9 +27,6 @@
 #include "../emcom_netlink.h"
 #include "../emcom_utils.h"
 #include <huawei_platform/emcom/network_evaluation.h>
-#ifdef CONFIG_MPTCP
-#include <net/mptcp.h>
-#endif
 
 #ifdef CONFIG_HUAWEI_BASTET
 #include <huawei_platform/net/bastet/bastet_utils.h>
@@ -38,7 +35,6 @@
 #include <linux/version.h>
 #include <asm/uaccess.h>
 
-#ifndef CONFIG_MPTCP
 /* These states need RST on ABORT according to RFC793 */
 static inline bool tcp_need_reset(int state)
 {
@@ -46,19 +42,16 @@ static inline bool tcp_need_reset(int state)
 		(TCPF_ESTABLISHED | TCPF_CLOSE_WAIT | TCPF_FIN_WAIT1 |
 		TCPF_FIN_WAIT2 | TCPF_SYN_RECV);
 }
-#endif
 
 #undef HWLOG_TAG
 #define HWLOG_TAG emcom_xengine
 HWLOG_REGIST();
 MODULE_LICENSE("GPL");
 
-
 #define     EMCOM_MAX_ACC_APP  (5)
 #define     EMCOM_UID_ACC_AGE_MAX  (1000)
 
 #define     EMCOM_SPEED_CTRL_BASE_WIN_SIZE   (10000)
-
 
 static spinlock_t g_mpflow_lock;
 struct emcom_xengine_mpflow_info g_mpflow_uids[EMCOM_MPFLOW_MAX_APP];
@@ -1961,10 +1954,6 @@ int8_t emcom_xengine_mpflow_checkstatus(struct sock *sk, int reason, int state, 
 	int oldstate = sk->sk_state;
 
 	if (reason == EMCOM_MPFLOW_FALLBACK_NOPAYLOAD) {
-#ifdef CONFIG_MPTCP
-		if (mptcp_meta_sk(sk) == sk)
-			return result;
-#endif
 		/* EST->DOWN */
 		if ((oldstate == TCP_ESTABLISHED) && (state != TCP_ESTABLISHED)) {
 			result = ((tp->bytes_received <= 1) && ((tp->bytes_acked > 1) ||
@@ -2769,33 +2758,6 @@ static void emcom_xengine_mpflow_unregister_nf_hook(void)
 	g_mpflow_nf_hook = false;
 	EMCOM_LOGD("stop emcom_xengine_mpflow_nfhooks\n");
 }
-
-#ifdef CONFIG_MPTCP
-void Emcom_Xengine_MptcpSocketClosed(void *data, int len)
-{
-	emcom_send_msg2daemon(NETLINK_EMCOM_KD_MPTCP_SOCKET_CLOSED, data, len);
-}
-EXPORT_SYMBOL(Emcom_Xengine_MptcpSocketClosed);
-
-void Emcom_Xengine_MptcpSocketSwitch(void *data, int len)
-{
-	emcom_send_msg2daemon(NETLINK_EMCOM_KD_MPTCP_SOCKET_SWITCH, data, len);
-}
-EXPORT_SYMBOL(Emcom_Xengine_MptcpSocketSwitch);
-
-void Emcom_Xengine_MptcpProxyFallback(void *data, int len)
-{
-	emcom_send_msg2daemon(NETLINK_EMCOM_KD_MPTCP_PROXY_FALLBACK, data, len);
-}
-EXPORT_SYMBOL(Emcom_Xengine_MptcpProxyFallback);
-
-void Emcom_Xengine_MptcpFallback(void *data, int len)
-{
-	emcom_send_msg2daemon(NETLINK_EMCOM_KD_MPTCP_FALLBACK, data, len);
-}
-EXPORT_SYMBOL(Emcom_Xengine_MptcpFallback);
-#endif
-
 
 void Emcom_Xengine_EvtProc(int32_t event, uint8_t *pdata, uint16_t len)
 {

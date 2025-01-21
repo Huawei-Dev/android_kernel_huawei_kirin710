@@ -454,9 +454,6 @@ static int sock_map_fd(struct socket *sock, int flags)
 	newfile = sock_alloc_file(sock, flags, NULL);
 	if (likely(!IS_ERR(newfile))) {
 		fd_install(fd, newfile);
-#ifdef CONFIG_MPTCP
-		sock->fd = fd;
-#endif
 		return fd;
 	}
 
@@ -596,7 +593,7 @@ struct socket *sock_alloc(void)
 	inode->i_uid = current_fsuid();
 	inode->i_gid = current_fsgid();
 	inode->i_op = &sockfs_inode_ops;
-#if defined(CONFIG_HUAWEI_KSTATE) || defined(CONFIG_MPTCP)
+#ifdef CONFIG_HUAWEI_KSTATE
 	if (sock != NULL && current != NULL) {
 		sock->pid = current->tgid;
 	}

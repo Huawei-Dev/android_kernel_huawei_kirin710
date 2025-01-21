@@ -34,7 +34,7 @@ void print_process_pid_name(struct inet_sock *inet)
 		return;
 #endif
 
-#if defined(CONFIG_HUAWEI_KSTATE) || defined(CONFIG_MPTCP)
+#ifdef CONFIG_HUAWEI_KSTATE
 	if (NULL == inet || NULL == inet->sk.sk_socket) {
 		return;
 	}

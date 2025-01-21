@@ -1117,10 +1117,6 @@ static void tun_net_init(struct net_device *dev)
 
 		break;
 	}
-#ifdef CONFIG_MPTCP
-	if (dev)
-		dev->flags |= IFF_NOMULTIPATH;
-#endif
 }
 
 static bool tun_sock_writeable(struct tun_struct *tun, struct tun_file *tfile)

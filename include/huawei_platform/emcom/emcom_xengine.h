@@ -365,13 +365,6 @@ bool emcom_xengine_mpflow_retrans(int reason, struct emcom_xengine_mpflow_stat *
 int8_t emcom_xengine_mpflow_checkstatus(struct sock *sk, int reason, int state, struct emcom_xengine_mpflow_stat *node);
 void emcom_xengine_mpflow_fallback(struct sock *sk, int reason, int state);
 
-#ifdef CONFIG_MPTCP
-void Emcom_Xengine_MptcpSocketClosed(void *data, int len);
-void Emcom_Xengine_MptcpSocketSwitch(void *data, int len);
-void Emcom_Xengine_MptcpProxyFallback(void *data, int len);
-void Emcom_Xengine_MptcpFallback(void *data, int len);
-#endif
-
 /*****************************************************************************
   9 OTHERS∂®“Â
 *****************************************************************************/
