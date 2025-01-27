@@ -73,7 +73,7 @@ struct memlat_hwmon {
 };
 
 #ifdef CONFIG_DEVFREQ_GOV_MEMLAT
-extern bool hisi_cluster_cpu_all_pwrdn(void);
+extern bool lpcpu_cluster_cpu_all_pwrdn(void);
 extern unsigned long get_dev_votefreq(struct device *dev);
 extern void set_dev_votefreq(struct device *dev, unsigned long new_freq);
 

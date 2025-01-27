@@ -24,7 +24,6 @@
 #include <linux/gpio.h>
 #include <soc_sctrl_interface.h>
 #include <soc_ufs_sysctrl_interface.h>
-#include <linux/hisi/hisi_idle_sleep.h>
 #include <linux/vmalloc.h>
 #include <linux/kthread.h>
 #include <linux/i2c.h>

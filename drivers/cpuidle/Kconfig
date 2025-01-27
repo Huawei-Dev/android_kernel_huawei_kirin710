@@ -31,7 +31,7 @@ config CPU_IDLE_TRIPPLE_DRIVERS
          Allows the cpuidle framework to use different drivers for three clusters.
 		 If unsure say N.
 
-config HISI_IDLE_SLEEP
+config LPCPU_IDLE_SLEEP
         bool "Support cpu idlesleep vote"
         depends on CPU_IDLE_MULTIPLE_DRIVERS
         default n

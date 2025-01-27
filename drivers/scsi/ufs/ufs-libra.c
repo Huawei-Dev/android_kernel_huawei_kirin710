@@ -17,7 +17,7 @@
 #include <linux/types.h>
 #include <soc_sctrl_interface.h>
 #include <soc_ufs_sysctrl_interface.h>
-#include <linux/hisi/hisi_idle_sleep.h>
+#include <linux/hisi/lpcpu_idle_sleep.h>
 #include "ufshcd.h"
 #include "ufs-kirin.h"
 #include "dsm_ufs.h"
@@ -180,7 +180,7 @@ void ufs_soc_init(struct ufs_hba *hba)
 		mdelay(1);
 
 	/*set SOC_SCTRL_SCBAKDATA11_ADDR ufs bit to 1 when init*/
-	hisi_idle_sleep_vote(ID_UFS, 1);
+	lpcpu_idle_sleep_vote(ID_UFS, 1);
 
 	/*ddr qos set*/
 	ufs_sys_ctrl_writel(host, 0x80700040, UFS_SYS_AXI_W_QOS_LMRT);
@@ -259,7 +259,7 @@ int ufs_kirin_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op)
 	struct ufs_kirin_host *host = hba->priv;
 
 	/*set SOC_SCTRL_SCBAKDATA11_ADDR ufs bit to 0 when idle*/
-	hisi_idle_sleep_vote(ID_UFS, 0);
+	lpcpu_idle_sleep_vote(ID_UFS, 0);
 
 	if (ufshcd_is_runtime_pm(pm_op))
 		return 0;
@@ -289,7 +289,7 @@ int ufs_kirin_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
 	int ret;
 
 	/*set SOC_SCTRL_SCBAKDATA11_ADDR ufs bit to 1 when busy*/
-	hisi_idle_sleep_vote(ID_UFS, 1);
+	lpcpu_idle_sleep_vote(ID_UFS, 1);
 
 	if (!host->in_suspend)
 		return 0;

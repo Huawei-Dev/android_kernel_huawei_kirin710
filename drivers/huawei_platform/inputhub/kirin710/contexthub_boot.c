@@ -31,7 +31,7 @@
 #include "sensor_config.h"
 #include "contexthub_pm.h"
 #ifdef CONFIG_CONTEXTHUB_IDLE_32K
-#include <linux/hisi/hisi_idle_sleep.h>
+#include <linux/hisi/lpcpu_idle_sleep.h>
 #endif
 
 /* CONFIG_USE_CAMERA3_ARCH : the camera module build config
@@ -82,8 +82,8 @@ static void peri_used_timeout(unsigned long data)
 	spin_lock_irqsave(&peri_lock, flags);
 	pr_debug("[%s]used[%d],t[%d]\n", __func__ ,peri_used,peri_used_t);
 	if(0 == peri_used) {
-		int ret = hisi_idle_sleep_vote(ID_IOMCU, 0);
-		if (ret)pr_err("[%s]hisi_idle_sleep_vote err\n", __func__);
+		int ret = lpcpu_idle_sleep_vote(ID_IOMCU, 0);
+		if (ret)pr_err("[%s]lpcpu_idle_sleep_vote err\n", __func__);
 		peri_used_t = 0;
 	}
 	spin_unlock_irqrestore(&peri_lock, flags);
@@ -112,8 +112,8 @@ void peri_used_request(void)
 	}
 
 	if (0 == peri_used_t) {
-		int ret = hisi_idle_sleep_vote(ID_IOMCU, 1);
-		if (ret)pr_err("[%s]hisi_idle_sleep_vote err\n", __func__);
+		int ret = lpcpu_idle_sleep_vote(ID_IOMCU, 1);
+		if (ret)pr_err("[%s]lpcpu_idle_sleep_vote err\n", __func__);
 	}else{/*just for pclist*/}
 
 	peri_used = 1;

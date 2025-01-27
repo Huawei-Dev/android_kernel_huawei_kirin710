@@ -360,7 +360,7 @@ static int event_idle_notif(struct notifier_block *nb, unsigned long action,
 
 	switch (action) {
 	case CPU_PM_ENTER:
-			cores_pwrdn = hisi_cluster_cpu_all_pwrdn();
+			cores_pwrdn = lpcpu_cluster_cpu_all_pwrdn();
 			if (cores_pwrdn) {
 				spin_lock(&d->idle_notif_spinlock);
 				d->prev_idle_freq = get_dev_votefreq(df->dev.parent);
