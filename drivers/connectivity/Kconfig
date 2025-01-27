@@ -11,13 +11,6 @@ if CONNECTIVITY_HI110X
 config CONNECTIVITY_HI1102
 	bool "Connectivity Hi1102 support"
 	default y
-config CONNECTIVITY_HI11XX
-	bool "Connectivity Hi11XX support"
-	default n
-config CONNECTIVITY_HI1102A
-	depends on CONNECTIVITY_HI11XX
-	bool "Connectivity Hi1102a support"
-	default n
 
 config HI110X_GPS_REFCLK
   bool "Hisilicon 110X gps refclk feature"
@@ -53,8 +46,4 @@ if CONNECTIVITY_HI1102
 source "drivers/connectivity/hisi/Kconfig"
 source "drivers/connectivity/hisi/platform/Kconfig"
 source "drivers/connectivity/hisi/wifi/Kconfig"
-endif
-
-if CONNECTIVITY_HI1102A
-source "drivers/connectivity/hi11xx/Kconfig"
 endif

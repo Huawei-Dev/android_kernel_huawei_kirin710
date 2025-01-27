@@ -13,12 +13,12 @@ config ARM64_CPUIDLE
 	  initialized by calling the CPU operations init idle hook
 	  provided by architecture code.
 
-config HISI_MULTIDRV_CPUIDLE
-	bool "Generic Hisilicon Multiple Driver CPU idle Driver"
+config LPCPU_MULTIDRV_CPUIDLE
+	bool "Generic Multiple Driver CPU idle Driver"
 	select ARM64_CPU_SUSPEND
 	select DT_IDLE_STATES
 	help
-	  Select this to enable generic cpuidle driver for Hisilicon.
+	  Select this to enable generic cpuidle driver for CPU lowpower.
 	  It provides a generic idle driver whose idle states are configured
 	  at run-time through DT nodes. The CPUidle suspend backend is
 	  initialized by calling the CPU operations init idle hook

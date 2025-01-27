@@ -29,5 +29,6 @@ obj-$(CONFIG_PSERIES_CPUIDLE)		+= cpuidle-pseries.o
 obj-$(CONFIG_POWERNV_CPUIDLE)		+= cpuidle-powernv.o
 ###############################################################################
 # ARM64 drivers
-obj-$(CONFIG_HISI_MULTIDRV_CPUIDLE)	+= hisi-multidrv-cpuidle.o
-obj-$(CONFIG_HISI_IDLE_SLEEP)	+= hisi-idle-sleep.o
+subdir-ccflags-y += -I$(srctree)/drivers/hisi/tzdriver/libhwsecurec/
+obj-$(CONFIG_LPCPU_MULTIDRV_CPUIDLE)	+= lpcpu-multidrv-cpuidle.o
+obj-$(CONFIG_LPCPU_IDLE_SLEEP)	+= lpcpu-idle-sleep.o

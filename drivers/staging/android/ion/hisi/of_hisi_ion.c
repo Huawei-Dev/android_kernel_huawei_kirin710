@@ -46,7 +46,7 @@
 #include "hisi/hisi_ion_scene_pool.h"
 #endif
 
-#include <linux/hisi/hisi_idle_sleep.h>
+#include <linux/hisi/lpcpu_idle_sleep.h>
 
 #define MAX_HISI_ION_DYNAMIC_AREA_NAME_LEN  64
 #define HISI_ION_FLUSH_ALL_CPUS_CACHES_THRESHOLD  (0x1000000) /*16MB*/
@@ -220,7 +220,7 @@ void ion_flush_all_cpus_caches(void)
 
 	preempt_disable();
 
-	idle_cpus = hisi_get_idle_cpumask();
+	idle_cpus = lpcpu_get_idle_cpumask();
 	for_each_online_cpu(cpu) {
 		if ((idle_cpus & BIT(cpu)) == 0)
 			cpumask_set_cpu(cpu, &mask);
