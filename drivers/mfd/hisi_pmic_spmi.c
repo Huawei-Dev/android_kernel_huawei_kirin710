@@ -54,11 +54,6 @@
 /*define the first group interrupt register number*/
 #define HISI_PMIC_FIRST_GROUP_INT_NUM        2
 
-#ifdef CONFIG_HISI_DIEID
-#define HISI_PMIC_DIEID_BUF        (100)
-#define HISI_PMIC_DIEID_TEM_SAVE_BUF        (4)
-#endif
-
 static struct bit_info g_pmic_vbus = {0};
 #ifndef BIT
 #define BIT(x)		(0x1U << (x))
@@ -127,163 +122,6 @@ void hisi_pmic_write(struct hisi_pmic *pmic, int reg, u32 val)
 	}
 }
 EXPORT_SYMBOL(hisi_pmic_write);
-
-#ifdef CONFIG_HISI_DIEID
-static int get_pmic_dieid_tree_data(struct spmi_device *pdev, struct hisi_pmic *pmic)
-{
-	int ret = 0;
-	struct device_node *root = NULL;
-	struct device *dev = &pdev->dev;
-	struct device_node *np = dev->of_node;
-
-	root = of_find_compatible_node(np, NULL, "hisilicon-hisi-pmic-dieid");
-	if (!root) {
-		pr_err("[%s]no hisilicon-hisi-pmic-dieid root node.\n", __func__);
-		return -ENODEV;
-	}
-
-	pmic->dieid_name = (char *)devm_kzalloc(dev, sizeof(*pmic->dieid_name), GFP_KERNEL);
-	if (!pmic->dieid_name) {
-		pr_err("[%s]kzalloc dieid_name failed.\n", __func__);
-		return -ENOMEM;
-	}
-	ret = of_property_read_string(root, "hisilicon,hisi-pmic-dieid-name",(const char **)&(pmic->dieid_name));
-	if (ret) {
-		pr_err("no hisilicon,hisi-pmic-dieid-name property set\n");
-		devm_kfree(dev,pmic->dieid_name);
-		return -ENODEV;
-	}
-
-	ret = of_property_read_u32(root, "hisilicon,hisi-pmic-dieid-reg-num",
-				(u32 *)&(pmic->dieid_reg_num));
-	if (ret) {
-		pr_err("no hisilicon,hisi-pmic-dieid-reg-num property set\n");
-		devm_kfree(dev,pmic->dieid_name);
-		return -ENODEV;
-	}
-	pmic->dieid_regs = (u32 *)devm_kzalloc(dev, sizeof(u32)*pmic->dieid_reg_num, GFP_KERNEL);
-	if (!pmic->dieid_regs) {
-		pr_err("[%s]kzalloc dieid_regs buffer failed.\n", __func__);
-		devm_kfree(dev,pmic->dieid_name);
-		return -ENOMEM;
-	}
-	ret = of_property_read_u32_array(root, "hisilicon,hisi-pmic-dieid-regs", pmic->dieid_regs, pmic->dieid_reg_num);
-	if (ret) {
-		pr_err("[%s]get hisi-pmic-dieid-regs attribute failed.\n", __func__);
-		devm_kfree(dev,pmic->dieid_name);
-		devm_kfree(dev,pmic->dieid_regs);
-		return -ENODEV;
-	}
-	return ret;
-}
-
-int hisi_pmic_get_dieid(char *dieid, unsigned int len)
-{
-	int ret = 0;
-	unsigned int i;
-	unsigned char value =0;
-	unsigned int length =0;
-	char  pmu_buf[HISI_PMIC_DIEID_BUF] ={0};
-	char  buf[HISI_PMIC_DIEID_TEM_SAVE_BUF] = {0};
-
-	if (NULL == dieid) {
-		pr_err("%s  dieid  is NULL\n",__func__);
-		return  -ENOMEM;
-	}
-
-	if(NULL == g_pmic){
-		pr_err("%s g_pmic  is NULL\n",__func__);
-		return  -ENOMEM;
-	}
-
-	ret = snprintf(pmu_buf,sizeof(pmu_buf),"%s%s%s","\r\n",g_pmic->dieid_name,":0x");/* [false alarm]:snprintf is safe  */
-	if( ret < 0){
-		pr_err("%s read main pmu dieid head fail.\n",__func__);
-		return ret;
-	}
-
-	for(i=0;i<g_pmic->dieid_reg_num;i++){
-		value = hisi_pmic_reg_read(g_pmic->dieid_regs[i]);
-		ret = snprintf(buf,sizeof(buf),"%02x",value);/* [false alarm]:snprintf is safe  */
-		if( ret < 0){
-			pr_err("%s read main pmu dieid fail.\n",__func__);
-			return ret;
-		}
-		strncat(pmu_buf,buf,strlen(buf));
-	}
-
-	strncat(pmu_buf,"\r\n",strlen("\r\n"));
-
-	length = strlen(pmu_buf);
-	if(len >= length){
-		strncat(dieid,pmu_buf,length);
-	}else{
-		pr_err("%s:dieid buf length is not enough!\n", __func__);
-		return length;
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL(hisi_pmic_get_dieid);
-
-u32 hisi_pmic_read_sub_pmu(u8 sid, int reg)
-{
-	u32 ret;
-	u8 read_value = 0;
-	struct spmi_device *pdev;
-
-	if(strstr(saved_command_line, "androidboot.swtype=factory"))
-	{
-		if (NULL == g_pmic) {
-			pr_err(" g_pmic  is NULL\n");
-			return -1;/*lint !e570 */
-		}
-
-		pdev = to_spmi_device(g_pmic->dev);
-		if (NULL == pdev) {
-			pr_err("%s:pdev get failed!\n", __func__);
-			return -1;/*lint !e570 */
-		}
-
-		ret = spmi_ext_register_readl(pdev->ctrl, sid, reg, (unsigned char*)&read_value, 1);/*lint !e734 !e732 */
-		if (ret) {
-			pr_err("%s:spmi_ext_register_readl failed!\n", __func__);
-			return ret;
-		}
-		return (u32)read_value;
-	}
-	return  0;
-}
-EXPORT_SYMBOL(hisi_pmic_read_sub_pmu);
-
-void hisi_pmic_write_sub_pmu(u8 sid, int reg, u32 val)
-{
-	u32 ret;
-	struct spmi_device *pdev;
-	if(strstr(saved_command_line, "androidboot.swtype=factory"))
-	{
-		if (NULL == g_pmic) {
-			pr_err(" g_pmic  is NULL\n");
-			return;
-		}
-
-		pdev = to_spmi_device(g_pmic->dev);
-		if (NULL == pdev) {
-			pr_err("%s:pdev get failed!\n", __func__);
-			return;
-		}
-
-		ret = spmi_ext_register_writel(pdev->ctrl, sid, reg, (unsigned char*)&val, 1);/*lint !e734 !e732 */
-		if (ret) {
-			pr_err("%s:spmi_ext_register_writel failed!\n", __func__);
-			return ;
-		}
-	}
-
-	return ;
-}
-EXPORT_SYMBOL(hisi_pmic_write_sub_pmu);
-#endif
 
 void hisi_pmic_rmw(struct hisi_pmic *pmic, int reg,
 		     u32 mask, u32 bits)
@@ -625,14 +463,6 @@ static int get_pmic_device_tree_all_data(struct spmi_device *pdev, struct hisi_p
 	int ret1= 0;
 	struct device *dev = &pdev->dev;
 	struct device_node *np = dev->of_node;
-
-#ifdef CONFIG_HISI_DIEID
-	/*get pmic dieid dts info*/
-	ret = get_pmic_dieid_tree_data(pdev, pmic);
-	if (ret) {
-		dev_err(&pdev->dev, "Error reading hisi pmic dieid dts \n");
-	}
-#endif
 
 	/*get pmic dts the second group irq*/
 	ret = get_pmic_device_tree_data1(np, pmic);

@@ -7,7 +7,6 @@ config HISILICON_PLATFORM_MAINTAIN
 source "drivers/hisi/mntn/blackbox/Kconfig"
 source "drivers/hisi/mntn/hisee/Kconfig"
 source "drivers/hisi/mntn/bl31/Kconfig"
-source "drivers/hisi/mntn/subpmu/Kconfig"
 
 config HISI_BOOT_TIME
 	bool "support print all boot slice"

@@ -129,22 +129,6 @@
 /* default value of auto suspend is 3000ms*/
 /*#define UFSHCD_AUTO_SUSPEND_DELAY_MS 3000*/
 
-#if defined(CONFIG_SCSI_UFS_HI1861_VCMD) && defined(CONFIG_HISI_DIEID)
-static u8 *ufs_hixxxx_dieid;
-static int is_fsr_read_failed;
-#define UFS_CONTROLLER_DIEID_SIZE 32
-#define UFS_FLASH_DIE_ID_SIZE 128
-#define UFS_DIEID_NUM_SIZE 4
-#define UFS_NAND_CHIP_VER_SIZE 8
-#define UFS_DIEID_TOTAL_SIZE 172
-#define UFS_DIEID_BUFFER_SIZE 800
-#define UFS_DIEID_CHIP_VER_OFFSET 4
-#define UFS_DIEID_CONTROLLER_OFFSET 12
-#define UFS_DIEID_FLASH_OFFSET 44
-#define UFS_FLASH_VENDOR_T 0x98
-#define UFS_FLASH_VENDOR_M 0x2c
-#endif
-
 /* define the max hardware slots for each CPU */
 #define UFS_MQ_MAX_HARDWARE_SLOTS_PER_CPU 8
 
@@ -2710,165 +2694,6 @@ static void ufshcd_init_fsr_sys(struct ufs_hba *hba)
 	hba->ufs_fsr.fsr_attr.attr.mode = S_IRUSR | S_IRGRP;
 	if (device_create_file(hba->dev, &hba->ufs_fsr.fsr_attr))
 		dev_err(hba->dev, "Failed to create sysfs for ufs fsrs\n");
-}
-
-#ifdef CONFIG_HISI_DIEID
-static void ufshcd_ufs_set_dieid(struct ufs_hba *hba)
-{
-	/* allocate memory to hold full descriptor */
-	u8 *fbuf = NULL;
-	int ret = 0;
-
-	if (hba->manufacturer_id != UFS_VENDOR_HI1861)
-		return;
-
-	if (ufs_hixxxx_dieid == NULL)
-		ufs_hixxxx_dieid = devm_kzalloc(hba->dev,
-			UFS_DIEID_TOTAL_SIZE * sizeof(u8), GFP_KERNEL);
-	if (!ufs_hixxxx_dieid)
-		return;
-
-	fbuf = kmalloc(HI1861_FSR_INFO_SIZE, GFP_KERNEL);
-	if (!fbuf)
-		return;
-
-	memset(fbuf, 0, HI1861_FSR_INFO_SIZE);
-
-	ret = ufshcd_read_fsr(hba, fbuf, HI1861_FSR_INFO_SIZE);
-	if (ret) {
-		is_fsr_read_failed = 1;
-		dev_err(hba->dev, "[%s]READ FSR FAILED\n", __func__);
-		goto out;
-	}
-
-	memcpy(ufs_hixxxx_dieid, fbuf + 12, UFS_DIEID_NUM_SIZE);
-	memcpy(ufs_hixxxx_dieid + UFS_DIEID_CHIP_VER_OFFSET,
-		fbuf + 28, UFS_NAND_CHIP_VER_SIZE);
-	memcpy(ufs_hixxxx_dieid + UFS_DIEID_CONTROLLER_OFFSET,
-		fbuf + 1692, UFS_CONTROLLER_DIEID_SIZE);
-	memcpy(ufs_hixxxx_dieid + UFS_DIEID_FLASH_OFFSET,
-		fbuf + 1900, UFS_FLASH_DIE_ID_SIZE);
-out:
-	kfree(fbuf);
-}
-
-static int hisi_ufs_get_flash_dieid(char *dieid, u32 dieid_num,
-				u8 vendor_id, u32 *flash_id)
-{
-	int len = 0;
-	int i = 0;
-	int j = 0;
-	int flag = 0;
-	int ret = 0;
-	/**
-	*T vendor flash id, the length is 32B.As is required,
-	*the output flash ids need to formatted in hex with appropriate prefix
-	*eg:\r\nDIEID_UFS_FLASH_B:0x00CD...\r\n
-	*   \r\nDIEID_UFS_FLASH_C:0xAC3D...\r\n
-	*/
-	/*lint -save -e574 -e679 */
-	if (vendor_id == UFS_FLASH_VENDOR_T) {
-		for (i = 0; i < dieid_num; i++) {
-			ret = snprintf(dieid + len,
-					UFS_DIEID_BUFFER_SIZE - len,
-					"\r\nDIEID_UFS_FLASH_%c:0x%08X%08X%08X%08X\r\n",
-					'B' + i,
-					*(flash_id + i * 4),
-					*(flash_id + i * 4 + 1),
-					*(flash_id + i * 4 + 2),
-					*(flash_id + i * 4 + 3));
-
-			if (ret <= 0)
-				return -2;
-			len += ret;
-		}
-	}
-	/**
-	*M vendor flash id's length is 16B. however,
-	*the required length is 32B,so the lower 16B is zero padded
-	*eg:\r\nDIEID_UFS_FLASH_B:0x00CD...00000000000...\r\n
-	*   \r\nDIEID_UFS_FLASH_C:0xAC3D...00000000000...\r\n
-	*/
-	else if (vendor_id == UFS_FLASH_VENDOR_M) {
-		for (i = 0; i < dieid_num; i++) {
-			if (4 == dieid_num && (2 == i || 3 == i)) {
-				i += 2;
-				flag = 1;
-			}
-
-			ret = snprintf(dieid + len,
-					UFS_DIEID_BUFFER_SIZE - len,
-					"\r\nDIEID_UFS_FLASH_%c:0x%08X%08X%08X%08X00000000000000000000000000000000\r\n",
-					'B' + j++,
-					*(flash_id + i * 4),
-					*(flash_id + i * 4 + 1),
-					*(flash_id + i * 4 + 2),
-					*(flash_id + i * 4 + 3));
-
-			if (ret <= 0)
-				return -2;
-			len += ret;
-
-			if (flag) {
-				flag = 0;
-				i -= 2;
-			}
-		}
-	} else
-		return -2;
-	/*lint -restore*/
-
-	return 0;
-}
-#endif
-#endif
-
-#ifdef CONFIG_HISI_DIEID
-int hisi_ufs_get_dieid(char *dieid, unsigned int len)
-{
-#ifdef CONFIG_SCSI_UFS_HI1861_VCMD
-	int length = 0;
-	int ret = 0;
-	u32 dieid_num = 0;
-	u8 vendor_id = 0;
-	u32 *controller_id = NULL;
-	u32 *flash_id = NULL;
-	char buf[UFS_DIEID_BUFFER_SIZE] = {0};
-
-	if (dieid == NULL || ufs_hixxxx_dieid == NULL)
-		return -2;
-	if (is_fsr_read_failed)
-		return -1;
-
-	dieid_num = *(u32 *)ufs_hixxxx_dieid;
-	vendor_id = *(u8 *)(ufs_hixxxx_dieid + UFS_DIEID_CHIP_VER_OFFSET);
-	controller_id = (u32 *)(ufs_hixxxx_dieid + UFS_DIEID_CONTROLLER_OFFSET);
-	flash_id = (u32 *)(ufs_hixxxx_dieid + UFS_DIEID_FLASH_OFFSET);
-
-	ret = snprintf(buf, UFS_DIEID_BUFFER_SIZE,
-			"\r\nDIEID_UFS_CONTROLLER_A:0x%08X%08X%08X%08X%08X%08X%08X%08X\r\n",
-			*controller_id, *(controller_id + 1),
-			*(controller_id + 2), *(controller_id + 3),
-			*(controller_id + 4), *(controller_id + 5),
-			*(controller_id + 6), *(controller_id + 7));
-	if (ret <= 0)
-		return -2;
-	length += ret;
-
-	ret = hisi_ufs_get_flash_dieid(buf + length,
-				dieid_num, vendor_id, flash_id);
-	if (ret != 0)
-		return ret;
-
-	if (len >= strlen(buf))
-		strncat(dieid, buf, strlen(buf));
-	else
-		return strlen(buf);
-
-	return 0;
-#else
-	return -1;
-#endif
 }
 #endif
 
@@ -6901,10 +6726,6 @@ static int ufshcd_probe_hba(struct ufs_hba *hba)
 		spin_unlock_irqrestore(hba->host->host_lock, flags);
 		schedule_ufs_dsm_work(hba);
 	}
-#endif
-
-#if defined(CONFIG_SCSI_UFS_HI1861_VCMD) && defined(CONFIG_HISI_DIEID)
-	ufshcd_ufs_set_dieid(hba);
 #endif
 
 	hba->force_host_reset = false;

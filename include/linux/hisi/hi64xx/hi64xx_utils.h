@@ -29,8 +29,4 @@ void hi64xx_dump_debug_info(void);
 
 void hi64xx_utils_deinit(void);
 
-#ifdef CONFIG_HISI_DIEID
-int hisi_codec_get_dieid(char *dieid, unsigned int len);
-#endif
-
 #endif
