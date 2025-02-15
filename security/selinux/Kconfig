@@ -105,7 +105,6 @@ config HISI_SELINUX_EBITMAP_RO
 config HISI_SELINUX_PROT
         bool "Enable protection for SELinux policy DB"
         select HISI_PMALLOC
-        select HISI_RO_LSM_HOOKS
         select HISI_SELINUX_EBITMAP_RO
         default n
         help
