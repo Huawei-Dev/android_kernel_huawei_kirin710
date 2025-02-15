@@ -232,7 +232,6 @@ config HISI_RO_LSM_HOOKS
 
 source security/kernel_harden/Kconfig
 source security/check_double_free/Kconfig
-source security/hkip_atkinfo/Kconfig
 source security/kernel_stp/Kconfig
 endmenu
 

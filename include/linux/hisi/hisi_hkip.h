@@ -26,7 +26,8 @@
 #include <linux/sched.h>
 #include <linux/threads.h>
 #include <linux/types.h>
-#include <linux/hisi/hisi_hhee.h>
+
+#define HKIP_HVC_ROWM_SET_BIT           0xC6001050
 
 bool hhee_is_present(void);
 
@@ -92,30 +93,6 @@ static inline void hkip_set_current_bit(u8 *bits, bool value)
 
 struct cred;
 
-#ifdef CONFIG_HISI_HHEE
-int hkip_register_ro(const void *base, size_t size);
-int hkip_register_ro_mod(const void *base, size_t size);
-int hkip_unregister_ro_mod(const void *base, size_t size);
-
-extern u8 hkip_addr_limit_bits[];
-
-#define hkip_is_kernel_fs() \
-	((current_thread_info()->addr_limit == KERNEL_DS) \
-	&& hkip_get_current_bit(hkip_addr_limit_bits, true))
-#define hkip_get_fs() \
-	(hkip_is_kernel_fs() ? KERNEL_DS : USER_DS)
-#define hkip_set_fs(fs) \
-	hkip_set_current_bit(hkip_addr_limit_bits, (fs) == KERNEL_DS)
-
-int hkip_check_uid_root(void);
-int hkip_check_gid_root(void);
-int hkip_check_xid_root(void);
-
-void hkip_init_task(struct task_struct *task);
-void hkip_update_xid_root(const struct cred *creds);
-
-#else
-
 #define hkip_set_fs(fs) ((void)(fs))
 
 static inline int hkip_register_ro(const void *base, size_t size)
@@ -148,7 +125,5 @@ static inline int hkip_check_xid_root(void)
 
 static inline void hkip_init_task(struct task_struct *task) { }
 static inline void hkip_update_xid_root(const struct cred *creds) { }
-
-#endif
 
 #endif /* LINUX_HKIP_H */
