@@ -224,6 +224,5 @@ config DEFAULT_SECURITY
 	default "" if DEFAULT_SECURITY_DAC
 
 source security/kernel_harden/Kconfig
-source security/kernel_stp/Kconfig
 endmenu
 
