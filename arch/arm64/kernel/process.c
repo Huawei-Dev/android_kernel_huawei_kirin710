@@ -418,11 +418,7 @@ static void tls_thread_switch(struct task_struct *next)
 void uao_thread_switch(struct task_struct *next)
 {
 	if (IS_ENABLED(CONFIG_ARM64_UAO)) {
-#ifndef CONFIG_HISI_HHEE
 		bool uao = task_thread_info(next)->addr_limit == KERNEL_DS;
-#else
-		bool uao = hkip_get_task_bit(hkip_addr_limit_bits, next, true);
-#endif
 		if (uao)
 			asm(ALTERNATIVE("nop", SET_PSTATE_UAO(1), ARM64_HAS_UAO));
 		else

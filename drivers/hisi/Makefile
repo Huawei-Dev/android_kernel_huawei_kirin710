@@ -14,7 +14,6 @@ obj-$(CONFIG_HISILICON_PLATFORM_DDRC)   += ddrc/
 obj-$(CONFIG_HISI_NOC)	+= noc/
 obj-$(CONFIG_HISI_SYSCOUNTER) += hisi_syscounter/
 obj-$(CONFIG_HISILICON_PLATFORM_SLIMBUS)+= slimbus/
-obj-$(CONFIG_HISI_HHEE) += hhee/
 
 obj-$(CONFIG_HI6402_HIFI_MISC) += hi64xx_dsp/
 obj-$(CONFIG_HISI_HISEE) += hisee/

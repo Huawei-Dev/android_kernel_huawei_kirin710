@@ -74,11 +74,6 @@
 #define ARCH_SHF_SMALL 0
 #endif
 
-#ifdef CONFIG_HISI_HHEE_TOKEN
-#include <linux/hisi/hisi_hhee.h>
-static unsigned long clarify_token;
-#endif
-
 /*
  * Modules' sections will be aligned on page boundaries
  * to ensure complete separation of code and data, but
@@ -1933,19 +1928,7 @@ void module_disable_ro(const struct module *mod)
 
 static inline void hhee_lkm_update(const struct module_layout *layout)
 {
-#ifdef CONFIG_HISI_HHEE_TOKEN
-	struct arm_smccc_res res;
-	if (HHEE_ENABLE != hhee_check_enable())
-			return;
-	arm_smccc_hvc(HHEE_LKM_UPDATE, (unsigned long)layout->base,
-			layout->text_size, clarify_token, 0, 0, 0, 0, &res);
-
-	if (res.a0)
-		pr_err("service from hhee failed test.\n");
-
-#else
 	(void *)layout;
-#endif
 }
 
 void module_enable_ro(const struct module *mod, bool after_init)
@@ -4269,21 +4252,6 @@ static int __init proc_modules_init(void)
 	return 0;
 }
 module_init(proc_modules_init);
-#endif
-
-#ifdef CONFIG_HISI_HHEE_TOKEN
-static int __init module_token_init(void)
-{
-
-	struct arm_smccc_res res;
-	if(HHEE_ENABLE == hhee_check_enable()){
-		arm_smccc_hvc(HHEE_HVC_TOKEN, 0, 0,
-			0, 0, 0, 0, 0, &res);
-		clarify_token = res.a1;
-	}
-	return 0;
-}
-module_init(module_token_init);
 #endif
 
 /* Given an address, look for it in the module exception tables. */

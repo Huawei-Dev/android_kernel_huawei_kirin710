@@ -933,15 +933,6 @@ static int __init parse_kpti(char *str)
 early_param("kpti", parse_kpti);
 #endif	/* CONFIG_UNMAP_KERNEL_AT_EL0 */
 
-#ifdef CONFIG_HISI_HHEE
-#include <linux/hisi/hisi_hkip.h>
-
-static bool has_hhee(const struct arm64_cpu_capabilities *entry, int __unused)
-{
-	return hhee_is_present();
-}
-#endif
-
 static void cpu_copy_el2regs(const struct arm64_cpu_capabilities *__unused)
 {
 	/*
@@ -1028,13 +1019,6 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 		.matches = cpufeature_pan_not_uao,
 	},
 #endif /* CONFIG_ARM64_PAN */
-#ifdef CONFIG_HISI_HHEE
-	{
-		.desc = "Huawei Hypervisor Execution Environment",
-		.capability = ARM64_HAS_HHEE,
-		.matches = has_hhee,
-	},
-#endif
 	{
 		.desc = "Virtualization Host Extensions",
 		.capability = ARM64_HAS_VIRT_HOST_EXTN,
