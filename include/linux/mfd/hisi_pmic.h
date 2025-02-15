@@ -70,11 +70,6 @@ struct hisi_pmic {
 	struct irq_info irq_addr1;
 	struct write_lock normal_lock;
 	struct write_lock debug_lock;
-#if defined(CONFIG_HISI_DIEID)
-	char			*dieid_name;
-	unsigned int			dieid_reg_num;
-	unsigned int			*dieid_regs;
-#endif
 };
 
 /* 0:disable; 1:enable */
@@ -95,11 +90,6 @@ int hisi_pmic_array_write(int addr, const char *buff, unsigned int len);
 extern int hisi_get_pmic_irq_byname(unsigned int pmic_irq_list);
 extern int hisi_pmic_get_vbus_status(void);
 extern int hisi_pmic_special_ocp_register(char *power_name, pmic_ocp_callback handler);
-#if defined(CONFIG_HISI_DIEID)
-u32 hisi_pmic_read_sub_pmu(u8 sid ,int reg);
-void hisi_pmic_write_sub_pmu(u8 sid ,int reg, u32 val);
-int hisi_pmic_get_dieid(char *dieid, unsigned int len);
-#endif
 #else
 static inline u32 hisi_pmic_read(struct hisi_pmic *pmic, int reg) { return 0; }
 static inline void hisi_pmic_write(struct hisi_pmic *pmic, int reg, u32 val) {}
