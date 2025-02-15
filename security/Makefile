@@ -31,6 +31,5 @@ subdir-$(CONFIG_INTEGRITY)		+= integrity
 obj-$(CONFIG_INTEGRITY)			+= integrity/
 
 # HW Object
-obj-$(CONFIG_HW_DOUBLE_FREE_DYNAMIC_CHECK) += check_double_free/
 obj-$(CONFIG_HW_KERNEL_STP) += kernel_stp/
 obj-y += kernel_harden/
