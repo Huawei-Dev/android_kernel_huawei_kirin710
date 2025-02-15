@@ -94,16 +94,8 @@ config SECURITY_SELINUX_CHECKREQPROT_VALUE
 
 	  If you are unsure how to answer this question, answer 0.
 
-config HISI_SELINUX_EBITMAP_RO
-        bool "Protect extensible bitmaps used to represent the SE Linux policy DB"
-        default n
-        help
-          Those extensible bitmaps that are used to store parts of the policy DB are
-          protected and marked read-only, when the option is enabled.
-
 config HISI_SELINUX_PROT
         bool "Enable protection for SELinux policy DB"
-        select HISI_SELINUX_EBITMAP_RO
         default n
         help
           Adds hardening to various data structures, that are both constant

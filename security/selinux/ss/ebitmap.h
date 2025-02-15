@@ -16,11 +16,7 @@
 
 #include <net/netlabel.h>
 
-#ifdef CONFIG_HISI_SELINUX_EBITMAP_RO
-#define HISI_SELINUX_EBITMAP_RO (true)
-#else
 #define HISI_SELINUX_EBITMAP_RO (false)
-#endif
 
 #ifdef CONFIG_64BIT
 #define	EBITMAP_NODE_SIZE	64
