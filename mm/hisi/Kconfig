@@ -3,16 +3,6 @@ menuconfig HISI_MM
 	---help---
 	  This option add some hisilicon mm codes, needed by following modules.
 
-config HISI_PMALLOC
-	bool "Protectable Memory Allocator"
-	default y
-	depends on MMU
-	depends on HISI_MM
-	select  GENERIC_ALLOCATOR
-	help
-	It allows to write-protect variables allocated dynamically
-	ls /sys/kernel/pmalloc
-
 config HUAWEI_UNMOVABLE_ISOLATE
 	bool "Isolate the unmovable memory."
 	depends on ARM64

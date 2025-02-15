@@ -96,7 +96,6 @@ config SECURITY_SELINUX_CHECKREQPROT_VALUE
 
 config HISI_SELINUX_EBITMAP_RO
         bool "Protect extensible bitmaps used to represent the SE Linux policy DB"
-        select HISI_PMALLOC
         default n
         help
           Those extensible bitmaps that are used to store parts of the policy DB are
@@ -104,7 +103,6 @@ config HISI_SELINUX_EBITMAP_RO
 
 config HISI_SELINUX_PROT
         bool "Enable protection for SELinux policy DB"
-        select HISI_PMALLOC
         select HISI_SELINUX_EBITMAP_RO
         default n
         help
