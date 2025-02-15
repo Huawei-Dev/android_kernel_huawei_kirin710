@@ -26,7 +26,7 @@
 #include <linux/hw_breakpoint.h>
 #include <linux/cn_proc.h>
 #include <linux/compat.h>
-#include <chipset_common/kernel_harden/hw_ptrace_log.h>
+
 /*
  * Access another process' address space via ptrace.
  * Source/target buffer must be kernel space,
@@ -954,7 +954,6 @@ int ptrace_request(struct task_struct *child, long request,
 		return generic_ptrace_peekdata(child, addr, data);
 	case PTRACE_POKETEXT:
 	case PTRACE_POKEDATA:
-		record_ptrace_info_before_return(request,child);
 		return generic_ptrace_pokedata(child, addr, data);
 #ifdef PTRACE_OLDSETOPTIONS
 	case PTRACE_OLDSETOPTIONS:
@@ -1265,7 +1264,6 @@ int compat_ptrace_request(struct task_struct *child, compat_long_t request,
 
 	case PTRACE_POKETEXT:
 	case PTRACE_POKEDATA:
-		record_ptrace_info_before_return(request,child);
 		ret = ptrace_access_vm(child, addr, &data, sizeof(data),
 				FOLL_FORCE | FOLL_WRITE);
 		ret = (ret != sizeof(data) ? -EIO : 0);
