@@ -53,7 +53,7 @@ static const char *symtab_name[SYM_NUM] = {
 };
 #endif
 
-static HISI_SELINUX_PROT unsigned int symtab_sizes[SYM_NUM] = {
+static unsigned int symtab_sizes[SYM_NUM] = {
 	2,
 	32,
 	16,

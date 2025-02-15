@@ -93,13 +93,3 @@ config SECURITY_SELINUX_CHECKREQPROT_VALUE
 	  via /selinux/checkreqprot if authorized by policy.
 
 	  If you are unsure how to answer this question, answer 0.
-
-config HISI_SELINUX_PROT
-        bool "Enable protection for SELinux policy DB"
-        default n
-        help
-          Adds hardening to various data structures, that are both constant
-          and semi-constant in nature.
-          Also loads into a special memory pool the data structures created
-          when receiveing in input the policy description.
-          The pool is write-protected, once loading is complete.

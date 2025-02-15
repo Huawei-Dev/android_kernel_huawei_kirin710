@@ -116,11 +116,7 @@ static int __init enforcing_setup(char *str)
 __setup("enforcing=", enforcing_setup);
 #endif
 
-#if defined(CONFIG_HISI_SELINUX_PROT) && !defined(CONFIG_SECURITY_SELINUX_DISABLE)
-#define __selinux_enabled_prot  __ro_after_init
-#else
 #define __selinux_enabled_prot
-#endif
 
 #ifdef CONFIG_SECURITY_SELINUX_BOOTPARAM
 int selinux_enabled __selinux_enabled_prot = CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE;
