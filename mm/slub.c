@@ -139,17 +139,6 @@ static inline int kmem_cache_debug(struct kmem_cache *s)
 #endif
 }
 
-#ifdef CONFIG_HW_SLUB_SANITIZE
-static inline bool has_sanitize(struct kmem_cache *s)
-{
-#ifdef CONFIG_HW_SLUB_DF
-	return false;
-#else
-	return (s->flags & SLAB_CLEAR) && !(s->flags & SLAB_POISON);
-#endif
-}
-#endif
-
 void *fixup_red_left(struct kmem_cache *s, void *p)
 {
 	if (kmem_cache_debug(s) && s->flags & SLAB_RED_ZONE)
@@ -285,18 +274,6 @@ static inline void *get_freepointer_safe(struct kmem_cache *s, void *object)
 
 static inline void set_freepointer(struct kmem_cache *s, void *object, void *fp)
 {
-#ifdef CONFIG_HW_SLUB_SANITIZE
-	if (unlikely(object == fp))
-	{
-#ifdef CONFIG_HW_SLUB_DF
-		set_harden_double_free_check_flags(true);
-#else
-		s->flags |= SLAB_CLEAR;
-#endif
-		WARN_ON(1);
-		return;
-	}
-#endif
 	*(void **)(object + s->offset) = fp;
 }
 
@@ -2993,10 +2970,6 @@ static void __slab_free(struct kmem_cache *s, struct page *page,
 		prior = page->freelist;
 		counters = page->counters;
 		set_freepointer(s, tail, prior);
-#ifdef CONFIG_HW_SLUB_SANITIZE
-		if (unlikely(*(void **)(tail + s->offset) != prior))
-			return;
-#endif
 		new.counters = counters;
 		was_frozen = new.frozen;
 		new.inuse -= cnt;
@@ -3109,22 +3082,6 @@ static __always_inline void do_slab_free(struct kmem_cache *s,
 	struct kmem_cache_cpu *c;
 	unsigned long tid;
 
-#ifdef CONFIG_HW_SLUB_SANITIZE
-	if (unlikely(has_sanitize(s))) {
-		int offset = s->offset ? 0 : sizeof(void *);
-		void *x = head;
-
-		while (1) {
-			memset(x + offset, 0, s->object_size - offset);
-			if (s->ctor)
-				s->ctor(x);
-			if (x == tail_obj)
-				break;
-			x = get_freepointer(s, x);
-		}
-	}
-#endif
-
 #ifdef CONFIG_HW_SLUB_DF
 	if (unlikely(s->flags & SLAB_DOUBLEFREE_CHECK) && hw_check_and_set_canary(s, head, s->hw_random_free) == false)
 			return;
@@ -3149,10 +3106,6 @@ redo:
 		void **freelist = READ_ONCE(c->freelist);
 
 		set_freepointer(s, tail_obj, freelist);
-#ifdef CONFIG_HW_SLUB_SANITIZE
-	if (unlikely(*(void **)(tail_obj + s->offset) != freelist))
-		return;
-#endif
 
 		if (unlikely(!this_cpu_cmpxchg_double(
 				s->cpu_slab->freelist, s->cpu_slab->tid,
