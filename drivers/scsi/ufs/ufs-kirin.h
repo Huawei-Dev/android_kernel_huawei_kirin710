@@ -124,22 +124,6 @@
 /*
  * ufs sysctrl specific define
  */
-#ifdef CONFIG_HISI_UFS_HC
-#define UFS_CRG_UFS_CFG 0x00
-#define UFS_CRG_UFS_CFG1 0x04
-#define UFS_SYS_UFS_RESET_CTRL 0x08
-#define UFS_SYS_UFSAXI_W_QOS_LMTR 0x0C
-#define UFS_SYS_UFSAXI_R_QOS_LMTR 0x10
-#define UFS_SYS_CRG_UFS_STAT 0x14
-#define UFS_SYS_MEMORY_CTRL_D1W2R 0x1C
-#define UFS_SYS_UFS_CLKRST_BYPASS 0x20
-#define UFS_SYS_AO_MEMORY_CTRL 0x24
-#define UFS_SYS_MEMORY_CTRL 0x28
-#define UFS_SYS_HIUFS_MPHY_CFG 0x2C
-#define UFS_SYS_HIUFS_DEBUG 0x30
-#define UFS_SYS_MPHYMCU_TEST_POINT 0x34
-#define UFS_SYS_UFS_ENHANCE_CTRL 0xF00
-#else
 #define UFS_SYS_MEMORY_CTRL 0x0
 #define PSW_POWER_CTRL 0x04
 #define PHY_ISO_EN 0x08
@@ -171,7 +155,6 @@
 #define UFS_SYS_PHY_SRAM_MEM_CTRL_S 0xEC
 #define UFS_SYS_PHY_SRAM_INIT_DONE (1 << 26)
 #define UFS_SYS_MEMORY_BP_CTRL 0xF8
-#endif
 #define UFS_DEVICE_RESET_CTRL 0x60
 #define UFS_DEBUG_STAT 0xB0
 #define UFS_IDLE_CONUTER_CLR 0xD4
@@ -578,9 +561,6 @@ int hufs_get_pwr_by_sysctrl(struct ufs_hba *hba);
 int hufs_daemon_thread(void *d);
 #endif
 void hufs_pre_hce_notify(struct ufs_hba *hba);
-#ifdef CONFIG_HISI_UFS_HC
-int ufs_get_hufs_hc(struct hufs_host *host);
-#endif
 bool ufshcd_is_hufs_hc(struct ufs_hba *hba);
 int ufshcd_adapt_workaround(struct ufs_hba *hba,
 			    struct ufs_pa_layer_attr *pwr_mode);

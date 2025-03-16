@@ -436,19 +436,11 @@
 #define DME_QOS_STATUS					0x5131
 
 /* Unipro DME Attributes */
-#ifdef CONFIG_HISI_UFS_HC
-#define DME_LAYER_ENABLE					0xD002
-#define DME_HIBERNATE_ENTER					0xD00B
-#define DME_HIBERNATE_ENTER_IND					0xD00D
-#define DME_HIBERNATE_EXIT					0xD00E
-#define DME_HIBERNATE_EXIT_IND					0xD010
-#else
 #define DME_LAYER_ENABLE					0xd000
 #define DME_HIBERNATE_ENTER					0xd030
 #define DME_HIBERNATE_ENTER_IND					0xd031
 #define DME_HIBERNATE_EXIT					0xd032
 #define DME_HIBERNATE_EXIT_IND					0xd033
-#endif
 
 #define DME_RESET						0xd010
 #define DME_ENDPOINT_RESET					0xd011

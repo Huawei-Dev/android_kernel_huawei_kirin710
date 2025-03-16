@@ -6171,8 +6171,6 @@ out:
 	return err;
 }
 
-/*lint -e648 -e845*/
-#ifndef CONFIG_HISI_UFS_HC
 int ufs_update_hc_fw(struct ufs_hba *hba)
 {
 	int retry = 100;
@@ -6198,5 +6196,3 @@ int ufs_update_hc_fw(struct ufs_hba *hba)
 
 	return err;
 }
-#endif
-/*lint +e648 +e845*/

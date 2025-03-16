@@ -245,11 +245,7 @@ struct blk_queue_ops mas_ufs_blk_queue_ops = {
 	.blk_status_dump_fn = __cfi_ufs_mq_status_dump,
 	.blk_req_dump_fn = __cfi_ufs_mq_dump_request,
 	.scheduler_priv = &mas_ufs_mq,
-#ifdef CONFIG_MAS_QOS_MQ
-	.iosched_name = "MAS QOS MQ",
-#else
 	.iosched_name = "MAS MQ",
-#endif
 };
 
 struct blk_tagset_ops mas_ufs_blk_tagset_ops = {

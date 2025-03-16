@@ -205,10 +205,6 @@ struct blk_req_cust {
 	struct blk_mq_ctx *mq_ctx_generate;
 	/* Non-FS request endup call back function */
 	rq_end_io_fn *uplayer_end_io;
-#ifdef CONFIG_MAS_QOS_MQ
-	unsigned char mas_rq_qos;
-	unsigned int slot_cpu;
-#endif
 	ktime_t req_stage_ktime[REQ_PROC_STAGE_MAX];
 
 #ifdef CONFIG_MAS_UNISTORE_PRESERVE
@@ -237,19 +233,6 @@ struct blk_req_cust {
 	enum blk_ft_rq_sim_mode simulate_mode;
 #endif
 };
-
-#ifdef CONFIG_MAS_QOS_MQ
-enum mas_mq_qos_val {
-	MAS_MQ_QOS_0 = 0,
-	MAS_MQ_QOS_1,
-	MAS_MQ_QOS_2,
-	MAS_MQ_QOS_3,
-	MAS_MQ_QOS_4,
-	MAS_MQ_QOS_5,
-	MAS_MQ_QOS_6,
-	MAS_MQ_QOS_7,
-};
-#endif /* CONFIG_MAS_QOS_MQ */
 #endif /* CONFIG_MAS_BLK */
 
 /*
@@ -3015,14 +2998,6 @@ int blk_mq_get_io_in_list_count(struct block_device *bdev);
 #ifdef CONFIG_MAS_MQ_USING_CP
 void blk_queue_cp_enable(struct request_queue *q, bool enable);
 #endif
-#ifdef CONFIG_MAS_QOS_MQ
-void blk_mq_tagset_ufs_qos_mq_iosched_enable(
-	struct blk_mq_tag_set *tag_set, int enable);
-static __always_inline unsigned int qos_ufs_mq_get_send_cpu(struct request *rq)
-{
-	return rq->mas_req.slot_cpu;
-}
-#endif /* CONFIG_MAS_QOS_MQ */
 
 void blk_dio_ck(struct gendisk *target_disk,
 	ktime_t dio_start, int dio_op, int dio_page_count);

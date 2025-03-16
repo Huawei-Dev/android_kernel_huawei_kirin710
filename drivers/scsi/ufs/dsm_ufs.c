@@ -456,9 +456,7 @@ static void update_common_err_log(char *log_buff, int *size,
 	unsigned long code)
 {
 	int ret;
-#ifndef CONFIG_HISI_UFS_HC_CORE_UTR
 	int i;
-#endif
 	if (!(g_ufs_dsm_adaptor.err_type & ((1 << UFS_CONTROLLER_ERR) |
 		(1 << UFS_INLINE_CRYPTO_ERR) | (1 << UFS_DEV_ERR) |
 		(1 << UFS_ENTER_OR_EXIT_H8_ERR)))) {
@@ -470,7 +468,6 @@ static void update_common_err_log(char *log_buff, int *size,
 		pr_err("dsm log buff left space too small to load log.\n");
 		return;
 	}
-#ifndef CONFIG_HISI_UFS_HC_CORE_UTR
 	if (g_ufs_dsm_adaptor.err_type & (1 << UFS_INLINE_CRYPTO_ERR)) {
 		ret = snprintf(log_buff, *size, "outstanding:0x%lx, doorbell: 0x%lx\n",
 			g_ufs_dsm_adaptor.ice_outstanding, g_ufs_dsm_adaptor.ice_doorbell);
@@ -486,7 +483,6 @@ static void update_common_err_log(char *log_buff, int *size,
 			}
 		}
 	}
-#endif
 	if ((g_ufs_dsm_adaptor.err_type & (1 << UFS_CONTROLLER_ERR))) {
 		ret = snprintf(log_buff, *size, "controller error\n");
 		log_buff += ret;
@@ -871,12 +867,7 @@ int dsm_ufs_uic_err_need_report(struct ufs_hba *hba)
 	/* get synbol cnt /1024 */
 	ufshcd_dme_get(hba, UIC_ARG_MIB((u32)VS_DEBUG_COUNTER0), &counter);
 	/* reset cnter0 and enable it */
-#ifdef CONFIG_HISI_UFS_HC
-	ufshcd_dme_set(hba, UIC_ARG_MIB((u32)DEBUGCOUNTER_CLR), BIT_DBG_CNT0_CLR);
-	ufshcd_dme_set(hba, UIC_ARG_MIB((u32)DEBUGCOUNTER_EN), BIT_DBG_CNT0_EN);
-#else
 	ufshcd_dme_set(hba, UIC_ARG_MIB((u32)VS_DEBUG_COUNTER_CONTROL), 0x5);
-#endif
 	if (ov_flag & 0x1)
 		tmp_bits += (1UL << SHIFT_32) * BITS_PER_CNT;
 	tmp_bits += (unsigned long)counter * BITS_PER_CNT;

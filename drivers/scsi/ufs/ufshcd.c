@@ -80,7 +80,6 @@
 #include "ufs-vendor-mode.h"
 #include "ufs-kirin-lib.h"
 #include "ufs-hisi-hci.h"
-#include "ufs-hisi-dump.h"
 #include "ufshcd-kirin-interface.h"
 #ifdef CONFIG_HISI_BOOTDEVICE
 #include "ufs_rpmb.h"
@@ -166,13 +165,8 @@
 enum {
 	UFSHCD_MAX_CHANNEL	= 0,
 	UFSHCD_MAX_ID		= 1,
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	UFSHCD_CMD_PER_LUN	= 64,
-	UFSHCD_CAN_QUEUE	= 64,
-#else
 	UFSHCD_CMD_PER_LUN	= 32,
 	UFSHCD_CAN_QUEUE	= 32,
-#endif
 };
 
 /* UFSHCD UIC layer error flags */
@@ -1043,11 +1037,7 @@ void ufshcd_add_command_trace(struct ufs_hba *hba,
 	sector_t lba = -1; /*lint !e570*/
 	u8 opcode = 0;
 	u32 intr;
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	u64 doorbell;
-#else
 	u32 doorbell;
-#endif
 	struct ufshcd_lrb *lrbp;
 	int transfer_len = -1;
 
@@ -1073,11 +1063,7 @@ void ufshcd_add_command_trace(struct ufs_hba *hba,
 	}
 
 	intr = ufshcd_readl(hba, REG_INTERRUPT_STATUS);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	doorbell = read_core_utr_doorbells(hba);
-#else
 	doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 
     trace_ufshcd_command(dev_name(hba->dev), str, tag,
 				doorbell, transfer_len, intr, lba, opcode);
@@ -1252,18 +1238,6 @@ static inline void ufshcd_put_tm_slot(struct ufs_hba *hba, int slot)
 	clear_bit_unlock(slot, &hba->tm_slots_in_use);
 }
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-/**
- * ufshcd_utrl_clear - Clear a bit in UTRLCLR register
- * @hba: per adapter instance
- * @pos: position of the bit to be cleared
- */
-static inline void ufshcd_utrl_clear(struct ufs_hba *hba, u32 pos)
-{
-	ufshcd_writel(hba, ~(1U << (pos % SLOT_NUM_EACH_CORE)),
-		UFS_CORE_UTRLCLR(pos / SLOT_NUM_EACH_CORE));
-}
-#else
 /**
  * ufshcd_utrl_clear - Clear a bit in UTRLCLR register
  * @hba: per adapter instance
@@ -1273,7 +1247,6 @@ static inline void ufshcd_utrl_clear(struct ufs_hba *hba, u32 pos)
 {
 	ufshcd_writel(hba, ~(1 << pos), REG_UTP_TRANSFER_REQ_LIST_CLEAR);
 }
-#endif
 
 /**
  * ufshcd_outstanding_req_clear - Clear a bit in outstanding request field
@@ -1419,12 +1392,8 @@ static void ufshcd_enable_run_stop_reg(struct ufs_hba *hba)
 {
 	ufshcd_writel(hba, UTP_TASK_REQ_LIST_RUN_STOP_BIT,
 		      REG_UTP_TASK_REQ_LIST_RUN_STOP);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	ufshcd_enable_core_run_stop_reg(hba);
-#else
 	ufshcd_writel(hba, UTP_TRANSFER_REQ_LIST_RUN_STOP_BIT,
 		      REG_UTP_TRANSFER_REQ_LIST_RUN_STOP);
-#endif
 }
 
 
@@ -2342,12 +2311,7 @@ void ufshcd_send_command(struct ufs_hba *hba, unsigned int task_tag)
 #endif
 	ufshcd_clk_scaling_start_busy(hba);
 	__set_bit((int)task_tag, &hba->outstanding_reqs);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	ufshcd_writel(hba, 1 << (task_tag % SLOT_NUM_EACH_CORE),
-		UFS_CORE_UTRLDBR(task_tag / SLOT_NUM_EACH_CORE));
-#else
 	ufshcd_writel(hba, 1 << task_tag, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 
 	ufsdbg_error_inject_dispatcher(hba,
 		ERR_INJECT_DEDBUG_CTRL_INTR,
@@ -2433,12 +2397,8 @@ static inline void ufshcd_hba_capabilities(struct ufs_hba *hba)
 {
 	hba->capabilities = ufshcd_readl(hba, REG_CONTROLLER_CAPABILITIES);
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	hba->nutrs = SLOT_NUM_EACH_CORE * CORE_NUM;
-#else
 	/* nutrs and nutmrs are 0 based values */
 	hba->nutrs = (hba->capabilities & MASK_TRANSFER_REQUESTS_SLOTS) + 1;
-#endif
 	hba->nutmrs =
 	((hba->capabilities & MASK_TASK_MANAGEMENT_REQUEST_SLOTS) >> 16) + 1;
 }
@@ -2962,11 +2922,6 @@ static int ufshcd_tag_alloc(struct Scsi_Host *host, struct ufs_hba *hba,
 						struct scsi_cmnd *cmd)
 {
 	int tag;
-#ifdef CONFIG_MAS_QOS_MQ
-	tag = get_tag_per_cpu(hba, qos_ufs_mq_get_send_cpu(cmd->request));
-	if (tag < 0)
-		return -EINVAL;
-#else
 #ifdef CONFIG_MAS_BLK
 	if (host->queue_quirk_flag & SHOST_QUIRK(SHOST_QUIRK_DRIVER_TAG_ALLOC)) {
 		tag = (int)ffz(hba->lrb_in_use);
@@ -2978,12 +2933,10 @@ static int ufshcd_tag_alloc(struct Scsi_Host *host, struct ufs_hba *hba,
 #ifdef CONFIG_MAS_BLK
 	}
 #endif
-#endif
 	cmd->tag = (unsigned char)tag;
 	return 0;
 }
 
-#ifndef CONFIG_HISI_UFS_HC_CORE_UTR
 static void ufshcd_validate_tag(struct Scsi_Host *host, struct ufs_hba *hba,
 								struct scsi_cmnd *cmd)
 {
@@ -3003,12 +2956,6 @@ static void ufshcd_validate_tag(struct Scsi_Host *host, struct ufs_hba *hba,
 	}
 #endif
 }
-#else
-static void ufshcd_validate_tag(struct Scsi_Host *host, struct ufs_hba *hba,
-							struct scsi_cmnd *cmd)
-{
-}
-#endif
 
 #ifdef CONFIG_MAS_ORDER_PRESERVE
 #if defined(CONFIG_HISI_DEBUG_FS) || defined(CONFIG_MAS_BLK_DEBUG)
@@ -3024,13 +2971,6 @@ static int ufshcd_custom_upiu_order(struct utp_upiu_req *ucd_req_ptr,
 
 	if (unlikely(!req || !req->q))
 		return 0;
-
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	if (blk_queue_query_order_enable(req->q) &&
-		(req_op(req) != REQ_OP_READ) && (!req_cp(req)) &&
-		(hweight64(hba->outstanding_reqs) >= SPEC_SLOT_NUM))/*lint !e514*/
-		return -EAGAIN;
-#endif
 
 	if (scsi_is_order_cmd(scmd)) {
 		wo_nr = blk_req_get_order_nr(req, true);
@@ -3240,15 +3180,6 @@ static int ufshcd_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
 
 	/* issue command to the controller */
 	spin_lock_irqsave(hba->host->host_lock, flags);
-#ifdef CONFIG_HISI_UFS_HC
-	if (ufshcd_is_ufs_dev_poweroff(hba)) {
-		dev_err(hba->dev, "warnning send cmd in ufs shutdown\n");
-		dump_stack();
-		err = SCSI_MLQUEUE_HOST_BUSY;
-		spin_unlock_irqrestore(hba->host->host_lock, flags);
-		goto ufstt_unprep;
-	}
-#endif
 	while (hba->is_hibernate) {
 		spin_unlock_irqrestore(hba->host->host_lock, flags);
 		dev_info(hba->dev, "warning send cmd in H8, %s\n", __func__);
@@ -3276,9 +3207,6 @@ static int ufshcd_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
 #ifdef CONFIG_HISI_SCSI_UFS_DUMP
 	ufshcd_dump_scsi_command(hba, tag);
 #endif
-#if defined(CONFIG_HISI_UFS_HC_CORE_UTR) && defined(CONFIG_MAS_QOS_MQ)
-	set_core_utr_slot_qos(hba, tag, cmd->request->mas_req.mas_rq_qos);
-#endif /* CONFIG_HISI_UFS_HC_CORE_UTR */
 	ufshcd_send_command(hba, tag);
 out_unlock:
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
@@ -3312,11 +3240,7 @@ ufshcd_clear_cmd(struct ufs_hba *hba, int tag)
 {
 	int err = 0;
 	unsigned long flags;
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	u32 mask = 1UL << (u32)(tag % SLOT_NUM_EACH_CORE);
-#else
 	u32 mask = 1U << (u32)tag;
-#endif
 
 	/* clear outstanding transaction before retry */
 	spin_lock_irqsave(hba->host->host_lock, flags);
@@ -3327,15 +3251,9 @@ ufshcd_clear_cmd(struct ufs_hba *hba, int tag)
 	 * wait for for h/w to clear corresponding bit in door-bell.
 	 * max. wait is 1 sec.
 	 */
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	err = ufshcd_wait_for_register(hba,
-			UFS_CORE_UTRLDBR(tag / SLOT_NUM_EACH_CORE),
-			mask, ~mask, 1000, 1000, true);
-#else
 	err = ufshcd_wait_for_register(hba,
 			REG_UTP_TRANSFER_REQ_DOOR_BELL,
 			mask, ~mask, 1000, 1000, true);
-#endif
 
 	return err;
 }
@@ -3502,17 +3420,8 @@ int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
 	ufshcd_transfer_req_compl(hba);
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
 
-#if defined(CONFIG_SCSI_UFS_HI1861_VCMD) && defined(CONFIG_HISI_UFS_HC)
-	if (hba->is_hi186x_query_vcmd) /*lint !e548*/
-		wait_event(hba->dev_cmd.tag_wq,
-			   ufshcd_get_vcmd_tag(hba, &tag)); /*lint !e666*/
-	else
-		wait_event(hba->dev_cmd.tag_wq,
-			   ufshcd_get_dev_cmd_tag(hba, &tag)); /*lint !e666*/
-#else
 	wait_event(hba->dev_cmd.tag_wq,
 		   ufshcd_get_dev_cmd_tag(hba, &tag)); /*lint !e666*/
-#endif
 
 	pm_runtime_get_sync(hba->dev);
 
@@ -4186,19 +4095,10 @@ static int ufshcd_memory_alloc(struct ufs_hba *hba)
 	size_t utmrdl_size, utrdl_size, ucdl_size;
 	unsigned int ucd_num;
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	ucd_num = CORE_SLOT_NUM;
-	hba->nutrs = SPEC_SLOT_NUM + CORE_SLOT_NUM;
-#else
 	ucd_num = hba->nutrs;
-#endif
+
 	/* Allocate memory for UTP command descriptors */
-#if defined(CONFIG_SCSI_UFS_HI1861_VCMD) && defined(CONFIG_HISI_UFS_HC)
-	ucdl_size = sizeof(struct utp_transfer_cmd_desc) * (ucd_num - 1) +
-		    sizeof(struct vcmd_utp_transfer_cmd_desc) * 1;
-#else
 	ucdl_size = sizeof(struct utp_transfer_cmd_desc) * ucd_num;
-#endif
 	hba->ucdl_base_addr = dmam_alloc_coherent(
 		hba->dev, ucdl_size, &hba->ucdl_dma_addr, GFP_KERNEL);
 
@@ -4830,20 +4730,6 @@ int ufshcd_change_power_mode(struct ufs_hba *hba,
 		dev_dbg(hba->dev, "%s: power already configured\n", __func__);
 		return 0;
 	}
-#ifdef CONFIG_HISI_UFS_HC
-	if ((pwr_mode->pwr_rx == SLOW_MODE ||
-	     pwr_mode->pwr_rx == SLOWAUTO_MODE) &&
-	    pwr_mode->gear_rx > UFS_PWM_G1) {
-		dev_info(hba->dev, "in PWM, hufs only support gear 1\n");
-		pwr_mode->gear_rx = UFS_PWM_G1;
-	}
-	if ((pwr_mode->pwr_tx == SLOW_MODE ||
-	     pwr_mode->pwr_tx == SLOWAUTO_MODE) &&
-	    pwr_mode->gear_tx > UFS_PWM_G1) {
-		dev_info(hba->dev, "in PWM, hufs only support gear 1\n");
-		pwr_mode->gear_tx = UFS_PWM_G1;
-	}
-#endif
 
 	/*
 	 * Configure attributes for power mode change with below.
@@ -4929,11 +4815,6 @@ static int ufshcd_config_pwr_mode(struct ufs_hba *hba,
 	if (ret)
 		memcpy(&final_params, desired_pwr_mode, sizeof(final_params));
 
-#ifdef CONFIG_HISI_UFS_HC
-	ret = auto_k_enable_pmc_check(hba, final_params);
-	if (ret)
-		return ret;
-#endif
 	ret = ufshcd_change_power_mode(hba, &final_params);
 	if (!ret)
 		ufshcd_print_pwr_info(hba);
@@ -5008,26 +4889,6 @@ static int ufshcd_make_hba_operational(struct ufs_hba *hba)
 
 	/* Enable required interrupts */
 	ufshcd_enable_intr(hba, UFSHCD_ENABLE_INTRS);
-
-#ifdef CONFIG_HISI_UFS_HC
-	if (ufshcd_is_hufs_hc(hba)) {
-		/* Enable required unipro and VS_IS interrupts */
-		ufshcd_hufs_enable_unipro_intr(hba, DME_ENABLE_INTRS);
-		ufshcd_enable_vs_intr(hba, UFS_VS_ENABLE_INTRS);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		ufshcd_enable_core_utr_intr(hba);
-		config_hufs_tr_qos(hba);
-		set_core_utr_qos_starve_timeout(hba, DEFAULT_CORE_TR_TIMEOUT);
-#endif
-		if (hba->caps & UFSHCD_CAP_PWM_DAEMON_INTR)
-			ufshcd_hufs_enable_pwm_intr(hba);
-		if (hba->caps & UFSHCD_CAP_DEV_TMT_INTR)
-			ufshcd_hufs_enable_dev_tmt_intr(hba);
-		/* when ufs reset, need enable idle intr again */
-		if (!(hba->caps & UFSHCD_CAP_BROKEN_IDLE_INTR))
-			ufshcd_enable_vs_intr(hba, IDLE_PREJUDGE_INTR);
-	}
-#endif
 
 #ifdef CONFIG_SCSI_UFS_INLINE_CRYPTO
 	/* enable intr CEFEE if the controller support inline encrypt */
@@ -5147,9 +5008,6 @@ int ufshcd_hba_enable(struct ufs_hba *hba)
 
 	/* enable UIC related interrupts */
 	ufshcd_enable_intr(hba, UFSHCD_UIC_MASK);
-#ifdef CONFIG_HISI_UFS_HC
-	ufshcd_hufs_enable_unipro_intr(hba, LINKUP_CNF_INTR | PEER_ATTR_COMPL_INTR);
-#endif
 
 	ufshcd_vops_hce_enable_notify(hba, POST_CHANGE);
 
@@ -5787,9 +5645,7 @@ void __ufshcd_transfer_req_compl(struct ufs_hba *hba,
 	unsigned long completed_reqs = _completed_reqs;
 	ktime_t now_time = ktime_get();
 	uint8_t opcode = 0;
-#ifndef CONFIG_HISI_UFS_HC_CORE_UTR
 check:
-#endif
 	for_each_set_bit(index, &completed_reqs, hba->nutrs) {
 		lrbp = &hba->lrb[index];
 
@@ -5798,12 +5654,7 @@ check:
 		if (cmd && lrbp->command_type != UTP_CMD_TYPE_DEV_MANAGE) {
 			ufshcd_update_tag_stats_completion(hba, cmd);
 			result = ufshcd_transfer_rsp_status(hba, lrbp, true);
-#ifdef CONFIG_MAS_BLK
-			if (!(hba->host->queue_quirk_flag & SHOST_QUIRK(SHOST_QUIRK_UNMAP_IN_SOFTIRQ)))
-				scsi_dma_unmap(cmd);
-#else
 			scsi_dma_unmap(cmd);
-#endif
 			cmd->result = result;
 			/* Mark completed command as NULL in LRB */
 			lrbp->cmd = NULL;
@@ -5835,7 +5686,6 @@ check:
 	}
 	/* clear corresponding bits of completed commands */
 	hba->outstanding_reqs ^= completed_reqs;
-#ifndef CONFIG_HISI_UFS_HC_CORE_UTR
 	if (hba->host->queue_quirk_flag & SHOST_QUIRK(SHOST_QUIRK_HUFS_MQ)) {
 		if (hba->outstanding_reqs) {
 			completed_reqs = ufshcd_readl(hba,
@@ -5844,7 +5694,6 @@ check:
 				goto check;
 		}
 	}
-#endif
 	ufshcd_clk_scaling_update_busy(hba);
 	/* we might have free'd some tags above */
 	wake_up(&hba->dev_cmd.tag_wq);
@@ -5856,12 +5705,6 @@ check:
  */
 static void ufshcd_transfer_req_compl(struct ufs_hba *hba)
 {
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	u32 cpu;
-
-	for (cpu = 0; cpu < UTR_CORE_NUM; cpu++)
-		ufshcd_core_transfer_req_compl(hba, cpu);
-#else
 	unsigned long completed_reqs;
 	u32 tr_doorbell;
 
@@ -5879,7 +5722,6 @@ static void ufshcd_transfer_req_compl(struct ufs_hba *hba)
 	completed_reqs = tr_doorbell ^ hba->outstanding_reqs;
 
 	__ufshcd_transfer_req_compl(hba, completed_reqs);
-#endif
 }
 
 /**
@@ -6510,10 +6352,6 @@ void ufshcd_check_errors(struct ufs_hba *hba)
 #ifdef CONFIG_SCSI_UFS_HS_ERROR_RECOVER
 		hba->check_pwm_after_h8 = 10;
 #endif
-#ifdef CONFIG_HISI_UFS_HC
-		dev_err(hba->dev, "not handle erros in h8 for hufs\n");
-		return;
-#endif
 	}
 
 	queue_eh_work = ufshcd_error_need_queue_work(hba);
@@ -6548,12 +6386,6 @@ void ufshcd_check_errors(struct ufs_hba *hba)
 					(hba->saved_err &
 						(UIC_HIBERNATE_ENTER |
 							UIC_HIBERNATE_EXIT)))
-#ifdef CONFIG_HISI_UFS_HC
-				|| (ufshcd_is_auto_hibern8_allowed(hba) &&
-					   (hba->saved_err &
-						   AH8_EXIT_REQ_CNF_FAIL_INTR))
-
-#endif
 					) {
 				bool pr_prdt = !!(hba->saved_err &
 						SYSTEM_BUS_FATAL_ERROR);
@@ -6863,17 +6695,12 @@ static unsigned int ufshcd_get_tag_from_cmd(struct Scsi_Host *host, struct ufs_h
 {
 	unsigned int tag;
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	tag = (unsigned int)cmd->tag;
-#else
 #ifdef CONFIG_MAS_BLK
 	if ((host->queue_quirk_flag & SHOST_QUIRK(SHOST_QUIRK_DRIVER_TAG_ALLOC)))
 		tag = (unsigned int)cmd->tag;
 	else
 #endif
 		tag = (unsigned int)cmd->request->tag;
-
-#endif /* CONFIG_HISI_UFS_HC_CORE_UTR */
 
 	if (!ufshcd_valid_tag(hba, tag)) {
 		dev_err(hba->dev,
@@ -6926,11 +6753,7 @@ static int ufshcd_abort(struct scsi_cmnd *cmd)
 
 	ufshcd_update_error_stats(hba, UFS_ERR_TASK_ABORT);
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	reg = ufshcd_readl(hba, UFS_CORE_UTRLDBR(tag / SLOT_NUM_EACH_CORE));
-#else
 	reg = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 	/* If command is already aborted/completed, return SUCCESS */
 	if (!(test_bit(tag, &hba->outstanding_reqs))) {
 		dev_err(hba->dev,
@@ -6939,11 +6762,7 @@ static int ufshcd_abort(struct scsi_cmnd *cmd)
 		goto out;
 	}
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	if (!(reg & (1 << (tag % SLOT_NUM_EACH_CORE)))) {
-#else
 	if (!(reg & (1 << tag))) {
-#endif
 		dev_err(hba->dev,
 		"%s: cmd was completed, but without a notifying intr, tag = %d",
 		__func__, tag);
@@ -6997,13 +6816,8 @@ static int ufshcd_abort(struct scsi_cmnd *cmd)
 			 */
 			dev_err(hba->dev, "%s: cmd at tag %d not pending in the device.\n",
 				__func__, tag);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-			reg = ufshcd_readl(hba, UFS_CORE_UTRLDBR(tag / SLOT_NUM_EACH_CORE));
-			if (reg & (1 << (tag % SLOT_NUM_EACH_CORE))) {
-#else
 			reg = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
 			if (reg & (1 << tag)) {
-#endif
 				/* sleep for max. 200us to stabilize */
 				usleep_range(100, 200);
 				continue;
@@ -7830,11 +7644,6 @@ static int ufshcd_probe_hba(struct ufs_hba *hba)
 	 */
 	ufshcd_device_need_enable_autobkops(hba);
 
-#ifdef CONFIG_HISI_UFS_HC
-	if (ufshcd_is_hufs_hc(hba))
-		ufshcd_enable_clock_gating_autodiv(hba);
-#endif
-
 #ifdef CONFIG_RPMB_UFS
 	if (get_bootdevice_type() == BOOT_DEVICE_UFS) {
 		set_bootdevice_rev_handler(ufshcd_device_get_rev);
@@ -7867,9 +7676,6 @@ static int ufshcd_probe_hba(struct ufs_hba *hba)
 	ret = ufshcd_verify_dev_init(hba, 1);
 	if (ret)
 		goto out;
-#ifdef CONFIG_HISI_UFS_HC
-	ufshcd_ue_clean(hba);
-#endif
 
 #ifdef CONFIG_SCSI_UFS_LUN_PROTECT
 	ret = ufshcd_set_lun_protect(hba);
@@ -9603,9 +9409,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq, 
 	ufshcd_hufs_mq_init(host);
 #endif /* CONFIG_SCSI_UFS_HISI_UFS_MQ_DEFAULT */
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	core_utr_qos_ctrl_init(hba);
-#endif
 	host->cmd_per_lun = hba->nutrs;
 	host->max_id = UFSHCD_MAX_ID;
 	if (likely(!host->is_emulator))
@@ -9719,64 +9522,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq, 
 		}
 	}
 
-#ifdef CONFIG_HISI_UFS_HC
-	if (!(hba->caps & UFSHCD_CAP_BROKEN_IDLE_INTR)) {
-		hba->idle_timeout_val = UFSHCD_IDLE_TIMEOUT_DEFAULT_VAL;
-#ifdef CONFIG_MAS_BLK
-		host->queue_quirk_flag |=
-			SHOST_QUIRK(SHOST_QUIRK_BUSY_IDLE_INTR_ENABLE);
-#endif
-		hba->ufs_idle_intr_en = 1;
-		ufshcd_enable_vs_intr(hba, IDLE_PREJUDGE_INTR);
-		ufshcd_add_idle_intr_check_timer(hba);
-	}
-	if (ufshcd_is_hufs_hc(hba)) {
-#ifdef CONFIG_SCSI_UFS_INTR_HUB
-		if (hba->ufs_intr_hub_irq) {
-			err = devm_request_irq(dev, hba->ufs_intr_hub_irq,
-					       ufshcd_ufs_intr_hub_intr,
-					       IRQF_SHARED,
-					       "ufshcd_ufs_intr_hub_irq", hba);
-			if (err) {
-				dev_err(hba->dev,
-					"request ufs intr hub irq failed\n");
-				goto exit_gating;
-			}
-		}
-#else
-		/* IRQ registration */
-		if (hba->unipro_irq >= 0) {
-			err = devm_request_irq(dev, hba->unipro_irq,
-				ufshcd_hufs_unipro_intr, IRQF_SHARED,
-				"ufshcd_hufs_unipro", hba);
-			if (err) {
-				dev_err(hba->dev, "request irq failed\n");
-				goto exit_gating;
-			}
-		}
-
-		if (hba->fatal_err_irq >= 0) {
-			err = devm_request_irq(dev, hba->fatal_err_irq,
-				ufshcd_hufs_fatal_err_intr, IRQF_SHARED,
-				"ufshcd_hufs_fatal_err", hba);
-			if (err) {
-				dev_err(hba->dev,
-					"request ufs fatal err irq failed\n");
-				goto exit_gating;
-			}
-		}
-#endif
-
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		err = request_irq_for_core_irq(hba, dev);
-		if (err) {
-			dev_err(hba->dev, "request core irq failed\n");
-			goto exit_gating;
-		}
-#endif
-	}
-#endif /* CONFIG_HISI_UFS_HC */
-
 	err = scsi_add_host(host, hba->dev);
 	if (err) {
 		dev_err(hba->dev, "scsi_add_host failed\n");
@@ -9864,10 +9609,6 @@ static void ufshcd_print_host_regs(struct ufs_hba *hba)
 	if (ufshcd_is_hufs_hc(hba) && hba->vops &&
 	    hba->vops->dbg_hufs_dme_dump)
 		hba->vops->dbg_hufs_dme_dump(hba);
-#ifdef CONFIG_HISI_UFS_HC
-	if (hba->vops && hba->vops->dbg_uic_dump)
-		hba->vops->dbg_uic_dump(hba);
-#endif
 	/*
 	 * hex_dump reads its data without the readl macro. This might
 	 * cause inconsistency issues on some platform, as the printed
@@ -10089,35 +9830,25 @@ void ufshcd_set_auto_hibern8_delay(struct ufs_hba *hba, unsigned int value)
 static void ufshcd_enable_pwm_cnt(struct ufs_hba *hba)
 {
 	unsigned long flags;
-#ifndef CONFIG_HISI_UFS_HC
 	struct hufs_host *host = (struct hufs_host *)hba->priv;
-#endif
 
 	if (!(hba->caps & UFSHCD_CAP_PWM_DAEMON_INTR))
 		return;
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
-#ifdef CONFIG_HISI_UFS_HC
-	ufshcd_hufs_enable_unipro_intr(hba, HSH8ENT_LR_INTR);
-#else
 	ufs_sys_ctrl_writel(host, 1000 * 1000, UFS_PWM_COUNTER);
 	ufs_sys_ctrl_clr_bits(host, BIT_UFS_PWM_CNT_INT_MASK, UFS_DEBUG_CTRL);
 	ufs_sys_ctrl_set_bits(host, BIT_UFS_PWM_CNT_EN, UFS_DEBUG_CTRL);
-#endif
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
 }
 
 void __ufshcd_disable_pwm_cnt(struct ufs_hba *hba)
 {
-#ifdef CONFIG_HISI_UFS_HC
-	ufshcd_hufs_disable_unipro_intr(hba, HSH8ENT_LR_INTR);
-#else
 	struct hufs_host *host = (struct hufs_host *)hba->priv;
 
 	ufs_sys_ctrl_clr_bits(host, BIT_UFS_PWM_CNT_EN, UFS_DEBUG_CTRL);
 	ufs_sys_ctrl_set_bits(host, BIT_UFS_PWM_CNT_INT_MASK, UFS_DEBUG_CTRL);
 	ufs_sys_ctrl_writel(host, 1, UFS_PWM_COUNTER_CLR);
-#endif
 }
 
 static void ufshcd_disable_pwm_cnt(struct ufs_hba *hba)
@@ -10146,21 +9877,6 @@ static void __ufshcd_enable_dev_tmt_cnt(struct ufs_hba *hba)
 	}
 
 	if (hba->dev_tmt_disable_depth == 0) {
-#ifdef CONFIG_HISI_UFS_HC
-		u32 reg_val = 0;
-
-		reg_val = ufshcd_readl(hba, UFS_PROC_MODE_CFG);
-		reg_val |= CFG_RX_CPORT_IDLE_CHK_EN;
-
-		/* set dev_tmt timeout trsh, 0xC8(200) mean 200 * 10ms */
-		reg_val &= ~CFG_RX_CPORT_IDLE_TIMEOUT_TRSH;
-		reg_val |= (DEV_TMT_VAL << BIT_SHIFT_DEV_TMT_TRSH);
-		ufshcd_writel(hba, reg_val, UFS_PROC_MODE_CFG);
-		/* set io timeout 5s */
-		reg_val = IO_TIMEOUT_TRSH_VAL & MASK_CFG_IO_TIMEOUT_TRSH;
-		reg_val |= MASK_CFG_IO_TIMEOUT_CHECK_EN;
-		ufshcd_writel(hba, reg_val, UFS_IO_TIMEOUT_CHECK);
-#else
 		struct hufs_host *host =
 			(struct hufs_host *)hba->priv;
 		/* most of all, one request can not execute more than 2s */
@@ -10169,7 +9885,6 @@ static void __ufshcd_enable_dev_tmt_cnt(struct ufs_hba *hba)
 			host, BIT_UFS_DEV_TMT_CNT_EN, UFS_DEBUG_CTRL);
 		ufs_sys_ctrl_clr_bits(
 			host, BIT_UFS_DEV_TMT_CNT_MASK, UFS_DEBUG_CTRL);
-#endif
 	}
 }
 
@@ -10187,23 +9902,10 @@ static void ufshcd_enable_dev_tmt_cnt(struct ufs_hba *hba)
 
 void __ufshcd_disable_dev_tmt_cnt(struct ufs_hba *hba)
 {
-
-#ifdef CONFIG_HISI_UFS_HC
-	u32 reg_val = 0;
-
-	reg_val = ufshcd_readl(hba, UFS_PROC_MODE_CFG);
-	reg_val &= ~CFG_RX_CPORT_IDLE_CHK_EN;
-	ufshcd_writel(hba, reg_val, UFS_PROC_MODE_CFG);
-
-	reg_val = ufshcd_readl(hba, UFS_IO_TIMEOUT_CHECK);
-	reg_val &= ~MASK_CFG_IO_TIMEOUT_CHECK_EN;
-	ufshcd_writel(hba, reg_val, UFS_IO_TIMEOUT_CHECK);
-#else
 	struct hufs_host *host = (struct hufs_host *)hba->priv;
 	ufs_sys_ctrl_clr_bits(host, BIT_UFS_DEV_TMT_CNT_EN, UFS_DEBUG_CTRL);
 	ufs_sys_ctrl_set_bits(host, BIT_UFS_DEV_TMT_CNT_MASK, UFS_DEBUG_CTRL);
 	ufs_sys_ctrl_writel(host, 1, UFS_DEV_TMT_COUNTER_CLR);
-#endif
 }
 
 static void ufshcd_disable_dev_tmt_cnt_no_irq(struct ufs_hba *hba)
@@ -10231,11 +9933,7 @@ static void ufshcd_disable_dev_tmt_cnt(struct ufs_hba *hba)
 void ufshcd_disable_run_stop_reg(struct ufs_hba *hba)
 {
 	ufshcd_writel(hba, 0, REG_UTP_TASK_REQ_LIST_RUN_STOP);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	ufshcd_disable_core_run_stop_reg(hba);
-#else
 	ufshcd_writel(hba, 0, REG_UTP_TRANSFER_REQ_LIST_RUN_STOP);
-#endif
 }
 /**
  * ufshcd_support_inline_encrypt - Check if controller supports
@@ -10422,11 +10120,7 @@ void ufs_recover_hs_mode(struct work_struct *work)
 {
 	unsigned long flags;
 	u32 tm_doorbell;
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	u64 tr_doorbell;
-#else
 	u32 tr_doorbell;
-#endif
 	struct ufs_hba *hba;
 	int ret;
 	unsigned long timeout;
@@ -10457,11 +10151,7 @@ void ufs_recover_hs_mode(struct work_struct *work)
 			continue;
 		}
 		tm_doorbell = ufshcd_readl(hba, REG_UTP_TASK_REQ_DOOR_BELL);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		tr_doorbell = read_core_utr_doorbells(hba);
-#else
 		tr_doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 		if (hba->outstanding_reqs || tm_doorbell || tr_doorbell) {
 			spin_unlock_irqrestore(hba->host->host_lock, flags);
 			msleep(5);
@@ -11085,37 +10775,21 @@ static int ufshcd_get_health_info(struct scsi_device *sdev,
 #endif
 
 static void __ufshcd_print_doorbell(struct ufs_hba *hba, u32 tm_doorbell,
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		u64 tr_doorbell, char *s)
-#else
 		u32 tr_doorbell, char *s)
-#endif
 {
 	dev_err(hba->dev, "wait door bell clean %s:tm_doorbell:0x%x, "
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-			  "tr_doorbell:0x%lx\n", s, tm_doorbell, tr_doorbell);
-#else
 			  "tr_doorbell:0x%x\n", s, tm_doorbell, tr_doorbell);
-#endif
 }
 int __ufshcd_wait_for_doorbell_clr(struct ufs_hba *hba)
 {
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	u32 tm_doorbell, wait_timeout_us;
-	u64 tr_doorbell;
-#else
 	u32 tr_doorbell, tm_doorbell, wait_timeout_us;
-#endif
 	int ret = 0;
 	ktime_t start = ktime_get();
 
 	wait_timeout_us = 2000000;
 	tm_doorbell = ufshcd_readl(hba, REG_UTP_TASK_REQ_DOOR_BELL);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	tr_doorbell = read_core_utr_doorbells(hba);
-#else
 	tr_doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
+
 	if ((!tm_doorbell) && (!tr_doorbell))
 		return 0;
 
@@ -11126,20 +10800,13 @@ int __ufshcd_wait_for_doorbell_clr(struct ufs_hba *hba)
 	 */
 	do {
 		tm_doorbell = ufshcd_readl(hba, REG_UTP_TASK_REQ_DOOR_BELL);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		tr_doorbell = read_core_utr_doorbells(hba);
-#else
 		tr_doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
-		/*lint -save -e446*/
 		if (ktime_to_us(ktime_sub(ktime_get(), start)) >
 			wait_timeout_us) {
 			ret = -EIO;
 			dev_err(hba->dev, "wait doorbell clean timeout\n");
-			hufs_key_reg_dump(hba);
 			break;
 		}
-		/*lint -restore*/
 	} while (tm_doorbell || tr_doorbell);
 	__ufshcd_print_doorbell(hba, tm_doorbell, tr_doorbell, "end");
 	return ret;
@@ -11150,11 +10817,7 @@ int ufshcd_wait_for_doorbell_clr(struct ufs_hba *hba, u64 wait_timeout_us)
 	unsigned long flags;
 	int ret = 0;
 	u32 tm_doorbell;
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	u64 tr_doorbell;
-#else
 	u32 tr_doorbell;
-#endif
 	bool timeout = false, do_last_check = false;
 	ktime_t start = ktime_get();
 
@@ -11170,11 +10833,7 @@ int ufshcd_wait_for_doorbell_clr(struct ufs_hba *hba, u64 wait_timeout_us)
 	 */
 	do {
 		tm_doorbell = ufshcd_readl(hba, REG_UTP_TASK_REQ_DOOR_BELL);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		tr_doorbell = read_core_utr_doorbells(hba);
-#else
 		tr_doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 		if (!tm_doorbell && !tr_doorbell) {
 			timeout = false;
 			break;
@@ -11376,17 +11035,6 @@ void ufshcd_config_adapt(struct ufs_hba *hba, struct ufs_pa_layer_attr *pwr_mode
 		return;
 
 	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_TXHSADAPTTYPE), PA_HS_APT_NO);
-#ifdef CONFIG_HISI_UFS_HC
-	if ((hba->manufacturer_id == UFS_VENDOR_TOSHIBA) ||
-	    (hba->manufacturer_id == UFS_VENDOR_SKHYNIX) ||
-	    (hba->manufacturer_id == UFS_VENDOR_SAMSUNG)) {
-		if ((pwr_mode->pwr_rx == FASTAUTO_MODE ||
-		     pwr_mode->pwr_rx == FAST_MODE) &&
-		    (pwr_mode->gear_rx >= UFS_HS_G4))
-			ufshcd_dme_set(hba, UIC_ARG_MIB(PA_TXHSADAPTTYPE),
-				       PA_HS_APT_INITIAL);
-	}
-#else
 	if ((hba->manufacturer_id == UFS_VENDOR_TOSHIBA) ||
 	    (hba->manufacturer_id == UFS_VENDOR_MICRON) ||
 	    (hba->manufacturer_id == UFS_VENDOR_SAMSUNG)) {
@@ -11396,7 +11044,6 @@ void ufshcd_config_adapt(struct ufs_hba *hba, struct ufs_pa_layer_attr *pwr_mode
 			ufshcd_dme_set(hba, UIC_ARG_MIB(PA_TXHSADAPTTYPE),
 				       PA_HS_APT_INITIAL);
 	}
-#endif
 }
 
 /**
@@ -11519,13 +11166,6 @@ static bool ufshcd_error_need_queue_work(struct ufs_hba *hba)
 			dsm_ufs_updata_ice_info(hba);
 #endif
 	}
-#ifdef CONFIG_HISI_UFS_HC
-	if (ufshcd_is_auto_hibern8_allowed(hba) &&
-		(hba->errors & AH8_EXIT_REQ_CNF_FAIL_INTR)) {
-		queue_eh_work = true;
-		dsm_ufs_update_error_info(hba, DSM_UFS_ENTER_OR_EXIT_H8_ERR);
-	}
-#endif
 
 	return queue_eh_work;
 }
@@ -11546,9 +11186,7 @@ static void ufs_idle_intr_check_timer_expire(unsigned long data)
 void ufs_idle_intr_toggle(struct ufs_hba *hba, int enable)
 {
 	unsigned long flags;
-#ifndef CONFIG_HISI_UFS_HC
 	struct hufs_host *host = (struct hufs_host *)hba->priv;
-#endif
 
 	if (!(hba->ufs_idle_intr_en))
 		return;
@@ -11556,11 +11194,6 @@ void ufs_idle_intr_toggle(struct ufs_hba *hba, int enable)
 	spin_lock_irqsave(hba->host->host_lock, flags);
 	hba->idle_intr_disabled = !enable;
 	if (enable) {
-#ifdef CONFIG_HISI_UFS_HC
-		ufshcd_writel(hba, hba->idle_timeout_val / 1000,
-			UFS_CFG_IDLE_TIME_THRESHOLD);
-		ufshcd_hufs_enable_idle_tmt_cnt(hba);
-#else
 		ufs_sys_ctrl_set_bits(
 			host, BIT_UFS_IDLE_CNT_TIMEOUT_MASK, UFS_DEBUG_CTRL);
 		ufs_sys_ctrl_set_bits(host, BIT_UFS_IDLE_CNT_TIMEOUT_CLR,
@@ -11574,15 +11207,10 @@ void ufs_idle_intr_toggle(struct ufs_hba *hba, int enable)
 			host, BIT_UFS_IDLE_CNT_EN, UFS_DEBUG_CTRL);
 		ufs_sys_ctrl_clr_bits(
 			host, BIT_UFS_IDLE_CNT_TIMEOUT_MASK, UFS_DEBUG_CTRL);
-#endif
 	} else {
-#ifdef CONFIG_HISI_UFS_HC
-		ufshcd_hufs_disable_idle_tmt_cnt(hba);
-#else
 		ufs_sys_ctrl_set_bits(host, BIT_UFS_IDLE_CNT_TIMEOUT_MASK, UFS_DEBUG_CTRL);
 		ufs_sys_ctrl_clr_bits(host, BIT_UFS_IDLE_CNT_EN, UFS_DEBUG_CTRL);
 		ufs_sys_ctrl_writel(host, 1, UFS_IDLE_CONUTER_CLR);
-#endif
 	}
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
 }
@@ -11598,19 +11226,11 @@ void ufshcd_idle_handler(struct ufs_hba *hba)
 #endif
 #ifdef CONFIG_HISI_DEBUG_FS
 	static DEFINE_RATELIMIT_STATE(idle_print_rs, (30 * HZ), 1);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	u64 utp_tx_doorbell;
-#else
 	u32 utp_tx_doorbell;
-#endif
 	u32 utp_task_doorbell;
 
 	if (!hba->idle_intr_disabled) {
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		utp_tx_doorbell = read_core_utr_doorbells(hba);
-#else
 		utp_tx_doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 		utp_task_doorbell = ufshcd_readl(hba, REG_UTP_TASK_REQ_DOOR_BELL);
 		if (__ratelimit(&idle_print_rs)) {
 			if (utp_tx_doorbell || utp_task_doorbell)
@@ -12071,15 +11691,6 @@ static void ufshcd_dump_status(
 
 	dev_err(hba->dev, "current ktime %lld, error_handle = %u\n",
 		ktime_to_us(ktime_get()), hba->error_handle_count);
-#ifdef CONFIG_HISI_UFS_HC
-	dev_err(hba->dev,
-		"last_intr = 0x%x, last_vs_intr = 0x%x, last_unipro_intr = 0x%x, last_fatal = 0x%x(%lld)\n",
-		hba->last_intr, hba->last_vs_intr, hba->last_unipro_intr,
-		hba->last_fatal_intr, hba->last_fatal_intr_time_stamp);
-	dev_err(hba->dev, "last_core = 0x%x, last_core_intr = 0x%x(%lld)\n",
-		hba->last_core, hba->last_core_intr,
-		hba->last_core_intr_time_stamp);
-#endif
 	for_each_set_bit (tag, &hba->outstanding_reqs, hba->nutrs) {
 		lrbp = &hba->lrb[tag];
 		dev_err(hba->dev,
@@ -12615,22 +12226,12 @@ static int ufshcd_sync_cache_irq_safe(struct ufs_hba *hba,
 	wmb();
 	/* issue command to the controller */
 	__set_bit(tag, &hba->outstanding_reqs);
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	ufshcd_writel(hba, 1 << ((unsigned int)tag % SLOT_NUM_EACH_CORE),
-		      UFS_CORE_UTRLDBR(tag / SLOT_NUM_EACH_CORE));
-#else
 	ufshcd_writel(hba, 1 << (unsigned int)tag, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 	/* Make sure that doorbell is committed immediately */
 	wmb();
 	while (query_intr_timeout-- > 0) {
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		tr_doorbell = ufshcd_readl(hba, UFS_CORE_UTRLDBR(tag / SLOT_NUM_EACH_CORE));
-		if (!(tr_doorbell & (1U << (tag % SLOT_NUM_EACH_CORE)))) {
-#else
 		tr_doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
 		if (!(tr_doorbell & (1U << (unsigned int)tag))) {
-#endif
 			hba->outstanding_reqs ^= (1UL << (unsigned int)tag);
 			goto scsi_cmd_deinit;
 		}

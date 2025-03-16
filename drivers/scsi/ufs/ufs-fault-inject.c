@@ -263,13 +263,8 @@ static bool inject_fatal_err_tr(struct ufs_hba *hba, u8 ocs_err)
 
 	/* clear all outstanding requests */
 	for_each_set_bit(tag, &hba->outstanding_reqs, hba->nutrs) {
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		ufshcd_writel(hba, ~(1UL << (tag % SLOT_NUM_EACH_CORE)),
-			UFS_CORE_UTRLCLR(tag / SLOT_NUM_EACH_CORE));
-#else
 		ufshcd_writel(
 			hba, ~(1UL << tag), REG_UTP_TRANSFER_REQ_LIST_CLEAR);
-#endif
 		if (ufshcd_is_hufs_hc(hba))
 			(&hba->lrb[tag])
 				->hufs_utr_descriptor_ptr->header.dword_2 =
@@ -354,11 +349,7 @@ static void ufsdbg_intr_fail_request(struct ufs_hba *hba, u32 *intr_status)
 		ocs_err = OCS_FATAL_ERROR;
 handle_fatal_err:
 		/* clear UTRLRSR & UTMRLRS */
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-		ufshcd_disable_core_run_stop_reg(hba);
-#else
 		ufshcd_writel(hba, 0, REG_UTP_TRANSFER_REQ_LIST_RUN_STOP);
-#endif
 		ufshcd_writel(hba, 0, REG_UTP_TASK_REQ_LIST_RUN_STOP);
 		if (!inject_fatal_err_tr(hba, ocs_err))
 			if (!inject_fatal_err_tm(hba, ocs_err))
@@ -490,14 +481,6 @@ void ufsdbg_error_inject_dispatcher(struct ufs_hba *hba,
 		if (opt_ret == BIT_UFS_DEV_TMT_INTR)
 			ufshcd_disable_run_stop_reg(hba);
 		break;
-#ifdef CONFIG_HISI_UFS_HC
-	case ERR_INJECT_VS_INTR:
-		opt_ret |= *ret_value;
-		break;
-	case ERR_INJECT_UNIPRO_INTR:
-		opt_ret |= *ret_value;
-		break;
-#endif
 	case ERR_UFSTT:
 		opt_ret |= *ret_value;
 		break;

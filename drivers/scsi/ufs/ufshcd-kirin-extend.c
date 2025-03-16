@@ -252,11 +252,7 @@ int hufs_get_device_info(struct ufs_hba *hba,
 u64 read_utr_doorbell(struct ufs_hba *hba)
 {
 	u64 tr_doobell;
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	tr_doobell = read_core_utr_doorbells(hba);
-#else
 	tr_doobell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
-#endif
 	return tr_doobell;
 }
 

@@ -266,38 +266,6 @@ static int hufs_ufshcd_unipro_base(struct platform_device *pdev,
 	return 0;
 }
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-static int hufs_ufshcd_get_core_irqs(struct platform_device *pdev, struct ufs_hba *hba)
-{
-	unsigned int i;
-	unsigned int core0_interrupt_index;
-	struct device *dev = &pdev->dev;
-	struct device_node *np = dev->of_node;
-
-	if (of_property_read_u32(np, "core0-interrupt-index",
-				 &core0_interrupt_index)) {
-		dev_err(dev, "ufshc core interrupt is not available!\n");
-		return -ENODEV;
-	}
-	for (i = 0; i < UTR_CORE_NUM; i++) {
-		hba->core_irq[i] =
-			platform_get_irq(pdev, core0_interrupt_index + i);
-		if (hba->core_irq[i] < 0) {
-			dev_err(dev, "core %d irq resource not available!\n", i);
-			return -ENODEV;
-		}
-#ifdef CONFIG_HISI_DEBUG_FS
-		if ((hba->core_irq[i] - hba->core_irq[0]) != i)
-			rdr_syserr_process_for_ap(
-				(u32)MODID_AP_S_PANIC_STORAGE, 0ull, 0ull);
-#endif
-		snprintf(hba->core_irq_name[i], CORE_IRQ_NAME_LEN, "ufshcd_hufs_core%d_irq", i);
-	}
-
-	return 0;
-}
-#endif
-
 static int hufs_ufshcd_pltfrm_irq(struct platform_device *pdev,
 				  struct ufs_hba *hba,
 				  void __iomem *ufs_unipro_base)
@@ -329,10 +297,6 @@ static int hufs_ufshcd_pltfrm_irq(struct platform_device *pdev,
 	}
 #endif
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	if (hufs_ufshcd_get_core_irqs(pdev, hba))
-		return err;
-#endif
 	hba->ufs_unipro_base = ufs_unipro_base;
 
 	return 0;

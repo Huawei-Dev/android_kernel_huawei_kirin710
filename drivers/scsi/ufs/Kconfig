@@ -50,23 +50,6 @@ config SCSI_UFSHCD
 	  However, do not compile this as a module if your root file system
 	  (the one containing the directory /) is located on a UFS device.
 
-config HISI_UFS_HC
-	tristate "Hisilicon UFS Host Controller"
-	---help---
-	This selects use Hisilicon UFS host controller.
-
-config HISI_UFS_HC_CORE_UTR
-	depends on HISI_UFS_HC
-	tristate "Hisilicon UFS Host Controller Core Utrs Instead Of Spec Utrs"
-	---help---
-	This selects use Hisilicon UFS host controller Core Utr.
-
-config FS_PER_FILE_PER_KEY
-	tristate "F2FS file system encrypto per file per key"
-	depends on HISI_UFS_HC
-	---help---
-	This selects use f2fs file system encrypto per file per key.
-
 config SCSI_UFSHCD_PCI
 	tristate "PCI bus based UFS Controller support"
 	depends on SCSI_UFSHCD && PCI
@@ -402,11 +385,6 @@ config SCSI_UFS_CUST_MAX_SECTORS
 config HISI_SCSI_UFS_DUMP
 	bool "hisi ufs_dump support"
 	depends on  SCSI_UFSHCD
-	default n
-
-config HISI_UFS_REG_DUMP
-	bool "hisi ufs_reg_dump support"
-	depends on  SCSI_UFSHCD && HISI_UFS_HC
 	default n
 
 config SCSI_UFS_LUN_PROTECT

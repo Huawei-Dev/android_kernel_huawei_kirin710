@@ -209,13 +209,6 @@ config MAS_MQ_USING_CP
     help
         MAS UFS Command Priority, good for foreground APP's IO performance
 
-config MAS_QOS_MQ
-    bool "MAS QoS MQ IO scheduler"
-    depends on MAS_BLK && HISI_UFS_HC_CORE_UTR
-    default n
-    help
-        MAS QoS MQ IO scheduler
-
 config MAS_ORDER_PRESERVE
     bool "MAS UFS Order Preserving"
     depends on MAS_BLK

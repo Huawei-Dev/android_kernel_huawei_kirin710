@@ -24,9 +24,6 @@
 #include "ufshcd.h"
 #include "ufs-hpb.h"
 #include "ufshci.h"
-#ifdef CONFIG_HISI_UFS_HC
-#include "ufs-hisi.h"
-#endif
 
 enum field_width {
 	BYTE = 1,
@@ -749,11 +746,6 @@ static int ufsdbg_config_pwr_mode(struct ufs_hba *hba,
 	scsi_block_requests(hba->host);
 	ret = ufshcd_wait_for_doorbell_clr(hba, DOORBELL_CLR_TOUT_US);
 	if (!ret) {
-#ifdef CONFIG_HISI_UFS_HC
-		if (ufshcd_is_hufs_hc(hba))
-			ufs_pwr_change_pre_change(hba,
-							     desired_pwr_mode);
-#endif
 		ret = ufshcd_change_power_mode(hba, desired_pwr_mode);
 	}
 	scsi_unblock_requests(hba->host);

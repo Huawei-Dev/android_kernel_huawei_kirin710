@@ -35,10 +35,6 @@
 #define HSH8ENT_LR_INTR UFS_BIT(15)
 #define LOCAL_ATTR_FAIL_INTR UFS_BIT(22)
 
-#ifdef CONFIG_HISI_UFS_HC
-irqreturn_t ufshcd_hufs_vs_intr(struct ufs_hba *hba);
-void ufshcd_hufs_is_intr_inject(struct ufs_hba *hba, u32 *intr_status);
-#else
 static inline irqreturn_t ufshcd_hufs_vs_intr(struct ufs_hba *hba)
 {
 	return IRQ_NONE;
@@ -48,7 +44,5 @@ static inline void ufshcd_hufs_is_intr_inject(struct ufs_hba *hba,
 					      u32 *intr_status)
 {
 }
-#endif /* End of CONFIG_HISI_UFS_HC */
-
 
 #endif

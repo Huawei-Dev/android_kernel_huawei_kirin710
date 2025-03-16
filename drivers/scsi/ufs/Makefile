@@ -11,7 +11,6 @@ obj-$(CONFIG_SCSI_UFS_CANCER) += ufs-cancer.o
 obj-$(CONFIG_SCSI_UFS_TAURUS) += ufs-taurus.o
 obj-$(CONFIG_SCSI_UFS_PISCES) += ufs-pisces.o
 obj-$(CONFIG_SCSI_UFS_SCORPIO) += ufs-scorpio.o
-obj-$(CONFIG_HISI_UFS_HC) += ufs-hisi.o ufs-hisi-dump.o
 obj-$(CONFIG_SCSI_UFS_LIBRA) += ufs-libra.o
 obj-$(CONFIG_SCSI_UFS_CAPRICORN) += ufs-capricorn.o
 obj-$(CONFIG_SCSI_UFS_LEO) += ufs-leo.o
@@ -39,10 +38,6 @@ obj-$(CONFIG_SCSI_UFS_HI1861_VCMD) += ufstt.o
 obj-$(CONFIG_SCSI_UFS_UNISTORE) += ufs_unistore_core.o
 obj-$(CONFIG_SCSI_UFS_UNISTORE) += ufs_unistore_read.o
 obj-$(CONFIG_SCSI_UFS_UNISTORE) += ufs_unistore_write.o
-
-ifeq ($(CONFIG_HISI_DEBUG_FS),y)
-obj-$(CONFIG_HISI_UFS_HC) += ufs_hisi_test.o
-endif
 
 ifeq ($(TARGET_VERSION_MODE),factory)
     obj-$(CONFIG_HUAWEI_UFS_TRACE) += ufs_trace.o

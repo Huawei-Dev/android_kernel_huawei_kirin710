@@ -219,9 +219,6 @@ enum {
 
 /* UTRLRSR - UTP Transfer Request Run-Stop Register 60h */
 #define UTP_TRANSFER_REQ_LIST_RUN_STOP_BIT	UFS_BIT(0)
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-#define CORE_UTP_TRANSFER_REQ_LIST_RUN_STOP_BIT UFS_BIT(0)
-#endif
 
 /* UTMRLRSR - UTP Task Management Request Run-Stop Register 80h */
 #define UTP_TASK_REQ_LIST_RUN_STOP_BIT		UFS_BIT(0)
@@ -376,11 +373,7 @@ struct ufshcd_sg_entry {
 #define UFS_SG_MAX_COUNT        256
 #endif
 
-#if defined(CONFIG_SCSI_UFS_HI1861_VCMD) && !defined(CONFIG_HISI_UFS_HC)
-#define MAX_DATA_USED_SPACE (124 + 1) /* 1861 REMAP 62K */
-#else
 #define MAX_DATA_USED_SPACE	(8 + 1) /* 1861 FSR 4K */
-#endif
 
 /*
  * struct utp_transfer_cmd_desc - UFS Command Descriptor structure
@@ -408,11 +401,7 @@ struct utp_transfer_cmd_desc {
  * tag is needed to ensure 16K responce size.
  */
 #define VCMD_RESP_UPIU_SIZE (ALIGNED_UPIU_SIZE + 16 * 1024)
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-#define HI1861_VCMD_QUERY_TAG (CORE_SLOT_NUM - 1)
-#else
 #define HI1861_VCMD_QUERY_TAG (32 - 1)
-#endif
 struct vcmd_utp_transfer_cmd_desc {
 	u8 command_upiu[ALIGNED_UPIU_SIZE];
 	u8 response_upiu[VCMD_RESP_UPIU_SIZE];

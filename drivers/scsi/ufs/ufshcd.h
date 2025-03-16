@@ -74,9 +74,6 @@
 #include "ufshci.h"
 #include "ufs-quirks.h"
 #include "ufs-fault-inject.h"
-#ifdef CONFIG_HISI_UFS_HC
-#include "ufs-hisi.h"
-#endif
 
 #define UFSHCD "ufshcd"
 #define UFSHCD_DRIVER_VERSION "0.2"
@@ -734,20 +731,6 @@ struct ufs_stats {
 	struct ufs_uic_err_reg_hist dme_err;
 };
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-struct hufs_qos_ctrl {
-	bool hufs_qos_inited;
-	bool hufs_qos_en;
-#define NUM_OF_QOS_LVL	8
-	unsigned char core_qos_outstd_num[NUM_OF_QOS_LVL];
-	/* num of promotable QOS Level, range from 0 to 6 */
-#define NUM_OF_PROMOTE_QOS_LVL	7
-	unsigned char core_qos_prmt_outstd_num[NUM_OF_PROMOTE_QOS_LVL];
-	unsigned char core_qos_incrs_outstd_num[NUM_OF_PROMOTE_QOS_LVL];
-	unsigned char core_qos_outstand_arb_num;
-};
-#endif
-
 /**
  * struct ufs_hba - per adapter private structure
  * @mmio_base: UFSHCI base register address
@@ -865,13 +848,6 @@ struct ufs_hba {
 #else
 	int unipro_irq;
 	int fatal_err_irq;
-#endif
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-#define CORE_IRQ_NAME_LEN	32
-	char core_irq_name[8][CORE_IRQ_NAME_LEN + 1];
-	int core_irq[8];
-	struct hufs_qos_ctrl qos_ctrl;
-	struct hlist_node node;
 #endif
 	struct mutex update_lock;
 	bool in_suspend;

@@ -93,16 +93,11 @@ enum query_opcode {
 void delete_ufs_product_name(char *cmdline);
 #endif
 
-#if defined(CONFIG_HISI_DEBUG_FS) && defined(CONFIG_HISI_UFS_HC)
-void ufs_change_vol_pre(void);
-void ufs_change_vol_post(void);
-#else
 static inline void ufs_change_vol_pre(void)
 {
 }
 static inline void ufs_change_vol_post(void)
 {
 }
-#endif
 
 #endif /* UAPI_UFS_H_ */

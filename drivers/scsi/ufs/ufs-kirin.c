@@ -95,37 +95,6 @@ struct fbe3_ufs_restore_key_stat {
 #define META_INPUT_LEN 11
 
 static const struct st_register_dump unipro_reg_uic[] = {
-#ifdef CONFIG_HISI_UFS_REG_DUMP
-	{ DME_UECPHY, "DME_UECPHY" },
-	{ DME_UECPA, "DME_UECPA" },
-	{ DME_UECDL, "DME_UECDL" },
-	{ DME_UECTL, "DME_UECTL" },
-	{ DME_UECNL, "DME_UECNL" },
-	{ DME_UECDME, "DME_UECDME" },
-	{ DME_LINKLOSTIND_STATE, "DME_LINKLOSTIND_STATE" },
-	{ DME_UNIPRO_STATE, "DME_UNIPRO_STATE" },
-	{ DME_HIBERNATE_ENTER_STATE, "DME_HIBERNATE_ENTER_STATE" },
-	{ DME_HIBERNATE_ENTER_IND, "DME_HIBERNATEENTERIND" },
-	{ DME_HIBERNATE_EXIT_STATE, "DME_HIBERNATEEXIT_STATE" },
-	{ DME_HIBERNATE_EXIT_IND, "DME_HIBERNATEEXITIND" },
-	{ DME_POWERMODEIND, "DME_POWERMODEIND" },
-	{ DME_PEER_OPC_DBG, "DME_PEER_OPC_DBG" },
-	{ PA_ACTIVETXDATALANES, "Active Tx Data Lanes" },
-	{ PA_ACTIVERXDATALANES, "Active Rx Data Lanes" },
-	{ PA_TACTIVATE, "PA_TACTIVATE" },
-	{ PA_GRANULARITY, "PA_GRANULARITY" },
-	{ DME_TXRX_DL_LM_ERROR, "DME_TXRX_DL_LM_ERROR" },
-	{ PA_TXPWRSTATUS, "PA_TXPWRSTATUS" },
-	{ PA_RXPWRSTATUS, "PA_RXPWRSTATUS" },
-	{ PA_FSM_STATUS, "PA_FSM_STATUS" },
-	{ TX_AUTO_BURST_SEL, "TX_AUTO_BURST_SEL" },
-	{ HSH8ENT_LR, "HSH8ENT_LR" },
-	{ PA_STATUS, "PA_STATUS" },
-	{ TX_CFG_DBG0, "TX_CFG_DBG0" },
-	{ PA_TX_DBG1, "PA_TX_DBG1" },
-	{ DL_IMPL_STATE, "DL_IMPL_STATE" },
-	{ DME_INTR_STATUS, "DME_INTR_STATUS" },
-#else
 	{ 0xD030, "DME_HibernateEnter" },
 	{ 0xD031, "DME_HibernateEnterInd" },
 	{ 0xD032, "DME_HibernateExit" },
@@ -151,7 +120,6 @@ static const struct st_register_dump unipro_reg_uic[] = {
 	{ 0xd09f, "VS_DebugCounterBMask" },
 	{ 0xd0a0, "VS_DebugSaveConfigTime" },
 	{ 0xd0a1, "VS_DebugLoopback" },
-#endif
 	{ PA_TXPWRSTATUS, "PA_TXPWRSTATUS" },
 	{ PA_RXPWRSTATUS, "PA_RXPWRSTATUS" },
 	{ PA_HIBERN8TIME, "PA_Hibern8Time" },
@@ -169,13 +137,6 @@ static const struct st_register_dump tx_phy_uic[] = {
 	{ 0x0023, "TX_HSGEAR" },
 	{ 0x0024, "TX_PWMGEAR" },
 	{ 0x0041, "TX_FSM_STATE" },
-#ifdef CONFIG_HISI_UFS_REG_DUMP
-	{ TX_HIBERN8_CONTROL, "TX_HIBERN8_CONTROL" },
-	{ TX_HS_SYNC_LENGTH, "TX_HS_SYNC_LENGTH" },
-	{ TX_HS_PREPARE_LENGTH, "TX_HS_PREPARE_LENGTH" },
-	{ TX_LS_PREPARE_LENGTH, "TX_LS_PREPARE_LENGTH" },
-	{ TX_HS_CLK_EN, "TX_HS_CLK_EN" },
-#endif
 };
 
 static const struct st_register_dump rx_phy_uic[] = {
@@ -184,41 +145,7 @@ static const struct st_register_dump rx_phy_uic[] = {
 	{ 0x00A3, "RX_HSGEAR" },
 	{ 0x00A4, "RX_PWMGEAR" },
 	{ 0x00C1, "RX_FSM_STATE" },
-#ifdef CONFIG_HISI_UFS_REG_DUMP
-	{ RX_ENTER_HIBERNATE, "RX_ENTER_HIBERNATE" },
-	{ RX_ERR_STATUS, "RX_ERR_STATUS" },
-	{ RX_HS_DATA_VALID_TIMER_VAL0, "RX_HS_DATA_VALID_TIMER_VAL0" },
-	{ RX_SQ_VREF, "RX_SQ_VREF" },
-	{ RX_FSM_STATE, "RX_FSM_STATE" },
-	{ RX_DA_SQUELCH_EN, "RX_DA_SQUELCH_EN" },
-	{ RX_EXTERNAL_H8_EXIT_EN, "RX_EXTERNAL_H8_EXIT_EN" },
-	{ RX_HS_CLK_EN, "RX_HS_CLK_EN" },
-	{ RX_LS_CLK_EN, "RX_LS_CLK_EN" },
-	{ RX_RG_RX_MODE, "RX_RG_RX_MODE" },
-	{ RX_STALL, "RX_STALL" },
-	{ RX_SLEEP, "RX_SLEEP" },
-	{ RX_SYM_ERR_COUNTER, "RX_SYM_ERR_COUNTER" },
-	{ RX_HSGEAR, "RX_HSGEAR" },
-#endif
 };
-
-#ifdef CONFIG_HISI_UFS_REG_DUMP
-static const struct st_register_dump common_phy_uic[] = {
-	{ RG_PLL_TXLS_EN, "RG_PLL_TXLS_EN" },
-	{ RG_PLL_EN, "RG_PLL_EN" },
-	{ RG_PLL_BIAS_EN, "RG_PLL_BIAS_EN" },
-	{ RG_PLL_PRE_DIV, "RG_PLL_PRE_DIV" },
-	{ RG_PLL_SWC_EN, "RG_PLL_SWC_EN" },
-	{ RG_PLL_FBK_S, "RG_PLL_FBK_S" },
-	{ RG_PLL_FBK_P, "RG_PLL_FBK_P" },
-	{ RG_PLL_TXHSGR, "RG_PLL_TXHSGR" },
-	{ RG_PLL_RXHSGR, "RG_PLL_RXHSGR" },
-	{ RG_PLL_TXLSGR, "RG_PLL_TXLSGR" },
-	{ RG_PLL_RXLSGR, "RG_PLL_RXLSGR" },
-	{ MPHY_VCO_CTRL_I, "MPHY_VCO_CTRL_I" },
-	{ MPHY_SET_VCO_BAND_I, "MPHY_SET_VCO_BAND_I"},
-};
-#endif
 
 struct st_caps_map {
 	char *caps_name;
@@ -543,27 +470,6 @@ int hufs_polling_mphy_write(
 	return (int)err;
 }
 
-#ifdef CONFIG_HISI_UFS_REG_DUMP
-static void common_phy_reg_dump(struct ufs_hba *hba)
-{
-	u32 reg = 0;
-	u32 index;
-	u32 array_size;
-
-	array_size = sizeof(common_phy_uic) / sizeof(struct st_register_dump);
-	for (index = 0; index < array_size; index++) {
-		/* dont print more info if one uic cmd failed */
-		if (ufshcd_dme_get(hba, UIC_ARG_MIB(common_phy_uic[index].addr),
-				   &reg))
-			return;
-
-		dev_err(hba->dev, ": %-27s 0x%x: 0x%08x\n",
-			common_phy_uic[index].name, common_phy_uic[index].addr,
-			reg);
-	}
-}
-#endif
-
 static void hufs_uic_log(struct ufs_hba *hba)
 {
 	unsigned int reg, reg_lane1, index, array_size;
@@ -616,10 +522,6 @@ static void hufs_uic_log(struct ufs_hba *hba)
 			rx_phy_uic[index].name, rx_phy_uic[index].addr, reg,
 			reg_lane1);
 	}
-
-#ifdef CONFIG_HISI_UFS_REG_DUMP
-	common_phy_reg_dump(hba);
-#endif
 }
 
 static void hufs_hci_reg_log(struct ufs_hba *hba)
@@ -659,25 +561,6 @@ static void hufs_hci_reg_log(struct ufs_hba *hba)
 		ufshcd_readl(hba, REG_UIC_ERROR_CODE_DME));
 }
 
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-static void hufs_hci_core_utr_reg_dump(struct ufs_hba *hba)
-{
-	unsigned int i;
-
-	for (i = 0; i < UTR_CORE_NUM; i++)
-		dev_err(hba->dev, ": UFS_CORE_UTRLDBR%u:	       0x%08x\n",
-			i, ufshcd_readl(hba, UFS_CORE_UTRLDBR(i)));
-	for (i = 0; i < UTR_CORE_NUM; i++)
-		dev_err(hba->dev, ": UTP CORE UTRLCLR%u:	       0x%08x\n",
-			i, ufshcd_readl(hba, UFS_CORE_UTRLCLR(i)));
-	for (i = 0; i < UTR_CORE_NUM; i++)
-		dev_err(hba->dev, ": UTP CORE UTRLRSR%u:	       0x%08x\n",
-			i, ufshcd_readl(hba, UFS_CORE_UTRLRSR(i)));
-	for (i = 0; i < UTR_CORE_NUM; i++)
-		dev_err(hba->dev, ": UTP CORE IS%u:	               0x%08x\n",
-			i, ufshcd_readl(hba, UFS_CORE_IS(i)));
-}
-#endif
 static void hufs_hci_host_reg_log(struct ufs_hba *hba)
 {
 	dev_err(hba->dev, ": UTP TRANSF REQ INT AGG CNTRL: 0x%08x\n",
@@ -686,16 +569,12 @@ static void hufs_hci_host_reg_log(struct ufs_hba *hba)
 		ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_LIST_BASE_L));
 	dev_err(hba->dev, ": UTP TRANSF REQ LIST BASE H:   0x%08x\n",
 		ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_LIST_BASE_H));
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	hufs_hci_core_utr_reg_dump(hba);
-#else
 	dev_err(hba->dev, ": UTP TRANSF REQ DOOR BELL:     0x%08x\n",
 		ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL));
 	dev_err(hba->dev, ": UTP TRANSF REQ LIST CLEAR:    0x%08x\n",
 		ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_LIST_CLEAR));
 	dev_err(hba->dev, ": UTP TRANSF REQ LIST RUN STOP: 0x%08x\n",
 		ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_LIST_RUN_STOP));
-#endif
 	dev_err(hba->dev, ": UTP TASK REQ LIST BASE L:     0x%08x\n",
 		ufshcd_readl(hba, REG_UTP_TASK_REQ_LIST_BASE_L));
 	dev_err(hba->dev, ": UTP TASK REQ LIST BASE H:     0x%08x\n",
@@ -706,7 +585,6 @@ static void hufs_hci_host_reg_log(struct ufs_hba *hba)
 		ufshcd_readl(hba, REG_UTP_TASK_REQ_LIST_CLEAR));
 	dev_err(hba->dev, ": UTP TASK REQ LIST RUN STOP:   0x%08x\n",
 		ufshcd_readl(hba, REG_UTP_TASK_REQ_LIST_RUN_STOP));
-#ifndef CONFIG_HISI_UFS_HC
 	dev_err(hba->dev, ": UIC COMMAND:                  0x%08x\n",
 		ufshcd_readl(hba, REG_UIC_COMMAND));
 	dev_err(hba->dev, ": UIC COMMAND ARG1:             0x%08x\n",
@@ -719,99 +597,7 @@ static void hufs_hci_host_reg_log(struct ufs_hba *hba)
 		ufshcd_readl(hba, UFS_REG_OCPTHRTL));
 	dev_err(hba->dev, ": DWC HCLKDIV:                  0x%08x\n",
 		ufshcd_readl(hba, UFS_REG_HCLKDIV));
-#endif
 }
-
-#ifdef CONFIG_HISI_UFS_HC
-static void hufs_log(struct ufs_hba *hba)
-{
-	/* add more core utr related reg */
-	dev_err(hba->dev, ": UFS_AHIT_CTRL:                0x%08x\n",
-		ufshcd_readl(hba, UFS_AHIT_CTRL_OFF));
-	dev_err(hba->dev, ": UFS_VS_IE:                    0x%08x\n",
-		ufshcd_readl(hba, UFS_VS_IE));
-	dev_err(hba->dev, ": UFS_VS_IS:                    0x%08x\n",
-		ufshcd_readl(hba, UFS_VS_IS));
-	dev_err(hba->dev, ": UFS_AUTO_H8_STATE:            0x%08x\n",
-		ufshcd_readl(hba, UFS_AUTO_H8_STATE_OFF));
-	dev_err(hba->dev, ": UFS_BLOCK_CG_CFG:             0x%08x\n",
-		ufshcd_readl(hba, UFS_BLOCK_CG_CFG));
-	dev_err(hba->dev, ": UFS_PROC_MODE_CFG:            0x%08x\n",
-		ufshcd_readl(hba, UFS_PROC_MODE_CFG));
-	dev_err(hba->dev, ": UFS_CFG_RAM_CTRL:             0x%08x\n",
-		ufshcd_readl(hba, UFS_CFG_RAM_CTRL));
-	dev_err(hba->dev, ": UFS_CFG_RAM_STATUS:           0x%08x\n",
-		ufshcd_readl(hba, UFS_CFG_RAM_STATUS));
-	dev_err(hba->dev, ": UFS_CFG_IDLE_ENABLE:          0x%08x\n",
-		ufshcd_readl(hba, UFS_CFG_IDLE_ENABLE));
-	dev_err(hba->dev, ": UFS_CFG_IDLE_TIME_THRESHOLD:  0x%08x\n",
-		ufshcd_readl(hba, UFS_CFG_IDLE_TIME_THRESHOLD));
-}
-
-static void hufs_hc_log(struct ufs_hba *hba)
-{
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	dev_err(hba->dev, ": UFS_DOORBELL_0_7_QOS:         0x%08x\n",
-		ufshcd_readl(hba, UFS_DOORBELL_0_7_QOS));
-	dev_err(hba->dev, ": UFS_DOORBELL_8_15_QOS:        0x%08x\n",
-		ufshcd_readl(hba, UFS_DOORBELL_8_15_QOS));
-	dev_err(hba->dev, ": UFS_DOORBELL_16_23_QOS:       0x%08x\n",
-		ufshcd_readl(hba, UFS_DOORBELL_16_23_QOS));
-	dev_err(hba->dev, ": UFS_DOORBELL_24_31_QOS:       0x%08x\n",
-		ufshcd_readl(hba, UFS_DOORBELL_24_31_QOS));
-	dev_err(hba->dev, ": UFS_TR_OUTSTANDING_NUM:       0x%08x\n",
-		ufshcd_readl(hba, UFS_TR_OUTSTANDING_NUM));
-	dev_err(hba->dev, ": UFS_TR_QOS_0_3_OUTSTANDING:   0x%08x\n",
-		ufshcd_readl(hba, UFS_TR_QOS_0_3_OUTSTANDING));
-	dev_err(hba->dev, ": UFS_TR_QOS_4_7_OUTSTANDING:   0x%08x\n",
-		ufshcd_readl(hba, UFS_TR_QOS_4_7_OUTSTANDING));
-	dev_err(hba->dev, ": UFS_TR_QOS_0_3_INCREASE:      0x%08x\n",
-		ufshcd_readl(hba, UFS_TR_QOS_0_3_INCREASE));
-	dev_err(hba->dev, ": UFS_TR_QOS_4_6_INCREASE:      0x%08x\n",
-		ufshcd_readl(hba, UFS_TR_QOS_4_6_INCREASE));
-	dev_err(hba->dev, ": UFS_TR_QOS_0_3_PROMOTE:       0x%08x\n",
-		ufshcd_readl(hba, UFS_TR_QOS_0_3_PROMOTE));
-	dev_err(hba->dev, ": UFS_TR_QOS_4_6_PROMOTE:       0x%08x\n",
-		ufshcd_readl(hba, UFS_TR_QOS_4_6_PROMOTE));
-#endif
-	dev_err(hba->dev, ": UFS_IS_INT_SET:               0x%08x\n",
-		ufshcd_readl(hba, UFS_IS_INT_SET));
-	dev_err(hba->dev, ": UFS_IE_KEY_KDF_EN:            0x%08x\n",
-		ufshcd_readl(hba, UFS_IE_KEY_KDF_EN));
-}
-
-static void ufs_hufs_sysctrl_log(struct ufs_hba *hba)
-{
-	struct hufs_host *host = hba->priv;
-
-	dev_err(hba->dev, ": UFS_CRG_UFS_CFG:                   0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_CRG_UFS_CFG));
-	dev_err(hba->dev, ": UFS_CRG_UFS_CFG1:                  0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_CRG_UFS_CFG1));
-	dev_err(hba->dev, ": UFS_SYS_UFS_RESET_CTRL:            0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_UFS_RESET_CTRL));
-	dev_err(hba->dev, ": UFS_SYS_UFSAXI_W_QOS_LMTR:         0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_UFSAXI_W_QOS_LMTR));
-	dev_err(hba->dev, ": UFS_SYS_UFSAXI_R_QOS_LMTR:         0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_UFSAXI_R_QOS_LMTR));
-	dev_err(hba->dev, ": UFS_SYS_CRG_UFS_STAT:              0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_CRG_UFS_STAT));
-	dev_err(hba->dev, ": UFS_SYS_MEMORY_CTRL_D1W2R:         0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_MEMORY_CTRL_D1W2R));
-	dev_err(hba->dev, ": UFS_SYS_UFS_CLKRST_BYPASS:         0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_UFS_CLKRST_BYPASS));
-	dev_err(hba->dev, ": UFS_SYS_AO_MEMORY_CTRL:            0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_AO_MEMORY_CTRL));
-	dev_err(hba->dev, ": UFS_SYS_MEMORY_CTRL:               0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_MEMORY_CTRL));
-	dev_err(hba->dev, ": UFS_SYS_HIUFS_MPHY_CFG:            0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_HIUFS_MPHY_CFG));
-	dev_err(hba->dev, ": UFS_SYS_HIUFS_DEBUG:               0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_HIUFS_DEBUG));
-	dev_err(hba->dev, ": UFS_SYS_MPHYMCU_TEST_POINT:        0x%08x\n",
-		ufs_sys_ctrl_readl(host, UFS_SYS_MPHYMCU_TEST_POINT));
-}
-#else
 
 static void hufs_sysctrl_log(struct ufs_hba *hba)
 {
@@ -887,39 +673,20 @@ static void hufs_hc_sysctrl_log(struct ufs_hba *hba)
 	dev_err(hba->dev, ": UFSSYS_CRG_UFS_STAT:            0x%08x\n",
 		ufs_sys_ctrl_readl(host, UFSSYS_CRG_UFS_STAT));
 }
-#endif
 
 static void hufs_hci_log(struct ufs_hba *hba)
 {
 	hufs_hci_reg_log(hba);
 	hufs_hci_host_reg_log(hba);
-#ifdef CONFIG_HISI_UFS_HC
-	hufs_log(hba);
-	hufs_hc_log(hba);
-#endif
 
 	dev_err(hba->dev,
 		": --------------------------------------------------- \n");
 	dev_err(hba->dev, ": \t\tUFS SYSCTRL REGISTER DUMP\n");
 	dev_err(hba->dev,
 		": --------------------------------------------------- \n");
-#ifdef CONFIG_HISI_UFS_HC
-	ufs_hufs_sysctrl_log(hba);
-#else
 	hufs_sysctrl_log(hba);
 	hufs_hc_sysctrl_log(hba);
-#endif
 }
-
-#ifdef CONFIG_HISI_UFS_HC
-void dbg_hufs_dme_dump(struct ufs_hba *hba)
-{
-	hufs_ufs_dme_reg_dump(hba, HUFS_UIC_HIBERNATE_ENTER);
-	hufs_ufs_dme_reg_dump(hba, HUFS_UIC_HIBERNATE_EXIT);
-	hufs_ufs_dme_reg_dump(hba, HUFS_UIC_LINKUP_FAIL);
-	hufs_ufs_dme_reg_dump(hba, HUFS_UIC_PMC_FAIL);
-}
-#endif
 
 int hufs_check_hibern8(struct ufs_hba *hba)
 {
@@ -1182,20 +949,6 @@ static void hufs_req_meta(
 	struct ufs_hba *hba, struct hufs_utp_transfer_req_desc *hufs_req_desc,
 	u32 *dword, u32 len)
 {
-#ifdef CONFIG_HISI_UFS_HC
-	if (len < META_INPUT_LEN)
-		dev_err(hba->dev, "%s: invalid dword len\n", __func__);
-	if (ufshcd_is_hufs_hc(hba)) {
-		hufs_req_desc->meta_data_random_factor_0 =
-			cpu_to_le32(*(dword + 8)); /* dword offset 8 */
-		hufs_req_desc->meta_data_random_factor_1 =
-			cpu_to_le32(*(dword + 9)); /* dword offset 9 */
-		hufs_req_desc->meta_data_random_factor_2 =
-			cpu_to_le32(*(dword + 10)); /* dword offset 10 */
-		hufs_req_desc->meta_data_random_factor_3 =
-			cpu_to_le32(*(dword + 11)); /* dword offset 11 */
-	}
-#endif
 }
 
 static void hufs_get_meta_data_factor(struct ufshcd_lrb *lrbp,
@@ -1304,7 +1057,6 @@ static int hufs_hce_enable_notify(
 	return 0;
 }
 
-#ifndef CONFIG_HISI_UFS_HC
 void hufs_mphy_busdly_config(struct ufs_hba *hba, struct hufs_host *host)
 {
 	uint32_t reg = 0;
@@ -1322,7 +1074,6 @@ void hufs_mphy_busdly_config(struct ufs_hba *hba, struct hufs_host *host)
 		(void)ufshcd_readl(hba, UFS_REG_OCPTHRTL);
 	}
 }
-#endif
 
 static int hufs_link_startup_notify(
 	struct ufs_hba *hba, enum ufs_notify_change_status status)
@@ -1613,11 +1364,6 @@ int hufs_get_resource(struct hufs_host *host)
 	if (hufs_get_common(host))
 		return -ENOMEM;
 
-#ifdef CONFIG_HISI_UFS_HC
-	if (ufs_get_hufs_hc(host))
-		return -ENOMEM;
-
-#endif
 	/* we only use 64 bit dma */
 	dev->dma_mask = &hufs_dma_mask;
 
@@ -2169,9 +1915,6 @@ out:
 
 void hufs_exit(struct ufs_hba *hba)
 {
-#ifdef CONFIG_HISI_UFS_HC_CORE_UTR
-	ufshcd_irq_cpuhp_remove(hba);
-#endif
 }
 
 #ifdef CONFIG_SCSI_UFS_HS_ERROR_RECOVER
@@ -2257,20 +2000,6 @@ const struct ufs_hba_variant_ops ufs_hba_hufs_vops = {
 	.setup_clocks = NULL,
 	.hce_enable_notify = hufs_hce_enable_notify,
 	.link_startup_notify = hufs_link_startup_notify,
-#ifdef CONFIG_HISI_UFS_HC
-	.hufs_dme_link_startup = hufs_dme_link_startup,
-	.hufs_uic_write_reg = hufs_uic_write_reg,
-	.hufs_uic_read_reg = hufs_uic_read_reg,
-	.hufs_uic_peer_set = hufs_uic_peer_set,
-	.hufs_uic_peer_get = hufs_uic_peer_get,
-	.ufshcd_hufs_disable_auto_hibern8 = ufshcd_hufs_disable_auto_hibern8,
-	.ufshcd_hufs_enable_auto_hibern8 = ufshcd_hufs_enable_auto_hibern8,
-	.ufshcd_hibern8_op_irq_safe = ufshcd_hibern8_op_irq_safe,
-	.ufshcd_hufs_host_memory_configure = ufshcd_hufs_host_memory_configure,
-	.ufshcd_hufs_uic_change_pwr_mode = ufshcd_hufs_uic_change_pwr_mode,
-	.snps_to_hufs_addr = snps_to_hufs_addr,
-	.dbg_hufs_dme_dump = dbg_hufs_dme_dump,
-#endif
 	.pwr_change_notify = hufs_pwr_change_notify,
 	.full_reset = hufs_full_reset,
 	.device_reset = hufs_device_hw_reset,
