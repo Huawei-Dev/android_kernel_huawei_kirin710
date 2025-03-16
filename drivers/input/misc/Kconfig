@@ -116,16 +116,6 @@ config HISI_POWERKEY_SPMI
 	  To compile this driver as a module, choose M here: the
 	  module will be called hisi_powerkey.
 
-config SUPPORT_SIM1_HPD_KEY_RESTART
-	bool "Hisilicon SIM1_HPD support"
-	depends on HISI_POWERKEY_SPMI
-	default n
-	help
-	  Say Y to enable support for SIM1_HPD key.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called hisi_powerkey.
-
 config INPUT_E3X0_BUTTON
 	tristate "NI Ettus Research USRP E3xx Button support."
 	default n

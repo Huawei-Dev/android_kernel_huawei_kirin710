@@ -54,43 +54,6 @@
 #endif
 #include <pr_log.h>
 
-#if defined(CONFIG_SUPPORT_SIM1_HPD_KEY_RESTART)
-#include <linux/mfd/hisi_pmic.h>
-#include <pmic_interface.h>
-
-#define KEY_VALUE_LOW 0x0
-#define SIM1_HPD_ENABLE 1
-
-#define SIM1_HPD_PRESS 1
-#define SIM1_HPD_RELEASE 0
-
-#define POWERKEY_PRESS 0x80
-
-#define PMIC_GPIO_SIM1_HPD_DATA   PMIC_GPIO1DATA_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_DIR    PMIC_GPIO1DIR_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_AFSEL  PMIC_GPIO1AFSEL_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_IS     PMIC_GPIO1IS_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_IBE    PMIC_GPIO1IBE_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_IEV    PMIC_GPIO1IEV_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_PUSEL  PMIC_GPIO1PUSEL_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_PDSEL  PMIC_GPIO1PDSEL_ADDR(0)
-#define PMIC_GPIO_SIM1_HPD_DEBSEL PMIC_GPIO1DEBSEL_ADDR(0)
-#define PMIC_IRQ_MASK_10 PMIC_IRQ_MASK_10_ADDR(0)
-#define PMIC_STATUS0 PMIC_STATUS0_ADDR(0)
-
-
-#define PMIC_GPIO_SIM1_HPD_20MS_FILTER 1
-#define PMIC_GPIO_SIM1_HPD_NOT_PD 0
-#define PMIC_GPIO_SIM1_HPD_PU 1
-#define PMIC_GPIO_SIM1_HPD_INPUT 0
-#define PMIC_GPIO_SIM1_HPD_GPIO_FUNC 0
-#define PMIC_GPIO_SIM1_HPD_EDGE_TRIGGER 0
-#define PMIC_GPIO_SIM1_HPD_DOUBLE_EDGE_TRIGGER 1
-#define PMIC_GPIO1_HPD_IRQ 0
-
-static irqreturn_t powerkey_sim1_hpd_hdl(int irq, void *data);
-#endif
-
 #define PR_LOG_TAG POWERKEY_TAG
 
 #define POWER_KEY_RELEASE 0
@@ -139,10 +102,6 @@ struct powerkey_info {
 	struct input_dev *idev;
 	int type;
 	struct wakeup_source pwr_wake_lock;
-#if defined(CONFIG_SUPPORT_SIM1_HPD_KEY_RESTART)
-	unsigned int sim1_hpd_flag;
-	unsigned int sim1_hpd_press_status;
-#endif
 };
 
 static struct semaphore long_presspowerkey_happen_sem;
@@ -214,115 +173,6 @@ static void powerkey_dsm(void)
 }
 #endif
 
-#if defined(CONFIG_SUPPORT_SIM1_HPD_KEY_RESTART)
-static irqreturn_t powerkey_sim1_hpd_hdl(int irq, void *data)
-{
-	struct powerkey_info *info = (struct powerkey_info *)data;
-	unsigned int keyup_value;
-
-	__pm_wakeup_event(&info->pwr_wake_lock, jiffies_to_msecs(HZ));
-
-	keyup_value = pmic_read_reg(PMIC_GPIO_SIM1_HPD_DATA);
-
-	if (keyup_value == KEY_VALUE_LOW) {
-		pr_err("[%s] power key press interrupt!\n", __func__);
-		call_powerkey_notifiers(PRESS_KEY_DOWN, data);
-#ifdef CONFIG_HUAWEI_DSM
-		powerkey_dsm();
-#endif
-		input_report_key(info->idev, KEY_POWER, POWER_KEY_PRESS);
-		input_sync(info->idev);
-
-		info->sim1_hpd_press_status = SIM1_HPD_PRESS;
-	} else {
-		keyup_value = pmic_read_reg(PMIC_STATUS0);
-		if (!(keyup_value & POWERKEY_PRESS)) {
-			pr_err("[%s]power key release interrupt!\n", __func__);
-			call_powerkey_notifiers(PRESS_KEY_UP, data);
-			input_report_key(info->idev, KEY_POWER,
-				POWER_KEY_RELEASE);
-			input_sync(info->idev);
-		}
-
-		info->sim1_hpd_press_status = SIM1_HPD_RELEASE;
-	}
-
-	return IRQ_HANDLED;
-}
-
-static int pmic_sim1_hpd_irq_init(struct spmi_device *pdev,
-	struct powerkey_info *info)
-{
-	int ret, irq;
-	struct device *dev = &pdev->dev;
-
-	irq = spmi_get_irq_byname(
-		pdev, NULL, "sim1-hpd");
-	if (irq < 0) {
-		dev_err(dev, "failed to get %s irq\n", "sim1-hpd");
-		return -ENOENT;
-	}
-
-	ret = devm_request_irq(
-		dev, irq, powerkey_sim1_hpd_hdl,
-		IRQF_NO_SUSPEND,
-		"sim1-hpd", info);
-	if (ret < 0) {
-		dev_err(dev, "failed to request %s irq\n", "sim1-hpd");
-		return -ENOENT;
-	}
-
-	pr_info("[%s] sim1_hpd_irq_init ok\n", __func__);
-	return ret;
-}
-
-static void pmic_sim1_hpd_reg_init(void)
-{
-	/* 20ms filter */
-	pmic_write_reg(PMIC_GPIO_SIM1_HPD_DEBSEL,
-		PMIC_GPIO_SIM1_HPD_20MS_FILTER);
-	/* not PD */
-	pmic_write_reg(PMIC_GPIO_SIM1_HPD_PDSEL,
-		PMIC_GPIO_SIM1_HPD_NOT_PD);
-	/* PU */
-	pmic_write_reg(PMIC_GPIO_SIM1_HPD_PUSEL,
-		PMIC_GPIO_SIM1_HPD_PU);
-	/* input */
-	pmic_write_reg(PMIC_GPIO_SIM1_HPD_DIR,
-		PMIC_GPIO_SIM1_HPD_INPUT);
-	/* gpio func */
-	pmic_write_reg(PMIC_GPIO_SIM1_HPD_AFSEL,
-		PMIC_GPIO_SIM1_HPD_GPIO_FUNC);
-	/* edge trigger */
-	pmic_write_reg(PMIC_GPIO_SIM1_HPD_IS,
-		PMIC_GPIO_SIM1_HPD_EDGE_TRIGGER);
-	/* double edge trigger  */
-	pmic_write_reg(PMIC_GPIO_SIM1_HPD_IBE,
-		PMIC_GPIO_SIM1_HPD_DOUBLE_EDGE_TRIGGER);
-	/* GPIO1 IRQ MASK*/
-	pmic_write_reg(PMIC_IRQ_MASK_10,
-		PMIC_GPIO1_HPD_IRQ);
-}
-
-static void pmic_sim1_hpd_dts_cfg(struct spmi_device *pdev,
-	struct powerkey_info *info)
-{
-	int ret;
-	int sim1_hpd_flag = 0;
-	struct device *dev = &pdev->dev;
-
-	ret = of_property_read_u32(pdev->res.of_node,
-		"sim1-hpd", &sim1_hpd_flag);
-	if (ret < 0) {
-		info->sim1_hpd_flag = POWER_KEY_DEFAULT;
-		dev_info(dev, "sim1_hpd_gpio not cpnfig\n");
-	} else {
-		info->sim1_hpd_flag = sim1_hpd_flag;
-	}
-}
-
-#endif
-
 static irqreturn_t powerkey_down_hdl(int irq, void *data)
 {
 	struct powerkey_info *info = NULL;
@@ -331,13 +181,6 @@ static irqreturn_t powerkey_down_hdl(int irq, void *data)
 		return IRQ_NONE;
 
 	info = (struct powerkey_info *)data;
-
-#if defined(CONFIG_SUPPORT_SIM1_HPD_KEY_RESTART)
-	if ((info->sim1_hpd_flag) &&
-		(info->sim1_hpd_press_status == SIM1_HPD_PRESS))
-		return IRQ_HANDLED;
-
-#endif
 
 	__pm_wakeup_event(&info->pwr_wake_lock, jiffies_to_msecs(HZ));
 
@@ -487,16 +330,6 @@ static int powerkey_irq_init(struct spmi_device *pdev,
 		}
 	}
 
-#if defined(CONFIG_SUPPORT_SIM1_HPD_KEY_RESTART)
-	if (info->sim1_hpd_flag == SIM1_HPD_ENABLE) {
-		ret = pmic_sim1_hpd_irq_init(pdev, info);
-		if (ret < 0) {
-			dev_err(dev, "%s failed\n", __func__);
-			return -ENOENT;
-		}
-	}
-#endif
-
 	return ret;
 }
 
@@ -555,14 +388,6 @@ static int powerkey_probe(struct spmi_device *pdev)
 
 	if (!kthread_run(long_presspowerkey_happen, NULL, "long_powerkey"))
 		pr_err("create thread long_presspowerkey_happen faild.\n");
-
-#if defined(CONFIG_SUPPORT_SIM1_HPD_KEY_RESTART)
-	pmic_sim1_hpd_dts_cfg(pdev, info);
-	if (info->sim1_hpd_flag == SIM1_HPD_ENABLE) {
-		info->sim1_hpd_press_status = SIM1_HPD_RELEASE;
-		pmic_sim1_hpd_reg_init();
-	}
-#endif
 
 	ret = powerkey_irq_init(pdev, info);
 	if (ret < 0)
