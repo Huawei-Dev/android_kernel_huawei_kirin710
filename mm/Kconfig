@@ -976,14 +976,6 @@ config ISOLATE_COUNT
 	  count where isolate pages come from: process reclaim, compaction & cma_alloc
 	  or shrink_(in)active_list.
 
-config HUAWEI_MINCORE_CLASSIC
-	bool "Enable classic mincore syscall"
-	default n
-	help
-	 Make mincore syscall return correct page cache status for mmap address.
-
-	 If unsure, say N to use default response for mincore.
-
 config HISI_ION_FLUSH_CACHE_ALL
 	bool "Enable flush all cpu cache when alloc hisi ion memory"
 	default n
