@@ -503,11 +503,6 @@ struct ff_effect {
 #define VOL_UP_BIT		(1)
 
 #define VOL_UPDOWN_PRESS		((1<<VOL_DOWN_BIT) | (1<<VOL_UP_BIT))
-#ifdef CONFIG_KEYBOARD_HISI_PMIC_GPIO_KEY
-extern void pmic_gpio_key_vol_updown_press_set_zero(void);
-extern int pmic_gpio_key_vol_updown_press_get(void);
-extern int is_pmic_gpio_key_vol_updown_pressed(void);
-#endif
 extern void gpio_key_vol_updown_press_set_zero(void);
 extern int gpio_key_vol_updown_press_get(void);
 extern int is_gpio_key_vol_updown_pressed(void);

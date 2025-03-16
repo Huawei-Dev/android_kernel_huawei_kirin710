@@ -70,5 +70,3 @@ obj-$(CONFIG_KEYBOARD_W90P910)		+= w90p910_keypad.o
 obj-$(CONFIG_KEYBOARD_HISI_GPIO_KEY)	+= keypad.o
 obj-$(CONFIG_KEYBOARD_HISI_GPIO_VOLUME_KEY)	+= keypad_gpio.o
 obj-$(CONFIG_KEYBOARD_HISI_GPIO_FUNC_KEY)	+= keypad_func.o
-obj-$(CONFIG_KEYBOARD_HISI_PMIC_GPIO_KEY)	+= keypad_pmic.o
-obj-$(CONFIG_KEYBOARD_HISI_PMIC_GPIO_KEY)	+= keypad_pmic_event.o

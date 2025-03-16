@@ -24,9 +24,6 @@
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
-#ifdef CONFIG_KEYBOARD_HISI_PMIC_GPIO_KEY
-#include <linux/hisi/keypad_pmic_event.h>
-#endif
 #ifdef CONFIG_HISI_POWERKEY_SPMI
 #include <linux/hisi/powerkey_event.h>
 #endif
@@ -75,16 +72,6 @@ static void power_volume_comb_status_distinguish(void)
 {
 	static unsigned long last_comb_key_status = COMB_KEY_PRESS_RELEASE;
 
-#ifdef CONFIG_HISI_POWERKEY_SPMI
-#ifdef CONFIG_KEYBOARD_HISI_PMIC_GPIO_KEY
-	if ((power_key_status == PRESS_KEY_DOWN) &&
-		(volume_key_status == KEYPAD_PMIC_DOWN_PRESS)) {
-		comb_key_status = COMB_KEY_PRESS_DOWN;
-	} else {
-		comb_key_status = COMB_KEY_PRESS_RELEASE;
-	}
-#endif
-#endif
 	if (comb_key_status == last_comb_key_status)
 		return;
 	hwlog_info("%s changed to %d\n", __func__, comb_key_status);
@@ -117,14 +104,6 @@ static int volume_key_notifier(struct notifier_block *nb,
 {
 	(void)bar;
 	mutex_lock(&comb_key_mutex);
-#ifdef CONFIG_KEYBOARD_HISI_PMIC_GPIO_KEY
-	if ((foo == KEYPAD_PMIC_DOWN_PRESS) ||
-		(foo == KEYPAD_PMIC_DOWN_RELEASE)) {
-		hwlog_info("%s recv volume key status = %lu\n", __func__, foo);
-		volume_key_status = (long)foo;
-		power_volume_comb_status_distinguish();
-	}
-#endif
 	mutex_unlock(&comb_key_mutex);
 	return 0;
 }
@@ -185,9 +164,6 @@ static void comb_power_delayed_work(struct work_struct *work)
 static int __init comb_key_init(void)
 {
 	hwlog_info("init\n");
-#ifdef CONFIG_KEYBOARD_HISI_PMIC_GPIO_KEY
-	keypad_pmic_register_notifier(&volume_key_notify);
-#endif
 #ifdef CONFIG_HISI_POWERKEY_SPMI
 	powerkey_register_notifier(&power_key_notify);
 	INIT_DELAYED_WORK(&power_key_work, comb_power_delayed_work);
