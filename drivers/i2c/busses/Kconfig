@@ -554,13 +554,6 @@ config I2C_DESIGNWARE_BAYTRAIL
 	  the platform firmware controlling it. You should say Y if running on
 	  a BayTrail system using the AXP288.
 
-config HISI_I2C_MASTER
-	tristate "Hisilicon I2C MASTR"
-	depends on HAVE_CLK
-	help
-	  If you say yes to this option, support will be included for the
-	  I2C adapter on Hisilicon.
-
 config I2C_DIGICOLOR
 	tristate "Conexant Digicolor I2C driver"
 	depends on ARCH_DIGICOLOR

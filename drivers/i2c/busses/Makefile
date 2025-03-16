@@ -54,7 +54,6 @@ i2c-designware-platform-$(CONFIG_I2C_DESIGNWARE_BAYTRAIL) += i2c-designware-bayt
 obj-$(CONFIG_I2C_DESIGNWARE_PCI)	+= i2c-designware-pci.o
 i2c-designware-pci-objs := i2c-designware-pcidrv.o
 obj-$(CONFIG_HISI_I2C_DESIGNWARE)	+= i2c_v300_designware.o
-obj-$(CONFIG_HISI_I2C_MASTER)	+= i2c_v400_master.o
 obj-$(CONFIG_I2C_DIGICOLOR)	+= i2c-digicolor.o
 obj-$(CONFIG_I2C_EFM32)		+= i2c-efm32.o
 obj-$(CONFIG_I2C_EG20T)		+= i2c-eg20t.o
