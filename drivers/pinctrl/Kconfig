@@ -367,12 +367,6 @@ config HISI_PINCRTL_INFO
         help
           Say yes here to support pins info for debug fs
 
-config HISI_ENABLE_PINCTRL_BIND_PINS
-	bool "Hisilicon enable pinctrl bind pins"
-	depends on PINCTRL_SINGLE
-	help
-	  Say yes here to enable pinctrl bind pins
-
 source "drivers/pinctrl/aspeed/Kconfig"
 source "drivers/pinctrl/bcm/Kconfig"
 source "drivers/pinctrl/berlin/Kconfig"

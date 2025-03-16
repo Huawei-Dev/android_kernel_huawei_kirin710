@@ -382,13 +382,6 @@ static int really_probe(struct device *dev, struct device_driver *drv)
 
 re_probe:
 	dev->driver = drv;
-#ifdef CONFIG_HISI_ENABLE_PINCTRL_BIND_PINS
-	/* If using pinctrl, bind pins now before probing */
-	ret = pinctrl_bind_pins(dev);
-	if (ret)
-		goto pinctrl_bind_failed;
-#endif
-
 	ret = dma_configure(dev);
 	if (ret)
 		goto probe_failed;
@@ -449,9 +442,6 @@ probe_failed:
 	if (dev->bus)
 		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
 					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
-#ifdef CONFIG_HISI_ENABLE_PINCTRL_BIND_PINS
-pinctrl_bind_failed:
-#endif
 	device_links_no_driver(dev);
 	devres_release_all(dev);
 	dma_deconfigure(dev);
