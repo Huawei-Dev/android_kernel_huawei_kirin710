@@ -58,10 +58,7 @@
 
 static unsigned long g_cpu_on_hotplug;
 struct cpumask g_idle_cpus_mask;
-#ifdef CONFIG_HISI_CPUIDLE_SKIP_ALL_CORE_DOWN
-/* g_core_idle_cpus_mask - has bit 'cpu' set iff cpu is in C1 idle state */
-struct cpumask g_core_idle_cpus_mask;
-#endif
+
 spinlock_t g_idle_spin_lock;
 bool lpcpu_cluster_cpu_all_pwrdn(void)
 {
@@ -169,14 +166,6 @@ static int enter_idle_state(struct cpuidle_device *dev,
 		smp_wmb();
 		spin_unlock(&g_idle_spin_lock);
 	}
-#ifdef CONFIG_HISI_CPUIDLE_SKIP_ALL_CORE_DOWN
-	if (idx == (drv->state_count - 2)) {
-		spin_lock(&g_idle_spin_lock);
-		cpumask_set_cpu(cpu, &g_core_idle_cpus_mask);
-		smp_wmb();
-		spin_unlock(&g_idle_spin_lock);
-	}
-#endif
 	ret = cpu_pm_enter();
 	if (ret == 0) {
 #ifdef CONFIG_ARCH_HISI
@@ -204,14 +193,6 @@ static int enter_idle_state(struct cpuidle_device *dev,
 		smp_wmb();
 		spin_unlock(&g_idle_spin_lock);
 	}
-#ifdef CONFIG_HISI_CPUIDLE_SKIP_ALL_CORE_DOWN
-	if (idx == (drv->state_count - 2)) {
-		spin_lock(&g_idle_spin_lock);
-		cpumask_clear_cpu(cpu, &g_core_idle_cpus_mask);
-		smp_wmb();
-		spin_unlock(&g_idle_spin_lock);
-	}
-#endif
 	return ret ? -1 : idx;
 }
 
@@ -567,9 +548,6 @@ static int __init lpcpu_idle_init(void)
 
 	spin_lock_init(&g_idle_spin_lock);
 	cpumask_clear(&g_idle_cpus_mask);
-#ifdef CONFIG_HISI_CPUIDLE_SKIP_ALL_CORE_DOWN
-	cpumask_clear(&g_core_idle_cpus_mask);
-#endif
 	cpumask_clear(&pending_idle_cpumask);
 
 	ret = cluster_idle_driver_init();
