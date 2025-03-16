@@ -1317,12 +1317,6 @@ int scsi_sysfs_add_sdev(struct scsi_device *sdev)
  */
 static inline unsigned int scsi_visible_check(struct scsi_device *sdev)
 {
-#ifdef CONFIG_HISI_SCSI_OTG_PLUG_WORKAROUND
-	if (sdev->is_visible == 0 && sdev->is_visible_bak == 1) {
-		sdev_printk(KERN_INFO, sdev, "visible compare is diff\n");
-		return 1;
-	}
-#endif
 	return 0;
 }
 

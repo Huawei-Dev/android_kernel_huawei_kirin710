@@ -58,15 +58,6 @@ config SCSI_MQ_DEFAULT
 
 	  If unsure say N.
 
-config HISI_SCSI_OTG_PLUG_WORKAROUND
-	bool "SCSI: OTG plug workaround"
-	depends on SCSI
-	default n
-	---help---
-	  This option enables the workaround of otg scsi device plug problem.
-
-	  If unsure say Y.
-
 config SCSI_PROC_FS
 	bool "legacy /proc/scsi/ support"
 	depends on SCSI && PROC_FS
