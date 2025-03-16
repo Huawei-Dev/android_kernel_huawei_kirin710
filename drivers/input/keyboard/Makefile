@@ -69,4 +69,3 @@ obj-$(CONFIG_KEYBOARD_XTKBD)		+= xtkbd.o
 obj-$(CONFIG_KEYBOARD_W90P910)		+= w90p910_keypad.o
 obj-$(CONFIG_KEYBOARD_HISI_GPIO_KEY)	+= keypad.o
 obj-$(CONFIG_KEYBOARD_HISI_GPIO_VOLUME_KEY)	+= keypad_gpio.o
-obj-$(CONFIG_KEYBOARD_HISI_GPIO_FUNC_KEY)	+= keypad_func.o

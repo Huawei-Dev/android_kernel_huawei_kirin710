@@ -275,10 +275,6 @@
 #define KEY_F24			194
 #define KEY_F25			195
 
-#ifdef  CONFIG_KEYBOARD_HISI_GPIO_FUNC_KEY
-#define KEY_F26			766 /* func key for Libra*/
-#endif
-
 #define KEY_GAME_SPACE		199 /* game space key for RSN */
 #define KEY_PLAYCD		200
 #define KEY_PAUSECD		201
