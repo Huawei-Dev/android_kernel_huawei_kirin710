@@ -214,43 +214,6 @@ static void powerkey_dsm(void)
 }
 #endif
 
-#ifdef CONFIG_HISI_POWERKEY_DEBUG
-static int test_powerkey_notifier_call(
-	struct notifier_block *powerkey_nb, unsigned long event, void *data)
-{
-	int ret = 0;
-
-	switch (event) {
-	case PRESS_KEY_DOWN:
-		pr_err("[%s] test power key press event!\n", __func__);
-		break;
-	case PRESS_KEY_UP:
-		pr_err("[%s] test power key release event!\n", __func__);
-		break;
-	case PRESS_KEY_1S:
-		pr_err("[%s] test response long press 1s event!\n", __func__);
-		break;
-	case PRESS_KEY_6S:
-		pr_err("[%s] test response long press 6s event!\n", __func__);
-		break;
-	case PRESS_KEY_8S:
-		pr_info("[%s] test response long press 8s event!\n", __func__);
-		break;
-	case PRESS_KEY_10S:
-		pr_info("[%s] test response long press 10s event!\n", __func__);
-		break;
-	default:
-		pr_err("[%s]invalid event %d!\n", __func__, (int)(event));
-		ret = -1;
-		break;
-	}
-
-	return ret;
-}
-
-static struct notifier_block test_powerkey_nb;
-#endif
-
 #if defined(CONFIG_SUPPORT_SIM1_HPD_KEY_RESTART)
 static irqreturn_t powerkey_sim1_hpd_hdl(int irq, void *data)
 {
@@ -588,11 +551,6 @@ static int powerkey_probe(struct spmi_device *pdev)
 #endif
 #endif
 
-#ifdef CONFIG_HISI_POWERKEY_DEBUG
-	test_powerkey_nb.notifier_call = test_powerkey_notifier_call;
-	powerkey_register_notifier(&test_powerkey_nb);
-#endif
-
 	sema_init(&long_presspowerkey_happen_sem, POWER_KEY_CNT);
 
 	if (!kthread_run(long_presspowerkey_happen, NULL, "long_powerkey"))
@@ -638,9 +596,6 @@ unregister_err:
 static int powerkey_remove(struct spmi_device *pdev)
 {
 	struct powerkey_info *info = dev_get_drvdata(&pdev->dev);
-#ifdef CONFIG_HISI_POWERKEY_DEBUG
-	powerkey_unregister_notifier(&test_powerkey_nb);
-#endif
 	if (info != NULL) {
 		wakeup_source_trash(&info->pwr_wake_lock);
 		input_free_device(info->idev);

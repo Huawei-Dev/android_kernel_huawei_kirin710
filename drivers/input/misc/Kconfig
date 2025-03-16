@@ -116,11 +116,6 @@ config HISI_POWERKEY_SPMI
 	  To compile this driver as a module, choose M here: the
 	  module will be called hisi_powerkey.
 
-config HISI_POWERKEY_DEBUG
-	bool "HiSilicon powerkey driver debug"
-	depends on DEBUG_FS
-	default n
-
 config SUPPORT_SIM1_HPD_KEY_RESTART
 	bool "Hisilicon SIM1_HPD support"
 	depends on HISI_POWERKEY_SPMI
