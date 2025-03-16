@@ -228,7 +228,6 @@ obj-$(CONFIG_MFD_STM32_LPTIMER)	+= stm32-lptimer.o
 obj-$(CONFIG_MFD_STM32_TIMERS) 	+= stm32-timers.o
 obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
 
-obj-$(CONFIG_HISI_PMIC_PMU_I2C)+= hisi_pmic_i2c.o
 obj-$(CONFIG_HISI_PMIC_PMU_SPMI)+= hisi_pmic_spmi.o
 obj-$(CONFIG_HISI_PMIC_PMU_SPMI)+= hisi_pmic_sim_hpd.o
 obj-$(CONFIG_HISI_PMIC_DCXO) += pmic_dcxo/
