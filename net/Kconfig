@@ -254,14 +254,6 @@ config RFS_ACCEL
 	select CPU_RMAP
 	default y
 
-config HISI_RFS_RPS_MATCH
-	bool "Hisilicon rfs rps match"
-	depends on RPS
-	default n
-	---help---
-	  If the desired CPU (where last recvmsg was done) is not in rps map table,
-	  do not set it in rps flow table.
-
 config XPS
 	bool
 	depends on SMP

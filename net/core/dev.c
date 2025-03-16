@@ -3764,10 +3764,6 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
 		 *     have been dequeued, thus preserving in order delivery.
 		 */
 		if (unlikely(tcpu != next_cpu) &&
-#ifdef CONFIG_HISI_RFS_RPS_MATCH
-		    unlikely(!map ||
-		             cpumask_test_cpu(next_cpu, &map->cpus_mask)) &&
-#endif
 		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
 		     ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
 		      rflow->last_qtail)) >= 0)) {
