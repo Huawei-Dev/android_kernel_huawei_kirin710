@@ -3379,11 +3379,7 @@ static const struct pid_entry tgid_base_stuff[] = {
 	REG("mountinfo",  S_IRUGO, proc_mountinfo_operations),
 	REG("mountstats", S_IRUSR, proc_mountstats_operations),
 #ifdef CONFIG_PROCESS_RECLAIM
-#ifdef CONFIG_HISI_PROCESS_RECLAIM_ACCESS
-	REG("reclaim", S_IWUGO, proc_reclaim_operations),
-#else
 	REG("reclaim", S_IWUSR, proc_reclaim_operations),
-#endif
 #ifdef CONFIG_HISI_SWAP_ZDATA
 	ONE("reclaim_result", S_IRUSR|S_IRGRP, process_reclaim_result_read),
 #endif
