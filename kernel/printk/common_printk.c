@@ -19,10 +19,6 @@
 #include <linux/of_address.h>
 #include <securec.h>
 #include <linux/version.h>
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-#include <linux/hisi/hw_cmdline_parse.h> /* for runmode_is_factory */
-#include <log/log_usertype.h>
-#endif
 
 #define SCBBPD_RX_STAT1 0x534
 #define SCBBPD_RX_STAT2 0x538
@@ -279,26 +275,6 @@ int get_console_name(char *name, int name_buf_len)
 
 	return 0;
 }
-
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-int printk_level = LOGLEVEL_DEBUG;
-int sysctl_printk_level = LOGLEVEL_DEBUG;
-/*
- * if loglevel > level, the log will not be saved to memory in no log load
- * log load and factory mode load will not be affected
- */
-void printk_level_setup(int level)
-{
-	if (runmode_is_factory())
-		return;
-
-	pr_alert("%s: %d\n", __func__, level);
-	raw_spin_lock(g_logbuf_level_lock_ex);
-	if (level >= LOGLEVEL_EMERG && level <= LOGLEVEL_DEBUG)
-		printk_level = level;
-	raw_spin_unlock(g_logbuf_level_lock_ex);
-}
-#endif
 
 static int __init early_printk_timer_setup(char *str)
 {

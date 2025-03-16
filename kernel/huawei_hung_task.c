@@ -760,9 +760,6 @@ static void do_dump(struct task_struct *task, int flag, int time_in_d_state)
 		rcu_read_unlock();
 		return;
 	}
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-	printk_level_setup(LOGLEVEL_DEBUG);
-#endif
 	if ((unsigned int)flag & (FLAG_DUMP_WHITE | FLAG_DUMP_APP)) {
 		int cnt = 0;
 
@@ -795,9 +792,6 @@ static void do_dump(struct task_struct *task, int flag, int time_in_d_state)
 	} else if ((unsigned int)flag & FLAG_DUMP_JANK) {
 		do_dump_task(task);
 	}
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-	printk_level_setup(sysctl_printk_level);
-#endif
 	rcu_read_unlock();
 }
 

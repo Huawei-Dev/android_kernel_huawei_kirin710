@@ -313,13 +313,7 @@ static void sysrq_handle_showstate_blocked(int key)
 #ifdef CONFIG_DETECT_HUAWEI_HUNG_TASK
     hwhungtask_show_state_filter(TASK_UNINTERRUPTIBLE);
 #else
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-	printk_level_setup(LOGLEVEL_DEBUG);
-#endif
 	show_state_filter(TASK_UNINTERRUPTIBLE);
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-	printk_level_setup(sysctl_printk_level);
-#endif
 #endif
 }
 static struct sysrq_key_op sysrq_showstate_blocked_op = {

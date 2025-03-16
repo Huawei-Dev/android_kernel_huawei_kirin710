@@ -278,9 +278,6 @@ void die(const char *str, struct pt_regs *regs, int err)
 	int ret;
 	unsigned long flags;
 
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-	printk_level_setup(LOGLEVEL_DEBUG);
-#endif
 	raw_spin_lock_irqsave(&die_lock, flags);
 
 	oops_enter();
@@ -308,9 +305,6 @@ void die(const char *str, struct pt_regs *regs, int err)
 
 	if (ret != NOTIFY_STOP)
 		do_exit(SIGSEGV);
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-	printk_level_setup(LOGLEVEL_DEBUG);
-#endif
 }
 
 void arm64_notify_die(const char *str, struct pt_regs *regs,
@@ -425,15 +419,9 @@ static void force_signal_inject(int signal, int code, struct pt_regs *regs,
 
 	if (unhandled_signal(current, signal) &&
 	    show_unhandled_signals_ratelimited()) {
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-		printk_level_setup(LOGLEVEL_DEBUG);
-#endif
 		pr_info("%s[%d]: %s: pc=%p\n",
 			current->comm, task_pid_nr(current), desc, pc);
 		dump_instr(KERN_INFO, regs);
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-		printk_level_setup(sysctl_printk_level);
-#endif
 	}
 
 	info.si_signo = signal;

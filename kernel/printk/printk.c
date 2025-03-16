@@ -380,9 +380,7 @@ DEFINE_RAW_SPINLOCK(logbuf_lock);
 #ifdef CONFIG_HISI_TIME
 raw_spinlock_t *g_logbuf_lock_ex = &logbuf_lock;
 #endif
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-raw_spinlock_t *g_logbuf_level_lock_ex = &logbuf_lock;
-#endif
+
 /*
  * Helper macros to lock/unlock logbuf_lock and switch between
  * printk-safe/unsafe modes.
@@ -1948,12 +1946,6 @@ int vprintk_store(int facility, int level,
 
 	if (level == LOGLEVEL_DEFAULT)
 		level = default_message_loglevel;
-
-#ifdef CONFIG_HUAWEI_PRINTK_CTRL
-	if (level > printk_level) {
-		return 0;
-	}
-#endif
 
 	if (dict)
 		lflags |= LOG_PREFIX|LOG_NEWLINE;
