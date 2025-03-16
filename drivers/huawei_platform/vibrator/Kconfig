@@ -6,4 +6,3 @@ menuconfig HUAWEI_VIBRATOR
 
 source "drivers/huawei_platform/vibrator/drv2605/Kconfig"
 source "drivers/huawei_platform/vibrator/classd_vibrator/Kconfig"
-source "drivers/huawei_platform/vibrator/ext_vibrator/Kconfig"
