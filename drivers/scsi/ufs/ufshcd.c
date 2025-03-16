@@ -6267,11 +6267,6 @@ out:
 static void ufshcd_update_uic_error(struct ufs_hba *hba)
 {
 	u32 reg;
-#ifdef CONFIG_SCSI_UFS_KIRIN_LINERESET_CHECK
-	reg = hba->reg_uecpa;
-	if (reg)
-		ufshcd_update_uic_reg_hist(&hba->ufs_stats.pa_err, reg);
-#else
 	/* PHY layer lane error */
 	reg = ufshcd_readl(hba, REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER);
 	/* Ignore LINERESET indication, as this is not an error */
@@ -6284,8 +6279,6 @@ static void ufshcd_update_uic_error(struct ufs_hba *hba)
 		dev_dbg(hba->dev, "%s: UIC Lane error reported\n", __func__);
 		ufshcd_update_uic_reg_hist(&hba->ufs_stats.pa_err, reg);
 	}
-#endif
-
 
 	/* PA_INIT_ERROR is fatal and needs UIC reset */
 	reg = ufshcd_readl(hba, REG_UIC_ERROR_CODE_DATA_LINK_LAYER);
@@ -7719,17 +7712,6 @@ static int ufshcd_probe_hba(struct ufs_hba *hba)
 	hba->force_host_reset = false;
 	/* set the state as operational after switching to desired gear */
 	hba->ufshcd_state = UFSHCD_STATE_OPERATIONAL;
-
-#ifdef CONFIG_SCSI_UFS_KIRIN_LINERESET_CHECK
-	if (hba->bg_task_enable && hba->vops && hba->vops->background_thread) {
-		if (!hba->background_task) {
-			hba->background_task = kthread_run(hba->vops->background_thread,
-				hba, "ufs_bg_thread");
-			if (IS_ERR(hba->background_task))
-				dev_err(hba->dev, "background_thread create fail! \r\n", __func__);
-		}
-	}
-#endif
 
 	/*
 	 * If we are in error handling context or in power management callbacks

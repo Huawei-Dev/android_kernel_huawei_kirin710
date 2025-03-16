@@ -557,9 +557,6 @@ int ufs_update_hc_fw(struct ufs_hba *hba);
 #ifdef CONFIG_SCSI_UFS_HS_ERROR_RECOVER
 int hufs_get_pwr_by_sysctrl(struct ufs_hba *hba);
 #endif
-#ifdef CONFIG_SCSI_UFS_KIRIN_LINERESET_CHECK
-int hufs_daemon_thread(void *d);
-#endif
 void hufs_pre_hce_notify(struct ufs_hba *hba);
 bool ufshcd_is_hufs_hc(struct ufs_hba *hba);
 int ufshcd_adapt_workaround(struct ufs_hba *hba,

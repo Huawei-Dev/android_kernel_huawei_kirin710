@@ -561,9 +561,6 @@ struct ufs_hba_variant_ops {
 	void (*add_debugfs)(struct ufs_hba *hba, struct dentry *root);
 	void (*remove_debugfs)(struct ufs_hba *hba);
 #endif
-#ifdef CONFIG_SCSI_UFS_KIRIN_LINERESET_CHECK
-	int (*background_thread)(void *d);
-#endif
 	void (*dbg_register_dump)(struct ufs_hba *hba);
 	int (*phy_initialization)(struct ufs_hba *);
 #ifdef CONFIG_SCSI_UFS_HS_ERROR_RECOVER
@@ -1159,11 +1156,6 @@ struct ufs_hba {
 	int v_rx;
 	int v_tx;
 	int init_retry;
-#endif
-#ifdef CONFIG_SCSI_UFS_KIRIN_LINERESET_CHECK
-	bool bg_task_enable;
-	struct task_struct *background_task;
-	u32 reg_uecpa;
 #endif
 	struct io_latency_state io_lat_s;
 

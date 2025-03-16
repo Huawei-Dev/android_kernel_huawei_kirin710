@@ -241,16 +241,6 @@ config SCSI_UFS_SGR
 
 	  If unsure, say N.
 
-config SCSI_UFS_KIRIN_LINERESET_CHECK
-	  bool "UFS background thread to check line-reset"
-	  depends on SCSI_UFSHCD && SCSI_UFS_KIRIN
-	  ---help---
-	  This create a thread to check line-reset bug, and recovery it.
-
-	  If using GEMINI, say Y here.
-
-	  If unsure, say N.
-
 config SCSI_UFS_FAULT_INJECT
 	  tristate "UFS Fault Inject"
 	  depends on SCSI_UFSHCD && FAULT_INJECTION && FAULT_INJECTION_DEBUG_FS
