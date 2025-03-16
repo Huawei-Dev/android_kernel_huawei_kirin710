@@ -3,16 +3,6 @@
 # Makefile for the input misc drivers.
 #
 
-ifeq ($(CONFIG_HISI_POWERKEY_SSI),y)
-ifeq ($(TARGET_BUILD_VARIANT),eng)
-	CONFIG_INPUT_KEYCHORD := y
-	ccflags-y += -DINPUT_MINI_BUGREPORT_TRIGGER
-endif
-ifeq ($(ENABLE_MINI_BUGREPORT),true)
-	CONFIG_INPUT_KEYCHORD := y
-	ccflags-y += -DINPUT_MINI_BUGREPORT_TRIGGER
-endif
-endif
 # Each configuration option enables a list of files.
 
 obj-$(CONFIG_INPUT_88PM860X_ONKEY)	+= 88pm860x_onkey.o
@@ -50,7 +40,6 @@ obj-$(CONFIG_INPUT_GPIO_TILT_POLLED)	+= gpio_tilt_polled.o
 obj-$(CONFIG_INPUT_GPIO_DECODER)	+= gpio_decoder.o
 obj-$(CONFIG_INPUT_GPIO)		+= gpio_event.o gpio_matrix.o gpio_input.o gpio_output.o gpio_axis.o
 obj-$(CONFIG_INPUT_HISI_POWERKEY)	+= hisi_powerkey.o
-obj-$(CONFIG_HISI_POWERKEY_SSI)		+= hisi_powerkey_ssi.o
 obj-$(CONFIG_HISI_POWERKEY_SPMI)	+= powerkey_spmi.o
 obj-$(CONFIG_HISI_POWERKEY_SPMI)	+= powerkey_event.o
 obj-$(CONFIG_HP_SDC_RTC)		+= hp_sdc_rtc.o
