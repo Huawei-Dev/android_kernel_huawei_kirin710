@@ -86,4 +86,3 @@ obj-$(CONFIG_INPUT_XEN_KBDDEV_FRONTEND)	+= xen-kbdfront.o
 obj-$(CONFIG_INPUT_YEALINK)		+= yealink.o
 obj-$(CONFIG_INPUT_IDEAPAD_SLIDEBAR)	+= ideapad_slidebar.o
 obj-$(CONFIG_HISI_VIBRATOR)		+= flat_vibrator.o
-obj-$(CONFIG_HISI_PMIC_VIBRATOR)        += linear_vibrator.o

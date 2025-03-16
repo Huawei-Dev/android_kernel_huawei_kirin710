@@ -881,21 +881,6 @@ config HISI_VIBRATOR
 	  To compile this driver as a module, choose M here: the module will be
 	  called hisi vibrator driver.
 
-config HISI_PMIC_VIBRATOR
-	bool "Led classdev pmic_vibrator hisi driver"
-	depends on LEDS_TRIGGERS && LEDS_TRIGGER_TRANSIENT
-	default n
-	help
-	  Say Y to enable support for the Hisilicon PMIC vibrator driver.
-
-	  To compile this driver as a module, choose M here: the module will be
-	  called hisi vibrator driver.
-
-config HISI_PMIC_VIBRATOR_DEBUG
-	bool "Led classdev pmic_vibrator driver debug"
-	depends on HISI_PMIC_VIBRATOR
-	default n
-
 config INPUT_HISI_POWERKEY
 	tristate "Hisilicon PMIC ONKEY support"
 	depends on ARCH_HISI || COMPILE_TEST
