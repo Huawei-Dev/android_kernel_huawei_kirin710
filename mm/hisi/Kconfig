@@ -35,17 +35,6 @@ config HISI_MEM_OFFLINE
 	  helps reduce power consumption during idle mode of the system.
 	  If unsure, say N
 
-config HISI_BOOTMEM_OPTIMIZE
-	bool "Hisi bootmem optimize"
-	default n
-	depends on HAVE_ARCH_PFN_VALID
-	depends on !HAVE_MEMBLOCK_NODE_MAP
-	---help---
-	  Orign bootmem_init in zone init function "memmap_init_zone" waste too much time
-	  in iterate zone [start, end) pfn and judge if the pfn is valid, and when memory
-	  has hole, it will cost too much time. So let it only iterate memory which in memblock.
-	  if unsure, say N
-
 config PM_PEAK
 	bool "Physical Memory Peak"
 	default n
