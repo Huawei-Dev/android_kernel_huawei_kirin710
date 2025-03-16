@@ -229,19 +229,10 @@ static void showacpu(void *dummy)
 	if (idle_cpu(smp_processor_id()))
 		return;
 
-#ifdef CONFIG_HISI_SHOWACPU_FLUSH_CACHE
-	pr_info("showacpu lock irq:owner %u next %u\n", show_lock.rlock.raw_lock.owner,
-			show_lock.rlock.raw_lock.next);
-#endif
 	spin_lock_irqsave(&show_lock, flags);
 	pr_info("CPU%d:\n", smp_processor_id());
 	show_stack(NULL, NULL);
 	spin_unlock_irqrestore(&show_lock, flags);
-#ifdef CONFIG_HISI_SHOWACPU_FLUSH_CACHE
-	pr_info("showacpu unlock:owner %u next %u\n", show_lock.rlock.raw_lock.owner,
-			show_lock.rlock.raw_lock.next);
-	flush_cache_all();
-#endif
 }
 
 static void sysrq_showregs_othercpus(struct work_struct *dummy)

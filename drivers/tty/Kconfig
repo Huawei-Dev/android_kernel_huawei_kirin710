@@ -472,10 +472,4 @@ config HISI_TTY
        bool "hisi tty"
        default n
 
-config HISI_SHOWACPU_FLUSH_CACHE
-	bool "hisi showacpu flush cache"
-	default n
-	help
-	  This enable flush cache all in showacpu after spin_unclock.
-
 endif # TTY
