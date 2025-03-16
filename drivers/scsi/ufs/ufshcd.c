@@ -76,7 +76,6 @@
 #include "ufs-quirks.h"
 #include "ufs_debugfs.h"
 #include "dsm_ufs.h"
-#include "ufs_trace.h"
 #include "ufs-vendor-mode.h"
 #include "ufs-kirin-lib.h"
 #include "ufs-hisi-hci.h"
@@ -9560,7 +9559,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq, 
 	ufsdbg_add_debugfs(hba);
 	async_schedule(ufshcd_async_scan, hba);
 
-	ufs_trace_fd_init();
 	ufs_fault_inject_fs_setup();
 	ufshcd_add_sysfs_nodes(hba);
 
@@ -11058,11 +11056,9 @@ uhshcd_rsp_sense_data(struct ufs_hba *hba, struct ufshcd_lrb *lrbp, int scsi_sta
 	if ((lrbp->ucd_rsp_ptr->sr.sense_data[2] & 0xf) == HARDWARE_ERROR) {
 		dsm_ufs_update_scsi_info(lrbp, scsi_status, DSM_UFS_SCSI_CMD_ERR);
 		schedule_ufs_dsm_work(hba);
-		ufs_rdr_hardware_err(hba, lrbp);
 	} else if ((lrbp->ucd_rsp_ptr->sr.sense_data[2] & 0xf) == MEDIUM_ERROR) {
 		dsm_ufs_update_scsi_info(lrbp, scsi_status, DSM_UFS_DEV_INTERNEL_ERR);
 		schedule_ufs_dsm_work(hba);
-		ufs_rdr_hardware_err(hba, lrbp);
 	}
 #ifdef CONFIG_SCSI_UFS_HI1861_VCMD
 	if (UFS_VENDOR_HI1861 == hba->manufacturer_id) {

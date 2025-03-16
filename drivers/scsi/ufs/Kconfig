@@ -348,10 +348,6 @@ config HUAWEI_UFS_DSM
 	bool "Listen UFS Kernel Error"
 	depends on SCSI_UFSHCD
 
-config HUAWEI_UFS_TRACE
-	bool "Trace UFS kernel Error"
-	depends on SCSI_UFSHCD
-
 config SCSI_UFS_HI1861_VCMD
 	bool "UFS Hi1861 Device Vendor Command"
 	depends on SCSI_UFSHCD

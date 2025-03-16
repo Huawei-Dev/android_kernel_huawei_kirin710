@@ -38,9 +38,3 @@ obj-$(CONFIG_SCSI_UFS_HI1861_VCMD) += ufstt.o
 obj-$(CONFIG_SCSI_UFS_UNISTORE) += ufs_unistore_core.o
 obj-$(CONFIG_SCSI_UFS_UNISTORE) += ufs_unistore_read.o
 obj-$(CONFIG_SCSI_UFS_UNISTORE) += ufs_unistore_write.o
-
-ifeq ($(TARGET_VERSION_MODE),factory)
-    obj-$(CONFIG_HUAWEI_UFS_TRACE) += ufs_trace.o
-    EXTRA_CFLAGS += -DHEALTH_INFO_FACTORY_MODE
-    EXTRA_CFLAGS += -DUFS_TRACE_FLAG
-endif
