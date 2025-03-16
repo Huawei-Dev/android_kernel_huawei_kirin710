@@ -1004,12 +1004,6 @@ config PRODUCT_ARMPC
 	help
 	 armpc use this configuration.
 
-config HISI_VLTMM
-	bool "Enable hisi secure memory dynamic allocate"
-	default n
-	help
-	  Support allocate secure volatile memory form secos.
-
 config KZEROD
 	bool "Support kzerod"
 	default n

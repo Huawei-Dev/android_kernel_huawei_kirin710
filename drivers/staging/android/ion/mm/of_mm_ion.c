@@ -35,7 +35,6 @@
 #include "mm_ion_priv.h"
 #include "ion.h"
 #include "sec_alloc.h"
-#include "vltmm.h"
 #ifdef CONFIG_HISI_LB
 #include <linux/hisi/hisi_lb.h>
 #endif
@@ -862,10 +861,6 @@ static int mm_ion_probe(struct platform_device *pdev)
 	}
 
 	sec_alloc_init(pdev);
-
-#ifdef CONFIG_HISI_VLTMM
-	smemheaps_init();
-#endif
 
 	err = sysfs_create_group(&pdev->dev.kobj, &sys_pool_attr_group);
 	if (err)

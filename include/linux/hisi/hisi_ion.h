@@ -265,8 +265,4 @@ static inline struct sg_table *mm_secmem_alloc(int id, unsigned long size)
 static inline void mm_secmem_free(int id, struct sg_table *table) {}
 #endif
 
-#ifdef CONFIG_HISI_VLTMM
-int vltmm_agent_register(void);
-#endif
-
 #endif

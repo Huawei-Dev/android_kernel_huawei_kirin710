@@ -32,10 +32,6 @@
 #include "mm_ion_priv.h"
 #include "sec_alloc.h"
 
-#ifdef CONFIG_HISI_VLTMM
-#include "vltmm.h"
-#endif
-
 struct svc_cap {
 	const char *name;
 	unsigned long align;
@@ -104,11 +100,6 @@ int mm_sec_cma_reserve(struct reserved_mem *rmem)
 		pr_err("Reserved memory: unable to setup CMA region\n");
 		return err;
 	}
-
-#ifdef CONFIG_HISI_VLTMM
-	err = smemheap_setup(rmem, cma);
-	WARN_ON(err);
-#endif
 
 #ifdef CONFIG_HISI_CMA_DEBUG
 	cma_set_flag(cma, node);
