@@ -7,13 +7,6 @@ menu "Character devices"
 
 source "drivers/tty/Kconfig"
 
-config HISI_RANDOM_ENTROPY_IMPROVEMENT
-	bool "hisi random entropy improvement"
-	default n
-	help
-	  Use random data to fill main pool, Fastboot config must
-	  be enabled.
-
 config DEVMEM
 	bool "/dev/mem virtual device support"
 	default y

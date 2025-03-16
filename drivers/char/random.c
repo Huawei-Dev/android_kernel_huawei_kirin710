@@ -275,16 +275,6 @@
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/random.h>
-#ifdef CONFIG_HISI_RANDOM_ENTROPY_IMPROVEMENT
-#include <global_ddr_map.h>
-
-#define GEN_RND_WRITE_BYTES			0x10
-#define GEN_RND_MAGIC_BYTES			0x04
-#define GEN_RND_SUCC_MAGIC			0x53554343 // 'S''U''C''C'
-#define GEN_RND_FAIL_MAGIC			0x4641494C // 'F''A''I''L'
-#endif
-
-/* #define ADD_INTERRUPT_BENCH */
 
 /*
  * Configuration information
@@ -1785,57 +1775,6 @@ static void init_std_data(struct entropy_store *r)
 	mix_pool_bytes(r, utsname(), sizeof(*(utsname())));
 }
 
-#ifdef CONFIG_HISI_RANDOM_ENTROPY_IMPROVEMENT
-/*
- * Use random data from crypto engine to fill entropy pool, in order to generate
- * more random number when system is booting.
- */
-static int hisi_rand_initialize(void)
-{/*lint !e629*/
-	uint8_t *virt_random_addr;
-	unsigned int random_size;
-	unsigned int write_times;
-	unsigned int index;
-
-	virt_random_addr = (uint8_t *)ioremap_cache(
-		HISI_SUB_RESERVED_SEC_RANDNUM_INJECT_PHYMEM_BASE,
-		HISI_SUB_RESERVED_SEC_RANDNUM_INJECT_PHYMEM_SIZE);
-	if (!virt_random_addr) {
-		pr_err("rand ioremap_cache fail.\n");
-		return -EINVAL;
-	}
-
-	/*
-	 * Use the first 4 bytes to record error code, so the real
-	 * rnd number size is 4K-4 bytes
-	 */
-	if (*(uint32_t *)virt_random_addr == GEN_RND_SUCC_MAGIC) {
-		pr_info("get rnd from share memory success.\n");
-	} else if (*(uint32_t *)virt_random_addr == GEN_RND_FAIL_MAGIC) {
-		pr_err("get rnd from share memory fail!\n");
-		return -EINVAL;
-	} else {
-		pr_err("rnd magic invalid, maybe fastboot config is not enable\n");
-		return -EINVAL;
-	}
-
-	random_size = HISI_SUB_RESERVED_SEC_RANDNUM_INJECT_PHYMEM_SIZE;
-	random_size -= GEN_RND_MAGIC_BYTES;
-	virt_random_addr += GEN_RND_MAGIC_BYTES;
-	/* Multiple writes generate more entropy */
-	write_times = random_size / GEN_RND_WRITE_BYTES;
-
-	for (index = 0; index < write_times; index++) {
-		mix_pool_bytes(&input_pool,
-			       virt_random_addr + ((uintptr_t)index * GEN_RND_WRITE_BYTES),
-			       GEN_RND_WRITE_BYTES);
-		credit_entropy_bits(&input_pool, GEN_RND_WRITE_BYTES);
-	}
-
-	return 0;
-}
-#endif
-
 /*
  * Note that setup_arch() may call add_device_randomness()
  * long before we get here. This allows seeding of the pools
@@ -1856,12 +1795,6 @@ static int rand_initialize(void)
 		urandom_warning.interval = 0;
 		unseeded_warning.interval = 0;
 	}
-#ifdef CONFIG_HISI_RANDOM_ENTROPY_IMPROVEMENT
-	if (hisi_rand_initialize() != 0) {
-		/* Only report a error here is enough. */
-		pr_err("hisi rand_initialize fail.\n");
-	}
-#endif
 	return 0;
 }
 early_initcall(rand_initialize);
