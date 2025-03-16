@@ -368,11 +368,6 @@ config SCSI_UFS_CUST_MAX_SECTORS
         help
                 enable custom max sectors in UFS
 
-config HISI_SCSI_UFS_DUMP
-	bool "hisi ufs_dump support"
-	depends on  SCSI_UFSHCD
-	default n
-
 config SCSI_UFS_LUN_PROTECT
 	bool "enable Lun Write Protect in UFS"
 	depends on SCSI_UFSHCD
