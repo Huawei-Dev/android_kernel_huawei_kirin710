@@ -2391,48 +2391,6 @@ static void sugov_nop_timer(unsigned long data)
 
 static void sugov_tunables_init(struct sugov_tunables *tunables, struct sugov_tunables *backup)
 {
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-
-	/* initialize the tunable parameters */
-	if (backup) {
-		tunables->overload_duration = backup->overload_duration;
-		tunables->above_hispeed_delay = backup->above_hispeed_delay;
-		tunables->nabove_hispeed_delay = backup->nabove_hispeed_delay;
-		tunables->min_sample_time = backup->min_sample_time;
-		tunables->nmin_sample_time = backup->nmin_sample_time;
-		tunables->go_hispeed_load = backup->go_hispeed_load;
-		tunables->hispeed_freq = backup->hispeed_freq;
-		tunables->target_loads = backup->target_loads;
-		tunables->ntarget_loads = backup->ntarget_loads;
-		tunables->boostpulse_duration = backup->boostpulse_duration;
-		tunables->boostpulse_min_interval = backup->boostpulse_min_interval;
-		tunables->timer_slack_val = backup->timer_slack_val;
-		tunables->fast_ramp_up = backup->fast_ramp_up;
-		tunables->fast_ramp_down = backup->fast_ramp_down;
-		tunables->freq_reporting_policy = backup->freq_reporting_policy;
-		tunables->iowait_boost_step = backup->iowait_boost_step;
-
-#ifdef CONFIG_SCHED_TOP_TASK
-		tunables->top_task_hist_size = backup->top_task_hist_size;
-		tunables->top_task_stats_empty_window = backup->top_task_stats_empty_window;
-		tunables->top_task_stats_policy = backup->top_task_stats_policy;
-#endif
-#ifdef CONFIG_ED_TASK
-		tunables->ed_task_running_duration = backup->ed_task_running_duration;
-		tunables->ed_task_waiting_duration = backup->ed_task_waiting_duration;
-		tunables->ed_new_task_running_duration = backup->ed_new_task_running_duration;
-#endif
-#ifdef CONFIG_MIGRATION_NOTIFY
-		tunables->freq_inc_notify = backup->freq_inc_notify;
-		tunables->freq_dec_notify = backup->freq_dec_notify;
-#endif
-#ifdef CONFIG_HISI_FREQ_IO_LIMIT
-		tunables->iowait_upper_limit = backup->iowait_upper_limit;
-#endif
-		return;
-	}
-#endif
-
 	tunables->overload_duration = DEFAULT_OVERLOAD_DURATION_MS;
 	tunables->above_hispeed_delay = default_above_hispeed_delay;
 	tunables->nabove_hispeed_delay =
@@ -2494,12 +2452,7 @@ static int sugov_init(struct cpufreq_policy *policy)
 
 	cpufreq_enable_fast_switch(policy);
 
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-	if (policy->backup_governor_data) {
-		sg_policy = policy->backup_governor_data;
-	} else {
-#endif
-		sg_policy = sugov_policy_alloc(policy);
+	sg_policy = sugov_policy_alloc(policy);
 		if (!sg_policy) {
 			ret = -ENOMEM;
 			goto disable_fast_switch;
@@ -2508,9 +2461,6 @@ static int sugov_init(struct cpufreq_policy *policy)
 		ret = sugov_kthread_create(sg_policy);
 		if (ret)
 			goto free_sg_policy;
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-	}
-#endif
 
 	mutex_lock(&global_tunables_lock);
 
@@ -2557,10 +2507,6 @@ static int sugov_init(struct cpufreq_policy *policy)
 	if (ret)
 		goto fail;
 
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-	policy->backup_governor_data = sg_policy;
-#endif
-
 	gov_sysfs_set_attr(policy->cpu, schedutil_gov.name, schedutil_user_attrs);
 out:
 	mutex_unlock(&global_tunables_lock);
@@ -2572,12 +2518,6 @@ fail:
 	sugov_tunables_free(tunables);
 
 stop_kthread:
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-	if (policy->backup_governor_data) {
-		mutex_unlock(&global_tunables_lock);
-		return ret;
-	}
-#endif
 	sugov_kthread_stop(sg_policy);
 	mutex_unlock(&global_tunables_lock);
 
@@ -2601,13 +2541,6 @@ static void sugov_exit(struct cpufreq_policy *policy)
 
 	count = gov_attr_set_put(&tunables->attr_set, &sg_policy->tunables_hook);
 	policy->governor_data = NULL;
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-	if (!count) {
-		if (!have_governor_per_policy())
-			global_tunables = NULL;
-	}
-	mutex_unlock(&global_tunables_lock);
-#else
 	if (!count)
 		sugov_tunables_free(tunables);
 
@@ -2615,7 +2548,6 @@ static void sugov_exit(struct cpufreq_policy *policy)
 
 	sugov_kthread_stop(sg_policy);
 	sugov_policy_free(sg_policy);
-#endif
 	cpufreq_disable_fast_switch(policy);
 }
 

@@ -1219,12 +1219,6 @@ static void cpufreq_policy_free(struct cpufreq_policy *policy)
 	free_cpumask_var(policy->real_cpus);
 	free_cpumask_var(policy->related_cpus);
 	free_cpumask_var(policy->cpus);
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-	if (policy->backup_governor_data) {
-		kfree(policy->backup_governor_data);
-		policy->backup_governor_data = NULL;
-	}
-#endif
 	kfree(policy);
 }
 

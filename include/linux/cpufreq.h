@@ -156,9 +156,6 @@ struct cpufreq_policy {
 
 	/* For cpufreq driver's internal use */
 	void			*driver_data;
-#ifdef CONFIG_HISI_CPUFREQ_GOVERNOR_BACKUP
-	void			*backup_governor_data;
-#endif
 };
 
 /* Only for ACPI */
