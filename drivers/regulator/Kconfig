@@ -1042,13 +1042,6 @@ config HISI_REGULATOR_SPMI
 	  This driver provides support for the voltage regulators on the
 	  PMU / Codec IC.
 
-config HISI_SUB_REGULATOR_SPMI
-	tristate "SUB PMIC regulators from spmi device"
-	depends on HISI_PMIC_SUB_PMU_SPMI
-	help
-	  This driver provides support for the voltage regulators on the
-	  SUB PMU / Codec IC.
-
 config HISI_SMARTPA_REGULATOR
 	tristate "SMARTPA regulators from platform device"
 	help

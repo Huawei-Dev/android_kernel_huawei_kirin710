@@ -100,18 +100,7 @@ void pmic_vbus_irq_mask(int enable);
 void pmic_clear_vbus_irq(int enable);
 extern int hisi_pmic_special_ocp_register(
 	char *power_name, pmic_ocp_callback handler);
-#if defined(CONFIG_HISI_PMIC_SUB_PMU_SPMI)
-u32 sub_pmic_read(struct vendor_pmic *pmic, int reg);
-void sub_pmic_write(struct vendor_pmic *pmic, int reg, u32 val);
-int pmic_subpmu_get_dieid(char *dieid, unsigned int len);
-#endif
 
-#if defined(CONFIG_HISI_PMIC_SUB_PMU_SPMI)
-unsigned int hisi_sub_pmic_reg_read(int addr);
-void hisi_sub_pmic_reg_write(int addr, int val);
-unsigned int mmw_pmic_reg_read(int addr);
-void mmw_pmic_reg_write(int addr, int val);
-#else
 static inline unsigned int hisi_sub_pmic_reg_read(int addr)
 {
 	return 0;
@@ -126,7 +115,6 @@ static inline unsigned int mmw_pmic_reg_read(int addr)
 static inline void mmw_pmic_reg_write(int addr, int val)
 {
 }
-#endif
 
 u32 pmic_read_sub_pmu(u8 sid, int reg);
 void pmic_write_sub_pmu(u8 sid, int reg, u32 val);
@@ -140,8 +128,6 @@ static inline int hisi_sub_pmu_pmic_dieid(char *dieid, unsigned int len)
 	int ret;
 #if defined(CONFIG_SUBPMU) && defined(CONFIG_HISI_DIEID)
 	ret = hisi_subpmu_get_dieid(dieid, len);
-#elif defined(CONFIG_HISI_PMIC_SUB_PMU_SPMI)
-	ret = pmic_subpmu_get_dieid(dieid, len);
 #endif
 	return ret;
 }

@@ -142,31 +142,6 @@ void main_pmic_write(struct vendor_pmic *pmic, int reg, u32 val)
 	_spmi_pmic_write(g_pmic, reg, val);
 }
 
-#if defined(CONFIG_HISI_PMIC_SUB_PMU_SPMI)
-unsigned int mmw_pmic_reg_read(int addr)
-{
-	return _spmi_pmic_read(g_mmw_pmic, addr);
-}
-
-void mmw_pmic_reg_write(int addr, int val)
-{
-	_spmi_pmic_write(g_mmw_pmic, addr, val);
-}
-
-unsigned int hisi_sub_pmic_reg_read(int addr)
-{
-	return _spmi_pmic_read(g_sub_pmic, addr);
-}
-EXPORT_SYMBOL(hisi_sub_pmic_reg_read);
-
-void hisi_sub_pmic_reg_write(int addr, int val)
-{
-	_spmi_pmic_write(g_sub_pmic, addr, val);
-}
-EXPORT_SYMBOL(hisi_sub_pmic_reg_write);
-
-#endif
-
 unsigned int pmic_read_reg(int addr)
 {
 	return _spmi_pmic_read(g_pmic, addr);
