@@ -3305,10 +3305,7 @@ static int mmc_blk_probe(struct mmc_card *card)
 #endif
 
 #ifdef CONFIG_HISI_MMC_FLUSH_REDUCE
-#ifndef CONFIG_HISI_MMC_FLUSH_REDUCE_WHITE_LIST
 	en_emmc_flush_reduce(card, 0U);
-#endif
-
 	mas_blk_flush_ctrl(md, card);
 #endif
 

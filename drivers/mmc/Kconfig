@@ -54,13 +54,6 @@ config HISI_MMC_FLUSH_REDUCE
 	help
 	   Enable this config will provide the flush reduce support in MMC
 
-config HISI_MMC_FLUSH_REDUCE_WHITE_LIST
-	bool "Flush Reduce eMMC devices white list"
-	depends on HISI_MMC_FLUSH_REDUCE != n
-	default n
-	help
-	   Enable this config will enfore white list check on eMMC devices for flush reduce
-
 config ZODIAC_MMC_MANUAL_BKOPS
 	bool "MMC manual BKOPS support"
 	depends on MAS_BKOPS
