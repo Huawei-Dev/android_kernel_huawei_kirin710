@@ -26,11 +26,6 @@ config HISI_CKM_MODULE
 	bool "HiSilicon clk monitor driver"
 	default n
 
-config HISI_CLK_SMC_SUPPORT
-	depends on HISI_CLK
-	bool "HiSilicon clk SMC handler"
-	default n
-
 config HISI_PLL_LOCK_RETRY
 	depends on HISI_CLK
 	bool "HiSilicon clk pll lock retry"
