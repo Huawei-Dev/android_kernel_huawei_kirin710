@@ -275,7 +275,6 @@ static int hisi_pm_enter(suspend_state_t state)
 
 	pm_gic_dump();
 #ifdef CONFIG_SR_DEBUG
-	get_ip_regulator_state();
 	pmclk_monitor_enable();
 #endif
 	while (test_pwrdn_othercores(cluster, core) != 0)
