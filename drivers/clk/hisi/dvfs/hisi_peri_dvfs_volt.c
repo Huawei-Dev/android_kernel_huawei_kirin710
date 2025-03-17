@@ -87,48 +87,6 @@ static int peri_fast_avs(struct peri_volt_poll *pvp, unsigned int target_volt)
 }
 #endif
 
-#ifdef CONFIG_HISI_PERI_AVS_IPC_NOTIFY
-static int peri_avs_ipc_notify_m3(struct peri_volt_poll *pvp, unsigned int target_volt)
-{
-	int ret = 0;
-	u32 val;
-	u32 avs_ipc_cmd[LPM3_CMD_LEN] = { LPM3_CMD_CLOCK_EN, FAST_AVS_ID };
-
-	/* send ipc for avs ip do not care scene */
-	if (pvp->perivolt_avs_ip) {
-		ret = hisi_clkmbox_send_msg(avs_ipc_cmd, LPM3_CMD_LEN);
-		if (ret < 0)
-			pr_err("[%s]fail to notify LPM3 for avs ip !\n", __func__);
-		return ret;
-	}
-
-	/*
-	 * volt up: send ipc immediately
-	 * volt down:volt will be change 5ms later by ddr dvfs
-	 */
-	if (target_volt > PERI_VOLT_0) {
-		val = ((unsigned int)readl(pvp->addr_0) & PMCTRL_PERI_CTRL4_VDD_MASK);
-		val = val >> PMCTRL_PERI_CTRL4_VDD_SHIFT;
-		if (val < target_volt) {
-			ret = hisi_clkmbox_send_msg(avs_ipc_cmd, LPM3_CMD_LEN);
-			if (ret < 0)
-				pr_err("[%s]fail to notify LPM3 for non-avs ip!\n", __func__);
-		}
-	}
-
-	return ret;
-}
-
-static int peri_avs_notify_m3(struct peri_volt_poll *pvp, unsigned int target_volt)
-{
-	int ret;
-
-	ret = peri_avs_ipc_notify_m3(pvp, target_volt);
-
-	return ret;
-}
-#endif /* CONFIG_HISI_PERI_AVS_IPC_NOTIFY */
-
 static int hisi_peri_set_volt(struct peri_volt_poll *pvp, unsigned int volt)
 {
 	unsigned int val;
@@ -180,16 +138,6 @@ static int hisi_peri_set_volt(struct peri_volt_poll *pvp, unsigned int volt)
 		ret = peri_fast_avs(pvp, volt);
 #endif
 
-#ifdef CONFIG_HISI_PERI_AVS_IPC_NOTIFY
-	if (pvp->perivolt_avs_ip) {
-		/* clear avs status */
-		val = readl(pvp->sysreg_base + SC_SCBAKDATA24_ADDR);
-		val = val & (~BIT(AVS_BITMASK_FLAG));
-		writel(val, pvp->sysreg_base + SC_SCBAKDATA24_ADDR);
-	}
-	/* avs send ipc to notify lpm3 */
-	ret = peri_avs_notify_m3(pvp, volt);
-#endif
 	hwspin_unlock((struct hwspinlock *)pvp->priv);
 
 	return ret;

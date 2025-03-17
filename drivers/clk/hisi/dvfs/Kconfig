@@ -10,8 +10,3 @@ config HISI_PERI_FAST_AVS
 	depends on HISI_MAILBOX
 	bool "HISI PERI FAST AVS"
 	default n
-config HISI_PERI_AVS_IPC_NOTIFY
-	depends on HISI_PERIDVFS
-	depends on HISI_MAILBOX
-	bool "HISI PERI AVS IPC NOTIFY"
-	default n
