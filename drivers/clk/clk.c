@@ -657,9 +657,6 @@ static void clk_core_disable_lock(struct clk_core *core)
 
 	flags = clk_enable_lock();
 	clk_core_disable(core);
-#ifdef CONFIG_HISI_CLK_TRACE
-    track_clk_enable(core->hw->clk);
-#endif
 	clk_enable_unlock(flags);
 }
 
@@ -735,9 +732,6 @@ static int clk_core_enable_lock(struct clk_core *core)
 
 	flags = clk_enable_lock();
 	ret = clk_core_enable(core);
-#ifdef CONFIG_HISI_CLK_TRACE
-    track_clk_enable(core->hw->clk);
-#endif
 	clk_enable_unlock(flags);
 
 	return ret;
@@ -1783,9 +1777,6 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	clk_prepare_lock();
 
 	ret = clk_core_set_rate_nolock(clk->core, rate);
-#ifdef CONFIG_HISI_CLK_TRACE
-    track_clk_set_freq(clk, rate);
-#endif
 	clk_prepare_unlock();
 
 	return ret;
