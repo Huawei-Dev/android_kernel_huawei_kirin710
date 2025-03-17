@@ -65,9 +65,6 @@ static const struct mm_ion_type_table ion_type_table[] = {
 	{"ion_system", ION_HEAP_TYPE_SYSTEM},
 	{"ion_system_contig", ION_HEAP_TYPE_SYSTEM_CONTIG},
 	{"ion_carveout", ION_HEAP_TYPE_CARVEOUT},
-#ifdef CONFIG_ION_HISI_CPA
-	{"ion_cpa", ION_HEAP_TYPE_CPA},
-#endif
 #ifdef CONFIG_ION_HISI_SECCM
 	{"ion_sec", ION_HEAP_TYPE_SECCM},
 #endif
@@ -175,11 +172,6 @@ static int ion_secmem_heap_phys(struct ion_heap *heap,
 	case ION_HEAP_TYPE_SECSG:
 		ret = ion_secsg_heap_phys(heap, buffer, addr, len);
 		break;
-#ifdef CONFIG_ION_HISI_CPA
-	case ION_HEAP_TYPE_CPA:
-		ret = ion_cpa_heap_phys(heap, buffer, addr, len);
-		break;
-#endif
 	case ION_HEAP_TYPE_DMA_POOL:
 		ret = ion_dma_pool_heap_phys(heap, buffer, addr, len);
 		break;
@@ -727,11 +719,6 @@ static struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 	case ION_HEAP_TYPE_SECSG:
 		heap = ion_secsg_heap_create(heap_data);
 		break;
-#ifdef CONFIG_ION_HISI_CPA
-	case ION_HEAP_TYPE_CPA:
-		heap = ion_cpa_heap_create(heap_data);
-		break;
-#endif
 	case ION_HEAP_TYPE_DMA_POOL:
 		heap = ion_dma_pool_heap_create(heap_data);
 		break;

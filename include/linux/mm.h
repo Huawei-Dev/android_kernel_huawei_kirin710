@@ -2718,10 +2718,6 @@ extern bool process_shares_mm(struct task_struct *p, struct mm_struct *mm);
 extern int sysctl_drop_caches;
 int drop_caches_sysctl_handler(struct ctl_table *, int,
 					void __user *, size_t *, loff_t *);
-#ifdef CONFIG_ION_HISI_CPA
-void cpa_drop_pagecache(void);
-#endif
-
 #ifdef CONFIG_HISI_MEM_OFFLINE
 void mem_offline_drop_pagecache(void);
 #endif

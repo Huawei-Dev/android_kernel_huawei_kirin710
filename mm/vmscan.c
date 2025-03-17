@@ -4835,42 +4835,6 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
 
 	return nr_reclaimed;
 }
-
-#ifdef CONFIG_ION_HISI_CPA
-unsigned long cpa_shrink_all_memory(unsigned long nr_to_reclaim)
-{
-	struct reclaim_state reclaim_state;
-	struct scan_control sc = {
-		.nr_to_reclaim = nr_to_reclaim,
-		.gfp_mask = GFP_HIGHUSER_MOVABLE,
-		.reclaim_idx = MAX_NR_ZONES - 1,
-		.priority = DEF_PRIORITY,
-		.may_writepage = 0,
-		.hibernation_mode = 0,
-		.may_unmap = 1,
-		.may_swap = 1,
-	};
-	struct zonelist *zonelist = node_zonelist(numa_node_id(), sc.gfp_mask);
-	struct task_struct *p = current;
-	unsigned long nr_reclaimed;
-	unsigned int noreclaim_flag;
-
-	noreclaim_flag = memalloc_noreclaim_save();
-	fs_reclaim_acquire(sc.gfp_mask);
-
-	reclaim_state.reclaimed_slab = 0;
-	p->reclaim_state = &reclaim_state;
-
-	nr_reclaimed = do_try_to_free_pages(zonelist, &sc);
-
-	p->reclaim_state = NULL;
-	fs_reclaim_release(sc.gfp_mask);
-	memalloc_noreclaim_restore(noreclaim_flag);
-
-	return nr_reclaimed;
-}
-#endif
-
 #endif /* CONFIG_HIBERNATION */
 
 #ifdef CONFIG_SHRINK_MEMORY

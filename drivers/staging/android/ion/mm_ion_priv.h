@@ -123,13 +123,6 @@ static inline int ion_secsg_heap_phys(struct ion_heap *heap,
 }
 #endif
 
-#ifdef CONFIG_ION_HISI_CPA
-struct ion_heap *ion_cpa_heap_create(struct ion_platform_heap *);
-
-int ion_cpa_heap_phys(struct ion_heap *heap,
-		struct ion_buffer *buffer,
-		phys_addr_t *addr, size_t *len);
-#else
 static inline struct ion_heap *ion_cpa_heap_create(
 				struct ion_platform_heap *iph)
 {
@@ -143,7 +136,6 @@ static inline int ion_cpa_heap_phys(struct ion_heap *heap,
 	pr_err("%s: not cpa mem!\n", __func__);
 	return -EINVAL;
 }
-#endif
 
 #ifdef CONFIG_ION_HISI_CMA_HEAP
 struct ion_heap *ion_mm_cma_heap_create(struct ion_platform_heap *);

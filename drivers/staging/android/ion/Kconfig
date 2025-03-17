@@ -77,13 +77,6 @@ config SECMEM_TEST
 	help
 	  Only for sec memory alloc test in develop version.
 
-config ION_HISI_CPA
-	bool "Hisilicon ION cpa heap support"
-	depends on ION_HISI
-	default n
-	help
-	  if you want to use cpa heap, you should select this.
-
 config ION_HISI_DMA_POOL
 	bool "Hisilicon ION DMA pool heap support"
 	depends on ION_HISI

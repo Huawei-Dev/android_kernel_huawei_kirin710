@@ -766,12 +766,6 @@ int ion_alloc(size_t len, unsigned int heap_id_mask, unsigned int flags)
 			  ION_FLAG_ALLOC_NOWARN_BUFFER);
 	}
 
-#ifdef CONFIG_ION_HISI_CPA
-	if ((heap_id_mask & 0x1U << ION_DRM_HEAP_ID) &&
-	    !(flags & ION_FLAG_DRM_HEAP_ONLY))
-		heap_id_mask |= 0x1U << ION_DRM_CPA_HEAP_ID;
-#endif
-
 #ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
 	if (heap_id_mask & 0x1U << ION_IRIS_HEAP_ID)
 		heap_id_mask |= 0x1U << ION_CAMERA_HEAP_ID;
