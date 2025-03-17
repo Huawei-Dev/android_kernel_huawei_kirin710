@@ -466,44 +466,7 @@ SkipForAbort:
  * Device probing and disconnecting
  ***********************************************************************/
 
-#ifdef CONFIG_HISI_USB_STORAGE_QUIRK
-static const struct usb_device_id usb_quirk_list[] = {
-	/* aigo U350 */
-	{ USB_DEVICE(0x090c, 0x3267), .driver_info = US_UDEV_QUIRK_STOP_TRANS_PRE_RESET },
-	/* aigo U350/U351 */
-	{ USB_DEVICE(0x058f, 0x6387), .driver_info = US_UDEV_QUIRK_STOP_TRANS_PRE_RESET },
-	{ USB_DEVICE(0x090c, 0x1000), .driver_info = US_UDEV_QUIRK_STOP_TRANS_PRE_RESET },
-
-	{ }  /* terminating entry must be last */
-};
-
-static int usb_match_device(struct usb_device *udev, const struct usb_device_id *id)
-{
-	if (id->idVendor != le16_to_cpu(udev->descriptor.idVendor))
-		return 0;
-
-	if (id->idProduct != le16_to_cpu(udev->descriptor.idProduct))
-		return 0;
-
-	return 1;
-}
-
-static void usb_detect_quirks(struct us_data *us)
-{
-	const struct usb_device_id *id = usb_quirk_list;
-
-	for (; id->match_flags; id++) {
-		if (usb_match_device(us->pusb_dev, id)) {
-			hiusb_dev_info(&us->pusb_dev->dev,
-				       "detect quirk device 0x%x:0x%x\n",
-				       id->idVendor, id->idProduct);
-			us->udev_quirks |= id->driver_info;
-		}
-	}
-}
-#else
 #define usb_detect_quirks(x)
-#endif
 
 /* Associate our private data with the USB device */
 static int associate_dev(struct us_data *us, struct usb_interface *intf)
