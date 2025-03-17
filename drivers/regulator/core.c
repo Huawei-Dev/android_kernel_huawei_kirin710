@@ -39,10 +39,6 @@
 #include "dummy.h"
 #include "internal.h"
 
-#ifdef CONFIG_HISI_REGULATOR_TRACE
-#include "regulator_debug.h"
-#endif
-
 #define rdev_crit(rdev, fmt, ...)					\
 	pr_crit("%s: " fmt, rdev_get_name(rdev), ##__VA_ARGS__)
 #define rdev_err(rdev, fmt, ...)					\
@@ -2304,9 +2300,6 @@ int regulator_enable(struct regulator *regulator)
 
 	mutex_lock(&rdev->mutex);
 	ret = _regulator_enable(rdev);
-#ifdef CONFIG_HISI_REGULATOR_TRACE
-	track_regulator_onoff(rdev, TRACK_ON_OFF);
-#endif
 	mutex_unlock(&rdev->mutex);
 
 	if (ret != 0 && rdev->supply)
@@ -2415,9 +2408,6 @@ int regulator_disable(struct regulator *regulator)
 
 	mutex_lock(&rdev->mutex);
 	ret = _regulator_disable(rdev);
-#ifdef CONFIG_HISI_REGULATOR_TRACE
-	track_regulator_onoff(rdev, TRACK_ON_OFF);
-#endif
 	mutex_unlock(&rdev->mutex);
 
 	if (ret == 0 && rdev->supply)
@@ -3102,9 +3092,6 @@ static int regulator_set_voltage_unlocked(struct regulator *regulator,
 	}
 
 out:
-#ifdef CONFIG_HISI_REGULATOR_TRACE
-	track_regulator_set_vol(rdev, TRACK_VOL, max_uV, min_uV);
-#endif
 	return ret;
 out2:
 	regulator->min_uV = old_min_uV;
@@ -3455,9 +3442,6 @@ int regulator_set_mode(struct regulator *regulator, unsigned int mode)
 		goto out;
 
 	ret = rdev->desc->ops->set_mode(rdev, mode);
-#ifdef CONFIG_HISI_REGULATOR_TRACE
-	track_regulator_set_mode(rdev, TRACK_MODE, mode);
-#endif
 out:
 	mutex_unlock(&rdev->mutex);
 	return ret;

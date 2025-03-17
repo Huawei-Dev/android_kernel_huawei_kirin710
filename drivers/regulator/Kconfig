@@ -1024,11 +1024,6 @@ config IP_PLATFORM_COMMON
         help
           This driver provides system interior bus switch for the IP regulator after ORLA AND PHON system.
 
-config HISI_REGULATOR_DEBUG
-	tristate "regulator debug info"
-	help
-	  This driver provides support for regulator control info.
-
 config HISI_REGULATOR_SPMI
 	tristate "PMIC regulators from spmi device"
 	depends on HISI_PMIC_PMU_SPMI
@@ -1036,11 +1031,4 @@ config HISI_REGULATOR_SPMI
 	  This driver provides support for the voltage regulators on the
 	  PMU / Codec IC.
 
-config HISI_REGULATOR_TRACE
-	tristate "Regulator Debug driver for REGULATOR TRACE"
-	depends on HISI_REGULATOR_DEBUG
-	help
-	  provides support for regulator trace.
-
 endif
-
