@@ -764,10 +764,6 @@ int ion_alloc(size_t len, unsigned int heap_id_mask, unsigned int flags)
 #endif
 		flags |= (ION_FLAG_NO_SHRINK_BUFFER |
 			  ION_FLAG_ALLOC_NOWARN_BUFFER);
-#ifdef CONFIG_ION_HISI_SUPPORT_SUBBIT
-		heap_id_mask |= 0x1U << ION_IRIS_HEAP_ID;
-		flags |= ION_FLAG_SECURE_BUFFER;
-#endif
 	}
 
 #ifdef CONFIG_ION_HISI_CPA

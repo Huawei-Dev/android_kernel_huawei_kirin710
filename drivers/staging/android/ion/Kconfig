@@ -70,12 +70,6 @@ config ION_HISI_SECSG
 	help
 	 if you want to use secsg heap, you should select this.
 
-config ION_HISI_SUPPORT_SUBBIT
-	bool "Hisilicon ION secsg heap support subbit region"
-	depends on ION_HISI_SECSG
-	help
-	 if you want to use subbit region, you should select this.
-
 config NEED_CHANGE_MAPPING
 	bool "Need change secure memory's mapping prot"
 	depends on ION_HISI_SECSG
