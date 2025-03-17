@@ -964,12 +964,6 @@ config DRV_HISI_IP_REGULATOR
 	help
 	  This driver provides system interior bus switch support for the IP regulator on the system.
 
-config HISI_IP_REGULATOR_IPC
-	tristate "system interior bus mtcmos IPC control"
-	depends on HISI_MAILBOX
-	help
-	  This driver provides system interior bus switch support for the IP regulator IPC on the system.
-
 config ATLA_IP_PLATFORM
         tristate "ATLA system interior bus control platform switch"
         depends on MFD_HISI_IP_CORE
