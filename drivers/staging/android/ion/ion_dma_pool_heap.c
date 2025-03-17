@@ -76,12 +76,6 @@ struct ion_dma_pool_heap {
 	size_t size;
 	atomic64_t alloc_size;
 	atomic64_t prealloc_cnt;
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	TEEC_Context *context;
-	TEEC_Session *session;
-	int ta_init;
-	struct mutex mutex;
-#endif
 };
 struct cma *ion_dma_camera_cma = NULL;
 static struct ion_dma_pool_heap *ion_dma_camera_heap;
@@ -239,12 +233,6 @@ static phys_addr_t ion_dma_pool_allocate(struct ion_heap *heap,
 	if (!dma_pool_heap)
 		return (phys_addr_t)-1L;
 
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	if (size < SZ_2M &&
-	    !(flags & ION_FLAG_SECURE_BUFFER))
-		return (phys_addr_t)-1L;
-#endif
-
 	offset = gen_pool_alloc(dma_pool_heap->pool, size);
 	if (!offset) {
 		if ((heap->id == ION_CAMERA_DAEMON_HEAP_ID)
@@ -282,181 +270,6 @@ static void ion_dma_pool_free(struct ion_heap *heap, phys_addr_t addr,
 		ion_clean_dma_camera_cma();
 }
 
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-int ion_dma_pool_heap_phys(struct ion_heap *heap,
-			   struct ion_buffer *buffer,
-			   phys_addr_t *addr, size_t *len)
-{
-	if (!heap || !buffer || !addr || !len) {
-		pr_err("%s: invalid input para!\n", __func__);
-		return -EINVAL;
-	}
-
-	if (!(buffer->flags & ION_FLAG_SECURE_BUFFER)) {
-		pr_err("%s: non_sec donnot get phys!!\n", __func__);
-		return -EINVAL;
-	}
-
-	*addr = buffer->id;
-	*len = buffer->size;
-
-	return 0;
-}
-
-static int ion_dma_change_scatter_prop(struct ion_dma_pool_heap *cam_heap,
-					struct ion_buffer *buffer, u32 cmd)
-{
-	struct sg_table *table = buffer->sg_table;
-	struct scatterlist *sg = NULL;
-	struct page *page = NULL;
-	struct mem_chunk_list mcl;
-	struct tz_pageinfo *pageinfo = NULL;
-	unsigned int nents = table->nents;
-	int ret;
-	u32 i;
-
-	pr_err("%s: into\n", __func__);
-	if (!cam_heap->ta_init) {
-		pr_err("[%s] TA not inited.\n", __func__);
-		return -EINVAL;
-	}
-
-#ifdef CONFIG_HISI_ION_FLUSH_CACHE_ALL
-	ion_flush_all_cpus_caches_raw();
-#else
-	ion_flush_all_cpus_caches();
-#endif
-
-	mcl.protect_id = SEC_TASK_SEC;
-
-	if (cmd == ION_SEC_CMD_ALLOC) {
-		pageinfo = kcalloc(nents, sizeof(*pageinfo), GFP_KERNEL);
-		if (!pageinfo)
-			return -ENOMEM;
-
-		for_each_sg(table->sgl, sg, table->nents, i) {
-			page = sg_page(sg);
-			pageinfo[i].addr = page_to_phys(page);
-			pageinfo[i].nr_pages = sg->length / PAGE_SIZE;
-		}
-
-		mcl.phys_addr = (void *)pageinfo;
-		mcl.nents = nents;
-	} else if (cmd == ION_SEC_CMD_FREE) {
-		mcl.buff_id = buffer->id;
-		mcl.phys_addr = NULL;
-	} else {
-		pr_err("%s: Error cmd\n", __func__);
-		return -EINVAL;
-	}
-
-	ret = secmem_tee_exec_cmd(cam_heap->session, &mcl, cmd);
-	if (ret) {
-		pr_err("%s:exec cmd[%d] fail\n", __func__, cmd);
-		ret = -EINVAL;
-	} else if (cmd == ION_SEC_CMD_ALLOC) {
-		buffer->id = mcl.buff_id;
-	}
-
-	if (pageinfo)
-		kfree(pageinfo);
-
-	return ret;
-}
-
-#ifdef CONFIG_NEED_CHANGE_MAPPING
-static void ion_dma_change_secpage_range(struct ion_buffer *buffer,
-					 pgprot_t prot)
-{
-	struct sg_table *table = buffer->sg_table;
-	struct scatterlist *sg = NULL;
-	struct page *page = NULL;
-	u32 i;
-	ktime_t _stime, _etime;
-	s64 _timedelta;
-	const s64 timeout = 10 * 1000; /* 10ms */;
-
-	_stime = ktime_get();
-
-	for_each_sg(table->sgl, sg, table->nents, i) {
-		page = sg_page(sg);
-		change_secpage_range(page_to_phys(page),
-				     (unsigned long)page_address(page),
-				     sg->length, prot);
-	}
-
-	flush_tlb_all();
-
-	_etime = ktime_get();
-	_timedelta = ktime_us_delta(_etime, _stime);
-	if (_timedelta >= timeout)
-		pr_err("[%s], cost:%lld us\n", __func__, _timedelta);
-}
-#endif
-
-static int ion_dma_pool_heap_sec_config(struct ion_heap *heap,
-	struct ion_buffer *buffer, unsigned long size, phys_addr_t paddr)
-{
-	int ret;
-	struct ion_dma_pool_heap *dma_pool_heap = NULL;
-	ktime_t _stime, _time1, _etime;
-	s64 _timedelta;
-
-	_stime = ktime_get();
-	dma_pool_heap = container_of(heap, struct ion_dma_pool_heap, heap);
-
-	/*init the TA conversion here*/
-	if (unlikely(!dma_pool_heap->ta_init)) {
-		mutex_lock(&dma_pool_heap->mutex);
-		if (unlikely(!dma_pool_heap->ta_init)) {
-			ret = secmem_tee_init(dma_pool_heap->context,
-				dma_pool_heap->session, TEE_SECMEM_NAME);
-			if (ret) {
-				pr_err("[%s] TA init failed\n", __func__);
-				mutex_unlock(&dma_pool_heap->mutex);
-				return ret;
-			}
-			dma_pool_heap->ta_init = 1;
-			pr_err("[%s] TA init ok!\n", __func__);
-		}
-		mutex_unlock(&dma_pool_heap->mutex);
-	}
-	_time1 = ktime_get();
-
-	mutex_lock(&dma_pool_heap->mutex);
-#ifdef CONFIG_NEED_CHANGE_MAPPING
-	/*
-	 * Before set memory in secure region, we need change kernel
-	 * pgtable from normal to device to avoid big CPU Speculative
-	 * read.
-	 */
-	ion_dma_change_secpage_range(buffer, __pgprot(PROT_DEVICE_nGnRE));/*lint !e446*/
-#endif
-	/*
-	 * After change the pgtable prot, we need flush TLB and cache.
-	 */
-	ret = ion_dma_change_scatter_prop(dma_pool_heap,
-				buffer, ION_SEC_CMD_ALLOC);
-	if (ret) {
-#ifdef CONFIG_NEED_CHANGE_MAPPING
-		ion_dma_change_secpage_range(buffer, PAGE_KERNEL);/*lint !e446*/
-#endif
-		pr_err("[%s] change_scatter_prop failed\n", __func__);
-	}
-	mutex_unlock(&dma_pool_heap->mutex);
-
-	_etime = ktime_get();
-	_timedelta = ktime_us_delta(_etime, _stime);
-	if (_timedelta >= MM_ION_MAX_LATENCY)
-		pr_err("[%s] , size:0x%lx, cost:%lld us, cmd_alloc cost:%lld us\n",
-			__func__, size, _timedelta,
-			ktime_us_delta(_etime, _time1));
-
-	pr_err("[%s] out\n", __func__);
-	return ret;
-}
-#endif
-
 static int ion_dma_pool_heap_allocate(struct ion_heap *heap,
 	struct ion_buffer *buffer, unsigned long size, unsigned long flags)
 {
@@ -476,11 +289,6 @@ static int ion_dma_pool_heap_allocate(struct ion_heap *heap,
 	if (ret)
 		goto err_free;
 
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	if (flags & ION_FLAG_SECURE_BUFFER)
-		size = ALIGN(size, SZ_2M);
-#endif
-
 	paddr = ion_dma_pool_allocate(heap, size, 0, flags);
 	if (paddr == (phys_addr_t)-1L) {
 		ret = -ENOMEM;
@@ -490,20 +298,6 @@ static int ion_dma_pool_heap_allocate(struct ion_heap *heap,
 	page = pfn_to_page(PFN_DOWN(paddr));
 	sg_set_page(table->sgl, page, (unsigned int)size, (unsigned int)0);
 	buffer->sg_table = table;
-
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	if (flags & ION_FLAG_SECURE_BUFFER) {
-		pr_err("[%s] into ion_dma_pool_heap_sec_config, size:0x%lx\n",
-			__func__, size);
-
-		ret = ion_dma_pool_heap_sec_config(heap, buffer, size, paddr);
-		if (ret) {
-			pr_err("[%s] heap_sec_config failed, size:0x%lx\n",
-				__func__, size);
-			goto err_free_table;
-		}
-	}
-#endif
 
 	if (heap->id == ION_CAMERA_DAEMON_HEAP_ID)
 		(void)ion_heap_pages_zero(page, size,
@@ -534,36 +328,7 @@ static void ion_dma_pool_heap_free(struct ion_buffer *buffer)
 	phys_addr_t paddr = 0;
 	u32 i;
 
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	if (buffer->flags & ION_FLAG_SECURE_BUFFER) {
-		struct ion_dma_pool_heap *dma_pool_heap =
-		container_of(heap, struct ion_dma_pool_heap, heap);
-
-		mutex_lock(&dma_pool_heap->mutex);
-		/*
-		 * After change the pgtable prot, we need flush TLB and cache.
-		 */
-		if (ion_dma_change_scatter_prop(dma_pool_heap,
-				buffer, ION_SEC_CMD_FREE)) {
-			pr_err("%s change prop is failed\n", __func__);
-			return;
-		}
-#ifdef CONFIG_NEED_CHANGE_MAPPING
-		/*
-		 * Before set memory in secure region, we need change kernel
-		 * pgtable from normal to device to avoid big CPU Speculative
-		 * read.
-		 */
-		ion_dma_change_secpage_range(buffer, PAGE_KERNEL);/*lint !e446*/
-#endif
-		mutex_unlock(&dma_pool_heap->mutex);
-	} else {
-		/* the sync has done by caller, we don't need to do any more */
-		ion_heap_buffer_zero(buffer);
-	}
-#else
 	ion_heap_buffer_zero(buffer);
-#endif
 
 	if (buffer->flags & ION_FLAG_CACHED)
 		dma_sync_sg_for_device(&mm_ion_dev->dev, table->sgl,
@@ -721,11 +486,7 @@ struct ion_heap *ion_static_dma_pool_heap_create(struct ion_platform_heap *heap_
 		pr_err("%s, mm_camera_pool kzalloc out of memory!\n", __func__);
 		return ERR_PTR(-ENOMEM);
 	}
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	dma_pool_heap->pool = gen_pool_create(POOL_SZ_2M, -1);
-#else
 	dma_pool_heap->pool = gen_pool_create(PAGE_SHIFT, -1);
-#endif
 	if (!dma_pool_heap->pool) {
 		kfree(dma_pool_heap);
 		pr_err("%s, mm_camera_pool gen_pool_create fail!\n", __func__);
@@ -747,33 +508,7 @@ struct ion_heap *ion_static_dma_pool_heap_create(struct ion_platform_heap *heap_
 	heap_data->size = size;
 	heap_data->base = page_to_phys(page);
 
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	/* default setting */
-	dma_pool_heap->context = kzalloc(sizeof(TEEC_Context), GFP_KERNEL);
-	if (!dma_pool_heap->context)
-		goto free_heap;
-	dma_pool_heap->session = kzalloc(sizeof(TEEC_Session), GFP_KERNEL);
-	if (!dma_pool_heap->session)
-		goto free_context;
-
-	dma_pool_heap->ta_init = 0;
-
-	mutex_init(&dma_pool_heap->mutex);
-
 	return &dma_pool_heap->heap;
-
-free_context:
-	if (dma_pool_heap->context)
-		kfree(dma_pool_heap->context);
-free_heap:
-	kfree(dma_pool_heap);
-
-	return ERR_PTR(-ENOMEM);
-
-#else
-
-	return &dma_pool_heap->heap;
-#endif
 }
 
 struct ion_heap *ion_dma_pool_heap_create(struct ion_platform_heap *heap_data)

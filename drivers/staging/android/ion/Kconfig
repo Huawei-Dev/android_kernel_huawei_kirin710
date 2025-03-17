@@ -87,8 +87,3 @@ config ION_HISI_SUPPORT_4GPLUS
 	bool "Hisilicon ION can support allocation above 4G"
 	depends on ION
 	default n
-
-config ION_HISI_SUPPORT_HEAP_MERGE
-	bool "Hisilicon ION camera heap and iris heap merge"
-	depends on ION
-	default n

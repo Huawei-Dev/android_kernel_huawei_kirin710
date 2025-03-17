@@ -766,11 +766,6 @@ int ion_alloc(size_t len, unsigned int heap_id_mask, unsigned int flags)
 			  ION_FLAG_ALLOC_NOWARN_BUFFER);
 	}
 
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	if (heap_id_mask & 0x1U << ION_IRIS_HEAP_ID)
-		heap_id_mask |= 0x1U << ION_CAMERA_HEAP_ID;
-#endif
-
 	plist_for_each_entry(heap, &dev->heaps, node) {
 		/* if the caller didn't specify this heap id */
 		if (!((1 << heap->id) & heap_id_mask))

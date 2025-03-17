@@ -57,11 +57,6 @@ static inline int ion_seccm_heap_phys(struct ion_heap *heap,
 	return -EINVAL;
 }
 
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-int ion_dma_pool_heap_phys(struct ion_heap *heap,
-			   struct ion_buffer *buffer,
-			   phys_addr_t *addr, size_t *len);
-#else
 static inline int ion_dma_pool_heap_phys(struct ion_heap *heap,
 					 struct ion_buffer *buffer,
 					 phys_addr_t *addr, size_t *len)
@@ -69,7 +64,6 @@ static inline int ion_dma_pool_heap_phys(struct ion_heap *heap,
 	pr_err("%s: not sec mem!\n", __func__);
 	return -EINVAL;
 }
-#endif
 
 #ifdef CONFIG_ION_HISI_SECSG
 struct ion_heap *ion_seccg_heap_create(struct ion_platform_heap *);

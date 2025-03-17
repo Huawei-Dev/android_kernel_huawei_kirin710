@@ -216,9 +216,6 @@ static bool check_heap_type_secure(struct ion_heap *heap)
 	case ION_HEAP_TYPE_SEC_CONTIG:
 	case ION_HEAP_TYPE_SECSG:
 	case ION_HEAP_TYPE_CPA:
-#ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
-	case ION_HEAP_TYPE_DMA_POOL:
-#endif
 		return true;
 	default:
 		return false;
