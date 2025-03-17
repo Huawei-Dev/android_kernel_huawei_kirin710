@@ -17,11 +17,7 @@
 #include <linux/string.h>
 
 #ifdef CONFIG_HISI_CLK_DEBUG
-#ifndef CONFIG_ARCH_HISI_CLK_EXTREME
 #include "hisi/debug/clk-debug.h"
-#else
-#include "hisi_extreme/debug/clk-debug.h"
-#endif
 #include <securec.h>
 #endif
 
