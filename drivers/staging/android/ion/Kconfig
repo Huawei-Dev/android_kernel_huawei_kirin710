@@ -57,13 +57,6 @@ config ION_HISI_CMA_HEAP
 	help
 	  if you want to use hisi_ion cma heap, you should select this.
 
-config HISI_ION_SECSG_DEBUG
-	bool "Hisilicon ION secsg heap debug support"
-	depends on ION_HISI_SECSG
-	default n
-	help
-	  if you want to debug ion secsg, you should select this.
-
 config ION_HISI_SECSG
 	bool "Hisilicon ION secsg heap support"
 	depends on ION_HISI

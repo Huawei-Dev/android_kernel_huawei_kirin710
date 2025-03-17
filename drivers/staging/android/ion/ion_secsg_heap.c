@@ -61,21 +61,6 @@ struct ion_secsg_heap {
 	int ta_init;
 };
 
-#ifdef CONFIG_HISI_ION_SECSG_DEBUG
-struct ion_secsg_fault_info {
-	size_t total_size;
-	u32 count;
-};
-
-static struct ion_secsg_fault_info fault_info;
-
-void ion_secsg_fault_info_dump(void)
-{
-	pr_err("dump ion secsg fault info: count[0x%x], total_size: 0x%lx\n",
-		fault_info.count, fault_info.total_size);
-}
-#endif
-
 #ifdef CONFIG_SECMEM_TEST
 #define ION_FLAG_ALLOC_TEST (1U << 31)
 
@@ -515,12 +500,6 @@ static void __secsg_free_scatter(struct ion_secsg_heap *secsg_heap,
 	if (__secsg_type_filer(secsg_heap->heap_attr, buffer->flags)) {
 		ret = change_scatter_prop(secsg_heap, buffer, ION_SEC_CMD_FREE);
 		if (ret) {
-#ifdef CONFIG_HISI_ION_SECSG_DEBUG
-			if (__secsg_tiny_heap_check(secsg_heap)) {
-				fault_info.count++;
-				fault_info.total_size += buffer->size;
-			}
-#endif
 			pr_err("release MPU protect fail! Need check runtime\n");
 			return;
 		}

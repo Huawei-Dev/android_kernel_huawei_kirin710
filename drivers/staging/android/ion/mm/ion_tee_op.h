@@ -23,11 +23,7 @@ enum SEC_Task {
 
 #define SECBOOT_CMD_ID_MEM_ALLOCATE 0x1
 
-#ifdef CONFIG_HISI_ION_SECSG_DEBUG
 #define sec_debug(fmt, ...)
-#else
-#define sec_debug(fmt, ...)
-#endif
 
 struct mem_chunk_list {
 	u32 protect_id;
