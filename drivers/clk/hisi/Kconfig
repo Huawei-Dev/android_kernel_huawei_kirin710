@@ -21,11 +21,6 @@ config HISI_CLK_DEBUG
 	bool "HiSilicon clock driver debug"
 	default n
 
-config HISI_CKM_MODULE
-	depends on HISI_CLK
-	bool "HiSilicon clk monitor driver"
-	default n
-
 config HISI_PLL_LOCK_RETRY
 	depends on HISI_CLK
 	bool "HiSilicon clk pll lock retry"

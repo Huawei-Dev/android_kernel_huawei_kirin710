@@ -10,4 +10,3 @@ obj-$(CONFIG_HISI_CLK_PM_MONITOR)       += hisi-clk-pm-monitor.o
 obj-$(CONFIG_HISI_CLK)                  += hisi-clk-intr.o
 
 obj-$(CONFIG_HISI_PERIDVFS)             += dvfs/
-obj-$(CONFIG_HISI_CKM_MODULE)	        += hisi-clk-monitor.o
