@@ -305,9 +305,6 @@ int perivolt_register(struct device *dev, struct peri_volt_poll *pvp)
 	perivolt->flags = pvp->flags;
 	perivolt->priv = pvp->priv;
 	perivolt->stat = pvp->stat;
-#ifdef CONFIG_HISI_HW_PERI_DVS
-	perivolt->priv_date = pvp->priv_date;
-#endif
 	pr_info("%s: id=%u name=%s\n", __func__, perivolt->dev_id,
 		perivolt->name);
 	ret = __perivolt_init(dev, perivolt);

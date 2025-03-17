@@ -19,7 +19,3 @@ config HISI_PERI_VOLT_HW_VOTE
 	depends on HISI_PERIDVFS
 	bool "HISI PERI VOLT HW VOTE"
 	default n
-config HISI_HW_PERI_DVS
-	depends on HISI_PERIDVFS
-	bool "HISI HW PERI DVS"
-	default n

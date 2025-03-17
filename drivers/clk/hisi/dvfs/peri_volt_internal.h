@@ -64,9 +64,6 @@ struct peri_volt_poll {
 	spinlock_t lock;
 	void *priv;
 	unsigned int poll_count;
-#ifdef CONFIG_HISI_HW_PERI_DVS
-	void *priv_date;
-#endif
 };
 
 struct of_device_id;

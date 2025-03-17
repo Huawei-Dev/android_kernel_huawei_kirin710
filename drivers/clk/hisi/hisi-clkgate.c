@@ -44,29 +44,6 @@
 #define CLOCK_GATE_SYNC_MAX			10 /* us */
 
 #ifdef CONFIG_HISI_PERIDVFS
-#if defined(CONFIG_HISI_HW_PERI_DVS)
-static int peridvs_channel_valid_set(struct hi3xxx_periclk *pclk, bool flag)
-{
-	struct peri_volt_poll *pvp = NULL;
-	int ret;
-
-	if (!pclk)
-		return -EINVAL;
-
-	pvp = peri_volt_poll_get(pclk->perivolt_poll_id, NULL);
-	if (!pvp) /* if no pvp found, just return ok */
-		return 0;
-
-	ret = peri_set_avs(pvp, flag);
-	if (ret < 0) {
-		pr_err("[%s] pvp dev_id %u valid set failed!\n", __func__,
-			pclk->perivolt_poll_id);
-		return ret;
-	}
-	return 0;
-}
-#endif
-
 static int peri_dvfs_set_volt(u32 poll_id, u32 volt_level)
 {
 	struct peri_volt_poll *pvp = NULL;
@@ -195,11 +172,6 @@ static int hi3xxx_clkgate_prepare(struct clk_hw *hw)
 		}
 	}
 #ifdef CONFIG_HISI_PERIDVFS
-#if defined(CONFIG_HISI_HW_PERI_DVS)
-	ret = peridvs_channel_valid_set(pclk, AVS_ENABLE_PLL);
-	if (ret < 0)
-		pr_err("[%s] set peridvs channel failed ret=%d!\n", __func__, ret);
-#endif
 	ret = hisi_peri_dvfs_prepare(pclk);
 	if (ret < 0)
 		pr_err("[%s]set volt failed ret = %d tar = %s!\n", __func__, ret, hw->init->name);
@@ -270,10 +242,6 @@ static void hi3xxx_clkgate_unprepare(struct clk_hw *hw)
 	struct clk *friend_clk = NULL;
 
 #ifdef CONFIG_HISI_PERIDVFS
-#if defined(CONFIG_HISI_HW_PERI_DVS)
-	if (peridvs_channel_valid_set(pclk, AVS_DISABLE_PLL) < 0)
-		pr_err("[%s] disable peridvs channel failed!\n", __func__);
-#endif /* CONFIG_HISI_HW_PERI_DVS */
 	hisi_peri_dvfs_unprepare(pclk);
 #endif /* CONFIG_HISI_PERIDVFS */
 

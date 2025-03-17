@@ -122,40 +122,6 @@ static int clk_peri_get_temprature(struct peri_volt_poll *pvp)
 #endif
 
 #ifdef CONFIG_HISI_PERIDVFS
-#if defined(CONFIG_HISI_HW_PERI_DVS)
-static int clk_ip_avs_poll(struct peri_dvfs_clk *dfclk, bool flag)
-{
-	struct peri_volt_poll *pvp = NULL;
-	int ret;
-
-	if (!dfclk)
-		return -EINVAL;
-
-	pvp = peri_volt_poll_get(dfclk->id, NULL);
-	if (!pvp) {
-		pr_err("[%s] get pvp dev_id %u get failed!\n",
-			__func__, dfclk->id);
-		return -EINVAL;
-	}
-
-	ret = peri_set_avs(pvp, flag);
-	if (ret < 0) {
-		pr_err("[%s] pvp dev_id %u valid set failed!\n",
-			__func__, dfclk->id);
-		return ret;
-	}
-	return 0;
-}
-
-static int wait_avs_complete(struct peri_dvfs_clk *dfclk)
-{
-	if (!dfclk)
-		return -EINVAL;
-
-	/* nothing to do */
-	return 0;
-}
-#else
 static int clk_ip_avs_poll(struct peri_dvfs_clk *dfclk, bool flag)
 {
 	struct peri_volt_poll *pvp = NULL;
@@ -237,7 +203,6 @@ static int wait_avs_complete(struct peri_dvfs_clk *dfclk)
 
 	return ret;
 }
-#endif /* CONFIG_HISI_HW_PERI_DVS */
 
 static int peri_temperature(struct peri_dvfs_clk *pclk)
 {
