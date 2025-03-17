@@ -39,13 +39,5 @@ void track_regulator_set_mode(struct regulator_dev *rdev,
 
 extern struct list_head *get_regulator_list(void);
 
-#ifdef CONFIG_HISI_PMIC_DEBUG
-void get_current_regulator_dev(struct seq_file *s);
-void set_regulator_state(const char *ldo_name, int value);
-void get_regulator_state(const char *ldo_name, int length);
-int set_regulator_voltage(const char *ldo_name, unsigned int vol_value);
-int regulator_debugfs_create(struct device *dev);
-#endif
-
 #endif
 

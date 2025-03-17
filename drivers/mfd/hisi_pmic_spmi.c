@@ -171,57 +171,11 @@ u32 pmic_read_sub_pmu(u8 sid, int reg)
 {
 	u8 read_value = 0;
 
-#ifdef CONFIG_HISI_PMIC_DEBUG
-	u32 ret;
-	struct spmi_device *pdev = NULL;
-
-	if (g_pmic == NULL) {
-		pr_err(" g_pmic is NULL\n");
-		return 0;
-	}
-
-	pdev = to_spmi_device(g_pmic->dev);
-	if (pdev == NULL) {
-		pr_err("%s:pdev get failed!\n", __func__);
-		return 0;
-	}
-
-	ret = spmi_ext_register_readl(
-		pdev->ctrl, sid, reg, (unsigned char *)&read_value, 1);
-	if (ret) {
-		pr_err("%s:spmi_ext_register_readl failed!\n",
-			__func__);
-		return 0;
-	}
-#endif
 	return (u32)read_value;
 }
 
 void pmic_write_sub_pmu(u8 sid, int reg, u32 val)
 {
-#ifdef CONFIG_HISI_PMIC_DEBUG
-	u32 ret;
-	struct spmi_device *pdev = NULL;
-
-	if (g_pmic == NULL) {
-		pr_err(" g_pmic is NULL\n");
-		return;
-	}
-
-	pdev = to_spmi_device(g_pmic->dev);
-	if (pdev == NULL) {
-		pr_err("%s:pdev get failed!\n", __func__);
-		return;
-	}
-
-	ret = spmi_ext_register_writel(
-		pdev->ctrl, sid, reg, (unsigned char *)&val, 1);
-	if (ret) {
-		pr_err("%s:spmi_ext_register_writel failed!\n",
-			__func__);
-		return;
-	}
-#endif
 }
 
 void hisi_pmic_rmw(struct vendor_pmic *pmic, int reg, u32 mask, u32 bits)

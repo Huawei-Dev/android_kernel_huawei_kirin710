@@ -1036,11 +1036,6 @@ config HISI_REGULATOR_SPMI
 	  This driver provides support for the voltage regulators on the
 	  PMU / Codec IC.
 
-config HISI_PMIC_DEBUG
-	depends on DEBUG_FS
-	bool "regulator and ip driver debug"
-	default n
-
 config HISI_REGULATOR_TRACE
 	tristate "Regulator Debug driver for REGULATOR TRACE"
 	depends on HISI_REGULATOR_DEBUG

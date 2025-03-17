@@ -4,10 +4,6 @@
  * Create: 2013-03-17
  */
 #include <linux/mfd/hisi_pmic.h>
-#ifdef CONFIG_HISI_PMIC_DEBUG
-#include <linux/debugfs.h>
-#include "regulator_debug.h"
-#endif
 #include <linux/regulator/of_regulator.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
@@ -509,11 +505,6 @@ static int spmi_regulator_probe(struct spmi_device *pdev)
 		rdesc->name, constraint->valid_modes_mask, constraint->valid_ops_mask);
 
 	dev_set_drvdata(dev, rdev);
-#ifdef CONFIG_HISI_PMIC_DEBUG
-	ret = regulator_debugfs_create(dev);
-	if (ret)
-		regulator_unregister(rdev);
-#endif
 regulator_probe_end:
 	if (ret)
 		kfree(sreg);

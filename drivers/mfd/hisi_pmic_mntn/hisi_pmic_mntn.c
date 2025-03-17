@@ -54,9 +54,6 @@
 #define PMU_NUM	2
 static struct pmic_mntn_desc *g_pmic_mntn[PMU_NUM];
 static void __iomem *g_sysctrl_base;
-#ifdef CONFIG_HISI_PMIC_DEBUG
-static int g_mntn_notifier_flag;
-#endif
 
 static unsigned int pmic_mntn_reg_read(
 	struct pmic_mntn_desc *pmic_mntn, int addr)
@@ -165,31 +162,6 @@ int pmic_mntn_call_notifiers(int val, void *v)
 		&hisi_pmic_mntn_notifier_list, (unsigned long)val, v);
 }
 EXPORT_SYMBOL_GPL(pmic_mntn_call_notifiers);
-
-#ifdef CONFIG_HISI_PMIC_DEBUG
-static int pmic_mntn_test_notifier_call(
-	struct notifier_block *nb, unsigned long event, void *data)
-{
-	PMIC_MNTN_EXCP_INFO *ocp_ldo_msg = (PMIC_MNTN_EXCP_INFO *)data;
-
-	if (ocp_ldo_msg == NULL) {
-		pr_err("[%s] test pmic mnt ocp ldo msg is NULL!\n", __func__);
-		return -EPERM;
-	}
-
-	if (event == PMIC_MNTN_OCP_EVENT)
-		pr_err("[%s] test pmic mnt %s ocp event!\n",
-			__func__, ocp_ldo_msg->ldo_num);
-	else
-		pr_err("[%s]invalid event %d!\n", __func__, (int)event);
-	return 0;
-}
-
-static struct notifier_block pmic_mntn_test_nb = {
-	.notifier_call = pmic_mntn_test_notifier_call,
-	.priority = INT_MIN,
-};
-#endif
 
 void pmic_mntn_panic_handler(void)
 {
@@ -1211,15 +1183,6 @@ static int pmic_mntn_ocp_mntn_irq_initial(
 		return -ENODEV;
 	}
 
-#ifdef CONFIG_HISI_PMIC_DEBUG
-	if (!g_mntn_notifier_flag) {
-		g_mntn_notifier_flag = 1;
-		ret = pmic_mntn_register_notifier(&pmic_mntn_test_nb);
-		if (ret)
-			pr_err("%s:hisi pmic mntn test nb register fail!\n",
-				__func__);
-	}
-#endif
 	return 0;
 }
 
@@ -1557,18 +1520,6 @@ void pmic_vsys_surge_init(struct pmic_mntn_desc *pmic_mntn)
 
 void pmic_mntn_drv_deinit(void)
 {
-#ifdef CONFIG_HISI_PMIC_DEBUG
-		int ret;
-
-		if (!g_mntn_notifier_flag)
-			return;
-
-		ret = pmic_mntn_unregister_notifier(&pmic_mntn_test_nb);
-		if (ret)
-			pr_err("%s: hisi pmic mntn test nb unregister fail!\n",
-				__func__);
-		g_mntn_notifier_flag = 0;
-#endif
 }
 
 static int pmic_mntn_probe(struct platform_device *pdev)

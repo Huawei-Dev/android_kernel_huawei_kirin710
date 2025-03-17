@@ -44,9 +44,6 @@
 #include <linux/hwspinlock.h>
 #include <linux/interrupt.h>
 #include <soc_crgperiph_interface.h>
-#ifdef CONFIG_HISI_PMIC_DEBUG
-#include <linux/debugfs.h>
-#endif
 #include <linux/seq_file.h>
 #include <linux/uaccess.h>
 #if CONFIG_DEBUG_FS
