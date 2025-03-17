@@ -65,9 +65,6 @@ static const struct mm_ion_type_table ion_type_table[] = {
 	{"ion_system", ION_HEAP_TYPE_SYSTEM},
 	{"ion_system_contig", ION_HEAP_TYPE_SYSTEM_CONTIG},
 	{"ion_carveout", ION_HEAP_TYPE_CARVEOUT},
-#ifdef CONFIG_ION_HISI_SECCM
-	{"ion_sec", ION_HEAP_TYPE_SECCM},
-#endif
 #ifdef CONFIG_ION_HISI_SECSG
 	{"ion_sec", ION_HEAP_TYPE_SEC_CONTIG},
 	{"ion_sec_sg", ION_HEAP_TYPE_SECSG},

@@ -8,5 +8,4 @@ obj-$(CONFIG_ION_CMA_HEAP) += ion_cma_heap.o
 obj-$(CONFIG_ION_HISI_CMA_HEAP) += ion_mm_cma_heap.o
 obj-$(CONFIG_ION_HISI) += mm/
 obj-$(CONFIG_ION_HISI_SECSG) += ion_seccg_heap.o ion_sec_contig.o ion_secsg_heap.o
-obj-$(CONFIG_ION_HISI_SECCM) += ion_seccm_heap.o
 obj-$(CONFIG_ION_HISI_DMA_POOL) += ion_dma_pool_heap.o

@@ -41,13 +41,6 @@ static inline struct ion_heap *ion_carveout_heap_create(
 static inline void ion_carveout_heap_destroy(struct ion_heap *ih){ }
 #endif
 
-#ifdef CONFIG_ION_HISI_SECCM
-struct ion_heap *ion_seccm_heap_create(struct ion_platform_heap *);
-void ion_seccm_heap_destroy(struct ion_heap *);
-int ion_seccm_heap_phys(struct ion_heap *heap,
-		struct ion_buffer *buffer,
-		phys_addr_t *addr, size_t *len);
-#else
 static inline struct ion_heap *ion_seccm_heap_create(
 				struct ion_platform_heap *iph)
 {
@@ -63,7 +56,6 @@ static inline int ion_seccm_heap_phys(struct ion_heap *heap,
 	pr_err("%s: not sec mem!\n", __func__);
 	return -EINVAL;
 }
-#endif
 
 #ifdef CONFIG_ION_HISI_SUPPORT_HEAP_MERGE
 int ion_dma_pool_heap_phys(struct ion_heap *heap,
