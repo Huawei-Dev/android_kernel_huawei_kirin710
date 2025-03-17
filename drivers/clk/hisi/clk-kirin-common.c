@@ -828,17 +828,6 @@ static int hi3xxx_clkdiv_set_rate(struct clk_hw *hw, unsigned long rate,
 	data |= dclk->mbits;
 	writel(data, dclk->reg);
 
-#ifdef CONFIG_HISI_CLK_WAIT_DONE
-	if ((dclk->div_done) &&
-	    (dclk->hw.core->parent) &&
-	    (clk_gate_is_enabled(dclk->hw.core->parent->hw))) {
-		udelay(1);
-		if (!(readl(dclk->div_done) & BIT(dclk->done_bit)))
-			pr_err("[%s]: [%s] not complete at %lu rate!\n",
-				__func__, dclk->hw.core->name, rate);
-	}
-#endif
-
 	if (dclk->lock)
 		spin_unlock_irqrestore(dclk->lock, flags);
 
@@ -940,10 +929,6 @@ static int __hi3xxx_clkdiv_reg_set(struct device_node *np, struct hi3xxx_divclk 
 {
 	/* 2:offset and efficient bit */
 	u32 data[2] = {0};
-#ifdef CONFIG_HISI_CLK_WAIT_DONE
-	/* 2: div_done offset and efficient bit */
-	u32 done_data[2] = {0};
-#endif
 
 	if (of_property_read_u32_array(np, "hisilicon,clkdiv", &data[0], 2)) {
 		pr_err("[%s] node %s doesn't have clkdiv property!\n",
@@ -955,18 +940,6 @@ static int __hi3xxx_clkdiv_reg_set(struct device_node *np, struct hi3xxx_divclk 
 	dclk->shift = ffs(data[1]) - 1;
 	dclk->width = fls(data[1]) - ffs(data[1]) + 1;
 	dclk->mbits = data[1] << 16;
-
-#ifdef CONFIG_HISI_CLK_WAIT_DONE
-	if (of_find_property(np, "hisilicon,clkdiv-done", NULL) != NULL) {
-		if (of_property_read_u32_array(np, "hisilicon,clkdiv-done", &done_data[0], 2)) {
-			pr_err("[%s] node %s doesn't have divdone property!\n",
-				__func__, np->name);
-			return -ENODEV;
-		}
-		dclk->div_done = reg_base + done_data[0];
-		dclk->done_bit = done_data[1];
-	}
-#endif
 
 	return 0;
 }

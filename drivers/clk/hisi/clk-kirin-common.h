@@ -105,10 +105,6 @@ struct hi3xxx_divclk {
 	u8 width;
 	u32 mbits;         /* mask bits in divider register */
 	const struct clk_div_table *table;
-#ifdef CONFIG_HISI_CLK_WAIT_DONE
-	void __iomem *div_done;
-	u32 done_bit;
-#endif
 	spinlock_t *lock;
 };
 

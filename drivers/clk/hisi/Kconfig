@@ -20,8 +20,3 @@ config HISI_CLK_DEBUG
 	depends on DEBUG_FS
 	bool "HiSilicon clock driver debug"
 	default n
-
-config HISI_CLK_WAIT_DONE
-	depends on HISI_CLK
-	bool "HiSilicon clk wait div done"
-	default n
