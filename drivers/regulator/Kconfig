@@ -1036,12 +1036,6 @@ config HISI_REGULATOR_SPMI
 	  This driver provides support for the voltage regulators on the
 	  PMU / Codec IC.
 
-config HISI_SMARTPA_REGULATOR
-	tristate "SMARTPA regulators from platform device"
-	help
-	  This driver provides support for the voltage regulators on the
-	  PMU / Codec IC.
-
 config HISI_REGULATOR
 	tristate "PMIC regulators from platform device"
 	help

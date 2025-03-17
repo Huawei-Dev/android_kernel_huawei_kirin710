@@ -122,7 +122,6 @@ obj-$(CONFIG_REGULATOR_WM8400) += wm8400-regulator.o
 obj-$(CONFIG_REGULATOR_WM8994) += wm8994-regulator.o
 
 obj-$(CONFIG_HISI_REGULATOR) += hisi_regulator_regmap.o
-obj-$(CONFIG_HISI_SMARTPA_REGULATOR) += hisi_smartpa_regulator.o
 obj-$(CONFIG_HISI_REGULATOR_SPMI) += hisi_regulator_spmi.o
 obj-$(CONFIG_DRV_HISI_IP_REGULATOR) += ip_regulator.o
 obj-$(CONFIG_HISI_REGULATOR_DEBUG) += regulator_debug.o
