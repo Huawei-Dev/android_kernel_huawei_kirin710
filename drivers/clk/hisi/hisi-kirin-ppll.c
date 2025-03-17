@@ -33,12 +33,6 @@
 #include "debug/clk-debug.h"
 #endif
 
-#ifdef CONFIG_HISI_PLL_LOCK_RETRY
-#define MAX_RETRY_NUM 5
-#define MAX_CHECK_TIME 60
-#define PLL_LOCK_STATUS 0xFFFFF
-#endif
-
 #define PPLL_TYPE_ID 1
 
 static int kirin_ppll_enable_open(struct hi3xxx_ppll_clk *ppll_clk, int ppll)
@@ -97,38 +91,6 @@ static void kirin_ppll_nogate(struct hi3xxx_ppll_clk *ppll_clk, int ppll)
 	}
 }
 
-#ifdef CONFIG_HISI_PLL_LOCK_RETRY
-static int wait_ap_pll_lock(const void __iomem *lock_base, int ppll, unsigned int lock_bit)
-{
-	u32 reg_value, lock_state;
-	u32 timeout = 0;
-	u32 lockerr_flag = 0;
-	u32 pll_lock_state = 0;
-	u32 zero_flag = 0;
-
-	do {
-		reg_value = readl(lock_base);
-		lock_state = (reg_value & BIT(lock_bit)) >> lock_bit;
-		/* record lock state 1 to 0 */
-		if ((pll_lock_state & 0x1) == 1 && lock_state == 0)
-			lockerr_flag = 1;
-		pll_lock_state = (pll_lock_state << 1) | lock_state;
-		zero_flag |= lock_state;
-		udelay(1);
-		timeout++;
-	} while (timeout < MAX_CHECK_TIME && ((pll_lock_state & PLL_LOCK_STATUS) != PLL_LOCK_STATUS));
-
-	if ((pll_lock_state & PLL_LOCK_STATUS) == PLL_LOCK_STATUS)
-		return 0;
-	if (lockerr_flag)
-		pr_err("[%s]: PPLL-%d[0x%x] lock unstabitily!\n", __func__,
-			ppll, pll_lock_state);
-	if (!zero_flag)
-		pr_err("[%s]: PPLL-%d lock timeout!\n", __func__, ppll);
-
-	return -1;
-}
-#else
 static int wait_ap_pll_lock(const void __iomem *lock_base, int ppll, unsigned int lock_bit)
 {
 	u32 val;
@@ -147,7 +109,6 @@ static int wait_ap_pll_lock(const void __iomem *lock_base, int ppll, unsigned in
 
 	return 0;
 }
-#endif
 
 static int kirin_ppll_enable_ready(struct hi3xxx_ppll_clk *ppll_clk, int ppll)
 {
@@ -269,9 +230,6 @@ static int kirin_multicore_ppll_enable(struct clk_hw *hw)
 {
 	struct hi3xxx_ppll_clk *ppll_clk = container_of(hw, struct hi3xxx_ppll_clk, hw);
 	u32 ret;
-#ifdef CONFIG_HISI_PLL_LOCK_RETRY
-	int i;
-#endif
 
 	/* for debug */
 	ppll_clk->ref_cnt++;
@@ -282,25 +240,8 @@ static int kirin_multicore_ppll_enable(struct clk_hw *hw)
 		ret = get_ppll_state(ppll_clk);
 		if (ret)
 			return 0;
-#ifdef CONFIG_HISI_PLL_LOCK_RETRY
-		for (i = 0; i < MAX_RETRY_NUM; i++) {
-			kirin_ppll_enable_open(ppll_clk, ppll_clk->en_cmd[1]);
-			/* wait to lock */
-			udelay(20);
-			ret = kirin_ppll_enable_ready(ppll_clk, ppll_clk->en_cmd[1]);
-			if (!ret)
-				break;
-			kirin_ppll_disable(ppll_clk, ppll_clk->en_cmd[1]);
-		}
-		if (i == MAX_RETRY_NUM) {
-			pr_err("[%s]: PPLL-%d retry five count lock err!\n", __func__,
-				ppll_clk->en_cmd[1]);
-			return -1;
-		}
-#else
 		kirin_ppll_enable_open(ppll_clk, ppll_clk->en_cmd[1]);
 		kirin_ppll_enable_ready(ppll_clk, ppll_clk->en_cmd[1]);
-#endif
 	}
 	return 0;
 }
@@ -941,37 +882,6 @@ static void ppll_disable(struct hi3xxx_ppll_clk *ppll_clk, int ppll)
 	}
 }
 
-#ifdef CONFIG_HISI_PLL_LOCK_RETRY
-static int hi3xxx_multicore_ppll_enable(struct clk_hw *hw)
-{
-	struct hi3xxx_ppll_clk *ppll_clk = NULL;
-	u32 ret;
-	int i;
-
-	ppll_clk = container_of(hw, struct hi3xxx_ppll_clk, hw);
-	/* for debug */
-	ppll_clk->ref_cnt++;
-	if (ppll_clk->en_cmd[PPLL_TYPE_ID] == PPLL0)
-		return 0;
-	if (ppll_clk->ref_cnt == 1) {
-		for (i = 0; i < MAX_RETRY_NUM; i++) {
-			ppll_enable_open(ppll_clk, ppll_clk->en_cmd[PPLL_TYPE_ID]);
-			/* wait to lock */
-			udelay(20);
-			ret = ppll_enable_ready(ppll_clk, ppll_clk->en_cmd[PPLL_TYPE_ID]);
-			if (!ret)
-				break;
-			ppll_disable(ppll_clk, ppll_clk->en_cmd[PPLL_TYPE_ID]);
-		}
-		if (i == MAX_RETRY_NUM) {
-			pr_err("[%s]: PPLL-%d retry five count lock err!\n",
-				__func__, ppll_clk->en_cmd[PPLL_TYPE_ID]);
-			return -1;
-		}
-	}
-	return 0;
-}
-#else
 static int hi3xxx_multicore_ppll_enable(struct clk_hw *hw)
 {
 	struct hi3xxx_ppll_clk *ppll_clk = NULL;
@@ -987,7 +897,6 @@ static int hi3xxx_multicore_ppll_enable(struct clk_hw *hw)
 	}
 	return 0;
 }
-#endif
 
 static void hi3xxx_multicore_ppll_disable(struct clk_hw *hw)
 {

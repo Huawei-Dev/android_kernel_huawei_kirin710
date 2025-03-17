@@ -21,11 +21,6 @@ config HISI_CLK_DEBUG
 	bool "HiSilicon clock driver debug"
 	default n
 
-config HISI_PLL_LOCK_RETRY
-	depends on HISI_CLK
-	bool "HiSilicon clk pll lock retry"
-	default n
-
 config HISI_CLK_WAIT_DONE
 	depends on HISI_CLK
 	bool "HiSilicon clk wait div done"
