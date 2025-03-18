@@ -6,7 +6,6 @@ obj-$(CONFIG_HISI_BOOT_TIME) += boottime.o
 obj-$(CONFIG_HISI_RECOVERY_BIGCORE_PANIC) += mntn_bc_panic.o
 obj-$(CONFIG_HISI_BB) += blackbox/
 ifeq ($(TARGET_VERSION_MODE),factory)
-obj-$(CONFIG_HISI_VIRT_TO_PHYS) += virt_to_phys.o
 obj-$(CONFIG_HISI_MNTN_FACTORY) += mntn_factory.o
 endif
 obj-$(CONFIG_HISI_POWER_OFF)	+= hisi_poweroff.o
