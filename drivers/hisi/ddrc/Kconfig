@@ -12,12 +12,6 @@ config HI6250_DDRC_FLUX
 	bool "Hi6250 ddr bandwith statstic "
 	default n
 
-config HISI_DDR_TRACKING
-        tristate "Hisilicon DDR Tracking Function"
-        default n
-        help
-                Hisilicon DDR Tracking Function
-
 config HISI_DDRC_FLUX
 	bool "Hisi ddr bandwith statstic "
 	default n
