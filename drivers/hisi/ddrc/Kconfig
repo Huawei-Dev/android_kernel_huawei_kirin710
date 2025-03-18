@@ -4,10 +4,6 @@ config HISILICON_PLATFORM_DDRC
 	help
 	  Say yes here to support the hisilicon platform ddr controller
 
-config HISI_DDRC_FLUX
-	bool "Hisi ddr bandwith statstic "
-	default n
-
 config HISI_DDRC_SEC
 	bool "hisi ddr secprotect"
 	default n
