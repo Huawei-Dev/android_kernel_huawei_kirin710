@@ -15,7 +15,6 @@ obj-$(CONFIG_HIFI_DSP_ONE_TRACK)		+= hifi_dsp/
 obj-$(CONFIG_SOUND_TRIGGER)			+= soundtrigger/
 obj-$(CONFIG_HIFI_MAILBOX)			+= hifi_mailbox/
 obj-$(CONFIG_HISILICON_PLATFORM_MAINTAIN) += mntn/
-obj-$(CONFIG_FACTORY_SVFD) += factory_svfd/
 obj-$(CONFIG_HISILICON_PLATFORM_KERNELDUMP) += memory_dump/
 obj-$(CONFIG_HISILICON_PLATFORM_DDRC)   += ddrc/
 obj-$(CONFIG_HISI_NOC)	+= noc/
