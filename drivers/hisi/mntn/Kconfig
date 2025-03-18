@@ -52,12 +52,6 @@ config HISI_CLANG
         help
            Say 'Y' here if you want to support clang.
 
-config HISI_MNTN_SWITCH
-        bool "mntn switch debug driver"
-        depends on HISI_BB
-        default n
-        help
-           Say 'Y' here if you want to use himntn switch debug
 config HISI_EARLY_PANIC
         bool "early ap panic save log buf"
         depends on HISI_BB

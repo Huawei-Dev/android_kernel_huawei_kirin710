@@ -14,4 +14,3 @@ obj-$(CONFIG_HISI_RECORD_SP)       += mntn_record_sp.o
 obj-$(CONFIG_HISEE_MNTN) += hisee/
 obj-$(CONFIG_HISI_BL31_MNTN) += bl31/
 obj-$(CONFIG_SUBPMU) += subpmu/
-obj-$(CONFIG_HISI_MNTN_SWITCH) += himntn_switch.o
