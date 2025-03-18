@@ -200,15 +200,6 @@ void tasklet_hook(u64 address, u32 dir);
 void worker_hook(u64 address, u32 dir);
 void softirq_hook(unsigned int softirq_type, u64 address, u32 dir);
 void softirq_timeout_hook(u64 address, u32 dir);
-#ifdef CONFIG_HISI_MEM_TRACE
-void page_trace_hook(gfp_t gfp_flag, u8 action, u64 caller, struct page *page, u32 order);
-void kmalloc_trace_hook(u8 action, u64 caller, u64 va_addr, u64 phy_addr, u32 size);
-void vmalloc_trace_hook(u8 action, u64 caller, u64 va_addr, struct page *page, u64 size);
-#if (KERNEL_VERSION(4, 14, 0) > LINUX_VERSION_CODE)
-void ion_trace_hook(u8 action, struct ion_client *client, struct ion_handle *handle);
-#endif
-void smmu_trace_hook(u8 action, u64 va_addr, u64 phy_addr, u32 size);
-#else
 static inline void page_trace_hook(gfp_t gfp_flag, u8 action, u64 caller, struct page *page, u32 order) {}
 static inline void kmalloc_trace_hook(u8 action, u64 caller, u64 va_addr, u64 phy_addr, u32 size) {}
 static inline void vmalloc_trace_hook(u8 action, u64 caller, u64 va_addr, struct page *page, u64 size) {}
@@ -216,7 +207,6 @@ static inline void vmalloc_trace_hook(u8 action, u64 caller, u64 va_addr, struct
 static inline void ion_trace_hook(u8 action, struct ion_client *client, struct ion_handle *handle) {}
 #endif
 static inline void smmu_trace_hook(u8 action, u64 va_addr, u64 phy_addr, u32 size) {}
-#endif
 #else
 static inline void irq_trace_hook(unsigned int dir, unsigned int old_vec, unsigned int new_vec) {}
 static inline void task_switch_hook(const void *pre_task, void *next_task) {}

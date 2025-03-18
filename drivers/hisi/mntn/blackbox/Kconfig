@@ -54,16 +54,6 @@ config HISP_RDR
 	  isp,
 	  etc
 
-config HISI_MEM_TRACE
-	bool "mem trace"
-	depends on HISI_BB
-	default n
-	help
-	  This module used to record mem trace info.
-	  Include:
-	  mem trace,
-	  etc
-
 config HISI_DFX_CORE
 	bool "dfx core"
 	depends on HISI_BB
