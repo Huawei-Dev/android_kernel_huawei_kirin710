@@ -278,8 +278,6 @@ source "drivers/reclaim_acct/Kconfig"
 
 source "drivers/task_mem_stat/Kconfig"
 
-source "drivers/swapfile/Kconfig"
-
 -source "drivers/ics_drivers/Kconfig"
 
 source "drivers/emcom/Kconfig"

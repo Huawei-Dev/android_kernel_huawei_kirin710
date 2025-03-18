@@ -235,9 +235,6 @@ obj-$(CONFIG_HW_TASK_MEM_STAT) += task_mem_stat/
 # socp mem config
 obj-y += socp/
 
-# swapfile module
-obj-$(CONFIG_HUAWEI_SWAPFILE) += swapfile/
-
 obj-$(CONFIG_ICS_DRIVER) += ics_drivers/
 
 obj-y += hisi_sim_adapt/
