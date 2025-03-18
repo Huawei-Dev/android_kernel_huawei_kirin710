@@ -30,12 +30,6 @@ ifeq ($(CONFIG_HIFI_IPC_3660),y)
 EXTRA_CFLAGS += -Iinclude/modem/include/config/hi365x
 EXTRA_CFLAGS += -Iinclude/modem/include/drv/hi365x
 endif
-ifeq ($(CONFIG_HIFI_IPC_6250),y)
-EXTRA_CFLAGS += -DPLATFORM_HI6250
-EXTRA_CFLAGS += -DEXPAND_HIFI_RUNNING_REGION
-EXTRA_CFLAGS += -Iinclude/modem/include/config/hi62x0
-EXTRA_CFLAGS += -Iinclude/modem/include/drv/hi62x0
-endif
 
 EXTRA_CFLAGS += -Idrivers/hisi/hifi_mailbox/mailbox
 EXTRA_CFLAGS += -Idrivers/hisi/hifi_mailbox/ipcm

@@ -4,13 +4,6 @@ EXTRA_CFLAGS += -DPLATFORM_HI3XXX
 EXTRA_CFLAGS += -DPLATFORM_HI365X
 endif
 
-ifeq ($(CONFIG_HIFI_IPC_6250),y)
-EXTRA_CFLAGS += -DPLATFORM_HI3XXX
-EXTRA_CFLAGS += -DPLATFORM_HI6250
-#todo fixme: hi6250(PLATFORM_FPGA should be deleted on asic)
-EXTRA_CFLAGS += -DPLATFORM_FPGA
-endif
-
 EXTRA_CFLAGS += -Idrivers/hisi/hifi_mailbox/mailbox
 EXTRA_CFLAGS += -Idrivers/hisi/hifi_mailbox/ipcm
 
