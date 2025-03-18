@@ -8,10 +8,6 @@ config HISI_DDRC_SEC
 	bool "hisi ddr secprotect"
 	default n
 
-config HISI_DDR_SUBREASON
-	bool "hisi ddr subreason"
-	default n
-
 config HISI_MNTN_DMSS_OPTI
 	bool "hisi dmss opti"
 	default n

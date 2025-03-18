@@ -54,10 +54,6 @@
 #include "soc_media2_crg_interface.h"
 #include "linux/hisi/rdr_pub.h"
 
-#if defined(CONFIG_HISI_DDR_SUBREASON) && defined(CONFIG_HISI_DDR_MONOCEROS)
-#include "../hisi/ddrc/hisi_ddr_subreason/hisi_ddr_subreason_monoceros.h"
-#endif
-
 #define CONFIG_IOVA_POOL 1
 #define HISI_SMMUV3_SUPPORT
 /* MMIO registers */
@@ -2034,22 +2030,11 @@ static void arm_smmu_event_dump(struct arm_smmu_device *smmu,
 	}
 }
 
-#if defined(CONFIG_HISI_DDR_SUBREASON) && defined(CONFIG_HISI_DDR_MONOCEROS)
-static bool arm_smmu_modid_check(unsigned int modid)
-{
-	if (modid != MODID_DMSS_MEDIA_TCU) {
-		pr_err("%s modid:0x%x not match!\n", __func__, modid);
-		return false;
-	}
-	return true;
-}
-#else
 static inline bool arm_smmu_modid_check(unsigned int modid)
 {
 	(void)modid;
 	return false;
 }
-#endif
 
 static void arm_smmu_rdr_event_dump(unsigned int modid,
 				void *addr, unsigned int size)
