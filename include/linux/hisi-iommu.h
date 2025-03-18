@@ -171,11 +171,6 @@ static inline int hisi_iommu_unmap_padding_dmabuf(struct device *dev,
 }
 #endif /* CONFIG_HISI_IOMMU_LAST_PAGE */
 
-#ifdef CONFIG_HISI_IOMMU_TEST
-void mm_smmu_show_pte(struct device *dev, unsigned long iova,
-			unsigned long size);
-void mm_print_iova_dom(struct device *dev);
-#else
 static inline void mm_smmu_show_pte(struct device *dev, unsigned long iova,
 			unsigned long size)
 {
@@ -184,6 +179,5 @@ static inline void mm_smmu_show_pte(struct device *dev, unsigned long iova,
 static inline void mm_print_iova_dom(struct device *dev)
 {
 }
-#endif
 
 #endif

@@ -24,13 +24,6 @@ config HISI_IOMMU_LEGACY
 	help
 	  Hisilicon IOMMU Support.
 
-config HISI_IOMMU_TEST
-	bool "Hisilicon IOMMU TEST Support"
-	depends on HISI_IOMMU_LPAE
-	select IOMMU_API
-	help
-	  Hisilicon IOMMU Support.
-
 config HISI_IOMMU_IOVA_DEBUG
         bool "Hisilicon IOMMU IOVA DEBUG Support"
 	depends on HISI_IOMMU
