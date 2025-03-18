@@ -264,8 +264,6 @@ source "drivers/storage_rofa/Kconfig"
 
 source "drivers/hitrace/Kconfig"
 
-source "drivers/echub/Kconfig"
-
 -source "drivers/ics_drivers/Kconfig"
 
 source "drivers/emcom/Kconfig"
