@@ -601,9 +601,6 @@ static void mark_constdata_ro(void)
 
 #ifdef CONFIG_HISI_BB
 	extern int rdr_hisiap_early_init(void);
-#ifdef CONFIG_HISI_BB_DEBUG
-	extern u32 hisi_mntn_test_startkernel_panic(void);
-#endif
 #endif
 
 asmlinkage __visible void __init start_kernel(void)
@@ -692,10 +689,6 @@ asmlinkage __visible void __init start_kernel(void)
 #ifdef CONFIG_HISI_BB
 	/* startup mntn init set here to cover whole init flow */
 	(void)rdr_hisiap_early_init();
-
-#ifdef CONFIG_HISI_BB_DEBUG
-	(void)hisi_mntn_test_startkernel_panic();
-#endif
 #endif
 
 	/*

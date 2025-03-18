@@ -13,7 +13,6 @@ obj-$(CONFIG_HISI_POWER_OFF)	+= hisi_poweroff.o
 obj-$(CONFIG_HISI_FIQ)	+= hisi_fiq.o
 hisilicon_platform_mntn-y := util.o dump.o fastbootlog.o mntn_filesys.o hisi_bootup_keypoint.o
 subdir-ccflags-$(CONFIG_HISI_BB)               += -Idrivers/hisi/mntn/blackbox/
-obj-$(CONFIG_HISI_BB_DEBUG) += hisi_mntn_test.o
 obj-$(CONFIG_HISI_MNTNDUMP)       += mntn_dump.o
 obj-$(CONFIG_HISI_RECORD_SP)       += mntn_record_sp.o
 obj-$(CONFIG_HISI_HW_SP)           += mntn_hw_sp.o
