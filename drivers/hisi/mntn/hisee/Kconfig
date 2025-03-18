@@ -4,12 +4,6 @@ config HISEE_MNTN
     help
       Say yes here to support the hisee mntn module.
 
-config HISEE_MNTN_TEST
-    bool "hisee mntn test"
-    default n
-    help
-      Say yes here to support the hisee mntn test.
-
 config HISEE_NVMFORMAT_TEST
     bool "hisee nvm format"
     default n
