@@ -8,10 +8,6 @@ config HISI_DDRC_SEC
 	bool "hisi ddr secprotect"
 	default n
 
-config HI3660_DDR_AUTO_FSGT
-       bool "hi3660 ddr autofs/autogt"
-       default n
-
 config KIRIN970_DDR_AUTO_FSGT
        bool "kirin970 ddr autofs/autogt"
        default n
