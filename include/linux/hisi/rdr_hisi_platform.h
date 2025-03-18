@@ -222,13 +222,8 @@ static inline char *rdr_get_exec_subtype(void)
 }
 #endif
 
-#ifdef CONFIG_HISI_IRQ_REGISTER
-void irq_register_hook(struct pt_regs *reg);
-void show_irq_register(void);
-#else
 static inline void irq_register_hook(struct pt_regs *reg) {}
 static inline void show_irq_register(void) {}
-#endif
 
 #ifdef CONFIG_HISI_REENTRANT_EXCEPTION
 void reentrant_exception(void);

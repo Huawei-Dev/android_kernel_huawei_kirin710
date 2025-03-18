@@ -1,10 +1,3 @@
-config HISI_IRQ_REGISTER
-	bool "record irq register"
-	depends on HISI_BB
-	default n
-	help
-	  This module can record irq register.
-
 config HISI_REENTRANT_EXCEPTION
 	bool "reentrant exception"
 	depends on HISI_BB
