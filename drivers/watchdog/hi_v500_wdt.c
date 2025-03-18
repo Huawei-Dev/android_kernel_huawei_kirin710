@@ -103,11 +103,6 @@
 
 /* lpm3 message length */
 #define M3_MSG_LEN 2
-#undef CONFIG_HISI_AGING_WDT
-#ifdef CONFIG_HISI_AGING_WDT
-static bool disable_wdt_flag = false;
-#endif
-
 static struct hiv500_wdt *g_wdt = NULL;
 static struct syscore_ops hiv500_wdt_syscore_ops;
 void __iomem *wdt_base = NULL;
@@ -382,13 +377,6 @@ unsigned int get_wdt_kick_time(void)
 	return g_wdt->kick_time;
 }
 
-#ifdef CONFIG_HISI_AGING_WDT
-void set_wdt_disable_flag(bool iflag)
-{
-	disable_wdt_flag = iflag;
-}
-#endif
-
 static int hiv500_wdt_rdr_init(void)
 {
 	struct rdr_exception_info_s einfo;
@@ -502,16 +490,6 @@ static void dfx_wdt_mond(struct work_struct *work)
 	if (work == NULL)
 		return;
 	wdt = container_of(work, struct hiv500_wdt, dfx_wdt_delayed_work.work);
-#ifdef CONFIG_HISI_AGING_WDT
-	if (disable_wdt_flag == true) {
-#if (KERNEL_VERSION(4, 9, 76) > LINUX_VERSION_CODE)
-		dev_err(wdt->wdd.dev, "disable wdt ok!!!!!\n");
-#else
-		dev_err(&wdt->pdev->dev, "disable wdt ok!!!!!\n");
-#endif
-		return;
-	}
-#endif
 	wdt_ping(&wdt->wdd);
 
 	rdr_set_wdt_kick_slice(kickslice);
@@ -649,14 +627,7 @@ static int hiv500_wdt_probe(struct platform_device *pdev)
 	if (ret)
 		goto probe_fail;
 
-#ifdef CONFIG_HISI_AGING_WDT
-	if (check_himntn(HIMNTN_AGING_WDT))
-		wdt_setload(&wdt->wdd, AGING_WDT_TIMEOUT);
-	else
-		wdt_setload(&wdt->wdd, default_timeout);
-#else
 	wdt_setload(&wdt->wdd, default_timeout);
-#endif
 
 	m3_wdt_timeout_notify(default_timeout);
 
@@ -666,11 +637,6 @@ static int hiv500_wdt_probe(struct platform_device *pdev)
 		wdt->kick_time = ((default_timeout >> 1) - 1) / WDG_FEED_MOMENT_ADJUST; /* minus 1 from the total */
 
 	wdt_ping(&wdt->wdd);
-
-#ifdef CONFIG_HISI_AGING_WDT
-	if (check_himntn(HIMNTN_AGING_WDT))
-		set_wdt_disable_flag(true);
-#endif
 
 	INIT_DELAYED_WORK(&wdt->dfx_wdt_delayed_work, dfx_wdt_mond);
 
