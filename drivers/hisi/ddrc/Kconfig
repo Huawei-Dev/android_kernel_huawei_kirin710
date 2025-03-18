@@ -8,10 +8,6 @@ config HISI_DDRC_SEC
 	bool "hisi ddr secprotect"
 	default n
 
-config DDR_AUTO_FSGT
-       bool "ddr autofs/autogt"
-       default n
-
 config HISI_DDR_LACERTA
        bool "Hisi ddr lacerta platform"
        default n
