@@ -242,10 +242,6 @@ void panic(const char *fmt, ...)
 		crash_smp_send_stop();
 	}
 
-#ifdef CONFIG_HISI_EARLY_PANIC
-	if (!rdr_get_ap_init_done())
-		rdr_log_buf_notify_bl31();
-#endif
 	/*
 	 * Run any panic handlers, including those that might need to
 	 * add information to the kmsg dump output.

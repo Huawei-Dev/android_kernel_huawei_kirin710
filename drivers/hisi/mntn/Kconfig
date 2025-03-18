@@ -52,10 +52,3 @@ config HISI_CLANG
         help
            Say 'Y' here if you want to support clang.
 
-config HISI_EARLY_PANIC
-        bool "early ap panic save log buf"
-        depends on HISI_BB
-        default n
-        help
-           Say 'Y' here if you want to use enable early log buf
-

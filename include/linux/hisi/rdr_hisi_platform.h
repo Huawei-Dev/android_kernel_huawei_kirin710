@@ -139,10 +139,6 @@ char *rdr_get_category_name(u32 e_exce_type, u32 subtype);
 u32 rdr_get_exec_subtype_value(void);
 char *rdr_get_exec_subtype(void);
 void flush_logbuff_range(void);
-#ifdef CONFIG_HISI_EARLY_PANIC
-void rdr_log_buf_notify_bl31(void);
-#endif
-
 #else
 static inline void save_module_dump_mem(void) {}
 static inline void regs_dump(void) {}
