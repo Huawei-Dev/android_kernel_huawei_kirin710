@@ -24,13 +24,6 @@ config HISI_IOMMU_LEGACY
 	help
 	  Hisilicon IOMMU Support.
 
-config HISI_IOMMU_IOVA_DEBUG
-        bool "Hisilicon IOMMU IOVA DEBUG Support"
-	depends on HISI_IOMMU
-	default n
-	help
-	  Hisilicon IOMMU IOVA DEBUG Support
-
 config HISI_SVM
 	tristate "HISI SVM driver"
 	depends on !ARM_SMMU_V3
