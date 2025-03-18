@@ -24,29 +24,6 @@ config HISI_IOMMU_LEGACY
 	help
 	  Hisilicon IOMMU Support.
 
-config HISI_SVM
-	tristate "HISI SVM driver"
-	depends on !ARM_SMMU_V3
-	select MMU_NOTIFIER
-	---help---
-	  This option enables support for the hisi svm features base on the ARM
-	  smmu v3 hardware. Select this option if you want to use devices by ssid
-	  and asid interface.
-
-config HISI_SMMUV310
-	bool "HISI SMMUV310 Support"
-	depends on HISI_SVM
-	default n
-	help
-	  HISI SMMUV310 Support
-
-config HISI_SMMUV320
-	bool "HISI SMMUV320 Support"
-	depends on HISI_SVM
-	default n
-	help
-	  HISI SMMUV320 Support
-
 config HISI_IOMMU_LAST_PAGE
 	bool "HISI IOMMU Last Page Support"
 	depends on HISI_IOMMU

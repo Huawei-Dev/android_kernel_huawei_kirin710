@@ -34,7 +34,7 @@ struct hisi_svm {
 	unsigned long        l2addr;
 	struct dentry       *debug_root;
 	pid_t                pid;
-#if defined(CONFIG_MM_TCU) || defined(CONFIG_HISI_SVM)
+#ifdef CONFIG_MM_TCU
 	struct list_head     list;
 #endif
 };
@@ -45,22 +45,6 @@ struct mm_aicpu_irq_info {
 	int (*callback)(void *); /* reserved */
 	u64 cookie; /* reserved */
 };
-
-#ifdef CONFIG_HISI_SVM
-int hisi_smmu_poweron(int smmuid);
-int hisi_smmu_poweroff(int smmuid);
-int hisi_smmu_evt_register_notify(struct notifier_block *n);
-int hisi_smmu_evt_unregister_notify(struct notifier_block *n);
-void hisi_svm_unbind_task(struct hisi_svm *svm);
-struct hisi_svm *hisi_svm_bind_task(struct device *dev, struct task_struct *task);
-void *mm_svm_get_l2buf_pte(struct hisi_svm *svm, unsigned long addr);
-void mm_svm_show_pte(struct hisi_svm *svm, unsigned long addr, size_t size);
-int hisi_svm_get_ssid(struct hisi_svm *svm, u16 *ssid,  u64 *ttbr, u64 *tcr);
-int hisi_svm_flush_cache(struct mm_struct *mm, unsigned long addr, size_t size);
-int mm_aicpu_irq_offset_register(struct mm_aicpu_irq_info info);
-int hisi_svm_flag_set(struct task_struct *task, u32 flag);
-int hisi_smmu_nonsec_tcuctl(int smmuid);
-#endif
 
 #if defined(CONFIG_ARM_SMMU_V3)
 int hisi_smmu_poweron(struct device *dev);
@@ -77,7 +61,7 @@ int mm_aicpu_irq_offset_register(struct mm_aicpu_irq_info info);
 int hisi_svm_flag_set(struct task_struct *task, u32 flag);
 int hisi_smmu_nonsec_tcuctl(int smmuid);
 void hisi_smmu_dump_tbu_status(struct device *dev);
-#elif (!defined(CONFIG_HISI_SVM))
+#else
 static inline int hisi_smmu_poweron(struct device *dev)
 {
 	return 0;

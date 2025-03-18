@@ -28,9 +28,6 @@
 #ifdef CONFIG_HISI_LB
 #include <linux/hisi/hisi_lb.h>
 #endif
-#if defined(CONFIG_HISI_SVM) || defined(CONFIG_ARM_SMMU_V3)
-#include <linux/hisi/hisi_svm.h>
-#endif
 #include "ion.h"
 
 void *ion_heap_map_kernel(struct ion_heap *heap,
@@ -162,14 +159,6 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 	}
 
 done:
-#if defined(CONFIG_HISI_SVM) || defined(CONFIG_ARM_SMMU_V3)
-	if (test_bit(MMF_SVM, &vma->vm_mm->flags)) {
-		hisi_svm_flush_cache(vma->vm_mm,
-				     vma->vm_start,
-				     vma->vm_end - vma->vm_start);
-	}
-#endif
-
 	return 0;
 }
 
