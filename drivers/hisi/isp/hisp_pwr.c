@@ -24,7 +24,7 @@
 #include "hisp_internel.h"
 #include <isp_ddr_map.h>
 #include <securec.h>
-#include "../../clk/hisi_extreme/dvfs/peri_volt_poll.h"
+#include "../../clk/hisi/dvfs/peri_volt_poll.h"
 
 
 #define ISP_CFG_SIZE    0x1000

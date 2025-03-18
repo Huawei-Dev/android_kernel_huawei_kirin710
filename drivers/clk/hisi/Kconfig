@@ -2,10 +2,6 @@ config HISI_CLK
 	bool "clock driver of Soc"
 	default n
 
-config HISI_CLK_ALWAYS_ON
-	bool "all clocks of Hisi Soc are always on"
-	default n
-
 config HISI_CLK_PM_MONITOR
 	bool "clock pm_monitor spec"
 	default n

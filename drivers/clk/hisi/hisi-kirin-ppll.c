@@ -254,10 +254,8 @@ static void kirin_multicore_ppll_disable(struct clk_hw *hw)
 	ppll_clk->ref_cnt--;
 	if (ppll_clk->dis_cmd[1] == PPLL0)
 		return;
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 	if (!ppll_clk->ref_cnt)
 		kirin_ppll_disable(ppll_clk, ppll_clk->dis_cmd[1]);
-#endif
 }
 
 #ifdef CONFIG_HISI_CLK_DEBUG
@@ -907,10 +905,8 @@ static void hi3xxx_multicore_ppll_disable(struct clk_hw *hw)
 	ppll_clk->ref_cnt--;
 	if (ppll_clk->dis_cmd[PPLL_TYPE_ID] == PPLL0)
 		return;
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 	if (!ppll_clk->ref_cnt)
 		ppll_disable(ppll_clk, ppll_clk->dis_cmd[PPLL_TYPE_ID]);
-#endif
 }
 
 static const struct clk_ops hi3xxx_ppll_ops = {

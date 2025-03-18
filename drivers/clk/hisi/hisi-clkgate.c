@@ -34,10 +34,7 @@
 #include "debug/clk-debug.h"
 #endif
 
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
-
 #define HISI_CLK_GATE_DISABLE_OFFSET		0x4
-#endif
 
 #define HISI_CLK_GATE_STATUS_OFFSET		0x8
 
@@ -216,7 +213,6 @@ static int hi3xxx_clkgate_enable(struct clk_hw *hw)
 
 static void hi3xxx_clkgate_disable(struct clk_hw *hw)
 {
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 	struct hi3xxx_periclk *pclk = container_of(hw, struct hi3xxx_periclk, hw);
 	struct clk *friend_clk = NULL;
 
@@ -233,7 +229,6 @@ static void hi3xxx_clkgate_disable(struct clk_hw *hw)
 			pr_err("[%s]%s get failed!\n", __func__, pclk->friend);
 		__clk_disable(friend_clk);
 	}
-#endif
 }
 
 static void hi3xxx_clkgate_unprepare(struct clk_hw *hw)
@@ -245,7 +240,6 @@ static void hi3xxx_clkgate_unprepare(struct clk_hw *hw)
 	hisi_peri_dvfs_unprepare(pclk);
 #endif /* CONFIG_HISI_PERIDVFS */
 
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 	if (pclk->friend != NULL) {
 		friend_clk = __clk_lookup(pclk->friend);
 		if (IS_ERR_OR_NULL(friend_clk)) {
@@ -255,7 +249,6 @@ static void hi3xxx_clkgate_unprepare(struct clk_hw *hw)
 		clk_core_unprepare(friend_clk->core);
 	}
 
-#endif
 }
 
 #ifdef CONFIG_HISI_CLK_DEBUG

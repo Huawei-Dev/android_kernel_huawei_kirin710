@@ -296,7 +296,6 @@ err_cur_en:
 
 static void hi3xxx_clkfast_dvfs_disable(struct clk_hw *hw)
 {
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 	struct hi3xxx_fastclk *fclk = container_of(hw, struct hi3xxx_fastclk, hw);
 	const char *cur_pll_name = NULL;
 	struct clk *cur_pll = NULL;
@@ -324,7 +323,6 @@ static void hi3xxx_clkfast_dvfs_disable(struct clk_hw *hw)
 	clk_core_unprepare(cur_pll->core);
 
 	fclk->en_count--;
-#endif
 }
 
 static const struct clk_ops hi3xxx_clkfast_dvfs_ops = {

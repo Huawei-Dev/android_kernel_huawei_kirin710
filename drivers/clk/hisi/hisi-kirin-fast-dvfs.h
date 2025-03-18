@@ -35,9 +35,7 @@
 #define himask_set(mask) ((BIT(mask) << HIMASKEN_SHIFT) | BIT(mask))
 #define himask_unset(mask) (BIT(mask) << HIMASKEN_SHIFT)
 
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 #define HISI_CLK_GATE_DISABLE_OFFSET 0x4
-#endif
 #define HISI_CLK_GATE_STATUS_OFFSET 0x8
 
 /* member of struct clksw_offset and struct clkdiv_offset */

@@ -206,7 +206,6 @@ static int hi3xxx_multicore_clkgate_enable(struct clk_hw *hw)
 
 static void hi3xxx_multicore_clkgate_disable(struct clk_hw *hw)
 {
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 	struct hi3xxx_periclk *pclk = container_of(hw, struct hi3xxx_periclk, hw);
 	unsigned int val;
 	unsigned long flags = 0;
@@ -224,7 +223,6 @@ static void hi3xxx_multicore_clkgate_disable(struct clk_hw *hw)
 		spin_unlock_irqrestore(pclk->lock, flags);
 
 	return;
-#endif
 }
 
 static void hi3xxx_multicore_clkgate_unprepare(struct clk_hw *hw)
@@ -305,7 +303,6 @@ static int hi3xxx_multicore_abb_clkgate_prepare(struct clk_hw *hw)
 
 static void hi3xxx_multicore_abb_clkgate_unprepare(struct clk_hw *hw)
 {
-#ifndef CONFIG_HISI_CLK_ALWAYS_ON
 	struct hi3xxx_periclk *pclk = container_of(hw, struct hi3xxx_periclk, hw);
 	u32 val;
 
@@ -330,7 +327,6 @@ static void hi3xxx_multicore_abb_clkgate_unprepare(struct clk_hw *hw)
 		}
 	}
 	hwspin_unlock(pclk->clk_hwlock);
-#endif
 }
 
 #ifdef CONFIG_HISI_CLK_DEBUG
