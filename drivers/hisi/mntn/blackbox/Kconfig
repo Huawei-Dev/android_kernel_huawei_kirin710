@@ -74,13 +74,6 @@ config HISI_MNTN_ESUBTYPE
 	  exception subtype,
 	  etc
 
-config HISI_BB_SHUTDOWN_REASON
-	bool "shutdown reason record"
-	depends on HISI_BB
-	default n
-	help
-	  This module used to record shutdown reason
-
 source "drivers/hisi/mntn/blackbox/platform_ap/Kconfig"
 source "drivers/hisi/hifi_dsp/Kconfig"
 endmenu
