@@ -4,12 +4,6 @@ config HISILICON_PLATFORM_MAINTAIN
 	help
 	  Say yes here to support the platform maintain module
 
-config HISILICON_PLATFORM_HISI_EASYSHELL
-	bool "Support Easy Shell"
-	default n
-	help
-	  This driver supports XXX SOC,
-	  including easy shell, etc.
 source "drivers/hisi/mntn/blackbox/Kconfig"
 source "drivers/hisi/mntn/hisee/Kconfig"
 source "drivers/hisi/mntn/bl31/Kconfig"
