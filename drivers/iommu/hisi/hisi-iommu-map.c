@@ -536,26 +536,10 @@ release_attach:
 unsigned long hisi_iommu_map_dmabuf(struct device *dev, struct dma_buf *dmabuf,
 				int prot, unsigned long *out_size)
 {
-#ifdef CONFIG_HISI_IOMMU_BYPASS
-	struct sg_table *sgt = NULL;
-	struct dma_buf_attachment *attach = NULL;
-	unsigned long bypass_ret;
-#endif
-
 	if (!dev || !dmabuf || !out_size) {
 		dev_err(dev, "input err! dev %pK, dmabuf %pK\n", dev, dmabuf);
 		return 0;
 	}
-
-#ifdef CONFIG_HISI_IOMMU_BYPASS
-	sgt = __dmabuf_get_sgt(dev, dmabuf, &attach);
-	if (!sgt)
-		return 0;
-	bypass_ret = (unsigned long)sg_phys(sgt->sgl);
-	*out_size = sgt->sgl->length;
-	__release_dmabuf_attach(dmabuf, attach, sgt);
-	return bypass_ret;
-#endif
 
 	return __mm_iommu_map_dmabuf(dev, dmabuf, prot, out_size, NULL);
 }
@@ -579,10 +563,6 @@ int hisi_iommu_unmap_dmabuf(struct device *dev, struct dma_buf *dmabuf,
 	struct iova_dom *iova_dom = NULL;
 	struct iommu_domain *domain = NULL;
 	struct mm_dom_cookie *cookie = NULL;
-
-#ifdef CONFIG_HISI_IOMMU_BYPASS
-	return 0;
-#endif
 
 	if (!dev || !dmabuf || !iova) {
 		pr_err("input err! dev %pK, dmabuf %pK, iova 0x%lx\n",
@@ -641,11 +621,6 @@ unsigned long hisi_iommu_map_sg(struct device *dev, struct scatterlist *sgl,
 		pr_err("dev %pK, sgl %pK,or outsize is null\n", dev, sgl);
 		return 0;
 	}
-
-#ifdef CONFIG_HISI_IOMMU_BYPASS
-	*out_size = sgl->length;
-	return sg_phys(sgl);
-#endif
 
 	prot |= IOMMU_READ | IOMMU_WRITE;
 	iova = do_iommu_map_sg(dev, sgl, prot, out_size);
@@ -710,10 +685,6 @@ int hisi_iommu_unmap_sg(struct device *dev, struct scatterlist *sgl,
 			dev, sgl, iova);
 		return -EINVAL;
 	}
-
-#ifdef CONFIG_HISI_IOMMU_BYPASS
-	return 0;
-#endif
 
 	domain = iommu_get_domain_for_dev(dev);
 	if (!domain) {
@@ -802,10 +773,6 @@ unsigned long hisi_iommu_map(struct device *dev, phys_addr_t paddr,
 		pr_err("size is 0! no need to map\n");
 		return 0;
 	}
-
-#ifdef CONFIG_HISI_IOMMU_BYPASS
-	return (unsigned long)paddr;
-#endif
 
 	domain = iommu_get_domain_for_dev(dev);
 	if (!domain) {
@@ -915,10 +882,6 @@ int hisi_iommu_unmap(struct device *dev, unsigned long iova, size_t size)
 		pr_err("input err! dev %pK, size is 0\n", dev);
 		return -EINVAL;
 	}
-
-#ifdef CONFIG_HISI_IOMMU_BYPASS
-	return 0;
-#endif
 
 	domain = iommu_get_domain_for_dev(dev);
 	if (!domain) {

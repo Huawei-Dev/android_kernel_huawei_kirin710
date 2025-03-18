@@ -17,13 +17,6 @@ config HISI_IOMMU_LPAE
 	help
 	  Hisilicon IOMMU Support.
 
-config HISI_IOMMU_BYPASS
-	bool "Hisilicon IOMMU Bypass Support"
-	select IOMMU_API
-	depends on HISI_IOMMU
-	help
-	  Hisilicon IOMMU Bypass Support.
-
 config HISI_IOMMU_LEGACY
 	bool "Hisilicon IOMMU SECOND LEVEL PAGE TABLE Support"
 	select IOMMU_API
