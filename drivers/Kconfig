@@ -262,8 +262,6 @@ source "drivers/connectivity/Kconfig"
 
 source "drivers/storage_rofa/Kconfig"
 
-source "drivers/hwxcollie/Kconfig"
-
 source "drivers/hitrace/Kconfig"
 
 source "drivers/echub/Kconfig"
