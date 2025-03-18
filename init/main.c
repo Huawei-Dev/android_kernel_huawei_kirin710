@@ -99,10 +99,6 @@
 
 #include <chipset_common/security/root_scan.h>
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-#include <chipset_common/reclaim_acct/reclaim_acct.h>
-#endif
-
 #ifndef CONFIG_HISI_DEBUG_FS
 #include <uapi/scsi/ufs/ufs.h>
 #endif
@@ -808,9 +804,6 @@ asmlinkage __visible void __init start_kernel(void)
 	cgroup_init();
 	taskstats_init_early();
 	delayacct_init();
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	reclaimacct_init();
-#endif
 
 	check_bugs();
 

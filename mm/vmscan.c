@@ -86,10 +86,6 @@
 #include <linux/memcg_policy.h>
 #endif
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-#include <chipset_common/reclaim_acct/reclaim_acct.h>
-#endif
-
 #ifdef ARCH_HAS_PREFETCH
 #define prefetch_prev_lru_page(_page, _base, _field)			\
 	do {								\
@@ -507,13 +503,7 @@ unsigned long shrink_slab(gfp_t gfp_mask, int nid,
 		if (!(shrinker->flags & SHRINKER_NUMA_AWARE))
 			sc.nid = 0;
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-		reclaimacct_shrinkslab_start();
-#endif
 		freed += do_shrink_slab(&sc, shrinker, nr_scanned, nr_eligible);
-#ifdef CONFIG_HW_RECLAIM_ACCT
-		reclaimacct_shrinkslab_end(shrinker->scan_objects);
-#endif
 		/*
 		 * Bail out if someone want to register a new shrinker to
 		 * prevent the regsitration from being stalled for long periods
@@ -2670,11 +2660,6 @@ bool inactive_list_is_low(struct lruvec *lruvec, bool file,
 unsigned long shrink_list(enum lru_list lru, unsigned long nr_to_scan,
 				 struct lruvec *lruvec, struct scan_control *sc)
 {
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	unsigned long nr_reclaimed;
-
-	reclaimacct_shrinklist_start(is_file_lru(lru));
-#endif
 #ifndef CONFIG_REFAULT_IO_VMSCAN
 	if (is_active_lru(lru)) {
 		if (inactive_list_is_low(lruvec, is_file_lru(lru), sc, true))
@@ -2686,19 +2671,10 @@ unsigned long shrink_list(enum lru_list lru, unsigned long nr_to_scan,
 		else
 			sc->skipped_deactivate = 1;
 #endif
-#ifdef CONFIG_HW_RECLAIM_ACCT
-		reclaimacct_shrinklist_end(is_file_lru(lru));
-#endif
 		return 0;
 	}
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	nr_reclaimed = shrink_inactive_list(nr_to_scan, lruvec, sc, lru);
-	reclaimacct_shrinklist_end(is_file_lru(lru));
-	return nr_reclaimed;
-#else
 	return shrink_inactive_list(nr_to_scan, lruvec, sc, lru);
-#endif
 }
 
 #ifdef CONFIG_HUAWEI_PROMM

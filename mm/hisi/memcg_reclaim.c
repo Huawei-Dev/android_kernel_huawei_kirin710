@@ -64,9 +64,6 @@
 #ifdef CONFIG_HP_CORE
 #include <linux/hyperhold_inf.h>
 #endif
-#ifdef CONFIG_HW_RECLAIM_ACCT
-#include <chipset_common/reclaim_acct/reclaim_acct.h>
-#endif
 
 #include <linux/memcg_policy.h>
 #include "memcg_policy_internal.h"
@@ -210,11 +207,6 @@ unsigned long reclaim_all_anon_memcg(struct pglist_data *pgdat,
 		.may_unmap = 1,
 		.may_swap = 1,
 	};
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	enum lru_list lru = LRU_INACTIVE_ANON;
-
-	reclaimacct_shrinklist_start(is_file_lru(lru));
-#endif
 	count_vm_event(FREEZE_RECLAIM_TIMES);
 	move_pages_to_page_list(lruvec,
 			LRU_INACTIVE_ANON, &page_list);
@@ -228,9 +220,6 @@ unsigned long reclaim_all_anon_memcg(struct pglist_data *pgdat,
 		putback_lru_page(page);
 	}
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	reclaimacct_shrinklist_end(is_file_lru(lru));
-#endif
 	return nr_reclaimed;
 }
 
@@ -251,11 +240,6 @@ unsigned long reclaim_all_anon_memcg_prelaunch(struct pglist_data *pgdat,
 		.may_swap = 1,
 	};
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	enum lru_list lru = LRU_INACTIVE_ANON;
-
-	reclaimacct_shrinklist_start(is_file_lru(lru));
-#endif
 
 	lru_active_anon_size = lruvec_lru_size(lruvec, LRU_ACTIVE_ANON, MAX_NR_ZONES);
 	while (lru_active_anon_size) {
@@ -274,9 +258,6 @@ unsigned long reclaim_all_anon_memcg_prelaunch(struct pglist_data *pgdat,
 		putback_lru_page(page);
 	}
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	reclaimacct_shrinklist_end(is_file_lru(lru));
-#endif
 	return nr_reclaimed;
 }
 
@@ -1389,27 +1370,13 @@ static unsigned long zswapd_shrink_list(enum lru_list lru,
 		unsigned long nr_to_scan, struct lruvec *lruvec,
 		struct scan_control *sc)
 {
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	unsigned long nr_reclaimed;
-
-	reclaimacct_shrinklist_start(is_file_lru(lru));
-#endif
 	if (is_active_lru(lru)) {
 		if (inactive_list_is_low(lruvec, is_file_lru(lru), sc, true))
 			zswapd_shrink_active_list(nr_to_scan, lruvec, sc, lru);
-#ifdef CONFIG_HW_RECLAIM_ACCT
-		reclaimacct_shrinklist_end(is_file_lru(lru));
-#endif
 		return 0;
 	}
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	nr_reclaimed = shrink_inactive_list(nr_to_scan, lruvec, sc, lru);
-	reclaimacct_shrinklist_end(is_file_lru(lru));
-	return nr_reclaimed;
-#else
 	return shrink_inactive_list(nr_to_scan, lruvec, sc, lru);
-#endif
 }
 
 static void zswapd_shrink_anon_memcg(struct pglist_data *pgdat,

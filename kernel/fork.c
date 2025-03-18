@@ -121,10 +121,6 @@
 #endif
 #include <chipset_common/security/kshield.h>
 
-#ifdef CONFIG_HW_RECLAIM_ACCT
-#include <chipset_common/reclaim_acct/reclaim_acct.h>
-#endif
-
 #ifdef CONFIG_RENDER_RT
 #include <linux/render_rt.h>
 #endif
@@ -1802,9 +1798,6 @@ static __latent_entropy struct task_struct *copy_process(
 		goto bad_fork_cleanup_count;
 
 	delayacct_tsk_init(p);	/* Must remain after dup_task_struct() */
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	reclaimacct_tsk_init(p);
-#endif
 	p->flags &= ~(PF_SUPERPRIV | PF_WQ_WORKER | PF_IDLE);
 	p->flags |= PF_FORKNOEXEC;
 	INIT_LIST_HEAD(&p->children);

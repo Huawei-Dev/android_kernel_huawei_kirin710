@@ -272,8 +272,6 @@ source "drivers/hitrace/Kconfig"
 
 source "drivers/echub/Kconfig"
 
-source "drivers/reclaim_acct/Kconfig"
-
 -source "drivers/ics_drivers/Kconfig"
 
 source "drivers/emcom/Kconfig"

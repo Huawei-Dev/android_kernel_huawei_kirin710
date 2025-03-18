@@ -225,9 +225,6 @@ obj-$(CONFIG_HW_MEMORY_MONITOR) += allocpages_delayacct/
 obj-$(CONFIG_HW_XCOLLIE) += hwxcollie/
 obj-$(CONFIG_HUAWEI_ECHUB) += echub/
 
-# memory reclaim delay accounting
-obj-$(CONFIG_HW_RECLAIM_ACCT) += reclaim_acct/
-
 # socp mem config
 obj-y += socp/
 

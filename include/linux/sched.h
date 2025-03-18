@@ -44,9 +44,6 @@ struct perf_event_context;
 struct pid_namespace;
 struct pipe_inode_info;
 struct rcu_node;
-#ifdef CONFIG_HW_RECLAIM_ACCT
-struct reclaim_acct;
-#endif
 struct reclaim_state;
 struct robust_list_head;
 struct sched_attr;
@@ -1454,10 +1451,6 @@ struct task_struct {
 
 #ifdef CONFIG_TASK_DELAY_ACCT
 	struct task_delay_info		*delays;
-#endif
-
-#ifdef CONFIG_HW_RECLAIM_ACCT
-	struct reclaim_acct		*reclaim_acct;
 #endif
 
 #ifdef CONFIG_FAULT_INJECTION
