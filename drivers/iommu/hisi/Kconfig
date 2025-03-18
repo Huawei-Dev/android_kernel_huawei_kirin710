@@ -17,24 +17,3 @@ config HISI_IOMMU_LPAE
 	help
 	  Hisilicon IOMMU Support.
 
-config HISI_IOMMU_LEGACY
-	bool "Hisilicon IOMMU SECOND LEVEL PAGE TABLE Support"
-	select IOMMU_API
-	depends on HISI_IOMMU && !HISI_IOMMU_LPAE
-	help
-	  Hisilicon IOMMU Support.
-
-config HISI_IOMMU_DMA
-	bool "HISI IOMMU DMA Support"
-	depends on HISI_IOMMU
-	default n
-	help
-		HISI IOMMU DMA Support
-
-config HISI_IOMMU_DMD_REPORT
-        tristate "IOMMU dmd report support"
-        depends on ARM_SMMU_V3
-        ---help---
-          This option enables support for dmd report,
-	  only used for B platform npu tcu noc
-

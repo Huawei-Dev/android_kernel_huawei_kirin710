@@ -816,15 +816,4 @@ static inline int dma_mmap_wc(struct device *dev,
 #define dma_unmap_len(PTR, LEN_NAME)             (0)
 #define dma_unmap_len_set(PTR, LEN_NAME, VAL)    do { } while (0)
 #endif
-
-#ifdef CONFIG_HISI_IOMMU_DMA
-void *dma_iommu_alloc(struct device *dev, size_t size,
-				dma_addr_t *dma_handle, gfp_t flags,
-				unsigned long attrs);
-
-void dma_iommu_free(struct device *dev, size_t size,
-				void *vaddr, dma_addr_t dma_handle,
-				unsigned long attrs);
-#endif
-
 #endif

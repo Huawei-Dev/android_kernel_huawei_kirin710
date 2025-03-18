@@ -39,7 +39,6 @@
 #include <linux/platform_device.h>
 #include <linux/amba/bus.h>
 #include <linux/sched/mm.h>
-#include <linux/hisi/hisi_iommu_dma.h>
 #include <asm/pgtable.h>
 #include <asm/cacheflush.h>
 #include <mntn_subtype_exception.h>

@@ -686,9 +686,6 @@ static void pcie_tcu_tbu_rst_gt(struct pcie_kport *pcie, u32 enable)
 
 static bool is_smmu_bypass(struct pcie_kport *pcie)
 {
-	if (IS_ENABLED(CONFIG_HISI_IOMMU_DMA) && pcie->dtsinfo.sup_iommus)
-		return false;
-
 	return true;
 }
 

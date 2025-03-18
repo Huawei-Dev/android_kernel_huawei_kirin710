@@ -208,22 +208,6 @@ static void __dma_free(struct device *dev, size_t size,
 	__dma_free_coherent(dev, size, swiotlb_addr, dma_handle, attrs);
 }
 
-#ifdef CONFIG_HISI_IOMMU_DMA
-void *dma_iommu_alloc(struct device *dev, size_t size,
-				dma_addr_t *dma_handle, gfp_t flags,
-				unsigned long attrs)
-{
-	return __dma_alloc(dev, size, dma_handle, flags, attrs);
-}
-
-void dma_iommu_free(struct device *dev, size_t size,
-				void *vaddr, dma_addr_t dma_handle,
-				unsigned long attrs)
-{
-	__dma_free(dev, size, vaddr, dma_handle, attrs);
-}
-#endif
-
 static dma_addr_t __swiotlb_map_page(struct device *dev, struct page *page,
 				     unsigned long offset, size_t size,
 				     enum dma_data_direction dir,
