@@ -4498,16 +4498,6 @@ CONFIG_HISILICON_PLATFORM_MAILBOX=y
 CONFIG_HISI_MAILBOX=y
 
 #
-# hisi ipc mailboxes debugfs user
-#
-# CONFIG_HISI_MAILBOX_DEBUGFS is not set
-
-#
-# hisi ipc MailBox driver performance debug
-#
-# CONFIG_HISI_MAILBOX_PERFORMANCE_DEBUG is not set
-
-#
 # hisi kernel API about remote processor communication
 #
 CONFIG_HISI_RPROC=y
