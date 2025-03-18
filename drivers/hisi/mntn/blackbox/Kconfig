@@ -74,25 +74,6 @@ config HISI_MNTN_ESUBTYPE
 	  exception subtype,
 	  etc
 
-config HISI_BB_DIAGINFO
-	bool "diaginfo"
-	depends on HISI_BB
-	default n
-	help
-	  This module used to record nonreset exception.
-	  Include:
-	  nonreset exception,
-	  etc
-
-config HISI_HW_DIAG
-	bool "hareware diaginfo record"
-	depends on HISI_BB_DIAGINFO
-	default n
-	help
-	  This module record diaginfo to judge hardware fault.
-	  Include:
-	  hardware fault,
-	  etc
 config HISI_MNTN_GT_WATCH_SUPPORT
 	bool "mntn support GT watch"
 	default n

@@ -41,14 +41,8 @@ struct hisi_hw_diag_dev {
 	unsigned int trace_max_num;
 };
 
-#ifdef CONFIG_HISI_HW_DIAG
-void hisi_hw_diaginfo_trace(unsigned int err_id, const union hisi_hw_diag_info *diaginfo);
-void hisi_hw_diaginfo_record(const char *date);
-void hisi_hw_diag_init(void);
-#else
 static inline void hisi_hw_diaginfo_trace(unsigned int err_id, const union hisi_hw_diag_info *diaginfo) { return; }
 static inline void hisi_hw_diaginfo_record(const char *date) { return; }
 static inline void hisi_hw_diag_init(void) { return; }
-#endif
 
 #endif

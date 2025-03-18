@@ -31,18 +31,6 @@
 #define DIAGINFO_STRING_MAX_LEN     256
 #define DIAGINFO_COUNT_MAX           10
 
-#ifdef CONFIG_HISI_BB_DIAGINFO
-int bbox_diaginfo_exception_save2fs(void);
-void mntn_ipc_msg_nb(unsigned int *msg, u32 msg_len);
-void bbox_ap_ipc_init(void);
-int bbox_diaginfo_init(void);
-int bbox_lpmcu_diaginfo_init(void);
-int bbox_diaginfo_register(unsigned int err_id, const char *date, const char *pdata, unsigned int data_len, u64 ts);
-int bbox_diaginfo_record(unsigned int err_id, const char *date, const char *fmt, ...);
-void cpu_up_diaginfo_record(unsigned int cpu, int status);
-void bbox_diaginfo_dump_lastmsg(void);
-void create_hisi_diaginfo_log_file(void);
-#else
 static inline int bbox_diaginfo_exception_save2fs(void)
 {
 	return 0;
@@ -77,6 +65,4 @@ static inline void create_hisi_diaginfo_log_file(void)
 {
 	return;
 };
-#endif
-
 #endif
