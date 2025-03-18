@@ -131,10 +131,6 @@
 
 #include	"slab.h"
 
-#ifdef CONFIG_HW_TASK_MEM_STAT
-#include	<task_mem_stat/task_mem_stat.h>
-#endif
-
 /*
  * DEBUG	- 1 for kmem_cache_create() to honour; SLAB_RED_ZONE & SLAB_POISON.
  *		  0 for faster, smaller code (especially in the critical paths).
@@ -1423,9 +1419,6 @@ static struct page *kmem_getpages(struct kmem_cache *cachep, gfp_t flags,
 		mod_lruvec_page_state(page, NR_SLAB_RECLAIMABLE, nr_pages);
 	else
 		mod_lruvec_page_state(page, NR_SLAB_UNRECLAIMABLE, nr_pages);
-#ifdef CONFIG_HW_TASK_MEM_STAT
-	add_slab_count((cachep->flags & SLAB_RECLAIM_ACCOUNT) ? true : false, nr_pages);
-#endif
 
 	__SetPageSlab(page);
 	/* Record if ALLOC_NO_WATERMARKS was set when allocating the slab */
@@ -1449,9 +1442,6 @@ static void kmem_freepages(struct kmem_cache *cachep, struct page *page)
 		mod_lruvec_page_state(page, NR_SLAB_RECLAIMABLE, -nr_freed);
 	else
 		mod_lruvec_page_state(page, NR_SLAB_UNRECLAIMABLE, -nr_freed);
-#ifdef CONFIG_HW_TASK_MEM_STAT
-	add_slab_count((cachep->flags & SLAB_RECLAIM_ACCOUNT) ? true : false, -nr_freed);
-#endif
 
 	BUG_ON(!PageSlab(page));
 	__ClearPageSlabPfmemalloc(page);

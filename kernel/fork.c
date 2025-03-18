@@ -620,12 +620,6 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
 #ifdef CONFIG_FAULT_INJECTION
 	tsk->fail_nth = 0;
 #endif
-#ifdef CONFIG_HW_TASK_MEM_STAT
-	/* initialize slab count */
-	atomic_long_set(&tsk->slab_reclaimable, 0);
-	atomic_long_set(&tsk->slab_unreclaim, 0);
-#endif
-
 	return tsk;
 
 free_stack:

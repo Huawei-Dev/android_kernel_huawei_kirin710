@@ -51,9 +51,6 @@ static bool fill_random_malloc;
 #include <linux/hisi/mem_trace.h>
 #endif
 
-#ifdef CONFIG_HW_TASK_MEM_STAT
-#include <task_mem_stat/task_mem_stat.h>
-#endif
 /*
  * Lock order:
  *   1. slab_mutex (Global Mutex)
@@ -1774,9 +1771,6 @@ out:
 		(s->flags & SLAB_RECLAIM_ACCOUNT) ?
 		NR_SLAB_RECLAIMABLE : NR_SLAB_UNRECLAIMABLE,
 		1 << oo_order(oo));
-#ifdef CONFIG_HW_TASK_MEM_STAT
-	add_slab_count((s->flags & SLAB_RECLAIM_ACCOUNT) ? true : false, 1 << oo_order(oo));
-#endif
 
 	inc_slabs_node(s, page_to_nid(page), page->objects);
 
@@ -1815,9 +1809,6 @@ static void __free_slab(struct kmem_cache *s, struct page *page)
 		(s->flags & SLAB_RECLAIM_ACCOUNT) ?
 		NR_SLAB_RECLAIMABLE : NR_SLAB_UNRECLAIMABLE,
 		-pages);
-#ifdef CONFIG_HW_TASK_MEM_STAT
-	add_slab_count((s->flags & SLAB_RECLAIM_ACCOUNT) ? true : false, -pages);
-#endif
 
 	__ClearPageSlabPfmemalloc(page);
 	__ClearPageSlab(page);

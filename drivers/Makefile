@@ -228,9 +228,6 @@ obj-$(CONFIG_HUAWEI_ECHUB) += echub/
 # memory reclaim delay accounting
 obj-$(CONFIG_HW_RECLAIM_ACCT) += reclaim_acct/
 
-# memory stats for every task
-obj-$(CONFIG_HW_TASK_MEM_STAT) += task_mem_stat/
-
 # socp mem config
 obj-y += socp/
 

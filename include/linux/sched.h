@@ -1583,12 +1583,6 @@ struct task_struct {
 	bool				inspected;
 #endif
 
-#ifdef CONFIG_HW_TASK_MEM_STAT
-	/* Used to record Slab total used memory */
-	atomic_long_t			slab_reclaimable;
-	atomic_long_t			slab_unreclaim;
-#endif
-
 	/*
 	 * New fields for task_struct should be added above here, so that
 	 * they are included in the randomized portion of task_struct.
