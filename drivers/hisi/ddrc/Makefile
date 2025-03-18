@@ -1,4 +1,3 @@
-obj-$(CONFIG_HI3650_DDRC_FLUX) += hi3650_ddr_ddrcflux.o
 obj-$(CONFIG_HISI_DDRC_FLUX) += hisi_ddr_ddrcflux.o
 
 obj-$(CONFIG_HISI_DDRC_SEC) += hisi_ddr_secprotect.o
