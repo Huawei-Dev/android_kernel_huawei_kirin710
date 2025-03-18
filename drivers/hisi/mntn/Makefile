@@ -5,9 +5,6 @@ obj-$(CONFIG_HISILICON_PLATFORM_MAINTAIN)	+= hisilicon_platform_mntn.o
 obj-$(CONFIG_HISI_BOOT_TIME) += boottime.o
 obj-$(CONFIG_HISI_RECOVERY_BIGCORE_PANIC) += mntn_bc_panic.o
 obj-$(CONFIG_HISI_BB) += blackbox/
-ifeq ($(TARGET_VERSION_MODE),factory)
-obj-$(CONFIG_HISI_MNTN_FACTORY) += mntn_factory.o
-endif
 obj-$(CONFIG_HISI_POWER_OFF)	+= hisi_poweroff.o
 obj-$(CONFIG_HISI_FIQ)	+= hisi_fiq.o
 hisilicon_platform_mntn-y := util.o dump.o fastbootlog.o mntn_filesys.o hisi_bootup_keypoint.o

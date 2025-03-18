@@ -52,13 +52,6 @@ config HISI_CLANG
         help
            Say 'Y' here if you want to support clang.
 
-config HISI_MNTN_FACTORY
-        bool "debug mntn for factory test"
-        depends on HISI_BB
-        default n
-        help
-           Say 'Y' here if you want to use enable mntn factory debug
-
 config HISI_HEALTH_GRADE
         bool "health grade driver"
         default n
