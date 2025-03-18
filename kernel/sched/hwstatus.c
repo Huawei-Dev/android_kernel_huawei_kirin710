@@ -189,25 +189,10 @@ static void record_hwstatus(struct sched_hwstatus *hwstatus,
 static void record_mem(struct hwstatus_mem *mem,
 	struct task_struct *taskp)
 {
-#ifdef CONFIG_HW_MEMORY_MONITOR
-	if (taskp->delays) {
-		mem->allocuser_delay = taskp->delays->allocuser_delay;
-		mem->allocuser_count = taskp->delays->allocuser_count;
-		mem->allocuser_delay_max = taskp->delays->allocuser_delay_max;
-		mem->allocuser_delay_max_order =
-			taskp->delays->allocuser_delay_max_order;
-	} else {
-		mem->allocuser_delay = 0;
-		mem->allocuser_count = 0;
-		mem->allocuser_delay_max = 0;
-		mem->allocuser_delay_max_order = 0;
-	}
-#else
 	mem->allocuser_delay = 0;
 	mem->allocuser_count = 0;
 	mem->allocuser_delay_max = 0;
 	mem->allocuser_delay_max_order = 0;
-#endif
 }
 
 static void record_caller(struct hwstatus_caller *hw_caller,
@@ -489,19 +474,6 @@ static void clear_hwstatus(struct task_struct *taskp)
 
 static void clear_delays(struct task_struct *taskp)
 {
-#ifdef CONFIG_HW_MEMORY_MONITOR
-	unsigned long flags;
-
-	if (taskp->delays) {
-		raw_spin_lock_irqsave(&taskp->delays->allocpages_lock, flags);
-		taskp->delays->allocuser_delay = 0;
-		taskp->delays->allocuser_count = 0;
-		taskp->delays->allocuser_delay_max = 0;
-		taskp->delays->allocuser_delay_max_order = 0;
-		raw_spin_unlock_irqrestore(&taskp->delays->allocpages_lock,
-			flags);
-	}
-#endif
 }
 
 static void clear_task(struct task_struct *taskp)

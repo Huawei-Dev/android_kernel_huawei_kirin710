@@ -518,11 +518,6 @@ static int proc_pid_ravg_sum(struct seq_file *m, struct pid_namespace *ns,
 }
 #endif
 
-#ifdef CONFIG_HW_MEMORY_MONITOR
-extern int proc_tid_memstat(struct seq_file *m, struct pid_namespace *ns,
-                            struct pid *pid, struct task_struct *task);
-#endif
-
 #ifdef CONFIG_LATENCYTOP
 static int lstats_show_proc(struct seq_file *m, void *v)
 {
@@ -3819,9 +3814,6 @@ static const struct pid_entry tid_base_stuff[] = {
 #endif
 #ifdef CONFIG_SCHED_INFO
 	ONE("schedstat", S_IRUGO, proc_pid_schedstat),
-#endif
-#ifdef CONFIG_HW_MEMORY_MONITOR
-	ONE("mstat", S_IRUGO, proc_tid_memstat),
 #endif
 #ifdef CONFIG_LATENCYTOP
 	REG("latency",  S_IRUGO, proc_lstats_operations),

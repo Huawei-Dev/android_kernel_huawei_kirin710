@@ -81,12 +81,6 @@
 #include "internal.h"
 #include <linux/ktime.h>
 
-#ifdef CONFIG_HW_MEMORY_MONITOR
-#include <linux/delayacct.h>
-#include <chipset_common/mmonitor/mmonitor.h>
-#include <chipset_common/allocpages_delayacct/allocpages_delayacct.h>
-#endif
-
 #ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER_DAEMON
 #include <linux/hisi/lowmem_killer.h>
 #endif
@@ -3313,9 +3307,6 @@ void warn_alloc(gfp_t gfp_mask, nodemask_t *nodemask, const char *fmt, ...)
 
 	cpuset_print_current_mems_allowed();
 
-#ifdef CONFIG_HW_MEMORY_MONITOR
-	count_mmonitor_event(ALLOC_FAILED_COUNT);
-#endif
 	dump_stack();
 	warn_alloc_show_mem(gfp_mask, nodemask);
 }
@@ -3959,9 +3950,6 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
 				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)))
 		gfp_mask &= ~__GFP_ATOMIC;
 
-#ifdef CONFIG_HW_MEMORY_MONITOR
-	delayacct_allocpages_start();
-#endif
 retry_cpuset:
 	compaction_retries = 0;
 	no_progress_loops = 0;
@@ -4195,9 +4183,6 @@ fail:
 	warn_alloc(gfp_mask, ac->nodemask,
 			"page allocation failure: order:%u", order);
 got_pg:
-#ifdef CONFIG_HW_MEMORY_MONITOR
-	delayacct_allocpages_end(order);
-#endif
 	return page;
 }
 

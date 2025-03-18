@@ -220,8 +220,6 @@ obj-$(CONFIG_CONNECTIVITY_HI110X) += connectivity/
 obj-$(CONFIG_HUAWEI_STORAGE_ROFA) += storage_rofa/
 obj-$(CONFIG_HW_ERECOVERY) += hwerecovery/
 obj-$(CONFIG_HW_CPULOAD_NOTI) += cpuload/
-obj-$(CONFIG_HW_MEMORY_MONITOR) += mmonitor/
-obj-$(CONFIG_HW_MEMORY_MONITOR) += allocpages_delayacct/
 obj-$(CONFIG_HW_XCOLLIE) += hwxcollie/
 obj-$(CONFIG_HUAWEI_ECHUB) += echub/
 
