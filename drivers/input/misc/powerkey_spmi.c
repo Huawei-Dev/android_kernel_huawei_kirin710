@@ -361,9 +361,6 @@ static int powerkey_probe(struct spmi_device *pdev)
 	 * whether the device has only a power key.
 	 */
 	hisi_pmic_powerkey_only_status_get();
-#ifdef CONFIG_HISI_MNTN_GT_WATCH_SUPPORT
-	hisi_pm_get_gt_watch_support_state();
-#endif
 	info->idev->name = "ponkey_on";
 	info->idev->phys = "ponkey_on/input0";
 	info->idev->dev.parent = &pdev->dev;

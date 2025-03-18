@@ -106,25 +106,6 @@ typedef enum {
 	MODU_GAP, /* 256 byte space as the gap, adding modules need before this */
 	MODU_MAX
 } dump_mem_module;
-#ifdef CONFIG_HISI_MNTN_GT_WATCH_SUPPORT
-enum {
-	GT_WATCH_POWER_OFF = 0x00,      /* whole machine shutdown */
-	GT_WATCH_LOWPOWER_OFF = 0x01,   /* low power shutdown */
-	GT_WATCH_NOW_POWER_OFF = 0X02,  /* immediately shutdown */
-	GT_WATCH_RESET = 0x03,          /* whole machine reset */
-	GT_WATCH_X_POWER_OFF = 0x04,    /* x seconds whole machine shutdown */
-	GT_WATCH_AP_RESET = 0x07,       /* AP reset */
-	GT_WATCH_MCU_RESET = 0x08,
-	GT_WATCH_AP_POWER_OFF = 0x09
-};
-
-enum {
-	GT_WATCH_DISABLE = 0,
-	GT_WATCH_A = 1,      /* ap depends the main processor poweroff */
-	GT_WATCH_B = 2,      /* ap is not depends the main processor poweroff */
-};
-
-#endif
 #ifdef CONFIG_HISI_CORESIGHT_TRACE
 #define		ETR_DUMP_NAME		"etr_dump.ad"
 #endif
@@ -160,12 +141,6 @@ char *rdr_get_exec_subtype(void);
 void flush_logbuff_range(void);
 #ifdef CONFIG_HISI_EARLY_PANIC
 void rdr_log_buf_notify_bl31(void);
-#endif
-
-#ifdef CONFIG_HISI_MNTN_GT_WATCH_SUPPORT
-void hisi_pm_get_gt_watch_support_state(void);
-unsigned int hisi_pm_gt_watch_type(void);
-int hisi_pm_ap_pull_down_state(void);
 #endif
 
 #else

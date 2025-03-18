@@ -74,12 +74,6 @@ config HISI_MNTN_ESUBTYPE
 	  exception subtype,
 	  etc
 
-config HISI_MNTN_GT_WATCH_SUPPORT
-	bool "mntn support GT watch"
-	default n
-	help
-	Say 'Y' here if you wat to support GT watch
-
 config HISI_BB_SHUTDOWN_REASON
 	bool "shutdown reason record"
 	depends on HISI_BB
