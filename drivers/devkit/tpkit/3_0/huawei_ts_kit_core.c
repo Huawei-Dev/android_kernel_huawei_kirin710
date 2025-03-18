@@ -70,10 +70,6 @@
 #include "trace-events-touch.h"
 #include "hwspinlock_internal.h"
 
-#if (!defined CONFIG_HUAWEI_DEVKIT_QCOM_3_0) && (!defined CONFIG_HUAWEI_DEVKIT_MTK_3_0)
-#include <linux/i3c/master.h>
-#endif
-
 #if defined(CONFIG_TEE_TUI)
 #include "tui.h"
 #endif
