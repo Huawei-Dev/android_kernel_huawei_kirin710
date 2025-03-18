@@ -63,13 +63,9 @@ struct kernel_dump_cb {
 	u16 resize_flag;
 	u16 skp_flag;
 };
-#ifdef CONFIG_KERNELDUMP_KO_DBG
-extern int ko_dump(void);
-#else
 static inline int ko_dump(void)
 {
 	return 0;
 }
-#endif
 int add_extra_table(u64 pa, u64 size);
 #endif

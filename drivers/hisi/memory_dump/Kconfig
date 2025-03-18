@@ -11,11 +11,3 @@ config HISI_KERNELDUMP
 	help
 	  This driver supports KERNELDUMP,
 	  including kerneldump driver.
-
-config KERNELDUMP_KO_DBG
-	bool "Support ko mem dump"
-	depends on HISI_KERNELDUMP
-	default n
-	help
-	  This driver supports XXX ko dump,
-	  including ko dump driver.
