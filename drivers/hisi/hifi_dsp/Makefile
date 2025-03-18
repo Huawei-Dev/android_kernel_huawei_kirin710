@@ -1,11 +1,6 @@
 subdir-ccflags-y += -Wall -Werror
 
 # hifi dsp device driver
-ifeq ($(CONFIG_HIFI_IPC_3650),y)
-EXTRA_CFLAGS += -Iinclude/modem/include/config/hi365x
-EXTRA_CFLAGS += -Iinclude/modem/include/drv/hi365x
-endif
-
 ifeq ($(CONFIG_HISI_FB_970),y)
 EXTRA_CFLAGS += -DCONFIG_DP_MULTI_CHANNELS
 endif

@@ -1,9 +1,4 @@
 # hifi dsp device driver
-ifeq ($(CONFIG_HIFI_IPC_3650),y)
-EXTRA_CFLAGS += -DPLATFORM_HI3XXX
-EXTRA_CFLAGS += -DPLATFORM_HI365X
-endif
-
 EXTRA_CFLAGS += -Idrivers/hisi/hifi_mailbox/mailbox
 EXTRA_CFLAGS += -Idrivers/hisi/hifi_mailbox/ipcm
 
