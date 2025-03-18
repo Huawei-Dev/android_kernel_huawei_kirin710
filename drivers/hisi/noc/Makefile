@@ -24,5 +24,3 @@ obj-$(CONFIG_HISI_NOC) +=  dfx_noc.o             \
                            dfx_noc_info_dragon_cs2.o \
 
 obj-$(CONFIG_HISI_NOC_DBG) += dfx_noc_dbg.o
-obj-$(CONFIG_HISI_QIC) +=  dfx_qic.o             \
-                           dfx_qic_dump.o        \

@@ -18,16 +18,3 @@ config HISI_NOC_MODID_REGISTER
 	default n
 	help
 	  Support NOC modid register
-config HISI_QIC
-	depends on HISI_BB
-	bool "Support QIC"
-	default n
-	help
-	  This driver supports XXX QIC
-config HISI_QIC_MODID_REGISTER
-        depends on HISI_QIC
-        bool "Support QIC modid register"
-        default n
-        help
-          Support QIC modid register
-

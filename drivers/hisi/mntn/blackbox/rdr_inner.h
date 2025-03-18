@@ -319,12 +319,8 @@ void read_dump_end(void);
 int check_dfx_head_valid(struct dfx_head_info *base, const void *cur_addr, u32 size);
 int rdr_savebuf2fs(const char *logpath, const char *filename, const void *buf, u32 len, u32 is_append);
 extern unsigned int get_boot_into_recovery_flag(void);
-#ifdef CONFIG_HISI_QIC
-void hisiap_set_reset_keypoint(u32 value);
-#else
 static inline void hisiap_set_reset_keypoint(u32 value)
 {
 	return;
 }
-#endif
 #endif /* End #define __BB_INNER_H__ */
