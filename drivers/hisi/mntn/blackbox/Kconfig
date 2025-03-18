@@ -23,17 +23,6 @@ config HISI_BB_DEBUG
 	  etc
 
 # need_other_module_clear
-config HISI_MNTN_SP
-	bool "ap core register sp record"
-	depends on  HISI_LPMCU_BB
-	default n
-	help
-	  This module can record some data about sp info.
-	  Include:
-	  sp,
-	  etc
-
-
 config HISI_LPMCU_BB
 	bool "lpmcu bbox"
 	depends on  HISI_BB

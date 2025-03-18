@@ -125,10 +125,6 @@ struct coredebug_type {
 
 struct rdr_buf_head {
 	unsigned int acore_pc[CPU_CORE_NUM * RDR_BUF_HEAD_SIZE];
-#ifdef CONFIG_HISI_MNTN_SP
-	unsigned int acore_ls0_sp[CPU_CORE_NUM * RDR_BUF_HEAD_SIZE];
-	unsigned int acore_ls1_sp[CPU_CORE_NUM * RDR_BUF_HEAD_SIZE];
-#endif
 };
 
 char *lpmcu_rdr_ddr_addr_get(void);
