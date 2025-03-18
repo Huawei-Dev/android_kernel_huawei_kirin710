@@ -228,11 +228,7 @@ static inline void ion_trace_hook(u8 action, struct ion_client *client, struct i
 static inline void smmu_trace_hook(u8 action, u64 va_addr, u64 phy_addr, u32 size) {}
 #endif
 
-#ifdef CONFIG_HISI_TIME_HOOK
-void time_hook(u64 address, u32 dir);
-#else
 static inline void time_hook(u64 address, u32 dir) {}
-#endif
 
 void hisi_ap_defopen_hook_install(void);
 int hisi_ap_hook_install(enum hook_type hk);

@@ -4,10 +4,3 @@ config HISI_REENTRANT_EXCEPTION
 	default n
 	help
 	  this module deal with reentrant exception.
-
-config HISI_TIME_HOOK
-	bool "support print time call trace "
-	depends on HISI_BB
-	default n
-	help
-	  Say 'Y' here if you want to print time call trace.
