@@ -16,11 +16,7 @@
 #ifndef __MNTN_DUMP_H__
 #define __MNTN_DUMP_H__
 
-#ifdef CONFIG_HISI_MNTN_PC
-	#define KDUMP_DONE_FILE "/var/log/hisi/bbox/memorydump/done"
-#else
-	#define KDUMP_DONE_FILE "/data/hisi_logs/memorydump/done"
-#endif
+#define KDUMP_DONE_FILE "/data/hisi_logs/memorydump/done"
 
 void create_hisi_kdump_gzip_log_file(void);
 unsigned int skp_skp_flag(void);

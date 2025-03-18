@@ -598,12 +598,6 @@ static int sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
 	int ret;
 	unsigned int default_timeout;
 
-#ifdef CONFIG_HISI_MNTN_PC
-	if (check_himntn(HIMNTN_AP_WDT) == 0) {
-		dev_err(&adev->dev, "ap watchdog is closed in nv!!!\n");
-		return 0;
-	}
-#endif
 	ret = sp805_wdt_dev_init(adev, &wdt);
 	if (ret)
 		goto probe_fail;

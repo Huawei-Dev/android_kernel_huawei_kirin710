@@ -62,9 +62,6 @@ struct kernel_dump_cb {
 	u32 crc;
 	u16 resize_flag;
 	u16 skp_flag;
-#ifdef CONFIG_HISI_MNTN_PC
-	u64 kernel_version;
-#endif
 };
 #ifdef CONFIG_KERNELDUMP_KO_DBG
 extern int ko_dump(void);

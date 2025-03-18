@@ -27,15 +27,9 @@
 #define STR_TASKNAME_MAXLEN 16
 #define STR_USERDATA_MAXLEN 64
 
-#ifdef CONFIG_HISI_MNTN_PC
-#define PATH_MNTN_PARTITION "/var/log"
-#define PATH_ROOT "/var/log/hisi/bbox/"
-#define RDR_REBOOT_TIMES_FILE "/var/log/hisi/bbox/reboot_times.log"
-#else
 #define PATH_MNTN_PARTITION "/data/lost+found"
 #define PATH_ROOT "/data/hisi_logs/"
 #define RDR_REBOOT_TIMES_FILE "/data/hisi_logs/reboot_times.log"
-#endif
 
 #define RDR_ERECOVERY_REASON_FILE "/cache/recovery/last_erecovery_entry"
 #define RDR_UNEXPECTED_REBOOT_MARK_ADDR 0x2846579

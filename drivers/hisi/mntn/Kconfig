@@ -4,12 +4,6 @@ config HISILICON_PLATFORM_MAINTAIN
 	help
 	  Say yes here to support the platform maintain module
 
-config HISI_MNTN_PC
-	bool "pc platform"
-	default n
-	help
-	  Say yes here to support the pc platform
-
 config HISILICON_PLATFORM_HISI_EASYSHELL
 	bool "Support Easy Shell"
 	default n

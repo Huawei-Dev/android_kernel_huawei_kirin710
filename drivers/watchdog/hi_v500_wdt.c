@@ -641,12 +641,6 @@ static int hiv500_wdt_probe(struct platform_device *pdev)
 	int ret;
 	unsigned int default_timeout;
 
-#ifdef CONFIG_HISI_MNTN_PC
-	if (check_himntn(HIMNTN_AP_WDT) == 0) {
-		dev_err(&pdev->dev, "ap watchdog is closed in nv!!!\n");
-		return 0;
-	}
-#endif
 	ret = hiv500_wdt_dev_init(pdev, &wdt);
 	if (ret)
 		goto probe_fail;
