@@ -386,13 +386,6 @@ config ARM_TIMER_SP804
 	select CLKSRC_MMIO
 	select TIMER_OF if OF
 
-config LPCPU_HITIMER
-	bool "Support for HITIMER"
-	default n
-	depends on ARM_TIMER_SP804
-	help
-	  This option enables HITIMER instead of Hrtimer SP804
-
 config CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
 	bool
 	depends on ARM_GLOBAL_TIMER
