@@ -48,9 +48,6 @@
 #include <linux/kernel.h>
 #include <linux/bitops.h>
 #include <uapi/linux/sched/types.h>
-#ifdef CONFIG_MM_TCU
-#include <linux/hisi/hisi_svm.h>
-#endif
 
 #include "io-pgtable.h"
 #include "hisi/hisi_smmu.h"
@@ -549,10 +546,6 @@
 #define WATCHDOG_CPU	0
 #define WIFI_INTX_CPU	4
 #define LAZY_FREE_SCHED_PRI	97
-
-#ifdef CONFIG_MM_TCU
-#define CD_TTBR_DATA_MASK       ((1UL << CTXDESC_CD_0_ASID_SHIFT) - 1)
-#endif
 
 static bool disable_bypass;
 module_param_named(disable_bypass, disable_bypass, bool, 0444);
@@ -2618,9 +2611,6 @@ static int arm_smmu_domain_set_pgd(struct arm_smmu_domain *smmu_domain,
 static int arm_smmu_svm_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
 				struct io_pgtable_cfg *pgtbl_cfg)
 {
-#ifdef CONFIG_MM_TCU
-	int asid;
-#endif
 	int ssid;
 	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
 	struct arm_smmu_domain *dev_smmu_domain = NULL;
@@ -2638,22 +2628,6 @@ static int arm_smmu_svm_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
 		dev_err(smmu_domain->dev, "%s, arm_smmu_bitmap_alloc ssid err!!\n", __func__);
 		return -EINVAL;
 	}
-
-#ifdef CONFIG_MM_TCU
-	asid = arm_smmu_bitmap_alloc(smmu_domain->smmu->asid_map,
-				     smmu_domain->smmu->asid_bits);
-	if (asid < 0) {
-		dev_err(smmu_domain->dev, "%s, arm_smmu_bitmap_alloc asid err!!\n", __func__);
-		arm_smmu_bitmap_free(dev_smmu_domain->ssid_map, ssid);
-		return -EINVAL;
-	}
-
-	cfg->cd.asid = asid;
-
-	/* clear the asid which is get from ASID(mm), and write new 8-bit asid */
-	cfg->cd.ttbr &= CD_TTBR_DATA_MASK;
-	cfg->cd.ttbr |= (u64)(unsigned int)asid << CTXDESC_CD_0_ASID_SHIFT;
-#endif
 
 	cfg->cdptr = dev_smmu_domain->s1_cfg.cdptr;
 	cfg->cdptr_dma = dev_smmu_domain->s1_cfg.cdptr_dma;
@@ -2941,37 +2915,6 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
 
 static struct arm_smmu_device *svm_smmu;
 
-#ifdef CONFIG_MM_TCU
-static struct hisi_svm *get_svm_by_mm(struct mm_struct *mm)
-{
-	struct list_head *pos = NULL;
-	struct hisi_svm *tmp = NULL;
-
-	list_for_each(pos, &mm_svm_list) {
-		tmp = list_entry(pos, struct hisi_svm, list);
-		if (tmp->mm == mm) {
-			return tmp;
-		}
-	}
-	return NULL;
-}
-
-static u16 hisi_get_mm_domain_asid(struct mm_struct *mm)
-{
-	struct hisi_svm *svm = NULL;
-	struct arm_smmu_domain *smmu_domain = NULL;
-
-	svm = get_svm_by_mm(mm);
-	if (!svm) {
-		pr_err("%s: invalid mm_struct, no svm found!\n", __func__);
-		return (u16)((1UL << svm_smmu->asid_bits) - 1);
-	}
-
-	smmu_domain = to_smmu_domain(svm->dom);
-	return smmu_domain->s1_cfg.cd.asid;
-}
-#endif
-
 void arm_smmu_svm_tlb_inv_context(struct mm_struct *mm)
 {
 	struct arm_smmu_cmdq_ent cmd;
@@ -2987,11 +2930,7 @@ void arm_smmu_svm_tlb_inv_context(struct mm_struct *mm)
 	arm_smmu_invalid_tcu_cache(svm_smmu);
 
 	cmd.opcode	= CMDQ_OP_TLBI_NH_ASID;
-#ifdef CONFIG_MM_TCU
-	cmd.tlbi.asid	= hisi_get_mm_domain_asid(mm);
-#else
 	cmd.tlbi.asid	= ASID(mm);
-#endif
 	cmd.tlbi.vmid	= ARM_SMMU_SVM_S1CFG_VMID;
 
 	arm_smmu_cmdq_issue_cmd(svm_smmu, &cmd);
@@ -3063,9 +3002,6 @@ static void arm_smmu_svm_detach_dev(struct iommu_domain *domain,
 		return;
 	}
 	arm_smmu_bitmap_free(dev_smmu_domain->ssid_map, cfg->cd.ssid);
-#ifdef CONFIG_MM_TCU
-	arm_smmu_bitmap_free(smmu_domain->smmu->asid_map, cfg->cd.asid);
-#endif
 	/* clear cd decs */
 	cdptr_offset = cfg->cd.ssid * CTXDESC_CD_DWORDS;
 	memset(&cfg->cdptr[cdptr_offset], 0x0, CTXDESC_CD_DWORDS <<

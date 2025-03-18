@@ -20,7 +20,6 @@
 #include "pcie-kport-idle.h"
 
 #include <bl31_smc.h>
-#include <linux/hisi/hisi_svm.h>
 
 static atomic_t tcu_urst_cnt = ATOMIC_INIT(0);
 

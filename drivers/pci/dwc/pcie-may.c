@@ -19,7 +19,6 @@
 #include "pcie-kport-common.h"
 #include "pcie-kport-idle.h"
 #include <bl31_smc.h>
-#include <linux/hisi/hisi_svm.h>
 
 #define PCIE1_AXI_CLK_FREQ			238000000
 
