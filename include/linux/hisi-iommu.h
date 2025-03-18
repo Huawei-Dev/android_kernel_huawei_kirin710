@@ -150,13 +150,6 @@ static inline size_t hisi_iommu_unmap_fast(struct device *dev,
 }
 #endif /* CONFIG_HISI_IOMMU */
 
-#ifdef CONFIG_HISI_IOMMU_LAST_PAGE
-unsigned long hisi_iommu_map_padding_dmabuf(struct device *dev,
-		struct dma_buf *dmabuf, unsigned long padding_len,
-		int prot, unsigned long *out_size);
-int hisi_iommu_unmap_padding_dmabuf(struct device *dev, struct dma_buf *dmabuf,
-		unsigned long padding_len, unsigned long iova);
-#else
 static inline unsigned long hisi_iommu_map_padding_dmabuf(struct device *dev,
 		struct dma_buf *dmabuf, unsigned long padding_len,
 		int prot, unsigned long *out_size)
@@ -169,7 +162,6 @@ static inline int hisi_iommu_unmap_padding_dmabuf(struct device *dev,
 {
 	return 0;
 }
-#endif /* CONFIG_HISI_IOMMU_LAST_PAGE */
 
 static inline void mm_smmu_show_pte(struct device *dev, unsigned long iova,
 			unsigned long size)

@@ -24,13 +24,6 @@ config HISI_IOMMU_LEGACY
 	help
 	  Hisilicon IOMMU Support.
 
-config HISI_IOMMU_LAST_PAGE
-	bool "HISI IOMMU Last Page Support"
-	depends on HISI_IOMMU
-	select IOMMU_API
-	help
-	  Hisilicon IOMMU Last Page Support
-
 config HISI_IOMMU_DMA
 	bool "HISI IOMMU DMA Support"
 	depends on HISI_IOMMU
