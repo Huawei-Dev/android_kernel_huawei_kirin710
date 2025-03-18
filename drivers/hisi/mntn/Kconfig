@@ -52,12 +52,6 @@ config HISI_CLANG
         help
            Say 'Y' here if you want to support clang.
 
-config HISI_HEALTH_GRADE
-        bool "health grade driver"
-        default n
-        help
-           Say 'Y' here if you want to use enable health grade
-
 config HISI_MNTN_SWITCH
         bool "mntn switch debug driver"
         depends on HISI_BB
