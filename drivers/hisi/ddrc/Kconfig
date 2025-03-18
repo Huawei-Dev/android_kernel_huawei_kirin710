@@ -8,13 +8,6 @@ config HISI_DDRC_SEC
 	bool "hisi ddr secprotect"
 	default n
 
-config AP_CUST_2G_MEM
-       bool "Cust 2G memory support"
-       default n
-       help
-             Hisilicon 2G memory Pad, To enable this configure for Pad
-	     others disable
-
 config HISI_DDR_PERF_CTRL
         tristate "Hisilicon DDR Performance Control Function"
         depends on PERF_CTRL
