@@ -15,12 +15,6 @@ config HISI_BOOT_TIME
 	help
 	  Say 'Y' here if you want to print all boot slice.
 
-config HISI_BB_SYSCALL
-	bool "support print system call trace "
-	default n
-	help
-	  Say 'Y' here if you want to print system call trace.
-
 config HISI_POWER_OFF
 	bool "platform power off and reset driver"
 	default n

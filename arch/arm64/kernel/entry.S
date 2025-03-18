@@ -1054,26 +1054,6 @@ ENDPROC(el0_fiq)
  * and this includes saving x0 back into the kernel stack.
  */
 ret_fast_syscall:
-#ifdef CONFIG_HISI_BB
-#ifdef CONFIG_HISI_BB_SYSCALL
-/*
-*This is the syscall debug patch. The default is off.
-*/
-#syscall_hook start
-	push	x6, x7
-	push	x4, x5
-	push	x2, x3
-	push	x0, x1
-	mov x0, scno
-	mov x1, #1
-	bl syscall_hook
-	pop	x0, x1
-	pop	x2, x3
-	pop	x4, x5
-	pop	x6, x7
-#syscall_hook end
-#endif
-#endif
 	disable_irq				// disable interrupts
 	str	x0, [sp, #S_X0]			// returned x0
 	ldr	x1, [tsk, #TSK_TI_FLAGS]	// re-check for syscall tracing
@@ -1124,26 +1104,6 @@ el0_svc_naked:					// compat entry point
 	enable_dbg_and_irq
 	ct_user_exit 1
 
-#ifdef CONFIG_HISI_BB
-#ifdef CONFIG_HISI_BB_SYSCALL
-/*
-*This is the syscall debug patch. The default is off.
-*/
-#syscall_hook start
-	push	x6, x7
-	push	x4, x5
-	push	x2, x3
-	push	x0, x1
-	mov x0, scno
-	mov x1, #0
-	bl syscall_hook
-	pop	x0, x1
-	pop	x2, x3
-	pop	x4, x5
-	pop	x6, x7
-#syscall_hook end
-#endif
-#endif
 	ldr	x16, [tsk, #TSK_TI_FLAGS]	// check for syscall hooks
 	tst	x16, #_TIF_SYSCALL_WORK
 	b.ne	__sys_trace
