@@ -40,9 +40,6 @@
 #include <asm/suspend.h>
 #include <asm/sysreg.h>
 #include <asm/virt.h>
-#ifdef CONFIG_HISI_BL31_HIBERNATE
-#include <linux/hisi/hisi_bl31_hibernate.h>
-#endif
 
 /*
  * Hibernate core relies on this value being 0 on resume, and marks it
@@ -292,15 +289,6 @@ int swsusp_arch_suspend(void)
 	if (__cpu_suspend_enter(&state)) {
 		/* make the crash dump kernel image visible/saveable */
 		crash_prepare_suspend();
-
-#ifdef CONFIG_HISI_BL31_HIBERNATE
-		ret = bl31_hibernate_freeze();
-		if (ret != 0) {
-			pr_err("Can't hibernate: bl31 hibernate freeze fail.\n");
-			local_dbg_restore(flags);
-			return -EBUSY;
-		}
-#endif
 		sleep_cpu = smp_processor_id();
 		ret = swsusp_save();
 	} else {
@@ -315,11 +303,6 @@ int swsusp_arch_suspend(void)
 		/* make the crash dump kernel image protected again */
 		crash_post_resume();
 
-#ifdef CONFIG_HISI_BL31_HIBERNATE
-		ret = bl31_hibernate_restore();
-		if (ret != 0)
-			pr_err("bl31 hibernate restore fail.\n");
-#endif
 		/*
 		 * Tell the hibernation core that we've just restored
 		 * the memory

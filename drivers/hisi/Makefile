@@ -78,7 +78,6 @@ obj-$(CONFIG_ATF_KERNEL_BL31_LOG) += bl31_log/
 obj-y += bus_monitor/
 obj-$(CONFIG_SOC_MAD) += soc_mad/
 obj-$(CONFIG_HISI_AP_READY)	+= hisi_ap_ready/
-obj-$(CONFIG_HISI_BL31_HIBERNATE) += bl31_hibernate/
 obj-$(CONFIG_HISI1103_EEPROM) += hi1103_eeprom/
 obj-$(CONFIG_THEED) += thee/
 obj-$(CONFIG_AB_PARTITION_TABLE) += bootctrl/
