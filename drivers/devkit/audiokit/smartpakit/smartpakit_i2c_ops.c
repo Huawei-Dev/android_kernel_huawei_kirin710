@@ -2233,9 +2233,6 @@ static int smartpakit_i2c_probe(struct i2c_client *i2c,
 	dev_set_drvdata(&i2c->dev, i2c_priv);
 
 	INIT_WORK(&i2c_priv->irq_handle_work, smartpakit_i2c_handler_irq);
-#ifdef CONFIG_HUAWEI_ARMPC_PLATFORM
-	INIT_WORK(&i2c_priv->pm_s4_work, smartpakit_restore_process);
-#endif
 	INIT_DELAYED_WORK(&i2c_priv->irq_debounce_work,
 		smartpakit_i2c_irq_debounce_work);
 
@@ -2370,15 +2367,6 @@ static int smartpakit_i2c_suspend(struct device *dev)
 	if (i2c_priv == NULL)
 		return 0;
 
-#ifdef CONFIG_HUAWEI_ARMPC_PLATFORM
-	struct smartpakit_gpio_irq *irq_handler = NULL;
-
-	irq_handler = i2c_priv->irq_handler;
-	if (irq_handler != NULL) {
-		disable_irq(irq_handler->irq);
-		hwlog_info("%s: disable irq:%d\n", __func__, irq_handler->irq);
-	}
-#endif
 	if ((i2c_priv->regmap_cfg != NULL) &&
 		(i2c_priv->regmap_cfg->regmap != NULL) &&
 		(i2c_priv->regmap_cfg->cfg.cache_type == REGCACHE_RBTREE))
@@ -2406,16 +2394,6 @@ static int smartpakit_i2c_resume(struct device *dev)
 		regcache_cache_only(i2c_priv->regmap_cfg->regmap, (bool)false);
 		regcache_sync(i2c_priv->regmap_cfg->regmap);
 	}
-#ifdef CONFIG_HUAWEI_ARMPC_PLATFORM
-	struct smartpakit_gpio_irq *irq_handler = NULL;
-
-	irq_handler = i2c_priv->irq_handler;
-	if (irq_handler != NULL) {
-		enable_irq(irq_handler->irq);
-		hwlog_info("%s: end and enable irq : %d\n",
-					__func__, irq_handler->irq);
-	}
-#endif
 	return 0;
 }
 #else
@@ -2426,10 +2404,6 @@ static int smartpakit_i2c_resume(struct device *dev)
 static const struct dev_pm_ops smartpakit_i2c_pm_ops = {
 	.suspend = smartpakit_i2c_suspend,
 	.resume  = smartpakit_i2c_resume,
-#ifdef CONFIG_HUAWEI_ARMPC_PLATFORM
-	.freeze = smartpakit_i2c_freeze,
-	.restore = smartpakit_i2c_restore,
-#endif
 };
 
 static const struct i2c_device_id smartpakit_i2c_id[] = {

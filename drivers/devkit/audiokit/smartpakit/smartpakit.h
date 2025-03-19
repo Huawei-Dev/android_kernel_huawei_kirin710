@@ -176,9 +176,6 @@ struct smartpakit_i2c_priv {
 	/* irq */
 	struct smartpakit_gpio_irq *irq_handler;
 	struct work_struct irq_handle_work;
-#ifdef CONFIG_HUAWEI_ARMPC_PLATFORM
-	struct work_struct pm_s4_work;
-#endif
 	unsigned long irq_debounce_jiffies;
 	struct delayed_work irq_debounce_work;
 
@@ -427,11 +424,4 @@ int smartpakit_i2c_get_hismartpa_info(struct smartpakit_i2c_priv *i2c_priv,
 void smartpakit_handle_i2c_probe_dsm_report(
 	struct smartpakit_priv *pakit_priv);
 
-#ifdef CONFIG_HUAWEI_ARMPC_PLATFORM
-	void smartpakit_restore_process(struct work_struct *work);
-	int smartpakit_i2c_freeze(struct device *dev);
-	int smartpakit_i2c_restore(struct device *dev);
-#endif
-
 #endif /* __SMARTPAKIT_H__ */
-

@@ -219,8 +219,6 @@ source "drivers/hisi/Kconfig"
 
 source "drivers/huawei_platform/Kconfig"
 
--source "drivers/huawei_armpc_platform/Kconfig"
-
 source "drivers/log/Kconfig"
 
 source "drivers/hwbootfail/Kconfig"

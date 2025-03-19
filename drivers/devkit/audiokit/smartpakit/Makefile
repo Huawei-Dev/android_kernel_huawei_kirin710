@@ -16,4 +16,3 @@ ifneq ($(TARGET_BUILD_VARIANT),user)
 endif
 obj-$(CONFIG_HUAWEI_SMARTPAKIT_AUDIO) += smartpakit_i2c.o
 obj-$(CONFIG_SND_SOC_AU_PA) += external_requirement.o
-obj-$(CONFIG_HUAWEI_ARMPC_PLATFORM) += smartpakit_i2c_pm.o
