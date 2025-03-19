@@ -262,14 +262,6 @@ hisifb-objs += \
 	panel/dssv510/mipi_samsung_EA8076.o \
 	backlight/lm36923.o
 
-ifeq ($(CONFIG_ICS_DRIVER),y)
-hisifb-objs += \
-	panel/cdc/kernel/drivers/mipi2lvds/serdes_i2c.o \
-	panel/cdc/kernel/drivers/mipi2lvds/mipi2lvds_serdes_init.o \
-	panel/cdc/kernel/drivers/mipi2lvds/mipi_lvds_panel.o \
-	panel/cdc/kernel/drivers/mipi2lvds/drv_indigo.o
-endif
-
 hisifb-objs += voltage/ina231.o
 hisifb-objs += voltage/tps65132.o
 

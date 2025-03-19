@@ -212,5 +212,3 @@ obj-$(CONFIG_HW_ERECOVERY) += hwerecovery/
 
 # socp mem config
 obj-y += socp/
-
-obj-$(CONFIG_ICS_DRIVER) += ics_drivers/
