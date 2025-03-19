@@ -221,8 +221,6 @@ source "drivers/huawei_platform/Kconfig"
 
 source "drivers/log/Kconfig"
 
-source "drivers/hwbootfail/Kconfig"
-
 source "drivers/hwzerohung/Kconfig"
 
 source "drivers/hwusb/Kconfig"
