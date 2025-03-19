@@ -217,5 +217,3 @@ obj-$(CONFIG_HW_ERECOVERY) += hwerecovery/
 obj-y += socp/
 
 obj-$(CONFIG_ICS_DRIVER) += ics_drivers/
-
-obj-y += hisi_sim_adapt/
