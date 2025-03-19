@@ -5,10 +5,10 @@ menuconfig HUAWEI_EMCOM
     Say yes here to support emcom feature
 
 if HUAWEI_EMCOM
-source "drivers/emcom/argo/Kconfig"
-source "drivers/emcom/xengine/Kconfig"
-source "drivers/emcom/smartcare/Kconfig"
-source "drivers/emcom/nweval/Kconfig"
-source "drivers/emcom/opmp/Kconfig"
-source "drivers/emcom/nstack/Kconfig"
+source "drivers/hisi/emcom/argo/Kconfig"
+source "drivers/hisi/emcom/xengine/Kconfig"
+source "drivers/hisi/emcom/smartcare/Kconfig"
+source "drivers/hisi/emcom/nweval/Kconfig"
+source "drivers/hisi/emcom/opmp/Kconfig"
+source "drivers/hisi/emcom/nstack/Kconfig"
 endif # if HUAWEI_EMCOM

@@ -4,5 +4,5 @@ menuconfig HW_EMCOM_NSTACK
 	default n
 
 if HW_EMCOM_NSTACK
-source "drivers/emcom/nstack/fi/Kconfig"
+source "drivers/hisi/emcom/nstack/fi/Kconfig"
 endif # if HW_EMCOM_NSTACK

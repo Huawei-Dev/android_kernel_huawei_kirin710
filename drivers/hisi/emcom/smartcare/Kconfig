@@ -4,5 +4,5 @@ menuconfig HW_NETWORK_MEASUREMENT
 	default n
 
 if HW_NETWORK_MEASUREMENT
-source "drivers/emcom/smartcare/fi/Kconfig"
+source "drivers/hisi/emcom/smartcare/fi/Kconfig"
 endif # if HW_NETWORK_MEASUREMENT
