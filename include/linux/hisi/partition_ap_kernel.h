@@ -17,10 +17,6 @@
 
 #define PTN_ERROR (-1)
 
-#ifdef CONFIG_AB_PARTITION_TABLE
-extern int ufs_set_boot_partition_type(int boot_partition_type);
-#endif
-
 enum AB_PARTITION_TYPE {
 	NO_SUPPORT_AB = 0,
 	XLOADER_A = 1,

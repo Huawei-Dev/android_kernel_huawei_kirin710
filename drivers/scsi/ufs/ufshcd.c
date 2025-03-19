@@ -77,7 +77,6 @@
 #include "ufs_debugfs.h"
 #include "dsm_ufs.h"
 #include "ufs-vendor-mode.h"
-#include "ufs-kirin-lib.h"
 #include "ufs-hisi-hci.h"
 #include "ufshcd-kirin-interface.h"
 #ifdef CONFIG_HISI_BOOTDEVICE
@@ -7595,9 +7594,6 @@ static int ufshcd_probe_hba(struct ufs_hba *hba)
 	if (ret)
 		goto out;
 
-#ifdef CONFIG_AB_PARTITION_TABLE
-	ufs_get_boot_partition_type(hba);
-#endif
 	/* UFS device is also active now */
 	ufshcd_set_ufs_dev_active(hba);
 #ifdef FEATURE_UFS_AUTO_BKOPS

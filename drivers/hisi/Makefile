@@ -80,7 +80,6 @@ obj-$(CONFIG_SOC_MAD) += soc_mad/
 obj-$(CONFIG_HISI_AP_READY)	+= hisi_ap_ready/
 obj-$(CONFIG_HISI1103_EEPROM) += hi1103_eeprom/
 obj-$(CONFIG_THEED) += thee/
-obj-$(CONFIG_AB_PARTITION_TABLE) += bootctrl/
 obj-$(CONFIG_SWITCH)        += switch/
 obj-$(CONFIG_HISI_BOOTDEVICE)   += bootdevice/
 obj-$(CONFIG_HW_CPULOAD_NOTI) += cpuload/
