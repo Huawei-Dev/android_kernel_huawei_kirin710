@@ -247,8 +247,6 @@ source "drivers/spmi_hisi/Kconfig"
 
 source "drivers/devkit/lcdkit/Kconfig"
 
-source "drivers/dubai/Kconfig"
-
 source "drivers/devkit/tpkit/Kconfig"
 
 source "drivers/connectivity/Kconfig"

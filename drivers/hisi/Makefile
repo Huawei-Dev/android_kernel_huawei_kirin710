@@ -87,3 +87,4 @@ obj-$(CONFIG_SWITCH)        += switch/
 obj-$(CONFIG_HISI_BOOTDEVICE)   += bootdevice/
 obj-$(CONFIG_HW_CPULOAD_NOTI) += cpuload/
 obj-$(CONFIG_HUAWEI_DSM)	+= dsm/
+obj-$(CONFIG_HUAWEI_DUBAI) += dubai/
