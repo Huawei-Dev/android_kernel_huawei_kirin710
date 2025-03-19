@@ -22,7 +22,6 @@ obj-$(CONFIG_BSP_SYSCOUNTER) += syscounter/
 obj-$(CONFIG_PLATFORM_SLIMBUS)+= slimbus/
 obj-$(CONFIG_HSDTTRACE) += hsdt_trace/
 obj-y += hhee/
-obj-$(CONFIG_ATF_KERNEL_BL2_LOG) += bl2_log/
 obj-$(CONFIG_FILE_BASED_ENCRYPTO) += file_encry/
 obj-$(CONFIG_HISI_KERNEL_HARDEN_DEBUG) += kernel_harden_test/
 
