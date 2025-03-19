@@ -6,7 +6,7 @@ ccflags-y  += -I$(srctree)/drivers/contexthub/
 
 obj-y += hisi_aod_device.o
 
-EXTRA_CFLAGS += -Idrivers/huawei_platform/inputhub/default\
+EXTRA_CFLAGS += -Idrivers/huawei_platform/inputhub/kirin970 \
 		-Idrivers/video/fbdev/hisi/dss \
 		-Idrivers/video/hisi/dss \
 		-Idrivers/staging/android

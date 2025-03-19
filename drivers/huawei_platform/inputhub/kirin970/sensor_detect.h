@@ -516,4 +516,5 @@ extern int send_fileid_to_mcu(void);
 void sensor_redetect_enter(void);
 void sensor_redetect_init(void);
 int sensor_set_fw_load(void);
+uint32_t get_hall_lightstrap_value(void);
 #endif

@@ -5,7 +5,7 @@
 
 #include <chipset_common/dubai/dubai_ioctl.h>
 #include <huawei_platform/inputhub/sensorhub.h>
-#include <inputhub/default/protocol.h>
+#include <inputhub/kirin970/protocol.h>
 
 #include "utils/buffered_log_sender.h"
 #include "utils/dubai_utils.h"

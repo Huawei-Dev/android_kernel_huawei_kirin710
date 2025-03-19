@@ -528,7 +528,7 @@ EXTRA_CFLAGS += -Idrivers/video/hisi/dss \
 		-Iinclude \
 		-Idrivers/staging/android \
 		-Idrivers/devkit/lcdkit/lcdkit1.0/include \
-		-Idrivers/huawei_platform/inputhub/default
+		-Idrivers/huawei_platform/inputhub/kirin970
 
 ifeq ($(CONFIG_TEE_TUI),y)
 EXTRA_CFLAGS += -Idrivers/hisi/tzdriver

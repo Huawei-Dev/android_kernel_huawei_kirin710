@@ -23,7 +23,7 @@
 #ifdef CONFIG_GPIO_HI6502
 #include <linux/hisi/hisi_hi6502_gpio.h>
 #endif
-#include <huawei_platform/inputhub/default/sensor_detect.h>
+#include <huawei_platform/inputhub/kirin970/sensor_detect.h>
 #include "hall_sensor.h"
 
 #ifdef HWLOG_TAG
