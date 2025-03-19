@@ -219,4 +219,3 @@ obj-y += socp/
 obj-$(CONFIG_ICS_DRIVER) += ics_drivers/
 
 obj-y += hisi_sim_adapt/
-obj-$(CONFIG_HUAWEI_EMCOM) += emcom/

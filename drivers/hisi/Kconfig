@@ -84,6 +84,7 @@ source "drivers/hisi/bootdevice/Kconfig"
 source "drivers/hisi/cpuload/Kconfig"
 source "drivers/hisi/dsm/Kconfig"
 source "drivers/hisi/dubai/Kconfig"
+source "drivers/hisi/emcom/Kconfig"
 endif #HISILICON_PLATFORM
 
 endmenu
