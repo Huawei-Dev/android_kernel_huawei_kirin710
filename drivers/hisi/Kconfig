@@ -80,6 +80,7 @@ source "drivers/hisi/hi1103_eeprom/Kconfig"
 source "drivers/hisi/dpm/Kconfig"
 source "drivers/hisi/thee/Kconfig"
 source "drivers/hisi/switch/Kconfig"
+source "drivers/hisi/bootdevice/Kconfig"
 endif #HISILICON_PLATFORM
 
 endmenu

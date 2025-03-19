@@ -28,8 +28,6 @@ obj-y				+= video/
 obj-y				+= devkit/lcdkit/
 obj-y				+= idle/
 
-obj-$(CONFIG_HISI_BOOTDEVICE)   += bootdevice/
-
 # IPMI must come before ACPI in order to provide IPMI opregion support
 obj-y				+= char/ipmi/
 

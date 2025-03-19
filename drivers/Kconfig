@@ -3,8 +3,6 @@ menu "Device Drivers"
 
 source "drivers/amba/Kconfig"
 
-source "drivers/bootdevice/Kconfig"
-
 source "drivers/base/Kconfig"
 
 source "drivers/bus/Kconfig"
