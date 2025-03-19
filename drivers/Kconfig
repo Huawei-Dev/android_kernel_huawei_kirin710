@@ -248,9 +248,8 @@ source "drivers/devkit/audiokit/Kconfig"
 source "drivers/spmi_hisi/Kconfig"
 
 source "drivers/devkit/lcdkit/Kconfig"
-source "drivers/dubai/Kconfig"
 
-source "drivers/cfi/Kconfig"
+source "drivers/dubai/Kconfig"
 
 source "drivers/cpuload/Kconfig"
 

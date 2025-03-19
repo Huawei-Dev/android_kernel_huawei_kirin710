@@ -204,8 +204,6 @@ obj-$(CONFIG_HUAWEI_HITRACE) += hitrace/
 obj-$(CONFIG_HW_ZEROHUNG) += hwzerohung/
 obj-$(CONFIG_AUDIOKIT) += devkit/audiokit/
 obj-y += contexthub/
-# the cfi is for CFI test case
-obj-y += cfi/
 obj-$(CONFIG_HUAWEI_DUBAI) += dubai/
 obj-$(CONFIG_HUAWEI_PLATFORM) += huawei_platform/
 obj-$(CONFIG_HUAWEI_ARMPC_PLATFORM) += huawei_armpc_platform/
