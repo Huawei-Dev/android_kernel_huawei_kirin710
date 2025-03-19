@@ -81,7 +81,6 @@ obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
 obj-$(CONFIG_NUBUS)		+= nubus/
 obj-y				+= macintosh/
 obj-$(CONFIG_IDE)		+= ide/
-obj-$(CONFIG_HUAWEI_DSM)	+= dsm/
 obj-y				+= i2c/
 obj-$(CONFIG_SCSI)		+= scsi/
 obj-y				+= nvme/
