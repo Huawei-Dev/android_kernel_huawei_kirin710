@@ -357,6 +357,7 @@ static int check_process_access(struct task_struct *ca_task, int type)
 
 	get_task_struct(ca_task);
 	path = get_process_path(ca_task, tpath);
+	TCDEBUG("get_process_path %s - %s\n", path, tpath);
 	if (!IS_ERR_OR_NULL(path)) {
 		errno_t sret;
 
@@ -1607,28 +1608,40 @@ void spoof_hash(char *my_pkname, unsigned char *hash_buf)
 					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-	unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E,
-					    0x09, 0xCA, 0xFF, 0x44, 0x7A, 0xFA, 0xBB, 0x87,
-					    0x15, 0x3A, 0x16, 0x1E, 0xAC, 0x46, 0x09, 0xDB,
-					    0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};	
+	//TC_NS_OpenSession try to hash for /vendor/bin/hw/android.hardware.drm@1.1-service.widevine
+	unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E, 
+					0x09, 0xCA, 0xFF, 0x44, 0x7A, 0xFA, 0xBB, 0x87, 
+					0x15, 0x3A, 0x16, 0x1E, 0xAC, 0x46, 0x09, 0xDB,
+					0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};	
+
+
+	tlogd("TeeHash find %s process\n",my_pkname);
 
 	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.keymaster@3.0-service", 53))
 		memcpy(hash_buf, keystore_hash, MAX_SHA_256_SZ);
 	
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service", 54))
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service", 54)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, gatekeeper_hash, MAX_SHA_256_SZ);
+	}
 
 	if (!strncmp(my_pkname, "/vendor/bin/hw/vendor.huawei.hardware.biometrics.fingerprint@2.1-service", 72))
 		memcpy(hash_buf, fingerprint_hash, MAX_SHA_256_SZ);
 
-	if (!strncmp(my_pkname, "/system/vendor/bin/aptouch_daemon", 33))
+	if (!strncmp(my_pkname, "/system/vendor/bin/aptouch_daemon", 33)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, aptouch_hash, MAX_SHA_256_SZ);
+	}
 
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.media.omx@1.0-service", 53))
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.media.omx@1.0-service", 53)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, omx_hash, MAX_SHA_256_SZ);
-
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56))
+	}
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, widevine_hash, MAX_SHA_256_SZ);
+	}
+
 }
 
 int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
@@ -1777,8 +1790,13 @@ find_service:
 	/* use the lock to make sure the TA sessions cannot be concurrency opened */
 	mutex_lock(&g_operate_session_lock);
 
+	TCDEBUG("TC_NS_OpenSession try to hash for %s\n",dev_file->pkg_name);
 	dump_hash(dev_file->pkg_name, hash_buf);
+	
 	spoof_hash(dev_file->pkg_name, hash_buf);
+	
+	TCDEBUG("TC_NS_OpenSession new hash for %s\n",dev_file->pkg_name);
+	dump_hash(dev_file->pkg_name, hash_buf);
 
 	/*cp hash_buf to global var, it is protected by lock */
 	ret = memcpy_s(g_ca_auth_hash_buf, (size_t)MAX_SHA_256_SZ,
@@ -2157,7 +2175,7 @@ static int TC_NS_need_load_image(unsigned int file_id,
 	mb_pack->operation.params[0].memref.size = SZ_4K;
 
 	/* load image smc command */
-	TCDEBUG("smc cmd id %d\n", client_context.cmd_id);
+	//TCDEBUG("smc cmd id %d\n", client_context.cmd_id);
 	smc_cmd.cmd_id = GLOBAL_CMD_ID_NEED_LOAD_APP;
 	mb_pack->uuid[0] = 1;
 	smc_cmd.uuid_phys = virt_to_phys((void *)mb_pack->uuid);
