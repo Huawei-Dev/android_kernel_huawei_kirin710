@@ -1159,14 +1159,14 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 	{
 		.desc = "Data cache clean to the PoU not required for I/D coherence",
 		.capability = ARM64_HAS_CACHE_IDC,
-		.def_scope = SCOPE_SYSTEM,
+		.type = ARM64_CPUCAP_SCOPE_SYSTEM,
 		.matches = has_cache_idc,
 		.cpu_enable = cpu_emulate_effective_ctr,
 	},
 	{
 		.desc = "Instruction cache invalidation not required for I/D coherence",
 		.capability = ARM64_HAS_CACHE_DIC,
-		.def_scope = SCOPE_SYSTEM,
+		.type = ARM64_CPUCAP_SCOPE_SYSTEM,
 		.matches = has_cache_dic,
 	},
 	{},
