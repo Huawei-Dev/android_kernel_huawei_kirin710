@@ -664,7 +664,7 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 	{
 		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
 		ERRATA_MIDR_ALL_VERSIONS(MIDR_CORTEX_ENYO),
-		.cpu_enable = enable_smccc_arch_workaround_1,
+		.matches = check_branch_predictor,
 	},
 #endif
 #endif
