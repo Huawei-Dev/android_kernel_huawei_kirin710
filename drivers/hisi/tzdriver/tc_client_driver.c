@@ -1612,7 +1612,12 @@ void spoof_hash(char *my_pkname, unsigned char *hash_buf)
 	unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E, 
 					0x09, 0xCA, 0xFF, 0x44, 0x7A, 0xFA, 0xBB, 0x87, 
 					0x15, 0x3A, 0x16, 0x1E, 0xAC, 0x46, 0x09, 0xDB,
-					0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};	
+					0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};
+
+	/*unsigned char widevine_hash[32] = {0x9C, 0xEC, 0x5B, 0x8C, 0x8C, 0xAF, 0x35, 0x97,
+					0x84, 0x43, 0x8C, 0x00, 0xF7, 0xA5, 0xCB, 0x50,
+					0x18, 0x2B, 0xAC, 0x31, 0xFA, 0x31, 0xDE, 0x70,
+					0xA9, 0xD4, 0x6C, 0xF8, 0xBF, 0x37, 0x69, 0x4F};*/
 
 
 	tlogd("TeeHash find %s process\n",my_pkname);
@@ -1647,6 +1652,7 @@ void spoof_hash(char *my_pkname, unsigned char *hash_buf)
 int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 {
 	int ret = -EINVAL;
+	int sret = -EINVAL;
 	TC_NS_Service *service = NULL;
 	TC_NS_Session *session = NULL;
 	struct task_struct *S = NULL;
@@ -1681,6 +1687,14 @@ int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 			}
 		}
 	}
+		
+	/* Change login information */
+	/*if (!strncmp(dev_file->pkg_name, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
+		tlogd("change %s process name\n",dev_file->pkg_name);
+		strncpy(dev_file->pkg_name, "/vendor/preavs/bin/hw/android.hardware.drm@1.1-service.widevine", 63);
+		tlogd("to %s process name\n",dev_file->pkg_name);		
+	}*/
+	
 	mutex_lock(&dev_file->service_lock);
 	service = tc_find_service(&dev_file->services_list, context->uuid); /*lint !e64 */
 
@@ -1721,6 +1735,7 @@ find_service:
 			ret = -EFAULT;
 			goto error;
 		}
+
 
 		ret = set_login_information(dev_file, context);
 		if (ret != 0) {
