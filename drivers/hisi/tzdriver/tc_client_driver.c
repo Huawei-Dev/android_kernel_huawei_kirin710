@@ -2128,7 +2128,7 @@ static int TC_NS_load_image(TC_NS_DEV_File *dev_file,
 		smc_cmd.operation_h_phys = virt_to_phys(&mb_pack->operation) >> 32; /*lint !e572*/
 
 		ret = TC_NS_SMC(&smc_cmd, 0);
-		TCDEBUG("smc cmd ret %d\n", ret);
+		TCERR("smc cmd ret %d\n", ret);
 
 		tlogd("configid=%d,ret=%d,load_flag=%d,index=%d\n",mb_pack->operation.params[1].value.a,ret,load_flag,index);
 		if (ret != 0) {
@@ -2136,6 +2136,8 @@ static int TC_NS_load_image(TC_NS_DEV_File *dev_file,
 			ret = -1;
 			goto clean;
 		}
+		
+		TCERR("smc_call returns noerror - continue\n");
 		if (ret == 0 && load_flag == 0) {
 			/* check need to add ionmem  */
 			uint32_t configid = mb_pack->operation.params[1].value.a;
