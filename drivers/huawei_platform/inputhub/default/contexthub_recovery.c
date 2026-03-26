@@ -1,4 +1,4 @@
-﻿/*
+/*
  * contexthub_recovery.c
  *
  * functions for sensorhub recovery
