@@ -6190,7 +6190,7 @@ static void hw_tcp_check_and_disable_timestamps(struct net *net, struct sk_buff 
 	last_timestamps = net->ipv4.sysctl_tcp_timestamps;
 }
 
-unsigned int hw_get_currect_ipv4_sysctl_tcp_timestamps()
+unsigned int hw_get_currect_ipv4_sysctl_tcp_timestamps(void)
 {
 	return default_ipv4_sysctl_tcp_timestamps;
 }
