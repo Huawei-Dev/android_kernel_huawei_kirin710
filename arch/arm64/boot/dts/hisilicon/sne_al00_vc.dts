@@ -25008,7 +25008,7 @@
 		};
 
 		lcdkit_sne_vn2_boe_ft8719_6p3 {
-			status = "disabled";
+			status = "ok";
 			phandle = <0x678>;
 			compatible = "boe_ft8719_6p3_1080p_video";
 			hw,lcdkit-panel-name = "BOE_FT8719 6.3' VIDEO TFT 1080 x 2340";
