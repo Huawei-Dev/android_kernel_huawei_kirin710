@@ -144,6 +144,14 @@ SECTIONS
 	__stop_hwlog_tag = .;
 #endif
 
+#ifdef CONFIG_ARM64_BUILTIN_APPENDED_DTB_OVERRIDE
+	. = ALIGN(8);
+	.builtin_custom_dtb : {
+		KEEP(*(.builtin_custom_dtb))
+	}
+	. = ALIGN(8);
+#endif
+
 	. = ALIGN(SEGMENT_ALIGN);
 	_etext = .;			/* End of text section */
 

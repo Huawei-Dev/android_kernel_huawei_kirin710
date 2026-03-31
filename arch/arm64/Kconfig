@@ -1313,6 +1313,13 @@ source "drivers/cpufreq/Kconfig"
 
 endmenu
 
+config ARM64_BUILTIN_APPENDED_DTB_OVERRIDE
+	bool "Use built-in custom DTB and fallback to bootloader DTB"
+	default y
+	help
+	  Include a custom DTB blob inside the kernel image and prefer it at boot.
+	  If the built-in DTB is invalid, the kernel falls back to the bootloader DTB.
+
 source "net/Kconfig"
 
 source "drivers/Kconfig"
