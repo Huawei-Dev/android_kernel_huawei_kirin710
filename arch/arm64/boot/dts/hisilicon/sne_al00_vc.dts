@@ -16846,11 +16846,6 @@
 	};
 
 	chosen {
-		linux,initrd-end = <0x998bc00>;
-		linux,initrd-start = <0x7c00000>;
-		bootargs = "loglevel=4 initcall_debug=n page_tracker=on unmovable_isolate1=2:192M,3:224M,4:256M printktimer=0xfff0a000,0x534,0x538 androidboot.selinux=permissive androidboot.init_fatal_reboot_target=recovery androidboot.super_partition=system buildvariant=userdebug androidboot.swtype=normal fastboot_version=Chipset-miami9.1.0.(09Z0)_FASTBOOT setup_logctl=0 enter_recovery=1 enter_erecovery=0 androidboot.mode=normal pmu_nv_addr=0x13560014 low_volt_flag=0 usb_macbt=normal boardid=0x00001f1b androidboot.dtbo_idx=0 normal_reset_type=BR_KEY_VOLUMN_UP  TP_COLOR=210  COLOR_TMP=0 LCD_DENSITY=0  DDIC_INFO= productid=0x38624800 androidboot.serialno=HYJNW18A27001862 himntn=01111111111110100010110000000000000000101000 boot_slice=0x00060421 reboot_reason=AP_S_PMU exception_subtype=VSYS_PWRON_SHUTDOWN last_bootup_keypoint=70 recovery_update=0 bootlock=unlocked hw_bfm_enable=0 hw_bfr_enable=1 swiotlb=2 androidboot.odm.conn.chiptype=hisi androidboot.odm.conn.schiptype=hi1102 mdmreglogbase=0x00000000 mdmreglogsize=0x00000000 modem_socp_enable=0 androidboot.hardware=kirin710 tpcolor=black emmc_freqsel=0x00000000 format_data=1 cpu_buck_reg=0x;;  LCD_ID=0 androidboot.vendor.ddrsize=6 oba_version=20191219161009_OBA_VERSION kce_status=0 androidboot.verifiedbootstate=orange androidboot.veritymode=enforcing efuse_status=0  androidboot.vercnt1=1 bl1_time=1494 bl2_time=12051 logo_time=9571 dsm_notify=1 vendorcountry=hw/eu devmodel=SNE-L21 userHotaUpdate=success_2 androidboot.product.hardware.sku=SNE-L21 userlock=unlocked androidboot.oemmode=user cache=PARTUUID=f9f21f40-a8d4-5f0e-9746-594869aec34e/recovery/ patch=PARTUUID=f9f21f44-a8d4-5f0e-9746-594869aec34e  LCD_ELVSS_DIM=0  console=ttyS0 ";
-		kaslr-seed = <0x0 0x0>;
-		phandle = <0x51d>;
 	};
 
 	memory {
