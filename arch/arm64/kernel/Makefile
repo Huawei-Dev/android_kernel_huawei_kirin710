@@ -70,3 +70,5 @@ extra-y					+= $(head-y) vmlinux.lds
 ifeq ($(CONFIG_DEBUG_EFI),y)
 AFLAGS_head.o += -DVMLINUX_PATH="\"$(realpath $(objtree)/vmlinux)\""
 endif
+
+obj-$(CONFIG_ARM64_BUILTIN_APPENDED_DTB_OVERRIDE) += builtin_custom_dtb.o
