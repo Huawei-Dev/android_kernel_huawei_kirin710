@@ -4,6 +4,31 @@
 #include <linux/hisi/hisi_ion.h>
 
 #include "teek_ns_client.h"
+
+#include <linux/types.h>
+
+#ifndef MAX_ION_NENTS
+#define MAX_ION_NENTS 1024
+#endif
+
+#ifndef TZDRIVER_TZ_SG_LIST_COMPAT
+#define TZDRIVER_TZ_SG_LIST_COMPAT
+
+typedef struct ion_page_info {
+	phys_addr_t phys_addr;
+	uint32_t npages;
+} tz_page_info;
+
+typedef struct sglist {
+	uint64_t sglist_size;
+	uint64_t ion_size;
+	uint64_t ion_id;
+	uint64_t info_length;
+	struct ion_page_info page_info[0];
+} tz_sg_list;
+
+#endif
+
 #define CAFD_MAX         10 //concurrent opened session count
 #define SET_BIT(map, bit) (map |= (0x1<<(bit)))
 #define CLR_BIT(map, bit) (map &= (~(unsigned)(0x1<<(bit))))

@@ -34,6 +34,18 @@
 	} \
 }
 
+#ifndef TEE_SERVICE_SECISP
+#define TEE_SERVICE_SECISP \
+{ \
+	0xDCA5AE8A, \
+	0x769E, \
+	0x4E24, \
+	{ \
+		0x89, 0x6B, 0x7D, 0x06, 0x44, 0x2C, 0x1C, 0x0E \
+	} \
+}
+#endif
+
 /**
  * @ingroup  TEE_COMMON_DATA
  *
