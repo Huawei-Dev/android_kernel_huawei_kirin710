@@ -1,9 +1,5 @@
-/*
- * Copyright (c) Huawei Technologies Co., Ltd. 2016-2019. All rights reserved.
- * Description: Function declaration for smc cmd send.
- * Author: qiqingchao  q00XXXXXX
- * Create: 2016-06-21
- */
+
+
 #ifndef _SMC_H_
 #define _SMC_H_
 
@@ -30,15 +26,15 @@ struct pending_entry {
 };
 #endif
 
-extern struct session_crypto_info *g_session_root_key;
-extern unsigned long g_secs_suspend_status;
+extern struct device_node *np;
 
 int smc_init_data(struct device *class_dev);
 void smc_free_data(void);
-int tc_ns_smc(tc_ns_smc_cmd *cmd);
-int tc_ns_smc_with_no_nr(tc_ns_smc_cmd *cmd);
-int teeos_log_exception_archive(unsigned int eventid, const char *exceptioninfo);
-void set_cmd_send_state(void);
+unsigned int TC_NS_SMC(TC_NS_SMC_CMD *cmd, uint8_t flags);
+unsigned int TC_NS_SMC_WITH_NO_NR(TC_NS_SMC_CMD *cmd, uint8_t flags);
+int teeos_log_exception_archive(unsigned int eventid, const char* exceptioninfo);
+
+#ifdef CONFIG_TEE_SMP
 int init_smc_svc_thread(void);
 int smc_wakeup_ca(pid_t ca);
 int smc_wakeup_broadcast(void);
@@ -53,6 +49,15 @@ static inline int switch_low_temperature_mode(unsigned int mode)
 {
 	return -EINVAL;
 }
-void wakeup_tc_siq(void);
-
+#else
+/* Post command to TrustedCore without waiting for answer or result */
+unsigned int TC_NS_POST_SMC(TC_NS_SMC_CMD *cmd);
+void tc_smc_wakeup(void);
+static inline int init_smc_svc_thread(void)
+{
+	return 0;
+}
+static inline void smc_wakeup_ca(void) {}
+static inline void show_cmd_bitmap(void) {}
+#endif
 #endif

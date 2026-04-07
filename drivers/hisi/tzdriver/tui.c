@@ -1,6 +1,5 @@
 #include <linux/kthread.h>
 #include <linux/sched.h>
-#include <linux/sched/types.h>
 #include <linux/sched/rt.h>
 #include <linux/printk.h>
 #include <linux/slab.h>
@@ -13,8 +12,6 @@
 #include <linux/timer.h>
 #include <linux/wait.h>
 #include <linux/version.h>
-#include <linux/ion.h>
-#include <linux/cma.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/workqueue.h>
@@ -29,47 +26,33 @@
 #include <asm/cacheflush.h>
 #include <linux/kmemleak.h>
 #include <linux/hisi/hisi_ion.h>
-#include <securec.h>
 
 #include "teek_client_constants.h"	/*lint !e451 */
 #include "agent.h"
 #include "mem.h"
 #include "teek_ns_client.h"
-#include "teek_client_type.h"
-#include "teek_client_api.h"
 #include "tui.h"
 #include "smc.h"
 #include "tc_ns_client.h"
 #include "hisi_fb.h"
+#include "libhwsecurec/securec.h"
 #include "tc_ns_log.h"
 #include "mailbox_mempool.h"
-#include "dynamic_mem.h"
 #include <linux/hisi/hisi_powerkey_event.h>
 #include "mem.h"
 
 
-#if defined CONFIG_TEE_TUI_ION
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
-static struct ion_client *g_tui_client = NULL;
-static char *g_ion_name = "TUI_ION";
-#endif
-#endif
+static char *ion_name = "TUI_ION";
+static struct ion_client *tui_client = NULL;
 
-#define MAX_SCREEN_RESOLUTION 8192
-#define CHECK_IF_TRUE(bool_value, msg, ret) \
-do { \
-	if (bool_value) { \
-		tloge("%s\n", msg); \
-		return ret; \
-	} \
-} while (0)
 
 static void tui_poweroff_work_func(struct work_struct *work);
-static ssize_t tui_status_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf);
+static ssize_t tui_status_show(struct kobject *kobj,
+			       struct kobj_attribute *attr, char *buf);
 static void tui_msg_del(const char *name);
 static DECLARE_DELAYED_WORK(tui_poweroff_work, tui_poweroff_work_func);
 
-static struct kobject *g_tui_kobj = NULL;
+static struct kobject *tui_kobj = NULL;
 static struct kobj_attribute tui_attribute =
 	__ATTR(c_state, 0440, tui_status_show, NULL);
 static struct attribute *attrs[] = {
@@ -81,21 +64,23 @@ static struct attribute_group tui_attr_group = {
 	.attrs = attrs,
 };
 
-static struct task_struct *g_tui_task = NULL;
-static struct tui_ctl_shm *g_tui_ctl = NULL;
-static tc_ns_shared_mem *g_tui_tc_shm = NULL;
+static struct task_struct *tui_task = NULL;
+static struct tui_ctl_shm *tui_ctl = NULL;
+static TC_NS_Shared_MEM *tui_tc_shm = NULL;
 
 static spinlock_t tui_msg_lock;
 static struct list_head tui_msg_head;
 
 /*lint -e551 -esym(551,*) */
 static atomic_t tui_state = ATOMIC_INIT(TUI_STATE_UNUSED);
+/*lint -e551 +esym(551,*) */
+static atomic_t tui_pid_state = ATOMIC_INIT(TUI_PID_CLEAR);
 
 DEFINE_MUTEX(tui_drv_lock);
 static struct list_head tui_drv_head = LIST_HEAD_INIT(tui_drv_head);
 
-static atomic_t g_tui_attached_device = ATOMIC_INIT(TUI_PID_CLEAR);
-static atomic_t g_tui_pid = ATOMIC_INIT(TUI_PID_CLEAR);
+static unsigned int tui_attached_device;
+static unsigned int tui_pid;
 
 static wait_queue_head_t tui_state_wq;
 static int tui_state_flag;
@@ -112,45 +97,27 @@ static struct hisi_fb_data_type *dss_fd;
 
 #define TTF_NORMAL_BUFF_SIZE		(4 * 1024 * 1024)
 #define TTF_NORMAL_FILE_PATH	"/vendor/etc/DroidSansFallbackTui.ttf"
-#define TTF_UNUSUAL_BUFF_SIZE	(20 * 1024 * 1024)
+#define TTF_UNUSUAL_BUFF_SIZE	(18 * 1024 * 1024)
 #define TTF_UNUSUAL_FILE_PATH	"/system/fonts/NotoSansCJK-Regular.ttc"
+#define DRIVER_NUM 4
 
 /* 2M memory size is 2^21 */
-#define ALIGN_SIZE 21
+#define ALIGN_SIZE  21
 #define ALIGN_M  (1<<21)
 
-/* dss and tp couple mode: 0 is init dss and tp; 1 is only init dss; 2 is only init tp */
-#define DSS_TP_COUPLE_MODE 0
-
-#define NORMAL_MODE 0 /* init all driver */
-#define ONLY_INIT_DSS 1 /* only init dss */
-#define ONLY_INIT_TP 2 /* only init tp */
-
-/* do fp init(disable fp irq) before gpio init in order not response
- * sensor in normal world(when gpio secure status is set) */
-#if ONLY_INIT_DSS == DSS_TP_COUPLE_MODE
-#define DRIVER_NUM 1
-static char *g_init_driver[DRIVER_NUM] = {TUI_DSS_NAME};
-static char *g_deinit_driver[DRIVER_NUM] = {TUI_DSS_NAME};
-#endif
-
-#if ONLY_INIT_TP == DSS_TP_COUPLE_MODE
-#define DRIVER_NUM 3
-static char *g_init_driver[DRIVER_NUM] = {TUI_TP_NAME, TUI_FP_NAME, TUI_GPIO_NAME};
-static char *g_deinit_driver[DRIVER_NUM] = {TUI_TP_NAME, TUI_FP_NAME, TUI_GPIO_NAME};
-#endif
-
-#if NORMAL_MODE == DSS_TP_COUPLE_MODE
-#define DRIVER_NUM 4
-static char *g_init_driver[DRIVER_NUM] = {TUI_DSS_NAME, TUI_TP_NAME, TUI_FP_NAME, TUI_GPIO_NAME};
-static char *g_deinit_driver[DRIVER_NUM] = {TUI_DSS_NAME, TUI_TP_NAME, TUI_FP_NAME, TUI_GPIO_NAME};
-#endif
-
+/*do fp init(disable fp irq) before gpio init in order not response
+* sensor in normal world(when gpio secure status is set)*/
+static char *init_driver[DRIVER_NUM] = {TUI_DSS_NAME, TUI_TP_NAME,
+					TUI_FP_NAME, TUI_GPIO_NAME
+				       };
+static char *deinit_driver[DRIVER_NUM] = {TUI_DSS_NAME, TUI_GPIO_NAME,
+					  TUI_FP_NAME, TUI_TP_NAME
+					 };
 #define TIME_OUT_FOWER_ON 100
 
-#define DOWN_VAL 22 // 4M
-#define UP_VAL 27 // 64M
-#define COLOR_TYPE 4 /* ARGB */
+#define DOWN_VAL 22  //4M
+#define UP_VAL       27  //64M
+#define COLOR_TYPE	4  /*ARGB*/
 #define BUFFER_NUM 2
 
 /*tui-need-memory is calculated dynamically according to the screen resolution*/
@@ -169,9 +136,6 @@ struct ttf_mem {
 	unsigned int ttf_file_size;
 };
 
-#if !defined CONFIG_TEE_TUI_ION
-static struct tui_mem g_tui_mem;
-#endif
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0))
 extern void create_mapping_late(phys_addr_t phys, unsigned long virt,
@@ -189,19 +153,11 @@ typedef struct tui_memory {
 #endif
 	void *tui_ion_virt_addr;
 	size_t len;
-	uint32_t size;
-	uint32_t configid;
-	struct sg_table *tui_sg_table;
-	phys_addr_t fb_phys_addr;
-	uint32_t npages;
-	uint64_t info_length;
 } tui_ion_mem;
 
 
 
-#if defined CONFIG_TEE_TUI_ION
 static tui_ion_mem tui_display_mem;
-#endif
 static tui_ion_mem normal_font_mem;
 static tui_ion_mem unusual_font_mem;
 
@@ -248,7 +204,6 @@ static size_t get_tui_font_file_size(ttf_type type)
 
 }
 
-#if defined CONFIG_TEE_TUI_ION
 static int tui_mem_alloc(const struct device *class_dev)
 {
 	/*ALL Memeory about TUI were alloacated using ion.*/
@@ -260,95 +215,30 @@ static void tui_mem_free(void)
 	return;
 }
 
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
-static int get_tui_ion_sglist(tui_ion_mem *tui_mem)
-{
-	struct sglist *tmp_tui_sglist = NULL;
-	struct scatterlist *tui_sg = NULL;
-	struct page *tui_page = NULL;
-	uint32_t tui_sglist_size;
-	uint32_t i = 0;
-	struct sg_table *tui_ion_sg_table = NULL;
-
-	CHECK_IF_TRUE((tui_mem == NULL), "invalid input params", -1);
-
-	tui_ion_sg_table = tui_mem->tui_sg_table;
-	CHECK_IF_TRUE((tui_ion_sg_table == NULL), "invalid sgtable", -1);
-
-	tui_sglist_size = sizeof(tz_page_info) * tui_ion_sg_table->nents + sizeof(struct sglist);
-	tmp_tui_sglist = (tz_sg_list *)mailbox_alloc(tui_sglist_size, MB_FLAG_ZERO);
-
-	if (tmp_tui_sglist == NULL) {
-		tloge("in %s err: mailbox_alloc failed.\n", __func__);
-		return -1;
-	}
-
-	tmp_tui_sglist->sglist_size = (uint64_t)tui_sglist_size;
-	tmp_tui_sglist->ion_size = (uint64_t)tui_mem->len;
-	tmp_tui_sglist->info_length = (uint64_t)tui_ion_sg_table->nents;
-	tui_mem->info_length = (uint64_t)tui_ion_sg_table->nents;
-
-	/* nent must be 1, because ion addr for tui is continuous */
-	if (tui_ion_sg_table->nents != 1) {
-		tloge("nent is invalid\n");
-		mailbox_free(tmp_tui_sglist);
-		return -1;
-	}
-	/* get tui_sg to fetch ion for tui */
-	for_each_sg(tui_ion_sg_table->sgl, tui_sg, tui_ion_sg_table->nents, i) {
-		if (tui_sg == NULL) {
-			tloge("tui sg is NULL");
-			mailbox_free(tmp_tui_sglist);
-			return -1;
-		}
-		tui_page = sg_page(tui_sg);
-		tmp_tui_sglist->page_info[0].phys_addr = page_to_phys(tui_page);
-		tmp_tui_sglist->page_info[0].npages = tui_sg->length / PAGE_SIZE;
-		tui_mem->npages = tmp_tui_sglist->page_info[0].npages;
-		tui_mem->tui_ion_virt_addr = phys_to_virt(tmp_tui_sglist->page_info[0].phys_addr);
-		tui_mem->fb_phys_addr = tmp_tui_sglist->page_info[0].phys_addr;
-	}
-
-	tui_mem->tui_ion_phys_addr = virt_to_phys((void *)tmp_tui_sglist); // sglist phys-addr
-	if (tui_mem->tui_ion_phys_addr == 0) {
-		tloge("Failed to get tmp_tui_sglist physaddr, configid=%d\n",
-		tui_mem->configid);
-		mailbox_free(tmp_tui_sglist);
-		return -1;
-	}
-	tui_mem->size = tui_sglist_size;
-	return 0;
-}
-#endif
-
-
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
 static int alloc_ion_mem(tui_ion_mem *tui_mem)
 {
 	size_t ion_font_len = 0;
 	unsigned int ion_id;
 
-	if (g_tui_client == NULL || tui_mem == NULL)
+	if (NULL == tui_client || NULL == tui_mem)
 		return 0;
 	ion_id = (unsigned int)ION_TUI_HEAP_ID;
-	tui_mem->tui_ion_handle = ion_alloc(g_tui_client, tui_mem->len, /*lint !e647 */
+	tui_mem->tui_ion_handle = ion_alloc(tui_client, tui_mem->len, /*lint !e647 */
 			SZ_2M, ION_HEAP(ion_id), ION_FLAG_CACHED);
 
-	if (IS_ERR_OR_NULL(tui_mem->tui_ion_handle)) {
+	if (IS_ERR(tui_mem->tui_ion_handle)) {
 		tloge("Failed to get tui ion handle\n");
 		tui_mem->tui_ion_phys_addr = 0;
 		return -1; /*lint !e570 */
 	}
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
-	if (ion_secmem_get_phys(g_tui_client, tui_mem->tui_ion_handle,
-		(phys_addr_t *)&(tui_mem->tui_ion_phys_addr), &ion_font_len) < 0) {
+	if(ion_secmem_get_phys(tui_client, tui_mem->tui_ion_handle, (phys_addr_t *)(&(tui_mem->tui_ion_phys_addr)), &ion_font_len) < 0) {
 #else
-	if (ion_phys(g_tui_client, tui_mem->tui_ion_handle, &(tui_mem->tui_ion_phys_addr), &ion_font_len) < 0) {
+	if(ion_phys(tui_client, tui_mem->tui_ion_handle, &(tui_mem->tui_ion_phys_addr), &ion_font_len) < 0) {
 #endif
-		tloge("Get tui ion handle failed\n");
-		ion_free(g_tui_client, tui_mem->tui_ion_handle);
+		ion_free(tui_client, tui_mem->tui_ion_handle);
 		tui_mem->tui_ion_phys_addr = 0;
 		return -1; /*lint !e570 */
 	}
@@ -356,7 +246,7 @@ static int alloc_ion_mem(tui_ion_mem *tui_mem)
 	tui_mem->tui_ion_virt_addr = (void *)phys_to_virt(tui_mem->tui_ion_phys_addr);
 	if (IS_ERR_OR_NULL(tui_mem->tui_ion_virt_addr))  {
 		tloge("Map tui font ion mem failed.\n");
-		ion_free(g_tui_client, tui_mem->tui_ion_handle);
+		ion_free(tui_client, tui_mem->tui_ion_handle);
 		tui_mem->tui_ion_phys_addr = 0;
 		return -1;
 	}
@@ -364,21 +254,8 @@ static int alloc_ion_mem(tui_ion_mem *tui_mem)
 	return 0;
 }
 #else
-#define PAGE_ALIGN_ORDER 9 /* align with 2MB : PAGE_ORDER = 9 */
 static int alloc_ion_mem(tui_ion_mem *tui_mem)
 {
-	struct sg_table *tui_ion_sg_table = NULL;
-	if (tui_mem == NULL) {
-		tloge("bad input params\n");
-		return -1;
-	}
-
-	tui_ion_sg_table = hisi_secmem_alloc(SEC_TUI, tui_mem->len);
-	if (tui_ion_sg_table == NULL) {
-		tloge("failed to get ion page for tui,configid is %d\n", tui_mem->configid);
-		return -1;
-	}
-	tui_mem->tui_sg_table = tui_ion_sg_table;
 	return 0;
 }
 #endif
@@ -386,12 +263,11 @@ static int alloc_ion_mem(tui_ion_mem *tui_mem)
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
 static void free_ion_mem(tui_ion_mem *tui_mem)
 {
-	if (tui_mem == NULL) {
+	if(NULL == tui_mem)
 		return;
-	}
 
 	if (IS_ERR(tui_mem->tui_ion_handle) || NULL == tui_mem->tui_ion_handle || \
-		0 == tui_mem->tui_ion_phys_addr || g_tui_client == NULL) {
+		0 == tui_mem->tui_ion_phys_addr || NULL == tui_client) {
 		return;
 	}
 
@@ -406,7 +282,7 @@ static void free_ion_mem(tui_ion_mem *tui_mem)
 #endif
 	flush_tlb_all();
 
-	ion_free(g_tui_client, tui_mem->tui_ion_handle);
+	ion_free(tui_client, tui_mem->tui_ion_handle);
 	tui_mem->tui_ion_handle = NULL;
 
 	return;
@@ -414,12 +290,6 @@ static void free_ion_mem(tui_ion_mem *tui_mem)
 #else
 static void free_ion_mem(tui_ion_mem *tui_mem)
 {
-	if (tui_mem->tui_sg_table == NULL || tui_mem->tui_ion_phys_addr == 0) {
-		tloge("bad input params\n");
-		return;
-	}
-	hisi_secmem_free(SEC_TUI, tui_mem->tui_sg_table);
-	tui_mem->tui_ion_phys_addr = 0;
 	return;
 }
 #endif
@@ -455,11 +325,11 @@ static phys_addr_t get_frame_addr(void)
 	int screen_r;
 	unsigned int len = 0;
 	int ret;
-	if (dss_fd == NULL || tui_display_mem.tui_ion_handle != NULL) {
-		return 0;
-	}
 
-	screen_r = dss_fd->panel_info.xres * dss_fd->panel_info.yres * COLOR_TYPE * BUFFER_NUM;
+	if (NULL == dss_fd || NULL != tui_display_mem.tui_ion_handle)
+		return 0;
+
+	screen_r = dss_fd->panel_info.xres * dss_fd->panel_info.yres*COLOR_TYPE*BUFFER_NUM;
 	tui_display_mem.len = get_frame_size(screen_r);
 
 	ret = alloc_ion_mem(&tui_display_mem);
@@ -482,7 +352,7 @@ static phys_addr_t get_frame_addr(void)
 
 	/*0x2f000000 or 0x30000000*/
 	tlogd("tui width=%d height=%d tui_ion_phys_addr=0x%x len =%u  memory=%u M\n",
-	dss_fd->panel_info.xres, dss_fd->panel_info.yres,
+		dss_fd->panel_info.xres, dss_fd->panel_info.yres,
 		(unsigned int)tui_display_mem.tui_ion_phys_addr, len, get_frame_size(screen_r)); /*lint !e559 */
 
 	return tui_display_mem.tui_ion_phys_addr;
@@ -490,37 +360,16 @@ static phys_addr_t get_frame_addr(void)
 #else
 static phys_addr_t get_frame_addr(void)
 {
-	int screen_r;
-	int ret;
-	if(dss_fd == NULL){
-		return 0;
-	}
-	CHECK_IF_TRUE((dss_fd->panel_info.xres > MAX_SCREEN_RESOLUTION), "Horizontal resolution is too large", 0);
-	CHECK_IF_TRUE((dss_fd->panel_info.yres > MAX_SCREEN_RESOLUTION), "Vertical resolution is too large", 0);
-	screen_r = dss_fd->panel_info.xres * dss_fd->panel_info.yres * COLOR_TYPE * BUFFER_NUM;
-	tui_display_mem.len = get_frame_size(screen_r);
-	ret = alloc_ion_mem(&tui_display_mem);
-	if (ret) {
-		tloge("Failed to alloc mem for tui display.\n");
-		return 0;
-	}
-
-	if (get_tui_ion_sglist(&tui_display_mem)) {
-		tloge("get sglist failed\n");
-		free_ion_mem(&tui_display_mem);
-		return 0;
-	}
-
-	return tui_display_mem.fb_phys_addr;
+	return tui_display_mem.tui_ion_phys_addr;
 }
 #endif
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
 void free_frame_addr(void)
 {
-	if (!IS_ERR_OR_NULL(tui_display_mem.tui_ion_handle) &&
+	if (!IS_ERR(tui_display_mem.tui_ion_handle) &&
 		tui_display_mem.tui_ion_handle != NULL &&
-		g_tui_client) {
+		tui_client) {
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
 		change_secpage_range(tui_display_mem.tui_ion_phys_addr,
@@ -533,206 +382,52 @@ void free_frame_addr(void)
 #endif
 		flush_tlb_all();
 
-		ion_free(g_tui_client, tui_display_mem.tui_ion_handle);
+		ion_free(tui_client, tui_display_mem.tui_ion_handle);
 		tui_display_mem.tui_ion_handle = NULL;
 	}
 }
 #else
 void free_frame_addr(void)
 {
-	mailbox_free(phys_to_virt(tui_display_mem.tui_ion_phys_addr));
-	free_ion_mem(&tui_display_mem);
-	return;
-}
-#endif
-
-#else
-static int tui_mem_alloc(const struct device *class_dev)
-{
-	u64 len;
-	int ret;
-	const struct device_node *node = NULL;
-	const char *status = NULL;
-	const char *buff_virt = NULL;
-	phys_addr_t buff_phy = 0;
-
-	if (NULL == class_dev)
-		return -1;
-	of_dma_configure(class_dev,NULL);
-	ret = dma_set_mask_and_coherent(class_dev, DMA_BIT_MASK(64));
-	if(ret < 0){
-		tloge("dma set mask and coherent failed\n");
-		return ret;
-	}
-	ret = of_reserved_mem_device_init(class_dev);
-	if (ret < 0) {
-		tloge("reserve tui mem failed\n");
-		return ret;
-	}
-
-	node = of_find_node_by_path("/reserved-memory/tui-mem");
-	if (node == NULL) {
-		tloge("not find tui mem\n");
-		return -1;
-	}
-
-	ret = of_property_read_string(node, "status", &status);
-	if (ret) {
-		tloge("get status error\n");
-		return -1;
-	}
-
-	if (status && strncmp(status, "ok", strlen("ok")) != 0) {
-		tloge("status is error\n");
-		return -1;
-	}
-
-	if (of_property_read_u64(node, "size", &len)) {
-		tloge("get tui-mem size error");
-		return -1;
-	}
-
-	buff_virt = (void *)dma_alloc_coherent(class_dev, len, &buff_phy, GFP_KERNEL);
-	if (NULL == buff_virt) {
-		tloge("tui dma_alloc_coherent failed\n");
-		return -1;
-	}
-
-	__dma_map_area(phys_to_virt(buff_phy), len, DMA_BIDIRECTIONAL);
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
-	change_secpage_range((phys_addr_t)buff_phy,
-			(unsigned long)phys_to_virt(buff_phy), (phys_addr_t)len,
-			__pgprot(PROT_DEVICE_nGnRE));
-#else
-	create_mapping_late((phys_addr_t)buff_phy,
-			(unsigned long)phys_to_virt(buff_phy), (phys_addr_t)len,
-			__pgprot(PROT_DEVICE_nGnRE));
-#endif
-
-	kmemleak_ignore(phys_to_virt(buff_phy));
-
-	flush_tlb_all();
-
-	g_tui_mem.tui_addr = buff_phy;
-	g_tui_mem.tui_addr_h = buff_phy >> 32;
-	g_tui_mem.tui_virt = buff_virt;
-	g_tui_mem.tui_addr_size = len;
-	g_tui_mem.tui_dev = class_dev;
-
-	return 0;
-}
-
-static void tui_mem_free(void)
-{
-	phys_addr_t buff_phy_addr;
-	if (!g_tui_mem.tui_addr)
-		return;
-	buff_phy_addr = (phys_addr_t)g_tui_mem.tui_addr_h << 32 | g_tui_mem.tui_addr; /*lint !e63 */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
-	change_secpage_range(buff_phy_addr, (unsigned long)phys_to_virt(buff_phy_addr), /* lint !e571 */
-		(phys_addr_t)g_tui_mem.tui_addr_size, PAGE_KERNEL);
-#else
-	create_mapping_late(buff_phy_addr, (unsigned long)phys_to_virt(buff_phy_addr), /* lint !e571 */
-		(phys_addr_t)g_tui_mem.tui_addr_size, __pgprot(PAGE_KERNEL));
-#endif
-	dma_free_coherent(g_tui_mem.tui_dev,
-			  g_tui_mem.tui_addr_size, g_tui_mem.tui_virt, buff_phy_addr);
-}
-
-static unsigned int get_frame_addr(void)
-{
-	int screen_r;
-
-	if (dss_fd == NULL) {
-		return 0;
-	}
-
-	screen_r = dss_fd->panel_info.xres *
-		   dss_fd->panel_info.yres * COLOR_TYPE * BUFFER_NUM;
-	if (g_tui_mem.tui_addr_size < (get_frame_size(screen_r))) {
-		tloge("tui memory is not enough size=0x%x screen=(%d*%d)\n", g_tui_mem.tui_addr_size, dss_fd->panel_info.xres, dss_fd->panel_info.yres);
-		return 0;
-	} else {
-		tlogd("tui memory addr=0x%x 0x%x size=0x%x screen=(%d*%d)\n", g_tui_mem.tui_addr_h, g_tui_mem.tui_addr,
-			g_tui_mem.tui_addr_size, dss_fd->panel_info.xres, dss_fd->panel_info.yres);
-		return g_tui_mem.tui_addr;
-	}
-}
-
-void free_frame_addr(void)
-{
-}
-/*if we enable 960 platform, we should revserve TTF_NORMAL_BUFF_SIZE + (dss_fd->panel_info.xres *
-		dss_fd->panel_info.yres*COLOR_TYPE*BUFFER_NUM), the ttf_buff_offset should be 4M-algin*/
-static int get_tui_font_mem(tui_ion_mem *tui_font_mem)
-{
-	if (tui_font_mem == NULL || dss_fd == NULL) {
-		return -1;
-	}
-	unsigned int ttf_buff_offset;
-	tui_font_mem->len = TTF_NORMAL_BUFF_SIZE;
-
-	ttf_buff_offset= get_tui_size(dss_fd->panel_info.xres *
-		dss_fd->panel_info.yres*COLOR_TYPE*BUFFER_NUM);
-	if (g_tui_mem.tui_addr_size < TTF_NORMAL_BUFF_SIZE + ttf_buff_offset) {
-		tloge("tui mem is less than fonts+framebuffer memory 0x%x\n",g_tui_mem.tui_addr_size);
-		return -1;
-	}
-
-	tui_font_mem->tui_ion_phys_addr = ((phys_addr_t)g_tui_mem.tui_addr_h << 32) | (g_tui_mem.tui_addr + ttf_buff_offset);
-	tui_font_mem->tui_ion_virt_addr = g_tui_mem.tui_virt + ttf_buff_offset;
-
-	return 0;
-}
-
-static void free_tui_font_mem(ttf_type type)
-{
-	return;
 }
 #endif
 
 
-int tc_ns_register_tui_font_mem(tui_ion_mem *tui_font_mem, size_t font_file_size, ttf_type type)
+
+int TC_NS_register_tui_font_mem(tui_ion_mem *tui_font_mem, size_t font_file_size, ttf_type type)
 {
-	tc_ns_smc_cmd smc_cmd = { {0}, 0 };
+	TC_NS_SMC_CMD smc_cmd = {0};
 	int ret;
 	struct mb_cmd_pack *mb_pack = NULL;
 
-	if (tui_font_mem == NULL) {
+	if(NULL == tui_font_mem)
 		return -1;
-	}
 
 	mb_pack = mailbox_alloc_cmd_pack();
-	if (mb_pack == NULL) {
+	if (NULL == mb_pack) {
 		tloge("alloc cmd pack failed\n");
 		return -ENOMEM;
 	}
 
-	smc_cmd.global_cmd = true;
+	mb_pack->uuid[0] = 1;
+	smc_cmd.uuid_phys = (unsigned int)virt_to_phys(mb_pack->uuid);
+	smc_cmd.uuid_h_phys = virt_to_phys(mb_pack->uuid) >> 32; /*lint !e572*/
 	if (normal == type) {
 		smc_cmd.cmd_id = GLOBAL_CMD_ID_REGISTER_TTF_MEM;
 	} else {
 		smc_cmd.cmd_id = GLOBAL_CMD_ID_REGISTER_UNUSUAL_TTF_MEM;
 	}
-	mb_pack->operation.paramtypes = TEEC_PARAM_TYPES(
-		TEEC_MEMREF_TEMP_INPUT,
-		TEEC_VALUE_INPUT,
-		TEEC_NONE,
-		TEEC_NONE
-	);
 
-	mb_pack->operation.params[0].memref.size = (uint32_t)(tui_font_mem->size);
-	mb_pack->operation.params[0].memref.buffer = (uint32_t)(tui_font_mem->tui_ion_phys_addr & 0xFFFFFFFF);
-	mb_pack->operation.buffer_h_addr[0] = tui_font_mem->tui_ion_phys_addr >> 32;
+	mb_pack->operation.paramTypes = TEE_PARAM_TYPE_VALUE_INPUT | TEE_PARAM_TYPE_VALUE_INPUT << 4;
+	mb_pack->operation.params[0].value.a = (uint32_t)(tui_font_mem->tui_ion_phys_addr  & 0xFFFFFFFF);
+	mb_pack->operation.params[0].value.b = (uint32_t)(tui_font_mem->tui_ion_phys_addr >> 32);
 	mb_pack->operation.params[1].value.a = font_file_size;
-
-
 	smc_cmd.operation_phys = (unsigned int)virt_to_phys(&mb_pack->operation);
 	smc_cmd.operation_h_phys = virt_to_phys(&mb_pack->operation) >> 32; /*lint !e572*/
-	ret = (int)tc_ns_smc(&smc_cmd);
+
+	ret = (int)TC_NS_SMC(&smc_cmd, 0);
 	if (ret) {
-		tloge("Send ttf mem info failed. ret = 0x%x\n", ret);
+	    tloge("Send ttf mem info failed. 0x%x\n",ret);
 	}
 	mailbox_free(mb_pack);
 
@@ -747,9 +442,9 @@ static int copy_tui_font_file(size_t font_file_size, const void *font_virt_addr,
 	unsigned int count;
 	int ret = 0;
 
-	if (font_virt_addr == NULL) {
+	tloge("tui copy_ttf_file start config---\n");
+	if(NULL == font_virt_addr)
 		return -1;
-	}
 
 	if (normal == type) {
 		filep = filp_open(TTF_NORMAL_FILE_PATH, O_RDONLY, 0);
@@ -757,7 +452,7 @@ static int copy_tui_font_file(size_t font_file_size, const void *font_virt_addr,
 		filep = filp_open(TTF_UNUSUAL_FILE_PATH, O_RDONLY, 0);
 	}
 
-	if (IS_ERR(filep) || filep == NULL) {
+	if(IS_ERR(filep) || NULL == filep) {
 		tloge("Failed to open ttf file.\n");
 		return -1;
 	}
@@ -778,47 +473,15 @@ static int copy_tui_font_file(size_t font_file_size, const void *font_virt_addr,
 	return ret;
 }
 
-static int send_ttf_mem(tui_ion_mem *tui_ttf_mem, ttf_type type)
-{
-	int ret;
-	size_t tui_font_file_size;
-	bool check_params = false;
-
-	tui_font_file_size = get_tui_font_file_size(type);
-	check_params = (tui_font_file_size == 0) || (tui_font_file_size > tui_ttf_mem->len) || (tui_ttf_mem == NULL);
-	if (check_params) {
-		tloge("Failed to get the tui font file size or the tui_font_file_size is too big or tui_ttf_mem is null.\n");
-		return -1;
-	}
-
-	ret = copy_tui_font_file(tui_font_file_size, tui_ttf_mem->tui_ion_virt_addr, type);
-	if (ret < 0) {
-		tloge("Failed to do ttf file copy\n");
-		return -1;
-	}
-
-	__dma_map_area(tui_ttf_mem->tui_ion_virt_addr, tui_ttf_mem->len, DMA_BIDIRECTIONAL);
-
-	ret = tc_ns_register_tui_font_mem(tui_ttf_mem, tui_font_file_size, type);
-	if (ret != 0) {
-		tloge("Failed to do ttf file register ret is 0x%x\n", ret);
-		return -1;
-	}
-
-	return 0;
-}
-
 int load_tui_font_file(ttf_type type, unsigned int arg)
 {
 	int ret = 0;
+	size_t tui_font_file_size = 0;
 	tui_ion_mem *tui_ttf_mem = NULL;
 
-	tloge("====load ttf start type = %u=====\n", type);
 	if (normal == type) {
-		mutex_lock(&tui_drv_lock);
 		if (normal_load_flag) {
 			tloge("normal tui font file has been loaded.\n");
-			mutex_unlock(&tui_drv_lock);
 			return -1;
 		}
 
@@ -833,34 +496,48 @@ int load_tui_font_file(ttf_type type, unsigned int arg)
 
 	if(ret) {
 		tloge("Failed to get tui font memory.\n");
-		if (type == normal)
-			mutex_unlock(&tui_drv_lock);
 		return -1;
 	}
 
-	if (get_tui_ion_sglist(tui_ttf_mem) != 0) {
-		tloge("get tui sglist failed\n");
+	tui_font_file_size = get_tui_font_file_size(type);
+	if (0 == tui_font_file_size || tui_font_file_size > tui_ttf_mem->len) {
 		free_tui_font_mem(type);
-		if (type == normal)
-			mutex_unlock(&tui_drv_lock);
+		tloge("Failed to get the tui font file size or the tui_font_file_size is too big.\n");
 		return -1;
 	}
 
-	ret = send_ttf_mem(tui_ttf_mem, type);
+	ret = copy_tui_font_file(tui_font_file_size, tui_ttf_mem->tui_ion_virt_addr, type);
+	if (ret < 0) {
+		free_tui_font_mem(type);
+		tloge("Failed to do ttf file copy\n");
+		return -1;
+	}
+
+	__dma_map_area(tui_ttf_mem->tui_ion_virt_addr, tui_ttf_mem->len, DMA_BIDIRECTIONAL);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
+	change_secpage_range(tui_ttf_mem->tui_ion_phys_addr,
+			(unsigned long)phys_to_virt(tui_ttf_mem->tui_ion_phys_addr), (phys_addr_t)tui_ttf_mem->len,
+			__pgprot(PROT_DEVICE_nGnRE));
+#else
+	create_mapping_late(tui_ttf_mem->tui_ion_phys_addr,
+			(unsigned long)phys_to_virt(tui_ttf_mem->tui_ion_phys_addr), (phys_addr_t)tui_ttf_mem->len,
+			__pgprot(PROT_DEVICE_nGnRE));
+#endif
+	flush_tlb_all();
+
+	__dma_unmap_area(tui_ttf_mem->tui_ion_virt_addr, tui_ttf_mem->len, DMA_FROM_DEVICE);
+
+	ret = TC_NS_register_tui_font_mem(tui_ttf_mem, tui_font_file_size, type);
 	if (ret != 0) {
-		mailbox_free(phys_to_virt(tui_ttf_mem->tui_ion_phys_addr));
 		free_tui_font_mem(type);
-		if (type == normal)
-			mutex_unlock(&tui_drv_lock);
+		tloge("Failed to do ttf file register ret is 0x%x\n", ret);
 		return -1;
 	}
 
 	if (normal == type) {
 		normal_load_flag = 1;
-		mutex_unlock(&tui_drv_lock);
 	}
-	mailbox_free(phys_to_virt(tui_ttf_mem->tui_ion_phys_addr));
-	tloge("=====load ttf end=====\n");
+
 	return ret;
 }
 
@@ -873,17 +550,16 @@ int register_tui_driver(tui_drv_init fun, const char *name,
 	int sz_drv_node;
 
 	/* Return error if name is invalid */
-	if (name == NULL || fun == NULL) {
-		tloge("name or func is null");
+	if (NULL == name || NULL == fun) {
+		TCERR("name or func is null");
 		return -EINVAL;
 	}
 
 	if (!strncmp(name, TUI_DSS_NAME, (size_t)TUI_DRV_NAME_MAX)) {
-		if (pdata == NULL) {
+		if (NULL == pdata)
 			return -1;
-		} else {
+		else
 			dss_fd = (struct hisi_fb_data_type *)pdata;
-		}
 	}
 
 	if (!strncmp(name, TUI_TP_NAME, (size_t)TUI_DRV_NAME_MAX) && NULL == pdata)
@@ -903,12 +579,11 @@ int register_tui_driver(tui_drv_init fun, const char *name,
 
 	/* Allocate memory for tui_drv */
 	tui_drv = kzalloc(sizeof(struct tui_drv_node), GFP_KERNEL);
-	if (tui_drv == NULL) {
+	if (NULL == tui_drv)
 		return -ENOMEM;
-	}
 
 	sz_drv_node = sizeof(struct tui_drv_node);
-	if (memset_s(tui_drv, sz_drv_node, 0, sz_drv_node)) {
+	if(memset_s(tui_drv,sz_drv_node,0,sz_drv_node)){
 		tloge("tui_drv memset failed");
 		kfree(tui_drv);
 		return -1;
@@ -941,8 +616,8 @@ void unregister_tui_driver(const char *name)
 	struct tui_drv_node *pos = NULL, *tmp = NULL;
 
 	/* Return error if name is invalid */
-	if (name == NULL) {
-		tloge("name is null");
+	if (NULL == name) {
+		TCERR("name is null");
 		return;
 	}
 
@@ -964,18 +639,17 @@ static int add_tui_msg(int type, int val, void *data)
 	unsigned long flags;
 
 	/* Return error if pdata is invalid */
-	if (data == NULL) {
-		tloge("data is null");
+	if (NULL == data) {
+		TCERR("data is null");
 		return -EINVAL;
 	}
 
 	/* Allocate memory for tui_msg */
 	tui_msg = kzalloc(sizeof(*tui_msg), GFP_KERNEL);
-	if (tui_msg == NULL) {
+	if (NULL == tui_msg)
 		return -ENOMEM;
-	}
 
-	if (memset_s(tui_msg, sizeof(*tui_msg), 0, sizeof(*tui_msg))){
+	if(memset_s(tui_msg,sizeof(*tui_msg),0,sizeof(*tui_msg))){
 		tloge("tui_msg memset failed");
 		kfree(tui_msg);
 		return -1;
@@ -1001,18 +675,15 @@ static int init_tui_driver(int secure)
 {
 	struct tui_drv_node *pos = NULL;
 	char *drv_name = NULL;
-	char **drv_array = g_deinit_driver;
+	char **drv_array = deinit_driver;
 	int count = 0;
 	int i = 0;
-	if (dss_fd == NULL) {
+	if (NULL == dss_fd)
 		return -1;
-	}
-	if (secure) {
-		drv_array = g_init_driver;
-	}
+	if (secure)
+		drv_array = init_driver;
 	while (i < DRIVER_NUM) {
 		drv_name = drv_array[i];
-		tlogd("drv-name is %s\n", drv_name);
 		i++;
 		mutex_lock(&tui_drv_lock);
 
@@ -1023,9 +694,11 @@ static int init_tui_driver(int secure)
 
 				// cppcheck-suppress *
 				if (!strncmp(TUI_TP_NAME, pos->name, TUI_DRV_NAME_MAX)) {
-					/* If the name is "tp", assign pos->pdata to g_tui_ctl */
-					g_tui_ctl->n2s.tp_info = (int)virt_to_phys(pos->pdata);
-					g_tui_ctl->n2s.tp_info_h_addr = virt_to_phys(pos->pdata) >> 32;
+					/* If the name is "tp", assign pos->pdata to tui_ctl */
+					tui_ctl->n2s.tp_info =
+						virt_to_phys(pos->pdata);
+					tui_ctl->n2s.tp_info_h_addr =
+						virt_to_phys(pos->pdata) >> 32;
 				}
 				if (pos->init_func) {
 					// cppcheck-suppress *
@@ -1084,7 +757,7 @@ static int init_tui_driver(int secure)
 
 /* Only after all drivers cfg ok or some one failed, it need
  * to add_tui_msg.
- * ret val:  1 - all cfg ok
+ * ret val:	 1 - all cfg ok
  *			 0 - cfg is not complete, or have done
  *			-1 - cfg failed
  *			-2 - invalid name
@@ -1096,8 +769,8 @@ static int tui_cfg_filter(const char *name, bool ok)
 	int lock_flag = 0;
 
 	/* Return error if name is invalid */
-	if (name == NULL) {
-		tloge("name is null");
+	if (NULL == name) {
+		TCERR("name is null");
 		return -2;
 	}
 
@@ -1165,23 +838,26 @@ int send_tui_msg_config(int type, int val, void *data)
 {/*lint !e31 */
 	int ret;
 
-	if (type >= TUI_POLL_MAX  || type < 0 || data == NULL) {
+	if (type >= TUI_POLL_MAX  || type < 0 || NULL == data) {
 		tloge("invalid tui event type\n");
 		return -EINVAL;
 	}
 
 	/* The tui_state should be CONFIG */
 	if (atomic_read(&tui_state) != TUI_STATE_CONFIG) {
-		tloge("failed to send tui msg(%s)\n", poll_event_type_name[type]);
+		tloge("failed to send tui msg(%s)\n",
+		      poll_event_type_name[type]);
 		return -EINVAL;
 	}
 
 	if (CLASS_POLL_RUNNING == tui_poll_class(type)) {
-		tloge("invalid tui event type(%s) in config state\n", poll_event_type_name[type]);
+		tloge("invalid tui event type(%s) in config state\n",
+		      poll_event_type_name[type]);
 		return -EINVAL;
 	}
 
-	tlogd("send config event type %s(%s)\n", poll_event_type_name[type], (char *)data);
+	tlogd("send config event type %s(%s)\n",
+	      poll_event_type_name[type], (char *)data);
 
 	if (TUI_POLL_CFG_OK == type || TUI_POLL_CFG_FAIL == type) {
 		int cfg_ret;
@@ -1189,10 +865,8 @@ int send_tui_msg_config(int type, int val, void *data)
 		cfg_ret = tui_cfg_filter((const char *)data,
 					 TUI_POLL_CFG_OK == type);
 		tlogd("tui driver(%s) cfg ret = %d\n", (char *)data, cfg_ret);
-		if (-2 == cfg_ret) {
-			tloge("tui cfg filter failed, cfg_ret = %d\n", cfg_ret);
+		if (-2 == cfg_ret)
 			return -EINVAL;
-		}
 	}
 
 	ret = add_tui_msg(type, val, data);
@@ -1211,17 +885,13 @@ int send_tui_msg_config(int type, int val, void *data)
 
 
 /* Send tui event by smc_cmd */
-int tui_send_event(int event, teec_tui_parameter *tui_param)
+int tui_send_event(int event, unsigned int value)
 {
-	int status_temp;
-	bool check_value;
-	if (dss_fd == NULL || tui_param == NULL) {
+	if (NULL == dss_fd)
 		return -1;
-	}
-	status_temp = atomic_read(&tui_state);
-	check_value = (status_temp != TUI_STATE_UNUSED && dss_fd->panel_power_on) || TUI_POLL_NOTCH == event || TUI_POLL_FOLD == event;
-	if (check_value == true) {
-		tc_ns_smc_cmd smc_cmd = { {0}, 0 };
+	if ((atomic_read(&tui_state) != TUI_STATE_UNUSED
+	    && dss_fd->panel_power_on) || TUI_POLL_NOTCH == event) {
+		TC_NS_SMC_CMD smc_cmd = { 0 };
 		uint32_t uid;
 		struct mb_cmd_pack *mb_pack = NULL;
 		int ret = -1;
@@ -1234,47 +904,26 @@ int tui_send_event(int event, teec_tui_parameter *tui_param)
 #else
 		uid = current_uid();
 #endif
-		if (uid > 1000 || ((TUI_POLL_CANCEL != event) && (TUI_POLL_NOTCH != event) && (TUI_POLL_FOLD != event))) {
+		if (uid > 1000 || ((TUI_POLL_CANCEL != event) && (TUI_POLL_NOTCH != event))) {
 			tloge("no permission to send msg\n");
 			return -1;
 		}
 
 		mb_pack = mailbox_alloc_cmd_pack();
-		if (mb_pack == NULL) {
+		if (NULL == mb_pack) {
 			tloge("alloc cmd pack failed\n");
 			return -1;
 		}
 
-
-		smc_cmd.global_cmd = true;
-		smc_cmd.operation_phys = virt_to_phys(&mb_pack->operation);
-		smc_cmd.operation_h_phys = virt_to_phys(&mb_pack->operation) >> 32;
+		mb_pack->uuid[0] = 1;
+		smc_cmd.uuid_phys = virt_to_phys(mb_pack->uuid);
+		smc_cmd.uuid_h_phys = virt_to_phys(mb_pack->uuid) >> 32; /*lint !e572*/
 		switch(event){
 			case TUI_POLL_CANCEL:
 				smc_cmd.cmd_id = GLOBAL_CMD_ID_TUI_EXCEPTION;
 				break;
 			case TUI_POLL_NOTCH:
-				mb_pack->operation.paramtypes = TEEC_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,
-				TEEC_NONE,
-				TEEC_NONE,
-				TEEC_NONE
-				);
-				mb_pack->operation.params[0].value.a = tui_param->notch;
 				smc_cmd.cmd_id = GLOBAL_CMD_ID_TUI_NOTCH;
-				break;
-			case TUI_POLL_FOLD:
-				mb_pack->operation.paramtypes = TEEC_PARAM_TYPES(TEEC_NONE,
-				TEE_PARAM_TYPE_VALUE_INPUT,
-				TEE_PARAM_TYPE_VALUE_INPUT,
-				TEE_PARAM_TYPE_VALUE_INPUT
-				);
-				mb_pack->operation.params[1].value.a = tui_param->phy_width;
-				mb_pack->operation.params[1].value.b = tui_param->phy_height;
-				mb_pack->operation.params[2].value.a = tui_param->width;
-				mb_pack->operation.params[2].value.b = tui_param->height;
-				mb_pack->operation.params[3].value.a = tui_param->fold_state;
-				mb_pack->operation.params[3].value.b = tui_param->display_state;
-				smc_cmd.cmd_id = GLOBAL_CMD_ID_TUI_FOLD;
 				break;
 			default:
 				tloge("invalid event type : %d.\n",event);
@@ -1282,8 +931,9 @@ int tui_send_event(int event, teec_tui_parameter *tui_param)
 		}
 		smc_cmd.agent_id = event;
 		smc_cmd.uid = uid;
+		smc_cmd.ret_val = value;
 
-		smc_ret = (unsigned int)tc_ns_smc(&smc_cmd);
+		smc_ret = TC_NS_SMC(&smc_cmd, 0);
 		if (smc_ret != 0) {
 			tloge("call smc failed: 0x%x.\n", smc_ret);
 			ret = -1;
@@ -1299,20 +949,18 @@ int tui_send_event(int event, teec_tui_parameter *tui_param)
 
 static void tui_poweroff_work_func(struct work_struct *work)
 {
-	teec_tui_parameter tui_param = {0};
-	tui_send_event(TUI_POLL_CANCEL, &tui_param);
+	tui_send_event(TUI_POLL_CANCEL,0);
 }
 
 void tui_poweroff_work_start(void)
 {
 	tlogd("tui_poweroff_work_start----------\n");
-	if (dss_fd == NULL) {
+	if (NULL == dss_fd)
 		return;
-	}
 	if (atomic_read(&tui_state) != TUI_STATE_UNUSED
-		&& dss_fd->panel_power_on) {
+	    && dss_fd->panel_power_on) {
 		tlogd("come in tui_poweroff_work_start state=%d--\n",
-		atomic_read(&tui_state));
+		      atomic_read(&tui_state));
 		queue_work(system_wq, &tui_poweroff_work.work);
 	}
 }
@@ -1350,21 +998,20 @@ static int get_cfg_state(const char *name)
 	const struct tui_msg_node *tui_msg = NULL;
 
 	/* Return error if name is invalid */
-	if (name == NULL) {
-		tloge("name is null");
+	if (NULL == name) {
+		TCERR("name is null");
 		return -1;
 	}
 
 	list_for_each_entry(tui_msg, &tui_msg_head, list) {
 		/* Names match */
 		if (!strncmp(tui_msg->data, name, TUI_DRV_NAME_MAX)) {
-			if (TUI_POLL_CFG_OK == tui_msg->type) {
+			if (TUI_POLL_CFG_OK == tui_msg->type)
 				return 1;
-			} else if (TUI_POLL_CFG_FAIL == tui_msg->type) {
+			else if (TUI_POLL_CFG_FAIL == tui_msg->type)
 				return -1;
-			} else {
-				tloge("other state\n");
-			}
+			else
+				TCERR("other state\n");
 		}
 	}
 
@@ -1375,8 +1022,8 @@ static void tui_msg_del(const char *name)
 	struct tui_msg_node *tui_msg = NULL, *tmp = NULL;
 
 	/* Return error if name is invalid */
-	if (name == NULL) {
-		tloge("name is null");
+	if (NULL == name) {
+		TCERR("name is null");
 		return;
 	}
 
@@ -1397,8 +1044,7 @@ static void process_tui_msg(void)
 
 fetch_msg:
 	spin_lock(&tui_msg_lock);
-	if (DSS_CONFIG_INDEX == g_tui_ctl->s2n.value) {
-#if ONLY_INIT_TP != DSS_TP_COUPLE_MODE
+	if (DSS_CONFIG_INDEX == tui_ctl->s2n.value) {
 		/* Wait, until DSS init finishs */
 		while (0 == get_cfg_state(TUI_DSS_NAME)) {
 			tlogd("waiting for dss tui msg\n");
@@ -1414,10 +1060,7 @@ fetch_msg:
 		}
 		/* Delete DSS msg from tui_msg_head */
 		tui_msg_del(TUI_DSS_NAME);
-#endif
-
-	} else if (TP_CONFIG_INDEX == g_tui_ctl->s2n.value) {
-#if ONLY_INIT_DSS != DSS_TP_COUPLE_MODE
+	} else if (TP_CONFIG_INDEX == tui_ctl->s2n.value) {
 		while (0 == get_cfg_state(TUI_TP_NAME)) {
 			tlogd("waiting for tp tui msg\n");
 			tui_msg_flag = 0;
@@ -1434,7 +1077,6 @@ fetch_msg:
 		}
 		tui_msg_del(TUI_TP_NAME);
 		tlogd("tp/gpio/fp is config result:type = 0x%x\n", type);
-#endif
 	} else {
 		tloge("wait others dev\n");
 	}
@@ -1444,24 +1086,16 @@ next:
 	/* pre-process tui poll event if needed */
 	switch (type) {
 	case TUI_POLL_CFG_OK:
-		if (DSS_CONFIG_INDEX == g_tui_ctl->s2n.value) {
+		if (DSS_CONFIG_INDEX == tui_ctl->s2n.value) {
 
-#if defined CONFIG_TEE_TUI_ION
 			phys_addr_t tui_addr_t;
 			tui_addr_t = get_frame_addr();
 			if (0 == tui_addr_t) { /*lint !e568 !e685 */
 				tloge("get frame addr error\n");
 			}
-			g_tui_ctl->n2s.addr = (unsigned int)tui_addr_t;
-			g_tui_ctl->n2s.addr_h = tui_addr_t >> 32;
-			g_tui_ctl->n2s.npages = tui_display_mem.npages;
-			g_tui_ctl->n2s.info_length = tui_display_mem.info_length;
-#else
-			g_tui_ctl->n2s.addr = get_frame_addr();
-			g_tui_ctl->n2s.addr_h = g_tui_mem.tui_addr_h;
-			tloge("old tui reserve memory h:l=0x%x 0x%x\n", g_tui_ctl->n2s.addr_h, g_tui_ctl->n2s.addr);
-#endif
-			if (0 == g_tui_ctl->n2s.addr)
+			tui_ctl->n2s.addr = (unsigned int)tui_addr_t;
+			tui_ctl->n2s.addr_h = tui_addr_t >> 32;
+			if (0 == tui_ctl->n2s.addr)
 				val = -1;
 		}
 		break;
@@ -1469,10 +1103,10 @@ next:
 		break;
 	}
 
-	g_tui_ctl->n2s.event_type = type;
-	g_tui_ctl->n2s.value = val;
+	tui_ctl->n2s.event_type = type;
+	tui_ctl->n2s.value = val;
 
-	if (!valid_msg(g_tui_ctl->n2s.event_type)) {
+	if (!valid_msg(tui_ctl->n2s.event_type)) {
 		tlogd("refetch tui msg\n");
 		goto fetch_msg;
 	}
@@ -1482,36 +1116,36 @@ static int init_tui_agent(void)
 {
 	int ret;
 
-	g_tui_tc_shm = tc_mem_allocate((size_t)SZ_4K, true);
-	if (IS_ERR_OR_NULL(g_tui_tc_shm)) {
-		tloge("failed to allocate 4k bytes for g_tui_ctl\n");
-		g_tui_tc_shm = NULL;
+	tui_tc_shm = tc_mem_allocate((size_t)SZ_4K, true);
+	if (IS_ERR(tui_tc_shm)) {
+		tloge("failed to allocate 4k bytes for tui_ctl\n");
+		tui_tc_shm = NULL;
 		return -ENOMEM;
 	}
 
-	g_tui_ctl = g_tui_tc_shm->kernel_addr;
-	ret = tc_ns_register_agent(NULL, TEE_TUI_AGENT_ID, g_tui_tc_shm);
+	tui_ctl = tui_tc_shm->kernel_addr;
+	ret = TC_NS_register_agent(NULL, TEE_TUI_AGENT_ID, tui_tc_shm);
 	if (ret) {
-		tloge("register tui agent failed, ret = 0x%x\n", ret);
-		tc_mem_free(g_tui_tc_shm);
-		g_tui_tc_shm = NULL;
-		g_tui_ctl = NULL;
+		tloge("register tui agent failed\n");
+		tc_mem_free(tui_tc_shm);
+		tui_tc_shm = NULL;
+		tui_ctl = NULL;
 		return -EFAULT;
 	}
 
-	atomic_set(&g_tui_tc_shm->usage, 1);
+	atomic_set(&tui_tc_shm->usage, 1);
 
 	return 0;
 }
 
 static void exit_tui_agent(void)
 {
-	if (tc_ns_unregister_agent(TEE_TUI_AGENT_ID))
+	if (TC_NS_unregister_agent(TEE_TUI_AGENT_ID))
 		tloge("unregister tui agent failed\n");
 
-	put_sharemem_struct(g_tui_tc_shm); /* paired with init_tui_agent() */
-	g_tui_tc_shm = NULL;
-	g_tui_ctl = NULL;
+	put_sharemem_struct(tui_tc_shm); /* paired with init_tui_agent() */
+	tui_tc_shm = NULL;
+	tui_ctl = NULL;
 }
 
 static void set_tui_state(int state)
@@ -1522,32 +1156,37 @@ static void set_tui_state(int state)
 	}
 	if (atomic_read(&tui_state) != state) {
 		atomic_set(&tui_state, state); /*lint !e1058 */
-		tloge("set ree tui state is %d, 0: unused, 1:config , 2:running\n", state);
 		tui_state_flag = 1;
 		wake_up(&tui_state_wq);
 	}
 }
 
-int is_tui_in_use(int pid_value)
+static void set_tui_pid(int state)
 {
-	if (pid_value == atomic_read(&g_tui_pid))
+	if (state < TUI_PID_CLEAR || state > TUI_PID_CONFIG) {
+		tloge("state=%d is invalid\n", state);
+		return;
+	}
+	if (state == TUI_PID_CLEAR)
+		atomic_set(&tui_pid_state, 0);
+	if (state == TUI_PID_CONFIG){
+		atomic_set(&tui_pid_state, tui_pid);
+	}
+}
+int tui_pid_status(int pid_value)
+{
+	if (pid_value == atomic_read(&tui_pid_state))
 		return 1;
 	return 0;
 }
-
-void free_tui_caller_info()
-{
-	atomic_set(&g_tui_attached_device, TUI_PID_CLEAR);
-	atomic_set(&g_tui_pid, TUI_PID_CLEAR);
-}
-
 static int agent_process_work_tui(void)
 {
-	struct smc_event_data *event_data = NULL;
+	struct __smc_event_data *event_data = NULL;
 
+	/* TODO: needs lock */
 	event_data = find_event_control(TEE_TUI_AGENT_ID);
-	if (event_data == NULL || atomic_read(&event_data->agent_alive) == 0) {
-		/* if return, the pending task in S can't be resumed!! */
+	if ( NULL == event_data || 0 == event_data->agent_alive) {
+		/*TODO: if return, the pending task in S can't be resumed!! */
 		tloge("tui agent is not exist\n");
 		put_agent_event(event_data);
 		return TEEC_ERROR_GENERIC;/*lint !e570*/
@@ -1559,12 +1198,10 @@ static int agent_process_work_tui(void)
 	/* Wake up tui agent that will process the command */
 	wake_up(&event_data->wait_event_wq);
 
-#ifdef CONFIG_TEE_SMP
 	tlogi("agent 0x%x request, goto sleep, pe->run=%d\n",
 		TEE_TUI_AGENT_ID, atomic_read(&event_data->ca_run));
 	wait_event(event_data->ca_pending_wq, atomic_read(&event_data->ca_run));
 	atomic_set(&event_data->ca_run, 0);
-#endif
 	put_agent_event(event_data);
 
 	return TEEC_SUCCESS;
@@ -1573,8 +1210,8 @@ static int agent_process_work_tui(void)
 void do_ns_tui_release(void)
 { /*lint !e31 !e831 */
 	if (atomic_read(&tui_state) != TUI_STATE_UNUSED) { /*lint !e529 !e438 */
-	g_tui_ctl->s2n.command = TUI_CMD_FREE_UNUSUAL_TTF_MEM_AND_DISABLE;
-	g_tui_ctl->s2n.ret = -1;
+	tui_ctl->s2n.command = TUI_CMD_FREE_UNUSUAL_TTF_MEM_AND_DISABLE;
+	tui_ctl->s2n.ret = -1;
 	tloge("exec tui do_ns_tui_release\n");
 	if(agent_process_work_tui())
 		tloge("wake up tui agent error\n");
@@ -1584,7 +1221,7 @@ static int do_tui_unusual_ttf_work(void)
 {
 	int ret = 0;
 	unsigned int arg = 0;
-	switch (g_tui_ctl->s2n.command) {
+	switch (tui_ctl->s2n.command) {
 	case TUI_CMD_FREE_UNUSUAL_TTF_MEM_AND_DISABLE:
 		if (atomic_read(&tui_state) != TUI_STATE_UNUSED) {
 			tlogd("tui disable\n");
@@ -1598,10 +1235,10 @@ static int do_tui_unusual_ttf_work(void)
 		ret = load_tui_font_file(unusual, arg);
 		if (!ret) {
 			tlogd("=======suceed to load ttf\n");
-			g_tui_ctl->n2s.event_type = TUI_POLL_CFG_OK;
+			tui_ctl->n2s.event_type = TUI_POLL_CFG_OK;
 		} else {
 			tloge("Failed to load ttf ret is 0x%x\n", ret);
-			g_tui_ctl->n2s.event_type = TUI_POLL_CFG_FAIL;
+			tui_ctl->n2s.event_type = TUI_POLL_CFG_FAIL;
 		}
 		break;
 	case TUI_CMD_FREE_UNUSUAL_TTF_MEM:
@@ -1610,7 +1247,7 @@ static int do_tui_unusual_ttf_work(void)
 		break;
 	default:
 		ret = -EINVAL;
-		tloge("get error unusual ttf tui command(0x%x)\n", g_tui_ctl->s2n.command);
+		tloge("get error unusual ttf tui command(0x%x)\n", tui_ctl->s2n.command);
 		break;
 	}
 	return ret;
@@ -1619,17 +1256,18 @@ static int do_tui_config_work(void)
 {
 	int ret = 0;
 
-	switch (g_tui_ctl->s2n.command) {
+	switch (tui_ctl->s2n.command) {
 	case TUI_CMD_ENABLE:
 		if (atomic_read(&tui_state) != TUI_STATE_CONFIG) {
 			tlogd("tui enable\n");
 			set_tui_state(TUI_STATE_CONFIG);
 			/*do dss and tp init*/
 			if (init_tui_driver(1)) {
-				g_tui_ctl->s2n.ret = -1;
+				tui_ctl->s2n.ret = -1;
 				set_tui_state(TUI_STATE_ERROR);
 			}
 		}
+		set_tui_pid(TUI_PID_CONFIG);
 		break;
 	case TUI_CMD_DISABLE:
 		if (atomic_read(&tui_state) != TUI_STATE_UNUSED) {
@@ -1638,7 +1276,9 @@ static int do_tui_config_work(void)
 			free_frame_addr();
 			set_tui_state(TUI_STATE_UNUSED);
 		}
+		set_tui_pid(TUI_PID_CLEAR);
 		break;
+
 	case TUI_CMD_PAUSE:
 		if (atomic_read(&tui_state) != TUI_STATE_UNUSED) {
 			tlogd("tui pause\n");
@@ -1657,8 +1297,8 @@ static int do_tui_config_work(void)
 		/*}*/
 		break;
 	case TUI_CMD_SET_STATE:
-		tlogd("tui set state %d\n", g_tui_ctl->s2n.value);
-		set_tui_state(g_tui_ctl->s2n.value);
+		tlogd("tui set state %d\n", tui_ctl->s2n.value);
+		set_tui_state(tui_ctl->s2n.value);
 		break;
 	case TUI_CMD_START_DELAY_WORK:
 		tlogd("start delay work\n");
@@ -1671,7 +1311,7 @@ static int do_tui_config_work(void)
 		break;
 	default:
 		ret = -EINVAL;
-		tloge("get error config tui command(0x%x)\n", g_tui_ctl->s2n.command);
+		tloge("get error config tui command(0x%x)\n", tui_ctl->s2n.command);
 		break;
 	}
 	return ret;
@@ -1681,8 +1321,8 @@ static int do_tui_work(void)
 	int ret = 0;
 
 	/* clear s2n cmd ret */
-	g_tui_ctl->s2n.ret = 0;
-	switch (g_tui_ctl->s2n.command) {
+	tui_ctl->s2n.ret = 0;
+	switch (tui_ctl->s2n.command) {
 	case TUI_CMD_ENABLE:
 	case TUI_CMD_DISABLE:
 	case TUI_CMD_PAUSE:
@@ -1707,29 +1347,28 @@ static int do_tui_work(void)
 	return ret;
 }
 
-void set_tui_caller_info(unsigned int devid, int pid)
+void set_tui_caller_info(unsigned int devid, unsigned int pid)
 {/*lint !e18 !e31 !e532 */
-	atomic_set(&g_tui_attached_device, (int)devid);
-	atomic_set(&g_tui_pid, pid);
+	tui_attached_device = devid;
+	tui_pid = pid;
 } /*lint !e533 */
 
 unsigned int tui_attach_device(void)
 {
-	return (unsigned int)atomic_read(&g_tui_attached_device);
+	return tui_attached_device;
 }
 
 static int tui_kthread_work_fn(void *data)
 {
 	int ret;
+
 	ret = init_tui_agent();
-	if (ret) {
-		tloge("init tui agent error, ret = %d\n", ret);
+	if (ret)
 		return ret;
-	}
 
 	while (1) {
 		/*tlogd("tui before sleep  1\n");*/
-		tc_ns_wait_event(TEE_TUI_AGENT_ID);
+		TC_NS_wait_event(TEE_TUI_AGENT_ID);
 		/*tlogd("tui after sleep	 2\n");*/
 
 		if (kthread_should_stop())
@@ -1737,7 +1376,7 @@ static int tui_kthread_work_fn(void *data)
 
 		do_tui_work();
 
-		if (tc_ns_send_event_response(TEE_TUI_AGENT_ID))
+		if (TC_NS_send_event_response(TEE_TUI_AGENT_ID))
 			tloge("send event response error\n");
 	}
 
@@ -1755,29 +1394,25 @@ static ssize_t tui_dbg_state_read(struct file *filp,char __user *ubuf,
 	int ret;
 	struct tui_drv_node *pos = NULL;
 
-	if (filp == NULL || ubuf == NULL || ppos == NULL)
+	if (NULL == filp || NULL == ubuf || NULL == ppos)
 		return -EINVAL;
 
 	ret = snprintf_s(buf, READ_BUF, READ_BUF-1, "tui state:%s\n",
 			 state_name[atomic_read(&tui_state)]);
-	if (ret < 0) {
-		tloge("tui dbg state read 1 snprintf is faile, ret = 0x%x\n", ret);
+	if (ret < 0)
 		return -EINVAL;
-	}
 	r = (unsigned int)ret;
 
 	ret = snprintf_s(buf + r, READ_BUF - r, READ_BUF - r, "drv config state:");
-	if (ret < 0) {
-		tloge("tui dbg state read 2 snprintf is faile, ret = 0x%x\n", ret);
+	if (ret < 0)
 		return -EINVAL;
-	}
 	r += (unsigned int)ret;
 
 	mutex_lock(&tui_drv_lock);
 	list_for_each_entry(pos, &tui_drv_head, list) {
-		ret = snprintf_s(buf + r, READ_BUF - r, READ_BUF - r, "%s-%s,", pos->name, 1 == pos->state ? "ok" : "no ok");
+		ret = snprintf_s(buf + r, READ_BUF - r, READ_BUF - r, "%s-%s,", pos->name,
+				1 == pos->state ? "ok" : "no ok");/* [false alarm]:buffer?????????????????????  */
 		if (ret < 0) {
-			tloge("tui dbg state read 3 snprintf is faile, ret = 0x%x\n", ret);
 			mutex_unlock(&tui_drv_lock);
 			return -EINVAL;
 		}
@@ -1795,25 +1430,23 @@ static const struct file_operations tui_dbg_state_fops = {
 	.read = tui_dbg_state_read,
 };
 
-static ssize_t tui_status_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
+static ssize_t tui_status_show(struct kobject *kobj,
+			       struct kobj_attribute *attr, char *buf)
 {
 	int r;
-	size_t buf_len = 0;
-	if (kobj == NULL || attr == NULL || buf == NULL) {
+
+	if (NULL == kobj || NULL == attr || NULL == buf)
 		return -EINVAL;
-	}
 	tui_state_flag = 0;
 	r = wait_event_interruptible(tui_state_wq, tui_state_flag);
 	if (r) {
 		tloge("get tui state is interrupted\n");
 		return r;
 	}
-	buf_len = 32;
-	r = snprintf_s(buf, buf_len, 32, "%s", state_name[atomic_read(&tui_state)]);
-	if (r < 0) {
-		tloge("tui statue show snprintf is faile, ret = 0x%x\n", r);
+
+	r = snprintf_s(buf, 32, 32, "%s", state_name[atomic_read(&tui_state)]);
+	if (r < 0)
 		return -1;
-	}
 
 	return r;
 }
@@ -1828,51 +1461,41 @@ static ssize_t tui_dbg_msg_read(struct file *filp, char __user *ubuf,
 	int i;
 	struct tui_drv_node *pos = NULL;
 
-	if (filp == NULL || ubuf == NULL || ppos == NULL) {
+	if (NULL == filp || NULL == ubuf || NULL == ppos)
 		return -EINVAL;
-	}
 
 	ret = snprintf_s(buf, MSG_BUF, MSG_BUF-1, "%s", "event format: event_type:val\n"
 			 "event type:\n");
-	if (ret < 0) {
-		tloge("tui db msg read 1 snprint is error, ret = 0x%x\n", ret);
+	if (ret < 0)
 		return -EINVAL;
-	}
 	r = (unsigned int)ret;
 
 	/* event type list */
 	for (i = 0; i < TUI_POLL_MAX - 1; i++) {
 		ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s, ",
-				 poll_event_type_name[i]);
-		if (ret < 0) {
-			tloge("tui db msg read 2 snprint is error, ret = 0x%x\n", ret);
+				 poll_event_type_name[i]);/* [false alarm]:buffer????????????????????? */
+		if (ret < 0)
 			return -EINVAL;
-		}
 		r += (unsigned int)ret;
 	}
-	// cppcheck-suppress *
-	ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s\n", poll_event_type_name[i]);/*lint !e661*/
-	if (ret < 0) {
-		tloge("tui db msg read 3 snprint is error, ret = 0x%x\n", ret);
+
+	ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s\n", poll_event_type_name[i]);
+	if (ret < 0)
 		return -EINVAL;
-	}
 	r += (unsigned int)ret;
 
 	/* cfg drv type list */
 	ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "val type for %s or %s:\n",
 			poll_event_type_name[TUI_POLL_CFG_OK],
 			poll_event_type_name[TUI_POLL_CFG_FAIL]);
-	if (ret < 0) {
-		tloge("tui db msg read 4 snprint is error, ret = 0x%x\n", ret);
+	if (ret < 0)
 		return -EINVAL;
-	}
 	r += (unsigned int)ret;
 
 	mutex_lock(&tui_drv_lock);
 	list_for_each_entry(pos, &tui_drv_head, list) {
 		ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s,", pos->name);
 		if (ret < 0) {
-			tloge("tui db msg read 5 snprint is error, ret = 0x%x\n", ret);
 			mutex_unlock(&tui_drv_lock);
 			return -EINVAL;
 		}
@@ -1894,11 +1517,9 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 	int event_type = -1;
 	char *tokens = NULL, *begins = NULL;
 	int ret;
-	teec_tui_parameter tui_param = {0};
 
-	if (ubuf == NULL || filp == NULL || ppos == NULL) {
+	if (NULL == ubuf || NULL == filp || NULL == ppos)
 		return -EINVAL;
-	}
 
 	if (cnt >= sizeof(buf)/sizeof(char))
 		return -EINVAL;
@@ -1912,14 +1533,13 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 
 	/* event type */
 	tokens = strsep(&begins, ":");
-	if (tokens == NULL) {
+	if (NULL == tokens)
 		return -EFAULT;
-	}
 
 	tlogd("1: tokens:%s\n", tokens);
 	for (i = 0; i < TUI_POLL_MAX; i++) {
-		// cppcheck-suppress *
-		if (!strncmp(tokens, poll_event_type_name[i], strlen(poll_event_type_name[i]))) { /* lint !e661 */
+		if (!strncmp(tokens, poll_event_type_name[i],
+			     strlen(poll_event_type_name[i]))) {
 			event_type = i;
 			break;
 		}
@@ -1930,9 +1550,8 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 		return -EFAULT;
 	/* drv type */
 	tokens = strsep(&begins, ":");
-	if (tokens == NULL) {
+	if (NULL == tokens)
 		return -EFAULT;
-	}
 	tlogd("2: tokens:%s\n", tokens);
 	if (TUI_POLL_TP == event_type) {
 		long value = 0;
@@ -1942,29 +1561,28 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 		ret = kstrtol(tokens, base, &value);
 		if (ret)
 			return -EFAULT;
-		g_tui_ctl->n2s.status = (int)value;
+		tui_ctl->n2s.status = value;
 
 		tokens = strsep(&begins, ":");
-		if (tokens == NULL) {
+		if (NULL == tokens)
 			return -EFAULT;
-		}
 		ret = kstrtol(tokens, base, &value);
 		if (ret)
 			return -EFAULT;
-		g_tui_ctl->n2s.x = (int)value;
+		tui_ctl->n2s.x = value;
 
 		tokens = strsep(&begins, ":");
-		if (tokens == NULL) {
+		if (NULL == tokens)
 			return -EFAULT;
-		}
 		ret = kstrtol(tokens, base, &value);
 		if (ret)
 			return -EFAULT;
-		g_tui_ctl->n2s.y = (int)value;
+		tui_ctl->n2s.y = value;
 	}
-	tlogd("status=%d x=%d y=%d\n", g_tui_ctl->n2s.status, g_tui_ctl->n2s.x, g_tui_ctl->n2s.y);
+	tlogd("status=%d x=%d y=%d\n",
+	      tui_ctl->n2s.status, tui_ctl->n2s.x, tui_ctl->n2s.y);
 
-	if (tui_send_event(event_type, &tui_param))
+	if (tui_send_event(event_type,0))
 		return -EFAULT;
 
 	*ppos += cnt;
@@ -1978,7 +1596,7 @@ static const struct file_operations tui_dbg_msg_fops = {
 	.write = tui_dbg_msg_write,
 };
 
-static struct dentry *g_dbg_dentry = NULL;
+static struct dentry *dbg_dentry = NULL;
 
 
 static int tui_powerkey_notifier_call(struct notifier_block *powerkey_nb, unsigned long event, void *data)
@@ -2015,9 +1633,8 @@ int __init init_tui(const struct device *class_dev)
 	struct sched_param param;
 	param.sched_priority = MAX_RT_PRIO - 1;
 
-	if (class_dev == NULL) {
+	if (NULL == class_dev)
 		return -1;
-	}
 
 
 	retval = tui_mem_alloc(class_dev);
@@ -2027,58 +1644,56 @@ int __init init_tui(const struct device *class_dev)
 	}
 
 
-#if defined CONFIG_TEE_TUI_ION && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
-	g_tui_client = hisi_ion_client_create(g_ion_name);
-	if (g_tui_client == NULL) {
+	tui_client = hisi_ion_client_create(ion_name);
+	if(NULL == tui_client) {
 		tloge("create ion client failed\n");
 		tui_mem_free();
 		return -1;
 	}
 	else
 		tlogd("tui ion client succ\n");
-#endif
-	g_tui_task = kthread_create(tui_kthread_work_fn, NULL, "tuid");
-	if (IS_ERR_OR_NULL(g_tui_task)) { /*lint !e413 !e516 */
-		tloge("kthread create is error\n");
+	tui_task = kthread_create(tui_kthread_work_fn, NULL, "tuid");
+	if (IS_ERR(tui_task)) { /*lint !e413 !e516 */
 		tui_mem_free();
-		return PTR_ERR(g_tui_task);
+		return PTR_ERR(tui_task);
 	}
 
-	sched_setscheduler_nocheck(g_tui_task, SCHED_FIFO, &param);
-	get_task_struct(g_tui_task);
+	sched_setscheduler_nocheck(tui_task, SCHED_FIFO, &param);
+	get_task_struct(tui_task);
 
-	wake_up_process(g_tui_task);
+	wake_up_process(tui_task);
 
 	INIT_LIST_HEAD(&tui_msg_head);
 	spin_lock_init(&tui_msg_lock);
 
 	init_waitqueue_head(&tui_state_wq);
 	init_waitqueue_head(&tui_msg_wq);
-	g_dbg_dentry = debugfs_create_dir("tui", NULL);
-	debugfs_create_file("d_state", 0440, g_dbg_dentry, NULL, &tui_dbg_state_fops);
-	g_tui_kobj = kobject_create_and_add("tui", kernel_kobj);
-	if (g_tui_kobj == NULL) {
+	dbg_dentry = debugfs_create_dir("tui", NULL);
+	debugfs_create_file("d_state", 0440, dbg_dentry,
+			    NULL, &tui_dbg_state_fops);
+	tui_kobj = kobject_create_and_add("tui", kernel_kobj);
+	if (NULL == tui_kobj) {
 		tloge("tui kobj create error\n");
 		retval =  -ENOMEM;
 		goto error2;
 	}
-	retval = sysfs_create_group(g_tui_kobj, &tui_attr_group);
+	retval = sysfs_create_group(tui_kobj, &tui_attr_group);
 
 	if (retval) {
-		tloge("sysfs_create_group error, retval = 0x%x\n", retval);
+		tloge("sysfs_create_group error\n");
 		goto error1;
 	}
 
 	retval = register_tui_powerkeyListener();
 	if (retval != 0) {
-		tloge("tui register failed, retval = 0x%x\n", retval);
+		tloge("tui register failed.\n");
 		goto error1;
 	}
 	return 0;
 error1:
-	kobject_put(g_tui_kobj);
+	kobject_put(tui_kobj);
 error2:
-	kthread_stop(g_tui_task);
+	kthread_stop(tui_task);
 	tui_mem_free();
 	return retval;
 
@@ -2092,15 +1707,13 @@ void tui_exit(void)
 	}
 	tui_mem_free();
 
-#if defined CONFIG_TEE_TUI_ION && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
-	if (g_tui_client != NULL) {
-		ion_client_destroy(g_tui_client);
-		g_tui_client = NULL;
+	if(NULL != tui_client) {
+		ion_client_destroy(tui_client);
+		tui_client = NULL;
 	}
-#endif
-	kthread_stop(g_tui_task);
-	put_task_struct(g_tui_task);
-	debugfs_remove(g_dbg_dentry);
-	sysfs_remove_group(g_tui_kobj, &tui_attr_group);
-	kobject_put(g_tui_kobj);
+	kthread_stop(tui_task);
+	put_task_struct(tui_task);
+	debugfs_remove(dbg_dentry);
+	sysfs_remove_group(tui_kobj, &tui_attr_group);
+	kobject_put(tui_kobj);
 } /*lint !e533 */

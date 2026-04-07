@@ -2,7 +2,6 @@
 #define __TUI_H
 
 #include "tc_ns_client.h"
-#include "teek_client_type.h"
 
 #define TEE_TUI_AGENT_ID    0x54554944	/* TUID */
 
@@ -61,8 +60,6 @@ enum tui_poll_type {
 	TUI_POLL_CURSOR,
 	TUI_POLL_GETFP,
 	TUI_POLL_NOTCH,			/*for tui to get notch height*/
-	TUI_POLL_DIALOGTIMEOUT,
-	TUI_POLL_FOLD,          /*for tui to get fold_screen*/
 	TUI_POLL_MAX			/*Do Not add type behind this one*/
 };
 
@@ -93,8 +90,6 @@ static const char *const poll_event_type_name[] = {
 	"tui-cursor",
 	"tui-gettp",
 	"tui-notch",
-	"tui-dialogtimeout",
-	"tui-fold",
 	"tui-max"
 };
 
@@ -121,8 +116,6 @@ struct tui_ctl_shm {
 		int status;
 		int x;
 		int y;
-		uint32_t npages;
-		uint64_t info_length;
 	} n2s;
 };
 
@@ -158,7 +151,7 @@ extern int ts_tui_report_input(void *finger_data);
 extern int tui_fp_notify(void);
 int __init init_tui(const struct device *dev);
 void tui_exit(void);
-int tui_send_event(int event, teec_tui_parameter *tui_param);
+int tui_send_event(int event, unsigned int value);
 int register_tui_driver(tui_drv_init fun, const char *name,
 					 void *pdata);
 void unregister_tui_driver(const char *name);
@@ -170,13 +163,11 @@ void unregister_tui_driver(const char *name);
 int send_tui_msg_config(int type, int val, void *data);
 void tui_poweroff_work_start(void);
 
-void set_tui_caller_info(unsigned int devid, int pid);
-void free_tui_caller_info(void);
-
+void set_tui_caller_info(unsigned int devid, unsigned int pid);
 unsigned int tui_attach_device(void);
 int load_tui_font_file(ttf_type type, unsigned int arg);
 void do_ns_tui_release(void);
-int is_tui_in_use(int pid_value);
+int tui_pid_status(int pid_value);
 #else
 static inline int init_tui(const struct device *dev)
 {
@@ -202,11 +193,7 @@ static inline int send_tui_msg_config(int type, int val, const void *data)
 	return 0;
 }
 
-static inline void set_tui_caller_info(unsigned int devid, int pid)
-{
-}
-
-static inline void free_tui_caller_info(void)
+static inline void set_tui_caller_info(unsigned int devid, unsigned int pid)
 {
 }
 
@@ -214,7 +201,7 @@ static inline unsigned int tui_attach_device(void)
 {
 	return 0;
 }
-static inline int is_tui_in_use(int pid_value)
+static inline int tui_pid_status(int pid_value)
 {
 	return 0;
 }

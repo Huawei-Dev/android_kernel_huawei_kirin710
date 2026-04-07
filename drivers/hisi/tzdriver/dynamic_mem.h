@@ -1,16 +1,15 @@
-
-
 #ifndef _DYNAMIC_MMEM_H_
 #define _DYNAMIC_MMEM_H_
 #include <linux/version.h>
 #include <linux/hisi/hisi_ion.h>
-#include <securec.h>
-#include "teek_ns_client.h"
 
+#include "teek_ns_client.h"
+#define CAFD_MAX         10 //concurrent opened session count
+#define SET_BIT(map, bit) (map |= (0x1<<(bit)))
+#define CLR_BIT(map, bit) (map &= (~(unsigned)(0x1<<(bit))))
 struct sg_memory {
-#if (KERNEL_VERSION(4, 14, 0) <= LINUX_VERSION_CODE)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
 	int dyn_shared_fd;
-	struct sg_table *dyn_sg_table;
 	struct dma_buf *dyn_dma_buf;
 	phys_addr_t ion_phys_addr;
 #else
@@ -25,30 +24,16 @@ struct dynamic_mem_item{
 	uint32_t configid;
 	uint32_t size;
 	struct sg_memory memory;
-	uint32_t cafd;
-	teec_uuid uuid;
+	uint32_t cafd[CAFD_MAX];
+	uint32_t cafd_count_bitmap;
+	uint32_t cafd_count;
+	TEEC_UUID uuid;
 };
-
-#define MAX_ION_NENTS 1024
-typedef struct ion_page_info {
-	phys_addr_t phys_addr;
-	uint32_t npages;
-} tz_page_info;
-
-typedef struct sglist {
-	uint64_t sglist_size;
-	uint64_t ion_size; // ca alloced ion size
-	uint64_t ion_id; // used for drm-id now
-	uint64_t info_length; // page_info number
-	struct ion_page_info page_info[0];
-} tz_sg_list;
-
 int init_dynamic_mem(void);
 void exit_dynamic_mem(void);
-int load_app_use_configid(uint32_t configid, uint32_t cafd,
-	teec_uuid* uuid, uint32_t size);
+int load_app_use_configid(uint32_t configid, uint32_t cafd,  TEEC_UUID* uuid, uint32_t size);
 void kill_ion_by_cafd(unsigned int cafd);
-void kill_ion_by_uuid(teec_uuid *uuid);
-int is_used_dynamic_mem(teec_uuid *uuid);
-
+void kill_ion_by_uuid(TEEC_UUID* uuid);
+int add_cafd_count_by_uuid(TEEC_UUID* uuid, uint32_t cafd);
+int is_used_dynamic_mem(TEEC_UUID *uuid);
 #endif

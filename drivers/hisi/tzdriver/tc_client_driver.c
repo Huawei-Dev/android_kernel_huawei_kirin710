@@ -1,19 +1,38 @@
-/*
- * Copyright (c) Huawei Technologies Co., Ltd. 2016-2019. All rights reserved.
- * Description: Function definition for proc open,close session and invoke.
- * Author: qiqingchao  q00XXXXXX
- * Create: 2016-06-21
- */
-#include "tc_client_driver.h"
+
+
+/*******************************************************************************
+* All rights reserved, Copyright (C) huawei LIMITED 2012
+*------------------------------------------------------------------------------
+* File Name   : tc_client_driver.c
+* Description :
+* Platform    :
+* Author      : qiqingchao
+* Version     : V1.0
+* Date        : 2012.12.10
+* Notes       :
+*
+*------------------------------------------------------------------------------
+* Modifications:
+*   Date        Author          Modifications
+*******************************************************************************/
+/*******************************************************************************
+ * This source code has been made available to you by HUAWEI on an
+ * AS-IS basis. Anyone receiving this source code is licensed under HUAWEI
+ * copyrights to use it in any way he or she deems fit, including copying it,
+ * modifying it, compiling it, and redistributing it either with or without
+ * modifications. Any person who transfers this source code or any derivative
+ * work must include the HUAWEI copyright notice and this paragraph in
+ * the transferred software.
+*******************************************************************************/
+
 #include <linux/slab.h>
-#include <linux/types.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
 #include <linux/cdev.h>
-#include <linux/spinlock_types.h>
-#include <linux/spinlock.h>
 #include <linux/uaccess.h>
 #include <linux/sched.h>
+#include <linux/list.h>
+#include <linux/mutex.h>
 #include <asm/cacheflush.h>
 #include <linux/kthread.h>
 #include <linux/freezer.h>
@@ -27,14 +46,35 @@
 #include <linux/atomic.h>
 #include <linux/interrupt.h>
 #include <linux/version.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
+#include <linux/sched/mm.h>
+#include <linux/sched/signal.h>
+#endif
+#include <linux/hisi/ion.h>
+#include <linux/hisi/hisi_ion.h>
+#include <crypto/hash.h>
+#include <linux/hash.h>
+#include <linux/crypto.h>
 #include <linux/vmalloc.h>
 #include <linux/pid.h>
 #include <linux/security.h>
 #include <linux/cred.h>
-#include <linux/namei.h>
+/*#define TC_DEBUG*/
+#include "smc.h"
+#include "teek_client_constants.h"
+#include "tc_ns_client.h"
+#include "teek_ns_client.h"
+#include "agent.h"
+#include "mem.h"
+#include "tee_rdr_register.h"
+#include "tui.h"
+#include "gp_ops.h"
+#include "teek_client_type.h"
+
 #include <linux/thread_info.h>
 #include <linux/highmem.h>
 #include <linux/mm.h>
+
 #include <linux/kernel.h>
 #include <linux/file.h>
 #include <linux/scatterlist.h>
@@ -42,146 +82,222 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 #include <linux/security.h>
-#ifdef SECURITY_AUTH_ENHANCE
-#include <linux/random.h>
-#include <linux/crc32.h>
-#endif
 #if (KERNEL_VERSION(4, 14, 0) <= LINUX_VERSION_CODE)
 #include <linux/sched/mm.h>
 #include <linux/sched/signal.h>
 #include <linux/sched/task.h>
 #endif
-#include "tc_client_sub_driver.h"
-#include "smc.h"
-#include "teek_client_constants.h"
-#include "agent.h"
-#include "mem.h"
-#include "tee_rdr_register.h"
-#include "tui.h"
-#include "gp_ops.h"
-#include "teek_client_type.h"
+#include "libhwsecurec/securec.h"
+#include "tck_authentication.h"
 #include "tc_ns_log.h"
+#include "cfc.h"
 #include "mailbox_mempool.h"
 #include "tz_spi_notify.h"
 
-#ifdef SECURITY_AUTH_ENHANCE
+#include <linux/namei.h>
+
+#include <linux/random.h>
+#include <linux/crc32.h>
 #include "security_auth_enhance.h"
-#endif
 
-#ifdef DYNAMIC_ION
 #include "dynamic_mem.h"
+#include <linux/path.h>
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
+#include <crypto/skcipher.h>
 #endif
-#define MAX_VMA_BIT 64
+
+#define TEEC_PARAM_TYPES(param0Type, param1Type, param2Type, param3Type) \
+	((param3Type) << 12 | (param2Type) << 8 | \
+	 (param1Type) << 4 | (param0Type))
+
+#define TEEC_PARAM_TYPE_GET(paramTypes, index) \
+	(((paramTypes) >> (4*(index))) & 0x0F)
 
 
-#define TEEC_PARAM_TYPES(param0_type, param1_type, param2_type, param3_type) \
-	((param3_type) << 12 | (param2_type) << 8 | \
-	(param1_type) << 4 | (param0_type))
+#define INVALID_TYPE    0xff
+#define HIDL_SIDE    0x01
+#define NON_HIDL_SIDE    0x02
+#define CHECK_PATH_HASH_FAIL  0xff01
+#define CHECK_SECLABEL_FAIL   0xff02
+#define CHECK_CODE_HASH_FAIL  0xff03
+#define ENTER_BYPASS_CHANNEL  0xff04
 
-#define TEEC_PARAM_TYPE_GET(param_types, index) \
-	(((param_types) >> ((index) << 2)) & 0x0F)
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
+struct ion_client *drm_ion_client;
+#endif
 
-// global reference start
-static dev_t g_tc_ns_client_devt;
-static struct class *g_driver_class = NULL;
-static struct cdev g_tc_ns_client_cdev;
-static struct device_node *g_np = NULL;
+extern int switch_low_temperature_mode(unsigned int mode);
+struct reg_buf_st {
+	__u64 file_buffer;
+	uint32_t file_size;
+	uint32_t reserved;
+};
 
-// record device_file count
-static unsigned int g_device_file_cnt = 1;
-static DEFINE_MUTEX(g_device_file_cnt_lock);
+#define MAX_REGISTER_SIZE (10*sizeof(struct reg_buf_st))
+
+static DEFINE_MUTEX(load_app_lock);
+static DEFINE_MUTEX(device_file_cnt_lock);
+static DEFINE_MUTEX(g_operate_session_lock);
+
+/************global reference start***********/
+static dev_t tc_ns_client_devt;
+static struct class *driver_class = NULL;
+static struct cdev tc_ns_client_cdev;
+struct device_node *np = NULL;
+static unsigned int device_file_cnt = 1;
+
+struct TC_NS_DEV_List g_tc_ns_dev_list;
 
 static struct task_struct *g_teecd_task = NULL;
-// dev node list and itself has mutex to avoid race
-struct tc_ns_dev_list g_tc_ns_dev_list;
+/************global reference end*************/
 
-#if (KERNEL_VERSION(4, 14, 0) > LINUX_VERSION_CODE)
-struct ion_client *g_drm_ion_client = NULL;
-#endif
+static struct crypto_shash *g_tee_shash_tfm = NULL;
+static int tee_init_crypt_state;
+static struct mutex g_tee_crypto_hash_lock;
 
-// for crypto
-struct crypto_shash *g_tee_shash_tfm = NULL;
-int g_tee_init_crypt_state;
-struct mutex g_tee_crypto_hash_lock;
+static int tee_init_crypto(char *hash_type);
 
-// record all service node and need mutex to avoid race
-struct list_head g_service_list;
-DEFINE_MUTEX(g_service_list_lock);
+#define BUF_MAX_SIZE 1024
+#define MAX_PATH_SIZE 512
+#define SHA256_DIGEST_LENTH 32
 
-/* hash code for /vendor/bin/teecd0 */
-static unsigned char g_non_hidl_auth_hash[SHA256_DIGEST_LENTH] = {
-	0xc5, 0x6e, 0x2b, 0x89,
-	0xce, 0x9e, 0xeb, 0x63,
-	0xe7, 0x42, 0xfb, 0x2b,
-	0x9d, 0x48, 0xff, 0x52,
-	0xb2, 0x2f, 0xa7, 0xd5,
-	0x87, 0xc6, 0x1f, 0x95,
-	0x84, 0x5c, 0x0e, 0x96,
-	0x9e, 0x18, 0x81, 0x51,
-};
-static unsigned char g_hidl_auth_hash[SHA256_DIGEST_LENTH] = {
-	0x0a, 0xce, 0x6c, 0x1a,
-	0x6a, 0x54, 0x0f, 0xbd,
-	0xe3, 0xc8, 0xf8, 0x5e,
-	0xe1, 0xf3, 0x0a, 0x3a,
-	0x43, 0x6a, 0x45, 0x1c,
-	0x26, 0x7e, 0xa7, 0x08,
-	0xfa, 0x01, 0x3b, 0x25,
-	0x38, 0x51, 0x9e, 0xcb,
-};
+/**hash code for /vendor/bin/teecd0 **/
+/*lint -save -e569 */
+static char non_hidl_auth_hash[SHA256_DIGEST_LENTH] = {0xc5, 0x6e, 0x2b, 0x89,
+					    0xce, 0x9e, 0xeb, 0x63,
+					    0xe7, 0x42, 0xfb, 0x2b,
+					    0x9d, 0x48, 0xff, 0x52,
+					    0xb2, 0x2f, 0xa7, 0xd5,
+					    0x87, 0xc6, 0x1f, 0x95,
+					    0x84, 0x5c, 0x0e, 0x96,
+					    0x9e, 0x18, 0x81, 0x51,
+					   };
+static char hidl_auth_hash[SHA256_DIGEST_LENTH] = { 0x92, 0xe8, 0x79, 0x91,
+	                    0xc2, 0xad, 0x5c, 0x8a,
+	                    0xfe, 0x86, 0x6f, 0x93,
+	                    0xd5, 0xc5, 0x5a, 0xa8,
+	                    0x8a, 0x60, 0x87, 0x39,
+	                    0x81, 0x50, 0x34, 0x29,
+	                    0x8e, 0x23, 0xb2, 0x50,
+                    	0xd0, 0x36, 0xad, 0xdc,
+					   };
+/*lint -restore */
 
-typedef struct {
-	tc_ns_dev_file *dev_file;
-	char *file_buffer;
-	unsigned int file_size;
-} load_image_params;
+#define SYSTEM_SERVER "system_server"
+#define APK_64_PROCESS_PATH "/data/dalvik-cache/arm64/system@framework@boot.oat"
+#define APK_32_PROCESS_PATH "/data/dalvik-cache/arm/system@framework@boot.oat"
+/* factory version img apk dentry path is as belows */
+#define APK_64_PROCESS_PATH_FAC "/system/framework/arm64/boot.oat"
+#define APK_32_PROCESS_PATH_FAC "/system/framework/arm/boot.oat"
 
-#ifdef SECURITY_AUTH_ENHANCE
-static unsigned char g_teecd_hash[SHA256_DIGEST_LENTH] = {0};
-static unsigned char g_hidl_hash[SHA256_DIGEST_LENTH] = {0};
+static unsigned char teecd_hash[SHA256_DIGEST_LENTH] = {0};
+static unsigned char hidl_hash[SHA256_DIGEST_LENTH] = {0};
 static bool g_teecd_hash_enable = false;
 static bool g_hidl_hash_enable = false;
-DEFINE_MUTEX(g_teecd_hash_lock);
-DEFINE_MUTEX(g_hidl_hash_lock);
-
 /*
  * Calculate hash of task's text.
- * The random number is passed to TEE through CoreSight.
+ * @cfc_rehash: if generate a random number and hash the resulting hash again.
+ *              The random number is passed to TEE through CoreSight.
+ *              For TEECD code hash checking, cfc_rehash should be false.
  */
-static int tee_calc_task_hash(unsigned char *digest,
-	uint32_t dig_len, struct task_struct *cur_struct);
+static int tee_calc_task_hash(unsigned char *digest, bool cfc_rehash, struct task_struct *S);
+
+char *get_process_path(struct task_struct *task, char *tpath)
+{
+	char *ret_ptr = NULL;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
+	struct path base_path = {0};
+#else
+	struct path base_path;
+#endif
+	struct mm_struct *mm = NULL;
+	struct file *exe_file = NULL;
+	errno_t sret;
+
+	if (NULL == tpath || NULL == task)
+		return NULL;
+
+	sret = memset_s(tpath, MAX_PATH_SIZE, '\0', MAX_PATH_SIZE);
+	if (EOK != sret) {
+		TCERR("memset_s error sret is %d\n", sret);
+		return NULL;
+	}
+
+	mm = get_task_mm(task);
+	if(mm == NULL)
+		return NULL;
+	if (!mm->exe_file) {
+		mmput(mm);
+		return NULL;
+	}
+
+	exe_file = get_mm_exe_file(mm);
+	if (exe_file) {
+		base_path = exe_file->f_path;
+		path_get(&base_path);
+		ret_ptr = d_path(&base_path, tpath, MAX_PATH_SIZE);
+		path_put(&base_path);
+		fput(exe_file);
+	}
+	mmput(mm);
+	return ret_ptr;
+}
+
+
+static int calc_process_path_hash(unsigned char *data, unsigned long len, char *digest)
+{
+	int rc;
+	struct sdesc {
+		struct shash_desc shash;
+		char ctx[];
+	};
+	struct sdesc *desc = NULL;
+
+	if (tee_init_crypto("sha256")) {
+		TCERR("init tee crypto failed\n");
+		return -EFAULT;
+	}
+	desc = kmalloc(sizeof(struct shash_desc)
+			+ crypto_shash_descsize(g_tee_shash_tfm), GFP_KERNEL);
+	if (desc == NULL) {
+		TCERR("alloc desc failed\n");
+		return -ENOMEM;
+	}
+
+	desc->shash.tfm = g_tee_shash_tfm;
+	desc->shash.flags = 0;
+
+	rc = crypto_shash_digest(&desc->shash, data, len, digest); /*lint !e64 */
+
+	kfree(desc);
+
+	return rc;
+}
 
 static int check_teecd_hash(int type)
 {
-	bool check_value = false;
 	unsigned char digest[SHA256_DIGEST_LENTH] = {0};
-
-	check_value = (type != NON_HIDL_SIDE && type != HIDL_SIDE);
-	if (check_value == true) {
+	if (NON_HIDL_SIDE != type && HIDL_SIDE != type) {
 		tloge("type error! type is %d\n", type);
 		return -EFAULT;
 	}
-	check_value = (g_teecd_hash_enable && type == NON_HIDL_SIDE);
-	if (check_value == true) {
-		if (tee_calc_task_hash(digest,
-			(uint32_t)SHA256_DIGEST_LENTH, current) ||
-			memcmp(digest, g_teecd_hash, SHA256_DIGEST_LENTH)) {
+	if (g_teecd_hash_enable && NON_HIDL_SIDE == type) {
+		if (tee_calc_task_hash(digest, false, current)
+			|| memcmp(digest, teecd_hash, SHA256_DIGEST_LENTH)) {
 			tloge("compare teecd hash error!\n");
 			return CHECK_CODE_HASH_FAIL;
 		}
 	}
-	check_value = (g_hidl_hash_enable && type == HIDL_SIDE);
-	if (check_value == true) {
-		if (tee_calc_task_hash(digest,
-			(uint32_t)SHA256_DIGEST_LENTH, current) ||
-			memcmp(digest, g_hidl_hash, SHA256_DIGEST_LENTH)) {
+	if (g_hidl_hash_enable && HIDL_SIDE == type) {
+		if (tee_calc_task_hash(digest, false, current)
+			|| memcmp(digest, hidl_hash, SHA256_DIGEST_LENTH)) {
 			tloge("compare libteec hidl serivce hash error!\n");
 			return CHECK_CODE_HASH_FAIL;
 		}
 	}
 	return 0;
 }
-#endif
 
 static void free_cred(const struct cred *cred)
 {
@@ -189,102 +305,71 @@ static void free_cred(const struct cred *cred)
 		put_cred(cred);
 }
 
-static int get_mem_space(char **ca_cert, char **tpath)
-{
-
-	*tpath = kmalloc(MAX_PATH_SIZE, GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)(*tpath))) {
-		tloge("tpath kmalloc fail\n");
-		return -EPERM;
+extern int security_context_str_to_sid(const char *scontext, u32 *out_sid, gfp_t gfp);
+static int check_process_selinux_security(struct task_struct *ca_task, char *context) {
+	u32 sid;
+	u32 tid;
+	int rc = 0;
+	security_task_getsecid(ca_task, &sid);
+	rc = security_context_str_to_sid(context, &tid, GFP_KERNEL);
+	if (rc) {
+		TCERR("convert context to sid failed\n");
+		return rc;
 	}
-	*ca_cert = kmalloc(BUF_MAX_SIZE, GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)(*ca_cert))) {
-		tloge("ca_cert kmalloc fail\n");
-		kfree(*tpath);
+	if(sid != tid) {
+		TCERR("invalid access process judged by selinux side\n");
 		return -EPERM;
 	}
 	return 0;
 }
-
-static int check_path_and_access(struct task_struct *ca_task,
-	char *ca_cert, unsigned long message_size,
-	unsigned char *digest, unsigned int dig_len, int type)
-{
-	int ret;
-
-	ret = calc_process_path_hash(ca_cert, message_size, digest, dig_len);
-	if (ret != 0)
-		return ret;
-	if (type == NON_HIDL_SIDE) {
-		if (memcmp(digest, g_non_hidl_auth_hash,
-			SHA256_DIGEST_LENTH) == 0) {
-			if (check_process_selinux_security(
-				ca_task, "u:r:tee:s0")) {
-				tloge("[teecd] check seclabel failed\n");
-				return CHECK_SECLABEL_FAIL;
-			}
-		} else {
-			tloge("[teecd]check process path failed \n");
-			return CHECK_PATH_HASH_FAIL;
-		}
-	} else if (type == HIDL_SIDE) {
-		if (memcmp(digest, g_hidl_auth_hash,
-			SHA256_DIGEST_LENTH) == 0) {
-			if (check_process_selinux_security(
-				ca_task, "u:r:hal_libteec_default:s0")) {
-				tloge("[libteec hidl service] check seclabel failed\n");
-				return CHECK_SECLABEL_FAIL;
-			}
-		} else {
-			tlogd("access process is not libteec hidl service ,please going on\n");
-			return ENTER_BYPASS_CHANNEL;
-		}
-	} else {
-		tloge("%d. is invalid type\n", type);
-		return INVALID_TYPE;
-	}
-#ifdef SECURITY_AUTH_ENHANCE
-	ret = check_teecd_hash(type);
-#endif
-	return ret;
-}
-
-
 static int check_process_access(struct task_struct *ca_task, int type)
 {
 	char *ca_cert = NULL;
 	char *path = NULL;
-	char *tpath = NULL;
-	unsigned char digest[SHA256_DIGEST_LENTH] = {0};
+	char digest[SHA256_DIGEST_LENTH] = {0};
 	const struct cred *cred = NULL;
 	int message_size;
 	int ret = 0;
+	char *tpath = NULL;
 
-	if (ca_task == NULL) {
-		tloge("task_struct is NULL\n");
+	if (NULL == ca_task) {
+		TCERR("task_struct is NULL\n");
 		return -EPERM;
 	}
-	if (ca_task->mm == NULL) {
-		tlogd("kernel thread need not check\n");
+	if(!ca_task->mm) {
+		TCDEBUG("kernel thread need not check\n");
 		ret = ENTER_BYPASS_CHANNEL;
 		return ret;
 	}
 
-	ret = get_mem_space(&ca_cert, &tpath);
-	if (ret != 0)
-		return ret;
-	path = get_process_path(ca_task, tpath, MAX_PATH_SIZE);
+	tpath = kmalloc(MAX_PATH_SIZE, GFP_KERNEL);
+	if (NULL == tpath) {
+		TCERR("tpath kmalloc fail\n");
+		return -EPERM;
+	}
+
+	ca_cert = kmalloc(BUF_MAX_SIZE, GFP_KERNEL);
+	if (NULL == ca_cert) {
+		TCERR("ca_cert kmalloc fail\n");
+		kfree(tpath);
+		return -EPERM;
+	}
+
+	get_task_struct(ca_task);
+	path = get_process_path(ca_task, tpath);
+	TCDEBUG("get_process_path %s - %s\n", path, tpath);
 	if (!IS_ERR_OR_NULL(path)) {
 		errno_t sret;
 
 		sret = memset_s(ca_cert, BUF_MAX_SIZE, 0x00, BUF_MAX_SIZE);
-		if (sret != EOK) {
-			tloge("memset_s error sret is %d\n", sret);
+		if (EOK != sret) {
+			TCERR("memset_s error sret is %d\n", sret);
 			kfree(tpath);
 			kfree(ca_cert);
+			put_task_struct(ca_task);
 			return -EPERM;
 		}
-		get_task_struct(ca_task);
+
 		cred = get_task_cred(ca_task);
 		if (cred == NULL) {
 			tloge("cred is NULL\n");
@@ -293,70 +378,357 @@ static int check_process_access(struct task_struct *ca_task, int type)
 			put_task_struct(ca_task);
 			return -EPERM;
 		}
-		message_size = pack_ca_cert(type, ca_cert, path, ca_task, cred);
-		if (message_size > 0) {
-			ret = check_path_and_access(ca_task, ca_cert,
-				(unsigned long)message_size, digest,
-				(unsigned int)SHA256_DIGEST_LENTH, type);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0))
+		if(NON_HIDL_SIDE == type) {
+			message_size = snprintf_s(ca_cert, BUF_MAX_SIZE - 1,
+				BUF_MAX_SIZE - 1, "%s%s%u", ca_task->comm, path,
+				cred->uid.val);
 		} else {
-			ret = -EPERM;
+			message_size = snprintf_s(ca_cert, BUF_MAX_SIZE - 1,
+				BUF_MAX_SIZE - 1, "%s%u", path,
+				cred->uid.val);
+		}
+#else
+		if(NON_HIDL_SIDE == type) {
+			message_size = snprintf_s(ca_cert, BUF_MAX_SIZE - 1,
+				BUF_MAX_SIZE - 1, "%s%s%u", ca_task->comm, path,
+				cred->uid);
+		} else {
+			message_size = snprintf_s(ca_cert, BUF_MAX_SIZE - 1,
+				BUF_MAX_SIZE - 1, "%s%u", path,
+				cred->uid);
+		}
+#endif
+
+		if (message_size > 0) {
+			ret =  calc_process_path_hash(ca_cert, message_size, digest); /*lint !e64 */
+			if (!ret) {
+				if(type == NON_HIDL_SIDE) {
+					if (memcmp(digest, non_hidl_auth_hash, SHA256_DIGEST_LENTH) == 0) {
+						if(check_process_selinux_security(ca_task, "u:r:tee:s0")) {
+							TCERR("[teecd] check seclabel failed\n");
+							ret = CHECK_SECLABEL_FAIL;
+						}
+					} else {
+						TCERR("[teecd]check process path failed \n");
+                        ret = CHECK_PATH_HASH_FAIL;
+						free_cred(cred);
+						goto process_end;
+					}
+				} else if(type == HIDL_SIDE)  {
+					if(memcmp(digest, hidl_auth_hash, SHA256_DIGEST_LENTH) == 0){
+						if(check_process_selinux_security(ca_task, "u:r:hal_libteec_default:s0")){
+							TCERR("[libteec hidl service] check seclabel failed\n");
+							ret = CHECK_SECLABEL_FAIL;
+							free_cred(cred);
+							goto process_end;
+						}
+					} else {
+						TCDEBUG("access process is not libteec hidl service ,please going on\n");
+                        ret = ENTER_BYPASS_CHANNEL;
+						free_cred(cred);
+						goto process_end;
+					}
+				} else {
+					TCERR("%d. is invalid type\n", type);
+					ret = INVALID_TYPE;
+					free_cred(cred);
+					goto process_end;
+				}
+				ret = check_teecd_hash(type);
+			}
 		}
 		free_cred(cred);
-		put_task_struct(ca_task);
-	} else {
-		ret = -EPERM;
 	}
+process_end:
+	put_task_struct(ca_task);
 	kfree(tpath);
 	kfree(ca_cert);
 	return ret;
 }
 
-static int update_task_ca_hash(struct mm_struct *mm,
-	struct task_struct *cur_struct, struct shash_desc *shash)
+TC_NS_Service *tc_find_service(struct list_head *services, unsigned char *uuid)
 {
-	int rc = -1;
-	unsigned long start_code;
-	unsigned long end_code;
-	unsigned long code_size;
-	unsigned long in_size;
-	struct page *ptr_page = NULL;
+	TC_NS_Service *service = NULL;
+
+	if (services == NULL || uuid == NULL)
+		return NULL;
+
+	/*need service init or not */
+	list_for_each_entry(service, services, head) {
+		if (0 == memcmp(service->uuid, uuid, sizeof(service->uuid)))
+			return service;
+	}
+
+	return NULL;
+}
+
+TC_NS_Session *tc_find_session(struct list_head *session_list,
+			       unsigned int session_id)
+{
+	TC_NS_Session *session = NULL;
+
+	if (session_list == NULL) {
+		TCERR("session_list is Null.\n");
+		return ERR_PTR(-EINVAL); /*lint !e747*/
+	}
+
+	list_for_each_entry(session, session_list, head) {
+		if (session->session_id == session_id)
+			return session;
+	}
+
+	return NULL;
+}
+
+static int close_session(TC_NS_DEV_File *dev,
+		unsigned char *uuid,
+		unsigned int session_id,
+		TC_NS_Token *tc_ns_token,
+		void *teec_token)
+{
+	TC_NS_ClientContext context;
+	int ret = 0;
+	errno_t sret;
+
+	sret = memset_s(&context, sizeof(TC_NS_ClientContext), 0,
+			sizeof(TC_NS_ClientContext));
+	if (EOK != sret)
+		return TEEC_ERROR_GENERIC;
+
+	sret = memcpy_s(context.uuid, sizeof(context.uuid), uuid,
+			sizeof(context.uuid));
+	if (EOK != sret)
+		return TEEC_ERROR_GENERIC;
+
+	context.session_id = session_id;
+	context.cmd_id = GLOBAL_CMD_ID_CLOSE_SESSION;
+
+	context.teec_token = teec_token;
+	ret = tc_client_call(&context, dev, TC_CALL_GLOBAL | TC_CALL_SYNC,
+			tc_ns_token);
+	kill_ion_by_uuid((TEEC_UUID*)(context.uuid));
+	if (ret)
+		TCERR("close session failed, ret=0x%x\n", ret);
+	return ret;
+}
+
+
+static int kill_session(TC_NS_DEV_File *dev, unsigned char *uuid,
+			unsigned int session_id)
+{
+	TC_NS_ClientContext context;
+	int ret = 0;
+	errno_t sret;
+
+	sret = memset_s(&context, sizeof(TC_NS_ClientContext), 0,
+			sizeof(TC_NS_ClientContext));
+	if (EOK != sret)
+		return TEEC_ERROR_GENERIC;
+
+	sret = memcpy_s(context.uuid, sizeof(context.uuid), uuid,
+			sizeof(context.uuid));
+	if (EOK != sret)
+		return TEEC_ERROR_GENERIC;
+
+	context.session_id = session_id;
+	context.cmd_id = GLOBAL_CMD_ID_KILL_TASK;
+	TCDEBUG("dev_file_id=%d\n", dev->dev_file_id);
+
+	/*do clear work in agent */
+	tee_agent_clear_work(&context, dev->dev_file_id);
+
+	ret = tc_client_call(&context, dev,
+			TC_CALL_GLOBAL | TC_CALL_SYNC, NULL);
+	kill_ion_by_uuid((TEEC_UUID*)uuid);
+	if (ret)
+		TCERR("close session failed, ret=0x%x\n", ret);
+
+	return ret;
+}
+
+static int TC_NS_ServiceInit(TC_NS_DEV_File *dev_file, unsigned char *uuid,
+			     TC_NS_Service **new_service)
+{
+	int ret = 0;
+	TC_NS_Service *service = NULL;
+	errno_t sret;
+
+	service = kzalloc(sizeof(TC_NS_Service), GFP_KERNEL);
+	if (!service) {
+		TCERR("kmalloc failed\n");
+		ret = -ENOMEM;
+		return ret;
+	}
+
+	sret = memcpy_s(service->uuid, sizeof(service->uuid), uuid,
+			sizeof(service->uuid));
+	if (EOK != sret) {
+		kfree(service);
+		return -ENOMEM;
+	}
+	dev_file->service_cnt++;
+	INIT_LIST_HEAD(&service->session_list);
+	mutex_init(&service->session_lock);
+	list_add_tail(&service->head, &dev_file->services_list);
+	atomic_set(&service->usage, 1); /*lint !e1058 */
+	*new_service = service;
+
+	return ret;
+}
+
+uint32_t TC_NS_get_uid(void)
+{
+	struct task_struct *task = NULL;
+	const struct cred *cred = NULL;
+	uint32_t uid = 0;
+
+	rcu_read_lock();
+	task = get_current();
+	get_task_struct(task);
+	rcu_read_unlock();
+	cred = get_task_cred(task);
+
+	if (!cred) {
+		TCERR("failed to get uid of the task\n");
+		put_task_struct(task);
+		return -1; /*lint !e64 !e570 */
+	}
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0))
+	uid = cred->uid.val;
+#else
+	uid = cred->uid;
+#endif
+	put_cred(cred);
+	put_task_struct(task);
+	TCDEBUG("current uid is %d\n", uid);
+	return uid;
+}
+
+/* the input param should be "sha256" */
+static int tee_init_crypto(char *hash_type)
+{
+	long rc = 0;
+
+	if (NULL == hash_type) {
+		tloge("tee init crypto: error input parameter.\n");
+		return -5;
+	}
+	mutex_lock(&g_tee_crypto_hash_lock);
+	if (tee_init_crypt_state) {
+		mutex_unlock(&g_tee_crypto_hash_lock);
+		return 0;
+	}
+
+	g_tee_shash_tfm = crypto_alloc_shash(hash_type, 0, 0);
+	if (IS_ERR(g_tee_shash_tfm)) {
+		rc = PTR_ERR(g_tee_shash_tfm);
+		tloge("Can not allocate %s (reason: %ld)\n", hash_type, rc);
+		mutex_unlock(&g_tee_crypto_hash_lock);
+		return rc;
+	}
+	tee_init_crypt_state = 1;
+	mutex_unlock(&g_tee_crypto_hash_lock);
+
+	return 0;
+}
+
+static inline int
+tee_cfc_rehash(struct shash_desc *shash, unsigned char *digest)
+{
+	return 0;
+}
+
+/* Calculate the SHA256 file digest */
+static int tee_calc_task_hash(unsigned char *digest, bool cfc_rehash, struct task_struct *S)
+{
+	unsigned long start_code, end_code, code_size, in_size;
 	void *ptr_base = NULL;
-#if (KERNEL_VERSION(4, 9, 0) > LINUX_VERSION_CODE)
+	struct page *ptr_page = NULL;
+	struct mm_struct *mm = NULL;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0))
 	int locked = 1;
 #endif
+	int rc;
+	struct sdesc {
+		struct shash_desc shash;
+		char ctx[];
+	};
+	struct sdesc *desc;
+
+	if (NULL == digest) {
+		tloge("tee hash: input param is error!\n");
+		return -2;
+	}
+
+	desc = kmalloc(sizeof(struct shash_desc)
+			+ crypto_shash_descsize(g_tee_shash_tfm), GFP_KERNEL);
+	if (!desc) {
+		TCERR("alloc desc failed\n");
+		return -ENOMEM;
+	}
+
+	mm = get_task_mm(S);
+        if (mm == NULL) {
+		errno_t sret;
+
+		sret = memset_s(digest, MAX_SHA_256_SZ, 0,
+				MAX_SHA_256_SZ);
+		if (EOK != sret) {
+			rc = -2;
+			goto out;
+		}
+
+		if (cfc_is_enabled && cfc_rehash)
+			CFC_SEND_DATA(tee_calc_task_hash_fix_val, 0);
+
+		rc = 0;
+		goto out;
+	}
 
 	start_code = mm->start_code;
-	end_code = mm->end_code;
+	end_code   = mm->end_code;
 	code_size = end_code - start_code;
+
+	desc->shash.tfm = g_tee_shash_tfm;
+	desc->shash.flags = 0;
+
+	rc = crypto_shash_init(&desc->shash);
+	if (rc != 0)
+		goto out;
+
+        down_read(&mm->mmap_sem);
 	while (start_code < end_code) {
+
 		/* Get a handle of the page we want to read */
-#if (KERNEL_VERSION(4, 9, 0) <= LINUX_VERSION_CODE)
-
-#if (KERNEL_VERSION(4, 14, 0) > LINUX_VERSION_CODE)
-		rc = get_user_pages_remote(cur_struct, mm, start_code,
-			1, FOLL_FORCE, &ptr_page, NULL);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
+		rc = get_user_pages_remote(S, mm,
+			start_code, 1, 0, &ptr_page, NULL);
 #else
-		rc = get_user_pages_remote(cur_struct, mm, start_code,
-			1, FOLL_FORCE, &ptr_page, NULL, NULL);
+		rc = get_user_pages_remote(S, mm,
+			start_code, 1, 0, &ptr_page, NULL, NULL);
 #endif
-
 #else
-		rc = get_user_pages_locked(cur_struct, mm, start_code,
-			1, 0, 0, &ptr_page, &locked);
+		rc = get_user_pages_locked(S, mm,
+					  start_code, 1, 0, 0, &ptr_page, &locked);
 #endif
 		if (rc != 1) {
 			tloge("get user pages locked error[0x%x]\n", rc);
 			rc = -EFAULT;
 			break;
 		}
+
 		ptr_base = kmap_atomic(ptr_page);
-		if (ptr_base == NULL) {
-			rc = -EFAULT;
+		if (NULL == ptr_base) {
+			rc = -3;
 			put_page(ptr_page);
 			break;
 		}
+
 		in_size = (code_size > PAGE_SIZE) ? PAGE_SIZE : code_size;
-		rc = crypto_shash_update(shash, ptr_base, in_size);
+		rc = crypto_shash_update(&desc->shash, ptr_base, in_size);
 		if (rc) {
 			kunmap_atomic(ptr_base);
 			put_page(ptr_page);
@@ -364,410 +736,118 @@ static int update_task_ca_hash(struct mm_struct *mm,
 		}
 		kunmap_atomic(ptr_base);
 		put_page(ptr_page);
+
 		start_code += in_size;
 		code_size = end_code - start_code;
 	}
-	return rc;
-}
-
-
-/* Calculate the SHA256 file digest */
-static int tee_calc_task_hash(unsigned char *digest,
-	uint32_t dig_len, struct task_struct *cur_struct)
-{
-	struct mm_struct *mm = NULL;
-	int rc;
-	size_t size;
-	size_t shash_size;
-	struct sdesc {
-		struct shash_desc shash;
-		char ctx[];
-	};
-	struct sdesc *desc = NULL;
-	bool check_value = (digest == NULL ||
-		dig_len != SHA256_DIGEST_LENTH);
-
-	if (check_value) {
-		tloge("tee hash: input param is error!\n");
-		return -EFAULT;
-	}
-	mm = get_task_mm(cur_struct);
-	if (mm == NULL) {
-		errno_t sret;
-
-		sret = memset_s(digest, dig_len, 0, MAX_SHA_256_SZ);
-		if (sret != EOK)
-			return -EFAULT;
-		return 0;
-	}
-	shash_size = crypto_shash_descsize(g_tee_shash_tfm);
-	size = sizeof(desc->shash) + shash_size;
-	check_value = (size < sizeof(desc->shash) ||
-		size < shash_size);
-	if (check_value) {
-		tloge("size flow!\n");
-		mmput(mm);
-		return -ENOMEM;
-	}
-	desc = kmalloc(size, GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)desc)) {
-		tloge("alloc desc failed.\n");
-		mmput(mm);
-		return -ENOMEM;
-	}
-	rc = memset_s(desc, size, 0, size);
-	if (rc != EOK) {
-		tloge("memset desc failed!.\n");
-		kfree(desc);
-		mmput(mm);
-		return rc;
-	}
-	desc->shash.tfm = g_tee_shash_tfm;
-	desc->shash.flags = 0;
-	rc = crypto_shash_init(&desc->shash);
-	if (rc != 0) {
-		kfree(desc);
-		mmput(mm);
-		return rc;
-	}
-	down_read(&mm->mmap_sem);
-	rc = update_task_ca_hash(mm, cur_struct, &desc->shash);
-	up_read(&mm->mmap_sem);
+        up_read(&mm->mmap_sem);
 	mmput(mm);
-	if (!rc)
+	if (!rc) {
 		rc = crypto_shash_final(&desc->shash, digest);
-	kfree(desc);
-	return rc;
-}
 
-#define LIBTEEC_CODE_PAGE_SIZE 8
-#define DEFAULT_TEXT_OFF 0
-#define LIBTEEC_NAME_MAX_LEN 50
-const char g_libso[KIND_OF_SO][LIBTEEC_NAME_MAX_LEN] = {
-						"libteec_vendor.so",
-						"libteec.huawei.so",
-};
-
-static int find_library_code_area(struct mm_struct *mm,
-	struct vm_area_struct **lib_code_area, int so_index)
-{
-	struct vm_area_struct *vma = NULL;
-	bool is_valid_vma = false;
-	bool is_so_exists = false;
-	bool param_check = mm == NULL || mm->mmap == NULL ||
-		lib_code_area == NULL || so_index >= KIND_OF_SO;
-
-	if(param_check) {
-		tloge("illegal input params\n");
-		return -1;
-	}
-	for(vma = mm->mmap; vma != NULL; vma = vma->vm_next){
-		is_valid_vma = vma->vm_file != NULL && vma->vm_file->f_path.dentry != NULL &&
-			vma->vm_file->f_path.dentry->d_name.name != NULL;
-		if(is_valid_vma) {
-			is_so_exists = strcmp(g_libso[so_index],
-				vma->vm_file->f_path.dentry->d_name.name) == 0;
-			if(is_so_exists && (vma->vm_flags & VM_EXEC) != 0) {
-				*lib_code_area = vma;
-				tlogd("so name is %s\n", vma->vm_file->f_path.dentry->d_name.name);
-				return 0;
-			}
-		}
-	}
-	return -1;
-}
-
-static int update_task_so_hash(struct mm_struct *mm,
-	struct task_struct *cur_struct, struct shash_desc *shash, int so_index)
-{
-	struct vm_area_struct *vma = NULL;
-	int rc = -1;
-	int code_area_found;
-	unsigned long code_start, code_end, code_size, in_size;
-	struct page *ptr_page = NULL;
-	void *ptr_base = NULL;
-#if (KERNEL_VERSION(4, 9, 0) > LINUX_VERSION_CODE)
-	int locked = 1;
-#endif
-
-	code_area_found = find_library_code_area(mm, &vma, so_index);
-	if(code_area_found != 0) {
-		tloge("get lib code vma area failed\n");
-		return -1;
+		if (rc || !cfc_is_enabled || !cfc_rehash)
+			goto out;
+		rc = tee_cfc_rehash(&desc->shash, digest);
 	}
 
-	code_start = vma->vm_start;
-	code_end = vma->vm_end;
-	code_size = code_end - code_start;
-
-
-	while (code_start < code_end) {
-	// Get a handle of the page we want to read
-#if (KERNEL_VERSION(4, 9, 0) <= LINUX_VERSION_CODE)
-
-#if (KERNEL_VERSION(4, 14, 0) > LINUX_VERSION_CODE)
-		rc = get_user_pages_remote(cur_struct, mm, code_start,
-			1, FOLL_FORCE, &ptr_page, NULL);
-#else
-		rc = get_user_pages_remote(cur_struct, mm, code_start,
-			1, FOLL_FORCE, &ptr_page, NULL, NULL);
-#endif
-
-#else
-		rc = get_user_pages_locked(cur_struct, mm, code_start,
-			1, 0, 0, &ptr_page, &locked);
-#endif
-		if (rc != 1) {
-			tloge("get user pages locked error[0x%x]\n", rc);
-			rc = -1;
-			break;
-		}
-
-
-		ptr_base = kmap_atomic(ptr_page);
-		if (ptr_base == NULL) {
-			rc = -1;
-			put_page(ptr_page);
-			break;
-		}
-		in_size = (code_size > PAGE_SIZE) ? PAGE_SIZE : code_size;
-
-		rc = crypto_shash_update(shash, ptr_base, in_size);
-		if (rc != 0) {
-			kunmap_atomic(ptr_base);
-			put_page(ptr_page);
-			break;
-		}
-		kunmap_atomic(ptr_base);
-		put_page(ptr_page);
-		code_start += in_size;
-		code_size = code_end - code_start;
-	}
-	return rc;
-}
-
-/* Calculate the SHA256 library digest */
-static int tee_calc_task_so_hash(unsigned char *digest, uint32_t dig_len,
-	struct task_struct *cur_struct, int so_index)
-{
-	struct mm_struct *mm = NULL;
-	int rc;
-	size_t size;
-	size_t shash_size;
-	bool check_value = false;
-	errno_t sret;
-
-	struct sdesc {
-		struct shash_desc shash;
-		char ctx[];
-	};
-
-	struct sdesc *desc = NULL;
-	check_value = digest == NULL || dig_len != SHA256_DIGEST_LENTH;
-	if (check_value) {
-		tloge("tee hash: digest is NULL\n");
-		return -1;
-	}
-	mm = get_task_mm(cur_struct);
-	if (mm == NULL) {
-		tloge("so does not have mm struct\n");
-		sret = memset_s(digest, MAX_SHA_256_SZ, 0, dig_len);
-		return -1;
-	}
-
-	shash_size = crypto_shash_descsize(g_tee_shash_tfm);
-	size = sizeof(desc->shash) + shash_size;
-	check_value = (size < sizeof(desc->shash) ||
-		size < shash_size);
-	if (check_value) {
-		tloge("size overflow\n");
-		mmput(mm);
-		return -ENOMEM;
-	}
-	desc = kmalloc(size, GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)desc)) {
-		tloge("alloc desc failed\n");
-		mmput(mm);
-		return -ENOMEM;
-	}
-	sret = memset_s(desc, size, 0, size);
-	if (sret != EOK) {
-		tloge("memset desc failed\n");
-		kfree(desc);
-		mmput(mm);
-		return -1;
-	}
-
-	desc->shash.tfm = g_tee_shash_tfm;
-	desc->shash.flags = 0;
-	rc = crypto_shash_init(&desc->shash);
-	if (rc != 0) {
-		kfree(desc);
-		mmput(mm);
-		return rc;
-	}
-	down_read(&mm->mmap_sem);
-	rc = update_task_so_hash(mm, cur_struct, &desc->shash, so_index);
-	up_read(&mm->mmap_sem);
-	mmput(mm);
-	if (!rc)
-		rc = crypto_shash_final(&desc->shash, digest);
+out:
 	kfree(desc);
 	return rc;
 }
 
 /* Modify the client context so params id 2 and 3 contain temp pointers to the
  * public key and package name for the open session. This is used for the
- * TEEC_LOGIN_IDENTIFY open session method
- */
-static int set_login_information(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context)
+ * TEEC_LOGIN_IDENTIFY open session method */
+static int set_login_information(TC_NS_DEV_File *dev_file,
+				 TC_NS_ClientContext *context)
 {
 	/* The daemon has failed to get login information or not supplied */
-	if (dev_file->pkg_name_len == 0)
+	if (0 == dev_file->pkg_name_len)
 		return -1;
+
 	/* The 3rd parameter buffer points to the pkg name buffer in the
-	 * device file pointer
-	 * get package name len and package name
-	 */
-	context->params[TEE_PARAM_FOUR].memref.size_addr =
-		(__u64)(uintptr_t)&dev_file->pkg_name_len;
-	context->params[TEE_PARAM_FOUR].memref.buffer =
-		(__u64)(uintptr_t)dev_file->pkg_name;
+	* device file pointer */
+	/* get package name len and package name */
+	context->params[3].memref.size_addr = (__u64)&dev_file->pkg_name_len;
+	context->params[3].memref.buffer = (__u64)dev_file->pkg_name;
+
 	/* Set public key len and public key */
 	if (dev_file->pub_key_len != 0) {
-		context->params[TEE_PARAM_THREE].memref.size_addr =
-			(__u64)(uintptr_t)&dev_file->pub_key_len;
-		context->params[TEE_PARAM_THREE].memref.buffer =
-			(__u64)(uintptr_t)dev_file->pub_key;
+		context->params[2].memref.size_addr =
+			(__u64)&dev_file->pub_key_len;
+		context->params[2].memref.buffer = (__u64) dev_file->pub_key;
 	} else {
 		/* If get public key failed, then get uid in kernel */
-		uint32_t ca_uid = tc_ns_get_uid();
+		uint32_t ca_uid = TC_NS_get_uid();
 
-		if (ca_uid == (uint32_t)(-1)) {
-			tloge("Failed to get uid of the task\n");
+		if (-1 == ca_uid) { /*lint !e64 !e650 */
+			TCERR("Failed to get uid of the task\n");
 			goto error;
 		}
+
 		dev_file->pub_key_len = sizeof(ca_uid);
-		context->params[TEE_PARAM_THREE].memref.size_addr =
-			(__u64)(uintptr_t)&dev_file->pub_key_len;
+		context->params[2].memref.size_addr =
+			(__u64)&dev_file->pub_key_len;
+
 		if (memcpy_s(dev_file->pub_key, MAX_PUBKEY_LEN, &ca_uid,
-			dev_file->pub_key_len)) {
-			tloge("Failed to copy pubkey, pub_key_len=%u\n",
-			      dev_file->pub_key_len);
+					dev_file->pub_key_len)) {
+			TCERR("Failed to copy pubkey, pub_key_len=%u\n",
+					dev_file->pub_key_len);
 			goto error;
 		}
-		context->params[TEE_PARAM_THREE].memref.buffer =
-			(__u64)(uintptr_t)dev_file->pub_key;
+		context->params[2].memref.buffer = (__u64) dev_file->pub_key;
 	}
+
 	/* Now we mark the 2 parameters as input temp buffers */
-	context->param_types = TEEC_PARAM_TYPES(
-		TEEC_PARAM_TYPE_GET(context->param_types, TEE_PARAM_ONE),
-		TEEC_PARAM_TYPE_GET(context->param_types, TEE_PARAM_TWO),
-		TEEC_MEMREF_TEMP_INPUT, TEEC_MEMREF_TEMP_INPUT);
+	context->paramTypes =
+		TEEC_PARAM_TYPES(
+				TEEC_PARAM_TYPE_GET(context->paramTypes, 0),
+				TEEC_PARAM_TYPE_GET(context->paramTypes, 1),
+				TEEC_MEMREF_TEMP_INPUT, TEEC_MEMREF_TEMP_INPUT);
+
 	return 0;
 error:
 	return -1;
 }
 
-static int check_process_and_alloc_params(tc_ns_dev_file *dev_file,
-	uint8_t **cert_buffer, unsigned int *cert_buffer_size)
+static int TC_NS_Client_Login(TC_NS_DEV_File *dev_file, void __user *buffer)
 {
-	int ret;
+	int ret = -EINVAL;
+	uint8_t *cert_buffer = NULL;
+    uint8_t *buf = NULL;
+	errno_t sret;
 
-#ifdef SECURITY_AUTH_ENHANCE
 	ret = check_process_access(current, NON_HIDL_SIDE);
 	if (ret) {
 		tloge(KERN_ERR "tc client login: teecd verification failed ret 0x%x!\n", ret);
 		return -EPERM;
 	}
-#endif
-	mutex_lock(&dev_file->login_setup_lock);
+
 	if (dev_file->login_setup) {
-		tloge("Login information cannot be set twice!\n");
-		mutex_unlock(&dev_file->login_setup_lock);
+		TCERR("Login information cannot be set twice!\n");
 		return -EINVAL;
 	}
+
 	dev_file->login_setup = true;
-	mutex_unlock(&dev_file->login_setup_lock);
 
-	*cert_buffer_size = (unsigned int)(MAX_PACKAGE_NAME_LEN + MAX_PUBKEY_LEN +
-		sizeof(dev_file->pkg_name_len) + sizeof(dev_file->pub_key_len));
-	*cert_buffer = kmalloc(*cert_buffer_size, GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)(*cert_buffer))) {
-		tloge("Failed to allocate login buffer!");
-		return -EFAULT;
-	}
-
-	return 0;
-}
-
-static int tc_ns_get_tee_version(tc_ns_dev_file *dev_file, void __user *argp)
-{
-	unsigned int version;
-	tc_ns_smc_cmd smc_cmd = { {0}, 0 };
-	int smc_ret = 0;
-	struct mb_cmd_pack *mb_pack = NULL;
-	bool check_value = (g_teecd_task == current->group_leader) &&
-		(!tc_ns_get_uid());
-
-	if (argp == NULL) {
-		tloge("error input parameter\n");
-		return -1;
-	}
-	if (check_value == false) {
-		tloge("ioctl is not from teecd and return\n");
-		return -1;
-	}
-	mb_pack = mailbox_alloc_cmd_pack();
-	if (mb_pack == NULL) {
-		tloge("alloc mb pack failed\n");
-		return -ENOMEM;
-	}
-
-	mb_pack->operation.paramtypes = TEEC_VALUE_OUTPUT;
-	smc_cmd.global_cmd = true;
-	smc_cmd.cmd_id = GLOBAL_CMD_ID_GET_TEE_VERSION;
-	smc_cmd.dev_file_id = dev_file->dev_file_id;
-	smc_cmd.operation_phys = virt_to_phys(&mb_pack->operation);
-	smc_cmd.operation_h_phys =
-		virt_to_phys(&mb_pack->operation) >> ADDR_TRANS_NUM;
-	smc_ret = tc_ns_smc(&smc_cmd);
-	tlogd("smc cmd ret %d\n", smc_ret);
-	if (smc_ret != 0)
-		tloge("smc_call returns error ret 0x%x\n", smc_ret);
-
-	version = mb_pack->operation.params[0].value.a;
-	if (copy_to_user(argp, &version, sizeof(unsigned int))) {
-		if (smc_ret != 0)
-			smc_ret = -EFAULT;
-	}
-	mailbox_free(mb_pack);
-	return smc_ret;
-}
-
-#define MAX_BUF_LEN 4096
-static int tc_ns_client_login_func(tc_ns_dev_file *dev_file,
-	const void __user *buffer)
-{
-	int ret = -EINVAL;
-	uint8_t *cert_buffer = NULL;
-	uint8_t *temp_cert_buffer = NULL;
-	errno_t sret;
-	unsigned int cert_buffer_size = 0;
-
-	if (buffer == NULL) {
-		/* We accept no debug information because the daemon might  have failed */
-		tlogd("No debug information\n");
+	if (NULL == buffer) {
+		/* We accept no debug information because the daemon might
+		 * have failed */
+		TCDEBUG("No debug information\n");
 		dev_file->pkg_name_len = 0;
 		dev_file->pub_key_len = 0;
 		return 0;
 	}
-	ret = check_process_and_alloc_params(dev_file, &cert_buffer,
-		&cert_buffer_size);
-	if (ret != 0)
-		return ret;
-	temp_cert_buffer = cert_buffer;
+
+#define CERT_BUFFER_SIZE (MAX_PACKAGE_NAME_LEN + MAX_PUBKEY_LEN +\
+			  sizeof(dev_file->pkg_name_len) + \
+			  sizeof(dev_file->pub_key_len))
+	buf = cert_buffer = kmalloc(CERT_BUFFER_SIZE, GFP_KERNEL);
+	if (cert_buffer == NULL) {
+		TCERR("Failed to allocate login buffer!");
+		return -EFAULT;
+	}
+
 	/* GET PACKAGE NAME AND APP CERTIFICATE:
 	 * The proc_info format is as follows:
 	 * package_name_len(4 bytes) || package_name ||
@@ -778,799 +858,1520 @@ static int tc_ns_client_login_func(tc_ns_dev_file *dev_file,
 	 * modulus_size(4bytes) ||modulus buffer
 	 * || exponent size || exponent buffer
 	 */
-	if (cert_buffer_size > MAX_BUF_LEN) {
-		tloge("cert buffer size is invalid!\n");
-		ret = -EINVAL;
-		goto error;
-	}
-	if (copy_from_user(cert_buffer, buffer, cert_buffer_size)) {
-		tloge("Failed to get user login info!\n");
-		ret = -EINVAL;
-		goto error;
-	}
-	/* get package name len */
-	ret = get_pack_name_len(dev_file, cert_buffer, cert_buffer_size);
-	if (ret != 0)
-		goto error;
-	cert_buffer += sizeof(dev_file->pkg_name_len);
 
-	/* get package name */
-	sret = strncpy_s(dev_file->pkg_name, MAX_PACKAGE_NAME_LEN, cert_buffer,
-		dev_file->pkg_name_len);
-	if (sret != EOK) {
+	/* get package name len and package name */
+	if (copy_from_user(cert_buffer, buffer, CERT_BUFFER_SIZE)) {
+		TCERR("Failed to get user login info!\n");
+		ret = -EINVAL;
+		goto error;
+	}
+
+	sret = memcpy_s(&dev_file->pkg_name_len, sizeof(dev_file->pkg_name_len),
+			cert_buffer, sizeof(dev_file->pkg_name_len));
+	if (EOK != sret) {
 		ret = -ENOMEM;
 		goto error;
 	}
-	tlogd("package name is %s\n", dev_file->pkg_name);
+	TCDEBUG("package_name_len is %u\n", dev_file->pkg_name_len);
+
+	if (0 == dev_file->pkg_name_len ||
+	    dev_file->pkg_name_len >= MAX_PACKAGE_NAME_LEN) {
+		TCERR("Invalid size of package name len login info!\n");
+		ret = -EINVAL;
+		goto error;
+	}
+
+	cert_buffer += sizeof(dev_file->pkg_name_len);
+	sret = strncpy_s(dev_file->pkg_name, MAX_PACKAGE_NAME_LEN, cert_buffer, /*lint !e64 */
+			dev_file->pkg_name_len);
+	if (EOK != sret) {
+		ret = -ENOMEM;
+		goto error;
+	}
+	TCDEBUG("package name is %s\n", dev_file->pkg_name);
+
 	cert_buffer += dev_file->pkg_name_len;
 
-	/* get public key len */
-	ret = get_public_key_len(dev_file, cert_buffer, cert_buffer_size);
-	if (ret != 0)
+	/* get public key len and public key */
+	sret = memcpy_s(&dev_file->pub_key_len, sizeof(dev_file->pub_key_len),
+			cert_buffer, sizeof(dev_file->pub_key_len));
+	if (EOK != sret) {
+		ret = -ENOMEM;
 		goto error;
+	}
+	TCDEBUG("publick_key_len is %d\n", dev_file->pub_key_len);
 
-	/* get public key */
+	if (dev_file->pub_key_len > MAX_PUBKEY_LEN) {
+		TCERR("Invalid public key length in login info!\n");
+		ret = -EINVAL;
+		goto error;
+	}
+
 	if (dev_file->pub_key_len != 0) {
 		cert_buffer += sizeof(dev_file->pub_key_len);
+		TCDEBUG("public_key first 4 bytes %x,%x,%x,%x\n",
+			cert_buffer[0], cert_buffer[1], cert_buffer[2],
+			cert_buffer[3]);
 		if (memcpy_s(dev_file->pub_key, MAX_PUBKEY_LEN, cert_buffer,
-			dev_file->pub_key_len)) {
-			tloge("Failed to copy cert, pub_key_len=%u\n",
-				dev_file->pub_key_len);
+					dev_file->pub_key_len)) {
+			TCERR("Failed to copy cert, pub_key_len=%u\n",
+					dev_file->pub_key_len);
 			ret = -EINVAL;
 			goto error;
 		}
 		cert_buffer += dev_file->pub_key_len;
 	}
+
 	ret = 0;
 error:
-	kfree(temp_cert_buffer);
+	kfree(buf);
 	return ret;
 }
+#define ALIGN_UP(x, align) (((x) + ((align)-1)) & ~((align)-1))
 
-static int alloc_for_load_image(unsigned int *mb_load_size,
-	unsigned int file_size, char **mb_load_mem,
-	struct mb_cmd_pack **mb_pack, teec_uuid **uuid_return)
+extern struct session_crypto_info *g_session_root_key;
+extern struct session_secure_info g_cur_session_secure_info;
+
+static int __generate_random_data(uint8_t *data, uint32_t size)
 {
-	/* we will try any possible to alloc mailbox mem to load TA */
-	for (; *mb_load_size > 0; *mb_load_size >>= 1) {
-		*mb_load_mem = mailbox_alloc(*mb_load_size, 0);
-		if (*mb_load_mem != NULL)
+	uint32_t i;
+
+	if (memset_s((void *)data, size, 0, size)) {
+		tloge("Clean the data buffer failed!\n");
+		return -EFAULT;
+	}
+
+	wait_for_random_bytes();
+	get_random_bytes((void *)data, sizeof(size));
+
+	for (i = 0; i < size; i++)
+		if (data[i] != 0)
 			break;
-		tlogw("alloc mem(size=%d) for TA load mem fail, will retry\n", *mb_load_size);
-	}
-	if (*mb_load_mem == NULL) {
-		tloge("alloc TA load mem failed\n");
-		return -ENOMEM;
-	}
-	*mb_pack = mailbox_alloc_cmd_pack();
-	if (*mb_pack == NULL) {
-		mailbox_free(*mb_load_mem);
-		*mb_load_mem = NULL;
-		tloge("alloc mb pack failed\n");
-		return -ENOMEM;
-	}
-	*uuid_return = mailbox_alloc(sizeof(teec_uuid), 0);
-	if (*uuid_return == NULL) {
-		mailbox_free(*mb_load_mem);
-		*mb_load_mem = NULL;
-		mailbox_free(*mb_pack);
-		*mb_pack = NULL;
-		tloge("alloc uuid failed\n");
-		return -ENOMEM;
-	}
+
+	if (i >= size)
+		return -EFAULT;
+
 	return 0;
 }
 
-static void pack_data_for_smc_cmd(uint32_t load_size,
-	const char *mb_load_mem, struct mb_cmd_pack *mb_pack,
-	teec_uuid *uuid_return, tc_ns_smc_cmd *smc_cmd)
+static int generate_challenge_word(uint8_t *challenge_word, uint32_t size)
 {
-	mb_pack->operation.params[TEE_PARAM_ONE].memref.buffer =
-		virt_to_phys((void *)mb_load_mem);
-	mb_pack->operation.buffer_h_addr[TEE_PARAM_ONE] =
-		virt_to_phys((void *)mb_load_mem) >> ADDR_TRANS_NUM;
-	mb_pack->operation.params[TEE_PARAM_ONE].memref.size = load_size + sizeof(int);
-	mb_pack->operation.params[TEE_PARAM_THREE].memref.buffer =
-		virt_to_phys((void *)uuid_return);
-	mb_pack->operation.buffer_h_addr[TEE_PARAM_THREE] =
-		virt_to_phys((void *)uuid_return) >> ADDR_TRANS_NUM;
-	mb_pack->operation.params[TEE_PARAM_THREE].memref.size = sizeof(*uuid_return);
-	mb_pack->operation.paramtypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_INOUT,
-		TEEC_VALUE_OUTPUT, TEEC_MEMREF_TEMP_OUTPUT, TEEC_VALUE_INPUT);
-	/* load image smc command */
-	smc_cmd->global_cmd = true;
-	smc_cmd->cmd_id = GLOBAL_CMD_ID_LOAD_SECURE_APP;
-	smc_cmd->context_id = 0;
-	smc_cmd->operation_phys = virt_to_phys(&mb_pack->operation);
-	smc_cmd->operation_h_phys =
-		virt_to_phys(&mb_pack->operation) >> ADDR_TRANS_NUM;
+	if (challenge_word == NULL) {
+		tloge("Parameter is null pointer!\n");
+		return -EINVAL;
+	}
+
+	return __generate_random_data(challenge_word, size);
 }
 
-static int load_image_for_ion(struct mb_cmd_pack *mb_pack,
-	load_image_params *params_in, teec_uuid *uuid_return)
+static bool is_valid_encryption_head(const struct encryption_head *head,
+					const uint8_t *data, uint32_t len)
+{
+	uint32_t crc = 0;
+
+	if (head == NULL || data == NULL ||! len) {
+		tloge("In parameters check failed.\n");
+		return false;
+	}
+
+	if (strncmp(head->magic, MAGIC_STRING, sizeof(MAGIC_STRING))) {
+		tloge("Magic string is invalid.\n");
+		return false;
+	}
+
+	if (head->payload_len != len) {
+		tloge("Payload length is invalid.\n");
+		return false;
+	}
+
+	crc = crc32(0, data, len);
+	if (head->crc != crc) {
+		tloge("Crc32 is invalid, data have been modified.\n");
+		return false;
+	}
+
+	return true;
+}
+
+static void __clean_session_secure_information(TC_NS_Session *session)
+{
+	if (memset_s((void *)&session->secure_info,
+	              sizeof(session->secure_info),
+	              0,
+	              sizeof(session->secure_info)))
+		tloge("Clean this session secure information failed!\n");
+
+	if (memset_s((void *)&g_cur_session_secure_info,
+	              sizeof(g_cur_session_secure_info),
+	              0,
+	              sizeof(g_cur_session_secure_info)))
+		tloge("Clean the global session secure information failed!\n");
+}
+
+static int get_session_secure_params(TC_NS_DEV_File *dev_file,
+				TC_NS_ClientContext *context,
+				TC_NS_Session *session)
 {
 	int ret = 0;
-	/* check need to add ionmem  */
-	uint32_t configid = mb_pack->operation.params[TEE_PARAM_TWO].value.a;
-	uint32_t ion_size = mb_pack->operation.params[TEE_PARAM_TWO].value.b;
-	int32_t check_result = (configid != 0 && ion_size != 0);
+	kuid_t kuid;
+	uint32_t uid;
+	TC_NS_SMC_CMD smc_cmd = {0};
+	uint32_t params_size;
+	uint32_t secure_params_aligned_size;
+	struct session_secure_params *ree_secure_params = NULL;
+	struct session_secure_params *tee_secure_params = NULL;
+	uint8_t *enc_secure_params = NULL;
+	struct mb_cmd_pack *mb_pack = NULL;
 
-	tloge("check load by ION result %d : configid =%d,ion_size =%d,uuid=%x\n",
-		check_result, configid, ion_size, uuid_return->time_low);
-	if (check_result) {
-		ret = load_app_use_configid(configid, params_in->dev_file->dev_file_id,
-			uuid_return, ion_size);
-		if (ret != 0) {
-			tloge("load_app_use_configid failed ret =%d\n", ret);
-			return -1;
-		}
+	if (dev_file == NULL || context == NULL || session == NULL) {
+		tloge("Parameter is null pointer!\n");
+		return -EINVAL;
 	}
+
+	ret = generate_challenge_word(
+		(uint8_t *)&g_cur_session_secure_info.challenge_word,
+		sizeof(g_cur_session_secure_info.challenge_word));
+	if (ret) {
+		tloge("Generate challenge word failed, ret = %d\n", ret);
+		return ret;
+	}
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0))
+	kuid = current_uid();/*lint !e64 !e666*/
+	uid = kuid.val;
+#else
+	uid = current_uid();
+#endif
+
+	mb_pack = mailbox_alloc_cmd_pack();
+	if (!mb_pack)
+		return -ENOMEM;
+
+	mb_pack->uuid[0] = 1; /* TC_CALL_GLOBAL */
+	ret = memcpy_s(mb_pack->uuid+1, 16, context->uuid, sizeof(context->uuid));
+	if (ret) {
+		tloge("Memcpy uuid failed, ret = %d,\n", ret);
+		mailbox_free(mb_pack);
+		return ret;
+	}
+
+	secure_params_aligned_size =
+	        ALIGN_UP(sizeof(struct session_secure_params),
+		         CIPHER_BLOCK_BYTESIZE);
+	params_size = secure_params_aligned_size + IV_BYTESIZE;
+
+	ree_secure_params = mailbox_alloc(params_size, 0);
+	if (ree_secure_params == NULL) {
+		tloge("Malloc REE session secure parameters buffer failed.\n");
+		mailbox_free(mb_pack);
+		return -ENOMEM;
+	}
+
+	tee_secure_params = kzalloc(secure_params_aligned_size, GFP_KERNEL);
+	if (tee_secure_params == NULL) {
+		mailbox_free(ree_secure_params);
+		mailbox_free(mb_pack);
+
+		tloge("Malloc TEE session secure parameters buffer failed.\n");
+		return -ENOMEM;
+	}
+
+	/* Transfer chanllenge word to secure world */
+	ree_secure_params->payload.ree2tee.challenge_word =
+	g_cur_session_secure_info.challenge_word;
+
+	smc_cmd.uuid_phys = virt_to_phys((void *)mb_pack->uuid);
+	smc_cmd.uuid_h_phys = virt_to_phys((void *)mb_pack->uuid) >> 32; /*lint !e572*/
+	smc_cmd.cmd_id = GLOBAL_CMD_ID_GET_SESSION_SECURE_PARAMS;
+	smc_cmd.dev_file_id = dev_file->dev_file_id;
+	smc_cmd.context_id = context->session_id;
+	smc_cmd.operation_phys = 0;
+	smc_cmd.operation_h_phys = 0;
+	smc_cmd.login_data_phy = 0;
+	smc_cmd.login_data_h_addr = 0;
+	smc_cmd.login_data_len = 0;
+	smc_cmd.err_origin = 0;
+	smc_cmd.uid = uid;
+	smc_cmd.started = context->started;
+	smc_cmd.params_phys = virt_to_phys((void *)ree_secure_params);
+	smc_cmd.params_h_phys = virt_to_phys((void *)ree_secure_params) >> 32;
+
+	ret = (int)TC_NS_SMC(&smc_cmd, TC_CALL_GLOBAL);
+	if (ret) {
+		ree_secure_params->payload.ree2tee.challenge_word = 0;
+		tloge("TC_NS_SMC returns error, ret = %d\n", ret);
+		goto free;
+	}
+
+	/* Get encrypted session secure parameters from secure world */
+	enc_secure_params = (uint8_t *)ree_secure_params;
+	ret = crypto_session_aescbc_key256(enc_secure_params,
+	                                   params_size,
+	                                   (uint8_t *)tee_secure_params,
+	                                   secure_params_aligned_size,
+	                                   g_session_root_key->key,
+	                                   NULL,
+	                                   DECRYPT);
+	if (ret) {
+		tloge("Decrypted session secure parameters failed, ret = %d.\n",
+			ret);
+		goto free;
+	}
+
+	/* Analyze encryption head */
+	if (!is_valid_encryption_head(&tee_secure_params->head,
+				      (uint8_t *)&tee_secure_params->payload,
+				      sizeof(tee_secure_params->payload))) {
+		ret = -EFAULT;
+		goto clean;
+	}
+
+	/* Store session secure parameters */
+	ret = memcpy_s((void *)g_cur_session_secure_info.scrambling,
+			sizeof(g_cur_session_secure_info.scrambling),
+			(void *)&tee_secure_params->payload.tee2ree.scrambling,
+			sizeof(tee_secure_params->payload.tee2ree.scrambling));
+	if (ret) {
+		tloge("Memcpy scrambling data failed, ret = %d.\n", ret);
+		goto clean;
+	}
+
+	ret = memcpy_s((void *)&g_cur_session_secure_info.crypto_info,
+			sizeof(struct session_crypto_info),
+			(void *)&tee_secure_params->payload.tee2ree.crypto_info,
+			sizeof(struct session_crypto_info));
+	if (ret) {
+		tloge("Memcpy session crypto information failed, ret = %d.\n",
+			ret);
+		goto clean;
+	}
+
+	ret = memcpy_s((void *)&session->secure_info,
+			sizeof(struct session_secure_info),
+			(void *)&g_cur_session_secure_info,
+			sizeof(struct session_secure_info));
+	if (ret)
+		tloge("Memcpy session secure information failed, ret = %d.\n",
+			ret);
+
+clean:
+	if (memset_s((void *)tee_secure_params, secure_params_aligned_size,
+	              0, secure_params_aligned_size))
+		tloge("Clean the secure parameters buffer failed!\n");
+
+free:
+	mailbox_free(mb_pack);
+	mailbox_free(ree_secure_params);
+	kfree(tee_secure_params);
+
+	if (ret)
+		__clean_session_secure_information(session);
+
 	return ret;
 }
 
-static int load_image_by_frame(load_image_params *params_in,
-	unsigned int mb_load_size, char *mb_load_mem,
-	struct mb_cmd_pack *mb_pack, teec_uuid *uuid_return,
-	unsigned int load_times)
+int set_encryption_head(struct encryption_head *head,
+			const uint8_t *data,
+			uint32_t len)
 {
-	char *p = mb_load_mem;
-	uint32_t load_size;
-	int load_flag = 1; /* 0:it's last block, 1:not last block */
-	uint32_t loaded_size = 0;
-	unsigned int index;
-	tc_ns_smc_cmd smc_cmd = { {0}, 0 };
-	int ret = 0;
-	int smc_ret = 0;
-
-	for (index = 0; index < load_times; index++) {
-		if (index == (load_times - 1)) {
-			load_flag = 0;
-			load_size = params_in->file_size - loaded_size;
-		} else {
-			load_size = mb_load_size - sizeof(load_flag);
-		}
-		*(int *)p = load_flag;
-		if (load_size > mb_load_size - sizeof(load_flag)) {
-			tloge("invalid load size %d/%d\n", load_size,
-				mb_load_size);
-			return  -1;
-		}
-		if (copy_from_user(mb_load_mem + sizeof(load_flag),
-			(void __user *)params_in->file_buffer +
-			loaded_size, load_size)) {
-			tloge("file buf get fail\n");
-			return  -1;
-		}
-		pack_data_for_smc_cmd(load_size, mb_load_mem, mb_pack,
-			uuid_return, &smc_cmd);
-		mb_pack->operation.params[TEE_PARAM_FOUR].value.a = index;
-		smc_cmd.dev_file_id = params_in->dev_file->dev_file_id;
-		smc_ret = tc_ns_smc(&smc_cmd);
-		tlogd("smc cmd ret %d\n", smc_ret);
-		tlogd("configid=%d, ret=%d, load_flag=%d, index=%d\n",
-			mb_pack->operation.params[1].value.a, smc_ret,
-			load_flag, index);
-
-		if (smc_ret != 0) {
-			tloge("smc_call returns error ret 0x%x\n", smc_ret);
-			return -1;
-		}
-#ifdef DYNAMIC_ION
-		if (smc_ret == 0 && load_flag == 0) {
-			ret = load_image_for_ion(mb_pack, params_in,
-				uuid_return);
-			if (ret != 0)
-				return -1;
-		}
-#endif
-		loaded_size += load_size;
+	if (head == NULL || data == NULL || !len) {
+		tloge("In parameters check failed.\n");
+		return -EINVAL;
 	}
+
+	if (strncpy_s(head->magic, sizeof(head->magic),
+	              MAGIC_STRING, strlen(MAGIC_STRING) + 1)) {
+		tloge("Copy magic string failed.\n");
+		return -EFAULT;
+	}
+
+	head->crc = crc32(0, data, len);
+	head->payload_len = len;
+
 	return 0;
 }
 
-int tc_ns_load_image(tc_ns_dev_file *dev_file, char *file_buffer,
-	unsigned int file_size)
+int generate_encrypted_session_secure_params(uint8_t *enc_secure_params,
+	size_t enc_params_size)
+{
+	int ret = 0;
+	uint32_t secure_params_aligned_size =
+	        ALIGN_UP(sizeof(struct session_secure_params),
+	                 CIPHER_BLOCK_BYTESIZE);
+	uint32_t params_size = secure_params_aligned_size + IV_BYTESIZE;
+	struct session_secure_params *ree_secure_params;
+
+	if (enc_secure_params == NULL || enc_params_size < params_size) {
+		tloge("invalid enc params\n");
+		return -EINVAL;
+	}
+
+	ree_secure_params = kzalloc(secure_params_aligned_size, GFP_KERNEL);
+	if (ree_secure_params == NULL) {
+		tloge("Malloc REE session secure parameters buffer failed.\n");
+		return -ENOMEM;
+	}
+
+	/* Transfer chanllenge word to secure world */
+	ree_secure_params->payload.ree2tee.challenge_word =
+		g_cur_session_secure_info.challenge_word;
+
+	/* Setting encryption head */
+	ret = set_encryption_head(&ree_secure_params->head,
+				  (uint8_t *)&ree_secure_params->payload,
+				  sizeof(ree_secure_params->payload));
+	if (ret) {
+		ree_secure_params->payload.ree2tee.challenge_word = 0;
+		kfree(ree_secure_params);
+
+		tloge("Set encryption head failed, ret = %d.\n", ret);
+		return -EINVAL;
+	}
+
+	/* Setting padding data */
+	ret = crypto_aescbc_cms_padding((uint8_t *)ree_secure_params,
+	                                secure_params_aligned_size,
+	                                sizeof(struct session_secure_params));
+	if (ret) {
+		ree_secure_params->payload.ree2tee.challenge_word = 0;
+		kfree(ree_secure_params);
+
+		tloge("Set encryption padding data failed, ret = %d.\n", ret);
+		return -EINVAL;
+	}
+
+	/* Encrypt buffer with current session key */
+	ret = crypto_session_aescbc_key256((uint8_t *)ree_secure_params,
+	                        secure_params_aligned_size,
+	                        enc_secure_params,
+	                        params_size,
+	                        g_cur_session_secure_info.crypto_info.key,
+	                        NULL,
+	                        ENCRYPT);
+	if (ret) {
+		ree_secure_params->payload.ree2tee.challenge_word = 0;
+		kfree(ree_secure_params);
+
+		tloge("Encrypted session secure parameters failed, ret = %d.\n",
+			ret);
+		return -EINVAL;
+	}
+
+	ree_secure_params->payload.ree2tee.challenge_word = 0;
+	kfree(ree_secure_params);
+
+	return 0;
+}
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
+static int __crypto_aescbc_key256(uint8_t *output, const uint8_t *input,
+                           const uint8_t *iv, const uint8_t *key, int32_t size,
+                           uint32_t encrypto_type)
+{
+	struct scatterlist src;
+	struct scatterlist dst;
+	struct crypto_skcipher *skcipher = NULL;
+	struct skcipher_request *req = NULL;
+	int ret;
+	uint8_t temp_iv[IV_BYTESIZE] = {0};
+
+	skcipher = crypto_alloc_skcipher("cbc(aes)", 0, 0);
+	if (IS_ERR(skcipher)) {
+		tloge("crypto_alloc_skcipher() failed.\n");
+		return -EFAULT;
+	}
+
+	req = skcipher_request_alloc(skcipher, GFP_KERNEL);
+	if (!req) {
+		tloge("skcipher_request_alloc() failed.\n");
+		crypto_free_skcipher(skcipher);
+		return -ENOMEM;
+	}
+
+	ret = crypto_skcipher_setkey(skcipher, key, CIPHER_KEY_BYTESIZE);
+	if (ret) {
+		tloge("crypto_skcipher_setkey failed. %d\n", ret);
+		skcipher_request_free(req);
+		crypto_free_cipher(skcipher);
+		return -EFAULT;
+	}
+
+	if (EOK != memcpy_s(temp_iv, IV_BYTESIZE, iv, IV_BYTESIZE)) {
+		tloge("memcpy_s failed\n");
+		skcipher_request_free(req);
+		crypto_free_cipher(skcipher);
+		return -EFAULT;
+	}
+
+	sg_init_table(&dst, 1);
+	sg_init_table(&src, 1);
+	sg_set_buf(&dst, output, size);
+	sg_set_buf(&src, input, size);
+
+	skcipher_request_set_crypt(req, &src, &dst, size, temp_iv);
+
+	if (encrypto_type)
+	{
+		ret = crypto_skcipher_encrypt(req);
+	}
+	else
+	{
+		ret = crypto_skcipher_decrypt(req);
+	}
+
+	skcipher_request_free(req);
+	crypto_free_skcipher(skcipher);
+
+	return ret;
+}
+
+#else
+/* size of [iv] is 16 and [key] must be 32 bytes.
+    [size] is the size of [output] and [input].
+    [size] must be multiple of 32.   */
+static int __crypto_aescbc_key256(uint8_t *output, const uint8_t *input,
+                           const uint8_t *iv, const uint8_t *key, int32_t size,
+                           uint32_t encrypto_type)
+{
+	struct scatterlist src;
+	struct scatterlist dst;
+	struct blkcipher_desc desc;
+	struct crypto_blkcipher *cipher = NULL;
+	int ret;
+
+	cipher = crypto_alloc_blkcipher("cbc(aes)", 0, 0);
+
+	if (IS_ERR(cipher)) {
+		tloge("crypto_alloc_blkcipher() failed.\n");
+		return -EFAULT;
+	}
+
+	ret = crypto_blkcipher_setkey(cipher, key, CIPHER_KEY_BYTESIZE);
+	if (ret) {
+		tloge("crypto_blkcipher_setkey failed. %d\n", ret);
+		crypto_free_blkcipher(cipher);
+		return -EFAULT;
+	}
+
+	crypto_blkcipher_set_iv(cipher, iv, IV_BYTESIZE);
+	sg_init_table(&dst, 1);
+	sg_init_table(&src, 1);
+	sg_set_buf(&dst, output, size);
+	sg_set_buf(&src, input, size);
+	desc.tfm = cipher;
+	desc.flags = 0;
+
+	if (encrypto_type)
+		ret = crypto_blkcipher_encrypt(&desc, &dst, &src, size);
+	else
+		ret = crypto_blkcipher_decrypt(&desc, &dst, &src, size);
+
+	crypto_free_blkcipher(cipher);
+	return ret;
+}
+#endif
+
+int crypto_session_aescbc_key256(uint8_t *in, uint32_t in_len,
+                                 uint8_t *out, uint32_t out_len,
+                                 const uint8_t *key, uint8_t *iv,
+                                 uint32_t mode)
 {
 	int ret;
-	struct mb_cmd_pack *mb_pack = NULL;
-	unsigned int mb_load_size;
-	char *mb_load_mem = NULL;
-	teec_uuid *uuid_return = NULL;
-	unsigned int load_times;
-	load_image_params params_in = {dev_file, file_buffer, file_size};
-	bool check_value = false;
+	uint32_t src_len;
+	uint32_t dest_len;
+	uint8_t *aescbc_iv = NULL;
 
-	check_value = (dev_file == NULL || file_buffer == NULL);
-	if (check_value) {
-		tloge("dev_file or file_buffer is NULL!\n");
+	if (in == NULL || out == NULL || key == NULL) {
+		tloge("AES-CBC crypto parameters have null pointer.\n");
 		return -EINVAL;
 	}
-	if (!is_valid_ta_size(file_buffer, file_size))
+
+	if ((in_len < IV_BYTESIZE) || (out_len < IV_BYTESIZE)) {
+		tloge("AES-CBC crypto data length is invalid.\n");
 		return -EINVAL;
-	mb_load_size = file_size > (SZ_1M - sizeof(int)) ?
-		SZ_1M : ALIGN(file_size, SZ_4K);
-	ret = alloc_for_load_image(&mb_load_size, file_size, &mb_load_mem,
-		&mb_pack, &uuid_return);
-	if (ret != 0)
-		return ret;
-	if (mb_load_size <= sizeof(int)) {
-		tloge("mb_load_size is too small!\n");
-		ret = -ENOMEM;
-		goto free_mem;
 	}
-	load_times = file_size / (mb_load_size - sizeof(int));
-	if (file_size % (mb_load_size - sizeof(int)))
-		load_times += 1;
-	ret = load_image_by_frame(&params_in, mb_load_size, mb_load_mem,
-		mb_pack, uuid_return, load_times);
-free_mem:
-	mailbox_free(mb_load_mem);
-	mailbox_free(mb_pack);
-	mailbox_free(uuid_return);
-	return ret;
+
+	/* For iv variable is null, iv is the first 16 bytes
+	 * in cryptotext buffer.
+	 */
+	switch (mode) {
+	case ENCRYPT:
+		src_len = in_len;
+		dest_len = out_len - IV_BYTESIZE;
+		aescbc_iv = out + dest_len;
+		break;
+
+	case DECRYPT:
+		src_len = in_len - IV_BYTESIZE;
+		dest_len = out_len;
+		aescbc_iv = in + src_len;/*lint !e429*/ /*lint !e429*/ /*lint !e662*/
+		break;
+
+	default:
+		tloge("AES-CBC crypto use error mode = %d.\n", mode);
+		return -EINVAL;
+	}
+
+	/* IV is configured by user */
+	if (iv) {
+		src_len = in_len;
+		dest_len = out_len;
+		aescbc_iv = iv;
+	}
+
+	if ((src_len != dest_len)
+	 || (!src_len)
+	 || (src_len % CIPHER_BLOCK_BYTESIZE)) {
+		tloge("For AES-CBC algorithm, plaintext length must be equal \
+		       to cryptotext's. src_len=%d, dest_len=%d.\n",
+		       src_len, dest_len);
+		return -EINVAL;
+	}
+
+	/* IV is configured in here */
+	if (!iv && (ENCRYPT == mode)) {
+		ret = __generate_random_data(aescbc_iv, IV_BYTESIZE);
+		if (ret) {
+			tloge("Generate AES-CBC iv failed, ret = %d.\n", ret);
+			return ret;
+		}
+	}
+
+	return __crypto_aescbc_key256(out, in, aescbc_iv, key, src_len, mode);
+}/*lint !e429*/ /*lint !e429*/
+
+int crypto_aescbc_cms_padding(uint8_t *plaintext, uint32_t plaintext_len,/*lint !e429*/
+                              uint32_t payload_len)
+{
+	uint32_t padding_len;
+	uint8_t padding;
+
+	if (plaintext == NULL) {
+		tloge("Plaintext is NULL.\n");
+		return -EINVAL;
+	}
+
+	if ((!plaintext_len)
+	 || (plaintext_len % CIPHER_BLOCK_BYTESIZE)
+	 || (plaintext_len < payload_len)) {
+		tloge("Plaintext length is invalid.\n");
+		return -EINVAL;
+	}
+
+	padding_len = plaintext_len - payload_len;
+
+	if (padding_len >= CIPHER_BLOCK_BYTESIZE) {
+		tloge("Padding length is error.\n");
+		return -EINVAL;
+	}
+
+	if (0 == padding_len) {
+		/* No need padding */
+		return 0;
+	}
+
+	padding = (uint8_t)padding_len;
+	if (memset_s((void *)(plaintext + payload_len), padding_len,
+	              padding, padding_len)) {
+		tloge("CMS-Padding is failed.\n");
+		return -EFAULT;
+	}
+
+	return 0;
+}/*lint !e429*/
+
+TC_NS_DEV_File *tc_find_dev_file(unsigned int dev_file_id)
+{
+	TC_NS_DEV_File *dev_file = NULL;
+
+	list_for_each_entry(dev_file, &g_tc_ns_dev_list.dev_file_list, head) {
+		if (dev_file->dev_file_id == dev_file_id)
+			return dev_file;
+	}
+
+	return NULL;
 }
 
-static int check_task_state(bool hidl_access, struct task_struct **hidl_struct,
-	tc_ns_client_context *context)
+TC_NS_Session *tc_find_session2(
+	unsigned int dev_file_id,
+	unsigned int context_id,
+	unsigned char *uuid)
 {
-	bool check_value = false;
+	TC_NS_DEV_File *dev_file = NULL;
+	TC_NS_Service *service = NULL;
+	TC_NS_Session *session = NULL;
+
+	if (uuid == NULL) {
+		tloge("Parameter is null pointer!\n");
+		return NULL;
+	}
+
+	mutex_lock(&g_tc_ns_dev_list.dev_lock);
+	dev_file = tc_find_dev_file(dev_file_id);
+	mutex_unlock(&g_tc_ns_dev_list.dev_lock);
+
+	if (dev_file == NULL) {
+		tlogd("Can't find dev file!\n");
+		return NULL;
+	}
+
+	mutex_lock(&dev_file->service_lock);
+	service = tc_find_service(&dev_file->services_list, uuid);
+	get_service_struct(service);
+	mutex_unlock(&dev_file->service_lock);
+	if (service == NULL) {
+		tlogd(" Can't find service!\n");
+		return NULL;
+	}
+
+	mutex_lock(&service->session_lock);
+	session = tc_find_session(&service->session_list, context_id);
+	get_session_struct(session);
+	mutex_unlock(&service->session_lock);
+	put_service_struct(service);
+	if (session == NULL) {
+		tlogd("can't find session[0x%x]!\n", context_id);
+		return NULL;
+	}
+
+	return session;
+}
+
+static void remove_unused_session(TC_NS_Service *service,
+		unsigned int session_id) {
+	TC_NS_Session *saved_session = NULL;
+	if (service == NULL) {
+		tloge("session_list_remove_unlock invalid params.\n");
+		return;
+	}
+
+	saved_session = tc_find_session(&service->session_list, session_id);
+	get_session_struct(saved_session);
+	if (saved_session) {
+		tloge("%d has been exist, del first before insert.\n",
+				saved_session->session_id);
+		list_del(&saved_session->head);
+		put_session_struct(saved_session);
+	}
+
+	/* remove session to release unused session resource.
+	 * session->usage is set to 1 when session is opened,
+	 * and the session will be released finally in remove/close phase
+	 */
+	put_session_struct(saved_session);
+}
+
+void dump_hash(char *my_pkname, unsigned char *hash_buf)
+{
+	TCDEBUG("SHA256 hash for %s:\n", my_pkname);
+	TCDEBUG("{0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, ",
+		*(hash_buf + 0), *(hash_buf + 1), *(hash_buf + 2), *(hash_buf + 3),
+		*(hash_buf + 4), *(hash_buf + 5), *(hash_buf + 6), *(hash_buf + 7));
+	TCDEBUG("0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, ",
+		*(hash_buf + 8), *(hash_buf + 9), *(hash_buf + 10), *(hash_buf + 11),
+		*(hash_buf + 12), *(hash_buf + 13), *(hash_buf + 14),
+		*(hash_buf + 15));
+	TCDEBUG("0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,  ",
+		*(hash_buf + 16), *(hash_buf + 17), *(hash_buf + 18),
+		*(hash_buf + 19), *(hash_buf + 20), *(hash_buf + 21),
+		*(hash_buf + 22), *(hash_buf + 23));
+	TCDEBUG("0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X} ",
+		*(hash_buf + 24), *(hash_buf + 25), *(hash_buf + 26),
+		*(hash_buf + 27), *(hash_buf + 28), *(hash_buf + 29),
+		*(hash_buf + 30), *(hash_buf + 31));
+}
+
+void spoof_hash(char *my_pkname, unsigned char *hash_buf)
+{
+	unsigned char keystore_hash[32] = {0xAA, 0x3B, 0x24, 0x94, 0xD7, 0xB8, 0x05, 0x42,
+					   0x34, 0x65, 0x7E, 0x10, 0x6A, 0xC8, 0x5B, 0x64,
+					   0xBD, 0xFE, 0x7F, 0x65, 0x77, 0xED, 0x26, 0x2F,
+					   0x15, 0x2A, 0x8A, 0x8C, 0x03, 0x1D, 0x81, 0x69};
+
+	unsigned char gatekeeper_hash[32] = {0xAF, 0x49, 0x6D, 0x17, 0x5E, 0x66, 0xC0, 0x45,
+					   0xEE, 0xFC, 0xC0, 0xA9, 0x0B, 0x04, 0x2E, 0xB2,
+					   0x32, 0x18, 0xA4, 0x9F, 0x73, 0xA3, 0x67, 0x29,
+					   0x16, 0xAD, 0x47, 0x90, 0x3F, 0x50, 0xA1, 0xA9};
+
+	unsigned char fingerprint_hash[32] = {0x2F, 0x63, 0xF0, 0x29, 0x92, 0x51, 0x86, 0xB2,
+					    0xDF, 0xB3, 0xA3, 0x14, 0x15, 0xC3, 0xAD, 0x30,
+					    0x7E, 0x52, 0x75, 0x5A, 0xBC, 0x43, 0x7B, 0xAE,
+					    0x42, 0x3E, 0x9C, 0x38, 0xAB, 0x45, 0x52, 0xCB};
+	
+	unsigned char aptouch_hash[32] = {0x3F, 0x6B, 0x74, 0xF3, 0xE0, 0x79, 0x15, 0x29,
+					  0x07, 0x57, 0x64, 0x42, 0x9C, 0x05, 0x98, 0x9F,
+					  0xBE, 0x24, 0x5E, 0x30, 0x3C, 0xDD, 0x50, 0x25,
+					  0xF1, 0xD0, 0xB1, 0x3C, 0x36, 0x32, 0xEC, 0x8D};
+
+	unsigned char omx_hash[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+	//TC_NS_OpenSession try to hash for /vendor/bin/hw/android.hardware.drm@1.1-service.widevine
+	unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E, 
+					0x09, 0xCA, 0xFF, 0x44, 0x7A, 0xFA, 0xBB, 0x87, 
+					0x15, 0x3A, 0x16, 0x1E, 0xAC, 0x46, 0x09, 0xDB,
+					0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};
+
+	/*unsigned char widevine_hash[32] = {0x9C, 0xEC, 0x5B, 0x8C, 0x8C, 0xAF, 0x35, 0x97,
+					0x84, 0x43, 0x8C, 0x00, 0xF7, 0xA5, 0xCB, 0x50,
+					0x18, 0x2B, 0xAC, 0x31, 0xFA, 0x31, 0xDE, 0x70,
+					0xA9, 0xD4, 0x6C, 0xF8, 0xBF, 0x37, 0x69, 0x4F};*/
+
+
+	tlogd("TeeHash find %s process\n",my_pkname);
+
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.keymaster@3.0-service", 53))
+		memcpy(hash_buf, keystore_hash, MAX_SHA_256_SZ);
+	
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service", 54)) {
+		tlogd("Spoof now %s process\n",my_pkname);
+		memcpy(hash_buf, gatekeeper_hash, MAX_SHA_256_SZ);
+	}
+
+	if (!strncmp(my_pkname, "/vendor/bin/hw/vendor.huawei.hardware.biometrics.fingerprint@2.1-service", 72))
+		memcpy(hash_buf, fingerprint_hash, MAX_SHA_256_SZ);
+
+	if (!strncmp(my_pkname, "/system/vendor/bin/aptouch_daemon", 33)) {
+		tlogd("Spoof now %s process\n",my_pkname);
+		memcpy(hash_buf, aptouch_hash, MAX_SHA_256_SZ);
+	}
+
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.media.omx@1.0-service", 53)) {
+		tlogd("Spoof now %s process\n",my_pkname);
+		memcpy(hash_buf, omx_hash, MAX_SHA_256_SZ);
+	}
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
+		tlogd("Spoof now %s process\n",my_pkname);
+		memcpy(hash_buf, widevine_hash, MAX_SHA_256_SZ);
+	}
+
+}
+
+int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
+{
+	int ret = -EINVAL;
+	int sret = -EINVAL;
+	TC_NS_Service *service = NULL;
+	TC_NS_Session *session = NULL;
+	struct task_struct *S = NULL;
+	struct task_struct *hidl_struct = NULL;
+	uint8_t flags = TC_CALL_GLOBAL;
+	unsigned char *hash_buf = NULL;
+	bool hidl_access = false;
+
+	CFC_FUNC_ENTRY(TC_NS_OpenSession);
+
+	if (dev_file == NULL || context == NULL) {
+		TCERR("invalid dev_file or context\n");
+		return ret;
+	}
+	ret = check_process_access(current, HIDL_SIDE);
+	if(!ret) {
+		hidl_access = true;
+	} else if (ret &&ret != ENTER_BYPASS_CHANNEL) {
+		TCERR("libteec hidl service may be exploited ret 0x%x\n",ret);
+		return -EPERM;
+	}
+	if(hidl_access) {
+		if(!g_hidl_hash_enable) {
+			if(memset_s((void *)hidl_hash, sizeof(hidl_hash), 0x00, sizeof(hidl_hash))) {
+				tloge("tc_client_open memset failed!\n");
+				return -EFAULT;
+			}
+			g_hidl_hash_enable = (current->mm && !tee_calc_task_hash(hidl_hash, false, current));
+			if (!g_hidl_hash_enable) {
+				tloge("calc libteec hidl  hash failed\n");
+				return -EFAULT;
+			}
+		}
+	}
+		
+	/* Change login information */
+	/*if (!strncmp(dev_file->pkg_name, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
+		tlogd("change %s process name\n",dev_file->pkg_name);
+		strncpy(dev_file->pkg_name, "/vendor/preavs/bin/hw/android.hardware.drm@1.1-service.widevine", 63);
+		tlogd("to %s process name\n",dev_file->pkg_name);		
+	}*/
+	
+	mutex_lock(&dev_file->service_lock);
+	service = tc_find_service(&dev_file->services_list, context->uuid); /*lint !e64 */
+
+	/* Need service init or not */
+	if (service)
+		goto find_service;
+
+	/* Create a new service if we couldn't find it in list */
+	ret = TC_NS_ServiceInit(dev_file, context->uuid, &service);
+	if (ret)
+		TCERR("service init failed");
+	else
+		goto find_service;
+
+	mutex_unlock(&dev_file->service_lock);
+	TCERR("find service failed\n");
+
+	return ret;
+
+find_service:
+	get_service_struct(service);
+	mutex_unlock(&dev_file->service_lock);
+	session = kzalloc(sizeof(TC_NS_Session), GFP_KERNEL);
+	if (session == NULL) {
+		TCERR("kmalloc failed\n");
+		ret = -ENOMEM;
+		put_service_struct(service);
+		return ret;
+	}
+
+	if (TEEC_LOGIN_IDENTIFY == context->login.method) {
+		TCDEBUG("login method is IDENTIFY\n");
+
+		/* Check if params 0 and 1 are valid */
+		if ((TEE_REQ_FROM_USER_MODE == dev_file->kernel_api) &&
+		    (tc_user_param_valid(context, 0) ||
+		     tc_user_param_valid(context, 1))) {
+			ret = -EFAULT;
+			goto error;
+		}
+
+
+		ret = set_login_information(dev_file, context);
+		if (ret != 0) {
+			TCERR("set_login_information failed ret =%d\n", ret);
+			goto error;
+		}
+
+		flags |= TC_CALL_LOGIN;
+	} else {
+		TCDEBUG("login method is not supported\n");
+		ret = -EINVAL;
+		goto error;
+	}
+
+	context->cmd_id = GLOBAL_CMD_ID_OPEN_SESSION;
+	mutex_init(&session->ta_session_lock);
+
+	hash_buf = kzalloc((size_t)MAX_SHA_256_SZ, GFP_KERNEL);
+	if (NULL == hash_buf) {
+		tloge("malloc 32 bytes hash mem failed\n");
+		ret = -ENOMEM;
+		goto error;
+	}
+
+	if (tee_init_crypto("sha256")) {
+		tloge("init code hash error!!!\n");
+		kfree(hash_buf);
+		ret = -EFAULT;
+		goto error;
+	}
 
 	if (hidl_access) {
 		rcu_read_lock();
-		*hidl_struct = pid_task(find_vpid(context->callingPid),
-			PIDTYPE_PID);
-		check_value = *hidl_struct == NULL ||
-			(*hidl_struct)->state == TASK_DEAD;
-		if (check_value == true) {
+		hidl_struct = pid_task(find_vpid(context->callingPid), PIDTYPE_PID);
+		if (hidl_struct == NULL || hidl_struct->state == TASK_DEAD) {
 			tloge("task is dead!\n");
+			kfree(hash_buf);
+			ret = -EFAULT;
 			rcu_read_unlock();
-			return -EFAULT;
+			goto error;
 		}
-		get_task_struct(*hidl_struct);
+		get_task_struct(hidl_struct);
 		rcu_read_unlock();
 	} else {
-		check_value = (context->callingPid && current->mm != NULL);
-		if (check_value == true) {
+		if(context->callingPid && current->mm) {
 			tloge("non hidl service pass non-zero callingpid , reject please!!!\n");
-			return -EFAULT;
+			kfree(hash_buf);
+			ret = -EFAULT;
+			goto error;
 		}
 	}
-	return 0;
-}
 
-static int calc_task_hash(uint8_t kernel_api,
-	tc_ns_session *session, tc_ns_service *service,
-	struct task_struct *cur_struct)
-{
-	int rc, i;
-	int so_found = 0;
-	mutex_lock(&g_tee_crypto_hash_lock);
-	if (kernel_api == TEE_REQ_FROM_USER_MODE) {
-		for (i = 0; so_found < NUM_OF_SO && i < KIND_OF_SO; i++) {
-			rc = tee_calc_task_so_hash(session->auth_hash_buf + MAX_SHA_256_SZ * so_found,
-				(uint32_t)SHA256_DIGEST_LENTH, cur_struct, i);
-			if (rc == 0)
-				so_found++;
-		}
-		if (so_found != NUM_OF_SO)
-			tlogd("so library found: %d\n", so_found);
-	} else {
-		tlogd("request from kernel\n");
-	}
-
-
-	rc = tee_calc_task_hash(session->auth_hash_buf + MAX_SHA_256_SZ * NUM_OF_SO,
-		(uint32_t)SHA256_DIGEST_LENTH, cur_struct);
-	if (rc != 0) {
-		mutex_unlock(&g_tee_crypto_hash_lock);
-		tloge("tee calc ca hash failed\n");
-		return -EFAULT;
-	}
-	mutex_unlock(&g_tee_crypto_hash_lock);
-	return 0;
-}
-
-static int check_hidl_access(bool hidl_access)
-{
-	if (hidl_access) {
-		mutex_lock(&g_hidl_hash_lock);
-		if (!g_hidl_hash_enable) {
-			if (memset_s((void *)g_hidl_hash,
-				sizeof(g_hidl_hash), 0x00, sizeof(g_hidl_hash))) {
-				tloge("tc_client_open memset failed!\n");
-				mutex_unlock(&g_hidl_hash_lock);
-				return -EFAULT;
-			}
-			g_hidl_hash_enable =
-				(current->mm != NULL && !tee_calc_task_hash(
-				g_hidl_hash, (uint32_t)SHA256_DIGEST_LENTH,
-				current));
-			if (!g_hidl_hash_enable) {
-				tloge("calc libteec hidl hash failed\n");
-				mutex_unlock(&g_hidl_hash_lock);
-				return -EFAULT;
-			}
-		}
-		mutex_unlock(&g_hidl_hash_lock);
-	}
-	return 0;
-}
-
-static int check_login_method(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context, uint8_t *flags)
-{
-	bool check_value = false;
-	int ret = 0;
-
-	if (dev_file == NULL || context == NULL || flags == NULL)
-		return -EFAULT;
-	if (context->login.method == TEEC_LOGIN_IDENTIFY) {
-		tlogd("login method is IDENTIFY\n");
-		/* Check if params 0 and 1 are valid */
-		check_value = dev_file->kernel_api == TEE_REQ_FROM_USER_MODE &&
-			(tc_user_param_valid(context, (unsigned int)TEE_PARAM_ONE) ||
-			tc_user_param_valid(context, (unsigned int)TEE_PARAM_TWO));
-		if (check_value == true)
-			return -EFAULT;
-		ret = set_login_information(dev_file, context);
-		if (ret != 0) {
-			tloge("set_login_information failed ret =%d\n", ret);
-			return ret;
-		}
-		*flags |= TC_CALL_LOGIN;
-	} else {
-		tlogd("login method is not supported\n");
-		return -EINVAL;
-	}
-	return 0;
-}
-
-static tc_ns_service *find_service(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context)
-{
-	int ret;
-	tc_ns_service *service = NULL;
-	bool is_new_service = false;
-	bool is_full = false;
-
-	mutex_lock(&dev_file->service_lock);
-	service = tc_ref_service_in_dev(dev_file, context->uuid,
-		UUID_LEN, &is_full);
-	/* if service has been opened in this dev or ref cnt is full */
-	if (service != NULL || is_full == true) {
-		/* If service has been reference by this dev, tc_find_service_in_dev
-		 * will increase a ref count to declaim there's how many callers to
-		 * this service from the dev_file, instead of increase service->usage.
-		 * While close session, dev->service_ref[i] will decrease and till
-		 * it get to 0 put_service_struct will be called.
-		 */
-		mutex_unlock(&dev_file->service_lock);
-		return service;
-	}
-	mutex_lock(&g_service_list_lock);
-	service = tc_find_service_from_all(context->uuid, (uint32_t)UUID_LEN);
-	/* if service has been opened in other dev */
-	if (service != NULL) {
-		get_service_struct(service);
-		mutex_unlock(&g_service_list_lock);
-		goto add_service;
-	}
-	/* Create a new service if we couldn't find it in list */
-	ret = tc_ns_service_init(context->uuid, (uint32_t)UUID_LEN, &service);
-	/* Put unlock after tc_ns_serviceInit to make sure tc_find_service_from_all * is correct */
-	mutex_unlock(&g_service_list_lock);
-	if (ret) {
-		tloge("service init failed");
-		mutex_unlock(&dev_file->service_lock);
-		return NULL;
-	}
-	is_new_service = true;
-add_service:
-	ret = add_service_to_dev(dev_file, service);
-	mutex_unlock(&dev_file->service_lock);
-	if (ret) {
-		if (is_new_service)
-			put_service_struct(service);
-		service = NULL;
-		tloge("fail to add service to dev\n");
-		return NULL;
-	}
-	return service;
-}
-
-static int proc_calc_task_hash(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context, tc_ns_session *session,
-	tc_ns_service *service, uint8_t *flags, bool hidl_access)
-{
-	int ret;
-	struct task_struct *cur_struct = NULL;
-	struct task_struct *hidl_struct = NULL;
-
-	ret = check_login_method(dev_file, context, flags);
-	if (ret != 0)
-		return ret;
-	context->cmd_id = GLOBAL_CMD_ID_OPEN_SESSION;
-	mutex_init(&session->ta_session_lock);
-	if (tee_init_crypto("sha256")) {
-		tloge("init code hash error!!!\n");
-		return -EFAULT;
-	}
-	ret = check_task_state(hidl_access, &hidl_struct, context);
-	if (ret != 0)
-		return ret;
 	if (hidl_struct != NULL)
-		cur_struct = hidl_struct;
+		S = hidl_struct;
 	else
-		cur_struct = current;
-	/* lock reason:
-	 * tee_calc_task_hash will use the global value g_tee_shash_tfm
-	 */
-	ret = calc_task_hash(dev_file->kernel_api, session, service, cur_struct);
+		S = current;
+	if (tee_calc_task_hash(hash_buf, true, S)) {
+		tloge("tee calc task hash failed\n");
+		kfree(hash_buf);
+		ret = -EFAULT;
+		if (hidl_struct != NULL)
+			put_task_struct(hidl_struct);
+		goto error;
+	}
 	if (hidl_struct != NULL)
 		put_task_struct(hidl_struct);
-	return ret;
-}
+	/* use the lock to make sure the TA sessions cannot be concurrency opened */
+	mutex_lock(&g_operate_session_lock);
 
-static void proc_after_smc_cmd(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context, tc_ns_service *service,
-	tc_ns_session *session)
-{
-	session->session_id = context->session_id;
-#ifdef TC_ASYNC_NOTIFY_SUPPORT
-	session->wait_data.send_wait_flag = 0;
-	init_waitqueue_head(&session->wait_data.send_cmd_wq);
-#endif
-	atomic_set(&session->usage, 1);
-	session->owner = dev_file;
-	mutex_lock(&service->session_lock);
-	list_add_tail(&session->head, &service->session_list);
-	mutex_unlock(&service->session_lock);
-}
+	TCDEBUG("TC_NS_OpenSession try to hash for %s\n",dev_file->pkg_name);
+	dump_hash(dev_file->pkg_name, hash_buf);
+	
+	spoof_hash(dev_file->pkg_name, hash_buf);
+	
+	TCDEBUG("TC_NS_OpenSession new hash for %s\n",dev_file->pkg_name);
+	dump_hash(dev_file->pkg_name, hash_buf);
 
-
-static int proc_send_smc_cmd(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context, tc_ns_service *service,
-	tc_ns_session *session, uint8_t flags)
-{
-	int ret;
-
-	mutex_lock(&service->operation_lock);
-	ret = load_ta_image(dev_file, context);
-	if (ret != 0) {
-		mutex_unlock(&service->operation_lock);
-		return ret;
+	/*cp hash_buf to global var, it is protected by lock */
+	ret = memcpy_s(g_ca_auth_hash_buf, (size_t)MAX_SHA_256_SZ,
+			hash_buf, (size_t)MAX_SHA_256_SZ);
+	kfree(hash_buf);
+	if (ret) {
+		tloge("memcpy_s to g_hash_buf failed\n");
+		mutex_unlock(&g_operate_session_lock);
+		ret = -ENOMEM;
+		goto error;
 	}
-	/* send smc */
-#ifdef SECURITY_AUTH_ENHANCE
+	/*send smc */
+	/* TODO */
+	/* if you have "error" cases in the future, please put
+	*  __clean_session_secure_information() before the line "goto error";
+	*/
 	ret = get_session_secure_params(dev_file, context, session);
 	if (ret) {
 		tloge("Get session secure parameters failed, ret = %d.\n", ret);
 		/* Clean this session secure information */
-		clean_session_secure_information(session);
-		mutex_unlock(&service->operation_lock);
-		return ret;
+		__clean_session_secure_information(session);
+		mutex_unlock(&g_operate_session_lock);
+		goto error;
 	}
+
 	session->tc_ns_token.token_buffer =
-		kzalloc(TOKEN_BUFFER_LEN, GFP_KERNEL);
-	session->tc_ns_token.token_len = TOKEN_BUFFER_LEN;
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)
-		session->tc_ns_token.token_buffer)) {
+			kzalloc(TOKEN_BUFFER_LEN, GFP_KERNEL);
+	if (session->tc_ns_token.token_buffer == NULL) {
 		tloge("kzalloc %d bytes token failed.\n", TOKEN_BUFFER_LEN);
 		/* Clean this session secure information */
-		clean_session_secure_information(session);
-		mutex_unlock(&service->operation_lock);
-		return -ENOMEM;
-	}
-	ret = tc_client_call(context, dev_file, session, flags);
-	if (ret != 0) {
-		/* Clean this session secure information */
-		clean_session_secure_information(session);
-	}
-#else
-	ret = tc_client_call(context, dev_file, session, flags);
-#endif
-	if (ret != 0) {
-#ifdef DYNAMIC_ION
-		kill_ion_by_uuid((teec_uuid *)context->uuid);
-#endif
-		mutex_unlock(&service->operation_lock);
-		tloge("smc_call returns error, ret=0x%x\n", ret);
-		return ret;
-	}
-	proc_after_smc_cmd(dev_file, context, service, session);
-	/* session_id in tee is unique, but in concurrency scene
-	 * same session_id may appear in tzdriver, put session_list
-	 * add/del in service->operation_lock can avoid it.
-	 */
-	mutex_unlock(&service->operation_lock);
-	return ret;
-}
-
-static void proc_error_situation(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context, tc_ns_service *service,
-	tc_ns_session *session)
-{
-	release_free_session(dev_file, context, session);
-	mutex_lock(&dev_file->service_lock);
-	del_service_from_dev(dev_file, service);
-	mutex_unlock(&dev_file->service_lock);
-	kfree(session);
-	return;
-}
-
-int tc_ns_open_session(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context)
-{
-	int ret;
-	tc_ns_service *service = NULL;
-	tc_ns_session *session = NULL;
-	uint8_t flags = TC_CALL_GLOBAL;
-	bool hidl_access = false;
-	bool check_value = (dev_file == NULL || context == NULL);
-
-	if (check_value == true) {
-		tloge("invalid dev_file or context\n");
-		return -EINVAL;
-	}
-	ret = check_process_access(current, HIDL_SIDE);
-	if (!ret) {
-		hidl_access = true;
-	} else if (ret && ret != ENTER_BYPASS_CHANNEL) {
-		tloge("libteec hidl service may be exploited ret 0x%x\n", ret);
-		return -EPERM;
-	}
-#ifdef SECURITY_AUTH_ENHANCE
-	ret = check_hidl_access(hidl_access);
-	if (ret != 0)
-		return ret;
-#endif
-	service = find_service(dev_file, context);
-	if (service == NULL) {
-		tloge("find service failed\n");
-		return -ENOMEM;
-	}
-	session = kzalloc(sizeof(*session), GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)session)) {
-		tloge("kzalloc failed\n");
-		mutex_lock(&dev_file->service_lock);
-		del_service_from_dev(dev_file, service);
-		mutex_unlock(&dev_file->service_lock);
-		return -ENOMEM;
-	}
-	ret = proc_calc_task_hash(dev_file, context, session, service,
-		&flags, hidl_access);
-	if (ret != 0)
+		__clean_session_secure_information(session);
+		mutex_unlock(&g_operate_session_lock);
+		ret = -ENOMEM;
 		goto error;
-	ret = proc_send_smc_cmd(dev_file, context, service, session, flags);
-	if (ret == 0)
-		return ret;
-error:
-	proc_error_situation(dev_file, context, service, session);
-	return ret;
-}
+	}
+	ret = tc_client_call(context, dev_file, flags, &session->tc_ns_token);
+	if (0 != ret) {
+		/* Clean this session secure information */
+		__clean_session_secure_information(session);
+	}
+	mutex_unlock(&g_operate_session_lock);
 
-static tc_ns_service *get_service(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context)
-{
-	tc_ns_service *service = NULL;
+	if (ret != 0) {
+		TCERR("smc_call returns error, ret=0x%x\n", ret);
+		goto error;
+	} else
+		TCDEBUG("smc_call returns right\n");
 
-	mutex_lock(&dev_file->service_lock);
-	service = tc_find_service_in_dev(dev_file,
-		context->uuid, UUID_LEN);
-	get_service_struct(service);
-	mutex_unlock(&dev_file->service_lock);
-	return service;
-}
-
-static tc_ns_session *get_session(tc_ns_service *service,
-	tc_ns_dev_file *dev_file, tc_ns_client_context *context)
-{
-	tc_ns_session *session = NULL;
+	session->session_id = context->session_id;
+	TCDEBUG("session id is %x\n", context->session_id);
+	session->wait_data.send_wait_flag = 0;
+	init_waitqueue_head(&session->wait_data.send_cmd_wq);
+	atomic_set(&session->usage, 1); /*lint !e1058 */
 
 	mutex_lock(&service->session_lock);
-	session = tc_find_session_withowner(&service->session_list,
-		context->session_id, dev_file);
-	get_session_struct(session);
+	remove_unused_session(service, context->session_id);
+	list_add_tail(&session->head, &service->session_list);
 	mutex_unlock(&service->session_lock);
-	return session;
-}
 
-int tc_ns_close_session(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context)
-{
-	int ret = -EINVAL;
-	errno_t ret_s = 0;
-	tc_ns_service *service = NULL;
-	tc_ns_session *session = NULL;
-
-	if (dev_file == NULL || context == NULL) {
-		tloge("invalid dev_file or context\n");
-		return ret;
+	put_service_struct(service);
+	return ret; /*lint !e429 */
+error:
+	mutex_lock(&service->session_lock);
+	{
+		int needkillsession = 0;
+		int needfree = 0;
+		needkillsession = context->session_id!=0;
+		if (needkillsession) {
+			kill_session(dev_file, context->uuid, context->session_id);
+		}
+		needfree = session && session->tc_ns_token.token_buffer;
+		if (needfree) {
+			kfree(session->tc_ns_token.token_buffer);
+			session->tc_ns_token.token_buffer = NULL;
+		}
 	}
-	service = get_service(dev_file, context);
-	if (service == NULL) {
-		tloge("invalid service\n");
-		return ret;
-	}
-	/*
-	 * session_id in tee is unique, but in concurrency scene
-	 * same session_id may appear in tzdriver, put session_list
-	 * add/del in service->operation_lock can avoid it.
-	 */
-	mutex_lock(&service->operation_lock);
-	session = get_session(service, dev_file, context);
-	if (session != NULL) {
-		int ret2;
-		mutex_lock(&session->ta_session_lock);
-		ret2 = close_session(dev_file, session, context->uuid,
-			(unsigned int)UUID_LEN, context->session_id);
-		mutex_unlock(&session->ta_session_lock);
-		if (ret2 != TEEC_SUCCESS)
-			tloge("close session smc failed!\n");
-#ifdef SECURITY_AUTH_ENHANCE
-		/* Clean this session secure information */
-		ret_s = memset_s((void *)&session->secure_info,
-			sizeof(session->secure_info),
-			0, sizeof(session->secure_info));
-		if (ret_s != EOK)
-			tloge("close session memset_s error=%d\n", ret_s);
-#endif
-		mutex_lock(&service->session_lock);
-		list_del(&session->head);
-		mutex_unlock(&service->session_lock);
+	mutex_unlock(&service->session_lock);
 
-		put_session_struct(session);
-		put_session_struct(session); /* pair with open session */
-
-		ret = TEEC_SUCCESS;
-		mutex_lock(&dev_file->service_lock);
-		del_service_from_dev(dev_file, service);
-		mutex_unlock(&dev_file->service_lock);
-	} else {
-		tloge("invalid session\n");
-	}
-	mutex_unlock(&service->operation_lock);
+	kfree(session);
 	put_service_struct(service);
 	return ret;
 }
 
-int tc_ns_send_cmd(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context)
+
+int TC_NS_CloseSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 {
 	int ret = -EINVAL;
-	tc_ns_service *service = NULL;
-	tc_ns_session *session = NULL;
-	bool check_value = (dev_file == NULL || context == NULL);
+	errno_t ret_s;
+	TC_NS_Service *service = NULL;
+	TC_NS_Session *session = NULL;
 
-	if (check_value == true) {
-		tloge("invalid dev_file or context\n");
+	if (dev_file == NULL || context == NULL) {
+		TCERR("invalid dev_file or context\n");
 		return ret;
 	}
-	tlogd("session id :%x\n", context->session_id);
-	service = get_service(dev_file, context);
-	/* check sessionid is validated or not */
-	if (service != NULL) {
-		session = get_session(service, dev_file, context);
-		put_service_struct(service);
-		if (session != NULL) {
-			tlogd("send cmd find session id %x\n",
-				context->session_id);
-			goto find_session;
-		}
-	} else {
-		tloge("can't find service\n");
+
+	mutex_lock(&g_operate_session_lock);
+
+	mutex_lock(&dev_file->service_lock);
+	service = tc_find_service(&dev_file->services_list, context->uuid); /*lint !e64 */
+	get_service_struct(service);
+	mutex_unlock(&dev_file->service_lock);
+	if (NULL == service) {
+		mutex_unlock(&g_operate_session_lock);
+		return ret;
 	}
-	tloge("send cmd can not find session id %d\n", context->session_id);
-	return ret;
-find_session:
-	/* send smc */
-	mutex_lock(&session->ta_session_lock);
-	ret = tc_client_call(context, dev_file, session, 0);
-	mutex_unlock(&session->ta_session_lock);
-	put_session_struct(session);
-	if (ret != 0)
-		tloge("smc_call returns error, ret=0x%x\n", ret);
+
+	mutex_lock(&service->session_lock);
+	session =
+		tc_find_session(&service->session_list,
+				context->session_id);
+	get_session_struct(session);
+	mutex_unlock(&service->session_lock);
+
+	if (session) {
+		int ret2;
+
+		mutex_lock(&session->ta_session_lock);
+		ret2 =
+			close_session(dev_file, context->uuid,
+					context->session_id,
+					&session->tc_ns_token,
+					context->teec_token);
+		mutex_unlock(&session->ta_session_lock);
+
+		if (TEEC_SUCCESS == ret2)
+			TCDEBUG("close session smc success.\n");
+		else
+			TCERR("close session smc failed!\n");
+
+		mutex_lock(&service->session_lock);
+		/* Clean this session secure information */
+		ret_s = memset_s((void *)&session->secure_info,
+			 sizeof(session->secure_info),
+			 0,
+			 sizeof(session->secure_info));
+		if (ret_s != EOK) {
+			 tloge("TC_NS_CloseSession memset_s error=%d\n", ret_s);
+		}
+		list_del(&session->head);
+		put_session_struct(session);
+		mutex_unlock(&service->session_lock);
+		put_session_struct(session); /* pair with open session */
+		ret = TEEC_SUCCESS;
+	}
+	put_service_struct(service);
+
+	mutex_unlock(&g_operate_session_lock);
 	return ret;
 }
 
-int tc_ns_client_open(tc_ns_dev_file **dev_file, uint8_t kernel_api)
+int TC_NS_Send_CMD(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 {
-	int ret = TEEC_ERROR_GENERIC;
-	tc_ns_dev_file *dev = NULL;
+	int ret = -EINVAL;
+	TC_NS_Service *service = NULL;
+	TC_NS_Session *session = NULL;
 
-	tlogd("tc_client_open\n");
-	if (dev_file == NULL) {
-		tloge("dev_file is NULL\n");
-		return -EFAULT;
-	}
-	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-	if (ZERO_OR_NULL_PTR((unsigned long)(uintptr_t)dev)) {
-		tloge("dev malloc failed\n");
+	if (dev_file == NULL || context == NULL) {
+		TCERR("invalid dev_file or context\n");
 		return ret;
 	}
+	TCDEBUG("session id :%x\n", context->session_id);
+
+	/*check sessionid is validated or not */
+	mutex_lock(&dev_file->service_lock);
+	service = tc_find_service(&dev_file->services_list, context->uuid); /*lint !e64 */
+	get_service_struct(service);
+	mutex_unlock(&dev_file->service_lock);
+	if (service) {
+		mutex_lock(&service->session_lock);
+		session =
+			tc_find_session(&service->session_list,
+					context->session_id);
+		get_session_struct(session);
+		mutex_unlock(&service->session_lock);
+		put_service_struct(service);
+		if (session) {
+			TCDEBUG("send cmd find session id %x\n",
+				context->session_id);
+			goto find_session;
+		}
+	}
+
+	TCERR("send cmd can not find session id %d\n", context->session_id);
+	return ret;
+
+find_session:
+
+	/*send smc */
+	mutex_lock(&session->ta_session_lock);
+	ret = tc_client_call(context, dev_file, 0, &session->tc_ns_token);
+	mutex_unlock(&session->ta_session_lock);
+	put_session_struct(session);
+
+	if (ret != 0)
+		TCERR("smc_call returns error, ret=0x%x\n", ret);
+	else
+		TCDEBUG("smc_call returns right\n");
+
+	return ret;
+}
+
+
+static bool is_valid_ta_size(struct load_app_ioctl_struct *ioctl_arg)
+{
+	if (ioctl_arg->file_buffer == NULL || 0 == ioctl_arg->file_size) {
+		TCERR("invalid load ta size\n");
+		return false;
+	}
+
+	if (ioctl_arg->file_size > SZ_8M) {
+		TCERR("larger than 8M TA is not supportedi, size=%d\n", ioctl_arg->file_size);
+		return false;
+	}
+
+	return true;
+}
+
+static int TC_NS_load_image(TC_NS_DEV_File *dev_file,
+	struct load_app_ioctl_struct *ioctl_arg)
+{
+	int ret = 0;
+	TC_NS_SMC_CMD smc_cmd = {0};
+	struct mb_cmd_pack *mb_pack = NULL;
+	unsigned int mb_load_size;
+	char *mb_load_mem = NULL;
+	int load_flag = 1; /* 0:it's last block, 1:not last block */
+	unsigned int load_times, index;
+	uint32_t loaded_size = 0;
+	TEEC_UUID* uuidReturn = NULL;
+
+	if (!is_valid_ta_size(ioctl_arg))
+		return -EINVAL;
+
+	mb_load_size = ioctl_arg->file_size > (SZ_1M-sizeof(load_flag)) ?
+		SZ_1M : ALIGN(ioctl_arg->file_size, SZ_4K);
+
+	/* we will try any possible to alloc mailbox mem to load TA */
+	for ( ; mb_load_size > 0; mb_load_size >>= 1) {
+		mb_load_mem = mailbox_alloc(mb_load_size, 0);
+		if (mb_load_mem)
+			break;
+		else
+			tlogw("alloc mem(size=%d) for TA load mem fail, will retry\n", mb_load_size);
+	}
+	if (mb_load_mem == NULL) {
+		tloge("alloc TA load mem failed\n");
+		return -ENOMEM;
+	}
+	load_times = ioctl_arg->file_size / (mb_load_size - sizeof(load_flag));
+	if (ioctl_arg->file_size % (mb_load_size - sizeof(load_flag)))
+		load_times += 1;
+
+	mb_pack = mailbox_alloc_cmd_pack();
+	if (mb_pack == NULL) {
+		mailbox_free(mb_load_mem);
+		tloge("alloc mb pack failed\n");
+		return -ENOMEM;
+	}
+	uuidReturn = mailbox_alloc(sizeof(TEEC_UUID),0);
+	if ( uuidReturn == NULL) {
+		mailbox_free(mb_load_mem);
+		mailbox_free(mb_pack);
+		tloge("alloc uuid failed\n");
+		return -ENOMEM;
+	}
+
+	for (index = 0; index < load_times;	index++) {
+		char *p = mb_load_mem;
+		uint32_t load_size;
+
+		if (index == (load_times - 1)) {
+			load_flag = 0;
+			load_size = ioctl_arg->file_size - loaded_size;
+		} else
+			load_size = mb_load_size - sizeof(load_flag);
+		*(int *)p = load_flag;
+		if (load_size > mb_load_size - sizeof(load_flag)) {
+			TCERR("invalid load size %d/%d\n", load_size, mb_load_size);
+			ret = -1;
+			goto clean;
+		}
+
+		if (copy_from_user(mb_load_mem + sizeof(load_flag),
+				(void __user *)ioctl_arg->file_buffer + loaded_size,
+				load_size)) {
+			TCERR("file buf get fail\n");
+			ret = -1;
+			goto clean;
+		}
+
+		mb_pack->operation.params[0].memref.buffer = virt_to_phys((void *)mb_load_mem);
+		mb_pack->operation.buffer_h_addr[0] =
+			virt_to_phys((void *)mb_load_mem) >> 32;
+		mb_pack->operation.params[0].memref.size = load_size + sizeof(load_flag);
+		mb_pack->operation.params[2].memref.buffer = virt_to_phys((void*)uuidReturn);
+		mb_pack->operation.buffer_h_addr[2] = virt_to_phys((void*)uuidReturn) >> 32;
+		mb_pack->operation.params[2].memref.size = sizeof(TEEC_UUID);
+		mb_pack->operation.params[3].value.a = index;
+		mb_pack->operation.paramTypes = TEEC_PARAM_TYPES(
+			TEEC_MEMREF_TEMP_INOUT,
+			TEEC_VALUE_OUTPUT,
+			TEEC_MEMREF_TEMP_OUTPUT,
+			TEEC_VALUE_INPUT);
+
+		/* load image smc command */
+		smc_cmd.cmd_id = GLOBAL_CMD_ID_LOAD_SECURE_APP;
+		mb_pack->uuid[0] = 1;
+		smc_cmd.uuid_phys = virt_to_phys((void *)mb_pack->uuid);
+		smc_cmd.uuid_h_phys = virt_to_phys((void *)mb_pack->uuid) >> 32; /*lint !e572*/
+		smc_cmd.dev_file_id = dev_file->dev_file_id;
+		smc_cmd.context_id = 0;
+		smc_cmd.operation_phys = virt_to_phys(&mb_pack->operation);
+		smc_cmd.operation_h_phys = virt_to_phys(&mb_pack->operation) >> 32; /*lint !e572*/
+
+		ret = TC_NS_SMC(&smc_cmd, 0);
+		TCERR("smc cmd ret %d\n", ret);
+
+		tlogd("configid=%d,ret=%d,load_flag=%d,index=%d\n",mb_pack->operation.params[1].value.a,ret,load_flag,index);
+		if (ret != 0) {
+			TCERR("smc_call returns error ret 0x%x\n", ret);
+			ret = -1;
+			goto clean;
+		}
+		
+		TCERR("smc_call returns noerror - continue\n");
+		if (ret == 0 && load_flag == 0) {
+			/* check need to add ionmem  */
+			uint32_t configid = mb_pack->operation.params[1].value.a;
+			uint32_t ion_size = mb_pack->operation.params[1].value.b;
+			int32_t checkresult = (configid != 0 && ion_size != 0);
+			tloge("check load by ION result %d : configid =%d,ion_size =%d,uuid=%x\n", checkresult, configid, ion_size, uuidReturn->timeLow);
+			if ( checkresult) {
+				ret = load_app_use_configid(configid, dev_file->dev_file_id, uuidReturn, ion_size);
+				if (ret != 0){
+					tloge("load_app_use_configid failed ret =%d\n", ret);
+					goto clean;
+				}
+			}
+
+		}
+		loaded_size += load_size;
+	}
+
+clean:
+	mailbox_free(mb_load_mem);
+	mailbox_free(mb_pack);
+	mailbox_free(uuidReturn);
+
+
+	return ret;
+}
+
+static int TC_NS_need_load_image(unsigned int file_id,
+	struct load_app_ioctl_struct *ioctl_arg)
+{
+	int ret;
+	TC_NS_SMC_CMD smc_cmd = {0};
+	struct mb_cmd_pack *mb_pack = NULL;
+	char *mb_param = NULL;
+
+	mb_pack = mailbox_alloc_cmd_pack();
+	if (mb_pack == NULL) {
+		TCERR("alloc mb pack failed\n");
+		return -ENOMEM;
+	}
+
+	mb_param = mailbox_copy_alloc((void *)&ioctl_arg->uuid, sizeof(ioctl_arg->uuid));
+	if (mb_param == NULL) {
+		TCERR("alloc mb param failed\n");
+		ret = -ENOMEM;
+		goto clean;
+	}
+
+	mb_pack->operation.paramTypes = TEEC_MEMREF_TEMP_INOUT;
+	mb_pack->operation.params[0].memref.buffer = virt_to_phys((void *)mb_param);
+	mb_pack->operation.buffer_h_addr[0] = virt_to_phys((void *)mb_param) >> 32;
+	mb_pack->operation.params[0].memref.size = SZ_4K;
+
+	/* load image smc command */
+	//TCDEBUG("smc cmd id %d\n", client_context.cmd_id);
+	smc_cmd.cmd_id = GLOBAL_CMD_ID_NEED_LOAD_APP;
+	mb_pack->uuid[0] = 1;
+	smc_cmd.uuid_phys = virt_to_phys((void *)mb_pack->uuid);
+	smc_cmd.uuid_h_phys = virt_to_phys((void *)mb_pack->uuid) >> 32; /*lint !e572*/
+	smc_cmd.dev_file_id = file_id;
+	smc_cmd.context_id = 0;
+	smc_cmd.operation_phys = virt_to_phys(&mb_pack->operation);
+	smc_cmd.operation_h_phys = virt_to_phys(&mb_pack->operation) >> 32; /*lint !e572*/
+
+	TCDEBUG("secure app load smc command\n");
+	ret = TC_NS_SMC(&smc_cmd, 0);
+	if (ret != 0) {
+		TCERR("smc_call returns error ret 0x%x\n", ret);
+		ret = -1;
+		goto clean;
+	} else {                        /* smc returns error,no need to register cafd list because ref_cnt don't change*/
+		ret = *(int *)mb_param;
+	}
+clean:
+	if (mb_param)
+		mailbox_free(mb_param);
+	mailbox_free(mb_pack);
+
+	return ret;
+}
+
+int TC_NS_ClientOpen(TC_NS_DEV_File **dev_file, uint8_t kernel_api)
+{
+	int ret = TEEC_ERROR_GENERIC;
+	TC_NS_DEV_File *dev = NULL;
+
+	TCDEBUG("tc_client_open\n");
+
+	if (dev_file == NULL) {
+		TCERR("dev_file is NULL");
+		return -EFAULT;
+	}
+
+	dev = kzalloc(sizeof(TC_NS_DEV_File), GFP_KERNEL);
+	if (dev == NULL) {
+		TCERR("dev malloc failed");
+		return ret;
+	}
+
 	mutex_lock(&g_tc_ns_dev_list.dev_lock);
 	list_add_tail(&dev->head, &g_tc_ns_dev_list.dev_file_list);
 	mutex_unlock(&g_tc_ns_dev_list.dev_lock);
-	mutex_lock(&g_device_file_cnt_lock);
-	dev->dev_file_id = g_device_file_cnt;
-	g_device_file_cnt++;
-	mutex_unlock(&g_device_file_cnt_lock);
+
+	mutex_lock(&device_file_cnt_lock);
+	g_tc_ns_dev_list.dev_file_cnt++;
+	dev->dev_file_id = device_file_cnt;
+	device_file_cnt++;
+	mutex_unlock(&device_file_cnt_lock);
+
+	dev->service_cnt = 0;
+	INIT_LIST_HEAD(&dev->services_list);
+
+	dev->shared_mem_cnt = 0;
 	INIT_LIST_HEAD(&dev->shared_mem_list);
+
 	dev->login_setup = 0;
+
 	dev->kernel_api = kernel_api;
 	dev->load_app_flag = 0;
 	mutex_init(&dev->service_lock);
 	mutex_init(&dev->shared_mem_lock);
-	mutex_init(&dev->login_setup_lock);
 	*dev_file = dev;
+
 	ret = TEEC_SUCCESS;
+
 	return ret;
 }
 
-void free_dev(tc_ns_dev_file *dev)
-{
-	del_dev_node(dev);
-	tee_agent_clear_dev_owner(dev);
-	if (memset_s((void *)dev, sizeof(*dev), 0, sizeof(*dev)) != EOK)
-		tloge("Caution, memset dev fail!\n");
-	kfree(dev);
-}
-int tc_ns_client_close(tc_ns_dev_file *dev, int flag)
+
+int TC_NS_ClientClose(TC_NS_DEV_File *dev, int flag)
 {
 	int ret = TEEC_ERROR_GENERIC;
+	errno_t ret_s;
+	TC_NS_Service *service = NULL, *service_temp = NULL;
 
 	if (dev == NULL) {
-		tloge("invalid dev(null)\n");
+		TCERR("invalid dev(null)\n");
 		return ret;
 	}
 	if (flag == 0) {
-		uint32_t index = 0;
-
+		mutex_lock(&g_operate_session_lock);
 		mutex_lock(&dev->service_lock);
-		for (index = 0; index < SERVICES_MAX_COUNT; index++) {
-			/* close unclosed session */
-			close_unclosed_session(dev, index);
+		list_for_each_entry_safe(service, service_temp, &dev->services_list,
+				head) {
+			if (service) {
+				/* close unclosed session */
+				if (!list_empty(&service->session_list)) {
+					TC_NS_Session *session, *tmp_session;
+
+					mutex_lock(&service->session_lock);
+					list_for_each_entry_safe(session, tmp_session,
+							&service->session_list,
+							head) {
+						TCDEBUG
+							("terminate opened service 0x%x\n",
+							 *(uint32_t *) service->uuid);
+						mutex_lock(&session->ta_session_lock);
+						kill_session(dev, service->uuid,
+								session->session_id);
+						mutex_unlock(&session->ta_session_lock);
+						/* Clean session secure information */
+						ret_s = memset_s((void *)&session->secure_info,
+								sizeof(session->secure_info),
+								0,
+								sizeof(session->secure_info));
+						if (ret_s != EOK) {
+							tloge("TC_NS_ClientClose memset_s error=%d\n", ret_s);
+						}
+						put_session_struct(session); /* pair with open session */
+					}
+					mutex_unlock(&service->session_lock);
+				}
+
+				list_del(&service->head);
+				put_service_struct(service); /* pair with TC_NS_ServiceInit */
+				dev->service_cnt--;
+			}
 		}
 		mutex_unlock(&dev->service_lock);
-#if defined(CONFIG_TEE_TUI)
-		if (dev->dev_file_id == tui_attach_device()) {
+		if (dev->dev_file_id == tui_attach_device())
 			do_ns_tui_release();
-			free_tui_caller_info();
-		}
-#endif
-#ifdef DYNAMIC_ION
 		kill_ion_by_cafd(dev->dev_file_id);
-#endif
+		mutex_unlock(&g_operate_session_lock);
 	}
-	if (flag == 0)
-		tc_ns_unregister_agent_client(dev);
+
+	if (!flag)
+		TC_NS_unregister_agent_client(dev);
+
+	mutex_lock(&g_tc_ns_dev_list.dev_lock);
 	ret = TEEC_SUCCESS;
-	free_dev(dev);
+	/*del dev from the list */
+	list_del(&dev->head);
+	mutex_unlock(&g_tc_ns_dev_list.dev_lock);
+	tee_agent_clear_dev_owner(dev);
+	kfree(dev);
+
+	TCDEBUG("dev list  dev file cnt:%d\n", g_tc_ns_dev_list.dev_file_cnt);
+	if (g_tc_ns_dev_list.dev_file_cnt != 0) {
+		g_tc_ns_dev_list.dev_file_cnt--;
+		TCDEBUG("dev list  dev file cnt:%d\n",
+			g_tc_ns_dev_list.dev_file_cnt);
+	} else {
+		TCERR("dev file list had been empty already");
+	}
+
 	return ret;
 }
 
+
 void shared_vma_open(struct vm_area_struct *vma)
 {
-	(void)vma;
 }
 
-static void release_vma_shared_mem(tc_ns_dev_file *dev_file,
-	struct vm_area_struct *vma)
+void shared_vma_close(struct vm_area_struct *vma)
 {
-	tc_ns_shared_mem *shared_mem = NULL;
-	tc_ns_shared_mem *shared_mem_temp = NULL;
+	TC_NS_Shared_MEM *shared_mem = NULL, *shared_mem_temp = NULL;
+	TC_NS_DEV_File *dev_file = vma->vm_private_data;
 	bool find = false;
+	if ((g_teecd_task == current->group_leader) && (!TC_NS_get_uid())
+			&& (g_teecd_task->flags & PF_EXITING ||
+				current->flags & PF_EXITING)) {
+		TCDEBUG("teecd is killed, just return in vma close\n");
+		return;
+	}
 
 	mutex_lock(&dev_file->shared_mem_lock);
 	list_for_each_entry_safe(shared_mem, shared_mem_temp,
-			&dev_file->shared_mem_list, head) {
-		if (shared_mem != NULL) {
+				 &dev_file->shared_mem_list, head) {
+		if (shared_mem != NULL){
 			if (shared_mem->user_addr ==
 				(void *)(uintptr_t)vma->vm_start) {
 				shared_mem->user_addr = NULL;
 				find = true;
-			}
-			else if (shared_mem->user_addr_ca ==
+			} else if (shared_mem->user_addr_ca ==
 				(void *)(uintptr_t)vma->vm_start) {
 				shared_mem->user_addr_ca = NULL;
 				find = true;
@@ -1579,7 +2380,6 @@ static void release_vma_shared_mem(tc_ns_dev_file *dev_file,
 			if ((shared_mem->user_addr == NULL) &&
 				(shared_mem->user_addr_ca == NULL))
 				list_del(&shared_mem->head);
-
 			/* pair with tc_client_mmap */
 			if (find == true) {
 				put_sharemem_struct(shared_mem);
@@ -1590,210 +2390,86 @@ static void release_vma_shared_mem(tc_ns_dev_file *dev_file,
 	mutex_unlock(&dev_file->shared_mem_lock);
 }
 
-void shared_vma_close(struct vm_area_struct *vma)
-{
-	tc_ns_dev_file *dev_file = NULL;
-	bool check_value = false;
-	if (vma == NULL) {
-		tloge("vma is null\n");
-		return;
-	}
-	dev_file = vma->vm_private_data;
-	if (dev_file == NULL) {
-		tloge("vma->vm_private_data is null\n");
-		return;
-	}
-	check_value = (g_teecd_task == current->group_leader) && (!tc_ns_get_uid()) &&
-		(g_teecd_task->flags & PF_EXITING || current->flags & PF_EXITING);
-	if (check_value == true) {
-		tlogd("teecd is killed, just return in vma close\n");
-		return;
-	}
-	release_vma_shared_mem(dev_file, vma);
-}
 
-static struct vm_operations_struct g_shared_remap_vm_ops = {
+static struct vm_operations_struct shared_remap_vm_ops = {
 	.open = shared_vma_open,
 	.close = shared_vma_close,
 };
 
-#define PGOFF_ONE    1
-#define PGOFF_TWO    2
-#define PGOFF_THREE  3
-#define PGOFF_FOUR   4
-#define MAX_VMA_BIT 64
-
-static struct smc_event_data *find_event_control_from_vma_pgoff(
-	unsigned long vm_pgoff)
+static struct __smc_event_data *
+find_event_control_from_vma_pgoff(unsigned long vm_pgoff)
 {
-	struct smc_event_data *event_control = NULL;
+	struct __smc_event_data *event_control = NULL;
 
-	if (vm_pgoff == PGOFF_ONE)
+	if (1 == vm_pgoff)
 		event_control = find_event_control(AGENT_FS_ID);
-	else if (vm_pgoff == PGOFF_TWO)
+	else if (2 == vm_pgoff)
 		event_control = find_event_control(AGENT_MISC_ID);
-	else if (vm_pgoff == PGOFF_THREE)
+	else if (3 == vm_pgoff)
 		event_control = find_event_control(AGENT_SOCKET_ID);
-	else if (vm_pgoff == PGOFF_FOUR)
-		event_control = find_event_control(SECFILE_LOAD_AGENT_ID);
+
 	return event_control;
 }
-
-static struct smc_event_data *find_third_party_event_control(
-	unsigned long vm_pgoff)
+/*lint -e429*/
+/*lint -e593*/
+static int tc_client_mmap(struct file *filp, struct vm_area_struct *vma)
 {
-	struct smc_event_data *event_control = NULL;
-
-	if (vm_pgoff == MAX_VMA_BIT)
-		event_control = find_event_control(TEE_SECE_AGENT_ID);
-	return event_control;
-}
-
-static void check_is_teecd(struct vm_area_struct *vma,
-	struct smc_event_data **event_control,
-	tc_ns_shared_mem **shared_mem, bool *is_teecd)
-{
-	bool check_value = false;
-
-	check_value = (g_teecd_task == current->group_leader) &&
-		(!tc_ns_get_uid());
-	if (check_value == true) {
-		*event_control =
-			find_event_control_from_vma_pgoff(vma->vm_pgoff);
-		if (*event_control != NULL)
-			*shared_mem = (*event_control)->buffer;
-		*is_teecd = true;
-		return;
-	}
-	/* for thirdparty ca agent,we just set is_teecd */
-	if (!check_ext_agent_access(current))
-		*is_teecd = true;
-
-	/* for ai agent restarting, we need to find sharedmem */
-	if (!check_ai_agent(current)) {
-		*event_control =
-			find_third_party_event_control(vma->vm_pgoff);
-		if (*event_control != NULL) {
-			*shared_mem = (*event_control)->buffer;
-			tloge("ai agent restart begins\n");
-		}
-	}
-	return;
-}
-
-static void alloc_shared_mem_for_ca_and_agent(
-	struct vm_area_struct *vma, tc_ns_shared_mem **shared_mem,
-	tc_ns_dev_file *dev_file, bool *only_remap, bool is_teecd)
-{
-	bool check_value = false;
-	tc_ns_shared_mem *shm_tmp = NULL;
+	int ret = 0;
+	TC_NS_DEV_File *dev_file = filp->private_data;
 	unsigned long len = vma->vm_end - vma->vm_start;
+	unsigned long pfn;
+	TC_NS_Shared_MEM *shared_mem = NULL; /*lint !e429*/
+	TC_NS_Shared_MEM *shm_tmp = NULL;
+	struct __smc_event_data *event_control = NULL;
+	bool is_teecd = false;
+	bool only_remap = false;
+	bool check_value = false;
+
+	if (dev_file == NULL) {
+		TCERR("can not find dev in malloc shared buffer!\n");
+		return -1;
+	}
+
+	if (((g_teecd_task == current->group_leader) && (!TC_NS_get_uid()))) {
+		event_control = find_event_control_from_vma_pgoff(vma->vm_pgoff);
+
+		if (event_control) {
+			shared_mem = event_control->buffer;
+		}
+		is_teecd = true;
+	}
+
+	/*for thirdparty ca agent,we just set is_teecd*/
+	if (!check_ext_agent_access(current)) {
+		is_teecd = true;
+	}
+	mutex_lock(&dev_file->shared_mem_lock);
+        /* TODO: need check libteec service,
+                service do alloc and client just map */
 
 	if (!is_teecd) {
 		/* using vma->vm_pgoff as share_mem index */
 		/* check if aready allocated */
 		list_for_each_entry(shm_tmp, &dev_file->shared_mem_list, head) {
 			if (atomic_read(&shm_tmp->offset) == vma->vm_pgoff) {
-				tlogd("share_mem already allocated, shm_tmp->offset=%d\n",
-					atomic_read(&shm_tmp->offset));
-				/* if this shared mem is already maped, just let shared_mem be NULL*/
+				tlogd("share_mem already allocated, shm_tmp->offset=%d\n", atomic_read(&shm_tmp->offset));
+				/* if this shared mem is already maped, just let shared_mem be NULL */
 				if (shm_tmp->user_addr_ca != NULL) {
-					*only_remap = true;
-					tloge("already remap once!\n");
+					only_remap = true;
 					break;
 				}
 				/* do remap to client */
-				*only_remap = true;
-				*shared_mem = shm_tmp;
-				get_sharemem_struct(shm_tmp);
-				break;
+				only_remap = true;
+				shared_mem = shm_tmp;
+			} else {
+				tlogd("registed share_mem, shm_tmp->offset=%d\n", atomic_read(&shm_tmp->offset));
 			}
 		}
 	}
-	check_value = (*shared_mem == NULL && !(*only_remap));
-	if (check_value == true) {
-		/* alloc mem for ca and third-party agent(not event_control) */
-		*shared_mem = tc_mem_allocate(len, is_teecd);
-	}
-	return;
-}
+        
+	if (shared_mem == NULL && !only_remap )
+		shared_mem = tc_mem_allocate(len, is_teecd);
 
-static int remap_shared_mem(struct vm_area_struct *vma,
-	struct smc_event_data *event_control,
-	tc_ns_shared_mem *shared_mem, bool only_remap)
-{
-	int ret = 0;
-	unsigned long pfn;
-
-	if (shared_mem->from_mailbox) {
-		pfn = virt_to_phys(shared_mem->kernel_addr) >> PAGE_SHIFT;
-		if (!valid_mmap_phys_addr_range(pfn,
-			(unsigned long)shared_mem->len)) {
-			/* for teecd, no need to free mem allocated form mailbox  */
-			if (event_control != NULL) {
-				put_agent_event(event_control);
-				return -1;
-			}
-			tc_mem_free(shared_mem);
-			return -1;
-		}
-		ret = remap_pfn_range(vma, vma->vm_start,
-			virt_to_phys(shared_mem->kernel_addr) >> PAGE_SHIFT,
-			(unsigned long)shared_mem->len, vma->vm_page_prot);
-	} else {
-		if (only_remap)
-			vma->vm_flags |= VM_USERMAP;
-		ret = remap_vmalloc_range(vma, shared_mem->kernel_addr, 0);
-	}
-	if (ret) {
-		tloge("can't remap %s to user, ret = %d\n",
-		      shared_mem->from_mailbox ? "pfn" : "vmalloc", ret);
-		if (event_control != NULL) {
-			/* for teecd, no need to free mem allocated form mailbox  */
-			put_agent_event(event_control);
-			return -1;
-		}
-		if (!only_remap)
-			tc_mem_free(shared_mem);
-		return -1;
-	}
-	return ret;
-}
-
-static int tc_client_mmap(struct file *filp, struct vm_area_struct *vma)
-{
-	int ret;
-	tc_ns_dev_file *dev_file = NULL;
-	tc_ns_shared_mem *shared_mem = NULL;
-	struct smc_event_data *event_control = NULL;
-	bool is_teecd = false;
-	bool only_remap = false;
-	bool check_value = false;
-
-	check_value = (filp == NULL || vma == NULL);
-	if (check_value == true) {
-		tloge("filp or vma is null\n");
-		return -1;
-	}
-	dev_file = filp->private_data;
-	if (dev_file == NULL) {
-		tloge("can not find dev in malloc shared buffer!\n");
-		return -1;
-	}
-	/* in this func, we need to deal with five cases:
-	 * teecd (alloc and remap);  third-party ca(alloc and remap);
-	 * vendor CA alloc sharedmem (alloc and remap);
-	 * HIDL alloc sharedmem (alloc and remap);
-	 * system CA alloc sharedmem (only just remap);
-	 */
-	check_is_teecd(vma, &event_control, &shared_mem, &is_teecd);
-	mutex_lock(&dev_file->shared_mem_lock);
-	alloc_shared_mem_for_ca_and_agent(vma, &shared_mem,
-		dev_file, &only_remap, is_teecd);
-	/* code runs here, for teecd, thirdparty ca agent and ca,
-	 * shared_mem is allocated;
-	 * for only teecd, event_control is assigned value;
-	 */
 	if (IS_ERR_OR_NULL(shared_mem)) {
 		put_agent_event(event_control);
 		mutex_unlock(&dev_file->shared_mem_lock);
@@ -1804,93 +2480,126 @@ static int tc_client_mmap(struct file *filp, struct vm_area_struct *vma)
 		vma->vm_end - vma->vm_start != shared_mem->len);
 	if (check_value) {
 		tloge("len of map memory is invalid!\n");
-		put_sharemem_struct(shared_mem);
 		put_agent_event(event_control);
 		mutex_unlock(&dev_file->shared_mem_lock);
 		return -1;
 	}
 
-	ret = remap_shared_mem(vma, event_control, shared_mem, only_remap);
-	if (ret != 0) {
+	if (shared_mem->from_mailbox) {
+		pfn = virt_to_phys(shared_mem->kernel_addr) >> PAGE_SHIFT;
+		if (!valid_mmap_phys_addr_range(pfn, (unsigned long)shared_mem->len)) {
+			if (event_control) {
+				put_agent_event(event_control);
+				mutex_unlock(&dev_file->shared_mem_lock);
+				return -1;/*lint !e429*/
+			}
+			tc_mem_free(shared_mem);
+			mutex_unlock(&dev_file->shared_mem_lock);
+			return -1;
+		}
+
+		ret = remap_pfn_range(vma, vma->vm_start,
+					virt_to_phys(shared_mem->kernel_addr) >> PAGE_SHIFT,
+					(unsigned long)shared_mem->len, vma->vm_page_prot);
+	} else {
 		if (only_remap)
-			put_sharemem_struct(shared_mem);
-		mutex_unlock(&dev_file->shared_mem_lock);
-		return ret;
+			vma->vm_flags |= VM_USERMAP;
+		ret = remap_vmalloc_range(vma, shared_mem->kernel_addr, 0);
 	}
+	if (ret) {
+		tloge("can't remap %s to user, ret = %d\n",
+			shared_mem->from_mailbox ? "pfn":"vmalloc", ret);
+
+		if (event_control) {
+			put_agent_event(event_control);
+			mutex_unlock(&dev_file->shared_mem_lock);
+			return -1;/*lint !e429*/
+		}
+		if (!only_remap)
+			tc_mem_free(shared_mem);
+		mutex_unlock(&dev_file->shared_mem_lock);
+		return -1;/*lint !e429*/
+	}
+
 	vma->vm_flags |= VM_DONTCOPY;
-	vma->vm_ops = &g_shared_remap_vm_ops;
+	vma->vm_ops = &shared_remap_vm_ops;
 	shared_vma_open(vma);
 	vma->vm_private_data = (void *)dev_file;
 
 	if (only_remap) {
 		tloge("only need remap to client\n");
+		get_sharemem_struct(shared_mem);
 		shared_mem->user_addr_ca = (void *)vma->vm_start;
 		mutex_unlock(&dev_file->shared_mem_lock);
 		return ret;
 	}
+
 	shared_mem->user_addr = (void *)vma->vm_start;
-	atomic_set(&shared_mem->offset, vma->vm_pgoff);
-	get_sharemem_struct(shared_mem);
+	dev_file->shared_mem_cnt++;
 	list_add_tail(&shared_mem->head, &dev_file->shared_mem_list);
+	get_sharemem_struct(shared_mem);
+	atomic_set(&shared_mem->offset, vma->vm_pgoff); /*lint !e1058 */
 	mutex_unlock(&dev_file->shared_mem_lock);
 	put_agent_event(event_control);
-	return ret;
+	return ret;/*lint !e429*/
 }
-
-static int ioctl_session_send_cmd(tc_ns_dev_file *dev_file,
-	tc_ns_client_context *context, void *argp)
-{
-	int ret;
-
-	ret = tc_ns_send_cmd(dev_file, context);
-	if (ret)
-		tloge("tc_ns_send_cmd Failed ret is %d\n", ret);
-	if (copy_to_user(argp, context, sizeof(*context))) {
-		if (ret == 0)
-			ret = -EFAULT;
-	}
-	return ret;
-}
-
-static int tc_client_session_ioctl(struct file *file, unsigned int cmd,
-	unsigned long arg)
+/*lint +e593*/
+/*lint +e429*/
+static long tc_client_session_ioctl(struct file *file, unsigned cmd,
+				    unsigned long arg)
 {
 	int ret = TEEC_ERROR_GENERIC;
-	void *argp = (void __user *)(uintptr_t)arg;
-	tc_ns_dev_file *dev_file = file->private_data;
-	tc_ns_client_context context;
+	void *argp = (void __user *)arg;
+	TC_NS_DEV_File *dev_file = file->private_data;
+	TC_NS_ClientContext context;
 
-	if (argp == NULL) {
-		tloge("argp is NULL input buffer\n");
+	if (!argp) {
+		TCERR("argp is NULL input buffer\n");
 		ret = -EINVAL;
 		return ret;
 	}
-	if (copy_from_user(&context, argp, sizeof(context))) {
-		tloge("copy from user failed\n");
+
+	if (copy_from_user(&context, argp, sizeof(TC_NS_ClientContext))) {
+		TCERR("copy from user failed\n");
 		return -EFAULT;
 	}
+
 	context.returns.origin = TEEC_ORIGIN_COMMS;
+
 	switch (cmd) {
 	case TC_NS_CLIENT_IOCTL_SES_OPEN_REQ: {
-		ret = tc_ns_open_session(dev_file, &context);
+		CFC_FUNC_ENTRY(tc_client_session_ioctl);
+		ret = TC_NS_OpenSession(dev_file, &context);
 		if (ret)
-			tloge("tc_ns_open_session Failed ret is %d\n", ret);
-		if (copy_to_user(argp, &context, sizeof(context)) && ret == 0)
-			ret = -EFAULT;
+			TCERR("TC_NS_OpenSession Failed ret is %d\n", ret);
+
+		if (copy_to_user(argp, &context, sizeof(context))) {
+			if (0 == ret)
+				ret = -EFAULT;
+			/* Need to close session?
+			 * or wait for fd close ? */
+		}
 		break;
 	}
 	case TC_NS_CLIENT_IOCTL_SES_CLOSE_REQ: {
-		ret = tc_ns_close_session(dev_file, &context);
+		ret = TC_NS_CloseSession(dev_file, &context);
 		break;
 	}
 	case TC_NS_CLIENT_IOCTL_SEND_CMD_REQ: {
-		ret = ioctl_session_send_cmd(dev_file, &context, argp);
+		ret = TC_NS_Send_CMD(dev_file, &context);
+		if (ret)
+			TCERR("TC_NS_Send_CMD Failed ret is %d\n", ret);
+
+		if (copy_to_user(argp, &context, sizeof(context)))
+			if (0 == ret)
+				ret = -EFAULT;
 		break;
 	}
 	default:
-		tloge("invalid cmd:0x%x!\n", cmd);
+          TCERR("invalid cmd:0x%x!", cmd);
 		return ret;
 	}
+
 	/*
 	 * Don't leak ERESTARTSYS to user space.
 	 *
@@ -1918,152 +2627,212 @@ static int tc_client_session_ioctl(struct file *file, unsigned int cmd,
 	return ret;
 }
 
-static tc_ns_shared_mem *find_shared_mem(tc_ns_dev_file *dev_file,
-	int *find_flag)
-{
-	tc_ns_shared_mem *tmp_mem = NULL;
 
-	/* find sharedmem */
-	mutex_lock(&dev_file->shared_mem_lock);
-	list_for_each_entry(tmp_mem, &dev_file->shared_mem_list, head) {
-		if (tmp_mem != NULL) {
-			*find_flag = 1;
-			get_sharemem_struct(tmp_mem);
-			mutex_unlock(&dev_file->shared_mem_lock);
-			return tmp_mem;
-		}
-	}
-	mutex_unlock(&dev_file->shared_mem_lock);
-	return tmp_mem;
-}
-
-static int ioctl_register_agent(tc_ns_dev_file *dev_file, unsigned long arg)
-{
-	int ret;
-	tc_ns_shared_mem *shared_mem = NULL;
-	int find_flag = 0;
-
-	shared_mem = find_shared_mem(dev_file, &find_flag);
-	ret = tc_ns_register_agent(dev_file, (unsigned int)arg, shared_mem);
-	if (find_flag)
-		put_sharemem_struct(shared_mem);
-	return ret;
-}
-
-static int ioctl_unregister_agent(tc_ns_dev_file *dev_file, unsigned long arg)
-{
-	int ret;
-	struct smc_event_data *event_data = NULL;
-
-	event_data = find_event_control((unsigned int)arg);
-	if (event_data == NULL) {
-		tloge("invalid agent id\n");
-		return TEEC_ERROR_GENERIC;
-	}
-	if (event_data->owner != dev_file) {
-		tloge("invalid unregister request\n");
-		put_agent_event(event_data);
-		return TEEC_ERROR_GENERIC;
-	}
-	put_agent_event(event_data);
-	ret = tc_ns_unregister_agent((unsigned int)arg);
-	return ret;
-}
-
-static long tc_agent_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+static long tc_agent_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 {
 	int ret = TEEC_ERROR_GENERIC;
-	tc_ns_dev_file *dev_file = file->private_data;
+	TC_NS_DEV_File *dev_file = file->private_data;
 
 	if (dev_file == NULL) {
-		tloge("invalid params\n");
+		TCERR("invalid params\n");
 		return ret;
 	}
+
 	switch (cmd) {
 	case TC_NS_CLIENT_IOCTL_WAIT_EVENT: {
-		ret = tc_ns_wait_event((unsigned int)arg);
+		ret = TC_NS_wait_event((unsigned int)arg);
 		break;
 	}
 	case TC_NS_CLIENT_IOCTL_SEND_EVENT_RESPONSE: {
-		ret = tc_ns_send_event_response((unsigned int)arg);
+		ret = TC_NS_send_event_response((unsigned int)arg);
 		break;
 	}
 	case TC_NS_CLIENT_IOCTL_REGISTER_AGENT: {
-		ret = ioctl_register_agent(dev_file, arg);
+		TC_NS_Shared_MEM *shared_mem = NULL, *tmp_mem = NULL;
+		int find_flag = 0;
+
+		/*find sharedmem */
+		mutex_lock(&dev_file->shared_mem_lock);
+		list_for_each_entry(tmp_mem, &dev_file->shared_mem_list,
+				    head) {
+			if (tmp_mem) {
+				find_flag = 1;
+				shared_mem = tmp_mem;
+				get_sharemem_struct(shared_mem);
+				break;
+			}
+		}
+		mutex_unlock(&dev_file->shared_mem_lock);
+		ret =
+			TC_NS_register_agent(dev_file, (unsigned int)arg,
+					     shared_mem);
+		if (find_flag)
+			put_sharemem_struct(shared_mem);
 		break;
 	}
 	case TC_NS_CLIENT_IOCTL_UNREGISTER_AGENT: {
-		ret = ioctl_unregister_agent(dev_file, arg);
+		struct __smc_event_data *event_data = NULL;
+		event_data = find_event_control((unsigned int)arg);
+		if (event_data == NULL) {
+			tloge("invalid agent id\n");
+			ret = TEEC_ERROR_GENERIC;
+			break;
+		}
+		if (event_data->owner != dev_file) {
+			tloge("invalid unregister request\n");
+			put_agent_event(event_data);
+			ret = TEEC_ERROR_GENERIC;
+			break;
+		}
+		put_agent_event(event_data);
+		ret = TC_NS_unregister_agent((unsigned int)arg);
 		break;
 	}
 	case TC_NS_CLIENT_IOCTL_SYC_SYS_TIME: {
-		ret = tc_ns_sync_sys_time((tc_ns_client_time *)(uintptr_t)arg);
+		ret = TC_NS_sync_sys_time((TC_NS_Time *) arg);
 		break;
 	}
-	case TC_NS_CLIENT_IOCTL_SET_NATIVECA_IDENTITY: {
-		ret = tc_ns_set_native_hash(arg, GLOBAL_CMD_ID_SET_CA_HASH);
+	case TC_NS_CLIENT_IOCTL_SET_NATIVE_IDENTITY: {
+		ret = TC_NS_set_nativeCA_hash(arg);
 		break;
 	}
-	case TC_NS_CLIENT_IOCTL_LOAD_TTF_FILE_AND_NOTCH_HEIGHT: {
-		ret = load_tui_font_file(normal, arg);
+	case TC_NS_CLIENT_IOCTL_LOAD_TTF_FILE_AND_NOTCH_HEIGHT: { /*lint !e30 !e142 */
+		ret =load_tui_font_file(normal,arg);
 		break;
 	}
 	case TC_NS_CLIENT_IOCTL_LOW_TEMPERATURE_MODE: {
 		ret = switch_low_temperature_mode((unsigned int)arg);
 		break;
 	}
-	case TC_NS_CLIENT_IOCTL_LATEINIT: {
-		ret = tc_ns_late_init(arg);
-		break;
-	}
 	default:
-		tloge("invalid cmd!");
+		TCERR("invalid cmd!");
 		return ret;
 	}
-	tlogd("TC_NS_ClientIoctl ret = 0x%x\n", ret);
+
+	TCDEBUG("TC_NS_ClientIoctl ret = 0x%x\n", ret);
 	return ret;
 }
 
-static long tc_client_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+
+static int TC_NS_tui_event(TC_NS_DEV_File *dev_file, void *argp)
+{
+	int ret = 0;
+	unsigned int notch = 0;
+	TEEC_TUI_Parameter tui_param = { 0 };
+
+	if (dev_file == NULL) {
+		TCERR("dev file id erro\n");
+		return -EINVAL; /*lint !e569 */
+	}
+
+	if (argp == NULL) {
+		TCERR("argp is NULL input buffer\n");
+		ret = -EINVAL;
+		return ret;
+	}
+	if (copy_from_user(&tui_param, argp, sizeof(TEEC_TUI_Parameter))) {
+		TCERR("copy from user failed\n");
+		ret = -ENOMEM;
+		return ret;
+	}
+
+	notch = tui_param.value;
+
+	if (TUI_POLL_CANCEL == tui_param.event_type || TUI_POLL_NOTCH == tui_param.event_type) {
+		ret = tui_send_event(tui_param.event_type, notch);
+	} else {
+		TCERR("no permission to send event\n");
+		ret = -1;
+	}
+	return ret;
+}
+static int paramcheck(TC_NS_DEV_File *dev_file, void *argp)
+{
+	if (dev_file == NULL) {
+		TCERR("dev file id erro\n");
+		return -EINVAL;
+	}
+	if (argp == NULL) {
+		TCERR("argp is NULL input buffer\n");
+		return -EINVAL;
+	}
+	return 0;
+}
+static long tc_client_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 {
 	int ret = TEEC_ERROR_GENERIC;
-	void *argp = (void __user *)(uintptr_t)arg;
-	tc_ns_dev_file *dev_file = file->private_data;
-	tc_ns_client_context client_context = {{0}};
-
+	void *argp = (void __user *)arg;
+	TC_NS_DEV_File *dev_file = file->private_data;
+	TC_NS_ClientContext client_context = { { 0 } };
+	int ion_flag = 0;
 	switch (cmd) {
-	/* IOCTLs for the CAs */
+		/* IOCTLs for the CAs */
 	case TC_NS_CLIENT_IOCTL_SES_OPEN_REQ:
 		/* Upvote for peripheral zone votage, needed by Coresight.
-		 * Downvote will be processed inside CFC_RETURN_PMCLK_ON_COND
-		 */
-	/* Fall through */
+		 * Downvote will be processed inside CFC_RETURN_PMCLK_ON_COND */
+		cfc_prepare_clk_pm();
+		CFC_FUNC_ENTRY(tc_client_ioctl);
+		/* Fall through */
 	case TC_NS_CLIENT_IOCTL_SES_CLOSE_REQ:
 	case TC_NS_CLIENT_IOCTL_SEND_CMD_REQ:
 		ret = tc_client_session_ioctl(file, cmd, arg);
 		break;
-	case TC_NS_CLIENT_IOCTL_LOAD_APP_REQ:
-		ret = tc_ns_load_secfile(dev_file, argp);
+
+	case TC_NS_CLIENT_IOCTL_LOAD_APP_REQ: {
+		struct load_app_ioctl_struct ioctl_arg;
+
+		if (paramcheck(dev_file,argp) != 0) {
+			return -EINVAL;
+		}
+		if (copy_from_user(&ioctl_arg, argp, sizeof(ioctl_arg))) {
+			TCERR("copy from user failed\n");
+			ret = -ENOMEM;
+			return ret;
+		}
+
+		ion_flag = is_used_dynamic_mem(&ioctl_arg.uuid);
+
+		if(ion_flag){
+			mutex_lock(&g_operate_session_lock);
+		}
+
+		mutex_lock(&load_app_lock);
+		ret = TC_NS_need_load_image(dev_file->dev_file_id, &ioctl_arg);
+		if (1 == ret) {
+			ret = TC_NS_load_image(dev_file, &ioctl_arg);
+			if (ret)
+				TCERR("load image failed, ret=%x", ret);
+		} else if (0 == ret) {
+			ret = add_cafd_count_by_uuid(&(ioctl_arg.uuid), dev_file->dev_file_id);
+		}
+		mutex_unlock(&load_app_lock);
+
+		if(ion_flag){
+			mutex_unlock(&g_operate_session_lock);
+		}
 		break;
+	}
 	case TC_NS_CLIENT_IOCTL_CANCEL_CMD_REQ:
+		TCDEBUG("come into cancel cmd\n");
 		if (argp == NULL) {
-			tloge("argp is NULL input buffer\n");
+			TCERR("argp is NULL input buffer\n");
 			ret = -EINVAL;
 			break;
 		}
-		if (copy_from_user(&client_context, argp,
-			sizeof(client_context))) {
-			tloge("copy from user failed\n");
+		if (copy_from_user
+		    (&client_context, argp, sizeof(TC_NS_ClientContext))) {
+			TCERR("copy from user failed\n");
 			ret = -ENOMEM;
 			break;
 		}
-		ret = tc_ns_send_cmd(dev_file, &client_context);
+		ret = TC_NS_Send_CMD(dev_file, &client_context);
+		TCDEBUG("cancel cmd end\n");
 		break;
-	/* This is the login information
-	 * and is set teecd when client opens a new session
-	 */
+		/* This is the login information
+		 * and is set teecd when client opens a
+		 * new session */
 	case TC_NS_CLIENT_IOCTL_LOGIN: {
-		ret = tc_ns_client_login_func(dev_file, argp);
+		ret = TC_NS_Client_Login(dev_file, argp);
 		break;
 	}
 	/* IOCTLs for the secure storage daemon */
@@ -2072,126 +2841,132 @@ static long tc_client_ioctl(struct file *file, unsigned int cmd, unsigned long a
 	case TC_NS_CLIENT_IOCTL_REGISTER_AGENT:
 	case TC_NS_CLIENT_IOCTL_UNREGISTER_AGENT:
 	case TC_NS_CLIENT_IOCTL_SYC_SYS_TIME:
-	case TC_NS_CLIENT_IOCTL_LOAD_TTF_FILE_AND_NOTCH_HEIGHT:
-	case TC_NS_CLIENT_IOCTL_SET_NATIVECA_IDENTITY:
+	case TC_NS_CLIENT_IOCTL_LOAD_TTF_FILE_AND_NOTCH_HEIGHT: /*lint !e30 !e142 */
+	case TC_NS_CLIENT_IOCTL_SET_NATIVE_IDENTITY:
 	case TC_NS_CLIENT_IOCTL_LOW_TEMPERATURE_MODE:
-	case TC_NS_CLIENT_IOCTL_LATEINIT:
 		ret = tc_agent_ioctl(file, cmd, arg);
 		break;
-#if defined(CONFIG_TEE_TUI)
+	case TC_NS_CLIENT_IOCTL_TST_CMD_REQ: {
+		TCDEBUG("come into tst cmd\n");
+		ret = TC_NS_TST_CMD(dev_file, argp);
+		break;
+	}
 	/* for tui service inform TUI TA  event type */
 	case TC_NS_CLIENT_IOCTL_TUI_EVENT: {
-		ret = tc_ns_tui_event(dev_file, argp);
+		TCDEBUG("come into tui cmd\n");
+		ret = TC_NS_tui_event(dev_file, argp);
 		break;
 	}
-#endif
-	case TC_NS_CLIENT_IOCTL_GET_TEE_VERSION: {
-		ret = tc_ns_get_tee_version(dev_file, argp);
-		break;
-	}
-
 	default:
-		tloge("invalid cmd 0x%x!", cmd);
+		TCERR("invalid cmd!");
 		break;
 	}
 
-	tlogd("tc client ioctl ret = 0x%x\n", ret);
-	return ret;
+	TCDEBUG("TC_NS_ClientIoctl ret = 0x%x\n", ret);
+
+	CFC_RETURN_PMCLK_ON_COND(tc_client_ioctl, 0, ret,
+			   cmd == TC_NS_CLIENT_IOCTL_SES_OPEN_REQ);
 }
+
 
 static int tc_client_open(struct inode *inode, struct file *file)
 {
-	int ret;
-	tc_ns_dev_file *dev = NULL;
+	int ret = TEEC_ERROR_GENERIC;
+	TC_NS_DEV_File *dev = NULL;
 
 	ret = check_process_access(current, NON_HIDL_SIDE);
 	if (ret) {
-		tloge(KERN_ERR "teecd service may be exploited 0x%x\n", ret);
+		TCERR(KERN_ERR "teecd service may be exploited 0x%x\n", ret);
 		return -EPERM;
 	}
-#ifdef SECURITY_AUTH_ENHANCE
-	mutex_lock(&g_teecd_hash_lock);
-	if (!g_teecd_hash_enable) {
-		if (memset_s((void *)g_teecd_hash, sizeof(g_teecd_hash),
-			0x00, sizeof(g_teecd_hash))) {
-			tloge("client open memset failed!\n");
-			mutex_unlock(&g_teecd_hash_lock);
+	if(!g_teecd_hash_enable) {
+		if(memset_s((void *)teecd_hash, sizeof(teecd_hash), 0x00, sizeof(teecd_hash))) {
+			tloge("tc_client_open memset failed!\n");
 			return -EFAULT;
 		}
-		g_teecd_hash_enable = (current->mm != NULL &&
-			!tee_calc_task_hash(g_teecd_hash,
-			(uint32_t)SHA256_DIGEST_LENTH, current));
+		g_teecd_hash_enable = (current->mm && !tee_calc_task_hash(teecd_hash, false, current));
 		if (!g_teecd_hash_enable) {
 			tloge("calc teecd hash failed\n");
-			mutex_unlock(&g_teecd_hash_lock);
 			return -EFAULT;
 		}
 	}
-	mutex_unlock(&g_teecd_hash_lock);
-#endif
+
 	g_teecd_task = current->group_leader;
 	file->private_data = NULL;
-	ret = tc_ns_client_open(&dev, TEE_REQ_FROM_USER_MODE);
-	if (ret == TEEC_SUCCESS)
+	ret = TC_NS_ClientOpen(&dev, TEE_REQ_FROM_USER_MODE);
+	if (TEEC_SUCCESS == ret)
 		file->private_data = dev;
+
 	return ret;
+}
+
+static int NS_ClientCloseTeecdNotAgent(TC_NS_DEV_File *dev)
+{
+	if (dev == NULL) {
+		tloge("invalid dev(null)\n");
+		return TEEC_ERROR_GENERIC;
+	}
+
+	mutex_lock(&g_tc_ns_dev_list.dev_lock);
+	list_del(&dev->head);
+	if (g_tc_ns_dev_list.dev_file_cnt != 0) {
+		g_tc_ns_dev_list.dev_file_cnt--;
+		tlogd("dev file cnt:%d\n", g_tc_ns_dev_list.dev_file_cnt);
+	} else {
+		tloge("dev file list had been empty already");
+	}
+	kfree(dev);
+	mutex_unlock(&g_tc_ns_dev_list.dev_lock);
+
+	return TEEC_SUCCESS;
 }
 
 static int tc_client_close(struct inode *inode, struct file *file)
 {
 	int ret = TEEC_ERROR_GENERIC;
-	tc_ns_dev_file *dev = file->private_data;
-	bool check_value = false;
+	TC_NS_DEV_File *dev = file->private_data;
+
 	/* release tui resource */
-#if defined(CONFIG_TEE_TUI)
-	teec_tui_parameter tui_param = {0};
 	if (dev->dev_file_id == tui_attach_device())
-		tui_send_event(TUI_POLL_CANCEL, &tui_param);
-#endif
-	check_value = (g_teecd_task == current->group_leader) &&
-		(!tc_ns_get_uid());
-	if (check_value == true) {
-		/* for teecd close fd */
-		check_value = g_teecd_task->flags & PF_EXITING ||
-			current->flags & PF_EXITING;
-		if (check_value == true) {
-			/* when teecd is be killed or crash */
-			tloge("teecd is killed, something bad must be happened!!!\n");
-			tc_ns_send_event_response_all();
-			if (is_system_agent(dev)) {
-				/* for teecd agent close fd */
-				ret = tc_ns_client_close(dev, 1);
+		tui_send_event(TUI_POLL_CANCEL, 0);
+
+	if ((g_teecd_task == current->group_leader) && (!TC_NS_get_uid())) {
+		/*for teecd close fd*/
+		if (g_teecd_task->flags & PF_EXITING
+			|| current->flags & PF_EXITING) {
+			/*when teecd is be killed or crash*/
+			TCERR("teecd is killed, something bad must be happened!!!\n");
+			TC_NS_send_event_response_all();
+			if (TC_NS_is_system_agent_client(dev)) {
+				/*for teecd agent close fd*/
+				ret = TC_NS_ClientClose(dev, 1);
 			} else {
-				/* for ca damon close fd */
-				ret = ns_client_close_teecd_not_agent(dev);
+				/*for ca damon close fd*/
+				ret = NS_ClientCloseTeecdNotAgent(dev);
 			}
 		} else {
-			/* for ca damon close fd when ca damon close fd
-			 *  later than HIDL thread
-			 */
-			ret = tc_ns_client_close(dev, 0);
+			/*for ca damon close fd when ca damon close fd later than HIDL thread*/
+			ret = TC_NS_ClientClose(dev, 0);
 		}
 	} else {
-		/* for CA(HIDL thread) close fd */
-		ret = tc_ns_client_close(dev, 0);
+		/*for CA(HIDL thread) close fd*/
+		ret = TC_NS_ClientClose(dev, 0);
 	}
+
 	file->private_data = NULL;
 	return ret;
 }
 
-#ifdef CONFIG_COMPAT
-long tc_compat_client_ioctl(struct file *flie, unsigned int cmd,
-	unsigned long arg)
-{
-	long ret;
 
-	if (flie == NULL)
-		return -EINVAL;
-	arg = (unsigned long)(uintptr_t)compat_ptr(arg);
+long tc_compat_client_ioctl(struct file *flie, unsigned int cmd,
+			    unsigned long arg)
+{
+	long ret = -ENOIOCTLCMD;
+
+	arg = (unsigned long)compat_ptr(arg);
 	ret = tc_client_ioctl(flie, cmd, arg);
 	return ret;
 }
-#endif
 
 static const struct file_operations TC_NS_ClientFops = {
 	.owner = THIS_MODULE,
@@ -2199,221 +2974,192 @@ static const struct file_operations TC_NS_ClientFops = {
 	.release = tc_client_close,
 	.unlocked_ioctl = tc_client_ioctl,
 	.mmap = tc_client_mmap,
-#ifdef CONFIG_COMPAT
 	.compat_ioctl = tc_compat_client_ioctl,
-#endif
 };
 
-#ifdef CONFIG_TEE_TUI
-static int g_tui_flag = 0;
-#endif
-
-static int tc_ns_client_init(struct device **class_dev)
-{
-	int ret;
-
-	tlogd("tc_ns_client_init");
-	g_np = of_find_compatible_node(NULL, NULL, "trusted_core");
-
-	if (g_np == NULL) {
-		tloge("No trusted_core compatible node found.\n");
-		return -ENODEV;
-	}
-	ret = alloc_chrdev_region(&g_tc_ns_client_devt, 0, 1, TC_NS_CLIENT_DEV);
-	if (ret < 0) {
-		tloge("alloc_chrdev_region failed %d", ret);
-		return -EFAULT;
-	}
-	g_driver_class = class_create(THIS_MODULE, TC_NS_CLIENT_DEV);
-	if (IS_ERR_OR_NULL(g_driver_class)) {
-		ret = -ENOMEM;
-		tloge("class_create failed %d", ret);
-		goto chrdev_region_unregister;
-	}
-	*class_dev = device_create(g_driver_class, NULL, g_tc_ns_client_devt,
-		NULL, TC_NS_CLIENT_DEV);
-	if (IS_ERR_OR_NULL(*class_dev)) {
-		tloge("class_device_create failed");
-		ret = -ENOMEM;
-		goto destroy_class;
-	}
-	(*class_dev)->of_node = g_np;
-	cdev_init(&g_tc_ns_client_cdev, &TC_NS_ClientFops);
-	g_tc_ns_client_cdev.owner = THIS_MODULE;
-	ret = cdev_add(&g_tc_ns_client_cdev,
-		MKDEV(MAJOR(g_tc_ns_client_devt), 0), 1);
-	if (ret < 0) {
-		tloge("cdev_add failed %d", ret);
-		goto class_device_destroy;
-	}
-	ret = memset_s(&g_tc_ns_dev_list, sizeof(g_tc_ns_dev_list), 0,
-		sizeof(g_tc_ns_dev_list));
-	if (ret != EOK)
-		goto class_device_destroy;
-	INIT_LIST_HEAD(&g_tc_ns_dev_list.dev_file_list);
-	mutex_init(&g_tc_ns_dev_list.dev_lock);
-	mutex_init(&g_tee_crypto_hash_lock);
-	INIT_LIST_HEAD(&g_service_list);
-	return ret;
-
-class_device_destroy:
-	device_destroy(g_driver_class, g_tc_ns_client_devt);
-destroy_class:
-	class_destroy(g_driver_class);
-chrdev_region_unregister:
-	unregister_chrdev_region(g_tc_ns_client_devt, 1);
-	return ret;
-}
-
-static int tc_teeos_init(struct device *class_dev)
-{
-	int ret;
-
-	ret = smc_init_data(class_dev);
-	if (ret < 0)
-		return ret;
-	ret = tc_mem_init();
-	if (ret < 0)
-		goto smc_data_free;
-	agent_init();
-	ret = tc_ns_register_ion_mem();
-	if (ret < 0) {
-		pr_err("Failed to register ion mem in tee.\n");
-		goto free_agent;
-	}
-#if defined(CONFIG_TEELOG)
-	ret = tc_ns_register_rdr_mem();
-	if (ret)
-		tloge("TC_NS_register_rdr_mem failed %x\n", ret);
-	ret = teeos_register_exception();   /* 0:error */
-	if (ret != 0)
-		tloge("teeos_register_exception to rdr failed\n");
-#endif
-	ret = tz_spi_init(class_dev, g_np);
-	if (ret)
-		goto free_agent;
-	return ret;
-
-free_agent:
-	agent_exit();
-	tc_mem_destroy();
-smc_data_free:
-	smc_free_data();
-	return ret;
-}
-
-static int tc_tui_init(struct device *class_dev)
-{
-	int ret = 0;
-
-#ifdef CONFIG_TEE_TUI
-	ret = init_tui(class_dev);
-	if (ret) {
-		tloge("init_tui failed 0x%x\n", ret);
-		g_tui_flag = 1;
-		/* go on init, skip tui init fail. */
-	}
-#endif
-
-#if (KERNEL_VERSION(4, 14, 0) > LINUX_VERSION_CODE)
-	g_drm_ion_client = hisi_ion_client_create("DRM_ION");
-	if (IS_ERR_OR_NULL(g_drm_ion_client)) {
-		tloge("in %s err: drm ion client create failed!\n", __func__);
-		ret = -EFAULT;
-		goto free_tui;
-	}
-#endif
-	if (init_smc_svc_thread()) {
-		ret = -EFAULT;
-		goto free_tui;
-	}
-#ifdef DYNAMIC_ION
-	if (init_dynamic_mem()) {
-		tloge("init_dynamic_mem Failed\n");
-		ret = -EFAULT;
-		goto free_tui;
-	}
-#endif
-	return ret;
-
-free_tui:
-	/* if error happens */
-#ifdef CONFIG_TEE_TUI
-	if (!g_tui_flag)
-		tui_exit();
-#endif
-#if (KERNEL_VERSION(4, 14, 0) > LINUX_VERSION_CODE)
-	if (g_drm_ion_client != NULL) {
-		ion_client_destroy(g_drm_ion_client);
-		g_drm_ion_client = NULL;
-	}
-#endif
-	return ret;
-}
+static int tui_flag = 0;
 
 static __init int tc_init(void)
 {
 	struct device *class_dev = NULL;
 	int ret = 0;
+	errno_t sret;
+	TCDEBUG("tc_ns_client_init");
+	np = of_find_compatible_node(NULL, NULL, "trusted_core");
+	if (!np) {
+		TCERR("No trusted_core compatible node found.\n");
+		return -ENODEV;
+	}
 
-	ret = tc_ns_client_init(&class_dev);
-	if (ret != 0)
-		return ret;
+	ret = alloc_chrdev_region(&tc_ns_client_devt, 0, 1, TC_NS_CLIENT_DEV);
+	if (ret < 0) {
+		TCERR("alloc_chrdev_region failed %d", ret);
+		return -EFAULT;
+	}
 
-	ret = tc_teeos_init(class_dev);
-	if (ret != 0)
+	driver_class = class_create(THIS_MODULE, TC_NS_CLIENT_DEV);
+	if (IS_ERR(driver_class)) {
+		ret = -ENOMEM;
+		TCERR("class_create failed %d", ret);
+		goto unregister_chrdev_region;
+	}
+
+	class_dev = device_create(driver_class, NULL, tc_ns_client_devt, NULL,
+				  TC_NS_CLIENT_DEV);
+	if (IS_ERR(class_dev)) {
+		TCERR("class_device_create failed");
+		ret = -ENOMEM;
+		goto class_destroy;
+	}
+
+	class_dev->of_node = np;
+
+	cdev_init(&tc_ns_client_cdev, &TC_NS_ClientFops);
+	tc_ns_client_cdev.owner = THIS_MODULE;
+
+	ret = cdev_add(&tc_ns_client_cdev,
+		       MKDEV(MAJOR(tc_ns_client_devt), 0), 1);
+	if (ret < 0) {
+		TCERR("cdev_add failed %d", ret);
+		goto class_device_destroy;
+	}
+
+	sret = memset_s(&g_tc_ns_dev_list, sizeof(g_tc_ns_dev_list),
+			0, sizeof(g_tc_ns_dev_list));
+	if (EOK != sret)
 		goto class_device_destroy;
 
-	ret = tc_tui_init(class_dev);
-	if (ret != 0)
-		goto free_teeos;
-	return ret;
+	g_tc_ns_dev_list.dev_file_cnt = 0;
+	INIT_LIST_HEAD(&g_tc_ns_dev_list.dev_file_list);
+	mutex_init(&g_tc_ns_dev_list.dev_lock);
+	mutex_init(&g_tee_crypto_hash_lock);
 
-free_teeos:
+	ret = smc_init_data(class_dev);
+	if (ret < 0)
+		goto class_device_destroy;
+
+	if (tc_mem_init())
+		goto smc_data_free;
+
+	ret = agent_init();
+	if (ret < 0)
+		goto free_shared_mem;
+
+	ret = TC_NS_register_ion_mem();
+	if (ret < 0) {
+		pr_err("Failed to register ion mem in tee.\n");
+		goto free_agent;
+	}
+
+	ret = TC_NS_register_rdr_mem();
+	if (ret)
+		TCERR("TC_NS_register_rdr_mem failed %x\n", ret);
+
+	ret = teeos_register_exception();	/*0:error */
+	if (0 == ret)
+		TCERR("teeos_register_exception to rdr failed\n");
+	else
+		ret = 0;
+
+	ret = tz_spi_init(class_dev, np);
+
+	if (ret)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
+		goto free_agent;
+#else
+		goto free_drm_ion;
+#endif
+
+	ret = init_tui(class_dev);
+	if (ret) {
+		TCERR("init_tui failed 0x%x\n", ret);
+		tui_flag = 1;
+		/* go on init, skip tui init fail. */
+	}
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
+	drm_ion_client = hisi_ion_client_create("DRM_ION");
+
+	if (IS_ERR(drm_ion_client)) {
+		TCERR("in %s err: drm ion client create failed!\n",
+		      __func__);
+		ret = -EFAULT;
+		goto free_tui;
+	}
+#endif
+
+	if (init_smc_svc_thread()) {
+		TCERR("init_smc_svc_thread failed\n");
+		goto free_tui;
+	}
+	if (init_dynamic_mem()) {
+		TCERR("init_dynamic_mem Failed\n");
+		goto free_tui;
+	}
+	return 0;
+	/* if error happens */
+free_tui:
+	if (!tui_flag)
+		tui_exit();
 	tz_spi_exit();
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
+free_drm_ion:
+	if (drm_ion_client) {
+		ion_client_destroy(drm_ion_client);
+		drm_ion_client = NULL;
+	}
+#endif
+
+free_agent:
 	agent_exit();
+free_shared_mem:
 	tc_mem_destroy();
+smc_data_free:
 	smc_free_data();
 class_device_destroy:
-	device_destroy(g_driver_class, g_tc_ns_client_devt);
-	class_destroy(g_driver_class);
-	unregister_chrdev_region(g_tc_ns_client_devt, 1);
+	device_destroy(driver_class, tc_ns_client_devt);
+class_destroy:
+	class_destroy(driver_class);
+unregister_chrdev_region:
+	unregister_chrdev_region(tc_ns_client_devt, 1);
 
 	return ret;
 }
 
 static void tc_exit(void)
 {
-	tlogd("otz_client exit");
-#ifdef CONFIG_TEE_TUI
-	if (!g_tui_flag)
+	TCDEBUG("otz_client exit");
+
+	if (!tui_flag)
 		tui_exit();
-#endif
+
 	tz_spi_exit();
-	device_destroy(g_driver_class, g_tc_ns_client_devt);
-	class_destroy(g_driver_class);
-	unregister_chrdev_region(g_tc_ns_client_devt, 1);
+	device_destroy(driver_class, tc_ns_client_devt);
+	class_destroy(driver_class);
+	unregister_chrdev_region(tc_ns_client_devt, 1);
 	smc_free_data();
+
 	agent_exit();
 	tc_mem_destroy();
-#if (KERNEL_VERSION(4, 14, 0) > LINUX_VERSION_CODE)
-	if (g_drm_ion_client != NULL) {
-		ion_client_destroy(g_drm_ion_client);
-		g_drm_ion_client = NULL;
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
+	if (drm_ion_client) {
+		ion_client_destroy(drm_ion_client);
+		drm_ion_client = NULL;
 	}
 #endif
-	if (g_tee_shash_tfm != NULL) {
+
+	if (g_tee_shash_tfm) {
 		crypto_free_shash(g_tee_shash_tfm);
-		g_tee_init_crypt_state = 0;
+		tee_init_crypt_state = 0;
 		g_tee_shash_tfm = NULL;
 	}
-#ifdef DYNAMIC_ION
 	exit_dynamic_mem();
-#endif
 }
 
 MODULE_AUTHOR("q00209673");
 MODULE_DESCRIPTION("TrustCore ns-client driver");
-MODULE_VERSION("1.10");
+MODULE_VERSION("1.10");/*lint !e64*/
 fs_initcall_sync(tc_init);
 module_exit(tc_exit);
