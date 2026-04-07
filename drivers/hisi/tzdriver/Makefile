@@ -24,7 +24,8 @@ endif
 
 obj-$(CONFIG_TEE_TUI) += tui.o
 
-obj-$(CONFIG_TEE_LIBHWSECUREC) += libhwsecurec/
+ccflags-y += 	-Ilib/libc_sec/src \
+		-Ilib/libc_sec/include
 
 obj-$(CONFIG_TEE_CFC) += cfc_data.o cfc_coresight.o
 $(obj)/cfc_data.o: $(obj)/cfc_data.c
@@ -36,8 +37,7 @@ $(obj)/rule.out: $(src)/rule.in
 
 ccflags-y += 	-Idrivers/video/hisi/dss \
 		-Idrivers/video/fbdev/hisi/dss \
-		-Idrivers/staging/android \
-		-Idrivers/hisi/tzdriver/libhwsecurec
+		-Idrivers/staging/android
 
 ifdef CONFIG_TEE_CFC
   rename-text-section-to := .cfc.text

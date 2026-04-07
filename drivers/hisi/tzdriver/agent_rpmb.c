@@ -10,7 +10,7 @@
 /*#define TC_DEBUG*/
 #include "teek_ns_client.h"
 #include "agent.h"
-#include "libhwsecurec/securec.h"
+#include <securec.h>
 #include "tc_ns_log.h"
 #include "smc.h"
 #include <linux/time.h>
