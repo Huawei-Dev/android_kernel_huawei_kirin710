@@ -1,15 +1,13 @@
-/*
- * Copyright (c) Huawei Technologies Co., Ltd. 2016-2019. All rights reserved.
- * Description:  Function declaration for alloc global operation and pass params to TEE.
- * Author: qiqingchao  q00XXXXXX
- * Create: 2016-06-21
- */
 #ifndef _GP_OPS_H_
 #define _GP_OPS_H_
-#include "tc_ns_client.h"
-#include "teek_ns_client.h"
 
-int tc_user_param_valid(tc_ns_client_context *client_context, unsigned int index);
-int tc_client_call(tc_ns_client_context *client_context,
-	tc_ns_dev_file *dev_file, tc_ns_session *session, uint8_t flags);
+extern struct ion_client *drm_ion_client;
+int tc_user_param_valid(TC_NS_ClientContext *client_context, int n);
+#ifdef SECURITY_AUTH_ENHANCE
+int tc_client_call(TC_NS_ClientContext *client_context,
+		   TC_NS_DEV_File *dev_file, uint8_t flags, TC_NS_Token *tc_ns_token);
+#else
+int tc_client_call(TC_NS_ClientContext *context, TC_NS_DEV_File *dev_file,
+		   uint8_t flags);
+#endif
 #endif

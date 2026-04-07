@@ -1,8 +1,8 @@
-
 #ifndef TC_NS_LOG_H_
 #define TC_NS_LOG_H_
 
 #include <linux/printk.h>
+
 enum {
 	TZ_DEBUG_VERBOSE = 0,
 	TZ_DEBUG_DEBUG,
@@ -11,43 +11,37 @@ enum {
 	TZ_DEBUG_ERROR,
 };
 
-#ifdef DEF_ENG
-#define TEE_ENG_LOG_MASK 2
-#define TEE_LOG_MASK TEE_ENG_LOG_MASK
-#else
-#define TEE_USR_LOG_MASK 3
-#define TEE_LOG_MASK TEE_USR_LOG_MASK
-#endif
+#define TEE_LOG_MASK TZ_DEBUG_VERBOSE
 
-#define tlogv(fmt, args...) \
+#define tlogv(fmt, args...) /*lint -save -e774*/ \
 do { \
 	if (TZ_DEBUG_VERBOSE >= TEE_LOG_MASK) \
-		pr_info("(%i, %s)%s: " fmt, current->pid, current->comm, __func__, ## args); \
-} while (0)
+		pr_info("(%i, %s)%s: " fmt, current->pid, current->comm,  __func__, ## args); \
+} while (0) /*lint -restore*/
 
 
-#define tlogd(fmt, args...) \
+#define tlogd(fmt, args...) /*lint -save -e774*/ \
 do { \
 	if (TZ_DEBUG_DEBUG >= TEE_LOG_MASK) \
-		pr_info("(%i, %s)%s: " fmt, current->pid, current->comm, __func__, ## args); \
-} while (0)
+		pr_info("(%i, %s)%s: " fmt, current->pid, current->comm,  __func__, ## args); \
+} while (0) /*lint -restore*/
 
 
-#define tlogi(fmt, args...) \
+#define tlogi(fmt, args...) /*lint -save -e774*/ \
 do { \
 	if (TZ_DEBUG_INFO >= TEE_LOG_MASK) \
-		pr_info("(%i, %s)%s: " fmt, current->pid, current->comm, __func__, ## args); \
-} while (0)
+		pr_info("(%i, %s)%s: " fmt, current->pid, current->comm,  __func__, ## args); \
+} while (0) /*lint -restore*/
 
 
-#define tlogw(fmt, args...) \
+#define tlogw(fmt, args...) /*lint -save -e774*/ \
 do { \
 	if (TZ_DEBUG_WARN >= TEE_LOG_MASK) \
-		pr_warn("(%i, %s)%s: " fmt, current->pid, current->comm, __func__, ## args);\
-} while (0)
+		pr_warn("(%i, %s)%s: " fmt, current->pid, current->comm,  __func__, ## args);\
+} while (0) /*lint -restore*/
 
 
 #define tloge(fmt, args...) \
-		pr_err("(%i, %s)%s: " fmt, current->pid, current->comm, __func__, ## args)
+		pr_err("(%i, %s)%s: " fmt, current->pid, current->comm,  __func__, ## args)
 
 #endif
