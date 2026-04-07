@@ -8,6 +8,7 @@
 
 #include "teek_client_type.h"
 #include "tc_ns_client.h"
+#include <linux/slab.h>
 
 #define TC_DEBUG
 
