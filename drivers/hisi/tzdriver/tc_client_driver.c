@@ -1561,8 +1561,12 @@ static void remove_unused_session(TC_NS_Service *service,
 	put_session_struct(saved_session);
 }
 
-void dump_hash(char *my_pkname, unsigned char *hash_buf)
+static void dump_hash(const char *my_pkname, const unsigned char *hash_buf)
 {
+	if (!hash_buf || !my_pkname) {
+		return;
+	}
+
 	TCDEBUG("SHA256 hash for %s:\n", my_pkname);
 	TCDEBUG("{0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, ",
 		*(hash_buf + 0), *(hash_buf + 1), *(hash_buf + 2), *(hash_buf + 3),
@@ -1581,72 +1585,66 @@ void dump_hash(char *my_pkname, unsigned char *hash_buf)
 		*(hash_buf + 30), *(hash_buf + 31));
 }
 
-void spoof_hash(char *my_pkname, unsigned char *hash_buf)
+static void apply_spoof_hash(const char *my_pkname,
+			     unsigned char *hash_buf,
+			     const unsigned char *src_hash)
 {
-	unsigned char keystore_hash[32] = {0xAA, 0x3B, 0x24, 0x94, 0xD7, 0xB8, 0x05, 0x42,
+	tlogd("Spoof now %s process\n", my_pkname);
+	memcpy(hash_buf, src_hash, MAX_SHA_256_SZ);
+}
+
+static void spoof_hash(const char *my_pkname, unsigned char *hash_buf)
+{
+	static const unsigned char keystore_hash[32] = {0xAA, 0x3B, 0x24, 0x94, 0xD7, 0xB8, 0x05, 0x42,
 					   0x34, 0x65, 0x7E, 0x10, 0x6A, 0xC8, 0x5B, 0x64,
 					   0xBD, 0xFE, 0x7F, 0x65, 0x77, 0xED, 0x26, 0x2F,
 					   0x15, 0x2A, 0x8A, 0x8C, 0x03, 0x1D, 0x81, 0x69};
 
-	unsigned char gatekeeper_hash[32] = {0xAF, 0x49, 0x6D, 0x17, 0x5E, 0x66, 0xC0, 0x45,
+	static const unsigned char gatekeeper_hash[32] = {0xAF, 0x49, 0x6D, 0x17, 0x5E, 0x66, 0xC0, 0x45,
 					   0xEE, 0xFC, 0xC0, 0xA9, 0x0B, 0x04, 0x2E, 0xB2,
 					   0x32, 0x18, 0xA4, 0x9F, 0x73, 0xA3, 0x67, 0x29,
 					   0x16, 0xAD, 0x47, 0x90, 0x3F, 0x50, 0xA1, 0xA9};
 
-	unsigned char fingerprint_hash[32] = {0x2F, 0x63, 0xF0, 0x29, 0x92, 0x51, 0x86, 0xB2,
+	static const unsigned char fingerprint_hash[32] = {0x2F, 0x63, 0xF0, 0x29, 0x92, 0x51, 0x86, 0xB2,
 					    0xDF, 0xB3, 0xA3, 0x14, 0x15, 0xC3, 0xAD, 0x30,
 					    0x7E, 0x52, 0x75, 0x5A, 0xBC, 0x43, 0x7B, 0xAE,
 					    0x42, 0x3E, 0x9C, 0x38, 0xAB, 0x45, 0x52, 0xCB};
 	
-	unsigned char aptouch_hash[32] = {0x3F, 0x6B, 0x74, 0xF3, 0xE0, 0x79, 0x15, 0x29,
+	static const unsigned char aptouch_hash[32] = {0x3F, 0x6B, 0x74, 0xF3, 0xE0, 0x79, 0x15, 0x29,
 					  0x07, 0x57, 0x64, 0x42, 0x9C, 0x05, 0x98, 0x9F,
 					  0xBE, 0x24, 0x5E, 0x30, 0x3C, 0xDD, 0x50, 0x25,
 					  0xF1, 0xD0, 0xB1, 0x3C, 0x36, 0x32, 0xEC, 0x8D};
 
-	unsigned char omx_hash[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	static const unsigned char omx_hash[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 	//TC_NS_OpenSession try to hash for /vendor/bin/hw/android.hardware.drm@1.1-service.widevine
-	unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E, 
+	static const unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E, 
 					0x09, 0xCA, 0xFF, 0x44, 0x7A, 0xFA, 0xBB, 0x87, 
 					0x15, 0x3A, 0x16, 0x1E, 0xAC, 0x46, 0x09, 0xDB,
 					0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};
 
-	/*unsigned char widevine_hash[32] = {0x9C, 0xEC, 0x5B, 0x8C, 0x8C, 0xAF, 0x35, 0x97,
-					0x84, 0x43, 0x8C, 0x00, 0xF7, 0xA5, 0xCB, 0x50,
-					0x18, 0x2B, 0xAC, 0x31, 0xFA, 0x31, 0xDE, 0x70,
-					0xA9, 0xD4, 0x6C, 0xF8, 0xBF, 0x37, 0x69, 0x4F};*/
-
-
-	tlogd("TeeHash find %s process\n",my_pkname);
-
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.keymaster@3.0-service", 53))
-		memcpy(hash_buf, keystore_hash, MAX_SHA_256_SZ);
-	
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service", 54)) {
-		tlogd("Spoof now %s process\n",my_pkname);
-		memcpy(hash_buf, gatekeeper_hash, MAX_SHA_256_SZ);
+	if (!hash_buf || !my_pkname) {
+		return;
 	}
 
-	if (!strncmp(my_pkname, "/vendor/bin/hw/vendor.huawei.hardware.biometrics.fingerprint@2.1-service", 72))
-		memcpy(hash_buf, fingerprint_hash, MAX_SHA_256_SZ);
+	tlogd("TeeHash find %s process\n", my_pkname);
 
-	if (!strncmp(my_pkname, "/system/vendor/bin/aptouch_daemon", 33)) {
-		tlogd("Spoof now %s process\n",my_pkname);
-		memcpy(hash_buf, aptouch_hash, MAX_SHA_256_SZ);
+	if (!strcmp(my_pkname, "/vendor/bin/hw/android.hardware.keymaster@3.0-service")) {
+		apply_spoof_hash(my_pkname, hash_buf, keystore_hash);
+	} else if (!strcmp(my_pkname, "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service")) {
+		apply_spoof_hash(my_pkname, hash_buf, gatekeeper_hash);
+	} else if (!strcmp(my_pkname, "/vendor/bin/hw/vendor.huawei.hardware.biometrics.fingerprint@2.1-service")) {
+		apply_spoof_hash(my_pkname, hash_buf, fingerprint_hash);
+	} else if (!strcmp(my_pkname, "/system/vendor/bin/aptouch_daemon")) {
+		apply_spoof_hash(my_pkname, hash_buf, aptouch_hash);
+	} else if (!strcmp(my_pkname, "/vendor/bin/hw/android.hardware.media.omx@1.0-service")) {
+		apply_spoof_hash(my_pkname, hash_buf, omx_hash);
+	} else if (!strcmp(my_pkname, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine")) {
+		apply_spoof_hash(my_pkname, hash_buf, widevine_hash);
 	}
-
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.media.omx@1.0-service", 53)) {
-		tlogd("Spoof now %s process\n",my_pkname);
-		memcpy(hash_buf, omx_hash, MAX_SHA_256_SZ);
-	}
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
-		tlogd("Spoof now %s process\n",my_pkname);
-		memcpy(hash_buf, widevine_hash, MAX_SHA_256_SZ);
-	}
-
 }
 
 int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
@@ -1688,13 +1686,6 @@ int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 		}
 	}
 		
-	/* Change login information */
-	/*if (!strncmp(dev_file->pkg_name, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
-		tlogd("change %s process name\n",dev_file->pkg_name);
-		strncpy(dev_file->pkg_name, "/vendor/preavs/bin/hw/android.hardware.drm@1.1-service.widevine", 63);
-		tlogd("to %s process name\n",dev_file->pkg_name);		
-	}*/
-	
 	mutex_lock(&dev_file->service_lock);
 	service = tc_find_service(&dev_file->services_list, context->uuid); /*lint !e64 */
 
@@ -1805,12 +1796,12 @@ find_service:
 	/* use the lock to make sure the TA sessions cannot be concurrency opened */
 	mutex_lock(&g_operate_session_lock);
 
-	TCDEBUG("TC_NS_OpenSession try to hash for %s\n",dev_file->pkg_name);
+	TCDEBUG("TC_NS_OpenSession try to hash for %s\n", dev_file->pkg_name);
 	dump_hash(dev_file->pkg_name, hash_buf);
 	
 	spoof_hash(dev_file->pkg_name, hash_buf);
 	
-	TCDEBUG("TC_NS_OpenSession new hash for %s\n",dev_file->pkg_name);
+	TCDEBUG("TC_NS_OpenSession new hash for %s\n", dev_file->pkg_name);
 	dump_hash(dev_file->pkg_name, hash_buf);
 
 	/*cp hash_buf to global var, it is protected by lock */
