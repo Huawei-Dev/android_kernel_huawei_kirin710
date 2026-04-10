@@ -240,6 +240,7 @@ source "drivers/hwnet/Kconfig"
 source "drivers/hwfdleak/Kconfig"
 
 source "drivers/hwerecovery/Kconfig"
+
 source "drivers/hwmemcheck/Kconfig"
 
 source "drivers/devkit/audiokit/Kconfig"
@@ -247,6 +248,7 @@ source "drivers/devkit/audiokit/Kconfig"
 source "drivers/spmi_hisi/Kconfig"
 
 source "drivers/devkit/lcdkit/Kconfig"
+
 source "drivers/dubai/Kconfig"
 
 source "drivers/cfi/Kconfig"
@@ -259,5 +261,4 @@ source "drivers/connectivity/Kconfig"
 
 source "drivers/storage_rofa/Kconfig"
 
-source "drivers/hwxcollie/Kconfig"
 endmenu
