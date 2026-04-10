@@ -205,8 +205,7 @@ obj-$(CONFIG_LOGGER_EXTEND)	+= log/
 obj-$(CONFIG_HW_ZEROHUNG) += hwzerohung/
 obj-$(CONFIG_AUDIOKIT) += devkit/audiokit/
 obj-y += contexthub/
-# the cfi is for CFI test case
-obj-y += cfi/
+
 obj-$(CONFIG_HUAWEI_DUBAI) += dubai/
 obj-$(CONFIG_HUAWEI_PLATFORM) += huawei_platform/
 obj-$(CONFIG_HW_FDLEAK) += hwfdleak/
