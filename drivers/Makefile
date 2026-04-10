@@ -204,7 +204,6 @@ obj-$(CONFIG_HUAWEI_DSM_IOMT_HOST)	+= iomt_host/
 obj-$(CONFIG_LOGGER_EXTEND)	+= log/
 obj-$(CONFIG_HUAWEI_BFM) += hwbfm/
 obj-$(CONFIG_HW_ZEROHUNG) += hwzerohung/
-obj-$(CONFIG_HW_MEMCHECK) += hwmemcheck/
 obj-$(CONFIG_AUDIOKIT) += devkit/audiokit/
 obj-y += contexthub/
 # the cfi is for CFI test case
