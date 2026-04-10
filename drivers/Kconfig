@@ -239,8 +239,6 @@ source "drivers/hwnet/Kconfig"
 
 source "drivers/hwfdleak/Kconfig"
 
-source "drivers/hwerecovery/Kconfig"
-
 source "drivers/devkit/audiokit/Kconfig"
 
 source "drivers/spmi_hisi/Kconfig"
