@@ -27,7 +27,7 @@
 #define CONFIG_ION_ALLOC_BUFFER (1)
 #endif
 
-#if !defined(CONFIG_SWITCH) || !defined(CONFIG_DP_AUX_SWITCH) || !defined(CONFIG_HW_DP_SOURCE)
+#if !defined(CONFIG_SWITCH)
 #define CONFIG_DP_ENABLE (0)
 #else
 #define CONFIG_DP_ENABLE (1)

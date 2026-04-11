@@ -33,13 +33,6 @@ enum dp_source_mode {
 	SAME_SOURCE,
 };
 
-#ifdef CONFIG_HW_DP_SOURCE
-int get_current_dp_source_mode(void);
-int update_external_display_timming_info(uint32_t width,
-					 uint32_t high,
-					 uint32_t fps);
-void dp_send_event(enum dp_event_type event);
-#else
 static inline int get_current_dp_source_mode(void) { return SAME_SOURCE; }
 
 static inline int update_external_display_timming_info(uint32_t width,
@@ -50,7 +43,6 @@ static inline int update_external_display_timming_info(uint32_t width,
 }
 
 static inline void dp_send_event(enum dp_event_type event) {}
-#endif // !CONFIG_HW_DP_SOURCE
 
 #endif // __DP_SOURCE_SWITCH_H__
 

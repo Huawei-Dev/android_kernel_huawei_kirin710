@@ -55,9 +55,6 @@
 #ifdef CONFIG_WIRELESS_CHARGER
 #include <huawei_platform/power/wireless_charger.h>
 #endif
-#ifdef CONFIG_DP_AUX_SWITCH
-#include "huawei_platform/dp_aux_switch/dp_aux_switch.h"
-#endif
 #include <huawei_platform/power/direct_charger_error_handle.h>
 
 #define DC_DMDLOG_SIZE                2048
