@@ -4,8 +4,6 @@
 
 obj-$(CONFIG_HW_WIFI) += ipv4/
 
-obj-$(CONFIG_HW_DC_MODULE) += hw_dual_connection/
-
 obj-$(CONFIG_HW_NETBOOSTER_MODULE) += netbooster/
 
 obj-$(CONFIG_HUAWEI_BASTET) += bastet/

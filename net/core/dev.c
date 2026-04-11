@@ -166,10 +166,6 @@ static int call_netdevice_notifiers_info(unsigned long val,
 					 struct netdev_notifier_info *info);
 static struct napi_struct *napi_by_id(unsigned int napi_id);
 
-#ifdef CONFIG_HW_DC_MODULE
-static struct hw_dc_ops g_dev_dc_ops;
-#endif
-
 /*
  * The @dev_base_head list is protected by @dev_base_lock and the rtnl
  * semaphore.
@@ -3010,10 +3006,6 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
 
 	len = skb->len;
 	trace_net_dev_start_xmit(skb, dev);
-#ifdef CONFIG_HW_DC_MODULE
-	if (g_dev_dc_ops.dc_send_copy)
-		g_dev_dc_ops.dc_send_copy(skb, dev);
-#endif
 	rc = netdev_start_xmit(skb, dev, txq, more);
 	trace_net_dev_xmit(skb, rc, dev, len);
 
@@ -4380,11 +4372,6 @@ another_round:
 	skb->skb_iif = skb->dev->ifindex;
 
 	__this_cpu_inc(softnet_data.processed);
-
-#ifdef CONFIG_HW_DC_MODULE
-	if (g_dev_dc_ops.dc_receive && g_dev_dc_ops.dc_receive(skb))
-		return NET_RX_DROP;
-#endif
 
 	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
 	    skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
@@ -8626,26 +8613,6 @@ void func(const struct net_device *dev, const char *fmt, ...)	\
 	va_end(args);						\
 }								\
 EXPORT_SYMBOL(func);
-
-#ifdef CONFIG_HW_DC_MODULE
-int hw_register_dual_connection(struct hw_dc_ops *ops)
-{
-	if (ops == NULL)
-		return -EINVAL;
-	g_dev_dc_ops.dc_send_copy = ops->dc_send_copy;
-	g_dev_dc_ops.dc_receive = ops->dc_receive;
-	return 0;
-}
-EXPORT_SYMBOL(hw_register_dual_connection);
-
-int hw_unregister_dual_connection(void)
-{
-	g_dev_dc_ops.dc_send_copy = NULL;
-	g_dev_dc_ops.dc_receive = NULL;
-	return 0;
-}
-EXPORT_SYMBOL(hw_unregister_dual_connection);
-#endif
 
 define_netdev_printk_level(netdev_emerg, KERN_EMERG);
 define_netdev_printk_level(netdev_alert, KERN_ALERT);
