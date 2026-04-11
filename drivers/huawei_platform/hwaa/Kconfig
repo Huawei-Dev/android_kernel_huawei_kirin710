@@ -1,6 +1,0 @@
-config HWAA
-	bool "HWAA System"
-	default y
-	help
-	Huawei Application Authentication System
-

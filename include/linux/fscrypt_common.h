@@ -69,11 +69,6 @@ struct fscrypt_info {
 	u8  ci_hw_enc_flag;
 };
 
-#ifdef CONFIG_HWAA
-#define HWAA_XATTR_NAME "hwaa"
-#define HWAA_XATTR_ENABLE_FLAG 0x0010
-#endif
-
 static inline void *fscrypt_ci_key(struct inode *inode)
 {
 #if IS_ENABLED(CONFIG_FS_ENCRYPTION)
@@ -163,13 +158,6 @@ struct fscrypt_operations {
 	unsigned int max_namelen;
 	int (*get_keyinfo)(struct inode *, void *, int *);
 	int (*is_file_sdp_encrypted)(struct inode *);
-#ifdef CONFIG_HWAA
-	int (*set_hwaa_attr)(struct inode *, const void *, size_t, void *);
-	int (*update_hwaa_attr)(struct inode *, const void *, size_t, void *);
-	int (*get_hwaa_attr)(struct inode *, void *, size_t);
-	int (*get_hwaa_flags)(struct inode *, void *, u32 *);
-	int (*set_hwaa_flags)(struct inode *, void *, u32 *);
-#endif
 };
 
 #endif	/* _LINUX_FSCRYPT_COMMON_H */
