@@ -2845,13 +2845,6 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 	sk->hicom_flag = 0;
 #endif
 
-#ifdef CONFIG_HW_CHR_TCP_SMALL_WIN_MONITOR
-	sk->win_cnt = 0;
-	sk->mime_type = 0;
-	sk->small_win_stamp = jiffies;
-	sk->win_flag = true;
-#endif
-
 	/*
 	 * Before updating sk_refcnt, we must commit prior changes to memory
 	 * (Documentation/RCU/rculist_nulls.txt for details)

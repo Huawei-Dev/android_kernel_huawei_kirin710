@@ -128,10 +128,6 @@
 #include <huawei_platform/net/himos/hw_himos_udp_stats.h>
 #endif
 
-#ifdef CONFIG_CHR_NETLINK_MODULE
-#include <hwnet/chr/chr_interface.h>
-#endif
-
 #ifdef CONFIG_MPTCP_EPC
 #include <net/mptcp_epc.h>
 #endif
@@ -1669,9 +1665,6 @@ try_again:
 
 #ifdef CONFIG_HW_NETWORK_AWARE
 	tcp_network_aware(true);
-#endif
-#ifdef CONFIG_CHR_NETLINK_MODULE
-	chr_update_buf_time(ktime_to_ns(skb->tstamp), SOL_UDP);
 #endif
 	ulen = udp_skb_len(skb);
 	copied = len;

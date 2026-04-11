@@ -127,27 +127,6 @@ struct report_slow_para {
 	unsigned char timeStart;
 };
 
-#ifdef CONFIG_CHR_NETLINK_MODULE
-/*Minimum report period*/
-#define CHR_REPORT_TIMER (25*HZ)
-#define MAX_RTT (255)
-/*RAT handover scenario CHR Report Structure*/
-struct chr_para {
-	struct pkt_cnt_swth stat_old;
-	struct pkt_cnt_swth stat_new;
-	unsigned int nsi_old;
-	unsigned int nsi_new;
-};
-
-struct report_chr_stru {
-	unsigned char slowType;
-	unsigned char avgAmp;
-	unsigned char oldRtt;
-	unsigned char newRtt;
-};
-extern unsigned int chr_smart_switch(struct chr_para *report);
-#endif
-
 /**********************************
 *	Export the definition of external interfaces
 ***********************************/

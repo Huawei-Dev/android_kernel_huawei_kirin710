@@ -55,10 +55,6 @@
 #include <hwnet/ipv4/wifipro_tcp_monitor.h>
 #endif
 
-#ifdef CONFIG_HW_CHR_TCP_SMALL_WIN_PROC
-#include <hwnet/ipv4/tcp_small_window_chr_monitor.h>
-#endif
-
 /*
  *	Report socket allocation statistics [mea@utu.fi]
  */
@@ -549,12 +545,6 @@ static __net_init int ip_proc_init_net(struct net *net)
 		WIFIPRO_WARNING("wifipro_init_proc fail!");
 	}
 #endif
-
-#ifdef CONFIG_HW_CHR_TCP_SMALL_WIN_PROC
-	if (tcp_small_win_init_proc(net))
-		HW_CHR_ERR("tcp_small_win_init_proc fail!");
-#endif
-
 	return 0;
 
 out_snmp:

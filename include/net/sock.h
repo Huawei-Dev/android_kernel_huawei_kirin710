@@ -518,12 +518,6 @@ struct sock {
 	u8	is_mp_flow:1,
 		is_download_flow:1;
 #endif
-#ifdef CONFIG_HW_CHR_TCP_SMALL_WIN_MONITOR
-	unsigned int win_cnt;
-	unsigned int mime_type;
-	unsigned long small_win_stamp;
-	bool win_flag;
-#endif
 #ifdef CONFIG_CGROUP_BPF
 	char		sk_process_name[TASK_COMM_LEN];
 #endif
