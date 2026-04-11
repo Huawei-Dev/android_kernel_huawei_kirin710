@@ -591,7 +591,7 @@ struct socket *sock_alloc(void)
 	inode->i_uid = current_fsuid();
 	inode->i_gid = current_fsgid();
 	inode->i_op = &sockfs_inode_ops;
-#if defined(CONFIG_HUAWEI_KSTATE) || defined(CONFIG_MPTCP)
+#if defined(CONFIG_HUAWEI_KSTATE)
 	if (sock != NULL && current != NULL) {
 		sock->pid = current->tgid;
 	}

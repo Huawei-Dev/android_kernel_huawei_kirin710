@@ -316,26 +316,6 @@ static void handle_init_info(struct heartbeat_init_info* data)
  */
 void opmp_event_process(int32_t event, uint8_t* pdata, uint16_t len)
 {
-#ifdef CONFIG_MPTCP_HEARTBEAT
-	switch(event) {
-		case NETLINK_EMCOM_DK_OPMP_INIT_HEARTBEAT:
-			LOGD(" : received NETLINK_EMCOM_DK_OPMP_INIT_HEARTBEAT");
-			handle_init_info((struct heartbeat_init_info*)pdata);
-			break;
-		case NETLINK_EMCOM_DK_OPMP_DEINIT_HEARTBEAT:
-			LOGD(" : received NETLINK_EMCOM_DK_OPMP_DEINIT_HEARTBEAT");
-			disable_mpheartbeat();
-			break;
-		case NETLINK_EMCOM_DK_OPMP_TRIGGER_HEARTBEAT:
-			LOGD(" : received NETLINK_EMCOM_DK_OPMP_TRIGGER_HEARTBEAT");
-			trigger_mpheartbeat();
-			break;
-		default:
-			LOGE(" unsupported event in opmp_event_process");
-			break;
-	}
-#else
 	LOGI("mptcp heartbeat feature is not enabled, heartbeat cannot continue");
-#endif
 }
 EXPORT_SYMBOL(opmp_event_process);

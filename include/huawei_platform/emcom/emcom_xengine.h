@@ -379,12 +379,4 @@ bool emcom_xengine_mpflow_errlink(int reason, struct emcom_xengine_mpflow_stat *
 bool emcom_xengine_mpflow_retrans(int reason, struct emcom_xengine_mpflow_stat *node);
 int8_t emcom_xengine_mpflow_checkstatus(struct sock *sk, int reason, int state, struct emcom_xengine_mpflow_stat *node);
 void emcom_xengine_mpflow_fallback(struct sock *sk, int reason, int state);
-
-#ifdef CONFIG_MPTCP
-void emcom_xengine_mptcp_socket_closed(const void *data, int len);
-void emcom_xengine_mptcp_socket_switch(const void *data, int len);
-void emcom_xengine_mptcp_proxy_fallback(const void *data, int len);
-void emcom_xengine_mptcp_fallback(const void *data, int len);
-#endif
-
 #endif

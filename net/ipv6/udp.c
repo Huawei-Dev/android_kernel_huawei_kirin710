@@ -66,10 +66,6 @@ static bool udp6_lib_exact_dif_match(struct net *net, struct sk_buff *skb)
 	return false;
 }
 
-#ifdef CONFIG_MPTCP_EPC
-#include <net/mptcp_epc.h>
-#endif
-
 static u32 udp6_ehashfn(const struct net *net,
 			const struct in6_addr *laddr,
 			const u16 lport,
@@ -362,9 +358,6 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 	int is_udplite = IS_UDPLITE(sk);
 	bool checksum_valid = false;
 	int is_udp4;
-#ifdef CONFIG_MPTCP_EPC
-	bool is_mutp = false;
-#endif
 
 	if (flags & MSG_ERRQUEUE)
 		return ipv6_recv_error(sk, msg, len, addr_len);
@@ -382,9 +375,6 @@ try_again:
 	ulen = udp6_skb_len(skb);
 	copied = len;
 
-#ifdef CONFIG_MPTCP_EPC
-	is_mutp = mutp_decode_recv(skb, (skb->protocol == htons(ETH_P_IP)), &off);
-#endif
 	if (copied > ulen - off)
 		copied = ulen - off;
 	else if (copied < ulen)
@@ -448,12 +438,8 @@ try_again:
 		sin6->sin6_flowinfo = 0;
 
 		if (is_udp4) {
-#ifndef CONFIG_MPTCP_EPC
 			ipv6_addr_set_v4mapped(ip_hdr(skb)->saddr,
 					       &sin6->sin6_addr);
-#else
-			mutp_rewrite_msg_addrv6(is_mutp, skb, sin6);
-#endif
 			sin6->sin6_scope_id = 0;
 		} else {
 			sin6->sin6_addr = ipv6_hdr(skb)->saddr;
