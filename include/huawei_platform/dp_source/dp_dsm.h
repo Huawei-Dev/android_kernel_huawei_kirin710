@@ -19,12 +19,6 @@
 #ifndef __DP_DSM_H__
 #define __DP_DSM_H__
 
-#if defined(CONFIG_HUAWEI_DSM) && defined(CONFIG_HW_DP_SOURCE)
-#ifndef DP_DSM_ENABLE
-#define DP_DSM_ENABLE
-#endif
-#endif
-
 #define DP_DSM_EDID_BLOCK_SIZE   128
 #define DP_DSM_DPCD_RX_CAPS_SIZE 256
 #define DP_DSM_VS_PE_NUM         4
