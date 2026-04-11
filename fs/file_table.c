@@ -311,7 +311,7 @@ void fput(struct file *file)
 	}
 }
 
-#if defined(CONFIG_MPTCP) || defined(CONFIG_HUAWEI_XENGINE)
+#if defined(CONFIG_HUAWEI_XENGINE)
 void fput_by_pid(pid_t pid, struct file *file)
 {
 	struct task_struct *task;
