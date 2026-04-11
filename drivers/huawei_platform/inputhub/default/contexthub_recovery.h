@@ -1,4 +1,4 @@
-﻿/*
+/*
  * drivers/inputhub/contexthub_recovery.h
  *
  * sensors sysfs header

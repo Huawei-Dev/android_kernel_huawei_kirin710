@@ -44,7 +44,7 @@ static u16 stwlc33_iout_adc_val;
 static int stwlc33_rx_ready_check_flag;
 static int irq_abnormal_flag = false;
 static u8 st_nvm_bufs[STWLC33_NVM_SEC_VAL_SIZE];
-static const u8 idtp9221_send_msg_len[IDT9221_RX_TO_TX_DATA_LEN+2] = {0,0x18,0x28,0x38,0x48,0x58};
+static const u8 idtp9221_send_msg_len[IDT9221_RX_TO_TX_DATA_LEN+2] = {0,0x18,0x28,0x38,0x48,0x58};
 static const u8 idtp9221_send_fsk_msg_len[IDT9221_RX_TO_TX_DATA_LEN+2] = {0,0x1f,0x2f,0x3f,0x4f,0x5f};
 #ifdef WIRELESS_CHARGER_FACTORY_VERSION
 /* refer to which otp to be (or has been) programmed */

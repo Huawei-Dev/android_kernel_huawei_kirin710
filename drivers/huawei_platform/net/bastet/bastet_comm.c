@@ -58,7 +58,7 @@ int get_modem_rab_id(struct bst_modem_rab_id *info)
 
 	if (!info) {
 		return -EINVAL;
-	}
+	}
 
 	if (IS_ERR_OR_NULL(dev_filp)) {
 		return -EBUSY;

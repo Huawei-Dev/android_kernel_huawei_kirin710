@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) Huawei Technologies Co., Ltd. 2012-2015. All rights reserved.
  * foss@huawei.com
  *
