@@ -53,7 +53,6 @@ struct cfg80211_conn {
 
 #ifdef CONFIG_HW_WIFI
 static bool hw_wifi_connect_mode = false;
-extern void wifi_disconnect_report(void);
 
 bool  hw_timestamps_get_wifi_connect_status(void)
 {
@@ -1104,7 +1103,6 @@ void cfg80211_disconnected(struct net_device *dev, u16 reason,
 #ifdef CONFIG_HW_WIFI
 	if(wdev->iftype == NL80211_IFTYPE_STATION){
 		hw_timestamps_set_wifi_connect_status(false);
-		wifi_disconnect_report();
 	}
 #endif
 }
@@ -1241,7 +1239,6 @@ int cfg80211_disconnect(struct cfg80211_registered_device *rdev,
 	#ifdef CONFIG_HW_WIFI
 	if(wdev->iftype == NL80211_IFTYPE_STATION){
 		hw_timestamps_set_wifi_connect_status(false);
-		wifi_disconnect_report();
 	}
 	#endif
 

@@ -196,7 +196,6 @@ obj-$(CONFIG_HI_VCODEC_VENC_HIVNA) += vcodec/hi_vcodec/venc_hivna/drv/venc/
 obj-$(CONFIG_HI_VCODEC_VDEC_HI3660) += vcodec/hi_vcodec/vdec/
 obj-$(CONFIG_HI_VCODEC_VDEC_HIVNA) += vcodec/hi_vcodec/vdec_hivna/
 obj-$(CONFIG_MULTIPLEXER)	+= mux/
-obj-$(CONFIG_HW_WIFI)       += hwnet/
 obj-y += devkit/tpkit/
 obj-$(CONFIG_HISILICON_PLATFORM)+= hisi/
 obj-$(CONFIG_HUAWEI_DSM)	+= dsm/
