@@ -293,9 +293,6 @@
 #ifdef CONFIG_HW_NETQOS_SCHED
 #include <netqos_sched/netqos_sched.h>
 #endif
-#ifdef CONFIG_CHR_NETLINK_MODULE
-#include <hwnet/chr/chr_interface.h>
-#endif
 
 #ifdef CONFIG_TCP_NODELAY
 #include <linux/blk-cgroup.h>
@@ -2118,10 +2115,6 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
 				 *seq, TCP_SKB_CB(skb)->seq, tp->rcv_nxt,
 				 flags))
 				break;
-
-#ifdef CONFIG_CHR_NETLINK_MODULE
-			chr_update_buf_time(ktime_to_ns(skb->tstamp), SOL_TCP);
-#endif
 
 			offset = *seq - TCP_SKB_CB(skb)->seq;
 			if (unlikely(TCP_SKB_CB(skb)->tcp_flags & TCPHDR_SYN)) {

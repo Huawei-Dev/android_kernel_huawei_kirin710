@@ -62,11 +62,6 @@ static uint8_t g_report_flag;
 
 /*Hook is enabled identifier*/
 static uint8_t g_hook_flag;
-#ifdef CONFIG_CHR_NETLINK_MODULE
-static struct chr_para g_chr_data;
-static struct timer_list g_chr_rpt_timer;
-static struct report_chr_stru g_chr_report;
-#endif
 
 /*hidata app qoe statistic variable*/
 static struct pkt_stat_swth g_app_qoe_stat;
@@ -173,98 +168,6 @@ static int idx_check(int index)
 
 	return  index;
 }
-
-/*Smart switching CHR*/
-#ifdef CONFIG_CHR_NETLINK_MODULE
-int get_rtt_list(struct native_event *rtt_event, unsigned int list_len) {
-	int cnt = 0;
-	int idx = 0;
-
-	if (list_len > MAX_STAT_SEC || rtt_event == NULL)
-		return -1;
-
-	/*Avoiding cache and index timeout for the lack of packets.*/
-	idx_update(&g_stat);
-
-	for (cnt = 0; cnt < list_len; cnt++) {
-		idx = idx_check(g_stat.idx - cnt);
-		rtt_event->rtt_list[cnt] = g_stat.stat[idx].rtt;
-		rtt_event->max_list[cnt] = g_stat.stat[idx].rtt_max;
-		if(0 != g_stat.stat[idx].rtt_cnt) {
-			rtt_event->avg_list[cnt] = g_stat.stat[idx].rtt_all / g_stat.stat[idx].rtt_cnt;
-		}else {
-			rtt_event->avg_list[cnt] = 0;
-		}
-	}
-	return 0;
-}
-
-unsigned int chr_smart_switch(struct chr_para *report)
-{
-	if (report != NULL && virt_addr_valid(report)) {
-		memcpy(report, &g_chr_data, sizeof(g_chr_data));
-		memset(&g_chr_data, 0, sizeof(g_chr_data));
-	}
-	return 0;
-}
-
-static void mean_stat_old(void)
-{
-	int cnt = 0;
-
-	g_stat.idx = idx_check(g_stat.idx);
-	g_chr_data.nsi_old = g_stat.norm_idx[g_stat.idx].flt_ksi;
-	memset(&(g_chr_data.stat_old), 0, sizeof(struct pkt_cnt_swth));
-	for (cnt =0; cnt < MAX_STAT_SEC; cnt++) {
-		g_chr_data.stat_old.in_pkt += g_stat.stat[cnt].in_pkt;
-		g_chr_data.stat_old.out_pkt += g_stat.stat[cnt].out_pkt;
-		g_chr_data.stat_old.in_len += g_stat.stat[cnt].in_len;
-		g_chr_data.stat_old.out_len += g_stat.stat[cnt].out_len;
-		g_chr_data.stat_old.dupack += g_stat.stat[cnt].dupack;
-		g_chr_data.stat_old.rts += g_stat.stat[cnt].rts;
-		g_chr_data.stat_old.syn += g_stat.stat[cnt].syn;
-		g_chr_data.stat_old.rtt += g_stat.stat[cnt].rtt;
-	}
-}
-
-static void mean_stat_new(void)
-{
-	int cnt = 0;
-
-	g_stat.idx = idx_check(g_stat.idx);
-	g_chr_data.nsi_new = g_stat.norm_idx[g_stat.idx].flt_ksi;
-	memset(&(g_chr_data.stat_new), 0, sizeof(struct pkt_cnt_swth));
-	for (cnt = 0; cnt < MAX_STAT_SEC; cnt++) {
-		g_chr_data.stat_new.in_pkt += g_stat.stat[cnt].in_pkt;
-		g_chr_data.stat_new.out_pkt += g_stat.stat[cnt].out_pkt;
-		g_chr_data.stat_new.in_len += g_stat.stat[cnt].in_len;
-		g_chr_data.stat_new.out_len += g_stat.stat[cnt].out_len;
-		g_chr_data.stat_new.dupack += g_stat.stat[cnt].dupack;
-		g_chr_data.stat_new.rts += g_stat.stat[cnt].rts;
-		g_chr_data.stat_new.syn += g_stat.stat[cnt].syn;
-		g_chr_data.stat_new.rtt += g_stat.stat[cnt].rtt;
-	}
-}
-
-static void chr_report(unsigned long data)
-{
-	int rtt = 0;
-
-	g_stat.idx = idx_check(g_stat.idx);
-	mean_stat_new();
-	g_chr_report.slowType = 3;
-	g_chr_report.avgAmp = g_stat.norm_idx[g_stat.idx].flt_ksi;
-	rtt = g_chr_data.stat_old.rtt / MAX_STAT_SEC / 10;
-	g_chr_report.oldRtt = rtt > MAX_RTT ? MAX_RTT : rtt;
-	rtt = g_chr_data.stat_new.rtt / MAX_STAT_SEC / 10;
-	g_chr_report.newRtt = rtt > MAX_RTT ? MAX_RTT : rtt;
-	nb_notify_event(NBMSG_KSI_EVT, &g_chr_report,
-		sizeof(g_chr_report));
-	pr_info("KSI chr slow timer report\n");
-	return;
-}
-
-#endif
 
 /*Normalized parameters*/
 static int norm_para(const unsigned char norm[],
@@ -428,10 +331,6 @@ static void detect_ksi(void)
 				sizeof(g_swth_report));
 			pr_info("KSI network slow %d\n", g_swth_report.avgAmp);
 			g_report_time = jiffies;
-#ifdef CONFIG_CHR_NETLINK_MODULE
-			mean_stat_old();
-			mod_timer(&g_chr_rpt_timer, jiffies + CHR_REPORT_TIMER);
-#endif
 		}
 	}
 }
@@ -1077,15 +976,6 @@ int smart_switch_init(void)
 		pr_err("KSI init fail ret=%d\n", ret);
 		return ret;
 	}
-
-#ifdef CONFIG_CHR_NETLINK_MODULE
-	/*Timer initialization*/
-	init_timer(&g_chr_rpt_timer);
-	g_chr_rpt_timer.data = 0;
-	g_chr_rpt_timer.function = chr_report;
-	g_chr_rpt_timer.expires = jiffies + CHR_REPORT_TIMER;
-	memset(&g_chr_report, 0, sizeof(g_chr_report));
-#endif
 
 	pr_info("KSI init success\n");
 	return 0;

@@ -152,10 +152,6 @@ int sysctl_tcp_autotuning __read_mostly = 0;
 #define TCP_REMNANT (TCP_FLAG_FIN|TCP_FLAG_URG|TCP_FLAG_SYN|TCP_FLAG_PSH)
 #define TCP_HP_BITS (~(TCP_RESERVED_BITS|TCP_FLAG_PSH))
 
-#ifdef CONFIG_CHR_NETLINK_MODULE
-extern void notify_chr_thread_to_send_msg(unsigned int dst_addr, unsigned int src_addr);
-extern void notify_chr_thread_to_update_rtt(u32 seq_rtt_us, struct sock *sk, u8 data_net_flag);
-#endif
 #ifdef CONFIG_HW_WIFI
 #define HW_TCP_TIMESTAMP_ERR_THRESHOLD    1
 static unsigned int default_ipv4_sysctl_tcp_timestamps;
@@ -3389,19 +3385,6 @@ static int tcp_clean_rtx_queue(struct sock *sk, int prior_fackets,
 		ca_rtt_us = tcp_stamp_us_delta(tp->tcp_mstamp, sack->last_sackt);
 	}
 
-#ifdef CONFIG_CHR_NETLINK_MODULE
-	if (flag & FLAG_SYN_ACKED) {
-
-		tp->first_data_flag = true;
-		tp->data_net_flag = false;
-	}
-
-	if (flag & FLAG_DATA_ACKED && tp->first_data_flag) {
-		notify_chr_thread_to_update_rtt((u32)seq_rtt_us, sk, tp->data_net_flag);
-		tp->first_data_flag = false;
-	}
-#endif
-
 	rtt_update = tcp_ack_update_rtt(sk, flag, seq_rtt_us, sack_rtt_us,
 					ca_rtt_us, sack->rate);
 
@@ -6195,9 +6178,6 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
 	struct tcp_fastopen_cookie foc = { .len = -1 };
 	int saved_clamp = tp->rx_opt.mss_clamp;
 	bool fastopen_fail;
-#ifdef CONFIG_CHR_NETLINK_MODULE
-	struct inet_sock *inet = inet_sk(sk);
-#endif
 #ifdef CONFIG_MPTCP
 	struct mptcp_options_received mopt;
 	mptcp_init_mp_opt(&mopt);
@@ -6272,14 +6252,6 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
 		 */
 
 		tcp_ecn_rcv_synack(tp, th);
-#ifdef CONFIG_CHR_NETLINK_MODULE
-		if (icsk->icsk_retransmits > 2) {
-			SOCK_DEBUG(sk, "tcp_rcv_synsent_state_process:icsk_retransmits=%d,notify_chr_thread_to_send_msg()!\n", icsk->icsk_retransmits);
-			notify_chr_thread_to_send_msg(inet->inet_daddr, inet->inet_saddr);
-		} else {
-			SOCK_DEBUG(sk, "tcp_rcv_synsent_state_process:icsk_retransmits=%d\n", icsk->icsk_retransmits);
-		}
-#endif
 
 		tcp_init_wl(tp, TCP_SKB_CB(skb)->seq);
 		tcp_ack(sk, skb, FLAG_SLOWPATH);
