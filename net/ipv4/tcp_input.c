@@ -81,9 +81,6 @@
 #ifdef CONFIG_HW_WIFIPRO
 #include <hwnet/ipv4/wifipro_tcp_monitor.h>
 #endif
-#ifdef CONFIG_WIFI_DELAY_STATISTIC
-#include <hwnet/ipv4/wifi_delayst.h>
-#endif
 int sysctl_tcp_fack __read_mostly;
 
 #ifdef CONFIG_HUAWEI_XENGINE
@@ -3830,11 +3827,6 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
 	 */
 	if (after(ack, tp->snd_nxt))
 		goto invalid_ack;
-#ifdef CONFIG_WIFI_DELAY_STATISTIC
-	if(DELAY_STATISTIC_SWITCH_ON) {
-		delay_record_rcv_combine(skb,sk,TP_SKB_TYPE_TCP);
-	}
-#endif
 
 	if (after(ack, prior_snd_una)) {
 		flag |= FLAG_SND_UNA_ADVANCED;

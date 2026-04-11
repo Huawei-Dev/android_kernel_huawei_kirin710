@@ -55,15 +55,9 @@
 #include <huawei_platform/emcom/emcom_xengine.h>
 #endif
 
-
-#ifdef CONFIG_WIFI_DELAY_STATISTIC
-#include <hwnet/ipv4/wifi_delayst.h>
-#endif
-
 #ifdef CONFIG_HUAWEI_FEATURE_PRINT_PID_NAME
 #include <huawei_platform/power/pid_socket/pid_socket.h>
 #endif
-
 
 #ifdef CONFIG_HW_NETQOS_SCHED
 #include <netqos_sched/netqos_sched.h>
@@ -3946,11 +3940,6 @@ void __tcp_send_ack(struct sock *sk, u32 rcv_nxt)
 	 * SKB_TRUESIZE(max(1 .. 66, MAX_TCP_HEADER)) is unfortunately ~784
 	 */
 	skb_set_tcp_pure_ack(buff);
-#ifdef CONFIG_WIFI_DELAY_STATISTIC
-	if(DELAY_STATISTIC_SWITCH_ON) {
-		delay_record_first_combine(sk,buff,TP_SKB_DIRECT_SND,TP_SKB_TYPE_TCP);
-	}
-#endif
 	/* Send it off, this clears delayed acks for us. */
 	__tcp_transmit_skb(sk, buff, 0, (__force gfp_t)0, rcv_nxt);
 }
