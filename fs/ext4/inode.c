@@ -39,6 +39,8 @@
 #include <linux/slab.h>
 #include <linux/bitops.h>
 #include <linux/iomap.h>
+#include <linux/file_map.h>
+
 
 #include "ext4_jbd2.h"
 #include "xattr.h"
@@ -49,6 +51,12 @@
 #include <trace/events/android_fs.h>
 
 #define MPAGE_DA_EXTENT_TAIL 0x01
+
+#ifdef CONFIG_HUAWEI_IO_TRACING
+#include <trace/iotrace.h>
+DEFINE_TRACE(ext4_da_write_begin_end);
+DEFINE_TRACE(mpage_da_map_and_submit);
+#endif
 
 static __u32 ext4_inode_csum(struct inode *inode, struct ext4_inode *raw,
 			      struct ext4_inode_info *ei)
@@ -1278,8 +1286,12 @@ static int ext4_write_begin(struct file *file, struct address_space *mapping,
 						    flags, pagep);
 		if (ret < 0)
 			return ret;
-		if (ret == 1)
+		if (ret == 1) {
+#ifdef CONFIG_HUAWEI_IO_TRACING
+            trace_ext4_da_write_begin_end(inode, pos, len, flags);
+#endif
 			return 0;
+		}
 	}
 
 	/*
@@ -1365,6 +1377,9 @@ retry_journal:
 		put_page(page);
 		return ret;
 	}
+#ifdef CONFIG_HUAWEI_IO_TRACING
+	trace_ext4_da_write_begin_end(inode, pos, len, flags);
+#endif
 	*pagep = page;
 	return ret;
 }
@@ -4925,6 +4940,11 @@ struct inode *ext4_iget(struct super_block *sb, unsigned long ino)
 	if (ret)
 		goto bad_inode;
 
+#ifdef CONFIG_FILE_MAP
+	inode->i_file_map = NULL;
+	file_map_entry_attach_unused(inode);
+#endif
+
 	if (S_ISREG(inode->i_mode)) {
 		inode->i_op = &ext4_file_inode_operations;
 		inode->i_fop = &ext4_file_operations;
@@ -5498,7 +5518,7 @@ int ext4_setattr(struct dentry *dentry, struct iattr *attr)
 			up_write(&EXT4_I(inode)->i_data_sem);
 			ext4_journal_stop(handle);
 			if (error) {
-				if (orphan)
+				if (orphan && inode->i_nlink)
 					ext4_orphan_del(NULL, inode);
 				goto err_out;
 			}

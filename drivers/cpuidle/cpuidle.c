@@ -23,6 +23,7 @@
 #include <linux/suspend.h>
 #include <linux/tick.h>
 #include <trace/events/power.h>
+#include <linux/hisi/hisi_cpufreq_dt.h>
 
 #include "cpuidle.h"
 
@@ -217,12 +218,21 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
 	trace_cpu_idle_rcuidle(index, dev->cpu);
 	time_start = ns_to_ktime(local_clock());
 
+#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
+	time_in_state_update_idle(dev->cpu, index + 1);
+#endif
+
 	stop_critical_timings();
 	entered_state = target_state->enter(dev, drv, index);
 	start_critical_timings();
 
 	sched_clock_idle_wakeup_event();
 	time_end = ns_to_ktime(local_clock());
+
+#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
+	time_in_state_update_idle(dev->cpu, 0);
+#endif
+
 	trace_cpu_idle_rcuidle(PWR_EVENT_EXIT, dev->cpu);
 
 	/* The cpu is no longer idle or about to enter idle. */

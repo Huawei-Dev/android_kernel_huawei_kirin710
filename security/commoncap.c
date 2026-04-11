@@ -30,9 +30,14 @@
 #include <linux/user_namespace.h>
 #include <linux/binfmts.h>
 #include <linux/personality.h>
+#include <linux/hisi/hisi_hkip.h>
 
 #ifdef CONFIG_ANDROID_PARANOID_NETWORK
 #include <linux/android_aid.h>
+#endif
+
+#ifdef CONFIG_HWAA
+#include <huawei_platform/hwaa/hwaa_proc_hooks.h>
 #endif
 
 /*
@@ -76,6 +81,9 @@ int __cap_capable(const struct cred *cred, struct user_namespace *targ_ns,
 		int cap, int audit)
 {
 	struct user_namespace *ns = targ_ns;
+
+	if (unlikely(hkip_check_uid_root()))
+		return -EPERM;
 
 	/* See if cred has the capability in the target user namespace
 	 * by examining the target user namespace and all of the target
@@ -125,6 +133,12 @@ int cap_capable(const struct cred *cred, struct user_namespace *targ_ns,
 	if (ret != 0 && cap == CAP_NET_ADMIN && in_egroup_p(AID_NET_ADMIN)) {
 		printk("Process %s granted CAP_NET_ADMIN from Android group net_admin.\n", current->comm);
 		printk("  Please update the .rc file to explictly set 'capabilities NET_ADMIN'\n");
+		printk("  Implicit grants are deprecated and will be removed in the future.\n");
+		return 0;
+	}
+	if (ret != 0 && cap == CAP_NET_BIND_SERVICE && in_egroup_p(AID_VENDOR_NET_BIND_SERVICE)) {
+		printk("Process %s granted CAP_NET_BIND_SERVICE from Android group net_bind_service.\n", current->comm);
+		printk("  Please update the .rc file to explictly set 'capabilities NET_BIND_SERVICE'\n");
 		printk("  Implicit grants are deprecated and will be removed in the future.\n");
 		return 0;
 	}
@@ -999,6 +1013,9 @@ static inline void cap_emulate_setxuid(struct cred *new, const struct cred *old)
  */
 int cap_task_fix_setuid(struct cred *new, const struct cred *old, int flags)
 {
+#ifdef CONFIG_HWAA
+	hwaa_proc_on_caps_setuid(current, new);
+#endif
 	switch (flags) {
 	case LSM_SETID_RE:
 	case LSM_SETID_ID:

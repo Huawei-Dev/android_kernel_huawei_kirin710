@@ -281,6 +281,18 @@
 	VMLINUX_SYMBOL(__end_ro_after_init) = .;
 #endif
 
+#ifndef RO_AFTER_INIT_SECTION
+#define RO_AFTER_INIT_SECTION(align)					\
+	. = ALIGN((align));						\
+	/* RO after init data section */				\
+	.ro_after_init_data : AT(ADDR(.ro_after_init_data) - LOAD_OFFSET) { \
+		VMLINUX_SYMBOL(__start_data_ro_after_init) = .;		\
+		RO_AFTER_INIT_DATA					\
+		. = ALIGN((align));					\
+		VMLINUX_SYMBOL(__end_data_ro_after_init) = .;		\
+	}
+#endif
+
 /*
  * Read only Data
  */
@@ -289,7 +301,6 @@
 	.rodata           : AT(ADDR(.rodata) - LOAD_OFFSET) {		\
 		VMLINUX_SYMBOL(__start_rodata) = .;			\
 		*(.rodata) *(.rodata.*)					\
-		RO_AFTER_INIT_DATA	/* Read only after init */	\
 		KEEP(*(__vermagic))	/* Kernel version magic */	\
 		. = ALIGN(8);						\
 		VMLINUX_SYMBOL(__start___tracepoints_ptrs) = .;		\
@@ -467,7 +478,6 @@
 		*(.ref.text)						\
 	MEM_KEEP(init.text)						\
 	MEM_KEEP(exit.text)						\
-
 
 /* sched.text is aling to function alignment to secure we have same
  * address even at second ld pass when generating System.map */
@@ -700,7 +710,7 @@
 		KEEP(*(.orc_unwind_ip))					\
 		VMLINUX_SYMBOL(__stop_orc_unwind_ip) = .;		\
 	}								\
-	. = ALIGN(2);							\
+	. = ALIGN(6);							\
 	.orc_unwind : AT(ADDR(.orc_unwind) - LOAD_OFFSET) {		\
 		VMLINUX_SYMBOL(__start_orc_unwind) = .;			\
 		KEEP(*(.orc_unwind))					\

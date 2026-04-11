@@ -11,6 +11,8 @@
 #include "tune.h"
 
 #include "walt.h"
+#include <linux/hisi_rtg.h>
+#include <linux/interrupt.h>
 
 int sched_rr_timeslice = RR_TIMESLICE;
 int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
@@ -18,6 +20,21 @@ int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
 static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
 
 struct rt_bandwidth def_rt_bandwidth;
+
+/*
+ * The margin used when comparing utilization with CPU capacity:
+ * util * margin < capacity * SCHED_CAPACITY_SCALE
+ */
+unsigned int rt_capacity_margin = 1138; /* ~10% */
+#ifdef CONFIG_HISI_RT_CAS
+unsigned int sysctl_sched_enable_rt_cas = 1;
+#else
+unsigned int sysctl_sched_enable_rt_cas = 0;
+#endif
+
+#ifdef CONFIG_HISI_RT_ACTIVE_LB
+unsigned int sysctl_sched_enable_rt_active_lb = 1;
+#endif
 
 static enum hrtimer_restart sched_rt_period_timer(struct hrtimer *timer)
 {
@@ -267,7 +284,12 @@ static void pull_rt_task(struct rq *this_rq);
 static inline bool need_pull_rt_task(struct rq *rq, struct task_struct *prev)
 {
 	/* Try to pull RT tasks here if we lower this rq's prio */
+#ifdef CONFIG_HISI_CPU_ISOLATION
+	return rq->rt.highest_prio.curr > prev->prio &&
+	       !cpu_isolated(cpu_of(rq));
+#else
 	return rq->rt.highest_prio.curr > prev->prio;
+#endif
 }
 
 static inline int rt_overloaded(struct rq *rq)
@@ -966,6 +988,9 @@ static void update_curr_rt(struct rq *rq)
 	if (unlikely((s64)delta_exec <= 0))
 		return;
 
+#ifdef CONFIG_HISI_CPU_FREQ_GOV_SCHEDUTIL
+	if (use_pelt_freq())
+#endif
 	/* Kick cpufreq (see the comment in kernel/sched/sched.h). */
 	cpufreq_update_util(rq, SCHED_CPUFREQ_RT);
 
@@ -1427,9 +1452,18 @@ select_task_rq_rt(struct task_struct *p, int cpu, int sd_flag, int flags,
 	 * This test is optimistic, if we get it wrong the load-balancer
 	 * will have to sort it out.
 	 */
-	if (curr && unlikely(rt_task(curr)) &&
-	    (curr->nr_cpus_allowed < 2 ||
-	     curr->prio <= p->prio)) {
+#ifdef CONFIG_HISI_CPU_ISOLATION
+	if (sysctl_sched_enable_rt_cas ||
+		cpu_isolated(cpu) ||
+		(curr && unlikely(rt_task(curr)) &&
+		(curr->nr_cpus_allowed < 2 ||
+		curr->prio <= p->prio))) {
+#else
+	if (sysctl_sched_enable_rt_cas ||
+		(curr && unlikely(rt_task(curr)) &&
+		(curr->nr_cpus_allowed < 2 ||
+		curr->prio <= p->prio))) {
+#endif
 		int target = find_lowest_rq(p);
 
 		/*
@@ -1641,12 +1675,38 @@ static struct task_struct *pick_highest_pushable_task(struct rq *rq, int cpu)
 
 static DEFINE_PER_CPU(cpumask_var_t, local_cpu_mask);
 
+#ifdef CONFIG_HISI_RTG
+static unsigned int rtg_up_migration_util_filter = 25;
+static inline bool hisi_favor_litte_core(struct task_struct *p)
+{
+	return task_util(p) * 100 < capacity_orig_of(0) * rtg_up_migration_util_filter;
+}
+#endif
+
 static int find_lowest_rq(struct task_struct *task)
 {
 	struct sched_domain *sd;
 	struct cpumask *lowest_mask = this_cpu_cpumask_var_ptr(local_cpu_mask);
 	int this_cpu = smp_processor_id();
-	int cpu      = task_cpu(task);
+	int cpu = -1;
+#ifdef CONFIG_HISI_RT_CAS
+	int target_cpu;
+	struct cpumask search_cpu, backup_search_cpu;
+	unsigned long cpu_capacity;
+	unsigned long target_capacity;
+	unsigned long util, target_cpu_util = ULONG_MAX;
+	unsigned long tutil = task_util(task);
+	int target_cpu_idle_idx = INT_MAX;
+	int cpu_idle_idx = -1;
+	int prev_cpu = task_cpu(task);
+	struct related_thread_group *grp;
+	struct cpumask *rtg_target_cpus = NULL;
+	struct sched_group *sg, *sg_target, *sg_backup;
+	bool boosted = schedtune_task_boost(task) > 0;
+	unsigned long boosted_tutil = boosted_task_util(task);
+	bool prefer_idle = schedtune_prefer_idle(task) > 0;
+	struct root_domain *rd = cpu_rq(this_cpu)->rd;
+#endif
 
 	/* Make sure the mask is initialized first */
 	if (unlikely(!lowest_mask))
@@ -1658,6 +1718,168 @@ static int find_lowest_rq(struct task_struct *task)
 	if (!cpupri_find(&task_rq(task)->rd->cpupri, task, lowest_mask))
 		return -1; /* No targets found */
 
+#ifdef CONFIG_HISI_RT_CAS
+	if (sysctl_sched_enable_rt_cas) {
+		sg_target = NULL;
+		sg_backup = NULL;
+		target_cpu = -1;
+		target_capacity = ULONG_MAX;
+
+		rcu_read_lock();
+#ifdef CONFIG_HISI_RTG
+		grp = task_related_thread_group(task);
+		if (grp && grp->preferred_cluster)
+			rtg_target_cpus = &grp->preferred_cluster->cpus;
+#endif
+
+		sd = rcu_dereference(per_cpu(sd_ea, 0));
+		if (!sd) {
+			rcu_read_unlock();
+			goto noea;
+		}
+
+		sg = sd->groups;
+		do {
+			if (!cpumask_intersects(lowest_mask,
+						sched_group_cpus(sg)))
+				continue;
+
+			if (global_boost_enable && boosted) {
+				if (cpumask_test_cpu(rd->max_cap_orig_cpu, sched_group_cpus(sg))) {
+					sg_target = sg;
+					break;
+				} else {
+					sg_backup = sg;
+					continue;
+				}
+			}
+
+			cpu = group_first_cpu(sg);
+#ifdef CONFIG_HISI_RTG
+			/* honor the rtg tasks */
+			if (rtg_target_cpus) {
+				if (cpumask_test_cpu(cpu, rtg_target_cpus)) {
+					sg_target = sg;
+					break;
+				}
+
+				/* active LB or big_task favor cpus with more capacity */
+				if (task->state == TASK_RUNNING || boosted || !hisi_favor_litte_core(task)) {
+					if (capacity_orig_of(cpu) > capacity_orig_of(cpumask_any(rtg_target_cpus))) {
+						sg_target = sg;
+						break;
+					} else {
+						sg_backup = sg;
+						continue;
+					}
+				}
+			}
+#endif
+			/*
+			 * 1. add margin to support task migration.
+			 * 2. if task_util is high then all cpus, make sure the
+			 * sg_backup with the most powerful cpus is selected.
+			 */
+			cpu_capacity = capacity_orig_of(cpu);
+			if (tutil * rt_capacity_margin > cpu_capacity * SCHED_CAPACITY_SCALE) {
+				sg_backup = sg;
+				continue;
+			}
+
+			/* support task boost */
+			if (boosted_tutil > cpu_capacity) {
+				sg_backup = sg;
+				continue;
+			}
+
+			/* sg_target: select the sg with smaller capacity */
+			if (cpu_capacity < target_capacity) {
+				target_capacity = cpu_capacity;
+				sg_target = sg;
+			}
+		} while (sg = sg->next, sg != sd->groups);
+		rcu_read_unlock();
+
+		if (!sg_target)
+			sg_target = sg_backup;
+
+		if (sg_target) {
+			cpumask_and(&search_cpu, lowest_mask,
+				    sched_group_cpus(sg_target));
+			cpumask_copy(&backup_search_cpu, lowest_mask);
+			cpumask_andnot(&backup_search_cpu, &backup_search_cpu,
+				       &search_cpu);
+		} else {
+			cpumask_copy(&search_cpu, lowest_mask);
+			cpumask_clear(&backup_search_cpu);
+		}
+
+retry:
+		cpu = cpumask_first(&search_cpu);
+		do {
+#ifdef CONFIG_HISI_CPU_ISOLATION
+			if (cpu_isolated(cpu))
+				continue;
+#endif
+
+			if (walt_cpu_high_irqload(cpu))
+				continue;
+
+			if (prefer_idle && idle_cpu(cpu)) {
+				target_cpu = cpu;
+				break;
+			}
+
+			/* !prefer_idle task: find best cpu with smallest max_capacity */
+			if (!prefer_idle && target_cpu != -1 &&
+					capacity_orig_of(cpu) > capacity_orig_of(target_cpu))
+				continue;
+
+			util = cpu_util(cpu);
+
+			/* Find the least loaded CPU */
+			if (util > target_cpu_util)
+				continue;
+
+			/*
+			 * If the previous CPU has same load, keep it as
+			 * target_cpu.
+			 */
+			if (target_cpu_util == util && target_cpu == prev_cpu)
+				continue;
+
+			/*
+			 * If candidate CPU is the previous CPU, select it.
+			 * Otherwise, if its load is same with target_cpu and in
+			 * a shallower C-state, select it.  If all above
+			 * conditions are same, select the least cumulative
+			 * window demand CPU.
+			 */
+			if (sysctl_sched_cstate_aware)
+				cpu_idle_idx = idle_get_state_idx(cpu_rq(cpu));
+
+			if (cpu != prev_cpu && target_cpu_util == util) {
+				if (target_cpu_idle_idx < cpu_idle_idx)
+					continue;
+			}
+
+			target_cpu_idle_idx = cpu_idle_idx;
+			target_cpu_util = util;
+			target_cpu = cpu;
+		} while ((cpu = cpumask_next(cpu, &search_cpu)) < nr_cpu_ids);
+
+		if (target_cpu != -1) {
+			return target_cpu;
+		} else if (!cpumask_empty(&backup_search_cpu)) {
+			cpumask_copy(&search_cpu, &backup_search_cpu);
+			cpumask_clear(&backup_search_cpu);
+			goto retry;
+		}
+	}
+
+noea:
+#endif /* CONFIG_HISI_RT_CAS */
+	cpu = task_cpu(task);
 	/*
 	 * At this point we have built a mask of cpus representing the
 	 * lowest priority tasks in the system.  Now we want to elect
@@ -2211,6 +2433,11 @@ static void switched_from_rt(struct rq *rq, struct task_struct *p)
 	if (!task_on_rq_queued(p) || rq->rt.rt_nr_running)
 		return;
 
+#ifdef CONFIG_HISI_CPU_ISOLATION
+	if (cpu_isolated(cpu_of(rq)))
+		return;
+#endif
+
 	queue_pull_task(rq);
 }
 
@@ -2349,6 +2576,109 @@ static void task_tick_rt(struct rq *rq, struct task_struct *p, int queued)
 		}
 	}
 }
+
+#ifdef CONFIG_HISI_RT_ACTIVE_LB
+static int rt_active_load_balance_cpu_stop(void *data)
+{
+	struct rq *busiest_rq = data;
+	struct task_struct *next_task = busiest_rq->rt_push_task;
+	struct rq *lowest_rq;
+	unsigned long flags;
+
+	raw_spin_lock_irqsave(&busiest_rq->lock, flags);
+	busiest_rq->rt_active_balance = 0;
+
+	/* find_lock_lowest_rq locks the rq if found */
+	lowest_rq = find_lock_lowest_rq(next_task, busiest_rq);
+	if (!lowest_rq)
+		goto out;
+
+	if (capacity_orig_of(cpu_of(lowest_rq)) <= capacity_orig_of(task_cpu(next_task)))
+		goto unlock;
+
+	deactivate_task(busiest_rq, next_task, 0);
+	next_task->on_rq = TASK_ON_RQ_MIGRATING;
+	set_task_cpu(next_task, lowest_rq->cpu);
+	next_task->on_rq = TASK_ON_RQ_QUEUED;
+	activate_task(lowest_rq, next_task, 0);
+
+	resched_curr(lowest_rq);
+
+unlock:
+	double_unlock_balance(busiest_rq, lowest_rq);
+
+out:
+	put_task_struct(next_task);
+	raw_spin_unlock_irqrestore(&busiest_rq->lock, flags);
+
+
+	return 0;
+}
+
+void check_for_rt_migration(struct rq *rq, struct task_struct *p)
+{
+	bool need_actvie_lb = false;
+	bool misfit_task = false;
+	int cpu = task_cpu(p);
+	unsigned long cpu_orig_cap;
+#ifdef CONFIG_HISI_RTG
+	struct related_thread_group *grp = NULL;
+	struct sched_cluster *new_cluster = NULL;
+	int new_cpu = -1;
+#endif
+
+	if (!sysctl_sched_enable_rt_active_lb)
+		return ;
+
+	if (p->nr_cpus_allowed == 1)
+		return ;
+
+	rcu_read_lock();
+
+	cpu_orig_cap = capacity_orig_of(cpu);
+	/* cpu has max capacity, no need to do balance */
+	if (cpu_orig_cap == rq->rd->max_cpu_capacity.val)
+		goto out;
+
+#ifdef CONFIG_HISI_RTG
+	grp = task_related_thread_group(p);
+	if (grp) {
+		if (!grp->preferred_cluster)
+			goto out;
+
+		new_cluster = grp->preferred_cluster;
+		new_cpu = cpumask_first(&new_cluster->cpus);
+		if (capacity_orig_of(new_cpu) > cpu_orig_cap)
+			misfit_task = true;
+	} else {
+		if (task_util(p) * rt_capacity_margin > cpu_orig_cap * SCHED_CAPACITY_SCALE)
+			misfit_task = true;
+	}
+#else
+	if (task_util(p) * rt_capacity_margin > cpu_orig_cap * SCHED_CAPACITY_SCALE)
+		misfit_task = true;
+#endif
+
+	if (misfit_task) {
+		raw_spin_lock(&rq->lock);
+		if (!rq->active_balance && !rq->rt_active_balance) {
+			rq->rt_active_balance = 1;
+			rq->rt_push_task = p;
+			get_task_struct(p);
+			need_actvie_lb = true;
+		}
+		raw_spin_unlock(&rq->lock);
+
+		if (need_actvie_lb)
+			stop_one_cpu_nowait(task_cpu(p),
+						rt_active_load_balance_cpu_stop,
+						rq, &rq->rt_active_balance_work);
+	}
+
+out:
+	rcu_read_unlock();
+}
+#endif
 
 static void set_curr_task_rt(struct rq *rq)
 {
@@ -2556,6 +2886,8 @@ int sched_group_set_rt_runtime(struct task_group *tg, long rt_runtime_us)
 	rt_runtime = (u64)rt_runtime_us * NSEC_PER_USEC;
 	if (rt_runtime_us < 0)
 		rt_runtime = RUNTIME_INF;
+	else if ((u64)rt_runtime_us > U64_MAX / NSEC_PER_USEC)
+		return -EINVAL;
 
 	return tg_set_rt_bandwidth(tg, rt_period, rt_runtime);
 }
@@ -2575,6 +2907,9 @@ long sched_group_rt_runtime(struct task_group *tg)
 int sched_group_set_rt_period(struct task_group *tg, u64 rt_period_us)
 {
 	u64 rt_runtime, rt_period;
+
+	if (rt_period_us > U64_MAX / NSEC_PER_USEC)
+		return -EINVAL;
 
 	rt_period = rt_period_us * NSEC_PER_USEC;
 	rt_runtime = tg->rt_bandwidth.rt_runtime;

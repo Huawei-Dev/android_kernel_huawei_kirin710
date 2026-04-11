@@ -24,6 +24,9 @@
 
 #define CREATE_TRACE_POINTS
 #include "sync_trace.h"
+#ifdef CONFIG_HW_FDLEAK
+#include <chipset_common/hwfdleak/fdleak.h>
+#endif
 
 /*
  * SW SYNC validation framework
@@ -382,7 +385,9 @@ static long sw_sync_ioctl_create_fence(struct sync_timeline *obj,
 	}
 
 	fd_install(fd, sync_file->file);
-
+#ifdef CONFIG_HW_FDLEAK
+	fdleak_report(FDLEAK_WP_SYNCFENCE, 0);
+#endif
 	return 0;
 
 err:

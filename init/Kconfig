@@ -16,6 +16,9 @@ config DEFCONFIG_LIST
 	default "$ARCH_DEFCONFIG"
 	default "arch/$ARCH/defconfig"
 
+config CC_IS_CLANG
+	bool "use clang to compile kernel"
+
 config CONSTRUCTORS
 	bool
 	depends on !UML
@@ -48,7 +51,7 @@ config BROKEN_ON_SMP
 
 config INIT_ENV_ARG_LIMIT
 	int
-	default 32 if !UML
+	default 128 if !UML
 	default 128 if UML
 	help
 	  Maximum of each of the number of arguments and environment
@@ -403,11 +406,14 @@ config IRQ_TIME_ACCOUNTING
 config SCHED_WALT
         bool "Support window based load tracking"
         depends on SMP
+        select IRQ_TIME_ACCOUNTING
         help
         This feature will allow the scheduler to maintain a tunable window
 	based set of metrics for tasks and runqueues. These metrics can be
 	used to guide task placement as well as task frequency requirements
 	for cpufreq governors.
+
+source "kernel/sched/Kconfig"
 
 config BSD_PROCESS_ACCT
 	bool "BSD Process Accounting"
@@ -504,19 +510,8 @@ config PSI_DEFAULT_DISABLED
 	depends on PSI
 	help
 	  If set, pressure stall information tracking will be disabled
-	  per default but can be enabled through passing psi=1 on the
-	  kernel commandline during boot.
-
-	  This feature adds some code to the task wakeup and sleep
-	  paths of the scheduler. The overhead is too low to affect
-	  common scheduling-intense workloads in practice (such as
-	  webservers, memcache), but it does show up in artificial
-	  scheduler stress tests, such as hackbench.
-
-	  If you are paranoid and not sure what the kernel will be
-	  used for, say Y.
-
-	  Say N if unsure.
+	  per default but can be enabled through passing psi_enable=1
+	  on the kernel commandline during boot.
 
 endmenu # "CPU/Task time and stats accounting"
 
@@ -718,6 +713,13 @@ config NUMA_BALANCING_DEFAULT_ENABLED
 	  If set, automatic NUMA balancing will be enabled if running on a NUMA
 	  machine.
 
+config BOOST_KILL
+	bool "boost kill"
+	default n
+	help
+	  if set, the process to be killed will be move to fast cpu and its nice
+	  value will also set to -20.
+
 menuconfig CGROUPS
 	bool "Control Group support"
 	select KERNFS
@@ -733,6 +735,15 @@ menuconfig CGROUPS
 	  Say N if unsure.
 
 if CGROUPS
+
+config HW_CGROUP_WORKINGSET
+	bool "workingset cgroup subsystem"
+	depends on CRYPTO_CRC32C
+	depends on TASK_DELAY_ACCT
+	help
+	  Provides a cgroup implementing filepage collector and prereader of workingset.
+	  This cgroup workingset for application, collect it touched filepages and
+	  preread those filepages.
 
 config PAGE_COUNTER
        bool
@@ -853,6 +864,14 @@ config CGROUP_PIDS
 	  since the PIDs limit only affects a process's ability to fork, not to
 	  attach to a cgroup.
 
+config HW_CGROUP_IONICE
+	bool "ionice cgroup controller"
+	depends on BLOCK
+	help
+	  Provides a way to set ionice for tasks in a cgroup.
+	  It's useful in mobile devices where certain background apps
+	  are doing heavy io work.
+
 config CGROUP_RDMA
 	bool "RDMA controller"
 	help
@@ -873,6 +892,16 @@ config CGROUP_FREEZER
 	  controller includes important in-kernel memory consumers per default.
 
 	  If you're using cgroup2, say N.
+source "kernel/cgroup_huawei/Kconfig"
+
+config MEMCG_PROTECT_LRU
+	bool "Memory Resource Controller Protect LRU file pages"
+	depends on MEMCG && !TRANSPARENT_HUGEPAGE && !HUGETLB_PAGE && (ARM64 || X86_64)
+	default n
+	depends on !TASK_PROTECT_LRU && MEMCG
+	help
+	  Protect LRU support. It's between normal lru and mlock,
+	  that means we will reclaim protect lru file pages as late as possible.
 
 config CGROUP_HUGETLB
 	bool "HugeTLB controller"
@@ -905,6 +934,12 @@ config PROC_PID_CPUSET
 	bool "Include legacy /proc/<pid>/cpuset file"
 	depends on CPUSETS
 	default y
+
+config CGROUP_IOLIMIT
+	bool "IO bandwidth limit cgroup subsystem"
+	help
+	  Provides a cgroup implementing for io bandwidth while a process
+	  in the cgroup read or write.
 
 config CGROUP_DEVICE
 	bool "Device controller"
@@ -1029,6 +1064,129 @@ config NET_NS
 	  of the network stack.
 
 endif # NAMESPACES
+
+config HISI_EAS_SCHED
+	bool "Hisilicon EAS scheduler optimization"
+	default n
+	help
+	  Hisilicon EAS scheduler
+
+config HISI_MULTI_MARGIN
+	bool "Hisilicon EAS multiple margin"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  Allow each cluster has its own capacity_margin/sd_capacity_margin.
+
+config HISI_RT_OPT
+	bool "hisilicon rt-threads optimization"
+	default n
+	help
+	  Limit rt-threads to slow cpus for power saving.
+
+config HISI_RT_CAS
+	bool "hisilicon rt-cas optimization"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  allow rt-threads to be scheduled according to task_util.
+
+config HISI_RT_ACTIVE_LB
+	bool "hisilicon rt-cas optimization"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  allow migrating running rt task.
+
+config HISI_CPU_ISOLATION
+	bool "Hisilicon cpu isolation"
+	depends on SMP
+	default n
+	help
+	  This option enables cpu isolation, which implement an interface to
+	  userspace to isolate cpu dynamically, the isolated cpu will be
+	  unavailable to scheduler and load balancer, and all its non-pinned
+	  timers, IRQs and tasks will be migrated to other cpus, only pinned
+	  kthread and IRQS are still allowed to run, this achieve similar
+	  effect as hotplug but at lower latency cost.
+
+config HISI_CPU_ISOLATION_STRICT
+	bool "Hisilicon cpu isolation strict"
+	depends on HISI_CPU_ISOLATION
+	default n
+	help
+	  This option controls isolation policy of pinned user thread, if
+	  this option is enabled, pinned user threads on an isolated cpu will
+	  be migrated to other unisolated cpu, otherwise they can still running
+	  on isolated cpu.
+
+config HISI_CORE_CTRL
+	bool "HIsilicon core control"
+	depends on HISI_CPU_ISOLATION
+	default n
+	help
+	  This option enables the core control functionality in
+	  the scheduler. Core control automatically isolate and
+	  unisolate cores based on cpu load and utilization.
+
+config HISI_ED_TASK
+	bool "Hisilicon early detection tasks for freq guidance"
+	depends on HISI_EAS_SCHED
+	depends on SCHED_WALT
+	default n
+	help
+	  early detection tasks for frequency guidance.
+
+config HISI_TASK_RAVG_SUM
+	bool "Hisilicon task normalized running time sum"
+	depends on HISI_EAS_SCHED
+	depends on SCHED_WALT
+	default n
+	help
+	  Sum all normalized running time for each task.
+
+config HISI_ED_TASK_RESET_AT_UPMIGRATION
+	bool "Reset ed task's run/wait time when migrate to faster cpu"
+	depends on HISI_ED_TASK
+	default n
+	help
+	  This feature reset an ed task's last_wake_ts/last_wake_wait_sum if
+	  task migrate to faster cpu. This prevents little core's ed task
+	  boost big core's freq when it upmigrate.
+	  However, it might be confusing if a task become ed task on big core
+	  by its earlier running time on little core. Disable this feature
+	  and do not reset ed task on migration is a better choice.
+
+config HISI_MIGRATION_NOTIFY
+	bool "Hisilicon task migration notify freq change"
+	depends on HISI_EAS_SCHED
+	default n
+	help
+	  tasks migration notify frequency change.
+
+config HISI_RTG
+	bool "Hisilicon related threads group"
+	depends on HISI_EAS_SCHED
+	depends on SCHED_WALT
+	default n
+	help
+	  set ux related threads into a group.
+
+config HISI_RTG_DEBUG
+	bool "Hisilicon related threads group debug"
+	depends on HISI_RTG
+	depends on HISI_DEBUG_FS
+	default n
+	help
+	  hisi related threads group debugfs.
+
+config HISI_CGROUP_RTG
+	bool "Hisilicon related threads group"
+	depends on HISI_RTG
+	depends on SCHED_TUNE
+	default n
+	help
+	  set schedtune group tasks into a rtg.
 
 config SCHED_AUTOGROUP
 	bool "Automatic process group scheduling"
@@ -1353,6 +1511,13 @@ config PRINTK_NMI
 	depends on PRINTK
 	depends on HAVE_NMI
 
+config HUAWEI_PRINTK_CTRL
+	default n
+	bool "Enable support for log level control" if EXPERT
+	help
+	  This option enables log level control in no log load, Debug kernel log
+	  will not be saved to memory if this option is enabled.
+
 config BUG
 	bool "BUG() support" if EXPERT
 	default y
@@ -1581,6 +1746,15 @@ config PERF_EVENTS
 
 	  Say Y if unsure.
 
+config PERF_USER_SHARE
+	bool "Perf event sharing with user-space"
+	help
+	  Say yes here to enable the user-space sharing of events. The events
+	  can be shared among other user-space events or with kernel created
+	  events that has the same config and type event attributes.
+
+	  Say N if unsure.
+
 config DEBUG_PERF_USE_VMALLOC
 	default n
 	bool "Debug: use vmalloc to back perf mmap() buffers"
@@ -1707,6 +1881,21 @@ config SLAB_FREELIST_HARDENED
 	  other infrastructure. This options makes minor performance
 	  sacrifies to harden the kernel slab allocator against common
 	  freelist exploit methods.
+
+config HW_SLUB_DF
+	bool "HUAWEI SLUB canaries"
+	default n
+	help
+	  Place canaries at first 8bit magic word of user data when free memory,
+	  check this magic when free to avoid double free.
+	  place canary_malloc before return to user.
+
+config HW_SLUB_DF_BUGON
+	bool "When canary status is wrong, throw out a bugon."
+	default n
+	depends on HW_SLUB_DF
+	help
+	  When canary status is wrong, throw out a bugon
 
 config SLUB_CPU_PARTIAL
 	default y
@@ -2032,3 +2221,9 @@ config ASN1
 	  functions to call on what tags.
 
 source "kernel/Kconfig.locks"
+source "net/network_aware/Kconfig"
+source "kernel/hwcfs/Kconfig"
+source "kernel/cpu_netlink/Kconfig"
+source "kernel/hwrtg/Kconfig"
+source "kernel/hwqos/Kconfig"
+source "net/netqos_sched/Kconfig"

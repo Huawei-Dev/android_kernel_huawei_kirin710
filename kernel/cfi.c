@@ -14,23 +14,29 @@
 #include <asm/cacheflush.h>
 #include <asm/memory.h>
 #include <asm/set_memory.h>
+#include <chipset_common/security/saudit.h>
+
+#ifdef CONFIG_HUAWEI_VENDOR_EXCEPTION
+#include <huawei_platform/vendor_exception/vendor_exception.h>
+#endif
 
 /* Compiler-defined handler names */
-#ifdef CONFIG_CFI_PERMISSIVE
-#define cfi_failure_handler	__ubsan_handle_cfi_check_fail
-#define cfi_slowpath_handler	__cfi_slowpath_diag
-#else /* enforcing */
-#define cfi_failure_handler	__ubsan_handle_cfi_check_fail_abort
-#define cfi_slowpath_handler	__cfi_slowpath
-#endif /* CONFIG_CFI_PERMISSIVE */
+#define cfi_failure_handler     __ubsan_handle_cfi_check_fail
+#define cfi_slowpath_handler    __cfi_slowpath_diag
 
 static inline void handle_cfi_failure(void *ptr)
 {
+	saudit_log(CFI, STP_RISK, 0, "target:<%px> %pF,", ptr, ptr);
 #ifdef CONFIG_CFI_PERMISSIVE
 	WARN_RATELIMIT(1, "CFI failure (target: [<%px>] %pF):\n", ptr, ptr);
 #else
 	pr_err("CFI failure (target: [<%px>] %pF):\n", ptr, ptr);
+
+#ifdef CONFIG_HUAWEI_VENDOR_EXCEPTION
+	VENDOR_EXCEPTION(VENDOR_MODID_AP_S_CFI, 0, 0);
+#else
 	BUG();
+#endif
 #endif
 }
 
@@ -229,7 +235,6 @@ static inline cfi_check_fn ptr_to_check_fn(const struct cfi_shadow __rcu *s,
 	unsigned long ptr)
 {
 	int index;
-	unsigned long check;
 
 	if (unlikely(!s))
 		return NULL; /* No shadow available */

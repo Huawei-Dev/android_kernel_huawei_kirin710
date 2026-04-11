@@ -34,13 +34,16 @@
 #define F2FS_XATTR_INDEX_ADVISE			7
 /* Should be same as EXT4_XATTR_INDEX_ENCRYPTION */
 #define F2FS_XATTR_INDEX_ENCRYPTION		9
+#define F2FS_XATTR_INDEX_ECE_ENCRYPTION		10
 
-#define F2FS_XATTR_NAME_ENCRYPTION_CONTEXT	"c"
+#define F2FS_XATTR_NAME_ENCRYPTION_CONTEXT		"c"
 
 struct f2fs_xattr_header {
 	__le32  h_magic;        /* magic number for identification */
 	__le32  h_refcount;     /* reference count */
-	__u32   h_reserved[4];  /* zero right now */
+	__le32  h_ctx_crc;	/* crc for fscrypt context */
+	__le32  h_xattr_flags;  /* flags to check the sdp encryption */
+	__u32   h_reserved[2];  /* zero right now */
 };
 
 struct f2fs_xattr_entry {
@@ -77,12 +80,6 @@ struct f2fs_xattr_entry {
 #define MAX_VALUE_LEN(i)	(MIN_OFFSET(i) -			\
 				sizeof(struct f2fs_xattr_header) -	\
 				sizeof(struct f2fs_xattr_entry))
-
-#define MAX_INLINE_XATTR_SIZE						\
-			(DEF_ADDRS_PER_INODE -				\
-			F2FS_TOTAL_EXTRA_ATTR_SIZE / sizeof(__le32) -	\
-			DEF_INLINE_RESERVED_SIZE -			\
-			MIN_INLINE_DENTRY_SIZE / sizeof(__le32))
 
 /*
  * On-disk structure of f2fs_xattr
@@ -126,6 +123,9 @@ extern int f2fs_setxattr(struct inode *, int, const char *,
 extern int f2fs_getxattr(struct inode *, int, const char *, void *,
 						size_t, struct page *);
 extern ssize_t f2fs_listxattr(struct dentry *, char *, size_t);
+struct f2fs_xattr_header* get_xattr_header(struct inode *, struct page *,
+					   struct page **);
+void put_xattr_header(struct page *);
 #else
 
 #define f2fs_xattr_handlers	NULL

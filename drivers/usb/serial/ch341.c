@@ -366,7 +366,7 @@ static void ch341_set_termios(struct tty_struct *tty,
 	/* redundant changes may cause the chip to lose bytes */
 	if (old_termios && !tty_termios_hw_change(&tty->termios, old_termios))
 		return;
-
+ch341_set_termios(struct
 	baud_rate = tty_get_baud_rate(tty);
 
 	lcr = CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX;

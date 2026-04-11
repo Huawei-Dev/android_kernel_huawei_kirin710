@@ -345,7 +345,7 @@ bool ovl_check_dir_xattr(struct dentry *dentry, const char *name)
 	if (!d_is_dir(dentry))
 		return false;
 
-	res = vfs_getxattr(dentry, name, &val, 1);
+	res = vfs_getxattr(NULL, dentry, name, &val, 1);
 	if (res == 1 && val == 'y')
 		return true;
 

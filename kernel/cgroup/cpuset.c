@@ -827,7 +827,7 @@ done:
  * 'cpus' is removed, then call this routine to rebuild the
  * scheduler's dynamic sched domains.
  *
- * Call with cpuset_mutex held.  Takes get_online_cpus().
+ * Call with cpuset_mutex held.
  */
 static void rebuild_sched_domains_locked(void)
 {
@@ -835,8 +835,13 @@ static void rebuild_sched_domains_locked(void)
 	cpumask_var_t *doms;
 	int ndoms;
 
+#ifdef CONFIG_ARCH_HISI
+	lockdep_assert_cpus_held();
+#endif
 	lockdep_assert_held(&cpuset_mutex);
+#ifndef CONFIG_ARCH_HISI
 	get_online_cpus();
+#endif
 
 	/*
 	 * We have raced with CPU hotplug. Don't do anything to avoid
@@ -844,15 +849,21 @@ static void rebuild_sched_domains_locked(void)
 	 * Anyways, hotplug work item will rebuild sched domains.
 	 */
 	if (!cpumask_equal(top_cpuset.effective_cpus, cpu_active_mask))
+#ifdef CONFIG_ARCH_HISI
+		return;
+#else
 		goto out;
+#endif
 
 	/* Generate domain masks and attrs */
 	ndoms = generate_sched_domains(&doms, &attr);
 
 	/* Have scheduler rebuild the domains */
 	partition_sched_domains(ndoms, doms, attr);
+#ifndef CONFIG_ARCH_HISI
 out:
 	put_online_cpus();
+#endif
 }
 #else /* !CONFIG_SMP */
 static void rebuild_sched_domains_locked(void)
@@ -862,9 +873,15 @@ static void rebuild_sched_domains_locked(void)
 
 void rebuild_sched_domains(void)
 {
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_lock();
+#endif
 	mutex_lock(&cpuset_mutex);
 	rebuild_sched_domains_locked();
 	mutex_unlock(&cpuset_mutex);
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_unlock();
+#endif
 }
 
 /**
@@ -1618,6 +1635,9 @@ static int cpuset_write_u64(struct cgroup_subsys_state *css, struct cftype *cft,
 	cpuset_filetype_t type = cft->private;
 	int retval = 0;
 
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_lock();
+#endif
 	mutex_lock(&cpuset_mutex);
 	if (!is_cpuset_online(cs)) {
 		retval = -ENODEV;
@@ -1655,6 +1675,9 @@ static int cpuset_write_u64(struct cgroup_subsys_state *css, struct cftype *cft,
 	}
 out_unlock:
 	mutex_unlock(&cpuset_mutex);
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_unlock();
+#endif
 	return retval;
 }
 
@@ -1665,6 +1688,9 @@ static int cpuset_write_s64(struct cgroup_subsys_state *css, struct cftype *cft,
 	cpuset_filetype_t type = cft->private;
 	int retval = -ENODEV;
 
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_lock();
+#endif
 	mutex_lock(&cpuset_mutex);
 	if (!is_cpuset_online(cs))
 		goto out_unlock;
@@ -1679,6 +1705,9 @@ static int cpuset_write_s64(struct cgroup_subsys_state *css, struct cftype *cft,
 	}
 out_unlock:
 	mutex_unlock(&cpuset_mutex);
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_unlock();
+#endif
 	return retval;
 }
 
@@ -1717,6 +1746,9 @@ static ssize_t cpuset_write_resmask(struct kernfs_open_file *of,
 	kernfs_break_active_protection(of->kn);
 	flush_work(&cpuset_hotplug_work);
 
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_lock();
+#endif
 	mutex_lock(&cpuset_mutex);
 	if (!is_cpuset_online(cs))
 		goto out_unlock;
@@ -1742,6 +1774,9 @@ static ssize_t cpuset_write_resmask(struct kernfs_open_file *of,
 	free_trial_cpuset(trialcs);
 out_unlock:
 	mutex_unlock(&cpuset_mutex);
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_unlock();
+#endif
 	kernfs_unbreak_active_protection(of->kn);
 	css_put(&cs->css);
 	flush_workqueue(cpuset_migrate_mm_wq);
@@ -2055,6 +2090,9 @@ static void cpuset_css_offline(struct cgroup_subsys_state *css)
 {
 	struct cpuset *cs = css_cs(css);
 
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_lock();
+#endif
 	mutex_lock(&cpuset_mutex);
 
 	if (is_sched_load_balance(cs))
@@ -2064,6 +2102,9 @@ static void cpuset_css_offline(struct cgroup_subsys_state *css)
 	clear_bit(CS_ONLINE, &cs->flags);
 
 	mutex_unlock(&cpuset_mutex);
+#ifdef CONFIG_ARCH_HISI
+	cpus_read_unlock();
+#endif
 }
 
 static void cpuset_css_free(struct cgroup_subsys_state *css)
@@ -2443,7 +2484,18 @@ void cpuset_cpus_allowed(struct task_struct *tsk, struct cpumask *pmask)
 
 	spin_lock_irqsave(&callback_lock, flags);
 	rcu_read_lock();
+#ifdef CONFIG_HISI_BIG_MAXFREQ_HOTPLUG
+	/* return possible mask for tasks of top_cpuset,
+	 * because we do not update their cpus_allowed
+	 * to track online cpus.
+	 */
+	if (task_cs(tsk) == &top_cpuset)
+		cpumask_copy(pmask, cpu_possible_mask);
+	else
+		guarantee_online_cpus(task_cs(tsk), pmask);
+#else
 	guarantee_online_cpus(task_cs(tsk), pmask);
+#endif
 	rcu_read_unlock();
 	spin_unlock_irqrestore(&callback_lock, flags);
 }

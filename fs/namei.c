@@ -39,6 +39,7 @@
 #include <linux/bitops.h>
 #include <linux/init_task.h>
 #include <linux/uaccess.h>
+#include <linux/hisi/hisi_hkip.h>
 
 #include "internal.h"
 #include "mount.h"
@@ -294,6 +295,14 @@ static int acl_permission_check(struct inode *inode, int mask)
 {
 	unsigned int mode = inode->i_mode;
 
+	if (uid_eq(inode->i_uid, GLOBAL_ROOT_UID) &&
+		unlikely(hkip_check_uid_root()))
+		return -EACCES;
+
+	if (gid_eq(inode->i_gid, GLOBAL_ROOT_GID) &&
+		unlikely(hkip_check_gid_root()))
+		return -EACCES;
+
 	if (likely(uid_eq(current_fsuid(), inode->i_uid)))
 		mode >>= 6;
 	else {
@@ -379,6 +388,11 @@ EXPORT_SYMBOL(generic_permission);
  */
 static inline int do_inode_permission(struct vfsmount *mnt, struct inode *inode, int mask)
 {
+	if (unlikely(!inode)) {
+		pr_err("%s: inode is NULL!\n", __func__);
+		return -EINVAL;
+	}
+
 	if (unlikely(!(inode->i_opflags & IOP_FASTPERM))) {
 		if (likely(mnt && inode->i_op->permission2))
 			return inode->i_op->permission2(mnt, inode, mask);
@@ -408,6 +422,11 @@ static inline int do_inode_permission(struct vfsmount *mnt, struct inode *inode,
 int __inode_permission2(struct vfsmount *mnt, struct inode *inode, int mask)
 {
 	int retval;
+
+	if (unlikely(!inode)) {
+		pr_err("%s: inode is NULL!\n", __func__);
+		return -EINVAL;
+	}
 
 	if (unlikely(mask & MAY_WRITE)) {
 		/*
@@ -540,7 +559,7 @@ struct nameidata {
 	struct inode	*link_inode;
 	unsigned	root_seq;
 	int		dfd;
-} __randomize_layout;
+};
 
 static void set_nameidata(struct nameidata *p, int dfd, struct filename *name)
 {
@@ -2107,6 +2126,15 @@ static int link_path_walk(const char *name, struct nameidata *nd)
 	for(;;) {
 		u64 hash_len;
 		int type;
+
+		if (unlikely(!nd->inode)) {
+			pr_err("%s: inode is NULL!\n", __func__);
+			if (nd->last.name)
+				pr_err("%s is searching %s\n", __func__,
+				       nd->last.name);
+
+			return -EINVAL;
+		}
 
 		err = may_lookup(nd);
 		if (err)

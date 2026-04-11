@@ -98,6 +98,11 @@
 #include "audit.h"
 #include "avc_ss.h"
 
+#define SELINUX_POOL_ALIGNMENT_ORDER	4
+#define SELINUX_POOL_PREALLOC_SIZE_BYTES (4 * 1024 * 1024)
+
+struct gen_pool *selinux_pool;
+
 /* SECMARK reference count */
 static atomic_t selinux_secmark_refcount = ATOMIC_INIT(0);
 
@@ -114,8 +119,14 @@ static int __init enforcing_setup(char *str)
 __setup("enforcing=", enforcing_setup);
 #endif
 
+#if defined(CONFIG_HISI_SELINUX_PROT) && !defined(CONFIG_SECURITY_SELINUX_DISABLE)
+#define __selinux_enabled_prot  __ro_after_init
+#else
+#define __selinux_enabled_prot
+#endif
+
 #ifdef CONFIG_SECURITY_SELINUX_BOOTPARAM
-int selinux_enabled = CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE;
+int selinux_enabled __selinux_enabled_prot = CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE;
 
 static int __init selinux_enabled_setup(char *str)
 {
@@ -126,7 +137,7 @@ static int __init selinux_enabled_setup(char *str)
 }
 __setup("selinux=", selinux_enabled_setup);
 #else
-int selinux_enabled = 1;
+int selinux_enabled __selinux_enabled_prot = 1;
 #endif
 
 static struct kmem_cache *sel_inode_cache;
@@ -264,7 +275,7 @@ static int __inode_security_revalidate(struct inode *inode,
 
 	might_sleep_if(may_sleep);
 
-	if (ss_initialized && isec->initialized != LABEL_INITIALIZED) {
+	if (*ss_initialized && isec->initialized != LABEL_INITIALIZED) {
 		if (!may_sleep)
 			return -ECHILD;
 
@@ -586,7 +597,7 @@ static int selinux_get_mnt_opts(const struct super_block *sb,
 	if (!(sbsec->flags & SE_SBINITIALIZED))
 		return -EINVAL;
 
-	if (!ss_initialized)
+	if (!*ss_initialized)
 		return -EINVAL;
 
 	/* make sure we always check enough bits to cover the mask */
@@ -704,7 +715,7 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 
 	mutex_lock(&sbsec->lock);
 
-	if (!ss_initialized) {
+	if (!*ss_initialized) {
 		if (!num_opts) {
 			/* Defer initialization until selinux_complete_init,
 			   after the initial policy is loaded and the security
@@ -987,7 +998,7 @@ static int selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
 	 * if the parent was able to be mounted it clearly had no special lsm
 	 * mount options.  thus we can safely deal with this superblock later
 	 */
-	if (!ss_initialized)
+	if (!*ss_initialized)
 		return 0;
 
 	/*
@@ -2840,7 +2851,7 @@ static int selinux_sb_kern_mount(struct super_block *sb, int flags, void *data)
 		return rc;
 
 	/* Allow all mounts performed by the kernel */
-	if (flags & (MS_KERNMOUNT | MS_SUBMOUNT))
+	if (flags & MS_KERNMOUNT)
 		return 0;
 
 	ad.type = LSM_AUDIT_DATA_DENTRY;
@@ -2962,7 +2973,7 @@ static int selinux_inode_init_security(struct inode *inode, struct inode *dir,
 		isec->initialized = LABEL_INITIALIZED;
 	}
 
-	if (!ss_initialized || !(sbsec->flags & SBLABEL_MNT))
+	if (!*ss_initialized || !(sbsec->flags & SBLABEL_MNT))
 		return -EOPNOTSUPP;
 
 	if (name)
@@ -6657,6 +6668,17 @@ static __init int selinux_init(void)
 
 	printk(KERN_INFO "SELinux:  Initializing.\n");
 
+	selinux_pool = pmalloc_create_pool("selinux",
+					   SELINUX_POOL_ALIGNMENT_ORDER);
+	BUG_ON(pmalloc_prealloc(selinux_pool,
+				SELINUX_POOL_PREALLOC_SIZE_BYTES) == false);
+	BUG_ON(selinux_pool == NULL);
+
+	ss_initialized = pmalloc(selinux_pool, sizeof(*ss_initialized), GFP_KERNEL);
+
+	BUG_ON(!ss_initialized);
+	*ss_initialized = 0;
+
 	/* Set the security state for the initial task. */
 	cred_init_security();
 
@@ -6803,7 +6825,7 @@ static int selinux_disabled;
 
 int selinux_disable(void)
 {
-	if (ss_initialized) {
+	if (*ss_initialized) {
 		/* Not permitted after initial policy load. */
 		return -EINVAL;
 	}

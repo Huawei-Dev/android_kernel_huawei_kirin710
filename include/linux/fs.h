@@ -38,6 +38,7 @@
 
 #include <asm/byteorder.h>
 #include <uapi/linux/fs.h>
+#include <linux/hisi/pagecache_debug.h>
 
 struct backing_dev_info;
 struct bdi_writeback;
@@ -161,6 +162,8 @@ typedef int (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
  * points too.
  */
 #define CHECK_IOVEC_ONLY -1
+
+#define WRITE_FLUSH_FUA         (REQ_SYNC | REQ_NOIDLE | REQ_PREFLUSH | REQ_FUA)
 
 /*
  * Attribute flags.  These should be or-ed together to figure out what
@@ -409,7 +412,7 @@ struct address_space {
 	struct list_head	private_list;	/* for use by the address_space */
 	void			*private_data;	/* ditto */
 	errseq_t		wb_err;
-} __attribute__((aligned(sizeof(long)))) __randomize_layout;
+} __attribute__((aligned(sizeof(long))));
 	/*
 	 * On most architectures that alignment is already the case; but
 	 * must be enforced here for CRIS, to let the least significant bit
@@ -453,7 +456,7 @@ struct block_device {
 	int			bd_fsfreeze_count;
 	/* Mutex for freeze */
 	struct mutex		bd_fsfreeze_mutex;
-} __randomize_layout;
+};
 
 /*
  * Radix-tree tags, for tagging dirty and writeback pages within the pagecache
@@ -672,7 +675,14 @@ struct inode {
 #endif
 
 	void			*i_private; /* fs or device private pointer */
-} __randomize_layout;
+#if defined(CONFIG_TASK_PROTECT_LRU) || defined(CONFIG_MEMCG_PROTECT_LRU)
+	int			i_protect;
+#endif
+
+#ifdef CONFIG_FILE_MAP
+	struct file_map_entry *i_file_map;
+#endif
+};
 
 static inline unsigned int i_blocksize(const struct inode *node)
 {
@@ -889,7 +899,7 @@ struct file {
 #endif /* #ifdef CONFIG_EPOLL */
 	struct address_space	*f_mapping;
 	errseq_t		f_wb_err;
-} __randomize_layout
+}
   __attribute__((aligned(4)));	/* lest something weird decides that 2 is OK */
 
 struct file_handle {
@@ -1444,7 +1454,7 @@ struct super_block {
 
 	spinlock_t		s_inode_wblist_lock;
 	struct list_head	s_inodes_wb;	/* writeback inodes */
-} __randomize_layout;
+};
 
 /* Helper functions so that in most cases filesystems will
  * not need to deal directly with kuid_t and kgid_t and can
@@ -1738,7 +1748,7 @@ struct file_operations {
 			u64);
 	ssize_t (*dedupe_file_range)(struct file *, u64, u64, struct file *,
 			u64);
-} __randomize_layout;
+};
 
 struct inode_operations {
 	struct dentry * (*lookup) (struct inode *,struct dentry *, unsigned int);
@@ -1799,6 +1809,8 @@ extern ssize_t vfs_read(struct file *, char __user *, size_t, loff_t *);
 extern ssize_t vfs_write(struct file *, const char __user *, size_t, loff_t *);
 extern ssize_t vfs_readv(struct file *, const struct iovec __user *,
 		unsigned long, loff_t *, rwf_t);
+extern ssize_t vfs_writev(struct file *, const struct iovec __user *,
+               unsigned long, loff_t *, int);
 extern ssize_t vfs_copy_file_range(struct file *, loff_t , struct file *,
 				   loff_t, size_t, unsigned int);
 extern int vfs_clone_file_prep_inodes(struct inode *inode_in, loff_t pos_in,
@@ -1850,6 +1862,10 @@ struct super_operations {
 				  struct shrink_control *);
 	long (*free_cached_objects)(struct super_block *,
 				    struct shrink_control *);
+#ifdef CONFIG_F2FS_JOURNAL_APPEND
+        void (*flush_mbio)(struct super_block *sb );
+#endif
+
 };
 
 /*
@@ -2689,6 +2705,9 @@ extern int vfs_fsync(struct file *file, int datasync);
  */
 static inline ssize_t generic_write_sync(struct kiocb *iocb, ssize_t count)
 {
+        pgcache_log_path(BIT_GENERIC_WRITE_DUMP, &(iocb->ki_filp->f_path),
+                        "generic write sync, offset, %ld, size, %ld",
+                        iocb->ki_pos, count);
 	if (iocb->ki_flags & IOCB_DSYNC) {
 		int ret = vfs_fsync_range(iocb->ki_filp,
 				iocb->ki_pos - count, iocb->ki_pos - 1,
@@ -2918,6 +2937,56 @@ extern void inode_sb_list_add(struct inode *inode);
 
 #ifdef CONFIG_BLOCK
 extern int bdev_read_only(struct block_device *);
+#endif
+#ifdef CONFIG_BLK_DEV_THROTTLING
+#define THROTL_WB_SYNC_PAGE_CNT	128
+#define THROTL_WB_SYNC_BIO_CNT	8
+extern bool blk_throtl_get_quota(struct block_device *,
+				 unsigned int, unsigned long, bool);
+static inline void blk_throtl_get_quotas(struct block_device *bdev,
+					 unsigned int size,
+					 unsigned long jiffies_time_out,
+					 bool wait,
+					 unsigned int cnt)
+{
+	while (cnt--)
+		blk_throtl_get_quota(bdev, PAGE_SIZE,
+				     jiffies_time_out,
+				     wait);
+}
+#else
+static inline bool blk_throtl_get_quota(struct block_device *bdev,
+					unsigned int size,
+					unsigned long jiffies_time_out,
+					bool wait)
+{
+	return true;
+}
+static inline void blk_throtl_get_quotas(struct block_device *bdev,
+					 unsigned int size,
+					 unsigned long jiffies_time_out,
+					 bool wait,
+					 unsigned int cnt)
+{
+}
+#endif
+#ifdef CONFIG_BLK_WBT
+int wbt_max_bio_blocks(struct block_device *bdev, unsigned int opf, int max,
+		       bool *nomerge);
+bool wbt_need_kick_bio(struct bio *bio);
+bool wbt_fs_get_quota(struct request_queue *q, struct writeback_control *wbc);
+void wbt_fs_wait(struct request_queue *q, struct writeback_control *wbc);
+#else
+static inline bool wbt_need_kick_bio(struct bio *bio)
+{
+	return false;
+}
+static inline int wbt_max_bio_blocks(struct block_device *bdev,
+				     unsigned int opf,
+				     int max, bool *nomerge)
+{
+	return max;
+}
 #endif
 extern int set_blocksize(struct block_device *, int);
 extern int sb_set_blocksize(struct super_block *, int);

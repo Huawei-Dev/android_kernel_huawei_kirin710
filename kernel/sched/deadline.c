@@ -1135,6 +1135,9 @@ static void update_curr_dl(struct rq *rq)
 		return;
 	}
 
+#ifdef CONFIG_HISI_CPU_FREQ_GOV_SCHEDUTIL
+	if (use_pelt_freq())
+#endif
 	/* kick cpufreq (see the comment in kernel/sched/sched.h). */
 	cpufreq_update_util(rq, SCHED_CPUFREQ_DL);
 

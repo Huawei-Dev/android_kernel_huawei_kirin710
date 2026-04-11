@@ -88,6 +88,7 @@ if INET
 source "net/ipv4/Kconfig"
 source "net/ipv6/Kconfig"
 source "net/netlabel/Kconfig"
+source "net/mptcp/Kconfig"
 
 endif # if INET
 
@@ -251,6 +252,14 @@ config RFS_ACCEL
 	depends on RPS
 	select CPU_RMAP
 	default y
+
+config HISI_RFS_RPS_MATCH
+	bool "Hisilicon rfs rps match"
+	depends on RPS
+	default n
+	---help---
+	  If the desired CPU (where last recvmsg was done) is not in rps map table,
+	  do not set it in rps flow table.
 
 config XPS
 	bool

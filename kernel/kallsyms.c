@@ -27,6 +27,9 @@
 #include <linux/compiler.h>
 
 #include <asm/sections.h>
+#ifdef CONFIG_HUAWEI_HIDESYMS
+#include <chipset_common/kernel_harden/litehide_symbols.h>
+#endif
 
 /*
  * These will be re-linked against their real values
@@ -626,6 +629,12 @@ static int s_show(struct seq_file *m, void *p)
 	/* Some debugging symbols have no name.  Ignore them. */
 	if (!iter->name[0])
 		return 0;
+
+#ifdef CONFIG_HUAWEI_HIDESYMS
+	/*  need to check if it's a hidden symbol. */
+	if (is_hide_symbols(iter->name) == true)
+		return 0;
+#endif
 
 	if (iter->module_name[0]) {
 		char type;

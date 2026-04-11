@@ -101,6 +101,10 @@ static ssize_t cpu_capacity_store(struct device *dev,
 		return ret;
 	if (new_capacity > SCHED_CAPACITY_SCALE)
 		return -EINVAL;
+#ifdef CONFIG_HISI_EAS_SCHED
+	if (!new_capacity)
+		return -EINVAL;
+#endif
 
 	mutex_lock(&cpu_scale_mutex);
 
@@ -180,8 +184,7 @@ int detect_share_cap_flag(void)
 		if (!policy)
 			return 0;
 
-		if (share_cap_level < share_cap_thread &&
-			cpumask_equal(topology_sibling_cpumask(cpu),
+		if (cpumask_equal(topology_sibling_cpumask(cpu),
 				  policy->related_cpus)) {
 			share_cap_level = share_cap_thread;
 			continue;
