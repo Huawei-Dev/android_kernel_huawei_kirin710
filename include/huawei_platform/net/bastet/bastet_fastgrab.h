@@ -90,18 +90,6 @@
         (sk)->discard_duration = (value); \
     }
 
-#ifdef CONFIG_HW_DPIMARK_MODULE
-#define BST_FG_SetAppType(sk, value) \
-    { \
-        (sk)->__sk_common.skc_hwdpi_mark |= (value << 8); \
-    }
-
-#define BST_FG_InitAppType(sk) \
-    { \
-        (sk)->__sk_common.skc_hwdpi_mark &= (0xFFFF00FF); \
-    }
-#endif
-
 typedef void(*BST_FG_PKT_PROC_T)(struct sock *, uint8_t*, uint32_t uint32_t);
 
 /*****************************************************************************

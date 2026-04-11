@@ -838,9 +838,6 @@ void BST_FG_HongBao_Process(struct sock *pstSock, uid_t lSockUid, uint8_t ucProt
 			BASTET_LOGI("BST_FG_CUSTOM:hongbao congestion stop,HZ is %u", HZ);
 			return;
 		}
-#ifdef CONFIG_HW_DPIMARK_MODULE
-		BST_FG_SetAppType(pstSock, (BST_FG_ACC_BITMAP | BST_FG_CONGESTION_BITMAP));
-#endif
 	}
 }
 
@@ -869,9 +866,6 @@ void BST_FG_Custom_Process(struct sock *pstSock, struct msghdr *msg, uint8_t ucP
 #endif
 
 	BST_FG_SetDiscardTimer(pstSock, 0);
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	BST_FG_InitAppType(pstSock);
-#endif
 
 	if(!BST_FG_IsUidValid(lSockUid))
 	{
@@ -909,12 +903,6 @@ void BST_FG_Custom_Process(struct sock *pstSock, struct msghdr *msg, uint8_t ucP
 		ucDiscardTimer = pastCustomInfo->ucDiscardTimer;
 		BST_FG_SetDiscardTimer(pstSock, ucDiscardTimer);
 	}
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	BST_FG_SetAppType(pstSock, pastCustomInfo->ucAppType);
-#endif
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	BASTET_LOGD("BST_FG_CUSTOM:DPI_MARK is 0x%x",pstSock->__sk_common.skc_hwdpi_mark);
-#endif
 	BASTET_LOGD("BST_FG_CUSTOM:Find sock UID is %d,discard_timer is %d,app_type is %d,ProtocolBitMap is %d, RetranDiscardFlag is %d",
 																				lSockUid,
 																				ucDiscardTimer,

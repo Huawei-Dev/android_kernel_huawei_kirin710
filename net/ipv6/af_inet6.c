@@ -82,10 +82,6 @@ static inline int current_has_network(void)
 
 #include "ip6_offload.h"
 
-#ifdef CONFIG_HW_DPIMARK_MODULE
-#include <hwnet/hw_dpi_mark/dpi_hw_hook.h>
-#endif
-
 #ifdef CONFIG_HUAWEI_XENGINE
 #include <huawei_platform/emcom/emcom_xengine.h>
 #endif
@@ -303,10 +299,6 @@ out:
 		get_task_comm(sk->sk_process_name, current->group_leader);
 #endif
 
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	if (!err)
-		mplk_try_nw_bind(sk);
-#endif
 #ifdef CONFIG_HUAWEI_XENGINE
 	if (!err)
 		emcom_xengine_bind(sk);

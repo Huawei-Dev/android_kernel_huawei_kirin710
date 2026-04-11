@@ -54,7 +54,7 @@
 #include "AdsDebug.h"
 #include "AdsMntn.h"
 #include "AdsNdisInterface.h"
-#if (defined(CONFIG_HUAWEI_BASTET) || defined(CONFIG_HW_DPIMARK_MODULE))
+#if defined(CONFIG_HUAWEI_BASTET)
 #include <net/inet_sock.h>
 #include <linux/version.h>
 #endif
@@ -568,11 +568,8 @@ VOS_UINT32 ADS_UL_CalcBuffTime(VOS_UINT32 ulBeginSlice, VOS_UINT32 ulEndSlice)
 
 VOS_UINT32 ADS_UL_BuildBdUserField2(IMM_ZC_STRU *pstImmZc)
 {
-#if (defined(CONFIG_HUAWEI_BASTET) || defined(CONFIG_HW_DPIMARK_MODULE))
+#if defined(CONFIG_HUAWEI_BASTET)
     struct sock                        *pstSk        = VOS_NULL_PTR;
-#ifdef CONFIG_HW_DPIMARK_MODULE
-    VOS_UINT8                          *pucTmp       = VOS_NULL_PTR;
-#endif
     VOS_UINT32                          ulUserField2;
 
     if( VOS_NULL_PTR == pstImmZc )
@@ -589,15 +586,8 @@ VOS_UINT32 ADS_UL_BuildBdUserField2(IMM_ZC_STRU *pstImmZc)
     {
         ulUserField2 = 0;
 #ifdef CONFIG_HUAWEI_BASTET
-        /* 第一个字节bit0为高优先级状态 第二个字节为超时主动弃包配置*/
         ulUserField2 |= (pstSk->acc_state & 0x01);
         ulUserField2 |= (((VOS_UINT32)pstSk->discard_duration << 8) & 0xFF00);
-#endif
-#ifdef CONFIG_HW_DPIMARK_MODULE
-        pucTmp = (VOS_UINT8 *)&(pstSk->sk_hwdpi_mark);
-        /* sk_hwdpi_mark中1,2字节均配置到userfield2的第一字节 */
-        ulUserField2 |= pucTmp[0];
-        ulUserField2 |= pucTmp[1];
 #endif
         return ulUserField2;
     }
