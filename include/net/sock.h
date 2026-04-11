@@ -228,10 +228,6 @@ struct sock_common {
 		u32		skc_window_clamp;
 		u32		skc_tw_snd_nxt; /* struct tcp_timewait_sock */
 	};
-	/* public: */
-    #ifdef CONFIG_HW_DPIMARK_MODULE
-	unsigned int    skc_hwdpi_mark;
-    #endif
 };
 
 /**
@@ -500,9 +496,6 @@ struct sock {
 	struct sock_reuseport __rcu	*sk_reuseport_cb;
 	struct rcu_head		sk_rcu;
 
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	unsigned long	sk_born_stamp;
-#endif
 #ifdef CONFIG_HUAWEI_XENGINE
 	int			hicom_flag;
 	u8	snd_pkt_cnt;

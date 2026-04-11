@@ -155,10 +155,6 @@
 #include <huawei_platform/emcom/emcom_xengine.h>
 #endif
 
-#ifdef CONFIG_HW_DPIMARK_MODULE
-#include <hwnet/hw_dpi_mark/dpi_hw_hook.h>
-#endif
-
 static DEFINE_MUTEX(proto_list_mutex);
 static LIST_HEAD(proto_list);
 
@@ -1018,11 +1014,7 @@ set_rcvbuf:
 		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
 			ret = -EPERM;
 		else {
-#ifdef CONFIG_HW_DPIMARK_MODULE
-			sk->sk_mark = get_mplk_somark(sk, val);
-#else
 			sk->sk_mark = val;
-#endif
 		}
 		break;
 
@@ -2831,10 +2823,6 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 	sk->sk_pacing_rate = ~0U;
 	sk->sk_pacing_shift = 10;
 	sk->sk_incoming_cpu = -1;
-
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	sk->sk_born_stamp = jiffies;
-#endif
 
 #ifdef CONFIG_HUAWEI_XENGINE
 	sk->hicom_flag = 0;

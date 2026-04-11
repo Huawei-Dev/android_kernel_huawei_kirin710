@@ -159,17 +159,7 @@ static void process_settings_params_request(struct setting_params_request *reque
 		return;
 	if (request->msg_id == REQ_TYPE_CLOSE_SOCKET) {
 		pr_info("process_settings_params_request REQ_TYPE_CLOSE_SOCKET,%d,%d\n", request->param1, request->param2);
-#ifdef CONFIG_HW_DPIMARK_MODULE
-		strategy = request->param1;
-		uid = request->param2;
-		mplk_add_nw_bind((uid_t)uid, 0);
-		mplk_close_socket_by_uid((uint32_t)strategy, (uid_t)uid);
-#endif
 	} else if (request->msg_id == REQ_TYPE_DEL_UID_NETID_ENTRY) {
-#ifdef CONFIG_HW_DPIMARK_MODULE
-		uid = request->param1;
-		mplk_del_nw_bind((uid_t)uid);
-#endif
 	} else if (request->msg_id == REQ_TYPE_SET_SLOW_THRESHOLD) {
 		pr_info("process_settings_params_request REQ_TYPE_SET_SLOW_THRESHOLD,%d,%d,%d\n",
 			request->param1, request->param2, request->param3);

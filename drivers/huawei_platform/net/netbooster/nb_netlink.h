@@ -103,11 +103,6 @@ struct native_requst {
 
 void nb_notify_event(enum nb_evt_type event_type, void *data, int size);
 extern int get_rtt_list(struct native_event *rtt_event, unsigned int list_len);
-#ifdef CONFIG_HW_DPIMARK_MODULE
-extern void mplk_del_nw_bind(uid_t uid);
-extern void mplk_add_nw_bind(uid_t uid, uint32_t netid);
-extern void mplk_close_socket_by_uid(uint32_t strategy, uid_t uid);
-#endif
 extern void set_slow_proba_threshold(int threshold_normal, int threshold_slow, int threshold_init);
 extern void config_pcie_power_level(int power_level, int timeout);
 #endif /*_NB_NETLINK_H*/

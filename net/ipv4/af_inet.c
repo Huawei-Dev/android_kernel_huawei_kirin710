@@ -139,10 +139,6 @@ static inline int current_has_network(void)
 }
 #endif
 
-#ifdef CONFIG_HW_DPIMARK_MODULE
-#include <hwnet/hw_dpi_mark/dpi_hw_hook.h>
-#endif
-
 #ifdef CONFIG_HW_HIDATA_HIMOS
 #include <huawei_platform/net/himos/hw_himos_tcp_stats.h>
 #endif
@@ -436,11 +432,6 @@ out:
 #ifdef CONFIG_CGROUP_BPF
 	if (!err)
 		get_task_comm(sk->sk_process_name, current->group_leader);
-#endif
-
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	if (!err)
-		mplk_try_nw_bind(sk);
 #endif
 
 #ifdef CONFIG_HUAWEI_XENGINE
@@ -838,9 +829,6 @@ EXPORT_SYMBOL(inet_getname);
 int inet_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 {
 	struct sock *sk = sock->sk;
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	int err;
-#endif
 
 	sock_rps_record_flow(sk);
 
@@ -848,13 +836,6 @@ int inet_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	if (!inet_sk(sk)->inet_num && !sk->sk_prot->no_autobind &&
 	    inet_autobind(sk))
 		return -EAGAIN;
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE) {
-		err = mplk_sendmsg(sk);
-		if (err < 0)
-			return err;
-	}
-#endif
 #ifdef CONFIG_HW_HIDATA_HIMOS
 	if (sk->sk_protocol == IPPROTO_TCP)
 		himos_tcp_stats(sk, NULL, msg, 0, 1);
@@ -887,9 +868,6 @@ int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 	struct sock *sk = sock->sk;
 	int addr_len = 0;
 	int err;
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	int ret;
-#endif
 #ifdef CONFIG_HW_HIDATA_HIMOS
 		struct msghdr msg_backup;
 		if (msg)
@@ -902,13 +880,6 @@ int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 				   flags & ~MSG_DONTWAIT, &addr_len);
 	if (err >= 0)
 		msg->msg_namelen = addr_len;
-#ifdef CONFIG_HW_DPIMARK_MODULE
-	if (sk->sk_protocol == IPPROTO_UDP || sk->sk_protocol == IPPROTO_UDPLITE) {
-		ret = mplk_recvmsg(sk);
-		if (ret < 0)
-			return ret;
-	}
-#endif
 #ifdef CONFIG_HW_HIDATA_HIMOS
 	if (err > 0 && sk->sk_protocol == IPPROTO_TCP) {
 		himos_tcp_stats(sk, &msg_backup, msg, err, 0);
