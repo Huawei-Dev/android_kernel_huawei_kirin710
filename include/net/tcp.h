@@ -328,13 +328,6 @@ extern unsigned long tcp_memory_pressure;
 extern int sysctl_tcp_nodelay;
 #endif
 
-#ifdef CONFIG_HW_NETQOS_SCHED
-extern int sysctl_netqos_switch;
-extern int sysctl_netqos_debug;
-extern int sysctl_netqos_limit;
-extern int sysctl_netqos_period;
-#endif
-
 /* optimized version of sk_under_memory_pressure() for TCP sockets */
 static inline bool tcp_under_memory_pressure(const struct sock *sk)
 {

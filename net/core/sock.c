@@ -1611,11 +1611,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 		sk->sk_hwdpi_mark = 0;
 #endif
 
-#ifdef CONFIG_HW_NETQOS_SCHED
-		sk->sk_netqos_level = -1;
-		sk->sk_netqos_time = 0;
-#endif
-
 		sock_update_classid(&sk->sk_cgrp_data);
 		sock_update_netprioidx(&sk->sk_cgrp_data);
 

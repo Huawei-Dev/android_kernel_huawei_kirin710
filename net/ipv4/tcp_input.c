@@ -100,9 +100,6 @@ int sysctl_tcp_fack __read_mostly;
 #ifdef CONFIG_HUAWEI_NWEVAL
 #include<huawei_platform/emcom/network_evaluation.h>
 #endif
-#ifdef CONFIG_HW_NETQOS_SCHED
-#include <netqos_sched/netqos_sched.h>
-#endif
 int sysctl_tcp_max_reordering __read_mostly = 300;
 int sysctl_tcp_dsack __read_mostly = 1;
 int sysctl_tcp_app_win __read_mostly = 31;
@@ -539,9 +536,6 @@ void tcp_init_buffer_space(struct sock *sk)
 	tcp_mstamp_refresh(tp);
 	tp->rcvq_space.time = tp->tcp_mstamp;
 	tp->rcvq_space.seq = tp->copied_seq;
-#ifdef CONFIG_HW_NETQOS_SCHED
-	tp->rcv_rate.segs = tp->segs_in;
-#endif
 
 	maxwin = tcp_full_space(sk);
 
@@ -644,11 +638,6 @@ static void tcp_rcv_rtt_update(struct tcp_sock *tp, u32 sample, int win_dep)
 	}
 
 	tp->rcv_rtt_est.rtt_us = new_sample;
-#ifdef CONFIG_HW_NETQOS_SCHED
-	if (new_sample && new_sample < tp->rcv_rate.min_rtt)
-		tp->rcv_rate.min_rtt = new_sample;
-#endif
-
 }
 
 static inline void tcp_rcv_rtt_measure(struct tcp_sock *tp)
@@ -687,32 +676,6 @@ static inline void tcp_rcv_rtt_measure_ts(struct sock *sk,
 	}
 }
 
-#ifdef CONFIG_HW_NETQOS_SCHED
-#define BW_SCALE 24
-#define BW_UNIT (1 << BW_SCALE)
-
-static void tcp_update_arriving_rate(struct sock *sk, u32 copied, int time)
-{
-	struct tcp_sock *tp = tcp_sk(sk);
-	u64 bw;
-	u64 rate;
-	u32 rwnd;
-
-	bw = (u64)copied * BW_UNIT;
-	if (likely(time))
-		do_div(bw, time);
-
-	if (bw > tp->rcv_rate.bw)
-		tp->rcv_rate.bw = bw;
-
-	rate = tp->rcv_rate.bw << 1;
-	rate *= (tp->rcv_rate.min_rtt >> 3);
-
-	rwnd = rate >> BW_SCALE;
-	tp->rcv_rate.rcv_wnd = rwnd;
-}
-#endif
-
 /*
  * This function should be called every time data is copied to user space.
  * It calculates the appropriate TCP receive buffer space.
@@ -722,10 +685,6 @@ void tcp_rcv_space_adjust(struct sock *sk)
 	struct tcp_sock *tp = tcp_sk(sk);
 	u32 copied;
 	int time;
-#ifdef CONFIG_HW_NETQOS_SCHED
-	int arrived;
-	int segs = tp->segs_in;
-#endif
 
 	tcp_mstamp_refresh(tp);
 	time = tcp_stamp_us_delta(tp->tcp_mstamp, tp->rcvq_space.time);
@@ -743,13 +702,6 @@ void tcp_rcv_space_adjust(struct sock *sk)
 #endif
 	/* Number of bytes copied to user in last RTT */
 	copied = tp->copied_seq - tp->rcvq_space.seq;
-#ifdef CONFIG_HW_NETQOS_SCHED
-	if (sysctl_netqos_switch && tcp_is_low_priority(sk)) {
-		arrived = (segs - tp->rcv_rate.segs) * tp->advmss;
-		copied = min_t(u64, copied, arrived);
-		tcp_update_arriving_rate(sk, copied, time);
-	}
-#endif
 
 	if (copied <= tp->rcvq_space.space)
 		goto new_measure;
@@ -805,9 +757,6 @@ void tcp_rcv_space_adjust(struct sock *sk)
 new_measure:
 	tp->rcvq_space.seq = tp->copied_seq;
 	tp->rcvq_space.time = tp->tcp_mstamp;
-#ifdef CONFIG_HW_NETQOS_SCHED
-	tp->rcv_rate.segs = segs;
-#endif
 }
 
 /* There is something which you must keep in mind when you analyze the
