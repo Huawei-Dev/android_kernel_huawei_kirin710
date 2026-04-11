@@ -2221,10 +2221,8 @@ config ASN1
 	  functions to call on what tags.
 
 source "kernel/Kconfig.locks"
-source "net/network_aware/Kconfig"
 source "kernel/hwcfs/Kconfig"
 source "kernel/cpu_netlink/Kconfig"
 source "kernel/hwrtg/Kconfig"
 source "kernel/hwqos/Kconfig"
-source "net/netqos_sched/Kconfig"
 source "init/sar_ramdisk/Kconfig"
