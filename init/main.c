@@ -97,9 +97,6 @@
 
 #include <chipset_common/security/root_scan.h>
 
-#ifdef CONFIG_HUAWEI_BOOT_TIME
-#include <huawei_platform/boottime/hw_boottime.h>
-#endif
 static int kernel_init(void *);
 
 extern void init_IRQ(void);
@@ -891,11 +888,7 @@ int __init_or_module do_one_initcall(initcall_t fn)
 	if (initcall_debug)
 		ret = do_one_initcall_debug(fn);
 	else
-#ifdef CONFIG_HUAWEI_BOOT_TIME
-		ret = do_boottime_initcall(fn);
-#else
 		ret = fn();
-#endif
 
 	msgbuf[0] = 0;
 
@@ -1098,9 +1091,6 @@ static int __ref kernel_init(void *unused)
 	rcu_end_inkernel_boot();
 
 	pr_err("Kernel init end, jump to execute/init\n");
-#ifdef CONFIG_HUAWEI_BOOT_TIME
-	boot_record("[INFOR] Kernel_init_done");
-#endif
 	if (ramdisk_execute_command) {
 		ret = run_init_process(ramdisk_execute_command);
 		if (!ret)
