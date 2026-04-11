@@ -4,8 +4,6 @@
 
 obj-$(CONFIG_HW_WIFI) += ipv4/
 
-obj-$(CONFIG_HW_COMMSTAT) += commstat/
-
 obj-$(CONFIG_HW_QTAGUID_PID) += qtaguid_pid/
 
 obj-$(CONFIG_HW_DC_MODULE) += hw_dual_connection/
