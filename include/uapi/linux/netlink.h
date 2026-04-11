@@ -78,13 +78,9 @@
 #define NETLINK_EIMA 36
 #endif
 
-#ifdef CONFIG_HW_DC_MODULE
-#define NETLINK_HW_DC 37
-#endif
+#define NETLINK_OLLIE 37
 
-#define NETLINK_OLLIE 38
-
-#define MAX_LINKS 39
+#define MAX_LINKS 38
 
 struct sockaddr_nl {
 	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
