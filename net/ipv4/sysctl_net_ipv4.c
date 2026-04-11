@@ -26,9 +26,6 @@
 #include <net/inet_frag.h>
 #include <net/ping.h>
 #include <net/protocol.h>
-#ifdef CONFIG_HW_SNIFFER
-#include <hwnet/ipv4/sysctl_sniffer.h>
-#endif
 
 static int zero;
 static int one = 1;
@@ -611,38 +608,6 @@ static struct ctl_table ipv4_table[] = {
 		.maxlen		= TCP_CA_NAME_MAX,
 		.proc_handler	= proc_tcp_congestion_control,
 	},
-#ifdef CONFIG_HW_SNIFFER
-	{
-		.procname	= "wifisniffer_01",
-		.mode		= 0644,
-		.maxlen		= PCAP_FILE_LEN,
-		.proc_handler	= proc_sniffer_read_01,
-	},
-	{
-		.procname	= "wifisniffer_02",
-		.mode		= 0644,
-		.maxlen		= PCAP_FILE_LEN,
-		.proc_handler	= proc_sniffer_read_02,
-	},
-	{
-		.procname	= "wifisniffer_03",
-		.mode		= 0644,
-		.maxlen		= PCAP_FILE_LEN,
-		.proc_handler	= proc_sniffer_read_03,
-	},
-	{
-		.procname	= "wifisniffer_04",
-		.mode		= 0644,
-		.maxlen		= PCAP_FILE_LEN,
-		.proc_handler	= proc_sniffer_read_04,
-	},
-	{
-		.procname	= "wifisniffer_05",
-		.mode		= 0644,
-		.maxlen		= PCAP_FILE_LEN,
-		.proc_handler	= proc_sniffer_read_05,
-	},
-#endif
 	{
 		.procname	= "tcp_workaround_signed_windows",
 		.data		= &sysctl_tcp_workaround_signed_windows,
@@ -1344,14 +1309,13 @@ err_alloc:
 	return -ENOMEM;
 }
 
-#ifndef CONFIG_HW_SNIFFER
 /* define a null function*/
 int proc_sniffer_write_file(const char *header_buff, unsigned int header_len,
 					const char *frame_buff, unsigned int frame_len, int flag_rx_tx)
 {
 	return 0;
 }
-#endif
+
 static __net_exit void ipv4_sysctl_exit_net(struct net *net)
 {
 	struct ctl_table *table;
