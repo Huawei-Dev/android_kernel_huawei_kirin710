@@ -26,9 +26,6 @@
 #include <net/inet_frag.h>
 #include <net/ping.h>
 #include <net/protocol.h>
-#ifdef CONFIG_WIFI_DELAY_STATISTIC
-#include <hwnet/ipv4/wifi_delayst.h>
-#endif
 #ifdef CONFIG_HW_SNIFFER
 #include <hwnet/ipv4/sysctl_sniffer.h>
 #endif
@@ -674,15 +671,6 @@ static struct ctl_table ipv4_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
 	},
-#ifdef CONFIG_WIFI_DELAY_STATISTIC
-	{
-		.procname       = "tcp_delay_filter",
-		.data           = tcp_delay_filter,
-		.maxlen         = DELAY_FILTER_NAME_MAX,
-		.mode           = 0644,
-		.proc_handler   = proc_wifi_delay_command,
-	},
-#endif
 #ifdef CONFIG_NETLABEL
 	{
 		.procname	= "cipso_cache_enable",
