@@ -57,9 +57,6 @@
 #include <net/busy_poll.h>
 #include <net/tcp.h>
 #include <linux/bpf_trace.h>
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-#include <hwnet/booster/hw_packet_filter_bypass.h>
-#endif
 
 /**
  *	sk_filter_trim_cap - run a packet through a socket filter
@@ -78,10 +75,6 @@ int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap)
 {
 	int err;
 	struct sk_filter *filter;
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	int hook = HW_PFB_INET_BPF_INGRESS;
-	struct net_device *dev;
-#endif
 
 	/*
 	 * If the skb was allocated from pfmemalloc reserves, only
@@ -93,15 +86,6 @@ int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap)
 		return -ENOMEM;
 	}
 	err = BPF_CGROUP_RUN_PROG_INET_INGRESS(sk, skb);
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	if (sk->sk_family == AF_INET6)
-		hook = HW_PFB_INET6_BPF_INGRESS;
-	rcu_read_lock();
-	dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
-	rcu_read_unlock();
-	if (hw_bypass_skb(sk->sk_family, hook, sk, skb, dev, NULL, err ? DROP : PASS))
-		err = 0;
-#endif
 	if (err) {
 #ifdef CONFIG_DOZE_FILTER
 		get_filter_infoEx(skb);

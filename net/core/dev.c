@@ -147,9 +147,6 @@
 #include <net/udp_tunnel.h>
 
 #include "net-sysfs.h"
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-#include <hwnet/booster/hw_packet_filter_bypass.h>
-#endif
 
 /* Instead of increasing this, you should create a hash table. */
 #define MAX_GRO_SKBS 8
@@ -3566,11 +3563,6 @@ out:
 
 int dev_queue_xmit(struct sk_buff *skb)
 {
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	if (likely(skb) && likely(skb->sk) && skb_dst(skb))
-		hw_bypass_skb(skb->sk->sk_family, HW_PFB_INET_DEV_XMIT, NULL,
-			skb, NULL, skb_dst(skb)->dev, PASS);
-#endif
 	return __dev_queue_xmit(skb, NULL);
 }
 EXPORT_SYMBOL(dev_queue_xmit);
