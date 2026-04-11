@@ -232,10 +232,6 @@ struct sock_common {
     #ifdef CONFIG_HW_DPIMARK_MODULE
 	unsigned int    skc_hwdpi_mark;
     #endif
-#ifdef CONFIG_HW_NETQOS_SCHED
-	int             skc_netqos_level;
-	unsigned long   skc_netqos_time;
-#endif
 };
 
 /**
@@ -359,11 +355,6 @@ struct sock {
 #define sk_flags		__sk_common.skc_flags
 #define sk_rxhash		__sk_common.skc_rxhash
 #define sk_hwdpi_mark   __sk_common.skc_hwdpi_mark
-#ifdef CONFIG_HW_NETQOS_SCHED
-#define sk_netqos_level		__sk_common.skc_netqos_level
-#define sk_netqos_time		__sk_common.skc_netqos_time
-#endif
-
 	socket_lock_t		sk_lock;
 	atomic_t		sk_drops;
 	int			sk_rcvlowat;

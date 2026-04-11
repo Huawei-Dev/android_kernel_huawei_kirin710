@@ -59,10 +59,6 @@
 #include <huawei_platform/power/pid_socket/pid_socket.h>
 #endif
 
-#ifdef CONFIG_HW_NETQOS_SCHED
-#include <netqos_sched/netqos_sched.h>
-#endif
-
 /* People can turn this off for buggy TCP's found in printers etc. */
 int sysctl_tcp_retrans_collapse __read_mostly = 1;
 
@@ -338,10 +334,6 @@ u16 tcp_select_window(struct sock *sk)
 	}
 	tp->rcv_wnd = new_win;
 	tp->rcv_wup = tp->rcv_nxt;
-
-#ifdef CONFIG_HW_NETQOS_SCHED
-	netqos_rcvwnd(sk, &new_win);
-#endif
 
 	/* Make sure we do not exceed the maximum possible
 	 * scaled window.

@@ -88,5 +88,4 @@ endif
 obj-$(CONFIG_QRTR)		+= qrtr/
 obj-$(CONFIG_NET)		+= hwnet/
 obj-$(CONFIG_HW_NETWORK_AWARE)  += network_aware/
-obj-$(CONFIG_HW_NETQOS_SCHED)  += netqos_sched/
 obj-$(CONFIG_NET_NCSI)		+= ncsi/

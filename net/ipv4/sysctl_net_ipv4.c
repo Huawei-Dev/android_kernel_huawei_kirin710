@@ -820,41 +820,6 @@ static struct ctl_table ipv4_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 #endif /* CONFIG_TCP_ARGO */
-#ifdef CONFIG_HW_NETQOS_SCHED
-	{
-		.procname	= "netqos_switch",
-		.data		= &sysctl_netqos_switch,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &zero,
-	},
-	{
-		.procname	= "netqos_debug",
-		.data		= &sysctl_netqos_debug,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &zero,
-	},
-	{
-		.procname	= "netqos_limit",
-		.data		= &sysctl_netqos_limit,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &zero,
-	},
-
-	{
-		.procname	= "netqos_period",
-		.data		= &sysctl_netqos_period,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec,
-	},
-#endif
-
 	{ }
 };
 
