@@ -41,10 +41,6 @@
 #include "xt_qtaguid_print.h"
 #include "../../fs/proc/internal.h"
 
-#ifdef CONFIG_HW_QTAGUID_PID
-#include <huawei_platform/net/qtaguid_pid/qtaguid_pid.h>
-#endif
-
 /*
  * We only use the xt_socket funcs within a similar context to avoid unexpected
  * return values.
@@ -62,10 +58,6 @@ module_param_named(iface_perms, proc_iface_perms, uint, S_IRUGO | S_IWUSR);
 static struct proc_dir_entry *xt_qtaguid_stats_file;
 static unsigned int proc_stats_perms = S_IRUGO;
 module_param_named(stats_perms, proc_stats_perms, uint, S_IRUGO | S_IWUSR);
-
-#ifdef CONFIG_HW_QTAGUID_PID
-static struct proc_dir_entry *xt_qtaguid_pid_stats_file;
-#endif
 
 static struct proc_dir_entry *xt_qtaguid_ctrl_file;
 
@@ -1406,14 +1398,6 @@ void bastet_update_if_tag_stat(const char *ifname, uid_t uid,
 	}
 
 	if_tag_stat_update(ifname, uid, sk, direction, proto, bytes);
-
-#ifdef CONFIG_HW_QTAGUID_PID
-	if_pid_stat_update(ifname, uid, sk, NULL,
-		get_active_counter_set(make_tag_from_uid(uid)),
-		NFPROTO_IPV4,
-		direction,
-		proto, bytes);
-#endif
 }
 
 int bastet_update_total_bytes(const char *dev_name, int proto,
@@ -1460,9 +1444,6 @@ static int iface_netdev_event_handler(struct notifier_block *nb,
 	switch (event) {
 	case NETDEV_UP:
 		iface_stat_create(dev, NULL);
-#ifdef CONFIG_HW_QTAGUID_PID
-		iface_pid_stat_create(dev, NULL);
-#endif
 		atomic64_inc(&qtu_events.iface_events);
 		break;
 	case NETDEV_DOWN:
@@ -1492,9 +1473,6 @@ static int iface_inet6addr_event_handler(struct notifier_block *nb,
 		BUG_ON(!ifa || !ifa->idev);
 		dev = (struct net_device *)ifa->idev->dev;
 		iface_stat_create_ipv6(dev, ifa);
-#ifdef CONFIG_HW_QTAGUID_PID
-		iface_pid_stat_create_ipv6(dev, ifa);
-#endif
 		atomic64_inc(&qtu_events.iface_events);
 		break;
 	case NETDEV_DOWN:
@@ -1526,9 +1504,6 @@ static int iface_inetaddr_event_handler(struct notifier_block *nb,
 		BUG_ON(!ifa || !ifa->ifa_dev);
 		dev = ifa->ifa_dev->dev;
 		iface_stat_create(dev, ifa);
-#ifdef CONFIG_HW_QTAGUID_PID
-		iface_pid_stat_create(dev, ifa);
-#endif
 		atomic64_inc(&qtu_events.iface_events);
 		break;
 	case NETDEV_DOWN:
@@ -1705,16 +1680,6 @@ static void account_for_uid(const struct sk_buff *skb,
 			   skb->sk ? skb->sk : alternate_sk,
 			   direction,
 			   proto, skb->len);
-
-#ifdef CONFIG_HW_QTAGUID_PID
-	if_pid_stat_update(el_dev->name, uid,
-			skb->sk ? skb->sk : alternate_sk,
-			skb,
-			get_active_counter_set(make_tag_from_uid(uid)),
-			par->state->pf,
-			direction,
-			proto, skb->len);
-#endif
 }
 
 static bool qtaguid_mt(const struct sk_buff *skb, struct xt_action_param *par)
@@ -3078,19 +3043,6 @@ static int __init qtaguid_proc_register(struct proc_dir_entry **res_procdir)
 		ret = -ENOMEM;
 		goto no_stats_entry;
 	}
-
-#ifdef CONFIG_HW_QTAGUID_PID
-	xt_qtaguid_pid_stats_file = proc_create_data("stats_pid", proc_stats_perms,
-						 *res_procdir,
-						 &proc_qtaguid_pid_stats_fops,
-						 NULL);
-	if (!xt_qtaguid_pid_stats_file) {
-		pr_err("qtaguid: failed to create xt_qtaguid/stats_pid "
-			"file\n");
-		ret = -ENOMEM;
-		goto no_stats_entry;
-	}
-#endif
 
 	/*
 	 * TODO: add support counter hacking
