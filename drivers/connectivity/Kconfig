@@ -21,14 +21,6 @@ config CONNECTIVITY_HI1102A
 	bool "Connectivity Hi1102a support"
 	default n
 
-config HI110X_DRIVER_PATH
-	string "Hi1102 Kernel Driver Path"
-	default "drivers/connectivity/hisi"
-
-config HI11XX_DRIVER_PATH
-	string "Hi1103 Kernel Driver Path"
-	default "drivers/connectivity/hi11xx"
-
 config ARCH_KIRIN_PCIE
     bool "kirin pcie interface support"
     default n
