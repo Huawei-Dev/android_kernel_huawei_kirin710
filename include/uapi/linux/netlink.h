@@ -66,21 +66,17 @@
 #define NETLINK_RIL_EVENT_SIM  33
 #endif
 
-#ifdef CONFIG_HW_NETBOOSTER_MODULE
-#define NETLINK_NETBOOSTER  34
-#endif
-
 #ifdef CONFIG_HISI_CAMERA_VL53L0_970
-#define NETLINK_ST_LASER_DRIVER 35
+#define NETLINK_ST_LASER_DRIVER 34
 #endif
 
 #ifdef CONFIG_HUAWEI_EIMA_ACCESS_CONTROL
-#define NETLINK_EIMA 36
+#define NETLINK_EIMA 35
 #endif
 
-#define NETLINK_OLLIE 37
+#define NETLINK_OLLIE 36
 
-#define MAX_LINKS 38
+#define MAX_LINKS 37
 
 struct sockaddr_nl {
 	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
