@@ -14,7 +14,5 @@ obj-$(CONFIG_HW_DC_MODULE) += hw_dual_connection/
 
 obj-$(CONFIG_HW_NETBOOSTER_MODULE) += netbooster/
 
-obj-$(CONFIG_HW_HIDATA_HIMOS) += himos/
-
 obj-$(CONFIG_HUAWEI_BASTET) += bastet/
 
