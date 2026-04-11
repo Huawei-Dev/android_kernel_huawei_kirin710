@@ -113,9 +113,6 @@
 #ifdef CONFIG_HW_CGROUP_PIDS
 #include <./cgroup_huawei/cgroup_pids.h>
 #endif
-#ifdef CONFIG_HWAA
-#include <huawei_platform/hwaa/hwaa_proc_hooks.h>
-#endif
 #ifdef CONFIG_HW_QOS_THREAD
 #include <chipset_common/hwqos/hwqos_common.h>
 #include <chipset_common/hwqos/hwqos_fork.h>
@@ -2199,9 +2196,6 @@ long _do_fork(unsigned long clone_flags,
 		pid = get_task_pid(p, PIDTYPE_PID);
 		nr = pid_vnr(pid);
 
-#ifdef CONFIG_HWAA
-		hwaa_proc_on_task_forked(p);
-#endif
 		if (clone_flags & CLONE_PARENT_SETTID)
 			put_user(nr, parent_tidptr);
 
