@@ -25,9 +25,6 @@
 #endif
 
 #include <net/netfilter/ipv4/nf_reject.h>
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-#include <hwnet/booster/hw_packet_filter_bypass.h>
-#endif
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
@@ -40,9 +37,6 @@ reject_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	int hook = xt_hooknum(par);
 	bool skip_reject = false;
 
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	skip_reject = hw_hook_bypass_skb(AF_INET, hook, skb);
-#endif
 	if (!skip_reject) {
 		switch (reject->with) {
 		case IPT_ICMP_NET_UNREACHABLE:

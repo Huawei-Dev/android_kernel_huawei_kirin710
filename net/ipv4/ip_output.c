@@ -81,14 +81,6 @@
 #include <linux/netlink.h>
 #include <linux/tcp.h>
 
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-#include <hwnet/booster/hw_packet_filter_bypass.h>
-#endif
-
-#ifdef CONFIG_HW_BOOSTER
-#include <hwnet/booster/tcp_para_collec.h>
-#endif
-
 #ifdef CONFIG_HUAWEI_WIFI_WEIXIN_HONGBAO_ENABLE_PRIORITY
 #define WIFI_WEIXIN_HONGBAO_PROORITY 0x7
 extern uint8_t BST_FG_Proc_Send_RPacket_Priority(struct sock *pstSock);
@@ -317,11 +309,6 @@ static int ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *sk
 	int ret;
 
 	ret = BPF_CGROUP_RUN_PROG_INET_EGRESS(sk, skb);
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	if (skb_dst(skb) && hw_bypass_skb(AF_INET, HW_PFB_INET_BPF_EGRESS, sk, skb,
-			NULL, skb_dst(skb)->dev, ret ? DROP : PASS))
-		ret = 0;
-#endif
 	if (ret) {
 		kfree_skb(skb);
 		return ret;
@@ -337,12 +324,6 @@ static int ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *sk
 
 #ifdef CONFIG_HW_WIFIPRO
 	wifipro_update_tcp_statistics(WIFIPRO_TCP_MIB_OUTSEGS, skb, NULL);
-#endif
-
-#ifdef CONFIG_HW_BOOSTER
-	if (skb_dst(skb))
-		booster_update_tcp_statistics(AF_INET, skb, NULL,
-			skb_dst(skb)->dev);
 #endif
 
 	mtu = ip_skb_dst_mtu(sk, skb);
@@ -361,11 +342,6 @@ static int ip_mc_finish_output(struct net *net, struct sock *sk,
 	int ret;
 
 	ret = BPF_CGROUP_RUN_PROG_INET_EGRESS(sk, skb);
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	if (skb_dst(skb) && hw_bypass_skb(AF_INET, HW_PFB_INET_BPF_EGRESS, sk, skb,
-			NULL, skb_dst(skb)->dev, ret ? DROP : PASS))
-		ret = 0;
-#endif
 	if (ret) {
 		kfree_skb(skb);
 		return ret;
@@ -558,12 +534,6 @@ packet_routed:
 		skb->priority = WIFI_WEIXIN_HONGBAO_PROORITY;
 	}
 #endif
-#endif
-
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	if (skb_dst(skb))
-		hw_bypass_skb(AF_INET, HW_PFB_INET_IP_XMIT, sk, skb, NULL,
-			skb_dst(skb)->dev, PASS);
 #endif
 
 	res = ip_local_out(net, sk, skb);

@@ -30,9 +30,6 @@
 #include <linux/netfilter_ipv6/ip6t_REJECT.h>
 
 #include <net/netfilter/ipv6/nf_reject.h>
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-#include <hwnet/booster/hw_packet_filter_bypass.h>
-#endif
 
 MODULE_AUTHOR("Yasuyuki KOZAKAI <yasuyuki.kozakai@toshiba.co.jp>");
 MODULE_DESCRIPTION("Xtables: packet \"rejection\" target for IPv6");
@@ -45,9 +42,6 @@ reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	struct net *net = xt_net(par);
 	bool skip_reject = false;
 
-#ifdef CONFIG_HW_PACKET_FILTER_BYPASS
-	skip_reject = hw_hook_bypass_skb(AF_INET, xt_hooknum(par), skb);
-#endif
 	if (!skip_reject) {
 		switch (reject->with) {
 		case IP6T_ICMP6_NO_ROUTE:
