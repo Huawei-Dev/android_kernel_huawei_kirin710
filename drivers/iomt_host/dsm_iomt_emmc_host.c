@@ -164,7 +164,7 @@ static ssize_t rw_size_mmc_show_checker(struct device *dev,
 	return 0;
 }
 
-static DEVICE_ATTR(rw_size_scatter, 0644,
+static DEVICE_ATTR(rw_size_scatter, 0444,
 			rw_size_mmc_show_checker,
 			NULL);
 
