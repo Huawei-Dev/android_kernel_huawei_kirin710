@@ -52,9 +52,6 @@ obj-$(CONFIG_HISI_JPU_SUPPORT) += jpu/
 obj-$(CONFIG_HISI_TIMEKEEPER) += timekeeper/
 obj-$(CONFIG_TLB_CONFLICT_WORKAROUND) += tlb_conflict/
 obj-$(CONFIG_HISI_GETSPINLOCK_TEST) += test_spinlock/
-ifeq ($(TARGET_VERSION_MODE),factory)
-obj-$(CONFIG_HISI_DIEID) += dieid/
-endif
 obj-$(CONFIG_HISPIPP) += ipp/
 obj-$(CONFIG_HISPFD)  += hispfd/
 obj-$(CONFIG_HISI_PERF_CTRL) += perf_ctrl/
