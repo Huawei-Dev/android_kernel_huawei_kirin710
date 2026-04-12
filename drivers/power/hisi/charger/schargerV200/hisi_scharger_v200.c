@@ -37,9 +37,6 @@
 #include <linux/power/hisi/hisi_bci_battery.h>
 #include <hisi_scharger_v200.h>
 #include <linux/power/hisi_hi6521_charger_power.h>
-#ifdef CONFIG_HUAWEI_OCP
-#include <huawei_platform/ocp/hw_ocp_ext.h>
-#endif
 #ifdef  CONFIG_HUAWEI_USB_SHORT_CIRCUIT_PROTECT
 #include <huawei_platform/power/usb_short_circuit_protect.h>
 #endif
@@ -2508,35 +2505,6 @@ static irqreturn_t hi6522_irq_handle(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-#ifdef CONFIG_HUAWEI_OCP
-static void scharger_wled_ocp(unsigned char irq_status)
-{
-	/*handle wled ocp */
-	if ((irq_status & CHG_IRQ1_WLED_OVP_38V) ||
-	    (irq_status & CHG_IRQ1_WLED_OVP_4P5V) ||
-	    (irq_status & CHG_IRQ1_WLED_UVP) ||
-	    (irq_status & CHG_IRQ1_WLED_SCP)) {
-		hw_ocp_handler("lcd-wled");
-	}
-}
-
-static void scharger_lcd_ocp(unsigned char irq_status)
-{
-	/*handle vsp/vsn/boost ocp */
-	if (irq_status & CHG_IRQ3_LCD_LDO_OCP) {
-		hw_ocp_handler("lcd-ldo");
-	} else if (irq_status & CHG_IRQ3_LCD_BST_SCP) {
-		hw_ocp_handler("lcd-bst");
-	} else if (irq_status & CHG_IRQ3_LCD_BST_OVP) {
-		hw_ocp_handler("lcd-bst");
-	} else if (irq_status & CHG_IRQ3_LCD_BST_UVP) {
-		hw_ocp_handler("lcd-bst");
-	} else if (irq_status & CHG_IRQ3_LCD_NCP_SCP) {
-		hw_ocp_handler("lcd-cpn");
-	}
-}
-#endif
-
 static void hi6522_irq_work_handle(struct work_struct *work)
 {
 	struct hi6522_device_info *di =
@@ -2898,12 +2866,6 @@ static void hi6522_irq_work_handle(struct work_struct *work)
 	hi6522_write_byte(CHG_IRQ_REG4, irq_status[4]);/*lint !e690*/
 
 	enable_irq(di->irq_int);
-#ifdef CONFIG_HUAWEI_OCP
-	/*handle lcd wled */
-	scharger_wled_ocp(irq_status[1]);
-	/*handle lcd vsp/vsn */
-	scharger_lcd_ocp(irq_status[3]);
-#endif
 }
 
 static BLOCKING_NOTIFIER_HEAD(scharger_init_notifier_list);
