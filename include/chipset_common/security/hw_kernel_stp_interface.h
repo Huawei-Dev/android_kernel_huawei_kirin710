@@ -125,13 +125,6 @@ struct stp_item {
  *     0, regist correctly.
  *     -1, regist failed.
  */
-#ifdef CONFIG_HW_KERNEL_STP
-int kernel_stp_scanner_register(stp_cb callbackfunc);
-/* the caller needed to check the return value */
-extern const struct stp_item_info *get_item_info_by_idx(int idx);
-
-extern const struct stp_item_info item_info[];
-#else
 static inline int kernel_stp_scanner_register(stp_cb callbackfunc)
 {
 	return 0;
@@ -159,7 +152,6 @@ static const struct stp_item_info item_info[] = {
 	[ITRUSTEE]     = { STP_ID_ITRUSTEE, STP_NAME_ITRUSTEE },
 	[DOUBLE_FREE]  = { STP_ID_DOUBLE_FREE, STP_NAME_DOUBLE_FREE },
 };
-#endif
 
 /*
  * kernel_stp_upload - for each scanner module to  upload result to stp
@@ -170,14 +162,8 @@ static const struct stp_item_info item_info[] = {
  *     0, upload correctly.
  *     -1, upload failed.
  */
-#ifdef CONFIG_HW_KERNEL_STP
-int kernel_stp_upload(struct stp_item result, const char *addition_info);
-
-#else
 static inline int kernel_stp_upload(struct stp_item result, const char *addition_info)
 {
 	return 0;
 }
-#endif
-
 #endif /* _HW_KERNEL_STP_INTERFACE_H_*/
