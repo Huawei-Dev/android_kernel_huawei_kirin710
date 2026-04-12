@@ -22,9 +22,6 @@ obj-y += harden/
 obj-$(CONFIG_HI6402_HIFI_MISC) += hi64xx_dsp/
 obj-y += l3cache/
 obj-$(CONFIG_HISI_HISEE) += hisee/
-obj-$(CONFIG_HISI_HIEPS) += hieps/
-ifneq ($(strip $(CFG_HISI_OPENSOURCE)), true)
-endif
 obj-$(CONFIG_HISI_IVP) += ivp/
 obj-$(CONFIG_HISI_HISTAR_ISP) += isp/
 obj-$(CONFIG_DRMDRIVER)                         += drmdriver/
