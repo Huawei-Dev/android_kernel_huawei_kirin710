@@ -26,14 +26,10 @@ int huawei_set_key_backlight(void *param_t)
 }
 #endif
 
-#ifdef CONFIG_HW_RL_TOUCH_KEY
-extern int huawei_set_dr_key_backlight(void *param_t);
-#else
 int huawei_set_dr_key_backlight(void *param_t)
 {
 	return 0;
 }
-#endif
 
 int send_key_event_to_inputhub(struct key_param_t *param_t);
 static void huawei_led_set_brightness(struct led_classdev *led_ldev,
