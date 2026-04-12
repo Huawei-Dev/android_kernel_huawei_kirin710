@@ -4747,11 +4747,6 @@ CONFIG_HISI_SECS_CTRL=y
 # CONFIG_HISI_ISP_DEBUG is not set
 
 #
-# Hisilicon ISP FD
-#
-# CONFIG_HISPFD is not set
-
-#
 # Hisilicon Performace Control
 #
 CONFIG_HISI_PERF_CTRL=y
