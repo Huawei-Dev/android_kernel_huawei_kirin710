@@ -19,7 +19,7 @@
 #endif
 #include <asm/page.h>
 #include <asm/pgtable.h>
-#include "internal.h"
+#include "../internal.h"
 
 #ifdef CONFIG_ION
 #include <linux/hisi/hisi_ion.h>
