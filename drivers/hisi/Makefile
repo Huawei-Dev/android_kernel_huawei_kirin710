@@ -35,7 +35,6 @@ endif
 endif
 obj-$(CONFIG_HISI_PERFHUB) += perfhub/
 obj-$(CONFIG_HISI_TIMEKEEPER) += timekeeper/
-obj-$(CONFIG_TLB_CONFLICT_WORKAROUND) += tlb_conflict/
 obj-$(CONFIG_HISI_PERF_CTRL) += perf_ctrl/
 obj-$(CONFIG_HISI_RPMB) += rpmb/
 obj-$(CONFIG_HISI_PERFHUB) += perfhub/

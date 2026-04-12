@@ -43,7 +43,6 @@
 #include <linux/profile.h>
 #include <linux/notifier.h>
 #include <linux/atomic.h>
-#include <hisi/hisi_lmk/lowmem_killer.h>
 #include <log/log_usertype.h>
 
 #define CREATE_TRACE_POINTS
@@ -62,6 +61,13 @@
 #include <chipset_common/hwzrhung/zrhung.h>
 #endif
 #include <chipset_common/hwmemcheck/memcheck.h>
+
+static inline int hisi_lowmem_tune(int *other_free, int *other_file,
+		     struct shrink_control *sc)
+{
+	return 0;
+}
+
 static u32 lowmem_debug_level = 1;
 static short lowmem_adj[6] = {
 	0,
@@ -234,7 +240,6 @@ kill_selected:
 				atomic_dec(&atomic_lmk);
 				return 0;
 			} else {
-				hisi_lowmem_dbg_timeout(tsk, p);
 #ifdef CONFIG_HISI_MULTI_KILL
 				if (lmk_multi_kill) {
 					task_unlock(p);
@@ -296,7 +301,6 @@ kill_selected:
 			     min_score_adj,
 			     free, ret_tune, sc->gfp_mask);
 
-		hisi_lowmem_dbg(selected_oom_score_adj);
 		memcheck_report_lmk_oom(selected->pid, selected->tgid,
 					selected->comm, KILLTYPE_KERNEL_LMK,
 					selected_oom_score_adj,

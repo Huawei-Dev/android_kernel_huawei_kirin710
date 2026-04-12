@@ -244,15 +244,7 @@ extern phys_addr_t __phys_addr_symbol(unsigned long x);
 #define __phys_addr_symbol(x)	__pa_symbol_nodebug(x)
 #endif
 
-#if defined(__ASSEMBLER__)
 #define __phys_to_virt(x)	((unsigned long)((x) - PHYS_OFFSET) | PAGE_OFFSET)
-#else
-
-#define __phys_to_virt(x) ({                                \
-	lb_assert_phys(x);                                  \
-	((unsigned long)((x) - PHYS_OFFSET) | PAGE_OFFSET); \
-})
-#endif
 #define __phys_to_kimg(x)	((unsigned long)((x) + kimage_voffset))
 
 /*
