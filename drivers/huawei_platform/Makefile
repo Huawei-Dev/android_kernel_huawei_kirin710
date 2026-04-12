@@ -25,7 +25,6 @@ obj-$(CONFIG_HUAWEI_OCP) += ocp/
 obj-$(CONFIG_MADAPT) += madapt/
 obj-$(CONFIG_HUAWEI_IO_TRACING) += iotrace/
 obj-$(CONFIG_HUAWEI_EMCOM) += emcom/
-obj-$(CONFIG_HUAWEI_DTV_MMTUNER) += mm_tuner/
 obj-$(CONFIG_HUAWEI_VENDOR_EXCEPTION) += vendor_exception/
 obj-$(CONFIG_MEM_INSPECT) += rmeminspect/
 obj-$(CONFIG_HUAWEI_MEMINFO_DUMP) += pmeminfo/
