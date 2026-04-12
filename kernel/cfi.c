@@ -14,7 +14,6 @@
 #include <asm/cacheflush.h>
 #include <asm/memory.h>
 #include <asm/set_memory.h>
-#include <chipset_common/security/saudit.h>
 
 #ifdef CONFIG_HUAWEI_VENDOR_EXCEPTION
 #include <huawei_platform/vendor_exception/vendor_exception.h>
@@ -26,7 +25,6 @@
 
 static inline void handle_cfi_failure(void *ptr)
 {
-	saudit_log(CFI, STP_RISK, 0, "target:<%px> %pF,", ptr, ptr);
 #ifdef CONFIG_CFI_PERMISSIVE
 	WARN_RATELIMIT(1, "CFI failure (target: [<%px>] %pF):\n", ptr, ptr);
 #else

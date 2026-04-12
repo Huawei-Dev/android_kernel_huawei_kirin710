@@ -51,9 +51,6 @@
 #ifdef CONFIG_HISI_BB
 #include <linux/hisi/rdr_hisi_ap_hook.h>
 #endif
-#ifdef CONFIG_TZDRIVER
-#include <chipset_common/security/itrustee.h>
-#endif
 #ifdef CONFIG_HW_ZEROHUNG
 #include <chipset_common/hwzrhung/zrhung.h>
 #endif
@@ -1177,12 +1174,6 @@ static void deal_task(struct task_item *item, struct task_struct *task, bool is_
 		item->dump_wa = 1;
 		any_dumped_num++;
 	}
-#ifdef CONFIG_TZDRIVER
-	if (any_dumped_num && is_tee_hungtask(task)) {
-		pr_info("hungtask: related to teeos detected, dump status\n");
-		wakeup_tc_siq();
-	}
-#endif
 	if (!is_called && (item->task_type & TASK_TYPE_WHITE)) {
 		if (whitelist_panic_cnt && item->panic_wa > whitelist_panic_cnt) {
 			pr_err("hungtask: Task %s is causing panic\n", item->name);

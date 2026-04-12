@@ -21,7 +21,6 @@
 #include <linux/sched/task_stack.h>
 #include <linux/thread_info.h>
 #include <asm/sections.h>
-#include <chipset_common/security/saudit.h>
 
 /*
  * Checks if a given pointer and length is contained by the current
@@ -62,11 +61,6 @@ static noinline int check_stack_object(const void *obj, unsigned long len)
 static void report_usercopy(unsigned long len, bool to_user, const char *type)
 {
 	pr_emerg("kernel memory %s attempt detected %s '%s' (%lu bytes)\n",
-		to_user ? "exposure" : "overwrite",
-		to_user ? "from" : "to", type ? : "unknown", len);
-
-	saudit_log(USERCOPY, STP_RISK, 0,
-		"msg=kernel memory %s attempt detected %s '%s' (%lu bytes),",
 		to_user ? "exposure" : "overwrite",
 		to_user ? "from" : "to", type ? : "unknown", len);
 

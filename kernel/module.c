@@ -66,9 +66,6 @@
 #include <linux/audit.h>
 #include <uapi/linux/module.h>
 #include "module-internal.h"
-#ifdef CONFIG_MODULE_SIG
-#include <chipset_common/security/saudit.h>
-#endif
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/module.h>
@@ -2824,8 +2821,6 @@ static int module_sig_check(struct load_info *info, int flags)
 		info->sig_ok = true;
 		return 0;
 	}
-
-	saudit_log(MOD_SIGN, STP_RISK, 0, "result=%d,", err);
 
 	/* Not having a signature is only an error if we're strict. */
 	if (err == -ENOKEY && !sig_enforce)
