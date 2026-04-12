@@ -51,7 +51,6 @@ source "drivers/hisi/ivp/Kconfig"
 source "drivers/hisi/timekeeper/Kconfig"
 source "drivers/hisi/perfhub/Kconfig"
 source "drivers/hisi/cci_extra/Kconfig"
-source "drivers/hisi/irq_affinity/Kconfig"
 
 endif #HISILICON_PLATFORM
 
