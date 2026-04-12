@@ -76,10 +76,6 @@ SUBSYS(rdma)
 SUBSYS(debug)
 #endif
 
-#if IS_ENABLED(CONFIG_HW_CGROUP_IONICE)
-SUBSYS(ionice)
-#endif
-
 #if IS_ENABLED(CONFIG_HW_CGROUP_WORKINGSET)
 SUBSYS(workingset)
 #endif

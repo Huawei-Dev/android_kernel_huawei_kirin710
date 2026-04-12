@@ -864,14 +864,6 @@ config CGROUP_PIDS
 	  since the PIDs limit only affects a process's ability to fork, not to
 	  attach to a cgroup.
 
-config HW_CGROUP_IONICE
-	bool "ionice cgroup controller"
-	depends on BLOCK
-	help
-	  Provides a way to set ionice for tasks in a cgroup.
-	  It's useful in mobile devices where certain background apps
-	  are doing heavy io work.
-
 config CGROUP_RDMA
 	bool "RDMA controller"
 	help
