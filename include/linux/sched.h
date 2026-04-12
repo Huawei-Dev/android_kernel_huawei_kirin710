@@ -895,9 +895,6 @@ struct task_struct {
 	atomic_t trans_flags;
 	struct transact_qos trans_qos[DYNAMIC_QOS_TYPE_MAX];
 #endif
-#ifdef CONFIG_HW_RTG_SCHED
-	int rtg_depth;
-#endif
 #ifdef CONFIG_SMP
 	struct llist_node		wake_entry;
 	int				on_cpu;

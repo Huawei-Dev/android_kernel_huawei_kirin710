@@ -24,9 +24,6 @@
 #include <linux/slab.h>
 #include <linux/proc_fs.h>
 #include <trace/events/sched.h>
-#ifdef CONFIG_HW_RTG_SCHED
-#include "hwrtg/trans_rtg.h"
-#endif
 
 #define BASE_FLAG 0x00000001
 
@@ -259,10 +256,6 @@ bool dynamic_qos_enqueue(struct task_struct *task,
 		tq->trans_from = trans_qos;
 		tq->trans_pid = trans_qos->allow_pid;
 		tq->trans_type = type;
-#ifdef CONFIG_HW_RTG_SCHED
-		if (RTG_TRANS_ENABLE && (type == DYNAMIC_QOS_BINDER))
-			add_trans_thread(task, from);
-#endif
 		flags = set_trans_type(atomic_read(&task->trans_flags), type);
 		atomic_set(&task->trans_flags, flags); /*lint !e446 !e734*/
 #ifdef CONFIG_SCHED_HWSTATUS
@@ -296,10 +289,6 @@ void dynamic_qos_dequeue(struct task_struct *task, unsigned int type)
 	flags = remove_trans_type(atomic_read(&task->trans_flags), type);
 	atomic_set(&task->trans_flags, flags);
 	tq->trans_from = NULL;
-#ifdef CONFIG_HW_RTG_SCHED
-	if (RTG_TRANS_ENABLE && (type == DYNAMIC_QOS_BINDER))
-		remove_trans_thread(task);
-#endif
 	trace_sched_qos(task, tq, OPERATION_QOS_DEQUEUE);
 	tq->trans_pid = 0;
 	tq->trans_type = DYNAMIC_QOS_TYPE_MAX;

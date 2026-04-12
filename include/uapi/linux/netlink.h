@@ -50,7 +50,7 @@
 #define NETLINK_HW_LOGCAT_EXT 29
 
 #if (defined(CONFIG_HW_CPULOAD_NOTI) || defined(CONFIG_HW_VIP_THREAD) \
-        || defined(CONFIG_HW_IAWARE_THREAD_BOOST) || defined(CONFIG_HW_RTG_SCHED))
+        || defined(CONFIG_HW_IAWARE_THREAD_BOOST))
 #define NETLINK_HW_IAWARE_CPU 30
 #endif
 
