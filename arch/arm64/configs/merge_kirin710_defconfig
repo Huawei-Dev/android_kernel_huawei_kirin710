@@ -4752,12 +4752,6 @@ CONFIG_HISI_SECS_CTRL=y
 # CONFIG_SECURE_TEST is not set
 
 #
-# Hisilicon ISP IPP
-#
-# CONFIG_HISPIPP is not set
-# CONFIG_HISI_ISP_DEBUG is not set
-
-#
 # Hisilicon Performace Control
 #
 CONFIG_HISI_PERF_CTRL=y
