@@ -244,14 +244,9 @@ extern phys_addr_t __phys_addr_symbol(unsigned long x);
 #define __phys_addr_symbol(x)	__pa_symbol_nodebug(x)
 #endif
 
-#if defined(__ASSEMBLER__) || !defined(CONFIG_HISI_LB_DEBUG)
+#if defined(__ASSEMBLER__)
 #define __phys_to_virt(x)	((unsigned long)((x) - PHYS_OFFSET) | PAGE_OFFSET)
 #else
-
-#if defined(CONFIG_HISI_LB_DEBUG)
-extern void __lb_assert_phys(phys_addr_t phys);
-#define	lb_assert_phys __lb_assert_phys
-#endif
 
 #define __phys_to_virt(x) ({                                \
 	lb_assert_phys(x);                                  \

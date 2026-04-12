@@ -44,9 +44,6 @@
 #include <linux/sched/task.h>
 #include <linux/time.h>
 
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
 #include <linux/fdtable.h>
 #include <linux/sched/signal.h>
 
@@ -189,19 +186,6 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	if (buffer->heap->type != ION_HEAP_TYPE_CARVEOUT)
 		atomic_long_add(buffer->size, &ion_total_size);
 
-#ifdef CONFIG_HISI_LB
-	if (flags & ION_FLAG_HISI_LB_MASK) {
-		buffer->plc_id = ION_FLAG_2_PLC_ID(flags);
-		pr_info("HISI ION LB %lx\n", flags);
-		/*
-		 * will inv cache with normal va,
-		 * and need after set zero
-		 */
-		if (lb_sg_attach(buffer->plc_id, buffer->sg_table->sgl,
-				 buffer->sg_table->nents))
-			goto err1;
-	}
-#endif
 	init_dump(buffer);
 	mutex_lock(&dev->buffer_lock);
 	ion_buffer_add(dev, buffer);
@@ -209,10 +193,6 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 
 	return buffer;
 
-#ifdef CONFIG_HISI_LB
-err1:
-	heap->ops->free(buffer);
-#endif
 err2:
 	kfree(buffer);
 	return ERR_PTR(ret);
@@ -229,15 +209,6 @@ void ion_buffer_destroy(struct ion_buffer *buffer)
 		buffer->heap->ops->unmap_kernel(buffer->heap, buffer);
 	}
 
-#ifdef CONFIG_HISI_LB
-	/*
-	 * will inv cache with gid va,
-	 * and need before free
-	 */
-	if (buffer->plc_id)
-		(void)lb_sg_detach(buffer->plc_id, buffer->sg_table->sgl,
-			buffer->sg_table->nents);
-#endif
 	buffer->heap->ops->free(buffer);
 	kfree(buffer);
 }
