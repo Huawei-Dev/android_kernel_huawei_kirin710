@@ -29,9 +29,6 @@
 #include <linux/vmalloc.h>
 #include <linux/swiotlb.h>
 #include <linux/pci.h>
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
 #include <asm/cacheflush.h>
 
 static int swiotlb __ro_after_init;
@@ -167,10 +164,6 @@ static void *__dma_alloc(struct device *dev, size_t size,
 
 	/* create a coherent mapping */
 	page = virt_to_page(ptr);
-#ifdef CONFIG_HISI_LB
-	if (PageLB(page))
-		lb_prot_build(page, &prot);
-#endif
 	coherent_ptr = dma_common_contiguous_remap(page, size, VM_USERMAP,
 						   prot, __builtin_return_address(0));
 	if (!coherent_ptr)
@@ -209,13 +202,6 @@ static dma_addr_t __swiotlb_map_page(struct device *dev, struct page *page,
 
 	dev_addr = swiotlb_map_page(dev, page, offset, size, dir, attrs);
 
-#ifdef CONFIG_HISI_LB
-	if (PageLB(page)) {
-		WARN_ON(is_device_dma_coherent(dev));
-		__dma_map_area(lb_page_to_virt(page), size, dir);
-		return dev_addr;
-	}
-#endif
 	if (!is_device_dma_coherent(dev) &&
 	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
 		__dma_map_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
@@ -228,16 +214,6 @@ static void __swiotlb_unmap_page(struct device *dev, dma_addr_t dev_addr,
 				 size_t size, enum dma_data_direction dir,
 				 unsigned long attrs)
 {
-#ifdef CONFIG_HISI_LB
-	phys_addr_t phys = dma_to_phys(dev, dev_addr);
-	struct page *page = phys_to_page(phys);
-
-	if (PageLB(page)) {
-		WARN_ON(is_device_dma_coherent(dev));
-		__dma_unmap_area(lb_page_to_virt(page), size, dir);
-		return;
-	}
-#endif
 	if (!is_device_dma_coherent(dev) &&
 	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
 		__dma_unmap_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
@@ -281,17 +257,6 @@ static void __swiotlb_sync_single_for_cpu(struct device *dev,
 					  dma_addr_t dev_addr, size_t size,
 					  enum dma_data_direction dir)
 {
-#ifdef CONFIG_HISI_LB
-	phys_addr_t phys = dma_to_phys(dev, dev_addr);
-	struct page *page = phys_to_page(phys);
-
-	if (PageLB(page)) {
-		unsigned long offset = phys & ~PAGE_MASK;
-
-		__dma_unmap_area(lb_page_to_virt(page) + offset, size, dir);
-		return;
-	}
-#endif
 	if (!is_device_dma_coherent(dev))
 		__dma_unmap_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
 	swiotlb_sync_single_for_cpu(dev, dev_addr, size, dir);
@@ -301,17 +266,6 @@ static void __swiotlb_sync_single_for_device(struct device *dev,
 					     dma_addr_t dev_addr, size_t size,
 					     enum dma_data_direction dir)
 {
-#ifdef CONFIG_HISI_LB
-	phys_addr_t phys = dma_to_phys(dev, dev_addr);
-	struct page *page = phys_to_page(phys);
-
-	if (PageLB(page)) {
-		unsigned long offset = phys & ~PAGE_MASK;
-
-		__dma_map_area(lb_page_to_virt(page) + offset, size, dir);
-		return;
-	}
-#endif
 	swiotlb_sync_single_for_device(dev, dev_addr, size, dir);
 	if (!is_device_dma_coherent(dev))
 		__dma_map_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
@@ -326,13 +280,8 @@ static void __swiotlb_sync_sg_for_cpu(struct device *dev,
 
 	if (!is_device_dma_coherent(dev)) {
 		for_each_sg(sgl, sg, nelems, i)
-#ifdef CONFIG_HISI_LB
-			__swiotlb_sync_single_for_cpu(dev, dma_to_phys(dev, sg->dma_address),
-						  sg->length, dir);
-#else
 			__dma_unmap_area(phys_to_virt(dma_to_phys(dev, sg->dma_address)),
 					 sg->length, dir);
-#endif
 	}
 	swiotlb_sync_sg_for_cpu(dev, sgl, nelems, dir);
 }
@@ -347,13 +296,8 @@ static void __swiotlb_sync_sg_for_device(struct device *dev,
 	swiotlb_sync_sg_for_device(dev, sgl, nelems, dir);
 	if (!is_device_dma_coherent(dev)) {
 		for_each_sg(sgl, sg, nelems, i)
-#ifdef CONFIG_HISI_LB
-			__swiotlb_sync_single_for_device(dev, dma_to_phys(dev, sg->dma_address),
-						  sg->length, dir);
-#else
 			__dma_map_area(phys_to_virt(dma_to_phys(dev, sg->dma_address)),
 				       sg->length, dir);
-#endif
 	}
 }
 
@@ -386,11 +330,6 @@ static int __swiotlb_mmap(struct device *dev,
 
 	vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot,
 					     is_device_dma_coherent(dev));
-
-#ifdef CONFIG_HISI_LB
-	if (PageLB(pfn_to_page(pfn)))
-		(void)lb_prot_build(pfn_to_page(pfn), &vma->vm_page_prot);
-#endif
 
 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
 		return ret;

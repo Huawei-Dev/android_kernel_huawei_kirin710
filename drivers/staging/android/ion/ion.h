@@ -92,10 +92,6 @@ struct ion_buffer {
 #ifdef CONFIG_ION_HISI_SECSG
 	unsigned int id;
 #endif
-
-#ifdef CONFIG_HISI_LB
-	unsigned int plc_id;
-#endif
 };
 void ion_buffer_destroy(struct ion_buffer *buffer);
 

@@ -334,9 +334,6 @@ unsigned long hisi_iommu_map_dmabuf(struct device *dev, struct dma_buf *dmabuf,
 	buffer = dmabuf->priv;
 	table = buffer->sg_table;
 
-#ifdef CONFIG_HISI_LB
-	prot |= (unsigned long)buffer->plc_id << IOMMU_PORT_SHIFT;
-#endif
 	prot |= (IOMMU_READ | IOMMU_WRITE);
 	iova = do_iommu_map_sg(cookie, table->sgl, prot, &iova_dom->size);
 	if (!iova) {
@@ -667,9 +664,6 @@ int hisi_iommu_idle_display_map(struct device *dev, u32 policy_id,
 	 * map lb second
 	 */
 	prot = IOMMU_READ|IOMMU_WRITE;
-#ifdef CONFIG_HISI_LB
-	prot = (u32)prot | policy_id << IOMMU_PORT_SHIFT;
-#endif
 	if (lbsize) {
 		ret = iommu_map(domain, iova, paddr, lbsize, prot);
 		if (ret)
@@ -1259,10 +1253,6 @@ unsigned long hisi_iommu_map_dmabuf(struct device *dev, struct dma_buf *dmabuf,
 	buffer = dmabuf->priv;
 	table = buffer->sg_table;
 
-#ifdef CONFIG_HISI_LB
-	prot = (u32)prot | buffer->plc_id << IOMMU_PORT_SHIFT;
-#endif
-
 	iova = do_iommu_map_sg(hisi_domain, table->sgl, prot, &iova_dom->size);
 	if (!iova)
 		goto free_dom;
@@ -1546,9 +1536,6 @@ int hisi_iommu_idle_display_map(struct device *dev, u32 policy_id,
 	 * map lb second
 	 */
 	prot = IOMMU_READ | IOMMU_WRITE;
-#ifdef CONFIG_HISI_LB
-	prot = (u32)prot | policy_id << IOMMU_PORT_SHIFT;
-#endif
 	if (lbsize) {
 		ret = iommu_map(domain, iova, paddr, lbsize, prot);
 		if (ret)

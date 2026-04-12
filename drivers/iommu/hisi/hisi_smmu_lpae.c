@@ -35,10 +35,6 @@
 #include <linux/hisi/rdr_hisi_ap_hook.h>
 #include "hisi_smmu.h"
 
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
-
 LIST_HEAD(domain_list);
 static struct iommu_ops hisi_smmu_ops;
 
@@ -267,9 +263,6 @@ static int hisi_smmu_alloc_init_pte_lpae(struct iommu_domain *domain,
 					 unsigned long end, unsigned long pfn,
 					 u64 prot, unsigned long *flags)
 {
-#ifdef CONFIG_HISI_LB
-	u32 pid;
-#endif
 	smmu_pte_t *pte = NULL;
 	smmu_pte_t *start = NULL;
 	pgtable_t table;
@@ -307,10 +300,6 @@ pte_ready:
 	pte = start;
 	pteval = hisi_smmu_pte_ready(prot);
 
-#ifdef CONFIG_HISI_LB
-	pid = (prot & IOMMU_PORT_MASK) >> IOMMU_PORT_SHIFT;
-	pteval |= !pid ? 0 : lb_pid_to_gidphys(pid);
-#endif
 	do {
 		if (!pte_is_valid_lpae(pte))
 			*pte = (u64)(__pfn_to_phys(pfn) | pteval);
