@@ -5653,8 +5653,6 @@ CONFIG_DEFAULT_SECURITY="selinux"
 # Huawei Kernel Harden
 #
 # CONFIG_HUAWEI_PROC_CHECK_ROOT is not set
-CONFIG_HKIP_ATKINFO=y
-# CONFIG_HKIP_ATKINFO_DEBUGFS is not set
 
 #
 # Huawei root scanner
