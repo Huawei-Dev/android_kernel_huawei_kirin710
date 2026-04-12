@@ -57,7 +57,6 @@ ifeq ($(TARGET_VERSION_MODE),factory)
 obj-$(CONFIG_HISI_DIEID) += dieid/
 endif
 obj-$(CONFIG_HISPIPP) += ipp/
-obj-$(CONFIG_HISI_ACCURATE_DELAY) += accurate_delay/
 obj-$(CONFIG_HISPFD)  += hispfd/
 obj-$(CONFIG_HISI_PERF_CTRL) += perf_ctrl/
 obj-$(CONFIG_HISI_RPMB) += rpmb/
