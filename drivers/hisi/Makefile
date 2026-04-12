@@ -16,7 +16,6 @@ obj-$(CONFIG_HISI_NOC)	+= noc/
 obj-$(CONFIG_HISI_SYSCOUNTER) += hisi_syscounter/
 obj-$(CONFIG_HISILICON_PLATFORM_SLIMBUS)+= slimbus/
 obj-$(CONFIG_HISI_HHEE) += hhee/
-obj-$(CONFIG_HISI_KERNEL_BL2_LOG) += bl2_log/
 obj-$(CONFIG_HISI_KERNEL_HARDEN_DEBUG) += kernel_harden_test/
 obj-y += harden/
 
