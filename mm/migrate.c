@@ -704,12 +704,7 @@ void migrate_page_states(struct page *newpage, struct page *page)
 		SetPageNonCompress(newpage);
 #endif
 
-#if defined(CONFIG_TASK_PROTECT_LRU)
-	if (PageProtect(page)) {
-		SetPageProtect(newpage);
-		set_page_num(newpage, get_page_num(page));
-	}
-#elif defined(CONFIG_MEMCG_PROTECT_LRU)
+#if defined(CONFIG_MEMCG_PROTECT_LRU)
 	if (PageProtect(page))
 		SetPageProtect(newpage);
 #endif

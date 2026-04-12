@@ -126,7 +126,7 @@ bool list_lru_add(struct list_lru *lru, struct list_head *item)
 }
 EXPORT_SYMBOL_GPL(list_lru_add);
 
-#if defined(CONFIG_TASK_PROTECT_LRU) || defined(CONFIG_MEMCG_PROTECT_LRU)
+#if defined(CONFIG_MEMCG_PROTECT_LRU)
 void list_lru_move(struct list_lru *lru, struct list_head *item)
 {
 	/*lint -save -e648 -e730 -e834*/

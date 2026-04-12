@@ -898,7 +898,7 @@ config MEMCG_PROTECT_LRU
 	bool "Memory Resource Controller Protect LRU file pages"
 	depends on MEMCG && !TRANSPARENT_HUGEPAGE && !HUGETLB_PAGE && (ARM64 || X86_64)
 	default n
-	depends on !TASK_PROTECT_LRU && MEMCG
+	depends on MEMCG
 	help
 	  Protect LRU support. It's between normal lru and mlock,
 	  that means we will reclaim protect lru file pages as late as possible.

@@ -44,9 +44,6 @@
 #include <linux/psi.h>
 #include "internal.h"
 #include <linux/iolimit_cgroup.h>
-#ifdef CONFIG_TASK_PROTECT_LRU
-#include <linux/hisi/protect_lru.h>
-#endif
 
 #ifdef CONFIG_HW_MEMORY_MONITOR
 #include <chipset_common/mmonitor/mmonitor.h>
@@ -881,9 +878,7 @@ int add_to_page_cache_lru(struct page *page, struct address_space *mapping,
 		if (!(gfp_mask & __GFP_WRITE) && shadow)
 			workingset_refault(page, shadow);
 
-#if  defined(CONFIG_TASK_PROTECT_LRU)
-		protect_lru_set_from_file(page);
-#elif defined(CONFIG_MEMCG_PROTECT_LRU)
+#if defined(CONFIG_MEMCG_PROTECT_LRU)
 		if (PageProtect(page))
 			SetPageActive(page);
 #endif
@@ -1589,11 +1584,7 @@ no_page:
 			unlock_page(page);
 	}
 
-#ifdef CONFIG_TASK_PROTECT_LRU
-	return protect_lru_move_and_shrink(page);
-#else
 	return page;
-#endif
 }
 EXPORT_SYMBOL(pagecache_get_page);
 

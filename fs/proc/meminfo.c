@@ -169,16 +169,6 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 		    hisi_ion_total() >> PAGE_SHIFT);
 #endif
 
-#ifdef CONFIG_TASK_PROTECT_LRU
-	show_val_kb(m, "PActive(anon):   ",
-			  global_zone_page_state(NR_PROTECT_ACTIVE_ANON));
-	show_val_kb(m, "PInactive(anon):   ",
-			  global_zone_page_state(NR_PROTECT_INACTIVE_ANON));
-	show_val_kb(m, "PActive(file):   ",
-			  global_zone_page_state(NR_PROTECT_ACTIVE_FILE));
-	show_val_kb(m, "PInactive(file):   ",
-			  global_zone_page_state(NR_PROTECT_INACTIVE_FILE));
-#endif
 #ifdef CONFIG_OF_RESERVED_MEM
 	show_val_kb(m, "RsvTotalUsed:   ",
 			dt_memory_reserved_sizeinfo_get() >> PAGE_SHIFT);

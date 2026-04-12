@@ -523,10 +523,6 @@ struct mm_struct {
 	struct hmm *hmm;
 #endif
 
-#ifdef CONFIG_TASK_PROTECT_LRU
-	int protect;
-#endif
-
 #ifdef CONFIG_SPECULATIVE_PAGE_FAULT
 	rwlock_t mm_rb_lock;
 #endif

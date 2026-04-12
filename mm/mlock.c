@@ -25,9 +25,6 @@
 #include <linux/mm_inline.h>
 
 #include "internal.h"
-#ifdef CONFIG_TASK_PROTECT_LRU
-#include <linux/hisi/protect_lru.h>
-#endif
 
 bool can_do_mlock(void)
 {
@@ -111,9 +108,6 @@ static bool __munlock_isolate_lru_page(struct page *page, bool getpage)
 		lruvec = mem_cgroup_page_lruvec(page, page_pgdat(page));
 		if (getpage)
 			get_page(page);
-#ifdef CONFIG_TASK_PROTECT_LRU
-		del_page_from_protect_lru_list(page, lruvec);
-#endif
 		ClearPageLRU(page);
 		del_page_from_lru_list(page, lruvec, page_lru(page));
 		return true;
