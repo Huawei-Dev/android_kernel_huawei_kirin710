@@ -1003,8 +1003,12 @@ static int __init calc_load_init(void)
 		goto err_create_pidstat;
 
 	policy = cpufreq_cpu_get(CONFIG_NR_CPUS - 1);
-	if (policy)
+	if (policy) {
 		init_freqs_data(policy);
+		cpufreq_cpu_put(policy);
+	} else {
+		pr_info("cpuload: cpufreq policy not ready, skip freqs init\n");
+	}
 
 	INIT_DEFERRABLE_WORK(&high_load_work, high_load_tickfn);
 	INIT_DEFERRABLE_WORK(&cpus_procstatic_work, cpus_procstatic_tickfn);
