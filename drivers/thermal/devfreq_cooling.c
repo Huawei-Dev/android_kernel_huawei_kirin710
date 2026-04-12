@@ -28,9 +28,6 @@
 
 #include <trace/events/thermal.h>
 
-#ifdef CONFIG_HISI_DRG
-#include <linux/hisi/hisi_drg.h>
-#endif
 #ifdef CONFIG_HISI_IPA_THERMAL
 #include <trace/events/thermal_power_allocator.h>
 extern unsigned int g_ipa_freq_limit[];
@@ -174,11 +171,6 @@ static int devfreq_cooling_set_cur_state(struct thermal_cooling_device *cdev,
 		return 0;
 
 	dev_dbg(dev, "Setting cooling state %lu\n", state);
-
-#ifdef CONFIG_HISI_DRG
-	if (state < dfc->freq_table_size)
-		drg_devfreq_cooling_update(df, dfc->freq_table[state]);
-#endif
 
 #ifdef CONFIG_HISI_IPA_THERMAL
 	if (state == THERMAL_NO_LIMIT) {

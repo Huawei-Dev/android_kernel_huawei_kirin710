@@ -33,10 +33,6 @@
 #include <linux/hisi/hisi_hw_vote.h>
 #endif
 
-#ifdef CONFIG_HISI_DRG
-#include <linux/hisi/hisi_drg.h>
-#endif
-
 struct private_data {
 	struct opp_table *opp_table;
 	struct device *cpu_dev;
@@ -358,9 +354,6 @@ static int cpufreq_exit(struct cpufreq_policy *policy)
 	priv->cpu_hvdev = NULL;
 #endif
 	cpufreq_cooling_unregister(priv->cdev);
-#ifdef CONFIG_HISI_DRG
-	drg_cpufreq_unregister(policy);
-#endif
 	dev_pm_opp_free_cpufreq_table(priv->cpu_dev, &policy->freq_table);
 	dev_pm_opp_of_cpumask_remove_table(policy->related_cpus);
 #ifdef CONFIG_HISI_CPUFREQ_DT
@@ -386,10 +379,6 @@ static void cpufreq_ready(struct cpufreq_policy *policy)
 
 	if (WARN_ON(!np))
 		return;
-
-#ifdef CONFIG_HISI_DRG
-	drg_cpufreq_register(policy);
-#endif
 
 	/*
 	 * For now, just loading the cooling device;

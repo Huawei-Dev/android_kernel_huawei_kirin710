@@ -35,7 +35,6 @@ obj-$(CONFIG_HISI_SECS_CTRL) += secs_power_ctrl/
 obj-$(CONFIG_HISI_SR)                      += pm/
 obj-$(CONFIG_HISI_HW_VOTE)                 += hw_vote/
 obj-$(CONFIG_HISI_GPUFREQ)                 += gpufreq/
-obj-$(CONFIG_HISI_DRG)                     += hisi_drg/
 ifneq ($(link_kernel),false)
 ifneq (,$(findstring $(CONFIG_HISI_BALONG_MODEM),y m))
 obj-y += modem/
