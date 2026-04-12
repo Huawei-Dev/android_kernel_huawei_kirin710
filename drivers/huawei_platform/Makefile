@@ -26,5 +26,4 @@ obj-$(CONFIG_HUAWEI_IO_TRACING) += iotrace/
 obj-$(CONFIG_HUAWEI_EMCOM) += emcom/
 obj-$(CONFIG_HUAWEI_VENDOR_EXCEPTION) += vendor_exception/
 obj-$(CONFIG_MEM_INSPECT) += rmeminspect/
-obj-$(CONFIG_HUAWEI_MEMINFO_DUMP) += pmeminfo/
 obj-$(CONFIG_WAKEUP) += wakeup/
