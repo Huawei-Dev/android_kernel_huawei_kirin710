@@ -35,7 +35,6 @@ source "drivers/huawei_platform/vendor_exception/Kconfig"
 source "drivers/huawei_platform/rmeminspect/Kconfig"
 source "drivers/huawei_platform/pmeminfo/Kconfig"
 source "drivers/huawei_platform/wakeup/Kconfig"
-source "drivers/huawei_platform/multichip_skytone/Kconfig"
 endif #HUAWEI_PLATFORM
 
 endmenu
