@@ -69,10 +69,6 @@
 #include <linux/sched/debug.h>
 #endif
 
-#ifdef CONFIG_HUAWEI_KERNEL_STACK_RANDOMIZE
-#include <chipset_common/kernel_harden/kaslr.h>
-#endif
-
 #ifdef CONFIG_HISI_BB
 #include <linux/hisi/rdr_pub.h>
 #include <linux/hisi/util.h>
