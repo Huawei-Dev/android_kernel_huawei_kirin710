@@ -1823,10 +1823,6 @@ static __latent_entropy struct task_struct *copy_process(
 #ifdef CONFIG_HW_VIP_THREAD
 	init_task_vip_info(p);
 #endif
-#ifdef CONFIG_HW_RTG_SCHED
-	p->rtg_depth = 0;
-#endif
-
 	/* Perform scheduler related setup. Assign this task to a CPU. */
 	retval = sched_fork(clone_flags, p);
 	if (retval)
