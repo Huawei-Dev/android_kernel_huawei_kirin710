@@ -95,8 +95,6 @@
 #include <asm/sections.h>
 #include <asm/cacheflush.h>
 
-#include <chipset_common/security/root_scan.h>
-
 static int kernel_init(void *);
 
 extern void init_IRQ(void);
@@ -1084,7 +1082,6 @@ static int __ref kernel_init(void *unused)
 	free_initmem();
 	mark_readonly();
 	/* once marked ro data, root scan will measure it in TA */
-	tee_rootscan_run();
 	system_state = SYSTEM_RUNNING;
 	numa_default_policy();
 
