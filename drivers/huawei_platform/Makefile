@@ -21,7 +21,6 @@ obj-$(CONFIG_HUAWEI_UID_IO_STATS) += uid_iostats/
 obj-y   += usb/
 obj-$(CONFIG_HW_VOLTAGE_DETECTION) += voltage_detection/
 obj-$(CONFIG_HUAWEI_VIBRATOR) += vibrator/
-obj-$(CONFIG_HUAWEI_OCP) += ocp/
 obj-$(CONFIG_MADAPT) += madapt/
 obj-$(CONFIG_HUAWEI_IO_TRACING) += iotrace/
 obj-$(CONFIG_HUAWEI_EMCOM) += emcom/
