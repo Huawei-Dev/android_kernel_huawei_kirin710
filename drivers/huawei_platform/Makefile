@@ -29,4 +29,3 @@ obj-$(CONFIG_HUAWEI_VENDOR_EXCEPTION) += vendor_exception/
 obj-$(CONFIG_MEM_INSPECT) += rmeminspect/
 obj-$(CONFIG_HUAWEI_MEMINFO_DUMP) += pmeminfo/
 obj-$(CONFIG_WAKEUP) += wakeup/
-obj-$(CONFIG_MULTICHIP_SKYTONE) += multichip_skytone/
