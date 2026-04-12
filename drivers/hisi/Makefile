@@ -47,4 +47,3 @@ obj-$(CONFIG_HISPIPP) += ipp/
 obj-$(CONFIG_HISI_PERF_CTRL) += perf_ctrl/
 obj-$(CONFIG_HISI_RPMB) += rpmb/
 obj-$(CONFIG_HISI_PERFHUB) += perfhub/
-obj-$(CONFIG_HISI_ICS_IPU_PLATFORM) += ics/
