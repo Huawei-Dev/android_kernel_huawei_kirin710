@@ -47,9 +47,6 @@ enum page_ext_flags {
  */
 struct page_ext {
 	unsigned long flags;
-#ifdef CONFIG_HISI_PAGE_TRACKER
-	struct page_tracker page_tracker;
-#endif
 };
 
 extern void pgdat_page_ext_init(struct pglist_data *pgdat);
