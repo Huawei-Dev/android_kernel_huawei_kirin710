@@ -30,12 +30,8 @@
 
 #define HISI_LOG_TAG HISI_LED_TAG
 
-#ifdef CONFIG_HW_LED_CONFIG
-extern void led_config_get_current_setting(struct hisi_led_platform_data* hisi_leds);
-#else
 void led_config_get_current_setting(struct hisi_led_platform_data* hisi_leds)
 {	pr_info("%s enter,not need to set irset for tp color, using default!\n", __func__); }
-#endif
 
 extern struct atomic_notifier_head panic_notifier_list;
 
