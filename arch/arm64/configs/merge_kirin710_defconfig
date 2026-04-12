@@ -5657,11 +5657,6 @@ CONFIG_HKIP_ATKINFO=y
 # CONFIG_HKIP_ATKINFO_DEBUGFS is not set
 
 #
-# Huawei kernel mdpp selftest
-#
-# CONFIG_HUAWEI_CRYPTO_TEST_MDPP is not set
-
-#
 # Huawei root scanner
 #
 # CONFIG_HW_ROOT_SCAN is not set
