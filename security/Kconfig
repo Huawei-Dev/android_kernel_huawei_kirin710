@@ -276,6 +276,5 @@ config DEFAULT_SECURITY
 	default "" if DEFAULT_SECURITY_DAC
 
 source security/check_root/Kconfig
-source security/hkip_atkinfo/Kconfig
 endmenu
 
