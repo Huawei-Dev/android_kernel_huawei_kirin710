@@ -39,7 +39,6 @@ ifneq (,$(findstring $(CONFIG_HISI_BALONG_MODEM),y m))
 obj-y += modem/
 endif
 endif
-obj-$(CONFIG_HISI_LOWMEM) += hisi_lmk/
 obj-$(CONFIG_HISI_PAGE_TRACKER) += hisi_page_tracker/
 obj-$(CONFIG_HISI_PAGE_EXT) += hisi_page_ext/
 obj-$(CONFIG_HISI_PERFHUB) += perfhub/
