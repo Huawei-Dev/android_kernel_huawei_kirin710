@@ -1,5 +1,0 @@
-config HISI_HIEPS
-	bool "Hisilicon hieps "
-	default n
-	help
-	  Hisi hieps driver
