@@ -98,9 +98,6 @@
 #endif
 
 #include <linux/hisi/pagecache_debug.h>
-#ifdef CONFIG_TASK_PROTECT_LRU
-#include <linux/hisi/protect_lru.h>
-#endif
 
 #if defined(CONFIG_SYSCTL)
 
@@ -1651,15 +1648,7 @@ static struct ctl_table vm_table[] = {
 		.extra1		= &one,
 		.extra2		= &four,
 	},
-#if defined(CONFIG_TASK_PROTECT_LRU)
-	/*lint -save -e785*/
-	{
-		.procname	= "protect_lru",
-		.mode		= 0440,
-		.child		= protect_lru_table,
-	},
-	/*lint -restore*/
-#elif defined(CONFIG_MEMCG_PROTECT_LRU)
+#if defined(CONFIG_MEMCG_PROTECT_LRU)
 	{
 		.procname	= "protect_reclaim_ratio",
 		.data		= &protect_reclaim_ratio,

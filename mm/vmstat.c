@@ -1042,12 +1042,6 @@ const char * const vmstat_text[] = {
 	"nr_zone_inactive_file",
 	"nr_zone_active_file",
 	"nr_zone_unevictable",
-#ifdef CONFIG_TASK_PROTECT_LRU
-	"nr_inactive_prot_anon",
-	"nr_active_prot_anon",
-	"nr_inactive_prot_file",
-	"nr_active_prot_file",
-#endif
 	"nr_zone_write_pending",
 	"nr_mlock",
 	"nr_page_table_pages",

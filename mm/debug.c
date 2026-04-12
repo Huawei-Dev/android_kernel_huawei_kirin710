@@ -28,9 +28,6 @@ char *migrate_reason_names[MR_TYPES] = {
 
 const struct trace_print_flags pageflag_names[] = {
 	__def_pageflag_names,
-#ifdef CONFIG_TASK_PROTECT_LRU
-	{1UL << PG_protect,		"protect"	},
-#endif
 #ifdef CONFIG_HISI_PAGE_TRACE
 	{1UL << PG_lslub,                  "lslub"          },
 	{1UL << PG_vmalloc,                "vmalloc"        },

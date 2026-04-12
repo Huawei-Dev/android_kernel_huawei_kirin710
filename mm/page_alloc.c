@@ -1223,9 +1223,6 @@ static void __meminit __init_single_page(struct page *page, unsigned long pfn,
 	if (!is_highmem_idx(zone))
 		set_page_address(page, __va(pfn << PAGE_SHIFT));
 #endif
-#ifdef CONFIG_TASK_PROTECT_LRU
-	set_page_num(page, 0);
-#endif
 }
 
 static void __meminit __init_single_pfn(unsigned long pfn, unsigned long zone,
@@ -4655,10 +4652,6 @@ long si_mem_available(void)
 	 */
 	available += global_zone_page_state(NR_IONCACHE_PAGES);
 	available += (long)global_zone_page_state(NR_MALI_PAGES);
-#ifdef CONFIG_TASK_PROTECT_LRU
-	available -= (long)global_zone_page_state(NR_PROTECT_ACTIVE_FILE) +
-		     (long)global_zone_page_state(NR_PROTECT_INACTIVE_FILE);
-#endif
 
 	if (available < 0)
 		available = 0;
@@ -4787,10 +4780,6 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
 
 	printk("active_anon:%lu inactive_anon:%lu isolated_anon:%lu\n"
 		" active_file:%lu inactive_file:%lu isolated_file:%lu\n"
-#ifdef CONFIG_TASK_PROTECT_LRU
-		" active_prot_anon:%lu inactive_prot_anon:%lu\n"
-		" active_prot_file:%lu inactive_prot_file:%lu\n"
-#endif
 		" unevictable:%lu dirty:%lu writeback:%lu unstable:%lu\n"
 		" slab_reclaimable:%lu slab_unreclaimable:%lu\n"
 #ifdef CONFIG_ZSMALLOC
@@ -4805,12 +4794,6 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
 		global_node_page_state(NR_ACTIVE_FILE),
 		global_node_page_state(NR_INACTIVE_FILE),
 		global_node_page_state(NR_ISOLATED_FILE),
-#ifdef CONFIG_TASK_PROTECT_LRU
-		global_zone_page_state(NR_PROTECT_ACTIVE_ANON),
-		global_zone_page_state(NR_PROTECT_INACTIVE_ANON),
-		global_zone_page_state(NR_PROTECT_ACTIVE_FILE),
-		global_zone_page_state(NR_PROTECT_INACTIVE_FILE),
-#endif
 		global_node_page_state(NR_UNEVICTABLE),
 		global_node_page_state(NR_FILE_DIRTY),
 		global_node_page_state(NR_WRITEBACK),
@@ -4899,12 +4882,6 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
 			" inactive_anon:%lukB"
 			" active_file:%lukB"
 			" inactive_file:%lukB"
-#ifdef CONFIG_TASK_PROTECT_LRU
-			" active_prot_anon:%lukB"
-			" inactive_prot_anon:%lukB"
-			" active_prot_file:%lukB"
-			" inactive_prot_file:%lukB"
-#endif
 			" unevictable:%lukB"
 			" writepending:%lukB"
 			" present:%lukB"
@@ -4929,12 +4906,6 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
 			K(zone_page_state(zone, NR_ZONE_INACTIVE_ANON)),
 			K(zone_page_state(zone, NR_ZONE_ACTIVE_FILE)),
 			K(zone_page_state(zone, NR_ZONE_INACTIVE_FILE)),
-#ifdef CONFIG_TASK_PROTECT_LRU
-			K(zone_page_state(zone, NR_PROTECT_ACTIVE_ANON)),
-			K(zone_page_state(zone, NR_PROTECT_INACTIVE_ANON)),
-			K(zone_page_state(zone, NR_PROTECT_ACTIVE_FILE)),
-			K(zone_page_state(zone, NR_PROTECT_INACTIVE_FILE)),
-#endif
 			K(zone_page_state(zone, NR_ZONE_UNEVICTABLE)),
 			K(zone_page_state(zone, NR_ZONE_WRITE_PENDING)),
 			K(zone->present_pages),

@@ -1813,7 +1813,7 @@ cont:
 		if (!page)
 			continue;
 
-#if defined(CONFIG_TASK_PROTECT_LRU) || defined(CONFIG_MEMCG_PROTECT_LRU)
+#if defined(CONFIG_MEMCG_PROTECT_LRU)
 		// don't reclaim page in protected.
 		if (PageProtect(page))
 			continue;
