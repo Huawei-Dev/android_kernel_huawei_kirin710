@@ -34,11 +34,6 @@
 #define DM_COOKIE_ENV_VAR_NAME "DM_COOKIE"
 #define DM_COOKIE_LENGTH 24
 
-#ifdef CONFIG_HUAWEI_IO_TRACING
-#include <trace/iotrace.h>
-DEFINE_TRACE(block_dm_request);
-#endif
-
 static const char *_name = DM_NAME;
 
 static unsigned int major = 0;

@@ -65,14 +65,6 @@
 #include <linux/workingset_cgroup.h>
 #endif
 
-#ifdef CONFIG_HUAWEI_IO_TRACING
-#include <trace/iotrace.h>
-DEFINE_TRACE(generic_perform_write_enter);
-DEFINE_TRACE(generic_perform_write_end);
-DEFINE_TRACE(generic_file_read_begin);
-DEFINE_TRACE(generic_file_read_end);
-#endif
-
 /*
  * Shared mappings implemented 30.11.1994. It's not fully working yet,
  * though.
@@ -2081,10 +2073,6 @@ static ssize_t generic_file_buffered_read(struct kiocb *iocb,
 	last_index = (*ppos + iter->count + PAGE_SIZE-1) >> PAGE_SHIFT;
 	offset = *ppos & ~PAGE_MASK;
 
-#ifdef CONFIG_HUAWEI_IO_TRACING
-               trace_generic_file_read_begin(filp, iter->count);
-#endif
-
 	for (;;) {
 		struct page *page;
 		pgoff_t end_index;
@@ -2319,9 +2307,6 @@ no_cached_page:
 would_block:
 	error = -EAGAIN;
 out:
-#ifdef CONFIG_HUAWEI_IO_TRACING
-               trace_generic_file_read_end(filp, written);
-#endif
 	ra->prev_pos = prev_index;
 	ra->prev_pos <<= PAGE_SHIFT;
 	ra->prev_pos |= prev_offset;
