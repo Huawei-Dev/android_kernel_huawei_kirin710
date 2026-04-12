@@ -5650,13 +5650,6 @@ CONFIG_DEFAULT_SECURITY_SELINUX=y
 CONFIG_DEFAULT_SECURITY="selinux"
 
 #
-# Huawei root scanner
-#
-# CONFIG_HUAWEI_EIMA is not set
-# CONFIG_HUAWEI_ENG_EIMA is not set
-# CONFIG_HUAWEI_EIMA_ACCESS_CONTROL is not set
-
-#
 # Crypto core or helper
 #
 CONFIG_CRYPTO=y
