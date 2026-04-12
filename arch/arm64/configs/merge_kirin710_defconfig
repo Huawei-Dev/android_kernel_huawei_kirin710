@@ -4543,12 +4543,6 @@ CONFIG_HISI_DPM_PLATFORM_MARS=y
 # CONFIG_HISI_DPM_PLATFORM_PLUTO is not set
 
 #
-# Hisi L3 Cache
-#
-# CONFIG_HISI_L3CACHE_SHARE is not set
-# CONFIG_HISI_L3CACHE_LP_DEBUG is not set
-
-#
 # Hisi S/R options
 #
 CONFIG_HISI_SR=y
