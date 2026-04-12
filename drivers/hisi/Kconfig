@@ -62,7 +62,6 @@ source "drivers/hisi/ics/Kconfig"
 source "drivers/hisi/hitest/Kconfig"
 source "drivers/hisi/cci_extra/Kconfig"
 source "drivers/hisi/irq_affinity/Kconfig"
-source "drivers/hisi/bl31_log/Kconfig"
 
 endif #HISILICON_PLATFORM
 
