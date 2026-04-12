@@ -9,24 +9,22 @@ menuconfig HUAWEI_PLATFORM
 if HUAWEI_PLATFORM
 
 source "drivers/huawei_platform/antenna_board_match/Kconfig"
-#source "drivers/huawei_platform/antenna_fpga/Kconfig"
 source "drivers/huawei_platform/audio/Kconfig"
-source "drivers/huawei_platform/riltcp/Kconfig"
 source "drivers/huawei_platform/connectivity/Kconfig"
 source "drivers/huawei_platform/devdetect/Kconfig"
+source "drivers/huawei_platform/emcom/Kconfig"
 source "drivers/huawei_platform/inputhub/Kconfig"
+source "drivers/huawei_platform/madapt/Kconfig"
 source "drivers/huawei_platform/net/Kconfig"
 source "drivers/huawei_platform/nfc/Kconfig"
 source "drivers/huawei_platform/power/Kconfig"
+source "drivers/huawei_platform/rilsim/Kconfig"
+source "drivers/huawei_platform/riltcp/Kconfig"
 source "drivers/huawei_platform/sensor/Kconfig"
 source "drivers/huawei_platform/storage/Kconfig"
 source "drivers/huawei_platform/touthscreen/Kconfig"
 source "drivers/huawei_platform/usb/Kconfig"
-source "drivers/huawei_platform/madapt/Kconfig"
-source "drivers/huawei_platform/emcom/Kconfig"
-source "drivers/huawei_platform/rilsim/Kconfig"
 source "drivers/huawei_platform/vendor_exception/Kconfig"
-source "drivers/huawei_platform/wakeup/Kconfig"
 endif #HUAWEI_PLATFORM
 
 endmenu
