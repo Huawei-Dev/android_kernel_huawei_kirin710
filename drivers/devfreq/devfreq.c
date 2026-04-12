@@ -28,10 +28,6 @@
 #include <linux/of.h>
 #include "governor.h"
 
-#ifdef CONFIG_HISI_DRG
-#include <linux/hisi/hisi_drg.h>
-#endif
-
 static struct class *devfreq_class;
 
 /*
@@ -265,10 +261,6 @@ int update_devfreq(struct devfreq *devfreq)
 		flags |= DEVFREQ_FLAG_LEAST_UPPER_BOUND; /* Use LUB */
 	}
 
-#ifdef CONFIG_HISI_DRG
-	freq = drg_devfreq_check_limit(devfreq, freq);
-#endif
-
 	if (devfreq->profile->get_cur_freq)
 		devfreq->profile->get_cur_freq(devfreq->dev.parent, &cur_freq);
 	else
@@ -336,10 +328,6 @@ void devfreq_apply_limits(struct devfreq *devfreq)
 		freq = devfreq->max_freq;
 		flags |= DEVFREQ_FLAG_LEAST_UPPER_BOUND; /* Use LUB */
 	}
-
-#ifdef CONFIG_HISI_DRG
-	freq = drg_devfreq_check_limit(devfreq, freq);
-#endif
 
 	freqs.old = cur_freq;
 	freqs.new = freq;

@@ -34,10 +34,6 @@
 
 #include <trace/events/thermal.h>
 
-#ifdef CONFIG_HISI_DRG
-#include <linux/hisi/hisi_drg.h>
-#endif
-
 #ifdef CONFIG_HISI_IPA_THERMAL
 #include <trace/events/thermal_power_allocator.h>
 #ifdef CONFIG_HISI_THERMAL_SPM
@@ -548,9 +544,6 @@ static int cpufreq_set_cur_state(struct thermal_cooling_device *cdev,
 
 #ifdef CONFIG_HISI_IPA_THERMAL
 	g_ipa_freq_limit[cur_cluster] = clip_freq;
-#endif
-#ifdef CONFIG_HISI_DRG
-	drg_cpufreq_cooling_update(cpu, clip_freq);
 #endif
 	cpufreq_update_policy(cpufreq_cdev->policy->cpu);
 
