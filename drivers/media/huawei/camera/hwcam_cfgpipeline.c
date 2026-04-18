@@ -248,7 +248,7 @@ hwcam_cfgpipeline_create_instance(
 
     snprintf(sz_name, sizeof(sz_name),
             "hwcam_pl_%d", req->moduleID);
-    ws = wakeup_source_register(sz_name);
+    ws = wakeup_source_register(NULL, sz_name);
     if (!ws) {
         goto fail_to_register_wakeup_source;
     }
