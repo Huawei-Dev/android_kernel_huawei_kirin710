@@ -586,41 +586,6 @@ TRACE_EVENT(f2fs_background_gc,
 		__entry->free)
 );
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-TRACE_EVENT(f2fs_background_turbo_gc,
-
-	TP_PROTO(struct super_block *sb, unsigned int wait_ms,
-			unsigned int prefree, unsigned int free,
-			unsigned int tz_free),
-
-	TP_ARGS(sb, wait_ms, prefree, free, tz_free),
-
-	TP_STRUCT__entry(
-		__field(dev_t,	dev)
-		__field(unsigned int,	wait_ms)
-		__field(unsigned int,	prefree)
-		__field(unsigned int,	free)
-		__field(unsigned int,	tz_free)
-	),
-
-	TP_fast_assign(
-		__entry->dev		= sb->s_dev;
-		__entry->wait_ms	= wait_ms;
-		__entry->prefree	= prefree;
-		__entry->free		= free;
-		__entry->tz_free	= tz_free;
-	),
-
-	TP_printk("dev = (%d,%d), wait_ms = %u, "
-		"prefree = %u, free = %u, turbo_free = %u",
-		show_dev(__entry->dev),
-		__entry->wait_ms,
-		__entry->prefree,
-		__entry->free,
-		__entry->tz_free)
-);
-#endif
-
 TRACE_EVENT(f2fs_gc_begin,
 
 	TP_PROTO(struct super_block *sb, bool sync, bool background,

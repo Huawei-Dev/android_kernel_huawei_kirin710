@@ -25,9 +25,6 @@
 #include "trace.h"
 #include <trace/events/f2fs.h>
 #include <trace/events/android_fs.h>
-#ifdef CONFIG_F2FS_TURBO_ZONE
-#include "turbo_zone.h"
-#endif
 
 #define NUM_PREALLOC_POST_READ_CTXS	128
 
@@ -598,11 +595,6 @@ void f2fs_submit_page_write(struct f2fs_io_info *fio)
 	struct page *bio_page;
 	struct block_device *bdev = sbi->sb->s_bdev;
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (is_tz_existed(sbi))
-		bdev = FDEV(F2FS_TURBO_DEV).bdev;
-#endif
-
 	f2fs_bug_on(sbi, is_read_io(fio->op));
 
 	bio_page = fio->encrypted_page ? fio->encrypted_page : fio->page;
@@ -1079,12 +1071,6 @@ static int __allocate_data_block(struct dnode_of_data *dn, int seg_type, int con
 	if (unlikely(is_inode_flag_set(dn->inode, FI_NO_ALLOC)))
 		return -EPERM;
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (sbi->tz_info.enabled &&
-	    (is_inode_flag_set(dn->inode, FI_TZ_AGING_FILE) ||
-	     is_tz_flag_set(dn->inode, FI_TZ_KEY_FILE)))
-		seg_type = CURSEG_TURBO_DATA;
-#endif
 	err = f2fs_get_node_info(sbi, dn->nid, &ni);
 	if (err)
 		return err;
@@ -2024,12 +2010,6 @@ static inline bool check_inplace_update_policy(struct inode *inode,
 
 bool f2fs_should_update_inplace(struct inode *inode, struct f2fs_io_info *fio)
 {
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	/* for turbo zone aging test */
-	if (is_inode_flag_set(inode, FI_TZ_AGING_FILE))
-		return true;
-#endif
-
 	if (f2fs_is_pinned_file(inode))
 		return true;
 
@@ -2067,12 +2047,6 @@ bool f2fs_should_update_outplace(struct inode *inode, struct f2fs_io_info *fio)
 static inline bool need_inplace_update(struct f2fs_io_info *fio)
 {
 	struct inode *inode = fio->page->mapping->host;
-
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	/* for turbo zone aging test */
-	if (is_inode_flag_set(inode, FI_TZ_AGING_FILE))
-		return true;
-#endif
 
 	if (f2fs_is_pinned_file(inode))
 		return true;
@@ -2406,11 +2380,6 @@ static int f2fs_write_cache_pages(struct address_space *mapping,
 	int tag;
 	int nwritten = 0;
 	struct block_device *bdev = mapping->host->i_sb->s_bdev;
-
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (is_tz_existed(sbi))
-		bdev = FDEV(F2FS_TURBO_DEV).bdev;
-#endif
 
 	pagevec_init(&pvec, 0);
 

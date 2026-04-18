@@ -111,9 +111,6 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 	si->avail_nids = NM_I(sbi)->available_nids;
 	si->alloc_nids = NM_I(sbi)->nid_cnt[PREALLOC_NID];
 	si->bg_gc = sbi->bg_gc;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	si->turbo_bg_gc = sbi->tz_info.turbo_bg_gc;
-#endif
 	si->io_skip_bggc = sbi->io_skip_bggc;
 	si->other_skip_bggc = sbi->other_skip_bggc;
 	si->skipped_atomic_files[BG_GC] = sbi->skipped_atomic_files[BG_GC];
@@ -519,31 +516,6 @@ static int stat_show(struct seq_file *s, void *v)
 				si->cache_mem >> 10);
 		seq_printf(s, "  - paged : %llu KB\n",
 				si->page_mem >> 10);
-
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		/* turbo zone info */
-		if (si->sbi->tz_info.total_segs > 0) {
-			seq_puts(s, "\n\nTurbo Zone Info:\n");
-			seq_printf(s, "  - enabled: %d\n",
-				(int)si->sbi->tz_info.enabled);
-			seq_printf(s, "  - switchable: %d\n",
-				(int)si->sbi->tz_info.switchable);
-			seq_printf(s, "  - total_segs: %u\n",
-				si->sbi->tz_info.total_segs);
-			seq_printf(s, "  - start_seg: %u\n",
-				si->sbi->tz_info.start_seg);
-			seq_printf(s, "  - end_seg: %u\n",
-				si->sbi->tz_info.end_seg);
-			seq_printf(s, "  - free_segs: %u\n",
-				si->sbi->tz_info.free_segs);
-			seq_printf(s, "  - written_valid_blocks: %u\n",
-				si->sbi->tz_info.written_valid_blocks);
-
-			/* turbo gc */
-			seq_printf(s, "  - turbo_bg_gc: %d\n",
-				si->sbi->tz_info.turbo_bg_gc);
-		}
-#endif
 	}
 	mutex_unlock(&f2fs_stat_mutex);
 	return 0;

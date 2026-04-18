@@ -23,9 +23,6 @@
 #include "gc.h"
 #include "trace.h"
 #include <trace/events/f2fs.h>
-#ifdef CONFIG_F2FS_TURBO_ZONE
-#include "turbo_zone.h"
-#endif
 
 #define __reverse_ffz(x) __reverse_ffs(~(x))
 
@@ -671,22 +668,14 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
 
 		mutex_lock(&sbi->gc_mutex);
 		current->flags |= PF_MUTEX_GC;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		f2fs_gc(sbi, false, false, false, NULL_SEGNO);
-#else
 		f2fs_gc(sbi, false, false, NULL_SEGNO);
-#endif
 		current->flags &= (~PF_MUTEX_GC);
 
 		/* here judgement for recover process */
 		if (unlikely(ACCESS_ONCE(gc_th->f2fs_gc_task) == NULL)) {
 			mutex_lock(&sbi->gc_mutex);
 			current->flags |= PF_MUTEX_GC;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-			f2fs_gc(sbi, false, false, false, NULL_SEGNO);
-#else
 			f2fs_gc(sbi, false, false, NULL_SEGNO);
-#endif
 			current->flags &= (~PF_MUTEX_GC);
 			return;
 		}
@@ -716,11 +705,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
 		if (!gc_task_available) {
 			mutex_lock(&sbi->gc_mutex);
 			current->flags |= PF_MUTEX_GC;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-			f2fs_gc(sbi, false, false, false, NULL_SEGNO);
-#else
 			f2fs_gc(sbi, false, false, NULL_SEGNO);
-#endif
 			current->flags &= (~PF_MUTEX_GC);
 		}
 	} else if (f2fs_need_SSR(sbi) && need_balance_dirty_type(sbi)) {
@@ -731,11 +716,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi, bool need)
 		 /* if f2fs_gc_task is not available, do f2fs_gc in the original task */
 			 mutex_lock(&sbi->gc_mutex);
 			 current->flags |= PF_MUTEX_GC;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-			 f2fs_gc(sbi, true, false, false, NULL_SEGNO);
-#else
 			 f2fs_gc(sbi, true, false, NULL_SEGNO);
-#endif
 			 current->flags &= (~PF_MUTEX_GC);
 		 }
 
@@ -2510,10 +2491,6 @@ static void update_sit_entry(struct f2fs_sb_info *sbi, block_t blkaddr, int del)
 
 	/* update total number of valid blocks to be written in ckpt area */
 	SIT_I(sbi)->written_valid_blocks += del;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (is_in_turbo_zone(sbi, segno))
-		sbi->tz_info.written_valid_blocks += del;
-#endif
 
 	if (sbi->segs_per_sec > 1)
 		get_sec_entry(sbi, segno)->valid_blocks += del;
@@ -2733,10 +2710,6 @@ void get_new_segment(struct f2fs_sb_info *sbi,
 	unsigned int hint = GET_SEC_FROM_SEG(sbi, *newseg);
 	unsigned int old_zoneno = GET_ZONE_FROM_SEG(sbi, *newseg);
 	unsigned int left_start = hint;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	unsigned int start_seg = 0;
-	unsigned int end_seg = GET_SEG_FROM_SEC(sbi, MAIN_SECS(sbi));
-#endif
 	unsigned int start_sec = 0;
 	unsigned int end_sec;
 	bool init = true;
@@ -2746,20 +2719,6 @@ void get_new_segment(struct f2fs_sb_info *sbi,
 	spin_lock(&free_i->segmap_lock);
 	total_zones = MAIN_SECS(sbi) / sbi->secs_per_zone;
 	end_sec = MAIN_SECS(sbi);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (is_tz_existed(sbi) &&
-			(sbi->tz_info.enabled || !sbi->tz_info.switchable)) {
-		get_nz_area(sbi, &start_seg, &end_seg);
-		start_sec = GET_SEC_FROM_SEG(sbi, start_seg);
-		end_sec = GET_SEC_FROM_SEG(sbi, end_seg);
-		init = false;
-
-		if (hint < start_sec || hint >= end_sec) {
-			hint = start_sec;
-			left_start = hint;
-		}
-	}
-#endif
 
 	if (!new_sec && ((*newseg + 1) % sbi->segs_per_sec)) {
 		segno = find_next_zero_bit(free_i->free_segmap,
@@ -2852,9 +2811,7 @@ static void reset_curseg(struct f2fs_sb_info *sbi, struct curseg_info *curseg,
 	if (IS_NODESEG(type))
 		SET_SUM_TYPE(sum_footer, SUM_TYPE_NODE);
 	f2fs_bug_on(sbi, type == CURSEG_FRAGMENT_DATA);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	f2fs_bug_on(sbi, type == CURSEG_TURBO_DATA);
-#endif
+
 	__set_sit_entry_type(sbi, type, curseg->segno, modified);
 }
 
@@ -2994,11 +2951,6 @@ void restore_virtual_curseg_status(struct f2fs_sb_info *sbi, bool recover)
 	if (sbi->gc_thread.atgc_enabled)
 		__restore_virtual_curseg_status(sbi, CURSEG_FRAGMENT_DATA,
 						recover);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (is_tz_existed(sbi))
-		__restore_virtual_curseg_status(sbi, CURSEG_TURBO_DATA,
-						recover);
-#endif
 }
 
 static inline void __store_virtual_curseg_summary(struct f2fs_sb_info *sbi,
@@ -3020,10 +2972,6 @@ void store_virtual_curseg_summary(struct f2fs_sb_info *sbi)
 {
 	if (sbi->gc_thread.atgc_enabled)
 		__store_virtual_curseg_summary(sbi, CURSEG_FRAGMENT_DATA);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (is_tz_existed(sbi))
-		__store_virtual_curseg_summary(sbi, CURSEG_TURBO_DATA);
-#endif
 }
 
 static int get_ssr_segment(struct f2fs_sb_info *sbi,
@@ -3192,10 +3140,6 @@ static void get_new_segment_subdivision(struct f2fs_sb_info *sbi,
 	unsigned int hint = GET_SEC_FROM_SEG(sbi, *newseg);
 	unsigned int old_zoneno = GET_ZONE_FROM_SEG(sbi, *newseg);
 	unsigned int left_start = hint, right_start, start, end;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	unsigned int start_seg = 0;
-	unsigned int end_seg = GET_SEG_FROM_SEC(sbi, MAIN_SECS(sbi));
-#endif
 	unsigned int start_sec = 0;
 	unsigned int end_sec;
 	bool init = true;
@@ -3205,20 +3149,6 @@ static void get_new_segment_subdivision(struct f2fs_sb_info *sbi,
 	spin_lock(&free_i->segmap_lock);
 	total_zones = MAIN_SECS(sbi) / sbi->secs_per_zone;
 	end_sec = MAIN_SECS(sbi);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (is_tz_existed(sbi) &&
-		(sbi->tz_info.enabled || !sbi->tz_info.switchable)) {
-		get_nz_area(sbi, &start_seg, &end_seg);
-		start_sec = GET_SEC_FROM_SEG(sbi, start_seg);
-		end_sec = GET_SEC_FROM_SEG(sbi, end_seg);
-		init = false;
-
-		if (hint < start_sec || hint >= end_sec) {
-			hint = start_sec;
-			left_start = hint;
-		}
-	}
-#endif
 
 	/*
 	 * if we don't force to allocate a new section, and there is still
@@ -3382,212 +3312,6 @@ static const struct segment_allocation subdivision_salloc_ops = {
 	.get_new_segment = get_new_segment_subdivision,
 	.new_curseg = new_curseg_subdivision,
 };
-
-#ifdef CONFIG_F2FS_TURBO_ZONE
-/* Since TZ exists, so all substraction is safe. */
-static unsigned int get_free_segs_in_normal_zone(struct f2fs_sb_info *sbi)
-{
-	unsigned int free_segs;
-
-	free_segs = FREE_I(sbi)->free_segments -
-			(FDEV(F2FS_TURBO_DEV).total_segments -
-				sbi->tz_info.total_segs);
-
-	if (sbi->tz_info.enabled || !sbi->tz_info.switchable)
-		return free_segs - sbi->tz_info.free_segs;
-
-	return FREE_I(sbi)->free_segments;
-}
-
-static int get_new_segment_in_tz(struct f2fs_sb_info *sbi,
-				unsigned int *newseg)
-{
-	struct free_segmap_info *free_i = FREE_I(sbi);
-	unsigned int segno;
-	unsigned int tz_start_seg, tz_end_seg;
-
-	tz_start_seg = sbi->tz_info.start_seg;
-	tz_end_seg = sbi->tz_info.end_seg;
-
-	if (*newseg < tz_start_seg || *newseg >= tz_end_seg)
-		*newseg = tz_start_seg;
-
-	spin_lock(&free_i->segmap_lock);
-
-	segno = find_next_zero_bit(free_i->free_segmap, tz_end_seg,
-					*newseg);
-	if (segno >= tz_end_seg) {
-		segno = find_next_zero_bit(free_i->free_segmap, *newseg,
-						tz_start_seg);
-		if (segno >= *newseg) {
-			spin_unlock(&free_i->segmap_lock);
-			f2fs_msg(sbi->sb, KERN_INFO,
-				 "No free segment in turbo zone\n");
-			return -ENOSPC;
-		}
-	}
-
-	f2fs_bug_on(sbi, test_bit(segno, free_i->free_segmap));
-	__set_inuse(sbi, segno);
-	*newseg = segno;
-	spin_unlock(&free_i->segmap_lock);
-
-	return 0;
-}
-
-static int get_ssr_segment_in_tz(struct f2fs_sb_info *sbi,
-				struct curseg_info *curseg,
-				unsigned int *newseg, int type)
-{
-	const struct victim_selection *v_ops = DIRTY_I(sbi)->v_ops;
-	unsigned int segno = NULL_SEGNO;
-
-	if (v_ops->get_victim(sbi, &segno, BG_GC, type, SSR, 0)) {
-		curseg->next_segno = segno;
-		return 0;
-	}
-
-	return -ENOSPC;
-}
-
-static void allocate_segment_in_turbozone(struct f2fs_sb_info *sbi,
-					struct curseg_info *curseg,
-					int type)
-{
-	unsigned int segno = curseg->segno;
-	int ret = -ENOSPC;
-
-	if (curseg->inited || type != CURSEG_TURBO_DATA)
-		write_sum_page(sbi, curseg->sum_blk,
-				GET_SUM_BLOCK(sbi, segno));
-
-	if (sbi->tz_info.free_segs > F2FS_MIN_SEGS_IN_TZ ||
-		(current->flags & PF_MUTEX_GC)) {
-		ret = get_new_segment_in_tz(sbi, &segno);
-		if (ret == 0) {
-			curseg->next_segno = segno;
-			reset_curseg(sbi, curseg,
-				(type == CURSEG_TURBO_DATA) ?
-				CURSEG_WARM_DATA : type,
-				1);
-			curseg->alloc_type = LFS;
-		}
-	} else {
-		ret = get_ssr_segment_in_tz(sbi, curseg, &segno, type);
-		if (ret == 0)
-			change_curseg(sbi, curseg,
-				(type == CURSEG_TURBO_DATA) ?
-				CURSEG_WARM_DATA : type,
-				true);
-	}
-
-	if (ret == 0)
-		curseg->inited = true;
-	else
-		curseg->inited = false;
-}
-
-static bool need_SSR_in_normalzone(struct f2fs_sb_info *sbi)
-{
-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
-	unsigned int free_secs_in_nz;
-
-	if (test_opt(sbi, LFS))
-		return false;
-	if (sbi->gc_mode == GC_URGENT &&
-	    !is_gc_test_set(sbi, GC_TEST_DISABLE_GC_URGENT))
-		return true;
-	if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED)))
-		return true;
-
-	free_secs_in_nz = get_free_segs_in_normal_zone(sbi) /
-				sbi->segs_per_sec;
-	return free_secs_in_nz <= (node_secs + 2 * dent_secs + imeta_secs +
-			SM_I(sbi)->min_ssr_sections + reserved_sections(sbi));
-}
-
-static void allocate_segment_in_normalzone(struct f2fs_sb_info *sbi,
-					struct curseg_info *curseg, int type,
-					bool force)
-{
-	if (need_turn_off_tz(sbi))
-		sbi->tz_info.enabled = false;
-
-	if (force)
-		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, true);
-	else if (!is_set_ckpt_flags(sbi, CP_CRC_RECOVERY_FLAG) &&
-					type == CURSEG_WARM_NODE)
-		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
-	else if (curseg->alloc_type == LFS && is_next_segment_free(sbi, type) &&
-			likely(!is_sbi_flag_set(sbi, SBI_CP_DISABLED)))
-		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
-	else if (need_SSR_in_normalzone(sbi)) {
-		if (get_ssr_segment(sbi, curseg, type, SSR, 0))
-			change_curseg(sbi, curseg, type, true);
-		else {
-			if (get_free_segs_in_normal_zone(sbi) >
-					(reserved_segments(sbi) -
-						F2FS_MIN_SEGS_IN_TZ)) {
-				SIT_I(sbi)->s_ops->new_curseg(sbi, curseg,
-							type, false);
-			} else {
-				sbi->tz_info.enabled = false;
-				/* search in the whole space */
-				if (get_ssr_segment(sbi, curseg, type, SSR, 0))
-					change_curseg(sbi, curseg, type, true);
-				else
-					SIT_I(sbi)->s_ops->new_curseg(sbi,
-							curseg, type, false);
-			}
-		}
-	} else
-		SIT_I(sbi)->s_ops->new_curseg(sbi, curseg, type, false);
-
-	stat_inc_seg_type(sbi, curseg);
-}
-
-/*
- * Allocate new segment in turbo zone if it's a CURSEG_TURBO_DATA
- * curseg or free segments in normal zone is too few.
- */
-static bool is_allocated_in_tz(struct f2fs_sb_info *sbi, int type)
-{
-	unsigned int free_segs_in_nz;
-
-	if (type == CURSEG_TURBO_DATA)
-		return true;
-
-	if (!sbi->tz_info.enabled && sbi->tz_info.switchable)
-		return false;
-
-	free_segs_in_nz = get_free_segs_in_normal_zone(sbi);
-	if (free_segs_in_nz <
-		(reserved_segments(sbi) - F2FS_MIN_SEGS_IN_TZ))
-		return true;
-
-	return false;
-}
-
-static void allocate_segment_multizone(struct f2fs_sb_info *sbi,
-				struct curseg_info *curseg, int type,
-				bool force)
-{
-	if (type != CURSEG_TURBO_DATA)
-		curseg->inited = false;
-
-	if (is_allocated_in_tz(sbi, type)) {
-		/* May fail to get new segment */
-		allocate_segment_in_turbozone(sbi, curseg, type);
-	}
-
-	if (type != CURSEG_TURBO_DATA && !curseg->inited) {
-		/* must succeed */
-		allocate_segment_in_normalzone(sbi, curseg, type, force);
-	}
-}
-#endif
 
 bool f2fs_exist_trim_candidates(struct f2fs_sb_info *sbi,
 						struct cp_control *cpc)
@@ -3912,11 +3636,6 @@ static int __get_segment_type_6(struct f2fs_io_info *fio)
 	if (fio->type == DATA) {
 		struct inode *inode = fio->page->mapping->host;
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		if (is_tz_flag_set(inode, FI_TZ_KEY_FILE) ||
-		    is_inode_flag_set(inode, FI_TZ_AGING_FILE))
-			return CURSEG_TURBO_DATA;
-#endif
 		if (is_cold_data(fio->page)) {
 			if (fio->sbi->gc_thread.atgc_enabled)
 				return CURSEG_FRAGMENT_DATA;
@@ -4001,14 +3720,6 @@ int  f2fs_allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 	down_read(&SM_I(sbi)->curseg_lock);
 
 	mutex_lock(&curseg->curseg_mutex);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	if (type == CURSEG_TURBO_DATA && !curseg->inited) {
-		mutex_unlock(&curseg->curseg_mutex);
-		type = CURSEG_WARM_DATA;
-		curseg = CURSEG_I(sbi, type);
-		mutex_lock(&curseg->curseg_mutex);
-	}
-#endif
 
 	down_write(&sit_i->sentry_lock);
 
@@ -4122,22 +3833,7 @@ allocate_label:
 							free_segments(sbi), contig);
 #endif
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-			/*
-			 * If turbo zone is overhead and has switched to TLC
-			 * mode,or there's only one device, allocate segment
-			 * in original way.
-			 */
-			if (!is_tz_existed(sbi) || (!sbi->tz_info.enabled &&
-					sbi->tz_info.switchable))
-				sit_i->s_ops->allocate_segment(sbi, curseg,
-						type, false, contig);
-			else
-				allocate_segment_multizone(sbi, curseg, type,
-						false);
-#else
 			sit_i->s_ops->allocate_segment(sbi, curseg, type, false, contig);
-#endif
 		}
 	}
 	/*
@@ -4739,34 +4435,9 @@ static void init_frag_curseg(struct f2fs_sb_info *sbi)
 	up_read(&SM_I(sbi)->curseg_lock);
 }
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-void init_turbo_curseg(struct f2fs_sb_info *sbi)
-{
-	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_TURBO_DATA);
-
-	if (!sbi->tz_info.enabled)
-		return;
-
-	down_read(&SM_I(sbi)->curseg_lock);
-
-	mutex_lock(&curseg->curseg_mutex);
-	down_write(&SIT_I(sbi)->sentry_lock);
-
-	allocate_segment_in_turbozone(sbi, curseg, CURSEG_TURBO_DATA);
-
-	up_write(&SIT_I(sbi)->sentry_lock);
-	mutex_unlock(&curseg->curseg_mutex);
-
-	up_read(&SM_I(sbi)->curseg_lock);
-}
-#endif
-
 void init_virtual_curseg(struct f2fs_sb_info *sbi)
 {
 	init_frag_curseg(sbi);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	init_turbo_curseg(sbi);
-#endif
 }
 
 static void write_compacted_summaries(struct f2fs_sb_info *sbi, block_t blkaddr)

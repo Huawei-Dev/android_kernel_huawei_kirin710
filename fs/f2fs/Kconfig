@@ -108,6 +108,7 @@ config F2FS_FAULT_INJECTION
 	  Test F2FS to inject faults such as ENOMEM, ENOSPC, and so on.
 
 	  If unsure, say N.
+
 config HISI_F2FS_MTIME
 	bool "reduce freq to update mtime"
 	default n
@@ -127,10 +128,3 @@ config F2FS_GRADING_SSR
 	default n
 	help
 	  use grading ssr to improve the end performance
-
-config F2FS_TURBO_ZONE
-	bool "F2FS turbo zone"
-	depends on F2FS_FS
-	default n
-	help
-	  support turbo zone managemnt with multi devices.

@@ -29,17 +29,6 @@
 #define IS_WARM(t)	((t) == CURSEG_WARM_NODE || (t) == CURSEG_WARM_DATA)
 #define IS_COLD(t)	((t) == CURSEG_COLD_NODE || (t) == CURSEG_COLD_DATA)
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-#define IS_CURSEG(sbi, seg)						\
-	(((seg) == CURSEG_I(sbi, CURSEG_HOT_DATA)->segno) ||	\
-	 ((seg) == CURSEG_I(sbi, CURSEG_WARM_DATA)->segno) ||	\
-	 ((seg) == CURSEG_I(sbi, CURSEG_COLD_DATA)->segno) ||	\
-	 ((seg) == CURSEG_I(sbi, CURSEG_HOT_NODE)->segno) ||	\
-	 ((seg) == CURSEG_I(sbi, CURSEG_WARM_NODE)->segno) ||	\
-	 ((seg) == CURSEG_I(sbi, CURSEG_COLD_NODE)->segno) ||	\
-	 ((seg) == CURSEG_I(sbi, CURSEG_TURBO_DATA)->segno) ||  \
-	 ((seg) == CURSEG_I(sbi, CURSEG_FRAGMENT_DATA)->segno))
-#else
 #define IS_CURSEG(sbi, seg)						\
 	(((seg) == CURSEG_I(sbi, CURSEG_HOT_DATA)->segno) ||	\
 	 ((seg) == CURSEG_I(sbi, CURSEG_WARM_DATA)->segno) ||	\
@@ -48,27 +37,7 @@
 	 ((seg) == CURSEG_I(sbi, CURSEG_WARM_NODE)->segno) ||	\
 	 ((seg) == CURSEG_I(sbi, CURSEG_COLD_NODE)->segno) ||	\
 	 ((seg) == CURSEG_I(sbi, CURSEG_FRAGMENT_DATA)->segno))
-#endif
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-#define IS_CURSEC(sbi, secno)						\
-	(((secno) == CURSEG_I(sbi, CURSEG_HOT_DATA)->segno /		\
-	  (sbi)->segs_per_sec) ||	\
-	 ((secno) == CURSEG_I(sbi, CURSEG_WARM_DATA)->segno /		\
-	  (sbi)->segs_per_sec) ||	\
-	 ((secno) == CURSEG_I(sbi, CURSEG_COLD_DATA)->segno /		\
-	  (sbi)->segs_per_sec) ||	\
-	 ((secno) == CURSEG_I(sbi, CURSEG_HOT_NODE)->segno /		\
-	  (sbi)->segs_per_sec) ||	\
-	 ((secno) == CURSEG_I(sbi, CURSEG_WARM_NODE)->segno /		\
-	  (sbi)->segs_per_sec) ||	\
-	 ((secno) == CURSEG_I(sbi, CURSEG_COLD_NODE)->segno /		\
-	  (sbi)->segs_per_sec) ||	\
-	 ((secno) == CURSEG_I(sbi, CURSEG_TURBO_DATA)->segno /		\
-	  (sbi)->segs_per_sec) ||	\
-	 ((secno) == CURSEG_I(sbi, CURSEG_FRAGMENT_DATA)->segno /	\
-	  (sbi)->segs_per_sec))
-#else
 #define IS_CURSEC(sbi, secno)						\
 	(((secno) == CURSEG_I(sbi, CURSEG_HOT_DATA)->segno /		\
 	  (sbi)->segs_per_sec) ||	\
@@ -84,7 +53,6 @@
 	  (sbi)->segs_per_sec) ||	\
 	 ((secno) == CURSEG_I(sbi, CURSEG_FRAGMENT_DATA)->segno /	\
 	  (sbi)->segs_per_sec))
-#endif
 
 #define MAIN_BLKADDR(sbi)						\
 	(SM_I(sbi) ? SM_I(sbi)->main_blkaddr :				\
@@ -383,57 +351,6 @@ struct sit_entry_set {
 /*
  * inline functions
  */
-#ifdef CONFIG_F2FS_TURBO_ZONE
-static inline bool is_tz_existed(struct f2fs_sb_info *sbi)
-{
-	if (sbi->tz_info.total_segs > 0)
-		return true;
-	return false;
-}
-
-static inline bool is_in_turbo_zone(struct f2fs_sb_info *sbi,
-				unsigned int segno)
-{
-	if (!is_tz_existed(sbi))
-		return false;
-
-	if (segno >= sbi->tz_info.start_seg &&
-		segno < sbi->tz_info.end_seg)
-		return true;
-
-	return false;
-}
-
-/* caller should ensure tz status */
-static inline void get_nz_area(struct f2fs_sb_info *sbi,
-			unsigned int *start, unsigned int *end)
-{
-	if (sbi->tz_info.start_seg == 0) {
-		*start = GET_SEGNO_FROM_SEG0(sbi,
-				FDEV(F2FS_TURBO_DEV).end_blk + 1) -
-			 FREE_I(sbi)->start_segno;
-		*end = GET_SEG_FROM_SEC(sbi, MAIN_SECS(sbi));
-	} else {
-		*start = 0;
-		*end = sbi->tz_info.start_seg;
-	}
-}
-
-static inline void inc_free_segs_in_tz(struct f2fs_sb_info *sbi,
-				unsigned int segno)
-{
-	if (is_in_turbo_zone(sbi, segno))
-		sbi->tz_info.free_segs++;
-}
-
-static inline void dec_free_segs_in_tz(struct f2fs_sb_info *sbi,
-				unsigned int segno)
-{
-	if (is_in_turbo_zone(sbi, segno))
-		sbi->tz_info.free_segs--;
-}
-#endif
-
 static inline struct curseg_info *CURSEG_I(struct f2fs_sb_info *sbi, int type)
 {
 	return (struct curseg_info *)(SM_I(sbi)->curseg_array + type);
@@ -555,9 +472,6 @@ static inline void __set_free(struct f2fs_sb_info *sbi, unsigned int segno)
 	spin_lock(&free_i->segmap_lock);
 	clear_bit(segno, free_i->free_segmap);
 	free_i->free_segments++;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	inc_free_segs_in_tz(sbi, segno);
-#endif
 
 	next = find_next_bit(free_i->free_segmap,
 			start_segno + sbi->segs_per_sec, start_segno);
@@ -576,9 +490,6 @@ static inline void __set_inuse(struct f2fs_sb_info *sbi,
 
 	set_bit(segno, free_i->free_segmap);
 	free_i->free_segments--;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	dec_free_segs_in_tz(sbi, segno);
-#endif
 	if (!test_and_set_bit(secno, free_i->free_secmap))
 		free_i->free_sections--;
 }
@@ -594,9 +505,6 @@ static inline void __set_test_and_free(struct f2fs_sb_info *sbi,
 	spin_lock(&free_i->segmap_lock);
 	if (test_and_clear_bit(segno, free_i->free_segmap)) {
 		free_i->free_segments++;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		inc_free_segs_in_tz(sbi, segno);
-#endif
 
 		if (IS_CURSEC(sbi, secno))
 			goto skip_free;
@@ -620,9 +528,6 @@ static inline void __set_test_and_inuse(struct f2fs_sb_info *sbi,
 	spin_lock(&free_i->segmap_lock);
 	if (!test_and_set_bit(segno, free_i->free_segmap)) {
 		free_i->free_segments--;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		dec_free_segs_in_tz(sbi, segno);
-#endif
 		if (!test_and_set_bit(secno, free_i->free_secmap))
 			free_i->free_sections--;
 	}

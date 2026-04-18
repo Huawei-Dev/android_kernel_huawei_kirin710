@@ -32,10 +32,6 @@
 #include "gc.h"
 #include "trace.h"
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-#include "turbo_zone.h"
-#endif
-
 #define CREATE_TRACE_POINTS
 #include <trace/events/f2fs.h>
 
@@ -1646,11 +1642,7 @@ static int f2fs_disable_checkpoint(struct f2fs_sb_info *sbi)
 
 	while (!f2fs_time_over(sbi, DISABLE_TIME)) {
 		mutex_lock(&sbi->gc_mutex);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		err = f2fs_gc(sbi, true, false, false, NULL_SEGNO);
-#else
 		err = f2fs_gc(sbi, true, false, NULL_SEGNO);
-#endif
 		if (err == -ENODATA) {
 			err = 0;
 			break;
@@ -3678,10 +3670,6 @@ try_onemore:
 	f2fs_build_gc_manager(sbi);
 	atomic_set(&sbi->need_ssr_gc, 0);
 
-#ifdef CONFIG_F2FS_TURBO_ZONE
-	/* init f2fs turbo zone info */
-	init_f2fs_turbo_info(sbi);
-#endif
 	/* get an inode for node space */
 	sbi->node_inode = f2fs_iget(sb, F2FS_NODE_INO(sbi));
 	if (IS_ERR(sbi->node_inode)) {
@@ -3802,14 +3790,6 @@ skip_recovery:
 		err = f2fs_start_gc_thread(sbi);
 		if (err)
 			goto sync_free_meta;
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		err = f2fs_start_gc_turbo_thread(sbi);
-		if (err) {
-			f2fs_msg(sb, KERN_ERR,
-				"GC_TURBO: start_gc_turbo_thread err %d", err);
-			goto sync_free_meta;
-		}
-#endif
 	}
 	kfree(options);
 
@@ -3943,9 +3923,6 @@ static void kill_f2fs_super(struct super_block *sb)
 
 		set_sbi_flag(sbi, SBI_IS_CLOSE);
 		f2fs_stop_gc_thread(sbi);
-#ifdef CONFIG_F2FS_TURBO_ZONE
-		f2fs_stop_gc_turbo_thread(sbi);
-#endif
 		f2fs_stop_discard_thread(sbi);
 
 		if (is_sbi_flag_set(sbi, SBI_IS_DIRTY) ||
