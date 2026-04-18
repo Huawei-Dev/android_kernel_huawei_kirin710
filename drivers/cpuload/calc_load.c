@@ -482,11 +482,6 @@ static void high_load_tickfn(struct work_struct *work)
 			HIGH_LOAD_CPUSET_BG, NORMAL_LOAD_CPUSET_BG);
 
 	if (check_intervals >= CPU_LOAD_TIMER_RATE) {
-#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
-		if (((high_load_switch & (1 << LOAD_SWITCH_BIGCORE)) != 0) &&
-			is_beta_user())
-			high_freqs_load_tick();
-#endif
 		if (action_ctl_bits.bits_type)
 			schedule_delayed_work_on(0, &cpus_procstatic_work,
 				usecs_to_jiffies(CPUS_PROC_PERIOD));
@@ -784,32 +779,6 @@ static void high_freqs_load_tick(void)
 	now = ktime_get();
 	delta_time = ktime_us_delta(now, last);
 	last = now;
-
-#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
-	ret_err = hisi_time_in_freq_get(CONFIG_NR_CPUS - 1,
-		freqs_time, freqs_len);
-
-	if (ret_err)
-		return;
-
-	delta_freqs_time = 0;
-	for (i = 0; i < freqs_len; i++) {
-		if (freqs_weight[i] < fg_freqs_threshold)
-			continue;
-		delta_freqs_time += (freqs_time[i] - freqs_time_last[i]) *
-			freqs_weight[i];
-		freqs_time_last[i] = freqs_time[i];
-	}
-
-	if (delta_freqs_time > (delta_time * fg_freqs_threshold)) {
-		pr_info("cpuload: high freqs load");
-		set_action_ctl(CLUSTER_BIG, true);
-		last_status[CLUSTER_BIG] = HIGH_LOAD;
-	} else if (last_status[CLUSTER_BIG] != LOW_LOAD) {
-		set_action_ctl(CLUSTER_BIG, false);
-		last_status[CLUSTER_BIG] = LOW_LOAD;
-	}
-#endif
 }
 
 static void get_current_task_mask(int type)

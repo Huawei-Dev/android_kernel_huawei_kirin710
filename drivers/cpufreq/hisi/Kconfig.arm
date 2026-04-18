@@ -95,10 +95,3 @@ config HISI_CPUFREQ_GOVERNOR_BACKUP
 	default n
 	help
 	  Hisilicon save and restore cpufreq governor tunables set by userspace.
-
-config HISI_FREQ_STATS_COUNTING_IDLE
-	bool "time in state seperate active and idle time"
-	depends on CPU_FREQ_STAT && CPU_IDLE
-	default n
-	help
-	  Account active and idle time in different frequencies.

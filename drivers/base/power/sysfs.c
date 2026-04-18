@@ -598,25 +598,6 @@ static DEVICE_ATTR(async, 0644, async_show, async_store);
 #endif /* CONFIG_PM_SLEEP */
 #endif /* CONFIG_PM_ADVANCED_DEBUG */
 
-#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
-static ssize_t time_in_state_show(struct device *dev,
-				 struct device_attribute *attr, char *buf)
-{
-	return hisi_time_in_state_show(dev->id, buf);
-}
-
-static DEVICE_ATTR(time_in_state, 0440, time_in_state_show, NULL);
-
-static struct attribute *time_in_state_attrs[] = {
-	&dev_attr_time_in_state.attr,
-	NULL,
-};
-static const struct attribute_group time_in_state_attr_group = {
-	.name	= power_group_name,
-	.attrs	= time_in_state_attrs,
-};
-#endif
-
 static struct attribute *power_attrs[] = {
 #ifdef CONFIG_PM_ADVANCED_DEBUG
 #ifdef CONFIG_PM_SLEEP
@@ -723,18 +704,9 @@ int dpm_sysfs_add(struct device *dev)
 		if (rc)
 			goto err_wakeup;
 	}
-#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
-	rc = sysfs_merge_group(&dev->kobj, &time_in_state_attr_group);
-	if (rc)
-		goto err_pm_qos;
-#endif
 
 	return 0;
 
-#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
- err_pm_qos:
-	sysfs_unmerge_group(&dev->kobj, &pm_qos_latency_tolerance_attr_group);
-#endif
  err_wakeup:
 	sysfs_unmerge_group(&dev->kobj, &pm_wakeup_attr_group);
  err_runtime:
@@ -792,9 +764,6 @@ void rpm_sysfs_remove(struct device *dev)
 
 void dpm_sysfs_remove(struct device *dev)
 {
-#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
-	sysfs_unmerge_group(&dev->kobj, &time_in_state_attr_group);
-#endif
 	sysfs_unmerge_group(&dev->kobj, &pm_qos_latency_tolerance_attr_group);
 	dev_pm_qos_constraints_destroy(dev);
 	rpm_sysfs_remove(dev);

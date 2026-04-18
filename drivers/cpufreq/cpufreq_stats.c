@@ -244,8 +244,4 @@ void cpufreq_stats_record_transition(struct cpufreq_policy *policy,
 	stats->last_index = new_index;
 	stats->trans_table[old_index * stats->max_state + new_index]++;
 	stats->total_trans++;
-
-#ifdef CONFIG_HISI_FREQ_STATS_COUNTING_IDLE
-	time_in_state_update_freq(policy->cpus, stats->last_index);
-#endif
 }
