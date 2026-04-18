@@ -21,6 +21,7 @@
 #include <linux/profile.h>
 #include <linux/slab.h>
 #include <linux/version.h>
+#include <linux/futex.h>
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
 #include <linux/sched.h>
@@ -237,8 +238,8 @@ static bool dubai_task_alive(struct task_struct *task)
 	int state;
 
 	if (unlikely(task == NULL)
-		|| (task->flags & PF_EXITING)
-		|| (task->flags & PF_EXITPIDONE)
+		|| (task->futex_state != FUTEX_STATE_OK)
+		|| (task->futex_state != FUTEX_STATE_DEAD)
 		|| (task->flags & PF_SIGNALED))
 		return false;
 
