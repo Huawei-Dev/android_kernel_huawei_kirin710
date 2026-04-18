@@ -3905,9 +3905,6 @@ static int perf_event_read(struct perf_event *event, bool group)
 
 		if ((event->attr.exclude_idle &&
 				per_cpu(is_idle, event_cpu) && !readable) ||
-#ifdef CONFIG_HISI_CPU_ISOLATION
-				cpu_isolated(event_cpu) ||
-#endif
 				per_cpu(is_hotplugging, event_cpu))
 			active_event_skip_read = true;
 	}

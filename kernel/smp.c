@@ -19,9 +19,6 @@
 #include <linux/sched.h>
 #include <linux/sched/idle.h>
 #include <linux/hypervisor.h>
-#ifdef CONFIG_HISI_CPU_ISOLATION
-#include <linux/suspend.h>
-#endif
 
 #include "smpboot.h"
 

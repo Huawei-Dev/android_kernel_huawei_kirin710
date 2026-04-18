@@ -14,13 +14,7 @@
 #ifndef __HISI_CORE_CTL_H
 #define __HISI_CORE_CTL_H
 
-#ifdef CONFIG_HISI_CORE_CTRL
-void core_ctl_check(void);
-void core_ctl_set_boost(unsigned int timeout);
-void core_ctl_spread_affinity(cpumask_t *allowed_mask);
-#else
 static inline void core_ctl_check(void) {}
 static inline void core_ctl_set_boost(unsigned int timeout) {}
 static inline void core_ctl_spread_affinity(cpumask_t *allowed_mask) {}
-#endif
 #endif

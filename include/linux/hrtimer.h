@@ -72,10 +72,6 @@ enum hrtimer_restart {
 #define HRTIMER_STATE_INACTIVE	0x00
 #define HRTIMER_STATE_ENQUEUED	0x01
 
-#ifdef CONFIG_HISI_CPU_ISOLATION
-#define HRTIMER_STATE_PINNED	0x02
-#endif
-
 /**
  * struct hrtimer - the basic hrtimer structure
  * @node:	timerqueue node, which also manages node.expires,
@@ -354,12 +350,7 @@ DECLARE_PER_CPU(struct tick_device, tick_cpu_device);
 
 /* Exported timer functions: */
 
-#ifdef CONFIG_HISI_CPU_ISOLATION
-/* To be used from cpusets, only */
-extern void hrtimer_quiesce_cpu(void *cpup);
-#else
 static inline void hrtimer_quiesce_cpu(void *cpup) {}
-#endif
 
 /* Initialize timers: */
 extern void hrtimer_init(struct hrtimer *timer, clockid_t which_clock,

@@ -996,17 +996,12 @@ static int cpu_enable_ssbs(void *__unused)
 	}
 	spin_unlock(&hook_lock);
 
-#ifndef CONFIG_HISI_BYPASS_SSBS
 	if (arm64_get_ssbd_state() == ARM64_SSBD_FORCE_DISABLE) {
 		sysreg_clear_set(sctlr_el1, 0, SCTLR_ELx_DSSBS);
 		arm64_set_ssbd_mitigation(false);
 	} else {
 		arm64_set_ssbd_mitigation(true);
 	}
-#else
-	sysreg_clear_set(sctlr_el1, 0, SCTLR_ELx_DSSBS);
-	arm64_set_ssbd_mitigation(false);
-#endif
 	return 0;
 }
 #endif /* CONFIG_ARM64_SSBD */

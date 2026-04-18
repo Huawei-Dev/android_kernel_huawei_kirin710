@@ -1090,37 +1090,6 @@ config HISI_RT_ACTIVE_LB
 	help
 	  allow migrating running rt task.
 
-config HISI_CPU_ISOLATION
-	bool "Hisilicon cpu isolation"
-	depends on SMP
-	default n
-	help
-	  This option enables cpu isolation, which implement an interface to
-	  userspace to isolate cpu dynamically, the isolated cpu will be
-	  unavailable to scheduler and load balancer, and all its non-pinned
-	  timers, IRQs and tasks will be migrated to other cpus, only pinned
-	  kthread and IRQS are still allowed to run, this achieve similar
-	  effect as hotplug but at lower latency cost.
-
-config HISI_CPU_ISOLATION_STRICT
-	bool "Hisilicon cpu isolation strict"
-	depends on HISI_CPU_ISOLATION
-	default n
-	help
-	  This option controls isolation policy of pinned user thread, if
-	  this option is enabled, pinned user threads on an isolated cpu will
-	  be migrated to other unisolated cpu, otherwise they can still running
-	  on isolated cpu.
-
-config HISI_CORE_CTRL
-	bool "HIsilicon core control"
-	depends on HISI_CPU_ISOLATION
-	default n
-	help
-	  This option enables the core control functionality in
-	  the scheduler. Core control automatically isolate and
-	  unisolate cores based on cpu load and utilization.
-
 config HISI_ED_TASK
 	bool "Hisilicon early detection tasks for freq guidance"
 	depends on HISI_EAS_SCHED

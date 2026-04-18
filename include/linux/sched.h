@@ -259,13 +259,6 @@ enum task_event {
 
 extern void sched_exit(struct task_struct *p);
 
-#ifdef CONFIG_HISI_CPU_ISOLATION
-extern int sched_isolate_count(const cpumask_t *mask, bool include_offline);
-extern int sched_isolate_cpu(int cpu);
-extern int sched_isolate_cpu_unlocked(int cpu);
-extern int sched_unisolate_cpu(int cpu);
-extern int sched_unisolate_cpu_unlocked(int cpu, bool reset_vote);
-#else
 static inline int sched_isolate_count(const cpumask_t *mask,
 				      bool include_offline)
 {
@@ -298,7 +291,6 @@ static inline int sched_unisolate_cpu_unlocked(int cpu, bool reset_vote)
 {
 	return 0;
 }
-#endif
 
 extern cpumask_var_t			cpu_isolated_map;
 
@@ -929,10 +921,6 @@ struct task_struct {
 #endif
 #ifdef CONFIG_HISI_EAS_SCHED
 	u64 last_enqueued_ts;
-#endif
-
-#ifdef CONFIG_HISI_CORE_CTRL
-	bool heavy_task;
 #endif
 
 #ifdef CONFIG_HISI_RTG

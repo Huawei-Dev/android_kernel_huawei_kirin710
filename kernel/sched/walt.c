@@ -2032,19 +2032,11 @@ void walt_set_window_start(struct rq *rq, struct rq_flags *rf)
 	rq->curr->ravg.mark_start = rq->window_start;
 }
 
-#ifdef CONFIG_HISI_CPU_ISOLATION
-void walt_migrate_sync_cpu(int cpu, int new_cpu)
-{
-	if (cpu == sync_cpu)
-		sync_cpu = new_cpu;
-}
-#else
 void walt_migrate_sync_cpu(int cpu)
 {
 	if (cpu == sync_cpu)
 		sync_cpu = smp_processor_id();
 }
-#endif
 
 static inline bool in_range(u64 x, u64 begin, u64 end)
 {

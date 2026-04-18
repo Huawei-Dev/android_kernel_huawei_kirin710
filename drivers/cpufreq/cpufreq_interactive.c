@@ -417,9 +417,6 @@ static void eval_target_freq(struct interactive_cpu *icpu)
 	unsigned long flags;
 	int cpu_load;
 	int cpu = smp_processor_id();
-#ifdef CONFIG_HISI_CORE_CTRL
-	struct cpufreq_govinfo govinfo;
-#endif
 
 	spin_lock_irqsave(&icpu->load_lock, flags);
 	now = update_load(icpu, smp_processor_id());
@@ -439,23 +436,6 @@ static void eval_target_freq(struct interactive_cpu *icpu)
 #ifdef CONFIG_HISI_CPUFREQ
 	/* record last load */
 	icpu->prev_cpu_load = cpu_load;
-#endif
-
-#ifdef CONFIG_HISI_CORE_CTRL
-	/*
-	 * Send govinfo notification.
-	 * Govinfo notification could potentially wake up another thread
-	 * managed by its clients. Thread wakeups might trigger a load
-	 * change callback that executes this function again. Therefore
-	 * no spinlock could be held when sending the notification.
-	 */
-	if (policy->max) {
-		govinfo.cpu = cpu;
-		govinfo.load = loadadjfreq / policy->max;
-		govinfo.sampling_rate_us = tunables->sampling_rate;
-		atomic_notifier_call_chain(&cpufreq_govinfo_notifier_list,
-					   CPUFREQ_LOAD_CHANGE, &govinfo);
-	}
 #endif
 
 	if (cpu_load >= tunables->go_hispeed_load || tunables->boosted) {

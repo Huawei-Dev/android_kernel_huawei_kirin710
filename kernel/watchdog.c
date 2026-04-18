@@ -178,9 +178,6 @@ static u64 __read_mostly sample_period;
 static DEFINE_PER_CPU(unsigned long, watchdog_touch_ts);
 static DEFINE_PER_CPU(struct task_struct *, softlockup_watchdog);
 static DEFINE_PER_CPU(struct hrtimer, watchdog_hrtimer);
-#ifdef CONFIG_HISI_CPU_ISOLATION
-static DEFINE_PER_CPU(unsigned int, watchdog_en);
-#endif
 static DEFINE_PER_CPU(bool, softlockup_touch_sync);
 static DEFINE_PER_CPU(bool, soft_watchdog_warn);
 static DEFINE_PER_CPU(unsigned long, hrtimer_interrupts);
@@ -504,12 +501,6 @@ static void watchdog_set_prio(unsigned int policy, unsigned int prio)
 void watchdog_enable(unsigned int cpu)
 {
 	struct hrtimer *hrtimer = this_cpu_ptr(&watchdog_hrtimer);
-#ifdef CONFIG_HISI_CPU_ISOLATION
-	unsigned int *enabled = raw_cpu_ptr(&watchdog_en);
-
-	if (*enabled)
-		return;
-#endif
 
 	/*
 	 * Start the timer first to prevent the NMI watchdog triggering
@@ -527,16 +518,6 @@ void watchdog_enable(unsigned int cpu)
 
 	/* Initialize timestamp */
 	__touch_watchdog();
-#ifdef CONFIG_HISI_CPU_ISOLATION
-	/*
-	 * Need to ensure above operations are observed by other CPUs before
-	 * indicating that timer is enabled. This is to synchronize core
-	 * isolation and hotplug. Core isolation will wait for this flag to be
-	 * set.
-	 */
-	mb();
-	*enabled = 1;
-#endif
 
 	/* Enable the perf event */
 	if (watchdog_enabled & NMI_WATCHDOG_ENABLED)
@@ -548,12 +529,6 @@ void watchdog_enable(unsigned int cpu)
 void watchdog_disable(unsigned int cpu)
 {
 	struct hrtimer *hrtimer = this_cpu_ptr(&watchdog_hrtimer);
-#ifdef CONFIG_HISI_CPU_ISOLATION
-	unsigned int *enabled = raw_cpu_ptr(&watchdog_en);
-
-	if (!*enabled)
-		return;
-#endif
 
 	watchdog_set_prio(SCHED_NORMAL, 0);
 #ifdef CONFIG_HISI_SP805_WATCHDOG
@@ -567,22 +542,8 @@ void watchdog_disable(unsigned int cpu)
 	 * the perf NMI to detect a false positive.
 	 */
 	watchdog_nmi_disable(cpu);
-#ifdef CONFIG_HISI_CPU_ISOLATION
-	/*
-	 * No need for barrier here since disabling the watchdog is
-	 * synchronized with hotplug lock
-	 */
-	*enabled = 0;
-#endif
 	hrtimer_cancel(hrtimer);
 }
-
-#ifdef CONFIG_HISI_CPU_ISOLATION
-bool watchdog_configured(unsigned int cpu)
-{
-	return *per_cpu_ptr(&watchdog_en, cpu);
-}
-#endif
 
 static void watchdog_cleanup(unsigned int cpu, bool online)
 {

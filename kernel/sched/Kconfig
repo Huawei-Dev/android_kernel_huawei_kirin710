@@ -71,21 +71,6 @@ config SCHED_HISI_TOP_TASK_SKIP_HISPEED_LOGIC
 	  For schedutil governor, this option skips hispeed logic when
 	  ADD_TOP_TASK event triggers freq update.
 
-config SCHED_HISI_RUNNING_TASK_ROTATION
-	bool "Rotate running tasks between clusters"
-	default y
-	depends on HISI_EAS_SCHED
-	depends on HISI_CORE_CTRL
-	depends on HISI_ED_TASK && !HISI_ED_TASK_RESET_AT_UPMIGRATION
-	help
-	  When there are 8 big tasks running parallelly, e.g. geekbench
-	  multicore, tasks which were initially run on big cores will
-	  finish its job very soon and then there will be 6 or less tasks
-	  left.
-	  Rotate the tasks, or in other words exchange them between
-	  little cores and big cores randomly, will improve fairness and
-	  parallelism.
-
 config SCHED_HISI_PRED_LOAD
 	bool "Calculate predicted load for each task"
 	default y

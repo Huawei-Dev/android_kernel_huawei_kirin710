@@ -900,15 +900,6 @@ config ARM64_SSBD
 
 	  If unsure, say Y.
 
-config HISI_BYPASS_SSBS
-	bool "Hisilicon bypass SSBS solution" if EXPERT
-	default n
-	depends on ARM64_SSBD
-	help
-	  This bypass SSBS solution on platform which has SSBS feature, make
-	  it get back to SSBD solution, notice that DSSBS bit should be set
-	  for sctlr of all el level in arm trust firmware.
-
 menuconfig ARMV8_DEPRECATED
 	bool "Emulate deprecated/obsolete ARMv8 instructions"
 	depends on COMPAT

@@ -1023,15 +1023,6 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev,
 
 		if (s->disabled || su->disable)
 			continue;
-#ifdef CONFIG_HISI_CPU_ISOLATION
-		if (cpu_isolated(cpu)) {
-#ifdef CONFIG_HISI_CPUIDLE_SKIP_DEEP_CSTATE
-			pre_idx = idx;
-#endif
-			idx = i;
-			continue;
-		}
-#endif
 		if (idx == -1)
 			idx = i; /* first enabled state */
 		if (s->target_residency > data->predicted_us) {
@@ -1068,13 +1059,6 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev,
 
 	if (idx == -1)
 		idx = 0; /* No states enabled. Must use 0. */
-
-#ifdef CONFIG_HISI_CPU_ISOLATION
-	if (cpu_isolated(cpu)) {
-		data->last_state_idx = idx;
-		return data->last_state_idx;
-	}
-#endif
 
 	/*
 	 * Don't stop the tick if the selected state is a polling one or if the

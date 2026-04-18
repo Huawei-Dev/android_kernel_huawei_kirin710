@@ -756,109 +756,6 @@ TRACE_EVENT(sched_wake_idle_without_ipi,
 	TP_printk("cpu=%d", __entry->cpu)
 );
 
-#ifdef CONFIG_HISI_CORE_CTRL
-TRACE_EVENT(core_ctl_get_nr_running_avg,/* [false alarm]:fortify */
-
-	TP_PROTO(const struct cpumask *cpus, unsigned int avg,
-		 unsigned int big_avg, unsigned int iowait_avg,
-		 unsigned int nr_max),
-
-	TP_ARGS(cpus, avg, big_avg, iowait_avg, nr_max),
-
-	TP_STRUCT__entry(
-		__bitmask( cpumask,	num_possible_cpus()	)
-		__field( unsigned int,	avg			)
-		__field( unsigned int,	big_avg			)
-		__field( unsigned int,	iowait_avg		)
-		__field( unsigned int,	nr_max			)
-	),
-
-	TP_fast_assign(
-		__assign_bitmask(cpumask, cpumask_bits(cpus),
-				 num_possible_cpus());
-		__entry->avg		= avg;
-		__entry->big_avg	= big_avg;
-		__entry->iowait_avg	= iowait_avg;
-		__entry->nr_max		= nr_max;
-	),
-
-	TP_printk("cpu=%s avg=%u big_avg=%u iowait_avg=%u max_nr=%u",
-		  __get_bitmask(cpumask), __entry->avg, __entry->big_avg,
-		  __entry->iowait_avg, __entry->nr_max)
-);/* [false alarm]:fortify */
-
-TRACE_EVENT(core_ctl_eval_need,/* [false alarm]:fortify */
-
-	TP_PROTO(const struct cpumask *cpus, unsigned int nrrun,
-		 unsigned int busy_cpus, unsigned int active_cpus,
-		 unsigned int old_need, unsigned int new_need,
-		 s64 elapsed, unsigned int updated),
-	TP_ARGS(cpus, nrrun, busy_cpus, active_cpus,
-		old_need, new_need, elapsed, updated),
-	TP_STRUCT__entry(
-		__bitmask( cpumask, num_possible_cpus()	)
-		__field( u32, nrrun			)
-		__field( u32, busy_cpus			)
-		__field( u32, active_cpus		)
-		__field( u32, old_need			)
-		__field( u32, new_need			)
-		__field( s64, elapsed			)
-		__field( u32, updated			)
-	),
-	TP_fast_assign(
-		__assign_bitmask(cpumask, cpumask_bits(cpus),
-				 num_possible_cpus());
-		__entry->nrrun		= nrrun;
-		__entry->busy_cpus	= busy_cpus;
-		__entry->active_cpus	= active_cpus;
-		__entry->old_need	= old_need;
-		__entry->new_need	= new_need;
-		__entry->elapsed	= elapsed;
-		__entry->updated	= updated;
-	),
-	TP_printk("cpu=%s, nrrun:%u, busy:%u, active:%u,"
-		  " old_need=%u, new_need=%u, elapsed =%lld, updated=%u",
-		  __get_bitmask(cpumask), __entry->nrrun, __entry->busy_cpus,
-		  __entry->active_cpus, __entry->old_need, __entry->new_need,
-		  __entry->elapsed, __entry->updated)
-);/* [false alarm]:fortify */
-
-TRACE_EVENT(core_ctl_update_busy,/* [false alarm]:fortify */
-
-	TP_PROTO(unsigned int cpu, unsigned int load,
-		 unsigned int old_is_busy, unsigned int is_busy),
-	TP_ARGS(cpu, load, old_is_busy, is_busy),
-	TP_STRUCT__entry(
-		__field( u32, cpu		)
-		__field( u32, load		)
-		__field( u32, old_is_busy	)
-		__field( u32, is_busy		)
-	),
-	TP_fast_assign(
-		__entry->cpu		= cpu;
-		__entry->load		= load;
-		__entry->old_is_busy	= old_is_busy;
-		__entry->is_busy	= is_busy;
-	),
-	TP_printk("cpu=%u, load=%u, old_is_busy=%u, new_is_busy=%u",
-		  __entry->cpu, __entry->load, __entry->old_is_busy,
-		  __entry->is_busy)
-);/* [false alarm]:fortify */
-
-TRACE_EVENT(core_ctl_set_boost,/* [false alarm]:fortify */
-
-	TP_PROTO(u32 refcount),
-	TP_ARGS(refcount),
-	TP_STRUCT__entry(
-		__field( u32, refcount	)
-	),
-	TP_fast_assign(
-		__entry->refcount	= refcount;
-	),
-	TP_printk("boost=%u", __entry->refcount)
-);/* [false alarm]:fortify */
-#endif /* CONFIG_HISI_CORE_CTRL */
-
 #ifdef CONFIG_SMP
 #ifdef CREATE_TRACE_POINTS
 static inline
@@ -900,41 +797,6 @@ struct cfs_rq *__trace_sched_group_cfs_rq(struct sched_entity *se)
 #endif
 }
 #endif /* CREATE_TRACE_POINTS */
-
-#ifdef CONFIG_HISI_CPU_ISOLATION
-/*
- * sched_isolate - called when cores are isolated/unisolated
- *
- * @time: amount of time in us it took to isolate/unisolate
- * @isolate: 1 if isolating, 0 if unisolating
- *
- */
-TRACE_EVENT(sched_isolate,/* [false alarm]:fortify */
-
-	TP_PROTO(unsigned int requested_cpu, unsigned int isolated_cpus,
-		 u64 start_time, unsigned char isolate),
-
-	TP_ARGS(requested_cpu, isolated_cpus, start_time, isolate),
-
-	TP_STRUCT__entry(
-		__field( u32, requested_cpu	)
-		__field( u32, isolated_cpus	)
-		__field( u32, time		)
-		__field( unsigned char, isolate	)
-	),
-
-	TP_fast_assign(
-		__entry->requested_cpu	= requested_cpu;
-		__entry->isolated_cpus	= isolated_cpus;
-		__entry->time		= div64_u64(sched_clock() - start_time, 1000);
-		__entry->isolate	= isolate;
-	),
-
-	TP_printk("iso cpu=%u cpus=0x%x time=%u us isolated=%d",
-		  __entry->requested_cpu, __entry->isolated_cpus,
-		  __entry->time, __entry->isolate)
-);/* [false alarm]:fortify */
-#endif /* CONFIG_HISI_CPU_ISOLATION */
 
 #ifdef CONFIG_SCHED_WALT
 extern unsigned int sysctl_sched_use_walt_cpu_util;
@@ -2048,28 +1910,6 @@ TRACE_EVENT(walt_update_top_task,
 		__entry->prev_top)
 );
 #endif /* CONFIG_SCHED_HISI_TOP_TASK */
-
-#ifdef CONFIG_SCHED_HISI_RUNNING_TASK_ROTATION
-TRACE_EVENT(walt_rotation_checkpoint,
-
-	TP_PROTO(unsigned int nr_big, unsigned int enabled),
-
-	TP_ARGS(nr_big, enabled),
-
-	TP_STRUCT__entry(
-		__field(unsigned int,	nr_big)
-		__field(unsigned int,	enabled)
-	),
-
-	TP_fast_assign(
-		__entry->nr_big		= nr_big;
-		__entry->enabled	= enabled;
-	),
-
-	TP_printk("nr_big=%u enabled=%u",
-		__entry->nr_big, __entry->enabled)
-);
-#endif /* CONFIG_SCHED_HISI_RUNNING_TASK_ROTATION */
 
 #ifdef CONFIG_HISI_RTG
 /* note msg size is less than TASK_COMM_LEN */

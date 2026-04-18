@@ -934,9 +934,6 @@ struct rq {
 	struct task_struct *ed_task;
 #endif
 
-#ifdef CONFIG_HISI_CORE_CTRL
-	int nr_heavy_running;
-#endif
 	u64 group_load;
 
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
@@ -1901,19 +1898,11 @@ static inline void sched_update_tick_dependency(struct rq *rq)
 static inline void sched_update_tick_dependency(struct rq *rq) { }
 #endif
 
-#ifdef CONFIG_HISI_CORE_CTRL
-extern void core_ctl_update_nr_prod(struct rq *rq);
-#endif
-
 static inline void add_nr_running(struct rq *rq, unsigned count)
 {
 	unsigned prev_nr = rq->nr_running;
 
 	rq->nr_running = prev_nr + count;
-
-#ifdef CONFIG_HISI_CORE_CTRL
-	core_ctl_update_nr_prod(rq);
-#endif
 
 	if (prev_nr < 2 && rq->nr_running >= 2) {
 #ifdef CONFIG_SMP
@@ -1928,9 +1917,6 @@ static inline void add_nr_running(struct rq *rq, unsigned count)
 static inline void sub_nr_running(struct rq *rq, unsigned count)
 {
 	rq->nr_running -= count;
-#ifdef CONFIG_HISI_CORE_CTRL
-	core_ctl_update_nr_prod(rq);
-#endif
 	/* Check if we still need preemption */
 	sched_update_tick_dependency(rq);
 }
@@ -2556,13 +2542,7 @@ static inline void sched_update_rtg_tick(struct task_struct *p) { return; }
 static inline struct related_thread_group *task_related_thread_group(struct task_struct *p) { return NULL; }
 #endif
 
-#ifdef CONFIG_SCHED_HISI_RUNNING_TASK_ROTATION
-void walt_rotate_work_init(int cpu);
-void walt_rotation_checkpoint(unsigned int nr_big);
-extern unsigned int walt_rotation_enabled;
-#else
 #define walt_rotation_enabled (0)
-#endif
 
 #ifdef CONFIG_HISI_RENDER_RT
 extern void add_render_rthread(struct task_struct *task);

@@ -390,12 +390,8 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 		    cpus_have_const_cap(ARM64_HAS_UAO))
 			childregs->pstate |= PSR_UAO_BIT;
 
-#ifdef CONFIG_HISI_BYPASS_SSBS
-		childregs->pstate |= PSR_SSBS_BIT;
-#else
 		if (arm64_get_ssbd_state() == ARM64_SSBD_FORCE_DISABLE)
 			childregs->pstate |= PSR_SSBS_BIT;
-#endif
 
 		p->thread.cpu_context.x19 = stack_start;
 		p->thread.cpu_context.x20 = stk_sz;

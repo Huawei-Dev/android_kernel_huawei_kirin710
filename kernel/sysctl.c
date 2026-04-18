@@ -485,15 +485,6 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 #endif /* CONFIG_HISI_EAS_SCHED */
-#ifdef CONFIG_SCHED_HISI_RUNNING_TASK_ROTATION
-	{
-		.procname	= "sched_walt_rotate_big_tasks",
-		.data		= &sysctl_sched_walt_rotate_big_tasks,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0640,
-		.proc_handler	= proc_dointvec,
-	},
-#endif /* CONFIG_SCHED_HISI_RUNNING_TASK_ROTATION */
 #endif /* CONFIG_SCHED_WALT */
 #ifdef CONFIG_HISI_RENDER_RT_DEBUG
 	{

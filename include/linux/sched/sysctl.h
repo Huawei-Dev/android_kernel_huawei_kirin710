@@ -46,9 +46,6 @@ extern unsigned int sysctl_sched_walt_cpu_high_irqload;
 extern unsigned int sysctl_sched_walt_cpu_overload_irqload;
 extern unsigned int sysctl_sched_force_upmigrate_duration;
 #endif
-#ifdef CONFIG_SCHED_HISI_RUNNING_TASK_ROTATION
-extern unsigned int sysctl_sched_walt_rotate_big_tasks;
-#endif
 #endif
 
 #ifdef CONFIG_HISI_RT_CAS
