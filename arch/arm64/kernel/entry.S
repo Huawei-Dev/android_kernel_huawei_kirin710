@@ -228,15 +228,6 @@ alternative_cb_end
 	/* Save the task's original addr_limit and set USER_DS */
 	ldr	x20, [tsk, #TSK_TI_ADDR_LIMIT]
 	str	x20, [sp, #S_ORIG_ADDR_LIMIT]
-#ifdef CONFIG_HISI_HHEE_ADDR_LIMIT_PROTECTION
-	ldr	w2, [tsk, #THREAD_PID]
-
-	adrp	x1, hkip_addr_limit_bits	// page aligned
-	lsr	w0, w2, #3
-	ldrb	w0, [x1, w0, uxtw]
-	str	w2, [sp, #S_ORIG_ADDR_LIMIT_HKIP]
-	str	w0, [sp, #(S_ORIG_ADDR_LIMIT_HKIP + 4)]
-#endif
 	mov	x20, #USER_DS
 	str	x20, [tsk, #TSK_TI_ADDR_LIMIT]
 	/* No need to reset PSTATE.UAO, hardware's already set it to 0 for us */
@@ -309,32 +300,6 @@ alternative_else_nop_endif
 	.macro	kernel_exit, el
 	.if	\el != 0
 	/* Restore the task's original addr_limit. */
-#ifdef CONFIG_HISI_HHEE_ADDR_LIMIT_PROTECTION
-	ldr	w2, [sp, #S_ORIG_ADDR_LIMIT_HKIP]
-	cbz	w2, 1f				// ultra-fast path: idle task
-	ldr	w3, [sp, #(S_ORIG_ADDR_LIMIT_HKIP + 4)]
-	adrp	x1, hkip_addr_limit_bits	// page aligned
-	lsr	w0, w2, #3
-	ldrb	w0, [x1, w0, uxtw]
-	cmp	w0, w3
-	b.eq	1f				// fast path: compare byte
-
-	eor	w0, w0, w3
-	and	w4, w2, #7
-	lsr	w0, w0, w4
-	tbz	w0, #0, 1f			// slow path: compare bit
-
-	movz	w0, #0x1050
-	lsr	w3, w3, w4
-	movk	w0, #0xC600, lsl #16
-	and	w3, w3, #1
-alternative_if_not ARM64_HAS_HHEE
-	bl	hkip_hvc_dispatch
-alternative_else
-	hvc	#0
-alternative_endif
-1:
-#endif
 	ldr	x20, [sp, #S_ORIG_ADDR_LIMIT]
 	str	x20, [tsk, #TSK_TI_ADDR_LIMIT]
 

@@ -76,9 +76,6 @@ int main(void)
   DEFINE(S_ORIG_X0,		offsetof(struct pt_regs, orig_x0));
   DEFINE(S_SYSCALLNO,		offsetof(struct pt_regs, syscallno));
   DEFINE(S_ORIG_ADDR_LIMIT,	offsetof(struct pt_regs, orig_addr_limit));
-#ifdef CONFIG_HISI_HHEE_ADDR_LIMIT_PROTECTION
-  DEFINE(S_ORIG_ADDR_LIMIT_HKIP,offsetof(struct pt_regs, orig_addr_limit_hkip));
-#endif
   DEFINE(S_STACKFRAME,		offsetof(struct pt_regs, stackframe));
   DEFINE(S_FRAME_SIZE,		sizeof(struct pt_regs));
   BLANK();

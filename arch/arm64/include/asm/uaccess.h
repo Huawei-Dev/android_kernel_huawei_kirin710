@@ -34,21 +34,14 @@
 #include <asm/memory.h>
 #include <asm/compiler.h>
 #include <asm/extable.h>
-#include <linux/hisi/hisi_hkip.h>
-#define get_ds()	(KERNEL_DS)
 
-#ifndef CONFIG_HISI_HHEE_ADDR_LIMIT_PROTECTION
+
+#define get_ds()	(KERNEL_DS)
 #define get_fs()	(current_thread_info()->addr_limit)
-#else
-#define get_fs()	(mm_segment_t)hkip_get_fs()
-#endif
 
 static inline void set_fs(mm_segment_t fs)
 {
 	current_thread_info()->addr_limit = fs;
-#ifdef CONFIG_HISI_HHEE_ADDR_LIMIT_PROTECTION
-	hkip_set_fs(fs);
-#endif
 	/*
 	 * Prevent a mispredicted conditional call to set_fs from forwarding
 	 * the wrong address limit to access_ok under speculation.
@@ -81,7 +74,7 @@ static inline void set_fs(mm_segment_t fs)
  */
 static inline unsigned long __range_ok(unsigned long addr, unsigned long size)
 {
-	unsigned long limit = get_fs();
+	unsigned long limit = current_thread_info()->addr_limit;
 
 	__chk_user_ptr(addr);
 	asm volatile(
@@ -235,7 +228,7 @@ static inline void __user *__uaccess_mask_ptr(const void __user *ptr)
 	"	bics	xzr, %1, %2\n"
 	"	csel	%0, %1, xzr, eq\n"
 	: "=&r" (safe_ptr)
-	: "r" (ptr), "r" (get_fs())
+	: "r" (ptr), "r" (current_thread_info()->addr_limit)
 	: "cc");
 
 	csdb();
