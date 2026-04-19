@@ -64,12 +64,6 @@
 #define DEFCONTEXT_STR	"defcontext="
 #define LABELSUPP_STR "seclabel"
 
-#ifdef CONFIG_HISI_SELINUX_PROT
-#define HISI_SELINUX_PROT const
-#else
-#define HISI_SELINUX_PROT
-#endif
-
 struct netlbl_lsm_secattr;
 
 extern int selinux_enabled;

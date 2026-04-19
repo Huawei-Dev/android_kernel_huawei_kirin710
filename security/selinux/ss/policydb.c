@@ -58,7 +58,7 @@ static const char *symtab_name[SYM_NUM] = {
 };
 #endif
 
-static HISI_SELINUX_PROT unsigned int symtab_sizes[SYM_NUM] = {
+static unsigned int symtab_sizes[SYM_NUM] = {
 	2,
 	32,
 	16,
@@ -313,9 +313,9 @@ static int policydb_init(struct policydb *p)
 		goto out;
 	}
 
-	ebitmap_init(&p->filename_trans_ttypes, HISI_SELINUX_EBITMAP_RO);
-	ebitmap_init(&p->policycaps, HISI_SELINUX_EBITMAP_RO);
-	ebitmap_init(&p->permissive_map, HISI_SELINUX_EBITMAP_RO);
+	ebitmap_init(&p->filename_trans_ttypes);
+	ebitmap_init(&p->policycaps);
+	ebitmap_init(&p->permissive_map);
 
 	return 0;
 out:
@@ -969,19 +969,19 @@ static int mls_read_range_helper(struct mls_range *r, void *fp)
 	else
 		r->level[1].sens = r->level[0].sens;
 
-	rc = ebitmap_read(&r->level[0].cat, fp, HISI_SELINUX_EBITMAP_RO);
+	rc = ebitmap_read(&r->level[0].cat, fp);
 	if (rc) {
 		printk(KERN_ERR "SELinux: mls:  error reading low categories\n");
 		goto out;
 	}
 	if (items > 1) {
-		rc = ebitmap_read(&r->level[1].cat, fp, HISI_SELINUX_EBITMAP_RO);
+		rc = ebitmap_read(&r->level[1].cat, fp);
 		if (rc) {
 			printk(KERN_ERR "SELinux: mls:  error reading high categories\n");
 			goto bad_high;
 		}
 	} else {
-		rc = ebitmap_cpy(&r->level[1].cat, &r->level[0].cat, HISI_SELINUX_EBITMAP_RO);
+		rc = ebitmap_cpy(&r->level[1].cat, &r->level[0].cat);
 		if (rc) {
 			printk(KERN_ERR "SELinux: mls:  out of memory\n");
 			goto bad_high;
@@ -1141,8 +1141,8 @@ bad:
 
 static void type_set_init(struct type_set *t)
 {
-	ebitmap_init(&t->types, HISI_SELINUX_EBITMAP_RO);
-	ebitmap_init(&t->negset, HISI_SELINUX_EBITMAP_RO);
+	ebitmap_init(&t->types);
+	ebitmap_init(&t->negset);
 }
 
 static int type_set_read(struct type_set *t, void *fp)
@@ -1150,9 +1150,9 @@ static int type_set_read(struct type_set *t, void *fp)
 	__le32 buf[1];
 	int rc;
 
-	if (ebitmap_read(&t->types, fp, HISI_SELINUX_EBITMAP_RO))
+	if (ebitmap_read(&t->types, fp))
 		return -EINVAL;
-	if (ebitmap_read(&t->negset, fp, HISI_SELINUX_EBITMAP_RO))
+	if (ebitmap_read(&t->negset, fp))
 		return -EINVAL;
 
 	rc = next_entry(buf, fp, sizeof(u32));
@@ -1231,7 +1231,7 @@ static int read_cons_helper(struct policydb *p,
 				if (depth == (CEXPR_MAXDEPTH - 1))
 					return -EINVAL;
 				depth++;
-				rc = ebitmap_read(&e->names, fp, HISI_SELINUX_EBITMAP_RO);
+				rc = ebitmap_read(&e->names, fp);
 				if (rc)
 					return rc;
 				if (p->policyvers >=
@@ -1383,11 +1383,11 @@ static int role_read(struct policydb *p, struct hashtab *h, void *fp)
 	if (rc)
 		goto bad;
 
-	rc = ebitmap_read(&role->dominates, fp, HISI_SELINUX_EBITMAP_RO);
+	rc = ebitmap_read(&role->dominates, fp);
 	if (rc)
 		goto bad;
 
-	rc = ebitmap_read(&role->types, fp, HISI_SELINUX_EBITMAP_RO);
+	rc = ebitmap_read(&role->types, fp);
 	if (rc)
 		goto bad;
 
@@ -1477,7 +1477,7 @@ static int mls_read_level(struct mls_level *lp, void *fp)
 	}
 	lp->sens = le32_to_cpu(buf[0]);
 
-	rc = ebitmap_read(&lp->cat, fp, HISI_SELINUX_EBITMAP_RO);
+	rc = ebitmap_read(&lp->cat, fp);
 	if (rc) {
 		printk(KERN_ERR "SELinux: mls:  error reading level categories\n");
 		return rc;
@@ -1513,7 +1513,7 @@ static int user_read(struct policydb *p, struct hashtab *h, void *fp)
 	if (rc)
 		goto bad;
 
-	rc = ebitmap_read(&usrdatum->roles, fp, HISI_SELINUX_EBITMAP_RO);
+	rc = ebitmap_read(&usrdatum->roles, fp);
 	if (rc)
 		goto bad;
 
@@ -2332,13 +2332,13 @@ int policydb_read(struct policydb *p, void *fp)
 	p->allow_unknown = !!(le32_to_cpu(buf[1]) & ALLOW_UNKNOWN);
 
 	if (p->policyvers >= POLICYDB_VERSION_POLCAP) {
-		rc = ebitmap_read(&p->policycaps, fp, HISI_SELINUX_EBITMAP_RO);
+		rc = ebitmap_read(&p->policycaps, fp);
 		if (rc)
 			goto bad;
 	}
 
 	if (p->policyvers >= POLICYDB_VERSION_PERMISSIVE) {
-		rc = ebitmap_read(&p->permissive_map, fp, HISI_SELINUX_EBITMAP_RO);
+		rc = ebitmap_read(&p->permissive_map, fp);
 		if (rc)
 			goto bad;
 	}
@@ -2490,9 +2490,9 @@ int policydb_read(struct policydb *p, void *fp)
 		goto bad;
 
 	for (i = 0; i < p->p_types.nprim; i++) {
-		ebitmap_init(&p->type_attr_map[i], HISI_SELINUX_EBITMAP_RO);
+		ebitmap_init(&p->type_attr_map[i]);
 		if (p->policyvers >= POLICYDB_VERSION_AVTAB) {
-			if (ebitmap_read(&p->type_attr_map[i], fp, HISI_SELINUX_EBITMAP_RO))
+			if (ebitmap_read(&p->type_attr_map[i], fp))
 				goto bad;
 		}
 		/* add the type itself as the degenerate case */

@@ -119,14 +119,8 @@ static int __init enforcing_setup(char *str)
 __setup("enforcing=", enforcing_setup);
 #endif
 
-#if defined(CONFIG_HISI_SELINUX_PROT) && !defined(CONFIG_SECURITY_SELINUX_DISABLE)
-#define __selinux_enabled_prot  __ro_after_init
-#else
-#define __selinux_enabled_prot
-#endif
-
 #ifdef CONFIG_SECURITY_SELINUX_BOOTPARAM
-int selinux_enabled __selinux_enabled_prot = CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE;
+int selinux_enabled = CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE;
 
 static int __init selinux_enabled_setup(char *str)
 {
@@ -137,7 +131,7 @@ static int __init selinux_enabled_setup(char *str)
 }
 __setup("selinux=", selinux_enabled_setup);
 #else
-int selinux_enabled __selinux_enabled_prot = 1;
+int selinux_enabled = 1;
 #endif
 
 static struct kmem_cache *sel_inode_cache;
