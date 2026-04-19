@@ -41,7 +41,7 @@
 #include <linux/semaphore.h>
 #include <linux/sched/rt.h>
 #include <linux/hisi/rdr_pub.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include <linux/hisi/hi64xx/hi64xx_dsp_regs.h>
 #include <linux/hisi/hi64xx/hi64xx_vad.h>

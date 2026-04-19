@@ -11,7 +11,7 @@ Copyright  (C),  2001-2012,  Huawei  Tech.  Co.,  Ltd.
 #include <linux/slab.h>
 #include <linux/timer.h>
 #include <linux/pm_qos.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/time.h>
 #include <linux/errno.h>
 #include <linux/of.h>

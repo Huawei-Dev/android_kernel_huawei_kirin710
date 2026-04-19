@@ -15,7 +15,7 @@
 #include <linux/seq_file.h>
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/atomic.h>
 
 #ifdef CONFIG_COMPAT

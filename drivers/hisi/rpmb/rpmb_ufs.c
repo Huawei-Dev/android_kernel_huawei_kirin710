@@ -6,7 +6,7 @@
 #include <linux/slab.h>
 #include <linux/hisi/rpmb.h>
 
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <scsi/sg.h>
 
 #include "hisi_rpmb.h"

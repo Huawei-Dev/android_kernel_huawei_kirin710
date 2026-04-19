@@ -76,7 +76,7 @@
 #include <linux/cdev.h>
 #include <linux/semaphore.h>
 #include <asm/io.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/bitops.h>
 #include <linux/pm_wakeup.h>
 #else

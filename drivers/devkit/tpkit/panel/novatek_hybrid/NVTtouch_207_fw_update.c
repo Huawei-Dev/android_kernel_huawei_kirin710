@@ -20,7 +20,7 @@
 #include <linux/firmware.h>
 #include <linux/vmalloc.h>
 //#include <linux/fs.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <../../huawei_ts_kit.h>
 
 #include "NVTtouch_207.h"

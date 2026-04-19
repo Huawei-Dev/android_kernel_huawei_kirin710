@@ -31,7 +31,7 @@
 #include <linux/of_platform.h>
 #include <linux/string.h>
 #include <linux/regulator/consumer.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/hisi/util.h>
 #include <soc_sctrl_interface.h>
 #include <linux/mfd/hisi_pmic.h>

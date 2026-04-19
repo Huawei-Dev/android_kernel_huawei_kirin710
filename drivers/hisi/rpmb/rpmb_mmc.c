@@ -12,7 +12,7 @@
 #include <linux/mmc/mmc.h>
 #include <linux/hisi/rpmb.h>
 
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include "hisi_rpmb.h"
 

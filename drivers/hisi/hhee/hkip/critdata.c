@@ -2,7 +2,7 @@
  * Copyright (c) 2017 Huawei Technologies.
  */
 
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/cred.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>

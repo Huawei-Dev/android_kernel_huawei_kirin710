@@ -26,7 +26,7 @@
 #include <linux/firmware.h>
 #include <linux/string.h>
 #include <linux/fs.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/vmalloc.h>
 #include "synaptics.h"
 #include <../../huawei_touchscreen_chips.h>

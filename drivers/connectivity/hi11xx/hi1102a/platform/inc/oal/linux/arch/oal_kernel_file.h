@@ -12,7 +12,7 @@
 #include <linux/mm.h>
 #include <linux/syscalls.h>
 #include <asm/unistd.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 /* ∫Í∂®“Â */
 #define OAL_KERNEL_DS KERNEL_DS

@@ -41,7 +41,7 @@
 #include <huawei_platform/net/bastet/bastet_utils.h>
 #endif
 #include <linux/version.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include "securec.h"
 
 /* These states need RST on ABORT according to RFC793 */

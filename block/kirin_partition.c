@@ -20,7 +20,7 @@
 #include <linux/types.h>
 #include <linux/err.h>
 #include <linux/bootdevice.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <partition.h>
 #include <linux/hisi/kirin_partition.h>
 

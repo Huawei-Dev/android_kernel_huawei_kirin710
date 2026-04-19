@@ -21,7 +21,7 @@
 #include <linux/delay.h>
 #include <linux/vmalloc.h>
 #include <linux/slab.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include <linux/delay.h>
 #include <linux/firmware.h>

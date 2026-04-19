@@ -24,7 +24,7 @@ extern "C" {
 #include <linux/proc_fs.h>
 #include <linux/sched.h>
 #include <linux/module.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/workqueue.h>
 
 /*****************************************************************************

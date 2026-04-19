@@ -17,7 +17,7 @@
 #define HIMAX_IC_H
 
 #include <asm/segment.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/atomic.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>

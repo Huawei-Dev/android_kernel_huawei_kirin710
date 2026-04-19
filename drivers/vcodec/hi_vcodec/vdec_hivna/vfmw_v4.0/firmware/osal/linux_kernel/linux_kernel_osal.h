@@ -36,7 +36,7 @@
 #include <linux/string.h>
 #include <linux/delay.h>
 #include <linux/version.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/io.h>
 #include <asm/ioctl.h>
 #include <linux/semaphore.h>

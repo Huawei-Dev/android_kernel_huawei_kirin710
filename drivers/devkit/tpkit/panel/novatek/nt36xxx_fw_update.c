@@ -2,7 +2,7 @@
 #include <linux/firmware.h>
 #include <linux/vmalloc.h>
 //#include <linux/fs.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #if defined (CONFIG_HUAWEI_DSM)
 #include <dsm/dsm_pub.h>
 #endif

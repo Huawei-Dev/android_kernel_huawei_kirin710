@@ -16,7 +16,7 @@
 #include <linux/proc_fs.h>
 #include <linux/sched.h>
 #include <linux/module.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/ktime.h>
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 0, 0))
 #include <linux/stacktrace.h>

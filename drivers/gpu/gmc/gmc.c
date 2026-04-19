@@ -29,7 +29,7 @@
 #include <linux/threads.h>
 #include <linux/gmc_storage.h>
 #include <linux/gmc.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/proc_fs.h>
 
 #define GMC_DEBUGFS_BUFMAX 1024

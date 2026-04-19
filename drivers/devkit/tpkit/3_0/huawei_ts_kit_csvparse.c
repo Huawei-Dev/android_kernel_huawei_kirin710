@@ -17,7 +17,7 @@
 #include <linux/seq_file.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <huawei_ts_kit.h>
 
 #define SUPPORT_UNIQUE_TEST 1

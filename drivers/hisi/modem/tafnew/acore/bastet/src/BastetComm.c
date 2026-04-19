@@ -24,7 +24,7 @@
 #include <linux/fs.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/ioctl.h>
 #include <linux/poll.h>
 #include <linux/platform_device.h>

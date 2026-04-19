@@ -220,7 +220,7 @@
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/composite.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include <linux/nospec.h>
 

@@ -77,7 +77,7 @@ extern "C" {
 #include <linux/netfilter_bridge.h>
 #include <linux/fs.h>
 #include <linux/wait.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/inet.h>
 #include <linux/types.h>
 #include <linux/stat.h>

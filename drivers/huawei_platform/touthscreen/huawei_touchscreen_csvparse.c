@@ -3,7 +3,7 @@
 #include <linux/seq_file.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include "huawei_touchscreen_chips.h"
 

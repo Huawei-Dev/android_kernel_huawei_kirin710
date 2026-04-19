@@ -60,7 +60,7 @@
 #include <huawei_platform/connectivity/hw_connectivity.h>
 #endif
 
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/unaligned.h>
 
 #include <epivers.h>

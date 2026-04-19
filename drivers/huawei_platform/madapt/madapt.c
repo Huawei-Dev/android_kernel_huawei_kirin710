@@ -58,7 +58,7 @@
 #include <linux/kernel.h>
 #include <linux/unistd.h>
 #include <linux/syscalls.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <huawei_platform/log/hw_log.h>
 
 #define HWLOG_TAG madapt

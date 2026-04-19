@@ -33,7 +33,7 @@ extern "C" {
 #include <linux/sort.h>
 #include <linux/err.h>
 #include <linux/workqueue.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/mmc/host.h>
 #include <linux/sysfs.h>
 #include <linux/semaphore.h>

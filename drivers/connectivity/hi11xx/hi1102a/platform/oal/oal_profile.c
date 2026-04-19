@@ -29,7 +29,7 @@
 #include <linux/string.h>
 #include <linux/vmalloc.h>
 #include <linux/time.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 // use /proc/check to switch check
 #define CFG_REPORT_CNT 3

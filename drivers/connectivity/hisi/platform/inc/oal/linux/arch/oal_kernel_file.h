@@ -22,7 +22,7 @@ extern "C" {
 #include <linux/mm.h>
 #include <linux/syscalls.h>
 #include <asm/unistd.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 /*****************************************************************************
   2 ∫Í∂®“Â

@@ -22,7 +22,7 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/time.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/syscalls.h>
 #include <linux/jiffies.h>
 

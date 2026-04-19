@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  */
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/mutex.h>

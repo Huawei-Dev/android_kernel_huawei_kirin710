@@ -51,7 +51,7 @@
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/sched.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <osl_generic.h>
 #include <bsp_hardtimer.h>
 #include <bsp_pm_om.h>

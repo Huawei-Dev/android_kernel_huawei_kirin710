@@ -36,7 +36,7 @@
 
 #include <linux/hisi/rpmb.h>
 #include "hisi_rpmb.h"
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/syscalls.h>
 #include <linux/delay.h>
 #include <linux/bootdevice.h>

@@ -10,7 +10,7 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/cdev.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/version.h>
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>

@@ -37,7 +37,7 @@
 #include <linux/iommu.h>
 #include <linux/compiler.h>
 #include <linux/cpumask.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/compiler.h>
 #include <global_ddr_map.h>
 #include "teek_client_id.h"

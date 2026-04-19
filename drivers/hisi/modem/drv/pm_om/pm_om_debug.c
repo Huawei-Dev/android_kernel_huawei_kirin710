@@ -58,7 +58,7 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
 #include <linux/uaccess.h>
 #else
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #endif
 #include <bsp_slice.h>
 #include <bsp_pm.h>

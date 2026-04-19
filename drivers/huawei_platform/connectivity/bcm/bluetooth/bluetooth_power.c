@@ -36,7 +36,7 @@
 #include <linux/proc_fs.h>
 #include <linux/fs.h>
 #include <linux/uaccess.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/mtd/hisi_nve_interface.h>
 #ifdef CONFIG_HWCONNECTIVITY
 #include <huawei_platform/connectivity/hw_connectivity.h>

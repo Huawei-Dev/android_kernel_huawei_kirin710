@@ -71,7 +71,7 @@
 #include <linux/cdev.h>
 #include <linux/device.h>
 #include <asm/io.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/poll.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>

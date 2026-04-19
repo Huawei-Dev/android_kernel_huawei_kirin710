@@ -1,6 +1,6 @@
 
 #include "hi_drv_mem.h"
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/version.h>
 #include <linux/dma-mapping.h>
 #include <linux/dma-iommu.h>

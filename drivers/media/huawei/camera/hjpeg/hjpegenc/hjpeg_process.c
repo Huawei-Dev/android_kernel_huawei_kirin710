@@ -35,7 +35,7 @@
 #include <media/huawei/hjpeg_cfg.h>
 #include <media/camera/jpeg/jpeg_base.h>
 #include <asm/io.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/rpmsg.h>
 #include <linux/ioport.h>
 #include <linux/hisi-iommu.h>

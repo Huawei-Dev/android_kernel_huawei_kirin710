@@ -24,7 +24,7 @@
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/proc_fs.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/segment.h>
 
 #define AVC_FILE  "/system/avc_context.txt"
