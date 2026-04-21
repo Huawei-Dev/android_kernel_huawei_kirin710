@@ -18,15 +18,6 @@
 #ifdef CONFIG_KEYS
 
 /*
- * key under-construction record
- * - passed to the request_key actor if supplied
- */
-struct key_construction {
-	struct key	*key;	/* key being constructed */
-	struct key	*authkey;/* authorisation for key being constructed */
-};
-
-/*
  * Pre-parsed payload, used by key add, update and instantiate.
  *
  * This struct will be cleared and data and datalen will be set with the data
@@ -47,8 +38,7 @@ struct key_preparsed_payload {
 	time_t		expiry;		/* Expiry time of key */
 } __randomize_layout;
 
-typedef int (*request_key_actor_t)(struct key_construction *key,
-				   const char *op, void *aux);
+typedef int (*request_key_actor_t)(struct key *auth_key, void *aux);
 
 /*
  * Preparsed matching criterion.
@@ -176,7 +166,7 @@ extern int key_reject_and_link(struct key *key,
 			       unsigned error,
 			       struct key *keyring,
 			       struct key *instkey);
-extern void complete_request_key(struct key_construction *cons, int error);
+extern void complete_request_key(struct key *authkey, int error);
 
 static inline int key_negate_and_link(struct key *key,
 				      unsigned timeout,

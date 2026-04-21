@@ -36,6 +36,7 @@
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/audit.h>
+#include <linux/flex_array.h>
 #include "security.h"
 
 #include "policydb.h"
@@ -187,7 +188,7 @@ static int roles_init(struct policydb *p)
 	int rc;
 	struct role_datum *role;
 
-	role = pzalloc(selinux_pool, sizeof(*role), GFP_KERNEL);
+	role = kzalloc(sizeof(*role), GFP_KERNEL);
 	if (!role)
 		return -ENOMEM;
 
@@ -197,7 +198,7 @@ static int roles_init(struct policydb *p)
 		goto out;
 
 	rc = -ENOMEM;
-	key = pstrdup(selinux_pool, OBJECT_R, GFP_KERNEL);
+	key = kstrdup(OBJECT_R, GFP_KERNEL);
 	if (!key)
 		goto out;
 
@@ -207,8 +208,8 @@ static int roles_init(struct policydb *p)
 
 	return 0;
 out:
-	pfree(selinux_pool, key);
-	pfree(selinux_pool, role);
+	kfree(key);
+	kfree(role);
 	return rc;
 }
 
@@ -340,13 +341,17 @@ static int common_index(void *key, void *datum, void *datap)
 {
 	struct policydb *p;
 	struct common_datum *comdatum;
+	struct flex_array *fa;
 
 	comdatum = datum;
 	p = datap;
 	if (!comdatum->value || comdatum->value > p->p_commons.nprim)
 		return -EINVAL;
 
-	p->p_common_val_to_name[comdatum->value - 1] = key;
+	fa = p->sym_val_to_name[SYM_COMMONS];
+	if (flex_array_put_ptr(fa, comdatum->value - 1, key,
+			       GFP_KERNEL | __GFP_ZERO))
+		BUG();
 	return 0;
 }
 
@@ -354,12 +359,16 @@ static int class_index(void *key, void *datum, void *datap)
 {
 	struct policydb *p;
 	struct class_datum *cladatum;
+	struct flex_array *fa;
 
 	cladatum = datum;
 	p = datap;
 	if (!cladatum->value || cladatum->value > p->p_classes.nprim)
 		return -EINVAL;
-	p->p_class_val_to_name[cladatum->value - 1] = key;
+	fa = p->sym_val_to_name[SYM_CLASSES];
+	if (flex_array_put_ptr(fa, cladatum->value - 1, key,
+			       GFP_KERNEL | __GFP_ZERO))
+		BUG();
 	p->class_val_to_struct[cladatum->value - 1] = cladatum;
 	return 0;
 }
@@ -368,6 +377,7 @@ static int role_index(void *key, void *datum, void *datap)
 {
 	struct policydb *p;
 	struct role_datum *role;
+	struct flex_array *fa;
 
 	role = datum;
 	p = datap;
@@ -376,7 +386,10 @@ static int role_index(void *key, void *datum, void *datap)
 	    || role->bounds > p->p_roles.nprim)
 		return -EINVAL;
 
-	p->p_role_val_to_name[role->value - 1] = key;
+	fa = p->sym_val_to_name[SYM_ROLES];
+	if (flex_array_put_ptr(fa, role->value - 1, key,
+			       GFP_KERNEL | __GFP_ZERO))
+		BUG();
 	p->role_val_to_struct[role->value - 1] = role;
 	return 0;
 }
@@ -385,6 +398,7 @@ static int type_index(void *key, void *datum, void *datap)
 {
 	struct policydb *p;
 	struct type_datum *typdatum;
+	struct flex_array *fa;
 
 	typdatum = datum;
 	p = datap;
@@ -394,8 +408,15 @@ static int type_index(void *key, void *datum, void *datap)
 		    || typdatum->value > p->p_types.nprim
 		    || typdatum->bounds > p->p_types.nprim)
 			return -EINVAL;
-		p->p_type_val_to_name[typdatum->value - 1] = key;
-		p->type_val_to_struct[typdatum->value - 1] = typdatum;
+		fa = p->sym_val_to_name[SYM_TYPES];
+		if (flex_array_put_ptr(fa, typdatum->value - 1, key,
+				       GFP_KERNEL | __GFP_ZERO))
+			BUG();
+
+		fa = p->type_val_to_struct_array;
+		if (flex_array_put_ptr(fa, typdatum->value - 1, typdatum,
+				       GFP_KERNEL | __GFP_ZERO))
+			BUG();
 	}
 
 	return 0;
@@ -405,6 +426,7 @@ static int user_index(void *key, void *datum, void *datap)
 {
 	struct policydb *p;
 	struct user_datum *usrdatum;
+	struct flex_array *fa;
 
 	usrdatum = datum;
 	p = datap;
@@ -413,7 +435,10 @@ static int user_index(void *key, void *datum, void *datap)
 	    || usrdatum->bounds > p->p_users.nprim)
 		return -EINVAL;
 
-	p->p_user_val_to_name[usrdatum->value - 1] = key;
+	fa = p->sym_val_to_name[SYM_USERS];
+	if (flex_array_put_ptr(fa, usrdatum->value - 1, key,
+			       GFP_KERNEL | __GFP_ZERO))
+		BUG();
 	p->user_val_to_struct[usrdatum->value - 1] = usrdatum;
 	return 0;
 }
@@ -422,6 +447,7 @@ static int sens_index(void *key, void *datum, void *datap)
 {
 	struct policydb *p;
 	struct level_datum *levdatum;
+	struct flex_array *fa;
 
 	levdatum = datum;
 	p = datap;
@@ -430,7 +456,10 @@ static int sens_index(void *key, void *datum, void *datap)
 		if (!levdatum->level->sens ||
 		    levdatum->level->sens > p->p_levels.nprim)
 			return -EINVAL;
-		p->p_sens_val_to_name[levdatum->level->sens - 1] = key;
+		fa = p->sym_val_to_name[SYM_LEVELS];
+		if (flex_array_put_ptr(fa, levdatum->level->sens - 1, key,
+				       GFP_KERNEL | __GFP_ZERO))
+			BUG();
 	}
 
 	return 0;
@@ -440,6 +469,7 @@ static int cat_index(void *key, void *datum, void *datap)
 {
 	struct policydb *p;
 	struct cat_datum *catdatum;
+	struct flex_array *fa;
 
 	catdatum = datum;
 	p = datap;
@@ -447,7 +477,10 @@ static int cat_index(void *key, void *datum, void *datap)
 	if (!catdatum->isalias) {
 		if (!catdatum->value || catdatum->value > p->p_cats.nprim)
 			return -EINVAL;
-		p->p_cat_val_to_name[catdatum->value - 1] = key;
+		fa = p->sym_val_to_name[SYM_CATS];
+		if (flex_array_put_ptr(fa, catdatum->value - 1, key,
+				       GFP_KERNEL | __GFP_ZERO))
+			BUG();
 	}
 
 	return 0;
@@ -499,7 +532,6 @@ static inline void hash_eval(struct hashtab *h, char *hash_name)
 static int policydb_index(struct policydb *p)
 {
 	int i, rc;
-	unsigned long size;
 
 	printk(KERN_DEBUG "SELinux:  %d users, %d roles, %d types, %d bools",
 	       p->p_users.nprim, p->p_roles.nprim, p->p_types.nprim, p->p_bools.nprim);
@@ -516,27 +548,34 @@ static int policydb_index(struct policydb *p)
 	symtab_hash_eval(p->symtab);
 #endif
 
-
-	size = p->p_classes.nprim * sizeof(*(p->class_val_to_struct));
-	p->class_val_to_struct = pmalloc(selinux_pool, size, GFP_KERNEL);
-
+	p->class_val_to_struct = kcalloc(p->p_classes.nprim,
+					 sizeof(*p->class_val_to_struct),
+					 GFP_KERNEL);
 	if (!p->class_val_to_struct)
 		return -ENOMEM;
-	size = p->p_roles.nprim * sizeof(*(p->role_val_to_struct));
-	p->role_val_to_struct =	pmalloc(selinux_pool, size, GFP_KERNEL);
+
+	p->role_val_to_struct = kcalloc(p->p_roles.nprim,
+					sizeof(*p->role_val_to_struct),
+					GFP_KERNEL);
 	if (!p->role_val_to_struct)
 		return -ENOMEM;
-	size = p->p_users.nprim * sizeof(*(p->user_val_to_struct));
-	p->user_val_to_struct =	pmalloc(selinux_pool, size, GFP_KERNEL);
+
+	p->user_val_to_struct = kcalloc(p->p_users.nprim,
+					sizeof(*p->user_val_to_struct),
+					GFP_KERNEL);
 	if (!p->user_val_to_struct)
 		return -ENOMEM;
 
 	/* Yes, I want the sizeof the pointer, not the structure */
-	size = p->p_types.nprim * sizeof(*(p->type_val_to_struct));
-	p->type_val_to_struct = pmalloc(selinux_pool, size, GFP_KERNEL);
-	if (!p->type_val_to_struct)
+	p->type_val_to_struct_array = flex_array_alloc(sizeof(struct type_datum *),
+						       p->p_types.nprim,
+						       GFP_KERNEL | __GFP_ZERO);
+	if (!p->type_val_to_struct_array)
+		return -ENOMEM;
 
-
+	rc = flex_array_prealloc(p->type_val_to_struct_array, 0,
+				 p->p_types.nprim, GFP_KERNEL | __GFP_ZERO);
+	if (rc)
 		goto out;
 
 	rc = cond_init_bool_indexes(p);
@@ -544,14 +583,17 @@ static int policydb_index(struct policydb *p)
 		goto out;
 
 	for (i = 0; i < SYM_NUM; i++) {
-		size = p->symtab[i].nprim * sizeof(char *);
-		if (i != SYM_BOOLS)
-			p->sym_val_to_name[i] =	pmalloc(selinux_pool, size,
-							GFP_KERNEL);
-		else
-			p->sym_val_to_name[i] = kmalloc(size, GFP_KERNEL);
+		p->sym_val_to_name[i] = flex_array_alloc(sizeof(char *),
+							 p->symtab[i].nprim,
+							 GFP_KERNEL | __GFP_ZERO);
 		if (!p->sym_val_to_name[i])
 			return -ENOMEM;
+
+		rc = flex_array_prealloc(p->sym_val_to_name[i],
+					 0, p->symtab[i].nprim,
+					 GFP_KERNEL | __GFP_ZERO);
+		if (rc)
+			goto out;
 
 		rc = hashtab_map(p->symtab[i].table, index_f[i], p);
 		if (rc)
@@ -570,8 +612,8 @@ out:
 
 static int perm_destroy(void *key, void *datum, void *p)
 {
-	pfree(selinux_pool, key);
-	pfree(selinux_pool, datum);
+	kfree(key);
+	kfree(datum);
 	return 0;
 }
 
@@ -579,13 +621,13 @@ static int common_destroy(void *key, void *datum, void *p)
 {
 	struct common_datum *comdatum;
 
-	pfree(selinux_pool, key);
+	kfree(key);
 	if (datum) {
 		comdatum = datum;
 		hashtab_map(comdatum->permissions.table, perm_destroy, NULL);
 		hashtab_destroy(comdatum->permissions.table);
 	}
-	pfree(selinux_pool, datum);
+	kfree(datum);
 	return 0;
 }
 
@@ -596,9 +638,9 @@ static void constraint_expr_destroy(struct constraint_expr *expr)
 		if (expr->type_names) {
 			ebitmap_destroy(&expr->type_names->types);
 			ebitmap_destroy(&expr->type_names->negset);
-			pfree(selinux_pool, expr->type_names);
+			kfree(expr->type_names);
 		}
-		pfree(selinux_pool, expr);
+		kfree(expr);
 	}
 }
 
@@ -608,7 +650,7 @@ static int cls_destroy(void *key, void *datum, void *p)
 	struct constraint_node *constraint, *ctemp;
 	struct constraint_expr *e, *etmp;
 
-	pfree(selinux_pool, key);
+	kfree(key);
 	if (datum) {
 		cladatum = datum;
 		hashtab_map(cladatum->permissions.table, perm_destroy, NULL);
@@ -623,7 +665,7 @@ static int cls_destroy(void *key, void *datum, void *p)
 			}
 			ctemp = constraint;
 			constraint = constraint->next;
-			pfree(selinux_pool, ctemp);
+			kfree(ctemp);
 		}
 
 		constraint = cladatum->validatetrans;
@@ -636,11 +678,11 @@ static int cls_destroy(void *key, void *datum, void *p)
 			}
 			ctemp = constraint;
 			constraint = constraint->next;
-			pfree(selinux_pool, ctemp);
+			kfree(ctemp);
 		}
-		pfree(selinux_pool, cladatum->comkey);
+		kfree(cladatum->comkey);
 	}
-	pfree(selinux_pool, datum);
+	kfree(datum);
 	return 0;
 }
 
@@ -648,20 +690,20 @@ static int role_destroy(void *key, void *datum, void *p)
 {
 	struct role_datum *role;
 
-	pfree(selinux_pool, key);
+	kfree(key);
 	if (datum) {
 		role = datum;
 		ebitmap_destroy(&role->dominates);
 		ebitmap_destroy(&role->types);
 	}
-	pfree(selinux_pool, datum);
+	kfree(datum);
 	return 0;
 }
 
 static int type_destroy(void *key, void *datum, void *p)
 {
-	pfree(selinux_pool, key);
-	pfree(selinux_pool, datum);
+	kfree(key);
+	kfree(datum);
 	return 0;
 }
 
@@ -669,7 +711,7 @@ static int user_destroy(void *key, void *datum, void *p)
 {
 	struct user_datum *usrdatum;
 
-	pfree(selinux_pool, key);
+	kfree(key);
 	if (datum) {
 		usrdatum = datum;
 		ebitmap_destroy(&usrdatum->roles);
@@ -677,7 +719,7 @@ static int user_destroy(void *key, void *datum, void *p)
 		ebitmap_destroy(&usrdatum->range.level[1].cat);
 		ebitmap_destroy(&usrdatum->dfltlevel.cat);
 	}
-	pfree(selinux_pool, datum);
+	kfree(datum);
 	return 0;
 }
 
@@ -685,20 +727,21 @@ static int sens_destroy(void *key, void *datum, void *p)
 {
 	struct level_datum *levdatum;
 
-	pfree(selinux_pool, key);
+	kfree(key);
 	if (datum) {
 		levdatum = datum;
-		ebitmap_destroy(&levdatum->level->cat);
-		pfree(selinux_pool, levdatum->level);
+		if (levdatum->level)
+			ebitmap_destroy(&levdatum->level->cat);
+		kfree(levdatum->level);
 	}
-	pfree(selinux_pool, datum);
+	kfree(datum);
 	return 0;
 }
 
 static int cat_destroy(void *key, void *datum, void *p)
 {
-	pfree(selinux_pool, key);
-	pfree(selinux_pool, datum);
+	kfree(key);
+	kfree(datum);
 	return 0;
 }
 
@@ -717,9 +760,9 @@ static int (*destroy_f[SYM_NUM]) (void *key, void *datum, void *datap) =
 static int filenametr_destroy(void *key, void *datum, void *p)
 {
 	struct filename_trans *ft = key;
-	pfree(selinux_pool, ft->name);
-	pfree(selinux_pool, key);
-	pfree(selinux_pool, datum);
+	kfree(ft->name);
+	kfree(key);
+	kfree(datum);
 	cond_resched();
 	return 0;
 }
@@ -727,10 +770,10 @@ static int filenametr_destroy(void *key, void *datum, void *p)
 static int range_tr_destroy(void *key, void *datum, void *p)
 {
 	struct mls_range *rt = datum;
-	pfree(selinux_pool, key);
+	kfree(key);
 	ebitmap_destroy(&rt->level[0].cat);
 	ebitmap_destroy(&rt->level[1].cat);
-	pfree(selinux_pool, datum);
+	kfree(datum);
 	cond_resched();
 	return 0;
 }
@@ -744,8 +787,8 @@ static void ocontext_destroy(struct ocontext *c, int i)
 	context_destroy(&c->context[1]);
 	if (i == OCON_ISID || i == OCON_FS ||
 	    i == OCON_NETIF || i == OCON_FSUSE)
-		pfree(selinux_pool, c->u.name);
-	pfree(selinux_pool, c);
+		kfree(c->u.name);
+	kfree(c);
 }
 
 /*
@@ -765,13 +808,16 @@ void policydb_destroy(struct policydb *p)
 		hashtab_destroy(p->symtab[i].table);
 	}
 
-	for (i = 0; i < SYM_NUM; i++)
-		pfree(selinux_pool, p->sym_val_to_name[i]);
+	for (i = 0; i < SYM_NUM; i++) {
+		if (p->sym_val_to_name[i])
+			flex_array_free(p->sym_val_to_name[i]);
+	}
 
-	pfree(selinux_pool, p->class_val_to_struct);
-	pfree(selinux_pool, p->role_val_to_struct);
-	pfree(selinux_pool, p->user_val_to_struct);
-	pfree(selinux_pool, p->type_val_to_struct);
+	kfree(p->class_val_to_struct);
+	kfree(p->role_val_to_struct);
+	kfree(p->user_val_to_struct);
+	if (p->type_val_to_struct_array)
+		flex_array_free(p->type_val_to_struct_array);
 
 	avtab_destroy(&p->te_avtab);
 
@@ -789,7 +835,7 @@ void policydb_destroy(struct policydb *p)
 	g = p->genfs;
 	while (g) {
 		cond_resched();
-		pfree(selinux_pool, g->fstype);
+		kfree(g->fstype);
 		c = g->head;
 		while (c) {
 			ctmp = c;
@@ -798,7 +844,7 @@ void policydb_destroy(struct policydb *p)
 		}
 		gtmp = g;
 		g = g->next;
-		pfree(selinux_pool, gtmp);
+		kfree(gtmp);
 	}
 	p->genfs = NULL;
 
@@ -806,17 +852,17 @@ void policydb_destroy(struct policydb *p)
 
 	for (tr = p->role_tr; tr; tr = tr->next) {
 		cond_resched();
-		pfree(selinux_pool, ltr);
+		kfree(ltr);
 		ltr = tr;
 	}
-	pfree(selinux_pool, ltr);
+	kfree(ltr);
 
 	for (ra = p->role_allow; ra; ra = ra->next) {
 		cond_resched();
-		pfree(selinux_pool, lra);
+		kfree(lra);
 		lra = ra;
 	}
-	pfree(selinux_pool, lra);
+	kfree(lra);
 
 	hashtab_map(p->filename_trans, filenametr_destroy, NULL);
 	hashtab_destroy(p->filename_trans);
@@ -824,11 +870,18 @@ void policydb_destroy(struct policydb *p)
 	hashtab_map(p->range_tr, range_tr_destroy, NULL);
 	hashtab_destroy(p->range_tr);
 
-	if (p->type_attr_map) {
-		for (i = 0; i < p->p_types.nprim; i++)
-			ebitmap_destroy(&p->type_attr_map[i]);
+	if (p->type_attr_map_array) {
+		for (i = 0; i < p->p_types.nprim; i++) {
+			struct ebitmap *e;
+
+			e = flex_array_get(p->type_attr_map_array, i);
+			if (!e)
+				continue;
+			ebitmap_destroy(e);
+		}
+		flex_array_free(p->type_attr_map_array);
 	}
-	pfree(selinux_pool, p->type_attr_map);
+
 	ebitmap_destroy(&p->filename_trans_ttypes);
 	ebitmap_destroy(&p->policycaps);
 	ebitmap_destroy(&p->permissive_map);
@@ -1047,7 +1100,7 @@ static int str_read(char **strp, gfp_t flags, void *fp, u32 len)
 	if ((len == 0) || (len == (u32)-1))
 		return -EINVAL;
 
-	str = pmalloc(selinux_pool, len + 1, flags);
+	str = kmalloc(len + 1, flags | __GFP_NOWARN);
 	if (!str)
 		return -ENOMEM;
 
@@ -1070,7 +1123,7 @@ static int perm_read(struct policydb *p, struct hashtab *h, void *fp)
 	__le32 buf[2];
 	u32 len;
 
-	perdatum = pzalloc(selinux_pool, sizeof(*perdatum), GFP_KERNEL);
+	perdatum = kzalloc(sizeof(*perdatum), GFP_KERNEL);
 	if (!perdatum)
 		return -ENOMEM;
 
@@ -1103,7 +1156,7 @@ static int common_read(struct policydb *p, struct hashtab *h, void *fp)
 	u32 len, nel;
 	int i, rc;
 
-	comdatum = pzalloc(selinux_pool, sizeof(*comdatum), GFP_KERNEL);
+	comdatum = kzalloc(sizeof(*comdatum), GFP_KERNEL);
 	if (!comdatum)
 		return -ENOMEM;
 
@@ -1176,7 +1229,7 @@ static int read_cons_helper(struct policydb *p,
 
 	lc = NULL;
 	for (i = 0; i < ncons; i++) {
-		c = pzalloc(selinux_pool, sizeof(*c), GFP_KERNEL);
+		c = kzalloc(sizeof(*c), GFP_KERNEL);
 		if (!c)
 			return -ENOMEM;
 
@@ -1193,7 +1246,7 @@ static int read_cons_helper(struct policydb *p,
 		le = NULL;
 		depth = -1;
 		for (j = 0; j < nexpr; j++) {
-			e = pzalloc(selinux_pool, sizeof(*e), GFP_KERNEL);
+			e = kzalloc(sizeof(*e), GFP_KERNEL);
 			if (!e)
 				return -ENOMEM;
 
@@ -1235,12 +1288,10 @@ static int read_cons_helper(struct policydb *p,
 				if (rc)
 					return rc;
 				if (p->policyvers >=
-				    POLICYDB_VERSION_CONSTRAINT_NAMES) {
-					unsigned long size;
-
-					size = sizeof(*e->type_names);
-					e->type_names = pzalloc(selinux_pool,
-								size, GFP_KERNEL);
+					POLICYDB_VERSION_CONSTRAINT_NAMES) {
+						e->type_names = kzalloc(sizeof
+						(*e->type_names),
+						GFP_KERNEL);
 					if (!e->type_names)
 						return -ENOMEM;
 					type_set_init(e->type_names);
@@ -1270,7 +1321,7 @@ static int class_read(struct policydb *p, struct hashtab *h, void *fp)
 	u32 len, len2, ncons, nel;
 	int i, rc;
 
-	cladatum = pzalloc(selinux_pool, sizeof(*cladatum), GFP_KERNEL);
+	cladatum = kzalloc(sizeof(*cladatum), GFP_KERNEL);
 	if (!cladatum)
 		return -ENOMEM;
 
@@ -1363,7 +1414,7 @@ static int role_read(struct policydb *p, struct hashtab *h, void *fp)
 	__le32 buf[3];
 	u32 len;
 
-	role = pzalloc(selinux_pool, sizeof(*role), GFP_KERNEL);
+	role = kzalloc(sizeof(*role), GFP_KERNEL);
 	if (!role)
 		return -ENOMEM;
 
@@ -1419,7 +1470,7 @@ static int type_read(struct policydb *p, struct hashtab *h, void *fp)
 	__le32 buf[4];
 	u32 len;
 
-	typdatum = pzalloc(selinux_pool, sizeof(*typdatum), GFP_KERNEL);
+	typdatum = kzalloc(sizeof(*typdatum), GFP_KERNEL);
 	if (!typdatum)
 		return -ENOMEM;
 
@@ -1493,7 +1544,7 @@ static int user_read(struct policydb *p, struct hashtab *h, void *fp)
 	__le32 buf[3];
 	u32 len;
 
-	usrdatum = pzalloc(selinux_pool, sizeof(*usrdatum), GFP_KERNEL);
+	usrdatum = kzalloc(sizeof(*usrdatum), GFP_KERNEL);
 	if (!usrdatum)
 		return -ENOMEM;
 
@@ -1543,7 +1594,7 @@ static int sens_read(struct policydb *p, struct hashtab *h, void *fp)
 	__le32 buf[2];
 	u32 len;
 
-	levdatum = pzalloc(selinux_pool, sizeof(*levdatum), GFP_ATOMIC);
+	levdatum = kzalloc(sizeof(*levdatum), GFP_ATOMIC);
 	if (!levdatum)
 		return -ENOMEM;
 
@@ -1559,8 +1610,7 @@ static int sens_read(struct policydb *p, struct hashtab *h, void *fp)
 		goto bad;
 
 	rc = -ENOMEM;
-	levdatum->level = pmalloc(selinux_pool, sizeof(struct mls_level),
-				  GFP_ATOMIC);
+	levdatum->level = kmalloc(sizeof(*levdatum->level), GFP_ATOMIC);
 	if (!levdatum->level)
 		goto bad;
 
@@ -1585,7 +1635,7 @@ static int cat_read(struct policydb *p, struct hashtab *h, void *fp)
 	__le32 buf[3];
 	u32 len;
 
-	catdatum = pzalloc(selinux_pool, sizeof(*catdatum), GFP_ATOMIC);
+	catdatum = kzalloc(sizeof(*catdatum), GFP_ATOMIC);
 	if (!catdatum)
 		return -ENOMEM;
 
@@ -1648,9 +1698,9 @@ static int user_bounds_sanity_check(void *key, void *datum, void *datap)
 			printk(KERN_ERR
 			       "SELinux: boundary violated policy: "
 			       "user=%s role=%s bounds=%s\n",
-			       p->p_user_val_to_name[user->value - 1],
-			       p->p_role_val_to_name[bit],
-			       p->p_user_val_to_name[upper->value - 1]);
+			       sym_name(p, SYM_USERS, user->value - 1),
+			       sym_name(p, SYM_ROLES, bit),
+			       sym_name(p, SYM_USERS, upper->value - 1));
 
 			return -EINVAL;
 		}
@@ -1685,9 +1735,9 @@ static int role_bounds_sanity_check(void *key, void *datum, void *datap)
 			printk(KERN_ERR
 			       "SELinux: boundary violated policy: "
 			       "role=%s type=%s bounds=%s\n",
-			       p->p_role_val_to_name[role->value - 1],
-			       p->p_type_val_to_name[bit],
-			       p->p_role_val_to_name[upper->value - 1]);
+			       sym_name(p, SYM_ROLES, role->value - 1),
+			       sym_name(p, SYM_TYPES, bit),
+			       sym_name(p, SYM_ROLES, upper->value - 1));
 
 			return -EINVAL;
 		}
@@ -1711,13 +1761,15 @@ static int type_bounds_sanity_check(void *key, void *datum, void *datap)
 			return -EINVAL;
 		}
 
-		upper = p->type_val_to_struct[upper->bounds - 1];
+		upper = flex_array_get_ptr(p->type_val_to_struct_array,
+					   upper->bounds - 1);
 		BUG_ON(!upper);
+
 		if (upper->attribute) {
 			printk(KERN_ERR "SELinux: type %s: "
 			       "bounded by attribute %s",
 			       (char *) key,
-			       p->p_type_val_to_name[upper->value - 1]);
+			       sym_name(p, SYM_TYPES, upper->value - 1));
 			return -EINVAL;
 		}
 	}
@@ -1802,7 +1854,7 @@ static int range_read(struct policydb *p, void *fp)
 	nel = le32_to_cpu(buf[0]);
 	for (i = 0; i < nel; i++) {
 		rc = -ENOMEM;
-		rt = pzalloc(selinux_pool, sizeof(*rt), GFP_KERNEL);
+		rt = kzalloc(sizeof(*rt), GFP_KERNEL);
 		if (!rt)
 			goto out;
 
@@ -1827,7 +1879,7 @@ static int range_read(struct policydb *p, void *fp)
 			goto out;
 
 		rc = -ENOMEM;
-		r = pzalloc(selinux_pool, sizeof(*r), GFP_KERNEL);
+		r = kzalloc(sizeof(*r), GFP_KERNEL);
 		if (!r)
 			goto out;
 
@@ -1851,8 +1903,8 @@ static int range_read(struct policydb *p, void *fp)
 	hash_eval(p->range_tr, "rangetr");
 	rc = 0;
 out:
-	pfree(selinux_pool, rt);
-	pfree(selinux_pool, r);
+	kfree(rt);
+	kfree(r);
 	return rc;
 }
 
@@ -1878,12 +1930,12 @@ static int filename_trans_read(struct policydb *p, void *fp)
 		name = NULL;
 
 		rc = -ENOMEM;
-		ft = pzalloc(selinux_pool, sizeof(*ft), GFP_KERNEL);
+		ft = kzalloc(sizeof(*ft), GFP_KERNEL);
 		if (!ft)
 			goto out;
 
 		rc = -ENOMEM;
-		otype = pmalloc(selinux_pool, sizeof(*otype), GFP_KERNEL);
+		otype = kmalloc(sizeof(*otype), GFP_KERNEL);
 		if (!otype)
 			goto out;
 
@@ -1923,17 +1975,17 @@ static int filename_trans_read(struct policydb *p, void *fp)
 			if (rc != -EEXIST)
 				goto out;
 			/* But free memory to avoid memory leak. */
-			pfree(selinux_pool, ft);
-			pfree(selinux_pool, name);
-			pfree(selinux_pool, otype);
+			kfree(ft);
+			kfree(name);
+			kfree(otype);
 		}
 	}
 	hash_eval(p->filename_trans, "filenametr");
 	return 0;
 out:
-	pfree(selinux_pool, ft);
-	pfree(selinux_pool, name);
-	pfree(selinux_pool, otype);
+	kfree(ft);
+	kfree(name);
+	kfree(otype);
 
 	return rc;
 }
@@ -1960,8 +2012,7 @@ static int genfs_read(struct policydb *p, void *fp)
 		len = le32_to_cpu(buf[0]);
 
 		rc = -ENOMEM;
-		newgenfs = pzalloc(selinux_pool, sizeof(*newgenfs),
-				   GFP_KERNEL);
+		newgenfs = kzalloc(sizeof(*newgenfs), GFP_KERNEL);
 		if (!newgenfs)
 			goto out;
 
@@ -2044,8 +2095,8 @@ static int genfs_read(struct policydb *p, void *fp)
 	rc = 0;
 out:
 	if (newgenfs) {
-		pfree(selinux_pool, newgenfs->fstype);
-		pfree(selinux_pool, newgenfs);
+		kfree(newgenfs->fstype);
+		kfree(newgenfs);
 	}
 	ocontext_destroy(newc, OCON_FSUSE);
 
@@ -2398,7 +2449,7 @@ int policydb_read(struct policydb *p, void *fp)
 	ltr = NULL;
 	for (i = 0; i < nel; i++) {
 		rc = -ENOMEM;
-		tr = pzalloc(selinux_pool, sizeof(*tr), GFP_KERNEL);
+		tr = kzalloc(sizeof(*tr), GFP_KERNEL);
 		if (!tr)
 			goto bad;
 		if (ltr)
@@ -2437,7 +2488,7 @@ int policydb_read(struct policydb *p, void *fp)
 	lra = NULL;
 	for (i = 0; i < nel; i++) {
 		rc = -ENOMEM;
-		ra = pzalloc(selinux_pool, sizeof(*ra), GFP_KERNEL);
+		ra = kzalloc(sizeof(*ra), GFP_KERNEL);
 		if (!ra)
 			goto bad;
 		if (lra)
@@ -2483,21 +2534,33 @@ int policydb_read(struct policydb *p, void *fp)
 	if (rc)
 		goto bad;
 
-	p->type_attr_map = pmalloc(selinux_pool,
-				   p->p_types.nprim * sizeof(struct ebitmap),
-				   GFP_KERNEL);
-	if (!p->type_attr_map)
+	rc = -ENOMEM;
+	p->type_attr_map_array = flex_array_alloc(sizeof(struct ebitmap),
+						  p->p_types.nprim,
+						  GFP_KERNEL | __GFP_ZERO);
+	if (!p->type_attr_map_array)
+		goto bad;
+
+	/* preallocate so we don't have to worry about the put ever failing */
+	rc = flex_array_prealloc(p->type_attr_map_array, 0, p->p_types.nprim,
+				 GFP_KERNEL | __GFP_ZERO);
+	if (rc)
 		goto bad;
 
 	for (i = 0; i < p->p_types.nprim; i++) {
-		ebitmap_init(&p->type_attr_map[i]);
+		struct ebitmap *e = flex_array_get(p->type_attr_map_array, i);
+
+		BUG_ON(!e);
+		ebitmap_init(e);
 		if (p->policyvers >= POLICYDB_VERSION_AVTAB) {
-			if (ebitmap_read(&p->type_attr_map[i], fp))
+			rc = ebitmap_read(e, fp);
+			if (rc)
 				goto bad;
 		}
 		/* add the type itself as the degenerate case */
-		if (ebitmap_set_bit(&p->type_attr_map[i], i, 1))
-				goto bad;
+		rc = ebitmap_set_bit(e, i, 1);
+		if (rc)
+			goto bad;
 	}
 
 	rc = policydb_bounds_sanity_check(p);
@@ -3482,7 +3545,7 @@ int policydb_write(struct policydb *p, void *fp)
 		return rc;
 
 	for (i = 0; i < p->p_types.nprim; i++) {
-		struct ebitmap *e = p->type_attr_map + i;
+		struct ebitmap *e = flex_array_get(p->type_attr_map_array, i);
 
 		BUG_ON(!e);
 		rc = ebitmap_write(e, fp);

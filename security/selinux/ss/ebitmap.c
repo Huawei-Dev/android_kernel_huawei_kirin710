@@ -431,7 +431,7 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 		}
 		map = le64_to_cpu(map);
 
-		index = (startbit - n->startbit) / EBITMAP_UNIT_SIZE;/* [false alarm]:original code */
+		index = (startbit - n->startbit) / EBITMAP_UNIT_SIZE;
 		while (map) {
 			n->maps[index++] = map & (-1UL);
 			map = EBITMAP_SHIFT_UNIT_SIZE(map);
