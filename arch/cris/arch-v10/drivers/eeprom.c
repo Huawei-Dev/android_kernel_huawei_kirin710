@@ -787,6 +787,7 @@ static void eeprom_disable_write_protect(void)
   /* Disable write protect */
   if (eeprom.size == EEPROM_8KB)
   {
+    /* Step 1 Set WEL = 1 (write 00000010 to address 1FFFh */
     i2c_start();
     i2c_outbyte(0xbe);
     if(!i2c_getack())
@@ -807,6 +808,7 @@ static void eeprom_disable_write_protect(void)
 
     i2c_delay(1000);
 
+    /* Step 2 Set RWEL = 1 (write 00000110 to address 1FFFh */
     i2c_start();
     i2c_outbyte(0xbe);
     if(!i2c_getack())
@@ -825,6 +827,7 @@ static void eeprom_disable_write_protect(void)
     }
     i2c_stop();
     
+    /* Step 3 Set BP1, BP0, and/or WPEN bits (write 00000110 to address 1FFFh */
     i2c_start();
     i2c_outbyte(0xbe);
     if(!i2c_getack())
