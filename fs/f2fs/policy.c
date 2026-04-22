@@ -7,6 +7,7 @@
 #include "f2fs.h"
 #include "xattr.h"
 #include "sdp_internal.h"
+#include "../crypto/fscrypt_private.h"
 
 #if F2FS_FS_SDP_ENCRYPTION
 static inline bool f2fs_inode_is_config_encryption(struct inode *inode)
@@ -44,20 +45,6 @@ int f2fs_inode_set_sdp_encryption_flags(struct inode *inode, void *fs_data,
 	flags |= sdp_enc_flag;
 
 	return sb->s_sdp_cop->set_sdp_encrypt_flags(inode, fs_data, &flags);
-}
-
-static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
-					   u32 filenames_mode)
-{
-	if (contents_mode == FS_ENCRYPTION_MODE_AES_128_CBC &&
-	    filenames_mode == FS_ENCRYPTION_MODE_AES_128_CTS)
-		return true;
-
-	if (contents_mode == FS_ENCRYPTION_MODE_AES_256_XTS &&
-	    filenames_mode == FS_ENCRYPTION_MODE_AES_256_CTS)
-		return true;
-
-	return false;
 }
 
 static int f2fs_create_sdp_encryption_context_from_policy(struct inode *inode,

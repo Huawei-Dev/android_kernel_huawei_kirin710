@@ -14,16 +14,6 @@
 #ifndef _LINUX_FSCRYPT_NOTSUPP_H
 #define _LINUX_FSCRYPT_NOTSUPP_H
 
-static inline void *fscrypt_ci_key(struct inode *inode)
-{
-	return NULL;
-}
-
-static inline int fscrypt_ci_key_len(struct inode *inode)
-{
-	return 0;
-}
-
 static inline bool fscrypt_has_encryption_key(const struct inode *inode)
 {
         return false;

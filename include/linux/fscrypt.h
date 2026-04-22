@@ -16,6 +16,12 @@
 #include <linux/fs.h>
 
 #define FS_CRYPTO_BLOCK_SIZE		16
+/* Encryption parameters */
+#define FS_IV_SIZE                     16
+#define FS_KEY_DERIVATION_NONCE_SIZE           64
+#define FS_KEY_DERIVATION_IV_SIZE              16
+#define FS_KEY_DERIVATION_TAG_SIZE             16
+#define FS_KEY_DERIVATION_CIPHER_SIZE          (64 + 16) /* nonce + tag */
 
 struct fscrypt_ctx;
 struct fscrypt_info;
@@ -259,29 +265,8 @@ static inline int fscrypt_encrypt_symlink(struct inode *inode,
 	return 0;
 }
 
-static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
-					u32 filenames_mode)
-{
-	if (contents_mode == FS_ENCRYPTION_MODE_AES_128_CBC &&
-	    filenames_mode == FS_ENCRYPTION_MODE_AES_128_CTS)
-		return true;
-
-	if (contents_mode == FS_ENCRYPTION_MODE_AES_256_XTS &&
-	    filenames_mode == FS_ENCRYPTION_MODE_AES_256_CTS)
-		return true;
-
-	return false;
-}
-
-static inline bool fscrypt_is_dot_dotdot(const struct qstr *str)
-{
-	if (str->len == 1 && str->name[0] == '.')
-		return true;
-
-	if (str->len == 2 && str->name[0] == '.' && str->name[1] == '.')
-		return true;
-
-	return false;
-}
+void *fscrypt_ci_key(struct inode *inode);
+int fscrypt_ci_key_len(struct inode *inode);
+int fscrypt_ci_key_index(struct inode *inode);
 
 #endif	/* _LINUX_FSCRYPT_H */

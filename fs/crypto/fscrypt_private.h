@@ -16,12 +16,7 @@
 #include <linux/fscrypt.h>
 #include <crypto/hash.h>
 
-/* Encryption parameters */
 #define FS_IV_SIZE                     16
-#define FS_KEY_DERIVATION_NONCE_SIZE           64
-#define FS_KEY_DERIVATION_IV_SIZE              16
-#define FS_KEY_DERIVATION_TAG_SIZE             16
-#define FS_KEY_DERIVATION_CIPHER_SIZE          (64 + 16) /* nonce + tag */
 
 /**
  * Encryption context for inode

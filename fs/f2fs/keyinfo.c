@@ -10,6 +10,7 @@
 #include "f2fs.h"
 #include "xattr.h"
 #include "sdp_internal.h"
+#include "../crypto/fscrypt_private.h"
 
 #if F2FS_FS_SDP_ENCRYPTION
 static void f2fs_put_crypt_info(struct fscrypt_info *ci)

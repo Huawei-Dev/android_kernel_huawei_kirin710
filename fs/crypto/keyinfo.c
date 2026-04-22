@@ -571,3 +571,33 @@ void fscrypt_put_encryption_info(struct inode *inode)
 	inode->i_crypt_info = NULL;
 }
 EXPORT_SYMBOL(fscrypt_put_encryption_info);
+
+void *fscrypt_ci_key(struct inode *inode)
+{
+#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
+	return inode->i_crypt_info->ci_key;
+#else
+	return NULL;
+#endif
+}
+EXPORT_SYMBOL(fscrypt_ci_key);
+
+int fscrypt_ci_key_len(struct inode *inode)
+{
+#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
+	return inode->i_crypt_info->ci_key_len;
+#else
+	return 0;
+#endif
+}
+EXPORT_SYMBOL(fscrypt_ci_key_len);
+
+int fscrypt_ci_key_index(struct inode *inode)
+{
+#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
+	return inode->i_crypt_info->ci_key_index;
+#else
+	return -1;
+#endif
+}
+EXPORT_SYMBOL(fscrypt_ci_key_index);

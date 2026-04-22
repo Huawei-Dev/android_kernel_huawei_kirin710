@@ -37,9 +37,6 @@
 extern struct dsm_client *f2fs_dclient;
 #endif
 
-#define __FS_HAS_ENCRYPTION IS_ENABLED(CONFIG_F2FS_FS_ENCRYPTION)
-#include <linux/fscrypt.h>
-
 #ifdef CONFIG_F2FS_CHECK_FS
 
 #ifdef CONFIG_HUAWEI_F2FS_DSM
