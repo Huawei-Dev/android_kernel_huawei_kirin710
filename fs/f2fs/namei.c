@@ -840,7 +840,7 @@ out_splice:
 		err = PTR_ERR(new);
 	else if (new && f2fs_encrypted_inode(dir) &&
 		   fscrypt_has_encryption_key(dir) &&
-		   !(new->d_flags & DCACHE_ENCRYPTED_WITH_KEY))
+		   !fscrypt_has_encryption_key(dir))
 		fscrypt_set_encrypted_dentry(new);
 	trace_f2fs_lookup_end(dir, dentry, ino, err);
 	return new;

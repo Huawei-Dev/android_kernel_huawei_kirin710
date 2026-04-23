@@ -119,7 +119,7 @@ extern void fscrypt_decrypt_dio_bio_pages(struct fscrypt_ctx *, struct bio *,
 static inline void fscrypt_set_encrypted_dentry(struct dentry *dentry)
 {
 	spin_lock(&dentry->d_lock);
-	dentry->d_flags |= DCACHE_ENCRYPTED_WITH_KEY;
+	dentry->d_flags |= DCACHE_ENCRYPTED_NAME;
 	spin_unlock(&dentry->d_lock);
 }
 
