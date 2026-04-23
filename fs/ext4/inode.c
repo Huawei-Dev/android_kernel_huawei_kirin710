@@ -39,8 +39,6 @@
 #include <linux/slab.h>
 #include <linux/bitops.h>
 #include <linux/iomap.h>
-#include <linux/file_map.h>
-
 
 #include "ext4_jbd2.h"
 #include "xattr.h"
@@ -1280,9 +1278,8 @@ static int ext4_write_begin(struct file *file, struct address_space *mapping,
 						    flags, pagep);
 		if (ret < 0)
 			return ret;
-		if (ret == 1) {
+		if (ret == 1)
 			return 0;
-		}
 	}
 
 	/*
@@ -4928,11 +4925,6 @@ struct inode *ext4_iget(struct super_block *sb, unsigned long ino)
 	if (ret)
 		goto bad_inode;
 
-#ifdef CONFIG_FILE_MAP
-	inode->i_file_map = NULL;
-	file_map_entry_attach_unused(inode);
-#endif
-
 	if (S_ISREG(inode->i_mode)) {
 		inode->i_op = &ext4_file_inode_operations;
 		inode->i_fop = &ext4_file_operations;
@@ -5506,7 +5498,7 @@ int ext4_setattr(struct dentry *dentry, struct iattr *attr)
 			up_write(&EXT4_I(inode)->i_data_sem);
 			ext4_journal_stop(handle);
 			if (error) {
-				if (orphan && inode->i_nlink)
+				if (orphan)
 					ext4_orphan_del(NULL, inode);
 				goto err_out;
 			}
