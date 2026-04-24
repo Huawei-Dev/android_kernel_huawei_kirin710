@@ -356,7 +356,7 @@ struct f2fs_xattr_header* get_xattr_header(struct inode *inode,
 	if (f2fs_has_inline_xattr(inode)) {
 		if (ipage) {
 			xattr_addr = inline_xattr_addr(inode, ipage);
-			f2fs_wait_on_page_writeback(ipage, NODE, true);
+			f2fs_wait_on_page_writeback(ipage, NODE, true, true);
 		} else {
 			*xpage = f2fs_get_node_page(sbi, inode->i_ino);
 			if (IS_ERR(*xpage))
@@ -368,7 +368,7 @@ struct f2fs_xattr_header* get_xattr_header(struct inode *inode,
 		*xpage = f2fs_get_node_page(sbi, F2FS_I(inode)->i_xattr_nid);
 		if (IS_ERR(*xpage))
 			return (void *)(*xpage);
-		f2fs_wait_on_page_writeback(*xpage, NODE, true);
+		f2fs_wait_on_page_writeback(*xpage, NODE, true, true);
 		xattr_addr = page_address(*xpage);
 		hdr = (struct f2fs_xattr_header *)xattr_addr;
 	} else {
