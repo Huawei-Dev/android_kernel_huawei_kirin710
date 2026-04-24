@@ -3312,6 +3312,13 @@ static void f2fs_dio_submit_bio(struct bio *bio, struct inode *inode,
 	inc_page_count(F2FS_I_SB(inode),
 			write ? F2FS_DIO_WRITE : F2FS_DIO_READ);
 
+#ifdef CONFIG_FS_ENCRYPTION
+	if (IS_ENCRYPTED(inode) && S_ISREG(inode->i_mode) &&
+	    !f2fs_inline_encrypted_inode(inode)) {
+		f2fs_submit_direct(bio, inode, file_offset);
+		return;
+	}
+#endif
 	submit_bio(bio);
 	return;
 out:
