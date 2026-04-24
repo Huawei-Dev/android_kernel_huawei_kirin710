@@ -1288,7 +1288,7 @@ static void __init_discard_policy(struct f2fs_sb_info *sbi,
 				struct discard_policy *policy,
 				int discard_type, unsigned int granularity)
 {
-	dpolicy->timeout = 0;
+	policy->timeout = 0;
 
 	if (discard_type == DPOLICY_BG) {
 	       *policy = dpolicys[DPOLICY_BG];
