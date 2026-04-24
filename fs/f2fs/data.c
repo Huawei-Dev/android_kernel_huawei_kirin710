@@ -1878,7 +1878,7 @@ zero_out:
 		 */
 		if (bio && (last_block_in_bio != block_nr - 1 ||
 			!__same_bdev(F2FS_I_SB(inode), block_nr, bio) ||
-			(f2fs_encrypted_inode(inode) &&
+			(IS_ENCRYPTED(inode) &&
 				f2fs_inline_encrypted_inode(inode) &&
 				last_index_in_bio != block_in_file - 1))) {
 submit_and_realloc:
