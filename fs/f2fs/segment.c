@@ -5446,11 +5446,11 @@ int f2fs_build_segment_manager(struct f2fs_sb_info *sbi)
 	err = build_dirty_segmap(sbi);
 	if (err)
 		return err;
-
+#if 0
 	err = sanity_check_curseg(sbi);
 	if (err)
 		return err;
-
+#endif
 	init_min_max_mtime(sbi);
 	return 0;
 }
