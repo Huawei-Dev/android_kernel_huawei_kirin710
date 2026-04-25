@@ -205,7 +205,7 @@ static void f2fs_write_end_io(struct bio *bio)
 			/* dummy page feature is never used */
 			f2fs_bug_on(sbi, 1);
 
-			set_page_private(page, (unsigned long)NULL);/*lint !e527*/
+			set_page_private(page, (unsigned long)NULL);
 			ClearPagePrivate(page);
 			unlock_page(page);
 			mempool_free(page, sbi->write_io_dummy);
@@ -3100,11 +3100,9 @@ static inline void __f2fs_crypt_end_dio(struct f2fs_crypt_dio *dio,
  */
 static void f2fs_complete_dio_read(struct work_struct *work)
 {
-	/*lint -save -e826*/
 	struct fscrypt_ctx *ctx =
-		container_of(work, struct fscrypt_ctx, r.work);
-	/*lint -restore*/
-	struct bio *bio = ctx->r.bio;
+		container_of(work, struct fscrypt_ctx, work);
+	struct bio *bio = ctx->bio;
 	struct f2fs_crypt_dio *dio = bio->bi_private;
 	struct inode *inode = dio->inode;
 	struct bio_vec *bv;
@@ -3113,9 +3111,7 @@ static void f2fs_complete_dio_read(struct work_struct *work)
 	int i;
 	int ret;
 
-	/*lint -save -e704*/
 	index = dio->foff >> PAGE_SHIFT;
-	/*lint -restore*/
 
 	bio_for_each_segment_all(bv, bio, i) {
 		page = bv->bv_page;
@@ -3186,9 +3182,7 @@ static int f2fs_encrypt_dio_pages(struct inode *inode, struct bio *bio,
 	int max;
 	int i;
 
-	/*lint -save -e704*/
 	index = offset >> PAGE_SHIFT;
-	/*lint -restore*/
 
 	bio_for_each_segment_all(bvec, bio, i) {
 		page = bvec->bv_page;
@@ -3216,9 +3210,7 @@ error:
 
 		bvec->bv_page = page;
 	}
-	/*lint -save -e712*/
 	return PTR_ERR(encrypted_page);
-	/*lint -restore*/
 }
 
 static void f2fs_submit_direct(struct bio *bio, struct inode *inode,
@@ -3226,9 +3218,7 @@ static void f2fs_submit_direct(struct bio *bio, struct inode *inode,
 {
 	struct f2fs_crypt_dio	*dio;
 	struct fscrypt_ctx	*ctx;
-	/*lint -save -e737*/
 	bool write = (bio_op(bio) == REQ_OP_WRITE);
-	/*lint -restore*/
 	int			ret;
 
 	dio = kzalloc(sizeof(struct f2fs_crypt_dio), GFP_NOFS);
@@ -3243,13 +3233,11 @@ static void f2fs_submit_direct(struct bio *bio, struct inode *inode,
 	dio->orig_end_io = bio->bi_end_io;
 
 	if (!write) {
-		/*lint -save -e712*/
 		ctx = fscrypt_get_ctx(GFP_NOFS);
 		if (IS_ERR(ctx)) {
 			ret = PTR_ERR(ctx);
 			goto ctx_err;
 		}
-		/*lint -restore*/
 
 		dio->ctx = ctx;
 
