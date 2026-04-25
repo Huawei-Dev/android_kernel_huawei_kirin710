@@ -202,41 +202,6 @@ struct page *fscrypt_alloc_bounce_page(struct fscrypt_ctx *ctx,
 	return ctx->w.bounce_page;
 }
 
-static struct page *do_encrypt_page(const struct inode *inode,
-				    struct page *plaintext_page,
-				    unsigned int len,
-				    unsigned int offs,
-				    u64 lblk_num, gfp_t gfp_flags)
-{
-	struct fscrypt_ctx *ctx;
-	struct page *ciphertext_page = NULL;
-	int err;
-
-	ctx = fscrypt_get_ctx(gfp_flags);
-	if (IS_ERR(ctx))
-		return ERR_CAST(ctx);
-
-	/* The encryption operation will require a bounce page. */
-	ciphertext_page = fscrypt_alloc_bounce_page(ctx, gfp_flags);
-	if (IS_ERR(ciphertext_page))
-		goto errout;
-
-	ctx->w.control_page = plaintext_page;
-	err = fscrypt_do_page_crypto(inode, FS_ENCRYPT, lblk_num, plaintext_page,
-			     ciphertext_page, len, offs, gfp_flags);
-	if (err) {
-		ciphertext_page = ERR_PTR(err);
-		goto errout;
-	}
-	SetPagePrivate(ciphertext_page);
-	set_page_private(ciphertext_page, (unsigned long)ctx);
-	lock_page(ciphertext_page);
-	return ciphertext_page;
-
-errout:
-	fscrypt_release_ctx(ctx);
-	return ciphertext_page;
-}
 /**
  * fscypt_encrypt_page() - Encrypts a page
  * @inode:     The inode for which the encryption should take place
@@ -275,6 +240,7 @@ struct page *fscrypt_encrypt_page(const struct inode *inode,
 				u64 lblk_num, gfp_t gfp_flags)
 
 {
+	struct fscrypt_ctx *ctx;
 	struct page *ciphertext_page = page;
 	int err;
 
@@ -292,7 +258,30 @@ struct page *fscrypt_encrypt_page(const struct inode *inode,
 	if (WARN_ON_ONCE(!PageLocked(page)))
 		return ERR_PTR(-EINVAL);
 
-	return do_encrypt_page(inode, page, len, offs, lblk_num, gfp_flags);
+	ctx = fscrypt_get_ctx(gfp_flags);
+	if (IS_ERR(ctx))
+		return ERR_CAST(ctx);
+
+	/* The encryption operation will require a bounce page. */
+	ciphertext_page = fscrypt_alloc_bounce_page(ctx, gfp_flags);
+	if (IS_ERR(ciphertext_page))
+		goto errout;
+
+	ctx->w.control_page = page;
+	err = fscrypt_do_page_crypto(inode, FS_ENCRYPT, lblk_num, page,
+				     ciphertext_page, len, offs, gfp_flags);
+	if (err) {
+		ciphertext_page = ERR_PTR(err);
+		goto errout;
+	}
+	SetPagePrivate(ciphertext_page);
+	set_page_private(ciphertext_page, (unsigned long)ctx);
+	lock_page(ciphertext_page);
+	return ciphertext_page;
+
+errout:
+	fscrypt_release_ctx(ctx);
+	return ciphertext_page;
 }
 EXPORT_SYMBOL(fscrypt_encrypt_page);
 
@@ -322,7 +311,35 @@ struct page *fscrypt_encrypt_dio_page(struct inode *inode,
 				      unsigned int offs,
 				      u64 lblk_num, gfp_t gfp_flags)
 {
-	return do_encrypt_page(inode, plaintext_page, len, offs, lblk_num, gfp_flags);
+	struct fscrypt_ctx *ctx;
+	struct page *ciphertext_page;
+	int err;
+
+	ctx = fscrypt_get_ctx(gfp_flags);
+	if (IS_ERR(ctx))
+		return ERR_CAST(ctx);
+
+	/* The encryption operation will require a bounce page. */
+	ciphertext_page = fscrypt_alloc_bounce_page(ctx, gfp_flags);
+	if (IS_ERR(ciphertext_page))
+		goto errout;
+
+	ctx->w.control_page = plaintext_page;
+	err = fscrypt_do_page_crypto(inode, FS_ENCRYPT, lblk_num,
+				     plaintext_page, ciphertext_page, len, offs,
+				     gfp_flags);
+	if (err) {
+		ciphertext_page = ERR_PTR(err);
+		goto errout;
+	}
+	SetPagePrivate(ciphertext_page);
+	set_page_private(ciphertext_page, (unsigned long)ctx);
+	lock_page(ciphertext_page);
+	return ciphertext_page;
+
+errout:
+	fscrypt_release_ctx(ctx);
+	return ciphertext_page;
 }
 EXPORT_SYMBOL(fscrypt_encrypt_dio_page);
 
