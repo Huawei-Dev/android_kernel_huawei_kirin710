@@ -1836,7 +1836,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 
 	if (no_io_align == !!F2FS_IO_ALIGNED(sbi)) {
 		err = -EINVAL;
-		f2fs_warn(sbi, "switch io_bits option is not allowed");
+		f2fs_msg(sbi->sb, KERN_WARNING, "switch io_bits option is not allowed");
 		goto restore_opts;
 	}
 
@@ -2242,7 +2242,7 @@ static int f2fs_quota_on(struct super_block *sb, int type, int format_id,
 
 	/* if quota sysfile exists, deny enabling quota with specific file */
 	if (f2fs_sb_has_quota_ino(F2FS_SB(sb))) {
-		f2fs_err(F2FS_SB(sb), "quota sysfile already exists");
+		f2fs_msg(sb, KERN_ERR, "quota sysfile already exists");
 		return -EBUSY;
 	}
 
