@@ -200,7 +200,7 @@ static int f2fs_get_verity_descriptor(struct inode *inode, void *buf,
 	if (res < 0 && res != -ERANGE)
 		return res;
 	if (res != sizeof(dloc) || dloc.version != cpu_to_le32(1)) {
-		f2fs_warn(F2FS_I_SB(inode), "unknown verity xattr format");
+		f2fs_msg(inode->i_sb, KERN_WARNING, "unknown verity xattr format");
 		return -EINVAL;
 	}
 	size = le32_to_cpu(dloc.size);
@@ -209,7 +209,7 @@ static int f2fs_get_verity_descriptor(struct inode *inode, void *buf,
 	/* Get the descriptor */
 	if (pos + size < pos || pos + size > inode->i_sb->s_maxbytes ||
 	    pos < f2fs_verity_metadata_pos(inode) || size > INT_MAX) {
-		f2fs_warn(F2FS_I_SB(inode), "invalid verity xattr");
+		f2fs_msg(inode->i_sb, KERN_WARNING, "invalid verity xattr");
 		return -EFSCORRUPTED;
 	}
 	if (buf_size) {
