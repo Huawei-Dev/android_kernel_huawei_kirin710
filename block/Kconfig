@@ -204,20 +204,6 @@ config HISI_MQ_USING_CP
     help
         HISI Kirin UFS Command Priority, good for foreground APP's IO performance
 
-config HISI_IO_TRACE
-	bool "HISI_IO_TRACE"
-	depends on HISI_DEBUG_FS
-	default n
-	help
-		HISI io trace event, as supplement to block_rq_issue and block_rq_complete
-
-config HISI_IO_DEBUG_TRACE
-	bool "HISI_IO_DEBUG_TRACE"
-	depends on HISI_IO_TRACE
-	default n
-	help
-		HISI io debug trace event
-
 config HISI_PARTITION
         bool "hisi partition"
         default n

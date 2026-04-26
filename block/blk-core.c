@@ -2421,14 +2421,6 @@ EXPORT_SYMBOL(generic_make_request);
  */
 blk_qc_t submit_bio(struct bio *bio)
 {
-#ifdef CONFIG_HISI_IO_TRACE
-	blk_qc_t ret;
-
-	bio_get(bio);
-	if (bio->bi_disk)
-		trace_block_submit_bio(bio, 1);
-#endif
-
 	/*
 	 * If it's a regular read/write or a barrier with data attached,
 	 * go through the normal accounting stuff before submission.
@@ -2458,16 +2450,7 @@ blk_qc_t submit_bio(struct bio *bio)
 		}
 	}
 
-#ifdef CONFIG_HISI_IO_TRACE
-	ret = generic_make_request(bio);
-	if (bio->bi_disk)
-		trace_block_submit_bio(bio, 0);
-	bio_put(bio);
-	return ret;
-#else
 	return generic_make_request(bio);
-#endif
-
 }
 EXPORT_SYMBOL(submit_bio);
 
