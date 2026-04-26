@@ -272,32 +272,6 @@ select_encryption_mode(const struct fscrypt_info *ci, const struct inode *inode)
 	return ERR_PTR(-EINVAL);
 }
 
-static int determine_cipher_type(struct fscrypt_info *ci, struct inode *inode,
-				 const char **cipher_str_ret, int *keysize_ret)
-{
-	u32 mode;
-	if (!fscrypt_valid_enc_modes(ci->ci_data_mode, ci->ci_filename_mode)) {
-		pr_warn_ratelimited("inode %lu err enc mode (contents %d,%d)\n",
-				    inode->i_ino,
-				    ci->ci_data_mode, ci->ci_filename_mode);
-		return -EINVAL;
-	}
-
-	if (S_ISREG(inode->i_mode)) {
-		mode = ci->ci_data_mode;
-	} else if (S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)) {
-		mode = ci->ci_filename_mode;
-	} else {
-		WARN_ONCE(1, "inode %lu not encryptable, file type %d\n",
-			  inode->i_ino, (inode->i_mode & S_IFMT));
-		return -EINVAL;
-	}
-
-	*cipher_str_ret = available_modes[mode].cipher_str;
-	*keysize_ret = available_modes[mode].keysize;
-	return 0;
-}
-
 static void put_crypt_info(struct fscrypt_info *ci)
 {
 	void *prev = NULL;

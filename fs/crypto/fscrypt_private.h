@@ -132,9 +132,6 @@ union fscrypt_iv {
 	u8 raw[FSCRYPT_MAX_IV_SIZE];
 };
 
-void fscrypt_generate_iv(union fscrypt_iv *iv, u64 lblk_num,
-			 const struct fscrypt_info *ci);
-
 /* fname.c */
 extern int fname_encrypt(struct inode *inode, const struct qstr *iname,
 			 u8 *out, unsigned int olen);
