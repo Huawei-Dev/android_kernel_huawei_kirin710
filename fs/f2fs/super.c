@@ -2870,7 +2870,7 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 			i++;
 		}
 		if (segment_count != dev_seg_count) {
-			f2fs_info(sbi, "Segment count (%u) mismatch with total segments from devices (%u)",
+			f2fs_msg(sb, KERN_INFO, "Segment count (%u) mismatch with total segments from devices (%u)",
 					segment_count, dev_seg_count);
 			return -EFSCORRUPTED;
 		}
