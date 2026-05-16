@@ -295,11 +295,14 @@ static void __init setup_machine_fdt(phys_addr_t dt_phys)
 	void *dt_virt = fixmap_remap_fdt(dt_phys);
 	const char *name;
 
-	if (!dt_virt || fdt_check_header(dt_virt))
+	if (!dt_virt)
 		goto invalid_fdt;
 
 #if defined(CONFIG_ARM64_BUILTIN_APPENDED_DTB_OVERRIDE)
 	{
+	if (fdt_check_header(dt_virt))
+		goto invalid_fdt;
+
 		void *builtin_fdt;
 
 		builtin_fdt = setup_machine_fdt_try_builtin(dt_virt);
