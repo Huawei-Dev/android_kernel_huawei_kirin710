@@ -1,14 +1,19 @@
 /*
- * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+ * governor_memlat.h
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
+ * .h file for governore_memlat.c
+ *
+ * Copyright (c) 2015-2020 Huawei Technologies Co., Ltd.
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ *
  */
 
 #ifndef _GOVERNOR_BW_HWMON_H
@@ -17,6 +22,8 @@
 #include <linux/kernel.h>
 #include <linux/devfreq.h>
 
+#define KHZ_PER_MHZ 1000
+#define HZ_PER_MHZ 1000000
 /**
  * struct dev_stats - Device stats
  * @inst_count:			Number of instructions executed.
@@ -33,7 +40,7 @@ struct dev_stats {
 
 struct core_dev_map {
 	unsigned int core_mhz;
-	unsigned int target_freq;
+	unsigned long target_freq;
 };
 
 /**
@@ -61,6 +68,8 @@ struct memlat_hwmon {
 	int (*start_hwmon)(struct memlat_hwmon *hw);
 	void (*stop_hwmon)(struct memlat_hwmon *hw);
 	unsigned long (*get_cnt)(struct memlat_hwmon *hw);
+	void (*request_update_ms)(struct memlat_hwmon *hw,
+				  unsigned int update_ms);
 	struct device *dev;
 	struct device_node *of_node;
 
@@ -73,18 +82,20 @@ struct memlat_hwmon {
 };
 
 #ifdef CONFIG_DEVFREQ_GOV_MEMLAT
-extern bool hisi_cluster_cpu_all_pwrdn(void);
-extern unsigned long get_dev_votefreq(struct device *dev);
-extern void set_dev_votefreq(struct device *dev, unsigned long new_freq);
+bool lpcpu_cluster_cpu_all_pwrdn(void);
+unsigned long get_dev_votefreq(struct device *dev);
+void set_dev_votefreq(struct device *dev, unsigned long new_freq);
 
 int register_memlat(struct device *dev, struct memlat_hwmon *hw);
 #else
 static inline int register_memlat(struct device *dev,
-					struct memlat_hwmon *hw)
+				  struct memlat_hwmon *hw)
 {
 	return 0;
 }
 #endif
+int start_monitor(struct devfreq *df);
+void stop_monitor(struct devfreq *df);
 
 #endif /* _GOVERNOR_BW_HWMON_H */
 

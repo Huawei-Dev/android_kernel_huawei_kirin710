@@ -34,15 +34,15 @@
 #endif
 
 static unsigned long cpu_on_hotplug = 0;
-static struct cpumask idle_cpus_mask;
-static spinlock_t idle_spin_lock;
-bool hisi_cluster_cpu_all_pwrdn(void)
+struct cpumask idle_cpus_mask;
+spinlock_t idle_spin_lock;
+bool lpcpu_cluster_cpu_all_pwrdn(void)
 {
 	struct cpuidle_driver *drv = cpuidle_get_driver();
 	struct cpumask cluster_cpu_mask;
 	int all_pwrdn;
 
-	if (!drv)
+	if (drv == NULL)
 		return false;
 	cpumask_copy(&cluster_cpu_mask, drv->cpumask);
 
@@ -52,7 +52,7 @@ bool hisi_cluster_cpu_all_pwrdn(void)
 
 	return !!all_pwrdn;
 }
-EXPORT_SYMBOL(hisi_cluster_cpu_all_pwrdn);
+EXPORT_SYMBOL(lpcpu_cluster_cpu_all_pwrdn);
 
 
 bool hisi_fcm_cluster_pwrdn(void)
@@ -487,15 +487,27 @@ static int __init hisi_cluster_idle_driver_init(void)
 	struct cpuidle_driver *drv = NULL;
 
 	cpumask_clear(&drv_init_cpumask);
-	memset(hisi_cluster_idle_driver, 0, sizeof(hisi_cluster_idle_driver)); /* unsafe_function_ignore: memset  */
+	ret = memset_s(hisi_cluster_idle_driver,
+		       sizeof(hisi_cluster_idle_driver), 0,
+		       sizeof(hisi_cluster_idle_driver));
+	if (ret != EOK)
+		return -ENODEV;
 
-	for_each_possible_cpu(cpu) { //lint !e574
+	for_each_possible_cpu(cpu) {
 		if(cpumask_test_cpu(cpu, &drv_init_cpumask))
 			continue;
 
 		drv_name = kzalloc(HISI_CLUSTER_IDLE_DRV_NAME_LEN, GFP_KERNEL);
-		if (drv_name){
-			snprintf(drv_name, HISI_CLUSTER_IDLE_DRV_NAME_LEN, "hisi_cluster%d_idle_driver", cluster_num); /* unsafe_function_ignore: snprintf  */
+		if (drv_name != NULL) {
+			ret = snprintf_s(drv_name,
+					 HISI_CLUSTER_IDLE_DRV_NAME_LEN,
+					 HISI_CLUSTER_IDLE_DRV_NAME_LEN - 1,
+					 "cluster%d_idle_driver",
+					 cluster_num);
+			if (ret == -1) {
+				kfree(drv_name);
+				return -ENODEV;
+			}
 		}
 
 		drv = &hisi_cluster_idle_driver[cluster_num++];
@@ -505,9 +517,11 @@ static int __init hisi_cluster_idle_driver_init(void)
 
 		hisi_cluster_wfi_state_init(&drv->states[0]);
 
-		ret = hisi_multidrv_idle_init(drv, topology_physical_package_id(cpu));
-		if (ret) {
-			pr_err("fail to register cluster cpuidle drv.ret:%d\n", ret);
+		ret = hisi_multidrv_idle_init(drv,
+					      topology_physical_package_id(cpu));
+		if (ret != 0) {
+			pr_err("fail to register cluster cpuidle drv.ret:%d\n",
+			       ret);
 			return ret;
 		}
 

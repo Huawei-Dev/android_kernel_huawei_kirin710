@@ -25,5 +25,5 @@ static inline unsigned long drg_devfreq_check_limit(
 }
 
 extern int drg_get_freq_range(struct drg_dev_freq *freq) {return 0;}
-extern bool hisi_cluster_cpu_all_pwrdn(void);
+extern bool lpcpu_cluster_cpu_all_pwrdn(void);
 #endif /* _HISI_DRG_H */
