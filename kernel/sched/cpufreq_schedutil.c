@@ -47,6 +47,8 @@ void sched_set_io_is_busy(int val)
 {
         sched_io_is_busy = val;
 }
+
+static BLOCKING_NOTIFIER_HEAD(sugov_status_notifier_list);
 #endif
 
 #define SUGOV_KTHREAD_PRIORITY	50
@@ -253,6 +255,16 @@ static inline unsigned int get_freq_reporting_policy(int cpu)
 		return DEFAULT_FREQ_REPORTING_POLICY;
 
 	return sg_policy->tunables->freq_reporting_policy;
+}
+
+int sugov_register_notifier(struct notifier_block *nb)
+{
+	return blocking_notifier_chain_register(&sugov_status_notifier_list, nb);
+}
+
+int sugov_unregister_notifier(struct notifier_block *nb)
+{
+	return blocking_notifier_chain_unregister(&sugov_status_notifier_list, nb);
 }
 #endif
 
@@ -1204,6 +1216,9 @@ out:
 
 #ifdef CONFIG_HISI_CPU_FREQ_GOV_SCHEDUTIL
 	sugov_slack_timer_resched(sg_policy);
+
+	blocking_notifier_call_chain(&sugov_status_notifier_list,
+			SUGOV_ACTIVE, &sg_policy->trigger_cpu);
 #endif
 
 	sg_policy->work_in_progress = false;
@@ -2470,6 +2485,9 @@ static int sugov_start(struct cpufreq_policy *policy)
 	raw_spin_unlock(&sg_policy->timer_lock);
 #endif
 
+	blocking_notifier_call_chain(&sugov_status_notifier_list,
+			SUGOV_START, &policy->cpu);
+
 	return 0;
 }
 
@@ -2477,6 +2495,9 @@ static void sugov_stop(struct cpufreq_policy *policy)
 {
 	struct sugov_policy *sg_policy = policy->governor_data;
 	unsigned int cpu;
+
+	blocking_notifier_call_chain(&sugov_status_notifier_list,
+			SUGOV_STOP, &policy->cpu);
 
 #ifdef CONFIG_HISI_CPU_FREQ_GOV_SCHEDUTIL
 	raw_spin_lock(&sg_policy->timer_lock);
