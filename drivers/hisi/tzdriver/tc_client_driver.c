@@ -305,13 +305,18 @@ static void free_cred(const struct cred *cred)
 		put_cred(cred);
 }
 
-extern int security_context_str_to_sid(const char *scontext, u32 *out_sid, gfp_t gfp);
+struct selinux_state;
+extern struct selinux_state selinux_state;
+extern int security_context_str_to_sid(struct selinux_state *state,
+				       const char *scontext,
+				       u32 *out_sid,
+				       gfp_t gfp);
 static int check_process_selinux_security(struct task_struct *ca_task, char *context) {
 	u32 sid;
 	u32 tid;
 	int rc = 0;
 	security_task_getsecid(ca_task, &sid);
-	rc = security_context_str_to_sid(context, &tid, GFP_KERNEL);
+	rc = security_context_str_to_sid(&selinux_state, context, &tid, GFP_KERNEL);
 	if (rc) {
 		TCERR("convert context to sid failed\n");
 		return rc;
