@@ -573,8 +573,7 @@ static inline bool __has_cursum_space(struct f2fs_journal *journal,
 #define F2FS_IOC_SET_PIN_FILE		_IOW(F2FS_IOCTL_MAGIC, 13, __u32)
 #define F2FS_IOC_GET_PIN_FILE		_IOR(F2FS_IOCTL_MAGIC, 14, __u32)
 #define F2FS_IOC_PRECACHE_EXTENTS	_IO(F2FS_IOCTL_MAGIC, 15)
-#define F2FS_IOC_RESIZE_FS		_IOWR(F2FS_IOCTL_MAGIC, 16,     \
-						struct f2fs_resize_from_end)
+#define F2FS_IOC_RESIZE_FS		_IOW(F2FS_IOCTL_MAGIC, 16, __u64)
 
 #define F2FS_IOC_SET_ENCRYPTION_POLICY	FS_IOC_SET_ENCRYPTION_POLICY
 #define F2FS_IOC_GET_ENCRYPTION_POLICY	FS_IOC_GET_ENCRYPTION_POLICY
@@ -624,10 +623,6 @@ struct f2fs_move_range {
 struct f2fs_flush_device {
 	u32 dev_num;		/* device number to flush */
 	u32 segments;		/* # of segments to flush */
-};
-
-struct f2fs_resize_from_end {
-	u64 len;		/* bytes to shrink */
 };
 
 /* for inline stuff */
@@ -3783,7 +3778,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync, bool background,
 int __init create_garbage_collection_cache(void);
 void destroy_garbage_collection_cache(void);
 void f2fs_build_gc_manager(struct f2fs_sb_info *sbi);
-int f2fs_resize_fs(struct f2fs_sb_info *sbi, size_t resize_len);
+int f2fs_resize_fs(struct f2fs_sb_info *sbi, __u64 block_count);
 
 /*
  * recovery.c

@@ -2259,7 +2259,7 @@ static void update_fs_metadata(struct f2fs_sb_info *sbi, int secs)
 					(long long)segs * sbi->blocks_per_seg);
 }
 
-int f2fs_resize_fs(struct f2fs_sb_info *sbi, size_t block_count)
+int f2fs_resize_fs(struct f2fs_sb_info *sbi, __u64 block_count)
 {
 	__u64 old_block_count, shrunk_blocks;
 	struct cp_control cpc = { CP_RESIZE, 0, 0, 0 };

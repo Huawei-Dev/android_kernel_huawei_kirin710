@@ -3161,7 +3161,7 @@ static int f2fs_ioc_precache_extents(struct file *filp, unsigned long arg)
 static int f2fs_ioc_resize_fs(struct file *filp, unsigned long arg)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(file_inode(filp));
-	struct f2fs_resize_from_end param;
+	__u64 block_count;
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -3169,11 +3169,11 @@ static int f2fs_ioc_resize_fs(struct file *filp, unsigned long arg)
 	if (f2fs_readonly(sbi->sb))
 		return -EROFS;
 
-	if (copy_from_user(&param, (struct f2fs_resize_from_end __user *)arg,
-				sizeof(param)))
+	if (copy_from_user(&block_count, (void __user *)arg,
+			   sizeof(block_count)))
 		return -EFAULT;
 
-	return f2fs_resize_fs(sbi, param.len);
+	return f2fs_resize_fs(sbi, block_count);
 }
 
 static int f2fs_ioc_enable_verity(struct file *filp, unsigned long arg)
