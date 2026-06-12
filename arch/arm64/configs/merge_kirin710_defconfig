@@ -4134,7 +4134,6 @@ CONFIG_HISI_IOMMU_LPAE=y
 # CONFIG_HISI_IOMMU_BYPASS is not set
 # CONFIG_HISI_IOMMU_TEST is not set
 # CONFIG_HISI_IOMMU_IOVA_DEBUG is not set
-# CONFIG_HISI_SVM is not set
 
 #
 # Remoteproc drivers
