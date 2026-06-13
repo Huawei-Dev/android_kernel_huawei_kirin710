@@ -101,4 +101,6 @@ static inline struct arm_smccc_res hhee_fn_hvc(unsigned long function_id,
 	return res;
 }
 
+void hhee_lkm_text_update(const void *base, unsigned long text_size);
+
 #endif
