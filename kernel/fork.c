@@ -89,7 +89,6 @@
 #include <linux/aio.h>
 #include <linux/compiler.h>
 #include <linux/sysctl.h>
-#include <linux/hisi/hisi_hkip.h>
 #include <linux/kcov.h>
 #include <linux/livepatch.h>
 #include <linux/thread_info.h>
@@ -1801,10 +1800,6 @@ static __latent_entropy struct task_struct *copy_process(
 	if (!p)
 		goto fork_out;
 
-	retval = hkip_check_xid_root();
-	if (retval)
-		goto bad_fork_free;
-
 	cpufreq_task_times_init(p);
 
 	/*
@@ -2069,7 +2064,6 @@ static __latent_entropy struct task_struct *copy_process(
 	INIT_LIST_HEAD(&p->thread_group);
 	p->task_works = NULL;
 
-	hkip_init_task(p);
 	cgroup_threadgroup_change_begin(current);
 	/*
 	 * Ensure that the cgroup subsystem policies allow the new process to be
