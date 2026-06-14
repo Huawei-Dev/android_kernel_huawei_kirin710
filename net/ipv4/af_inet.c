@@ -416,11 +416,6 @@ lookup_protocol:
 		}
 	}
 out:
-#ifdef CONFIG_CGROUP_BPF
-	if (!err)
-		get_task_comm(sk->sk_process_name, current->group_leader);
-#endif
-
 #ifdef CONFIG_HUAWEI_XENGINE
 	if (!err)
 		emcom_xengine_bind(sk);

@@ -506,9 +506,6 @@ struct sock {
 	u8	is_mp_flow:1,
 		is_download_flow:1;
 #endif
-#ifdef CONFIG_CGROUP_BPF
-	char		sk_process_name[TASK_COMM_LEN];
-#endif
 };
 
 enum sk_pacing {
