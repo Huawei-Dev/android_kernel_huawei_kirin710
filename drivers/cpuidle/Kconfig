@@ -47,14 +47,6 @@ config CPU_IDLE_GOV_MENU
 config DT_IDLE_STATES
 	bool
 
-config HISI_CPUIDLE_MENU_GOV_HIST
-	bool "Support C-state reselect with history record"
-	depends on CPU_IDLE_GOV_MENU
-	default n
-	help
-	  Allows the cpuidle C-state reselect with history record.
-	  If unsure say N.
-
 config HISI_CPUIDLE_LP_MODE
         bool "Support C-state reselect with lowpower mode"
         depends on CPU_IDLE
