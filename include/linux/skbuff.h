@@ -1276,11 +1276,6 @@ static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
 	return is_zcopy ? skb_uarg(skb) : NULL;
 }
 
-static inline bool skb_zcopy_is_nouarg(struct sk_buff *skb)
-{
-	return skb_zcopy(skb) && !skb_shinfo(skb)->destructor_arg;
-}
-
 static inline void skb_zcopy_set(struct sk_buff *skb, struct ubuf_info *uarg)
 {
 	if (skb && uarg && !skb_zcopy(skb)) {
@@ -1317,7 +1312,7 @@ static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy)
 		} else if (uarg->callback == sock_zerocopy_callback) {
 			uarg->zerocopy = uarg->zerocopy && zerocopy;
 			sock_zerocopy_put(uarg);
-		} else if (!skb_zcopy_is_nouarg(skb)) {
+		} else {
 			uarg->callback(uarg, zerocopy);
 		}
 
