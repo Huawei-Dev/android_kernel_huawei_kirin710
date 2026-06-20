@@ -11,8 +11,6 @@ obj-$(CONFIG_HISI_BB) += rdr_logmonitor_core.o
 obj-$(CONFIG_HISI_BB) += rdr_field_core.o
 #obj-$(CONFIG_HISI_BB) += rdr_bootcheck.o
 
-obj-$(CONFIG_HISI_BB_DEBUG) += rdr_debug.o
-obj-$(CONFIG_HISI_BB_DEBUG) += rdr_demo.o
 obj-$(CONFIG_HISI_BB) += platform_ap/
 obj-$(CONFIG_HISI_BB) += diaginfo/
 obj-$(CONFIG_HISI_LPMCU_BB) += platform_lpm3/

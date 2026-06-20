@@ -12,16 +12,6 @@ config HISI_BB
 	  arm exception info,
 	  etc ...
 
-config HISI_BB_DEBUG
-	bool "test unit for kernel run data recorder"
-	depends on SYSFS && HISI_BB
-	default n
-	help
-	  This module can test RDR function ...
-	  Include:
-	  dataabort,
-	  etc
-
 # need_other_module_clear
 config HISI_MNTN_SP
 	bool "hisi ap core register sp record"

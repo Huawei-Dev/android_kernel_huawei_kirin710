@@ -13,10 +13,6 @@
 
 #include <linux/types.h>
 
-#ifdef CONFIG_HISI_BB_DEBUG
-int rdr_debug_init(void);
-void hisi_syserr_loop_test(void);
-#else
 static inline int rdr_debug_init(void)
 {
 	return 0;
@@ -25,5 +21,4 @@ static inline void hisi_syserr_loop_test(void)
 {
 	return;
 }
-#endif /* End #define CONFIG_HISI_BB_DEBUG */
 #endif /* End #define __BB_DEBUG_H__ */

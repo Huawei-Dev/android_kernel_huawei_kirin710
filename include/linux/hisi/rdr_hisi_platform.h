@@ -135,10 +135,6 @@ void reentrant_exception(void);
 static inline void reentrant_exception(void) {}
 #endif
 
-#ifdef CONFIG_HISI_BB_DEBUG
-void last_task_stack_dump(void);
-#else
 static inline void last_task_stack_dump(void) {}
-#endif
 
 #endif

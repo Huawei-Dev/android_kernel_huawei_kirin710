@@ -990,10 +990,6 @@ static void __init do_initcalls(void)
 	/* startup mntn init set here to cover whole init flow */
 	(void)rdr_hisiap_early_init();
 
-#ifdef CONFIG_HISI_BB_DEBUG
-	extern u32 hisi_mntn_test_startkernel_panic(void);
-	(void)hisi_mntn_test_startkernel_panic();
-#endif
 #endif
 	for (level = 0; level < ARRAY_SIZE(initcall_levels) - 1; level++)
 		do_initcall_level(level);
