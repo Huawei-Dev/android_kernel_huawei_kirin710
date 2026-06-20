@@ -1759,7 +1759,7 @@ static void f2fs_enable_checkpoint(struct f2fs_sb_info *sbi)
 	} while (get_pages(sbi, F2FS_DIRTY_DATA) && retry--);
 
 	if (unlikely(retry < 0))
-		f2fs_warn(sbi, "checkpoint=enable has some unwritten data.");
+		f2fs_msg(sbi->sb, KERN_WARNING, "checkpoint=enable has some unwritten data.");
 
 	down_write(&sbi->gc_lock);
 	f2fs_dirty_to_prefree(sbi);
