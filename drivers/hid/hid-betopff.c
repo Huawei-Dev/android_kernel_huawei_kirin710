@@ -101,7 +101,6 @@ static int betopff_init(struct hid_device *hid)
 		for (j = 0; j < report->field[i]->report_count; j++) {
 			report->field[i]->value[j] = 0x00;
 		}
-		field_count++;
 	}
 
 	betopff = kzalloc(sizeof(*betopff), GFP_KERNEL);
