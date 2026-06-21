@@ -121,6 +121,10 @@ extern void userfaultfd_unmap_complete(struct mm_struct *mm,
 
 #else /* CONFIG_USERFAULTFD */
 
+#ifndef CONFIG_USERFAULTFD
+#include <linux/mm.h>
+#endif
+
 /* mm helpers */
 static inline int handle_userfault(struct vm_fault *vmf, unsigned long reason)
 {
