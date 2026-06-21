@@ -907,7 +907,7 @@ static int userfaultfd_release(struct inode *inode, struct file *file)
 					 new_flags, vma->anon_vma,
 					 vma->vm_file, vma->vm_pgoff,
 					 vma_policy(vma),
-					 NULL_VM_UFFD_CTX);
+					 NULL_VM_UFFD_CTX, NULL);
 			if (prev)
 				vma = prev;
 			else
