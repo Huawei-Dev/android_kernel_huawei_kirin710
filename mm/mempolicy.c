@@ -380,13 +380,7 @@ void mpol_rebind_mm(struct mm_struct *mm, nodemask_t *new)
 
 	down_write(&mm->mmap_sem);
 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-		vm_write_begin(vma);
 		mpol_rebind_policy(vma->vm_policy, new);
-		vm_write_end(vma);
-#else
-		mpol_rebind_policy(vma->vm_policy, new);
-#endif
 	}
 	up_write(&mm->mmap_sem);
 }
@@ -606,15 +600,9 @@ unsigned long change_prot_numa(struct vm_area_struct *vma,
 {
 	int nr_updated;
 
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	vm_write_begin(vma);
-#endif
 	nr_updated = change_protection(vma, addr, end, PAGE_NONE, 0, 1);
 	if (nr_updated)
 		count_vm_numa_events(NUMA_PTE_UPDATES, nr_updated);
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	vm_write_end(vma);
-#endif
 	return nr_updated;
 }
 #else
@@ -719,9 +707,6 @@ static int vma_replace_policy(struct vm_area_struct *vma,
 	if (IS_ERR(new))
 		return PTR_ERR(new);
 
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	vm_write_begin(vma);
-#endif
 	if (vma->vm_ops && vma->vm_ops->set_policy) {
 		err = vma->vm_ops->set_policy(vma, new);
 		if (err)
@@ -733,20 +718,12 @@ static int vma_replace_policy(struct vm_area_struct *vma,
 	 * The speculative page fault handler accesses this field without
 	 * hodling the mmap_sem.
 	 */
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	WRITE_ONCE(vma->vm_policy,  new);
-	vm_write_end(vma);
-#else
 	vma->vm_policy = new; /* protected by mmap_sem */
-#endif
 	mpol_put(old);
 
 	return 0;
  err_out:
 	mpol_put(new);
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	vm_write_end(vma);
-#endif
 	return err;
 }
 
@@ -1634,34 +1611,8 @@ COMPAT_SYSCALL_DEFINE6(mbind, compat_ulong_t, start, compat_ulong_t, len,
 struct mempolicy *__get_vma_policy(struct vm_area_struct *vma,
 						unsigned long addr)
 {
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	struct mempolicy *pol;
-#else
 	struct mempolicy *pol = NULL;
-#endif
 
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	if (!vma)
-		return NULL;
-	if (vma->vm_ops && vma->vm_ops->get_policy)
-		return vma->vm_ops->get_policy(vma, addr);
-
-	/*
-	 * This could be called without holding the mmap_sem in the
-	 * speculative page fault handler's path.
-	 */
-	pol = READ_ONCE(vma->vm_policy);
-	if (pol) {
-		/*
-		 * shmem_alloc_page() passes MPOL_F_SHARED policy with
-		 * a pseudo vma whose vma->vm_ops=NULL. Take a reference
-		 * count on these policies which will be dropped by
-		 * mpol_cond_put() later
-		 */
-		if (mpol_needs_cond_ref(pol))
-			mpol_get(pol);
-	}
-#else
 	if (vma) {
 		if (vma->vm_ops && vma->vm_ops->get_policy) {
 			pol = vma->vm_ops->get_policy(vma, addr);
@@ -1678,7 +1629,6 @@ struct mempolicy *__get_vma_policy(struct vm_area_struct *vma,
 				mpol_get(pol);
 		}
 	}
-#endif
 	return pol;
 }
 

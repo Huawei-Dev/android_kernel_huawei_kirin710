@@ -245,11 +245,7 @@ static bool remove_migration_pte(struct page *page, struct vm_area_struct *vma,
 		 */
 		entry = pte_to_swp_entry(*pvmw.pte);
 		if (is_write_migration_entry(entry))
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-			pte = maybe_mkwrite(pte, vma->vm_flags);
-#else
 			pte = maybe_mkwrite(pte, vma);
-#endif
 
 		if (unlikely(is_zone_device_page(new))) {
 			if (is_device_private_page(new)) {
@@ -1991,11 +1987,7 @@ bool pmd_trans_migrating(pmd_t pmd)
  * node. Caller is expected to have an elevated reference count on
  * the page that will be dropped by this function before returning.
  */
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-int migrate_misplaced_page(struct page *page, struct vm_fault *vmf,
-#else
 int migrate_misplaced_page(struct page *page, struct vm_area_struct *vma,
-#endif
 			   int node)
 {
 	pg_data_t *pgdat = NODE_DATA(node);
@@ -2008,11 +2000,7 @@ int migrate_misplaced_page(struct page *page, struct vm_area_struct *vma,
 	 * with execute permissions as they are probably shared libraries.
 	 */
 	if (page_mapcount(page) != 1 && page_is_file_cache(page) &&
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-	    (vmf->vma_flags & VM_EXEC))
-#else
 	    (vma->vm_flags & VM_EXEC))
-#endif
 		goto out;
 
 	/*

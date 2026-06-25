@@ -1146,19 +1146,12 @@ void do_page_add_anon_rmap(struct page *page,
  * This means the inc-and-test can be bypassed.
  * Page does not have to be locked.
  */
-#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-void __page_add_new_anon_rmap(struct page *page,
-	struct vm_area_struct *vma, unsigned long address, bool compound)
-#else
 void page_add_new_anon_rmap(struct page *page,
 	struct vm_area_struct *vma, unsigned long address, bool compound)
-#endif
 {
 	int nr = compound ? hpage_nr_pages(page) : 1;
 
-#ifndef CONFIG_SPECULATIVE_PAGE_FAULT
 	VM_BUG_ON_VMA(address < vma->vm_start || address >= vma->vm_end, vma);
-#endif
 	__SetPageSwapBacked(page);
 	if (compound) {
 		VM_BUG_ON_PAGE(!PageTransHuge(page), page);
