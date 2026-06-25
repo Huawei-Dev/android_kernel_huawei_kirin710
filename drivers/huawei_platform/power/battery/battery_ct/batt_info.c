@@ -1254,7 +1254,7 @@ static void check_nv_sn(struct batt_info *info)
 	schedule_delayed_work(&info->dmd_report_dw, 5 * HZ);
 }
 
-enum batt_match_type get_batt_match_type()
+enum batt_match_type get_batt_match_type(void)
 {
 	struct batt_chk_data *checker_data = NULL;
 	struct batt_checker_entry *temp = NULL;
