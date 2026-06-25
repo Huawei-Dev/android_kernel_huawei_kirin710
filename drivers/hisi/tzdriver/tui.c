@@ -35,16 +35,18 @@
 #include "smc.h"
 #include "tc_ns_client.h"
 #include "hisi_fb.h"
-#include "libhwsecurec/securec.h"
+#include <securec.h>
 #include "tc_ns_log.h"
 #include "mailbox_mempool.h"
-#include <linux/hisi/hisi_powerkey_event.h>
+#include <linux/hisi/powerkey_event.h>
 #include "mem.h"
 
+#include <linux/sched/types.h>
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
 static char *ion_name = "TUI_ION";
 static struct ion_client *tui_client = NULL;
-
+#endif
 
 static void tui_poweroff_work_func(struct work_struct *work);
 static ssize_t tui_status_show(struct kobject *kobj,
@@ -1601,31 +1603,30 @@ static struct dentry *dbg_dentry = NULL;
 
 static int tui_powerkey_notifier_call(struct notifier_block *powerkey_nb, unsigned long event, void *data)
 {
-	if (event == HISI_PRESS_KEY_DOWN) {
+	if (event == PRESS_KEY_DOWN) {
 		tui_poweroff_work_start();
-	}else if (event == HISI_PRESS_KEY_UP) {
-	}else if (event == HISI_PRESS_KEY_1S) {
-	}else if (event == HISI_PRESS_KEY_6S) {
-	} else if (event == HISI_PRESS_KEY_8S) {
-	} else if (event == HISI_PRESS_KEY_10S) {
+	}else if (event == PRESS_KEY_UP) {
+	}else if (event == PRESS_KEY_1S) {
+	}else if (event == PRESS_KEY_6S) {
+	} else if (event == PRESS_KEY_8S) {
+	} else if (event == PRESS_KEY_10S) {
 	} else {
 		pr_err("[%s]invalid event %ld !\n", __func__, event);
 	}
 	return 0;
 }
+
 static struct notifier_block tui_powerkey_nb;
 int register_tui_powerkeyListener(void)
 {
 	tui_powerkey_nb.notifier_call = tui_powerkey_notifier_call;
-	return hisi_powerkey_register_notifier(&tui_powerkey_nb);
+	return powerkey_register_notifier(&tui_powerkey_nb);
 }
 int unregister_tui_powerkeyListener(void)
 {
 	tui_powerkey_nb.notifier_call = tui_powerkey_notifier_call;
-	return hisi_powerkey_unregister_notifier(&tui_powerkey_nb);
+	return powerkey_unregister_notifier(&tui_powerkey_nb);
 }
-
-
 
 int __init init_tui(const struct device *class_dev)
 {
@@ -1643,7 +1644,7 @@ int __init init_tui(const struct device *class_dev)
 		return -ENOMEM;
 	}
 
-
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
 	tui_client = hisi_ion_client_create(ion_name);
 	if(NULL == tui_client) {
 		tloge("create ion client failed\n");
@@ -1652,6 +1653,8 @@ int __init init_tui(const struct device *class_dev)
 	}
 	else
 		tlogd("tui ion client succ\n");
+#endif
+
 	tui_task = kthread_create(tui_kthread_work_fn, NULL, "tuid");
 	if (IS_ERR(tui_task)) { /*lint !e413 !e516 */
 		tui_mem_free();
@@ -1707,10 +1710,13 @@ void tui_exit(void)
 	}
 	tui_mem_free();
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
 	if(NULL != tui_client) {
 		ion_client_destroy(tui_client);
 		tui_client = NULL;
 	}
+#endif
+
 	kthread_stop(tui_task);
 	put_task_struct(tui_task);
 	debugfs_remove(dbg_dentry);

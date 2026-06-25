@@ -509,7 +509,7 @@ int get_rpmb_init_status(void)
 }
 
 
-int vendor_rpmb_ioctl_cmd(enum func_id id, enum rpmb_op_type operation,
+int hisi_rpmb_ioctl_cmd(enum func_id id, enum rpmb_op_type operation,
 			struct storage_blk_ioc_rpmb_data *storage_data)
 {
 	int ret = RPMB_ERR_DEV_VER;

@@ -102,6 +102,4 @@ config HISI_SECBOOT_IMG
     help
       Macro defined for splitting modem and ap img
 
-source drivers/hisi/tzdriver/libhwsecurec/Kconfig
-
 endmenu

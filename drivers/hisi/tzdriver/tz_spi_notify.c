@@ -25,7 +25,7 @@
 #include "gp_ops.h"
 #include "mailbox_mempool.h"
 #include "smc.h"
-#include "libhwsecurec/securec.h"
+#include <securec.h>
 #include "tz_spi_notify.h"
 
 

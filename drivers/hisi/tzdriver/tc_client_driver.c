@@ -87,7 +87,7 @@
 #include <linux/sched/signal.h>
 #include <linux/sched/task.h>
 #endif
-#include "libhwsecurec/securec.h"
+#include <securec.h>
 #include "tck_authentication.h"
 #include "tc_ns_log.h"
 #include "cfc.h"

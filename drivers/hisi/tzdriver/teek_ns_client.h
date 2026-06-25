@@ -5,6 +5,7 @@
 
 #include <linux/mutex.h>
 #include <linux/list.h>
+#include <linux/slab.h>
 
 #include "teek_client_type.h"
 #include "tc_ns_client.h"

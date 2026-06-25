@@ -110,8 +110,6 @@ extern struct mmc_card *get_mmc_card(struct block_device *bdev);
 
 extern int check_ext_agent_access(struct task_struct *ca_task);
 char *get_process_path(struct task_struct *task, char *tpath);
-#if defined(CONFIG_HISI_RPMB) || defined(CONFIG_HISI_MMC_SECURE_RPMB)
 extern int rpmb_agent_register(void);
-#endif
 
 #endif /*_AGENT_H_*/

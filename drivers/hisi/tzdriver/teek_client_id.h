@@ -34,6 +34,18 @@
 	} \
 }
 
+#ifndef TEE_SERVICE_SECISP
+#define TEE_SERVICE_SECISP \
+{ \
+	0xDCA5AE8A, \
+	0x769E, \
+	0x4E24, \
+	{ \
+		0x89, 0x6B, 0x7D, 0x06, 0x44, 0x2C, 0x1C, 0x0E \
+	} \
+}
+#endif
+
 /**
  * @ingroup  TEE_COMMON_DATA
  *
@@ -54,6 +66,7 @@ enum SVC_SECBOOT_CMD_ID {
 	SECBOOT_CMD_ID_BSP_MODULE_VERIFY,        /**< Secboot Task modem module????????*/
 	SECBOOT_CMD_ID_BSP_ICC_OPEN_THREAD,      /**< Secboot Task icc open????*/
 	SECBOOT_CMD_ID_BSP_RFILE_RW_THREAD,      /**< Secboot Task rfile thread????*/
+	SECBOOT_CMD_VERIFY_BYPASS_NET_CERT,
 };
 
 /**

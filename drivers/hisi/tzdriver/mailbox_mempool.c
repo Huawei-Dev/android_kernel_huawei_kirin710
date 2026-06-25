@@ -17,7 +17,7 @@
 #include "mailbox_mempool.h"
 #include "tc_ns_log.h"
 #include "smc.h"
-#include "libhwsecurec/securec.h"
+#include <securec.h>
 
 #define MAILBOX_PAGE_MAX (MAILBOX_POOL_SIZE >> PAGE_SHIFT)
 static int getmax_order;

@@ -2,6 +2,7 @@
 #define TC_NS_LOG_H_
 
 #include <linux/printk.h>
+#include <linux/slab.h>
 
 enum {
 	TZ_DEBUG_VERBOSE = 0,

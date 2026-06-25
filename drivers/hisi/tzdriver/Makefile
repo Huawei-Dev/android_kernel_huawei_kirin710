@@ -15,16 +15,10 @@ obj-$(CONFIG_TZDRIVER) += smc.o
 endif
 
 obj-$(CONFIG_TZDRIVER) += tc_client_driver.o teek_client_api.o mailbox_mempool.o
-obj-$(CONFIG_TZDRIVER) += security_auth_enhance.o agent.o gp_ops.o mem.o cmdmonitor.o tzdebug.o tz_spi_notify.o  dynamic_mem.o
+obj-$(CONFIG_TZDRIVER) += security_auth_enhance.o agent.o gp_ops.o mem.o cmdmonitor.o tzdebug.o tz_spi_notify.o  dynamic_mem.o agent_rpmb.o
 obj-$(CONFIG_TEELOG) += tlogger.o tee_rdr_register.o
-ifeq ($(CONFIG_TZDRIVER), y)
-obj-$(CONFIG_HISI_MMC_SECURE_RPMB) += agent_rpmb.o
-obj-$(CONFIG_HISI_RPMB) += agent_rpmb.o
-endif
 
 obj-$(CONFIG_TEE_TUI) += tui.o
-
-obj-$(CONFIG_TEE_LIBHWSECUREC) += libhwsecurec/
 
 obj-$(CONFIG_TEE_CFC) += cfc_data.o cfc_coresight.o
 $(obj)/cfc_data.o: $(obj)/cfc_data.c
@@ -37,7 +31,7 @@ $(obj)/rule.out: $(src)/rule.in
 ccflags-y += 	-Idrivers/video/hisi/dss \
 		-Idrivers/video/fbdev/hisi/dss \
 		-Idrivers/staging/android \
-		-Idrivers/hisi/tzdriver/libhwsecurec
+		-Ilib/libc_sec/include
 
 ifdef CONFIG_TEE_CFC
   rename-text-section-to := .cfc.text

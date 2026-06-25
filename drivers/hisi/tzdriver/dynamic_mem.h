@@ -29,6 +29,20 @@ struct dynamic_mem_item{
 	uint32_t cafd_count;
 	TEEC_UUID uuid;
 };
+
+typedef struct ion_page_info {
+	phys_addr_t phys_addr;
+	uint32_t npages;
+} tz_page_info;
+
+typedef struct sglist {
+	uint64_t sglist_size;
+	uint64_t ion_size;
+	uint64_t ion_id;
+	uint64_t info_length; /* page_info number */
+	struct ion_page_info page_info[0];
+} tz_sg_list;
+
 int init_dynamic_mem(void);
 void exit_dynamic_mem(void);
 int load_app_use_configid(uint32_t configid, uint32_t cafd,  TEEC_UUID* uuid, uint32_t size);

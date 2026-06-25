@@ -1,6 +1,7 @@
 ccflags-y += -I$(srctree)/drivers/staging/android/ion
 ccflags-y += -I$(srctree)/drivers/hisi/ap/platform/$(TARGET_BOARD_PLATFORM)
 ccflags-y += -Idrivers/hisi/tzdriver
+ccflags-y += -Ilib/libc_sec/include
 
 obj-$(CONFIG_ION_HISI)+= of_mm_ion.o mm_ion_dump.o sec_alloc.o
 obj-$(CONFIG_ION_HISI_SECSG) += ion_tee_op.o

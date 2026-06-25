@@ -12,6 +12,7 @@
 #include <linux/err.h>
 #include <linux/hisi/hisi_ion.h>
 #include <linux/sizes.h>
+#include <securec.h>
 
 #include "mm_ion_priv.h"
 #include "ion.h"
