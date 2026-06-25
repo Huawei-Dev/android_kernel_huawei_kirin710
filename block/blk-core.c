@@ -52,10 +52,6 @@
 struct dentry *blk_debugfs_root;
 #endif
 
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-#include <linux/mmc/hw_write_protect.h>
-#endif
-
 #if defined(CONFIG_HUAWEI_QOS_BLKIO) || defined(CONFIG_ROW_VIP_QUEUE)
 extern int get_task_qos(struct task_struct *task);
 #endif
@@ -2314,20 +2310,6 @@ blk_qc_t generic_make_request(struct bio *bio)
 #ifdef CONFIG_HISI_BLK
 	if(unlikely(hisi_blk_generic_make_request_check(bio)))
 		goto out;
-#endif
-
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-	if (likely(bio_has_data(bio))) {
-		unsigned int count;
-
-		if (unlikely(bio->bi_opf & REQ_OP_WRITE_SAME))
-			count = queue_logical_block_size(bio->bi_disk->queue) >> 9;
-		else
-			count = bio_sectors(bio);
-
-		if (unlikely(should_trap_this_bio(bio->bi_opf, bio, count)))
-			goto out;
-	}
 #endif
 
 	if (!generic_make_request_checks(bio))

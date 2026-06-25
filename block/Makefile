@@ -49,5 +49,3 @@ obj-$(CONFIG_BLK_INLINE_ENCRYPTION)	+= keyslot-manager.o bio-crypt-ctx.o \
 					   blk-crypto.o
 
 obj-$(CONFIG_HISI_RPMB_UFS)       += hisi_blk_scsi_kern.o
-
-obj-$(CONFIG_HW_SYSTEM_WR_PROTECT) += software_system_wp.o

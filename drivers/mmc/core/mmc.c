@@ -271,62 +271,6 @@ static void mmc_select_card_type(struct mmc_card *card)
 		 card->ext_csd.hs_max_dtr);
 }
 
-#ifdef CONFIG_HW_SYSTEM_HW_WR_PROTECT
-static int mmc_system_partition_wr_prot_init(struct mmc_card *card, u8 *ext_csd)
-{
-	int err = 0;
-	unsigned char tmp;
-/* defined by supplier
- *	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
- *				 156, 0x01,
- *				 card->ext_csd.generic_cmd6_time);
- *	if (err){
- *		err = -EINVAL;
- *		pr_debug("[HW]:%s, %d: setting PARTITIONS_ATTRIBUTE [156] error \n", __func__, __LINE__);
- *	}
- *	else
- *		pr_debug("[HW]:%s, %d: setting PARTITIONS_ATTRIBUTE [156] = 0x%02x \n", __func__, __LINE__, 0x01);
-*/
-
-	if ((ext_csd[EXT_CSD_USER_WP] & (1 << 6)) == 0 ||
-	    (ext_csd[EXT_CSD_USER_WP] & (1 << 4)) == 0) {
-		tmp = ext_csd[EXT_CSD_USER_WP];
-		tmp |= (1 << 4);
-		tmp |= (1 << 6);
-		err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL, EXT_CSD_USER_WP,
-				 tmp, card->ext_csd.generic_cmd6_time);
-		if (err) {
-			err = -EINVAL;
-			pr_debug("[HW]:%s, %d: setting ext_csd[171] error \n",
-				 __func__, __LINE__);
-		} else {
-			pr_debug("[HW]:%s, %d: USER_WP[171] = 0x%02x \n",
-				 __func__, __LINE__, tmp);
-		}
-	}
-
-	if ((ext_csd[EXT_CSD_ERASE_GROUP_DEF] & (1 << 0)) == 0) {
-		tmp = ext_csd[EXT_CSD_ERASE_GROUP_DEF];
-		tmp |= (1 << 0);
-		err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
-				 EXT_CSD_ERASE_GROUP_DEF, tmp,
-				 card->ext_csd.generic_cmd6_time);
-		if (err) {
-			err = -EINVAL;
-			pr_debug(
-				"[HW]:%s, %d: setting ext_csd[EXT_CSD_ERASE_GROUP_DEF] error \n",
-				__func__, __LINE__);
-		} else {
-			pr_debug(
-				"[HW]:%s, %d: ERASE_GROUP_DEF [175] = 0x%02x \n",
-				__func__, __LINE__, tmp);
-		}
-	}
-
-	return err;
-}
-#endif
-
 static void mmc_manage_enhanced_area(struct mmc_card *card, u8 *ext_csd)
 {
 	u8 hc_erase_grp_sz, hc_wp_grp_sz;
@@ -848,9 +792,6 @@ static int mmc_read_ext_csd(struct mmc_card *card)
 
 	err = mmc_decode_ext_csd(card, ext_csd);
 
-#ifdef CONFIG_HW_SYSTEM_HW_WR_PROTECT
-    err = mmc_system_partition_wr_prot_init(card, ext_csd);
-#endif
 	kfree(ext_csd);
 	return err;
 }

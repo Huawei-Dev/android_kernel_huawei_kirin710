@@ -69,11 +69,6 @@
 #include "mmc_hisi_card.h"
 #endif
 
-
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-#include <linux/mmc/hw_write_protect.h>
-#endif
-
 #include "hisi_partition.h"
 
 #ifdef CONFIG_HW_SD_HEALTH_DETECT
@@ -197,21 +192,6 @@ struct mmc_blk_data *mmc_blk_get(struct gendisk *disk)
 
 	return md;
 }
-
-#ifdef CONFIG_HW_SYSTEM_HW_WR_PROTECT
-struct mmc_card *mmc_get_card_by_disk(struct gendisk *disk)
-{
-    struct mmc_blk_data *md;
-
-	md = mmc_blk_get(disk);
-	if ((!md) || (!(md->area_type & MMC_BLK_DATA_AREA_MAIN))) {
-		return ERR_PTR(EINVAL);
-	}
-
-    return md->queue.card;
-}
-EXPORT_SYMBOL(mmc_get_card_by_disk);
-#endif
 
 static inline int mmc_get_devidx(struct gendisk *disk)
 {
@@ -1020,9 +1000,6 @@ static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 {
 	struct mmc_blk_data *md;
 	int ret;
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-	ret = -EINVAL;
-#endif
 
 	switch (cmd) {
 	case MMC_IOC_CMD:
@@ -1047,29 +1024,6 @@ static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 					(struct mmc_ioc_multi_cmd __user *)arg);
 		mmc_blk_put(md);
 		return ret;
-#ifdef CONFIG_HW_SYSTEM_WR_PROTECT
-	case MMC_IOC_WP_CMD:
-		#ifdef CONFIG_HW_SYSTEM_HW_WR_PROTECT
-		/* physical protection*/
-		if (arg & 0x1) {
-			ret = mmc_hw_set_wp_state(bdev);
-			if(ret)
-				pr_err("%s; set mmc system wp failed.\n", __func__);
-		}
-
-		/* get physical protection state*/
-		if (arg & 0x10) {
-			ret = mmc_hw_get_wp_state(bdev);
-			if (ret)
-				pr_err("%s: get wp info failed.\n", __func__);
-		}
-		#endif
-		/* software protection */
-		ret = blk_set_ro_secure_debuggable(arg);
-		if (ret)
-			pr_err("%s: blk_set_ro_secure_debuggable failed.\n", __func__);
-		return ret;
-#endif
 	default:
 		return -EINVAL;
 	}
