@@ -626,7 +626,6 @@ static inline void brd_check_and_reset_par(void)
 	}
 }
 
->>>>>>> c911b13e8b2d (brd: check and limit max_part par)
 static int __init brd_init(void)
 {
 	struct brd_device *brd, *next;
