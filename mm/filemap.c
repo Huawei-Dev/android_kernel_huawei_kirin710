@@ -45,10 +45,6 @@
 #include "internal.h"
 #include <linux/iolimit_cgroup.h>
 
-#ifdef CONFIG_HW_MEMORY_MONITOR
-#include <chipset_common/mmonitor/mmonitor.h>
-#endif
-
 #define CREATE_TRACE_POINTS
 #include <trace/events/filemap.h>
 
@@ -2108,13 +2104,7 @@ find_page:
 #endif
 
 		page = find_get_page(mapping, index);
-#ifdef CONFIG_HW_MEMORY_MONITOR
-		count_mmonitor_event(FILE_CACHE_READ_COUNT);
-#endif
 		if (!page) {
-#ifdef CONFIG_HW_MEMORY_MONITOR
-			count_mmonitor_event(FILE_CACHE_MISS_COUNT);
-#endif
 			if (iocb->ki_flags & IOCB_NOWAIT)
 				goto would_block;
 			page_cache_sync_readahead(mapping,
@@ -2544,9 +2534,6 @@ int filemap_fault(struct vm_fault *vmf)
 	 * Do we have something in the page cache already?
 	 */
 	page = find_get_page(mapping, offset);
-#ifdef CONFIG_HW_MEMORY_MONITOR
-	count_mmonitor_event(FILE_CACHE_MAP_COUNT);
-#endif
 #ifdef CONFIG_HW_CGROUP_WORKINGSET
 	workingset_pagecache_on_pagefault(file, offset);
 #endif
