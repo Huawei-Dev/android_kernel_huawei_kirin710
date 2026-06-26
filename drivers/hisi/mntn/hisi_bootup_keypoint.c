@@ -447,4 +447,4 @@ static int __init security_stage_init(void)
 	set_boot_keypoint(STAGE_KERNEL_SECURITY_INITCALL);
 	return 0;
 }
-security_initcall(security_stage_init);
+late_initcall(security_stage_init);
