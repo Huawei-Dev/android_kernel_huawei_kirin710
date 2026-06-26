@@ -79,7 +79,6 @@ extern unsigned int sysctl_sched_time_avg;
 
 int sched_proc_update_handler(struct ctl_table *table, int write,
 		void *buffer, size_t *length, loff_t *ppos);
-#endif
 
 /*
  *  control realtime throttling:
