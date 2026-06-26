@@ -397,7 +397,8 @@ int rdr_get_reboot_state(void)
 
 int rdr_set_saving_state(int state)
 {
-	return atomic_set(&bb_in_saving, state);/*lint !e1058 !e446 */
+	atomic_set(&bb_in_saving, state);
+	return 0;
 }
 
 #ifdef CONFIG_PM
