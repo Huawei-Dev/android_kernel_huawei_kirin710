@@ -563,6 +563,26 @@ struct timespec64 ns_to_timespec64(const s64 nsec)
 }
 EXPORT_SYMBOL(ns_to_timespec64);
 
+/*
+ * Compatibility wrapper for old Huawei/generated assembly objects
+ * still referencing ns_to_timespec directly.
+ */
+#ifdef ns_to_timespec
+#undef ns_to_timespec
+#endif
+struct timespec ns_to_timespec(const s64 nsec)
+{
+	struct timespec64 ts64;
+	struct timespec ts;
+
+	ts64 = ns_to_timespec64(nsec);
+	ts.tv_sec = ts64.tv_sec;
+	ts.tv_nsec = ts64.tv_nsec;
+
+	return ts;
+}
+EXPORT_SYMBOL(ns_to_timespec);
+
 /**
  * msecs_to_jiffies: - convert milliseconds to jiffies
  * @m:	time in milliseconds
