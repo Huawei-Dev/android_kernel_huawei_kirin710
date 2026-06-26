@@ -61,24 +61,6 @@
 #define KBASE_MEM_ION_SYNC_WORKAROUND
 #endif
 
-#if (KERNEL_VERSION(4, 17, 0) > LINUX_VERSION_CODE)
-#define vm_fault_t int
-
-static inline vm_fault_t vmf_insert_pfn(struct vm_area_struct *vma,
-			unsigned long addr, unsigned long pfn)
-{
-	int err = vm_insert_pfn(vma, addr, pfn);
-
-	if (unlikely(err == -ENOMEM))
-		return VM_FAULT_OOM;
-	if (unlikely(err < 0 && err != -EBUSY))
-		return VM_FAULT_SIGBUS;
-
-	return VM_FAULT_NOPAGE;
-}
-#endif
-
-
 static int kbase_vmap_phy_pages(struct kbase_context *kctx,
 		struct kbase_va_region *reg, u64 offset_bytes, size_t size,
 		struct kbase_vmap_struct *map);
