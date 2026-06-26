@@ -3243,7 +3243,7 @@ static inline void *f2fs_kvzalloc(struct f2fs_sb_info *sbi,
 /* wrapper for __vmalloc */
 static inline void *f2fs_vzalloc(size_t size, gfp_t flags)
 {
-       return __vmalloc(size, flags | __GFP_ZERO, PAGE_KERNEL);
+       return __vmalloc(size, flags | __GFP_ZERO);
 }
 
 
