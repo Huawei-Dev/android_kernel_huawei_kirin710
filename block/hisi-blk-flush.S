@@ -1,36 +1,5 @@
 	.text
 	.file	"hisi-blk-flush.c"
-                                        // Start of file scope inline assembly
-	.section "___kcrctab_gpl+blk_power_off_flush", "a"	
-	.weak	__crc_blk_power_off_flush	
-	.long	__crc_blk_power_off_flush	
-	.previous					
-	.section "___kcrctab_gpl+blk_mq_tagset_direct_flush_register", "a"	
-	.weak	__crc_blk_mq_tagset_direct_flush_register	
-	.long	__crc_blk_mq_tagset_direct_flush_register	
-	.previous					
-	.section "___kcrctab_gpl+blk_flush_set_async", "a"	
-	.weak	__crc_blk_flush_set_async	
-	.long	__crc_blk_flush_set_async	
-	.previous					
-	.section "___kcrctab_gpl+blk_queue_direct_flush_register", "a"	
-	.weak	__crc_blk_queue_direct_flush_register	
-	.long	__crc_blk_queue_direct_flush_register	
-	.previous					
-	.section "___kcrctab_gpl+blk_queue_flush_reduce_config", "a"	
-	.weak	__crc_blk_queue_flush_reduce_config	
-	.long	__crc_blk_queue_flush_reduce_config	
-	.previous					
-	.section "___kcrctab_gpl+blk_mq_tagset_flush_reduce_config", "a"	
-	.weak	__crc_blk_mq_tagset_flush_reduce_config	
-	.long	__crc_blk_mq_tagset_flush_reduce_config	
-	.previous					
-	.section "___kcrctab_gpl+blk_flush_async_support", "a"	
-	.weak	__crc_blk_flush_async_support	
-	.long	__crc_blk_flush_async_support	
-	.previous					
-
-                                        // End of file scope inline assembly
 	.file	1 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/export.h"
 	.file	2 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/block/hisi-blk-flush.c"
 	.file	3 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/init.h"

@@ -1,40 +1,5 @@
 	.text
 	.file	"hisi-blk-busy-idle-notify.c"
-                                        // Start of file scope inline assembly
-	.section "___kcrctab+blk_busy_idle_event_subscriber", "a"	
-	.weak	__crc_blk_busy_idle_event_subscriber	
-	.long	__crc_blk_busy_idle_event_subscriber	
-	.previous					
-	.section "___kcrctab+blk_queue_busy_idle_event_subscriber", "a"	
-	.weak	__crc_blk_queue_busy_idle_event_subscriber	
-	.long	__crc_blk_queue_busy_idle_event_subscriber	
-	.previous					
-	.section "___kcrctab+blk_lld_busy_idle_event_subscriber", "a"	
-	.weak	__crc_blk_lld_busy_idle_event_subscriber	
-	.long	__crc_blk_lld_busy_idle_event_subscriber	
-	.previous					
-	.section "___kcrctab+blk_busy_idle_event_unsubscriber", "a"	
-	.weak	__crc_blk_busy_idle_event_unsubscriber	
-	.long	__crc_blk_busy_idle_event_unsubscriber	
-	.previous					
-	.section "___kcrctab+blk_queue_busy_idle_event_unsubscriber", "a"	
-	.weak	__crc_blk_queue_busy_idle_event_unsubscriber	
-	.long	__crc_blk_queue_busy_idle_event_unsubscriber	
-	.previous					
-	.section "___kcrctab+blk_queue_busy_idle_enable", "a"	
-	.weak	__crc_blk_queue_busy_idle_enable	
-	.long	__crc_blk_queue_busy_idle_enable	
-	.previous					
-	.section "___kcrctab+blk_mq_tagset_busy_idle_enable", "a"	
-	.weak	__crc_blk_mq_tagset_busy_idle_enable	
-	.long	__crc_blk_mq_tagset_busy_idle_enable	
-	.previous					
-	.section "___kcrctab+blk_mq_tagset_hw_idle_notify_enable", "a"	
-	.weak	__crc_blk_mq_tagset_hw_idle_notify_enable	
-	.long	__crc_blk_mq_tagset_hw_idle_notify_enable	
-	.previous					
-
-                                        // End of file scope inline assembly
 	.file	1 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/lockdep.h"
 	.file	2 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/block/hisi-blk-busy-idle-notify.c"
 	.file	3 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/export.h"

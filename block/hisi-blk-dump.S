@@ -1,16 +1,5 @@
 	.text
 	.file	"hisi-blk-dump.c"
-                                        // Start of file scope inline assembly
-	.section "___kcrctab+blk_mq_tagset_dump_register", "a"	
-	.weak	__crc_blk_mq_tagset_dump_register	
-	.long	__crc_blk_mq_tagset_dump_register	
-	.previous					
-	.section "___kcrctab+blk_queue_dump_register", "a"	
-	.weak	__crc_blk_queue_dump_register	
-	.long	__crc_blk_queue_dump_register	
-	.previous					
-
-                                        // End of file scope inline assembly
 	.file	1 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/export.h"
 	.file	2 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/block/hisi-blk-dump.c"
 	.file	3 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/asm-generic/int-ll64.h"

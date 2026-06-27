@@ -1,20 +1,5 @@
 	.text
 	.file	"hisi-blk-core.c"
-                                        // Start of file scope inline assembly
-	.section "___kcrctab+blk_queue_set_inline_crypto_flag", "a"	
-	.weak	__crc_blk_queue_set_inline_crypto_flag	
-	.long	__crc_blk_queue_set_inline_crypto_flag	
-	.previous					
-	.section "___kcrctab+is_blk_queue_support_crypto", "a"	
-	.weak	__crc_is_blk_queue_support_crypto	
-	.long	__crc_is_blk_queue_support_crypto	
-	.previous					
-	.section "___kcrctab+blk_generic_freeze", "a"	
-	.weak	__crc_blk_generic_freeze	
-	.long	__crc_blk_generic_freeze	
-	.previous					
-
-                                        // End of file scope inline assembly
 	.file	1 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/export.h"
 	.file	2 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/block/hisi-blk-core.c"
 	.file	3 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/lockdep.h"

@@ -1,12 +1,5 @@
 	.text
 	.file	"hisi-blk-iosched-ufs-mq.c"
-                                        // Start of file scope inline assembly
-	.section "___kcrctab+blk_mq_tagset_ufs_mq_iosched_enable", "a"	
-	.weak	__crc_blk_mq_tagset_ufs_mq_iosched_enable	
-	.long	__crc_blk_mq_tagset_ufs_mq_iosched_enable	
-	.previous					
-
-                                        // End of file scope inline assembly
 	.file	1 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/export.h"
 	.file	2 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/block/hisi-blk-iosched-ufs-mq.c"
 	.file	3 "/mnt/disk/jenkins/ci/workspace/chipset_Q_docker/opensource/component_code/vendor/huawei/extra/build/build_script/kirin_kernel_release/kernel/include/linux/blkdev.h"
