@@ -499,6 +499,7 @@ static ssize_t power_if_sysfs_store(struct device *dev,
 	int user;
 	int type;
 	int value;
+	int fields;
 
 	info = power_if_sysfs_field_lookup(attr->attr.name);
 	if (!info) {
@@ -513,9 +514,22 @@ static ssize_t power_if_sysfs_store(struct device *dev,
 	}
 
 	/* 3: the fields of "user type value" */
-	if (sscanf(buf, "%s %s %d", user_name, type_name, &value) != 3) {
+	/* Accept both:
+	* "user type value"  - Huawei original format
+	* "type value"       - userspace-friendly format
+	*/
+	fields = sscanf(buf, "%s %s %d", user_name, type_name, &value);
+	if (fields != 3) {
+		memset(user_name, 0, POWER_IF_RD_BUF_SIZE);
+		memset(type_name, 0, POWER_IF_RD_BUF_SIZE);
+
+	fields = sscanf(buf, "%s %d", type_name, &value);
+	if (fields != 2) {
 		hwlog_err("unable to parse input:%s\n", buf);
 		return -EINVAL;
+	}
+
+	snprintf(user_name, POWER_IF_RD_BUF_SIZE, "%s", "healthd");
 	}
 
 	if (value < 0) {
