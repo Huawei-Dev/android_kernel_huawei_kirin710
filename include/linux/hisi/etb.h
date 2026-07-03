@@ -62,8 +62,9 @@
 
 
 /*************************/
+#ifndef BIT
 #define BIT(nr) (1UL << (nr))
-
+#endif
 #define REG_SET_BIT(reg, bit)	do{writel((readl(reg) |BIT(bit)),reg);}while(0)
 #define REG_CLEAR_BIT(reg, bit)	do{writel((readl(reg) & ~(BIT(bit))),reg);}while(0)
 #define REG_TEST_BIT(reg, bit)	(readl(reg) & (BIT(bit)))

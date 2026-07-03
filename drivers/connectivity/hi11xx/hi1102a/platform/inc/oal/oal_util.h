@@ -168,9 +168,9 @@
 #define BIT1  ((oal_uint32)(1 << 1))
 #define BIT0  ((oal_uint32)(1 << 0))
 #define ALL   0xFFFF
-
+#ifndef BIT
 #define BIT(nr) (1UL << (nr))
-
+#endif
 #define OAL_BITS_PER_BYTE 8 /* 一个字节中包含的bit数目 */
 
 /* 位操作 */
