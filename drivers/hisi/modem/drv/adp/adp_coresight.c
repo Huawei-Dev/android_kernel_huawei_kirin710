@@ -64,13 +64,11 @@
 #include <bsp_version.h>
 #include <securec.h>
 
-
-
 #define CPU_NUMS                         (4)
 
-
-
+#ifndef BIT
 #define BIT(nr)                         (1UL << (nr))
+#endif
 #define BVAL(val, n)                    (((val) & BIT(n)) >> n)
 
 #define CS_ETM_LOCK(addr)                       \
