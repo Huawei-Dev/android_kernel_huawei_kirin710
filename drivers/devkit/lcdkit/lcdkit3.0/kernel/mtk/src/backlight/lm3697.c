@@ -23,7 +23,11 @@
 #include "lcd_kit_common.h"
 #include "lcd_kit_utils.h"
 #include "lm3697.h"
+#ifdef CONFIG_DRM_MEDIATEK
+#include "lcd_kit_drm_panel.h"
+#else
 #include "lcm_drv.h"
+#endif
 
 static char *lm3697_dts_string[LM3697_RW_REG_MAX] = {
 	"lm3697_reg_sink_output_config",
@@ -75,12 +79,15 @@ static struct lm3697_backlight_information lm3697_bl_info;
 struct class *lm3697_class;
 struct lm3697_chip_data *lm3697_g_chip;
 static bool lm3697_init_status = true;
+#ifndef CONFIG_DRM_MEDIATEK
 extern struct LCM_DRIVER lcdkit_mtk_common_panel;
+#endif
 
 static int lm3697_parse_dts(struct device_node *np)
 {
 	int ret;
 	int i;
+	struct mtk_panel_info *plcd_kit_info = NULL;
 
 	if (np == NULL) {
 		LCD_KIT_ERR("np is null pointer\n");
@@ -109,7 +116,13 @@ static int lm3697_parse_dts(struct device_node *np)
 		return ret;
 	}
 	/* gpio number offset */
+#ifdef CONFIG_DRM_MEDIATEK
+	plcd_kit_info = lcm_get_panel_info();
+	if (plcd_kit_info != NULL)
+		lm3697_bl_info.lm3697_hw_en_gpio += plcd_kit_info->gpio_offset;
+#else
 	lm3697_bl_info.lm3697_hw_en_gpio += ((struct mtk_panel_info *)(lcdkit_mtk_common_panel.panel_info))->gpio_offset;
+#endif
 	ret = of_property_read_u32(np, LM3697_HW_EN_DELAY,
 		&lm3697_bl_info.bl_on_lk_mdelay);
 	if (ret < 0) {
@@ -380,15 +393,18 @@ int lm3697_set_backlight(uint32_t bl_level)
 		lm3697_bl_info.lm3697_level_lsb_reg,
 		LM3697_REG_BRIGHTNESS_LSB_B_BRIGHTNESS[bl_level]);
 	if (ret < 0) {
+		lcd_backlight_i2c_dmd();
 		LCD_KIT_ERR("write lm3697 backlight level lsb:0x%x failed\n",
 			LM3697_REG_BRIGHTNESS_LSB_B_BRIGHTNESS[bl_level]);
 	}
 	ret = regmap_write(lm3697_g_chip->regmap,
 		lm3697_bl_info.lm3697_level_msb_reg,
 		LM3697_REG_BRIGHTNESS_MSB_B_BRIGHTNESS[bl_level]);
-	if (ret < 0)
+	if (ret < 0) {
+		lcd_backlight_i2c_dmd();
 		LCD_KIT_ERR("write lm3697 backlight level msb:0x%x failed\n",
 			LM3697_REG_BRIGHTNESS_MSB_B_BRIGHTNESS[bl_level]);
+	}
 	/* if set backlight level 0, disable lm3697 */
 	if ((lm3697_init_status == true) && (bl_level == 0))
 		lm3697_disable();

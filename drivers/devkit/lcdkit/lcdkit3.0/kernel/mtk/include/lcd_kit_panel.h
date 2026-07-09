@@ -20,13 +20,18 @@
 #define _LCD_KIT_PANEL_H_
 /* product id */
 #define PRODUCT_ALPS	1002
+#define PRODUCT_JM 3000
+#define PRODUCT_JSCH 6000
 
 /* panel compatible */
 #define PANEL_JDI_NT36860C "jdi_2lane_nt36860_5p88_1440P_cmd"
+#define PANEL_090_703 "090_703_6p53"
 
 /* struct */
 struct lcd_kit_panel_ops {
 	int (*lcd_kit_read_project_id)(void);
+	int (*lcd_get_2d_barcode)(char *oem_data);
+	int (*aod_set_area)(uint32_t addr);
 };
 
 struct lcd_kit_panel_map {

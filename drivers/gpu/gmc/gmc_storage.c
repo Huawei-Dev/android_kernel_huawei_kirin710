@@ -64,7 +64,10 @@ static struct gmc_storage_handle *gmc_storage_handle_create(void)
 {
 	struct gmc_storage_handle *handle;
 
-	handle = kmem_cache_alloc(gmc_storage_handle_cache, GFP_KERNEL);
+	handle = (struct gmc_storage_handle *)kmem_cache_alloc(
+		gmc_storage_handle_cache,
+		GFP_KERNEL);
+
 	if (handle == NULL) {
 		pr_err("Unable to allocate storage handle.\n");
 		return ERR_PTR(-ENOMEM);
@@ -185,11 +188,8 @@ static int store_data(struct gmc_storage *storage, u8 *buff, unsigned int size,
 	void *zpagep = NULL;
 	int ret;
 
-	spin_lock(&storage->zpool_lock);
 	ret = zpool_malloc(storage->zpool, size, __GFP_NORETRY | __GFP_NOWARN,
 		handlep);
-	spin_unlock(&storage->zpool_lock);
-
 	if (ret)
 		return ret;
 
@@ -504,7 +504,7 @@ static __init int gmc_storage_init(void)
 {
 	int ret;
 
-	ret = cpuhp_setup_state(CPUHP_AP_HISI_GMC_STORAGE_PREPARE,
+	ret = cpuhp_setup_state(CPUHP_AP_GPU_GMC_STORAGE_PREPARE,
 		"gmc:prepare", gmc_storage_prepare, gmc_storage_dead);
 	if (ret != 0) {
 		pr_err("gmc alloc failed\n");
@@ -523,7 +523,7 @@ static __init int gmc_storage_init(void)
 	return 0;
 
 backtrack:
-	cpuhp_remove_state(CPUHP_AP_HISI_GMC_STORAGE_PREPARE);
+	cpuhp_remove_state(CPUHP_AP_GPU_GMC_STORAGE_PREPARE);
 	return -ENOMEM;
 }
 

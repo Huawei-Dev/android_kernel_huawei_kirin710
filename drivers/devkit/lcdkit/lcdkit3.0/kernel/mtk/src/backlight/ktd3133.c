@@ -23,7 +23,11 @@
 #include "lcd_kit_common.h"
 #include "lcd_kit_utils.h"
 #include "ktd3133.h"
+#ifdef CONFIG_DRM_MEDIATEK
+#include "lcd_kit_drm_panel.h"
+#else
 #include "lcm_drv.h"
+#endif
 
 static char *ktd3133_dts_string[KTD3133_RW_REG_MAX] = {
 	"ktd3133_reg_control",
@@ -49,12 +53,15 @@ static struct ktd3133_backlight_information ktd3133_bl_info;
 struct class *ktd3133_class;
 struct ktd3133_chip_data *ktd3133_g_chip;
 static bool ktd3133_init_status = true;
+#ifndef CONFIG_DRM_MEDIATEK
 extern struct LCM_DRIVER lcdkit_mtk_common_panel;
+#endif
 
 static int ktd3133_parse_dts(struct device_node *np)
 {
 	int ret;
 	int i;
+	struct mtk_panel_info *plcd_kit_info = NULL;
 
 	if (np == NULL) {
 		LCD_KIT_ERR("np is null pointer\n");
@@ -83,7 +90,13 @@ static int ktd3133_parse_dts(struct device_node *np)
 		return ret;
 	}
 	/* gpio number offset */
+#ifdef CONFIG_DRM_MEDIATEK
+	plcd_kit_info = lcm_get_panel_info();
+	if (plcd_kit_info != NULL)
+		ktd3133_bl_info.ktd3133_hw_en_gpio += plcd_kit_info->gpio_offset;
+#else
 	ktd3133_bl_info.ktd3133_hw_en_gpio += ((struct mtk_panel_info *)(lcdkit_mtk_common_panel.panel_info))->gpio_offset;
+#endif
 	ret = of_property_read_u32(np, KTD3133_HW_EN_DELAY,
 		&ktd3133_bl_info.bl_on_lk_mdelay);
 	if (ret < 0) {
@@ -328,14 +341,18 @@ int ktd3133_set_backlight(uint32_t bl_level)
 	/* set backlight level */
 	ret = regmap_write(ktd3133_g_chip->regmap, KTD3133_REG_RATIO_LSB,
 		KTD3133_REG_RATIO_LSB_BRIGHTNESS[bl_level]);
-	if (ret < 0)
+	if (ret < 0) {
+		lcd_backlight_i2c_dmd();
 		LCD_KIT_ERR("write ktd3133 backlight level lsb:0x%x failed\n",
 			KTD3133_REG_RATIO_LSB_BRIGHTNESS[bl_level]);
+	}
 	ret = regmap_write(ktd3133_g_chip->regmap, KTD3133_REG_RATIO_MSB,
 		KTD3133_REG_RATIO_MSB_BRIGHTNESS[bl_level]);
-	if (ret < 0)
+	if (ret < 0) {
+		lcd_backlight_i2c_dmd();
 		LCD_KIT_ERR("write ktd3133 backlight level msb:0x%x failed\n",
 			KTD3133_REG_RATIO_MSB_BRIGHTNESS[bl_level]);
+	}
 	/* if set backlight level 0, disable ktd3133 */
 	if ((ktd3133_init_status == true) && (bl_level == 0))
 		ktd3133_disable();

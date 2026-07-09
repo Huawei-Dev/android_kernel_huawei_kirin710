@@ -72,7 +72,7 @@ enum {
 };
 
 struct rt4801h_voltage {
-	unsigned int voltage;
+	int voltage;
 	unsigned char value;
 };
 

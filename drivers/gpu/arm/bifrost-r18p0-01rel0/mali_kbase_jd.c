@@ -790,6 +790,9 @@ bool jd_submit_atom(struct kbase_context *kctx, const struct base_jd_atom_v2 *us
 	int queued = 0;
 	int i;
 	int sched_prio;
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+	int sched_thro;
+#endif
 	bool ret;
 	bool will_fail = false;
 
@@ -974,6 +977,13 @@ bool jd_submit_atom(struct kbase_context *kctx, const struct base_jd_atom_v2 *us
 	if (sched_prio == KBASE_JS_ATOM_SCHED_PRIO_INVALID)
 		sched_prio = KBASE_JS_ATOM_SCHED_PRIO_DEFAULT;
 	katom->sched_priority = sched_prio;
+
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+	sched_thro = kbasep_js_atom_thro_to_sched_thro(user_atom->thro);
+	if (sched_thro == KBASE_JS_ATOM_SCHED_THRO_INVALID)
+		sched_thro = KBASE_JS_ATOM_SCHED_THRO_DEFAULT;
+	katom->sched_throttle = sched_thro;
+#endif
 
 	/* Create a new atom. */
 	KBASE_TLSTREAM_TL_NEW_ATOM(
@@ -1291,7 +1301,7 @@ void kbase_jd_done_worker(struct work_struct *data)
 
 		kbdev->error_num.gpu_fault++;
 		kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 		/*benchmark data collect */
 		if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 			rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);  //lint !e730

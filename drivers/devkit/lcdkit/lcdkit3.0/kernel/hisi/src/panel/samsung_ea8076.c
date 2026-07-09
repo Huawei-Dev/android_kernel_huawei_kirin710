@@ -25,7 +25,7 @@ static int sam_ea8076_2d_code(char *oem_data, struct hisi_fb_data_type *hisifd)
 	int i;
 
 	if (disp_info->oeminfo.barcode_2d.support) {
-		ret = lcd_kit_dsi_cmds_rx(hisifd, read_value,
+		ret = lcd_kit_dsi_cmds_rx(hisifd, read_value, OEM_INFO_SIZE_MAX,
 			&disp_info->oeminfo.barcode_2d.cmds);
 		oem_data[0] = BARCODE_2D_TYPE;
 		oem_data[1] = BARCODE_BLOCK_NUM;

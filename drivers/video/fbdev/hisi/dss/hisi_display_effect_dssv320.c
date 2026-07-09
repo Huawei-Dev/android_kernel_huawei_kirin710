@@ -34,21 +34,27 @@ typedef struct delay_record {
 	int count;
 } delay_record_t;
 
-static int hisifb_ce_do_contrast(struct hisi_fb_data_type *hisifd);
-static void hisifb_ce_service_init(void);
-static void hisifb_ce_service_deinit(void);
+static int dpufb_ce_do_contrast(struct dpu_fb_data_type *dpufd);
+static void dpufb_ce_service_init(void);
+static void dpufb_ce_service_deinit(void);
 
-#define DEBUG_EFFECT_LOG					HISI_FB_ERR
+#define DEBUG_EFFECT_LOG					DPU_FB_ERR
 
-#define _EFFECT_DEBUG_LOG(message, ...) \
-	do { printk("%s: "message, __func__, ## __VA_ARGS__); } while (0)
-#define EFFECT_DEBUG_LOG(feature, message, ...) \
-	do { if (g_debug_effect & feature) \
-		printk("%s: "message, __func__, ## __VA_ARGS__); } while (0)
-
-#define DEFINE_DELAY_RECORD(var, name)		static delay_record_t var = {name, 0, 0xFFFFFFFF, 0, 0}
+#define define_delay_record(var, name)		static delay_record_t var = {name, 0, 0xFFFFFFFF, 0, 0}
 																		\
 #define EFFECT_GRADUAL_REFRESH_FRAMES		(30)
+
+#define XCC_COEF_LEN	   12
+#define XCC_COEF_INDEX_01	1
+#define XCC_COEF_INDEX_12	6
+#define XCC_COEF_INDEX_23	11
+#define XCC_DEFAULT	0x8000
+#define SCREEN_OFF_BLC_DELTA (-10000)
+#define DBV_MAP_INDEX 3
+#define DBV_MAP_COUNTS 1024
+extern unsigned short dbv_curve_noliner_to_liner_map[DBV_MAP_INDEX][DBV_MAP_COUNTS];
+static uint32_t xcc_table_temp[12] = {0x0, 0x8000, 0x0, 0x0, 0x0, 0x0, 0x8000, 0x0, 0x0, 0x0, 0x0, 0x8000};
+static uint32_t xcc_enable_state = 0;
 
 static bool g_is_effect_init = false;
 static bool g_is_ce_service_init = false;
@@ -67,9 +73,9 @@ static spinlock_t g_gamma_effect_lock;
 static time_interval_t interval_wait_hist = {0};
 static time_interval_t interval_wait_lut = {0};
 static time_interval_t interval_algorithm = {0};
-DEFINE_DELAY_RECORD(delay_wait_hist, "event hist waiting");
-DEFINE_DELAY_RECORD(delay_wait_lut, "event lut waiting");
-DEFINE_DELAY_RECORD(delay_algorithm, "algorithm processing");
+define_delay_record(delay_wait_hist, "event hist waiting");
+define_delay_record(delay_wait_lut, "event lut waiting");
+define_delay_record(delay_algorithm, "algorithm processing");
 
 uint32_t g_enable_effect = ENABLE_EFFECT_HIACE | ENABLE_EFFECT_BL;
 uint32_t g_debug_effect = 0;
@@ -113,21 +119,9 @@ static inline void count_delay(delay_record_t *record, long delay)
 	}
 }
 
-static inline uint32_t get_fixed_point_offset(uint32_t half_block_size)
+static inline void enable_blc(struct dpu_fb_data_type *dpufd, bool enable)
 {
-	uint32_t num = 2;
-	uint32_t len = 2;
-	while (len < half_block_size) {
-		num++;
-		len <<= 1;
-	}
-	return num;
-}
-
-
-static inline void enable_blc(struct hisi_fb_data_type *hisifd, bool enable)
-{
-	dss_display_effect_bl_enable_t *bl_enable_ctrl = &(hisifd->bl_enable_ctrl);
+	dss_display_effect_bl_enable_t *bl_enable_ctrl = &(dpufd->bl_enable_ctrl);
 	int bl_enable = enable ? 1 : 0;
 
 	mutex_lock(&(bl_enable_ctrl->ctrl_lock));
@@ -135,19 +129,19 @@ static inline void enable_blc(struct hisi_fb_data_type *hisifd, bool enable)
 		bl_enable_ctrl->ctrl_bl_enable = bl_enable;
 	}
 	mutex_unlock(&(bl_enable_ctrl->ctrl_lock));
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] bl_enable change to %d\n", bl_enable_ctrl->ctrl_bl_enable);
+	effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] bl_enable change to %d\n", bl_enable_ctrl->ctrl_bl_enable);
 }
 
 
-static int hisifb_ce_do_contrast(struct hisi_fb_data_type *hisifd)
+static int dpufb_ce_do_contrast(struct dpu_fb_data_type *dpufd)
 {
 	ce_service_t *service = &g_hiace_service;
 	int ret = 0;
 	long wait_ret = 0;
 	long timeout = msecs_to_jiffies(100);
 
-	if (hisifd == NULL) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (dpufd == NULL) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -EINVAL;
 	}
 
@@ -162,7 +156,7 @@ static int hisifb_ce_do_contrast(struct hisi_fb_data_type *hisifd)
 			wait_ret = wait_event_interruptible_timeout(service->wq_lut, service->new_lut || service->stop, timeout);
 			service->stop = false;
 		} else {
-			HISI_FB_ERR("[effect] wq_lut uninit\n");
+			DPU_FB_ERR("[effect] wq_lut uninit\n");
 			return -EINVAL;
 		}
 
@@ -174,39 +168,39 @@ static int hisifb_ce_do_contrast(struct hisi_fb_data_type *hisifd)
 
 	if (service->new_lut) {
 		service->new_lut = false;
-		ret = hisifd->hiace_info.algorithm_result;
+		ret = dpufd->hiace_info[dpufd->panel_info.disp_panel_id].algorithm_result;
 	} else {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] wait_event_interruptible_timeout() return %ld, -ERESTARTSYS:%d\n", wait_ret, -ERESTARTSYS);
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] wait_event_interruptible_timeout() return %ld, -ERESTARTSYS:%d\n", wait_ret, -ERESTARTSYS);
 		ret = -3;
 	}
 
 	return ret;
 }
 
-bool check_underflow_clear_ack(struct hisi_fb_data_type *hisifd)
+bool check_underflow_clear_ack(struct dpu_fb_data_type *dpufd)
 {
 	char __iomem *mctl_base = NULL;
 	uint32_t mctl_status = 0;
 
-	if(NULL == hisifd){
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if(NULL == dpufd){
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return false;
 	}
 
-	mctl_base = hisifd->dss_module.mctl_base[DSS_MCTL0];
+	mctl_base = dpufd->dss_module.mctl_base[DSS_MCTL0];
 	if (mctl_base) {
 		mctl_status = inp32(mctl_base + MCTL_CTL_STATUS);
 		if ((mctl_status & 0x10) == 0x10) {
-			HISI_FB_ERR("UNDERFLOW ACK TIMEOUT!\n");
+			DPU_FB_ERR("UNDERFLOW ACK TIMEOUT!\n");
 			return false;
 		}
 	}
 	return true;
 }
 
-void hisi_effect_init(struct hisi_fb_data_type *hisifd)
+void hisi_effect_init(struct dpu_fb_data_type *dpufd)
 {
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	dss_ce_info_t *ce_info = NULL;
 	hiace_alg_parameter_t *param = NULL;
 
@@ -219,12 +213,12 @@ void hisi_effect_init(struct hisi_fb_data_type *hisifd)
 		g_is_effect_lock_init = true;
 	}
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (pinfo->hiace_support == 0) {
 		if (g_debug_effect & DEBUG_EFFECT_ENTRY) {
 			DEBUG_EFFECT_LOG("[effect] HIACE is not supported!\n");
@@ -232,22 +226,22 @@ void hisi_effect_init(struct hisi_fb_data_type *hisifd)
 		return;
 	}
 
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
-		ce_info = &hisifd->hiace_info;
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
+		ce_info = &dpufd->hiace_info[dpufd->panel_info.disp_panel_id];
 		param = &pinfo->hiace_param;
 	} else {
-		HISI_FB_ERR("[effect] fb%d, not support!", hisifd->index);
+		DPU_FB_ERR("[effect] fb%d, not support!", dpufd->index);
 		return;
 	}
 
 	if (!g_is_effect_init) {
 		mutex_init(&g_ce_service_lock);
-		mutex_init(&(hisifd->al_ctrl.ctrl_lock));
-		mutex_init(&(hisifd->ce_ctrl.ctrl_lock));
-		mutex_init(&(hisifd->bl_ctrl.ctrl_lock));
-		mutex_init(&(hisifd->bl_enable_ctrl.ctrl_lock));
-		mutex_init(&(hisifd->metadata_ctrl.ctrl_lock));
-		hisifd->bl_enable_ctrl.ctrl_bl_enable = 1;
+		mutex_init(&(dpufd->al_ctrl.ctrl_lock));
+		mutex_init(&(dpufd->ce_ctrl.ctrl_lock));
+		mutex_init(&(dpufd->bl_ctrl.ctrl_lock));
+		mutex_init(&(dpufd->bl_enable_ctrl.ctrl_lock));
+		mutex_init(&(dpufd->metadata_ctrl.ctrl_lock));
+		dpufd->bl_enable_ctrl.ctrl_bl_enable = 1;
 
 		memset(ce_info, 0, sizeof(dss_ce_info_t));
 		ce_info->algorithm_result = 1;
@@ -258,8 +252,8 @@ void hisi_effect_init(struct hisi_fb_data_type *hisifd)
 		param->iHeight = (int)pinfo->yres;
 		param->iMode = 0;
 		param->bitWidth = 10;
-		param->iMinBackLight = (int)hisifd->panel_info.bl_min;
-		param->iMaxBackLight = (int)hisifd->panel_info.bl_max;
+		param->iMinBackLight = (int)dpufd->panel_info.bl_min;
+		param->iMaxBackLight = (int)dpufd->panel_info.bl_max;
 		param->iAmbientLight = -1;
 
 		memset(&g_hiace_service, 0, sizeof(g_hiace_service));
@@ -271,26 +265,26 @@ void hisi_effect_init(struct hisi_fb_data_type *hisifd)
 		}
 
 		g_is_effect_init = true;
-		HISI_FB_INFO("[effect] fb%d, hisi effect init here!", hisifd->index);
+		DPU_FB_INFO("[effect] fb%d, hisi effect init here!", dpufd->index);
 	} else {
 		if (g_debug_effect & DEBUG_EFFECT_ENTRY) {
 			DEBUG_EFFECT_LOG("[effect] bypass\n");
 		}
-		HISI_FB_INFO("[effect] fb%d, hisi effect has been inited!", hisifd->index);
+		DPU_FB_INFO("[effect] fb%d, hisi effect has been inited!", dpufd->index);
 	}
 }
 
-void hisi_effect_deinit(struct hisi_fb_data_type *hisifd)
+void hisi_effect_deinit(struct dpu_fb_data_type *dpufd)
 {
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	dss_ce_info_t *ce_info = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (pinfo->hiace_support == 0) {
 		if (g_debug_effect & DEBUG_EFFECT_ENTRY) {
 			DEBUG_EFFECT_LOG("[effect] HIACE is not supported!\n");
@@ -298,10 +292,10 @@ void hisi_effect_deinit(struct hisi_fb_data_type *hisifd)
 		return;
 	}
 
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
-		ce_info = &hisifd->hiace_info;
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
+		ce_info = &dpufd->hiace_info[dpufd->panel_info.disp_panel_id];
 	} else {
-		HISI_FB_ERR("[effect] fb%d, not support!", hisifd->index);
+		DPU_FB_ERR("[effect] fb%d, not support!", dpufd->index);
 		return;
 	}
 
@@ -310,18 +304,18 @@ void hisi_effect_deinit(struct hisi_fb_data_type *hisifd)
 		mutex_destroy(&g_rgbw_lock);
 	}
 
-	down(&hisifd->hiace_hist_lock_sem);/*avoid  using  mutex_lock() but hist_lock was destoried by mutex_destory in  hisi_effect_deinit*/
+	down(&dpufd->hiace_hist_lock_sem);/*avoid  using  mutex_lock() but hist_lock was destoried by mutex_destory in  hisi_effect_deinit*/
 	if (g_is_effect_init) {
 		g_is_effect_init = false;
 
 		mutex_destroy(&(ce_info->hist_lock));
 		mutex_destroy(&(ce_info->lut_lock));
 
-		mutex_destroy(&(hisifd->al_ctrl.ctrl_lock));
-		mutex_destroy(&(hisifd->ce_ctrl.ctrl_lock));
-		mutex_destroy(&(hisifd->bl_ctrl.ctrl_lock));
-		mutex_destroy(&(hisifd->bl_enable_ctrl.ctrl_lock));
-		mutex_destroy(&(hisifd->metadata_ctrl.ctrl_lock));
+		mutex_destroy(&(dpufd->al_ctrl.ctrl_lock));
+		mutex_destroy(&(dpufd->ce_ctrl.ctrl_lock));
+		mutex_destroy(&(dpufd->bl_ctrl.ctrl_lock));
+		mutex_destroy(&(dpufd->bl_enable_ctrl.ctrl_lock));
+		mutex_destroy(&(dpufd->metadata_ctrl.ctrl_lock));
 
 		mutex_destroy(&g_ce_service_lock);
 	} else {
@@ -329,14 +323,14 @@ void hisi_effect_deinit(struct hisi_fb_data_type *hisifd)
 			DEBUG_EFFECT_LOG("[effect] bypass\n");
 		}
 	}
-	up(&hisifd->hiace_hist_lock_sem);
+	up(&dpufd->hiace_hist_lock_sem);
 }
 
-static void hisifb_ce_service_init(void)
+static void dpufb_ce_service_init(void)
 {
 	mutex_lock(&g_ce_service_lock);
 	if (!g_is_ce_service_init) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] step in\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] step in\n");
 
 		g_hiace_service.is_ready = true;
 		g_hiace_service.stop = false;
@@ -346,11 +340,11 @@ static void hisifb_ce_service_init(void)
 	mutex_unlock(&g_ce_service_lock);
 }
 
-static void hisifb_ce_service_deinit(void)
+static void dpufb_ce_service_deinit(void)
 {
 	mutex_lock(&g_ce_service_lock);
 	if (g_is_ce_service_init) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] step in\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] step in\n");
 
 		g_is_ce_service_init = false;
 
@@ -362,14 +356,14 @@ static void hisifb_ce_service_deinit(void)
 	mutex_unlock(&g_ce_service_lock);
 }
 
-static inline void enable_hiace(struct hisi_fb_data_type *hisifd, bool enable)
+static inline void enable_hiace(struct dpu_fb_data_type *dpufd, bool enable)
 {
-	down(&hisifd->blank_sem);
-	if (hisifd->panel_power_on) {
-		if (hisifd->hiace_info.hiace_enable != enable) { //lint !e731
-			char __iomem *hiace_base = hisifd->dss_base + DSS_HI_ACE_OFFSET;
+	down(&dpufd->blank_sem);
+	if (dpufd->panel_power_on) {
+		if (dpufd->hiace_info[dpufd->panel_info.disp_panel_id].hiace_enable != enable) { //lint !e731
+			char __iomem *hiace_base = dpufd->dss_base + DSS_HI_ACE_OFFSET;
 
-			hisifb_activate_vsync(hisifd);
+			dpufb_activate_vsync(dpufd);
 			if (enable) {
 				// enable hiace
 				set_reg(hiace_base + HIACE_BYPASS_ACE, 0x0, 1, 0);
@@ -381,132 +375,133 @@ static inline void enable_hiace(struct hisi_fb_data_type *hisifd, bool enable)
 				// disable hiace
 				set_reg(hiace_base + HIACE_BYPASS_ACE, 0x1, 1, 0);
 			}
-			hisifb_deactivate_vsync(hisifd);
+			dpufb_deactivate_vsync(dpufd);
 
-			hisifd->hiace_info.hiace_enable = enable;
-			EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] hiace:%d\n", (int)enable);
+			dpufd->hiace_info[dpufd->panel_info.disp_panel_id].hiace_enable = enable;
+			effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] hiace:%d\n", (int)enable);
 		}
 	} else {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] fb%d, panel power off!\n", hisifd->index);
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] fb%d, panel power off!\n", dpufd->index);
 	}
-	up(&hisifd->blank_sem);
+	up(&dpufd->blank_sem);
 }
 
-int hisifb_ce_service_blank(int blank_mode, struct fb_info *info)
+int dpufb_ce_service_blank(int blank_mode, struct fb_info *info)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("info is NULL\n");
+		DPU_FB_ERR("info is NULL\n");
 		return -EINVAL;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -EINVAL;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
 		if (pinfo->hiace_support) {
-			EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] blank_mode is %d\n", blank_mode);
+			effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] blank_mode is %d\n", blank_mode);
 			if (blank_mode == FB_BLANK_UNBLANK) {
-				hisifb_ce_service_init();
-				enable_blc(hisifd, true);
-				if (hisifb_display_effect_is_need_ace(hisifd)) {
-					enable_hiace(hisifd, true);
+				dpufb_ce_service_init();
+				enable_blc(dpufd, true);
+				if (dpufb_display_effect_is_need_ace(dpufd)) {
+					enable_hiace(dpufd, true);
 				}
 			} else {
-				if (hisifb_display_effect_is_need_ace(hisifd)) {
+				if (dpufb_display_effect_is_need_ace(dpufd)) {
 					g_hiace_service.use_last_value = true;
 				}
-				hisifd->hiace_info.gradual_frames = 0;
-				hisifd->hiace_info.hiace_enable = false;
-				hisifd->hiace_info.to_stop_hdr = false;
-				hisifd->hiace_info.to_stop_sre = false;
+				dpufd->hiace_info[dpufd->panel_info.disp_panel_id].gradual_frames = 0;
+				dpufd->hiace_info[dpufd->panel_info.disp_panel_id].hiace_enable = false;
+				dpufd->hiace_info[dpufd->panel_info.disp_panel_id].to_stop_hdr = false;
+				dpufd->hiace_info[dpufd->panel_info.disp_panel_id].to_stop_sre = false;
 				g_hiace_service.blc_used = false;
 				// Since java has no destruct function and Gallery will refresh metadata when power on, always close HDR for Gallery when power off.
-				if (hisifd->ce_ctrl.ctrl_ce_mode == CE_MODE_IMAGE) {
-					hisifd->ce_ctrl.ctrl_ce_mode = CE_MODE_DISABLE;
+				if (dpufd->ce_ctrl.ctrl_ce_mode == CE_MODE_IMAGE) {
+					dpufd->ce_ctrl.ctrl_ce_mode = CE_MODE_DISABLE;
 				}
-				enable_blc(hisifd, false);
-				hisifb_ce_service_deinit();
+				enable_blc(dpufd, false);
+				dpufb_ce_service_deinit();
 			}
 		}
 	}
 	return 0;
 }
 
-int hisifb_ce_service_get_support(struct fb_info *info, void __user *argp)
+int dpufb_ce_service_get_support(struct fb_info *info, void __user *argp)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	unsigned int support = 0;
 	int ret = 0;
 
 	if (NULL == info) {
-		HISI_FB_ERR("[effect] info is NULL\n");
+		DPU_FB_ERR("[effect] info is NULL\n");
 		return -EINVAL;
 	}
 
 	if (NULL == argp) {
-		HISI_FB_ERR("[effect] argp is NULL\n");
+		DPU_FB_ERR("[effect] argp is NULL\n");
 		return -EINVAL;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -EINVAL;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (pinfo->hiace_support) {
 		support = 1;
 	}
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] support:%d\n", support);
+	effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] support:%d\n", support);
 
 	ret = (int)copy_to_user(argp, &support, sizeof(support));
 	if (ret) {
-		HISI_FB_ERR("[effect] copy_to_user failed! ret=%d.\n", ret);
+		DPU_FB_ERR("[effect] copy_to_user failed! ret=%d.\n", ret);
 		return ret;
 	}
 
 	return ret;
 }
 
-int hisifb_ce_service_get_limit(struct fb_info *info, void __user *argp)
+int dpufb_ce_service_get_limit(struct fb_info *info, void __user *argp)
 {
 	int limit = 0;
 	int ret = 0;
+	(void *)info;
 
 	if (NULL == argp) {
-		HISI_FB_ERR("argp is NULL\n");
+		DPU_FB_ERR("argp is NULL\n");
 		return -EINVAL;
 	}
 
 	ret = (int)copy_to_user(argp, &limit, sizeof(limit));
 	if (ret) {
-		HISI_FB_ERR("copy_to_user failed! ret=%d.\n", ret);
+		DPU_FB_ERR("copy_to_user failed! ret=%d.\n", ret);
 		return ret;
 	}
 
 	return ret;
 }
 
-int hisifb_ce_service_get_hiace_param(struct fb_info *info, void __user *argp){
+int dpufb_ce_service_get_hiace_param(struct fb_info *info, void __user *argp){
 	(void)info, (void)argp;
 	return 0;
 }
 
-int hisifb_ce_service_get_param(struct fb_info *info, void __user *argp)
+int dpufb_ce_service_get_param(struct fb_info *info, void __user *argp)
 {
 	int ret = 0;
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	dss_display_effect_ce_t *ce_ctrl = NULL;
 	dss_display_effect_al_t *al_ctrl = NULL;
 	dss_display_effect_sre_t *sre_ctrl = NULL;
@@ -516,36 +511,36 @@ int hisifb_ce_service_get_param(struct fb_info *info, void __user *argp)
 	struct timespec ts;
 
 	if (NULL == argp) {
-		HISI_FB_ERR("[effect] argp is NULL\n");
+		DPU_FB_ERR("[effect] argp is NULL\n");
 		return -EINVAL;
 	}
 
 	if (NULL == info) {
-		HISI_FB_ERR("[effect] info is NULL\n");
+		DPU_FB_ERR("[effect] info is NULL\n");
 		return -EINVAL;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -EINVAL;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (!pinfo->hiace_support) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
 		return -EINVAL;
 	}
 
-	ce_ctrl = &(hisifd->ce_ctrl);
-	al_ctrl = &(hisifd->al_ctrl);
-	sre_ctrl = &(hisifd->sre_ctrl);
-	metadata_ctrl = &(hisifd->metadata_ctrl);
-	ce_info = &(hisifd->hiace_info);
+	ce_ctrl = &(dpufd->ce_ctrl);
+	al_ctrl = &(dpufd->al_ctrl);
+	sre_ctrl = &(dpufd->sre_ctrl);
+	metadata_ctrl = &(dpufd->metadata_ctrl);
+	ce_info = &(dpufd->hiace_info[dpufd->panel_info.disp_panel_id]);
 	mode = ce_ctrl->ctrl_ce_mode;
 	if (mode != CE_MODE_DISABLE) {
 		pinfo->hiace_param.iDoLCE = 1;
-		pinfo->hiace_param.iDoAPLC = (mode == CE_MODE_VIDEO && hisifd->bl_level > 0 && al_ctrl->ctrl_al_value >= 0) ? 1 : 0;
+		pinfo->hiace_param.iDoAPLC = (mode == CE_MODE_VIDEO && dpufd->bl_level > 0 && al_ctrl->ctrl_al_value >= 0) ? 1 : 0;
 	} else {
 		if (ce_info->gradual_frames > 0) {
 			pinfo->hiace_param.iDoLCE = -1;
@@ -558,7 +553,7 @@ int hisifb_ce_service_get_param(struct fb_info *info, void __user *argp)
 			ce_info->to_stop_hdr = false;
 		}
 	}
-	if (hisifd->bl_level == 0) {
+	if (dpufd->bl_level == 0) {
 		pinfo->hiace_param.iDoAPLC = 0;
 	}
 	pinfo->hiace_param.iDoSRE = sre_ctrl->ctrl_sre_enable;
@@ -567,9 +562,9 @@ int hisifb_ce_service_get_param(struct fb_info *info, void __user *argp)
 	}
 	pinfo->hiace_param.iLevel = (mode == CE_MODE_VIDEO) ? 0 : 1;
 	pinfo->hiace_param.iAmbientLight = (sre_ctrl->ctrl_sre_enable == 1) ? sre_ctrl->ctrl_sre_al : al_ctrl->ctrl_al_value;
-	pinfo->hiace_param.iBackLight = (int)hisifd->bl_level;
+	pinfo->hiace_param.iBackLight = (int)dpufd->bl_level;
 	pinfo->hiace_param.iLaSensorSREOnTH = sre_ctrl->ctrl_sre_al_threshold;
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] BLC:%d, bl:%d, panel_on:%d\n", pinfo->hiace_param.iDoAPLC, pinfo->hiace_param.iBackLight, hisifd->panel_power_on);
+	effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] BLC:%d, bl:%d, panel_on:%d\n", pinfo->hiace_param.iDoAPLC, pinfo->hiace_param.iBackLight, dpufd->panel_power_on);
 	ktime_get_ts(&ts);
 	pinfo->hiace_param.lTimestamp = ts.tv_sec * MSEC_PER_SEC + ts.tv_nsec / NSEC_PER_MSEC;
 	if (metadata_ctrl->count <= META_DATA_SIZE) {
@@ -579,11 +574,11 @@ int hisifb_ce_service_get_param(struct fb_info *info, void __user *argp)
 
 	ret = (int)copy_to_user(argp, &pinfo->hiace_param, sizeof(pinfo->hiace_param));
 	if (ret) {
-		HISI_FB_ERR("[effect] copy_to_user(hiace_param) failed! ret=%d.\n", ret);
+		DPU_FB_ERR("[effect] copy_to_user(hiace_param) failed! ret=%d.\n", ret);
 		return ret;
 	}
 
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] iLevel:%d, iAmbientLight:%d, iBackLight:%d, lTimestamp:%ld(ms)\n",
+	effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] iLevel:%d, iAmbientLight:%d, iBackLight:%d, lTimestamp:%ld(ms)\n",
 					 pinfo->hiace_param.iLevel, pinfo->hiace_param.iAmbientLight, pinfo->hiace_param.iBackLight, pinfo->hiace_param.lTimestamp);
 
 	if (g_debug_effect & DEBUG_EFFECT_DELAY) {
@@ -592,42 +587,42 @@ int hisifb_ce_service_get_param(struct fb_info *info, void __user *argp)
 
 	return ret;
 }
-int hisifb_ce_service_get_hist(struct fb_info *info, void __user *argp)
+int dpufb_ce_service_get_hist(struct fb_info *info, void __user *argp)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	ce_service_t *service = &g_hiace_service;
 	int ret = 0;
 	long wait_ret = 0;
 
 	if (NULL == info) {
-		HISI_FB_ERR("info is NULL\n");
+		DPU_FB_ERR("info is NULL\n");
 		return -EINVAL;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return -EINVAL;
 	}
 
-	if (hisifd->index != PRIMARY_PANEL_IDX) {
-		HISI_FB_ERR("fb%d is not supported!\n", hisifd->index);
+	if (dpufd->index != PRIMARY_PANEL_IDX) {
+		DPU_FB_ERR("fb%d is not supported!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (!pinfo->hiace_support) {
-		HISI_FB_ERR("[effect] Don't support HIACE\n");
+		DPU_FB_ERR("[effect] Don't support HIACE\n");
 		return -EINVAL;
 	}
 
 	if (NULL == argp) {
-		HISI_FB_ERR("[effect] argp is NULL\n");
+		DPU_FB_ERR("[effect] argp is NULL\n");
 		return -EINVAL;
 	}
 
-	HISI_FB_DEBUG("[effect] wait hist\n");
+	DPU_FB_DEBUG("[effect] wait hist\n");
 
 	if (g_is_effect_init) {
 		unlock_fb_info(info);
@@ -635,7 +630,7 @@ int hisifb_ce_service_get_hist(struct fb_info *info, void __user *argp)
 		lock_fb_info(info);
 		service->stop = false;
 	} else {
-		HISI_FB_ERR("[effect]wq_hist uninit\n");
+		DPU_FB_ERR("[effect]wq_hist uninit\n");
 		return -EINVAL;
 	}
 
@@ -644,456 +639,945 @@ int hisifb_ce_service_get_hist(struct fb_info *info, void __user *argp)
 		count_delay(&delay_wait_hist, interval_wait_hist.stop - interval_wait_hist.start);
 	}
 
-	down(&hisifd->hiace_hist_lock_sem);/*avoid  using  mutex_lock() but hist_lock was destoried by mutex_destory in  hisi_effect_deinit*/
+	down(&dpufd->hiace_hist_lock_sem);/*avoid  using  mutex_lock() but hist_lock was destoried by mutex_destory in  hisi_effect_deinit*/
 	if (service->new_hist) {
 		time_interval_t interval_copy_hist = {0};
-		DEFINE_DELAY_RECORD(delay_copy_hist, "hist copy");
+		define_delay_record(delay_copy_hist, "hist copy");
 
 		service->new_hist = false;
 
 		if(!g_is_effect_init){
-			HISI_FB_ERR("[effect] wq_hist uninit here\n");
-			up(&hisifd->hiace_hist_lock_sem);
+			DPU_FB_ERR("[effect] wq_hist uninit here\n");
+			up(&dpufd->hiace_hist_lock_sem);
 			return -EINVAL;
 		}
-		mutex_lock(&hisifd->hiace_info.hist_lock);
+		mutex_lock(&dpufd->hiace_info[pinfo->disp_panel_id].hist_lock);
 		if (g_debug_effect & DEBUG_EFFECT_DELAY) {
 			interval_copy_hist.start = get_timestamp_in_us();
 		}
-		ret = (int)copy_to_user(argp, hisifd->hiace_info.histogram, sizeof(hisifd->hiace_info.histogram));
+		ret = (int)copy_to_user(argp, dpufd->hiace_info[pinfo->disp_panel_id].histogram,
+			sizeof(dpufd->hiace_info[pinfo->disp_panel_id].histogram));
 		if (ret) {
-			HISI_FB_ERR("[effect] copy_to_user failed(param)! ret=%d.\n", ret);
+			DPU_FB_ERR("[effect] copy_to_user failed(param)! ret=%d.\n", ret);
 			ret = -1;
 		}
 		if (g_debug_effect & DEBUG_EFFECT_DELAY) {
 			interval_copy_hist.stop = get_timestamp_in_us();
 			count_delay(&delay_copy_hist, interval_copy_hist.stop - interval_copy_hist.start);
 		}
-		mutex_unlock(&hisifd->hiace_info.hist_lock);
+		mutex_unlock(&dpufd->hiace_info[pinfo->disp_panel_id].hist_lock);
 	} else {
-		if (hisifd->panel_power_on) {
-			EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] wait_event_interruptible_timeout() return %ld, -ERESTARTSYS:%d\n", wait_ret, -ERESTARTSYS);
+		if (dpufd->panel_power_on) {
+			effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] wait_event_interruptible_timeout() return %ld, -ERESTARTSYS:%d\n", wait_ret, -ERESTARTSYS);
 			ret = 3;
 		} else {
-			EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] Panel off! wait_event_interruptible_timeout() return %ld, -ERESTARTSYS:%d\n", wait_ret, -ERESTARTSYS);
+			effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] Panel off! wait_event_interruptible_timeout() return %ld, -ERESTARTSYS:%d\n", wait_ret, -ERESTARTSYS);
 			ret = 1;
 		}
 	}
-	up(&hisifd->hiace_hist_lock_sem);
+	up(&dpufd->hiace_hist_lock_sem);
 
 	return ret;
 }
 
-int hisifb_ce_service_set_lut(struct fb_info *info, const void __user *argp)
+int dpufb_ce_service_set_lut(struct fb_info *info, const void __user *argp)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	dss_display_effect_bl_t *bl_ctrl = NULL;
 	hiace_interface_set_t hiace_set_interface;
 	ce_service_t *service = &g_hiace_service;
 	int ret = 0;
 	time_interval_t interval_copy_lut = {0};
-	DEFINE_DELAY_RECORD(delay_copy_lut, "lut copy");
+
+	define_delay_record(delay_copy_lut, "lut copy");
 
 	if (g_debug_effect & DEBUG_EFFECT_DELAY) {
 		interval_algorithm.stop = get_timestamp_in_us();
 		count_delay(&delay_algorithm, interval_algorithm.stop - interval_algorithm.start);
 	}
 
-	if (NULL == info) {
-		HISI_FB_ERR("info is NULL\n");
-		return -EINVAL;
-	}
+	dpu_check_and_return(!info, -EINVAL, ERR, "info is NULL\n");
+	dpu_check_and_return(!argp, -EINVAL, ERR, "[effect] argp is NULL\n");
 
-	if (NULL == argp) {
-		HISI_FB_ERR("[effect] argp is NULL\n");
-		return -EINVAL;
-	}
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	dpu_check_and_return(!dpufd, -EINVAL, ERR, "[effect] dpufd is NULL\n");
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
-		return -EINVAL;
-	}
-
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (!pinfo->hiace_support) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
 		return -EINVAL;
 	}
 
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] step in\n");
+	effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] step in\n");
 
-	bl_ctrl = &(hisifd->bl_ctrl);
+	bl_ctrl = &(dpufd->bl_ctrl);
 
 	ret = (int)copy_from_user(&hiace_set_interface, argp, sizeof(hiace_interface_set_t));
-	if (ret) {
-		HISI_FB_ERR("[effect] copy_from_user(param) failed! ret=%d.\n", ret);
-		return -2;
-	}
+	dpu_check_and_return((ret != 0), -2, ERR, "[effect] copy_from_user(param) failed! ret=%d.\n", ret);
 
-	hisifd->hiace_info.thminv = hiace_set_interface.thminv;
+	dpufd->hiace_info[pinfo->disp_panel_id].thminv = hiace_set_interface.thminv;
 
-	mutex_lock(&hisifd->hiace_info.lut_lock);
-	if (g_debug_effect & DEBUG_EFFECT_DELAY) {
+	mutex_lock(&dpufd->hiace_info[pinfo->disp_panel_id].lut_lock);
+	if (g_debug_effect & DEBUG_EFFECT_DELAY)
 		interval_copy_lut.start = get_timestamp_in_us();
-	}
-	ret = (int)copy_from_user(hisifd->hiace_info.lut_table, hiace_set_interface.lut, sizeof(hisifd->hiace_info.lut_table));
-	if (ret) {
-		HISI_FB_ERR("[effect] copy_from_user(lut_table) failed! ret=%d.\n", ret);
+
+	ret = (int)copy_from_user(dpufd->hiace_info[pinfo->disp_panel_id].lut_table, hiace_set_interface.lut,
+		sizeof(dpufd->hiace_info[pinfo->disp_panel_id].lut_table));
+
+	if (ret != 0) {
+		DPU_FB_ERR("[effect] copy_from_user lut_table failed! ret=%d.\n", ret);
 		ret = -2;
 	}
+
 	if (g_debug_effect & DEBUG_EFFECT_DELAY) {
 		interval_copy_lut.stop = get_timestamp_in_us();
 		count_delay(&delay_copy_lut, interval_copy_lut.stop - interval_copy_lut.start);
 	}
-	mutex_unlock(&hisifd->hiace_info.lut_lock);
-	hisifd->hiace_info.algorithm_result = 0;
+	mutex_unlock(&dpufd->hiace_info[pinfo->disp_panel_id].lut_lock);
+	dpufd->hiace_info[pinfo->disp_panel_id].algorithm_result = 0;
 
 	service->new_lut = true;
-	if (g_debug_effect & DEBUG_EFFECT_DELAY) {
+	if (g_debug_effect & DEBUG_EFFECT_DELAY)
 		interval_wait_lut.start = get_timestamp_in_us();
-	}
+
 	wake_up_interruptible(&service->wq_lut);
 
 	return ret;
 }
 
-ssize_t hisifb_display_effect_al_ctrl_show(struct fb_info *info, char *buf)
+ssize_t dpufb_display_effect_al_ctrl_show(struct fb_info *info, char *buf)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	dss_display_effect_al_t *al_ctrl = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("[effect] info is NULL\n");
+		DPU_FB_ERR("[effect] info is NULL\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -1;
 	}
 
-	al_ctrl = &(hisifd->al_ctrl);
+	al_ctrl = &(dpufd->al_ctrl);
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", al_ctrl->ctrl_al_value);
 }
 
-ssize_t hisifb_display_effect_al_ctrl_store(struct fb_info *info, const char *buf, size_t count)
+ssize_t dpufb_display_effect_al_ctrl_store(struct fb_info *info, const char *buf, size_t count)
 {
 	(void)info, (void)buf;
 
 	return (ssize_t)count;
 }
 
-ssize_t hisifb_display_effect_ce_ctrl_show(struct fb_info *info, char *buf)
+ssize_t dpufb_display_effect_ce_ctrl_show(struct fb_info *info, char *buf)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	dss_display_effect_ce_t *ce_ctrl = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("[effect] info is NULL\n");
+		DPU_FB_ERR("[effect] info is NULL\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -1;
 	}
 
-	ce_ctrl = &(hisifd->ce_ctrl);
+	ce_ctrl = &(dpufd->ce_ctrl);
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", ce_ctrl->ctrl_ce_mode);
 }
 
-ssize_t hisifb_display_effect_ce_ctrl_store(struct fb_info *info, const char *buf, size_t count)
+ssize_t dpufb_display_effect_ce_ctrl_store(struct fb_info *info, const char *buf, size_t count)
 {
 	(void)info, (void)buf;
 	return (ssize_t)count;
 }
 
-ssize_t hisifb_display_effect_bl_ctrl_show(struct fb_info *info, char *buf)
+ssize_t dpufb_display_effect_bl_ctrl_show(struct fb_info *info, char *buf)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	dss_display_effect_bl_t *bl_ctrl = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("[effect] info is NULL\n");
+		DPU_FB_ERR("[effect] info is NULL\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -1;
 	}
 
-	bl_ctrl = &(hisifd->bl_ctrl);
+	bl_ctrl = &(dpufd->bl_ctrl);
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", bl_ctrl->ctrl_bl_delta);
 }
 
-ssize_t hisifb_display_effect_bl_enable_ctrl_show(struct fb_info *info, char *buf)
+ssize_t dpufb_display_effect_bl_enable_ctrl_show(struct fb_info *info, char *buf)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	dss_display_effect_bl_enable_t *bl_enable_ctrl = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("[effect] info is NULL\n");
+		DPU_FB_ERR("[effect] info is NULL\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -1;
 	}
 
-	bl_enable_ctrl = &(hisifd->bl_enable_ctrl);
+	bl_enable_ctrl = &(dpufd->bl_enable_ctrl);
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", bl_enable_ctrl->ctrl_bl_enable);
 }
 
-ssize_t hisifb_display_effect_bl_enable_ctrl_store(struct fb_info *info, const char *buf, size_t count)
+ssize_t dpufb_display_effect_bl_enable_ctrl_store(struct fb_info *info, const char *buf, size_t count)
 {
 	(void)info, (void)buf;
 
 	return (ssize_t)count;
 }
 
-ssize_t hisifb_display_effect_sre_ctrl_show(struct fb_info *info, char *buf)
+ssize_t dpufb_display_effect_sre_ctrl_show(struct fb_info *info, char *buf)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	dss_display_effect_sre_t *sre_ctrl = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("NULL Pointer\n");
+		DPU_FB_ERR("NULL Pointer\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("NULL Pointer\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("NULL Pointer\n");
 		return -1;
 	}
 
-	sre_ctrl = &(hisifd->sre_ctrl);
+	sre_ctrl = &(dpufd->sre_ctrl);
 
 	return snprintf(buf, PAGE_SIZE, "sre_enable:%d, sre_al:%d\n", sre_ctrl->ctrl_sre_enable, sre_ctrl->ctrl_sre_al);
 }
 /*lint -e438, -e550, -e715*/
-ssize_t hisifb_display_effect_sre_ctrl_store(struct fb_info *info, const char *buf, size_t count)
+ssize_t dpufb_display_effect_sre_ctrl_store(struct fb_info *info, const char *buf, size_t count)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	dss_display_effect_sre_t *sre_ctrl = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("NULL Pointer\n");
+		DPU_FB_ERR("NULL Pointer\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("NULL Pointer\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("NULL Pointer\n");
 		return -1;
 	}
 
-	sre_ctrl = &(hisifd->sre_ctrl);
+	sre_ctrl = &(dpufd->sre_ctrl);
 
 	return (ssize_t)count;
 }
 
-ssize_t hisifb_display_effect_metadata_ctrl_show(struct fb_info *info, char *buf)
+ssize_t dpufb_display_effect_metadata_ctrl_show(struct fb_info *info, char *buf)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 
 	if (NULL == info) {
-		HISI_FB_ERR("NULL Pointer\n");
+		DPU_FB_ERR("NULL Pointer\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("NULL Pointer\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("NULL Pointer\n");
 		return -1;
 	}
 
 	return 0;
 }
 
-ssize_t hisifb_display_effect_metadata_ctrl_store(struct fb_info *info, const char *buf, size_t count)
+ssize_t dpufb_display_effect_metadata_ctrl_store(struct fb_info *info, const char *buf, size_t count)
 {
 	(void)info, (void)buf;
 
 	return (ssize_t)count;
 }
 
-void hisifb_display_effect_func_switch(struct hisi_fb_data_type *hisifd, const char *command)
+void dpufb_display_effect_func_switch(struct dpu_fb_data_type *dpufd, const char *command)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return;
 	}
 	if (NULL == command) {
-		HISI_FB_ERR("[effect] command is NULL\n");
+		DPU_FB_ERR("[effect] command is NULL\n");
 		return;
 	}
 
 	if (!strncmp("hiace:", command, strlen("hiace:"))) {
 		if('0' == command[strlen("hiace:")]) {
-			hisifd->panel_info.hiace_support = 0;
-			HISI_FB_INFO("[effect] hiace disable\n");
+			dpufd->panel_info.hiace_support = 0;
+			DPU_FB_INFO("[effect] hiace disable\n");
 		} else {
-			hisifd->panel_info.hiace_support = 1;
-			HISI_FB_INFO("[effect] hiace enable\n");
+			dpufd->panel_info.hiace_support = 1;
+			DPU_FB_INFO("[effect] hiace enable\n");
 		}
 	}
 	if (!strncmp("effect_enable:", command, strlen("effect_enable:"))) {
 		g_enable_effect = (int)simple_strtoul(&command[strlen("effect_enable:")], NULL, 0);
-		HISI_FB_INFO("[effect] effect_enable changed to %d\n", g_enable_effect);
+		DPU_FB_INFO("[effect] effect_enable changed to %d\n", g_enable_effect);
 	}
 	if (!strncmp("effect_debug:", command, strlen("effect_debug:"))) {
 		g_debug_effect = (int)simple_strtoul(&command[strlen("effect_debug:")], NULL, 0);
-		HISI_FB_INFO("[effect] effect_debug changed to %d\n", g_debug_effect);
+		DPU_FB_INFO("[effect] effect_debug changed to %d\n", g_debug_effect);
 	}
 }
 
-bool hisifb_display_effect_is_need_ace(struct hisi_fb_data_type *hisifd)
+bool dpufb_display_effect_is_need_ace(struct dpu_fb_data_type *dpufd)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return false;
 	}
 
-	return (g_enable_effect & ENABLE_EFFECT_HIACE) && (hisifd->ce_ctrl.ctrl_ce_mode > 0 || hisifd->sre_ctrl.ctrl_sre_enable == 1 || hisifd->hiace_info.to_stop_hdr || hisifd->hiace_info.to_stop_sre);
+	return (g_enable_effect & ENABLE_EFFECT_HIACE) && (dpufd->ce_ctrl.ctrl_ce_mode > 0 ||
+		dpufd->sre_ctrl.ctrl_sre_enable == 1 || dpufd->hiace_info[dpufd->panel_info.disp_panel_id].to_stop_hdr ||
+		dpufd->hiace_info[dpufd->panel_info.disp_panel_id].to_stop_sre);
 }
 
-bool hisifb_display_effect_is_need_blc(struct hisi_fb_data_type *hisifd)
+bool dpufb_display_effect_is_need_blc(struct dpu_fb_data_type *dpufd)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 	return false;
 	}
-	return hisifd->de_info.blc_enable;
+	return dpufd->de_info.blc_enable;
 }
-
-static void handle_first_deltabl(struct hisi_fb_data_type *hisifd, int backlight_in)
+static int deltabl_process(struct dpu_fb_data_type *dpufd, int backlight_in)
 {
-	struct hisi_panel_info* pinfo = NULL;
-	int bl_min = (int)hisifd->panel_info.bl_min;
-	int bl_max = (int)hisifd->panel_info.bl_max;
+	int ret = 0;
+	int bl_min;
+	int bl_max;
+	bool HBMEnable = false;
+	bool amoled_diming_enable = false;
+	int HBM_Threshold_BackLight;
+	int HBM_Min_BackLight;
+	int HBM_Max_BackLight;
+	int Hiac_DBVThres;
+	int Hiac_DBV_XCCThres;
+	int Hiac_DBV_XCC_MinThres ;
+	int current_hiac_backlight;
+	int origin_hiac_backlight;
+	int current_hiac_deltaBL = 0;
+	int temp_hiac_backlight = 0;
+	int temp_lowc_backlight = 0;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
-		return;
+	if (dpufd == NULL) {
+		DPU_FB_ERR("[effect] dpufd is NULL \n");
+		return -1;
 	}
 
-	pinfo = &(hisifd->panel_info);
-	if(NULL == pinfo) {
-		HISI_FB_ERR("pinfo is NULL!\n");
-		return;
-	}
+	bl_min = (int)dpufd->panel_info.bl_min;
+	bl_max = (int)dpufd->panel_info.bl_max;
+	HBMEnable = dpufd->de_info.amoled_param.HBMEnable ? true:false;
+	amoled_diming_enable = dpufd->de_info.amoled_param.amoled_diming_enable ? true:false;
+	HBM_Threshold_BackLight = dpufd->de_info.amoled_param.HBM_Threshold_BackLight;
+	HBM_Min_BackLight = dpufd->de_info.amoled_param.HBM_Min_BackLight;
+	HBM_Max_BackLight = dpufd->de_info.amoled_param.HBM_Max_BackLight;
+	Hiac_DBVThres = dpufd->de_info.amoled_param.Hiac_DBVThres;
+	Hiac_DBV_XCCThres = dpufd->de_info.amoled_param.Hiac_DBV_XCCThres;
+	Hiac_DBV_XCC_MinThres = dpufd->de_info.amoled_param.Hiac_DBV_XCC_MinThres;
 
-	if (pinfo->hbm_support != 1) {
-		return;
-	}
+	origin_hiac_backlight = (backlight_in - bl_min) * (HBM_Max_BackLight - HBM_Min_BackLight)
+		/(bl_max - bl_min) + HBM_Min_BackLight;
+	current_hiac_backlight = origin_hiac_backlight;
 
-	if (hisifd->bl_level == 0) {
-		hisifd->de_info.blc_delta = -1;
-		return;
-	}
-
-	if (hisifd->de_info.blc_delta == -1) {
-		if ((backlight_in >= bl_min) && (backlight_in < THRESHOLD_HBM_BACKLIGHT)) {
-			hisifd->de_info.blc_delta = bl_min + (backlight_in - bl_min)*(bl_max - bl_min)/(THRESHOLD_HBM_BACKLIGHT - 1 - bl_min ) - backlight_in;
-		} else if ((backlight_in >= THRESHOLD_HBM_BACKLIGHT) && (backlight_in <= bl_max)) {
-			hisifd->de_info.blc_delta = bl_max - backlight_in;
+	if (HBMEnable && (HBM_Max_BackLight > HBM_Threshold_BackLight)
+		&& (HBM_Threshold_BackLight > (HBM_Min_BackLight + 1))) {
+		if ((backlight_in >= bl_min) && (backlight_in < HBM_Threshold_BackLight)) {
+			current_hiac_deltaBL = HBM_Min_BackLight + ((current_hiac_backlight
+				- HBM_Min_BackLight) * (HBM_Max_BackLight - HBM_Min_BackLight)
+				/(HBM_Threshold_BackLight - 1 - HBM_Min_BackLight)) - current_hiac_backlight;
+		} else if ((current_hiac_backlight >= HBM_Threshold_BackLight)
+			&& (backlight_in <= bl_max)) {
+			current_hiac_deltaBL = HBM_Max_BackLight - current_hiac_backlight;
 		}
-		HISI_FB_DEBUG("[effect] first screen on ! delta: -1 -> %d bl: %d (%d)\n",hisifd->de_info.blc_delta,backlight_in,hisifd->bl_level);
+		current_hiac_backlight = current_hiac_backlight + current_hiac_deltaBL;
+		DPU_FB_DEBUG("[effect] hiac_delta =  %d hiac_backlight =  %d, backlight = %d",
+			current_hiac_deltaBL, current_hiac_backlight, backlight_in);
+	}
+
+	if (amoled_diming_enable) {
+		if ((current_hiac_backlight <= Hiac_DBVThres) && (current_hiac_backlight > Hiac_DBV_XCCThres)) {
+			current_hiac_deltaBL = Hiac_DBVThres - origin_hiac_backlight;
+		} else if ((current_hiac_backlight <= Hiac_DBV_XCCThres)) {
+			temp_hiac_backlight = (current_hiac_backlight - HBM_Min_BackLight )
+				* (Hiac_DBVThres - Hiac_DBV_XCC_MinThres)
+				/(Hiac_DBV_XCCThres - HBM_Min_BackLight) + Hiac_DBV_XCC_MinThres;
+			current_hiac_deltaBL = temp_hiac_backlight - origin_hiac_backlight;
+		}
+		DPU_FB_DEBUG("[effect] hiac_delta =  %d hiac_backlight =  %d, backlight = %d",
+			current_hiac_deltaBL, current_hiac_backlight, backlight_in);
+	}
+
+	dpufd->de_info.blc_delta = (bl_max - bl_min) * current_hiac_deltaBL
+		/(HBM_Max_BackLight -HBM_Min_BackLight);
+
+	if (amoled_diming_enable && dpufd->panel_info.dbv_curve_mapped_support
+		&& dpufd->panel_info.is_dbv_need_mapped) {
+		if ((current_hiac_backlight <= Hiac_DBVThres)
+			&& (current_hiac_backlight > Hiac_DBV_XCCThres)) {
+			temp_lowc_backlight =  (Hiac_DBVThres - HBM_Min_BackLight)
+				* (bl_max - bl_min)/(HBM_Max_BackLight -HBM_Min_BackLight) + bl_min;
+			dpufd->de_info.blc_delta = (int)dbv_curve_noliner_to_liner_map[dpufd->panel_info.dbv_map_index][temp_lowc_backlight] - backlight_in;
+		} else if ((current_hiac_backlight <= Hiac_DBV_XCCThres)) {
+			temp_hiac_backlight = (current_hiac_backlight - HBM_Min_BackLight )
+				* (Hiac_DBVThres - Hiac_DBV_XCC_MinThres)
+				/(Hiac_DBV_XCCThres - HBM_Min_BackLight) + Hiac_DBV_XCC_MinThres;
+			temp_lowc_backlight = (temp_hiac_backlight - HBM_Min_BackLight)
+				* (bl_max - bl_min)/(HBM_Max_BackLight -HBM_Min_BackLight) + bl_min;
+			dpufd->de_info.blc_delta = (int)dbv_curve_noliner_to_liner_map[dpufd->panel_info.dbv_map_index][temp_lowc_backlight] - backlight_in;
+		} else {
+			dpufd->de_info.blc_delta = (int)dbv_curve_noliner_to_liner_map[dpufd->panel_info.dbv_map_index][backlight_in] - backlight_in;
+		}
+		DPU_FB_DEBUG("[effect] hiac_delta =  %d hiac_backlight =  %d, backlight = %d",
+			current_hiac_deltaBL, current_hiac_backlight, backlight_in);
+	}
+
+	DPU_FB_DEBUG("[effect] first screen on ! dbv_map_index =%d delta: -10000 -> %d bl: %d (%d)\n",
+		dpufd->panel_info.dbv_map_index, dpufd->de_info.blc_delta,
+		backlight_in, backlight_in+dpufd->de_info.blc_delta);
+
+	return ret;
+}
+
+static void handle_first_deltabl(struct dpu_fb_data_type *dpufd, int backlight_in)
+{
+
+	bool HBMEnable = false;
+	bool amoled_diming_enable = false;
+	int bl_min;
+	int bl_max;
+
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
+		return;
+	}
+
+	HBMEnable = dpufd->de_info.amoled_param.HBMEnable ? true:false;
+	amoled_diming_enable = dpufd->de_info.amoled_param.amoled_diming_enable ? true:false;
+	bl_min = (int)dpufd->panel_info.bl_min;
+	bl_max = (int)dpufd->panel_info.bl_max;
+
+	if (!dpufb_display_effect_is_need_blc(dpufd)) {
+		return;
+	}
+
+	if (!(HBMEnable || amoled_diming_enable)) {
+		return;
+	}
+
+	if (dpufd->bl_level == 0) {
+		dpufd->de_info.blc_delta = SCREEN_OFF_BLC_DELTA;
+		return;
+	}
+
+	if (backlight_in >0 && (backlight_in < bl_min || backlight_in > bl_max)) {
+		return;
+	}
+
+	if (dpufd->de_info.blc_delta == SCREEN_OFF_BLC_DELTA) {
+		deltabl_process(dpufd,backlight_in);
 	}
 }
 
-bool hisifb_display_effect_check_bl_value(int curr, int last) {
+bool dpufb_display_effect_check_bl_value(int curr, int last) {
 	return false;
 }
 
-bool hisifb_display_effect_check_bl_delta(int curr, int last) {
+bool dpufb_display_effect_check_bl_delta(int curr, int last) {
 	return false;
 }
 
-bool hisifb_display_effect_fine_tune_backlight(struct hisi_fb_data_type *hisifd, int backlight_in, int *backlight_out)
+static inline void display_engine_bl_debug_print(int bl_in, int bl_out, int delta) {
+	static int last_delta = 0;
+	static int last_bl = 0;
+	static int last_bl_out = 0;
+	static int count = 0;
+	if (dpufb_display_effect_check_bl_value(bl_in, last_bl) ||
+		dpufb_display_effect_check_bl_value(bl_out, last_bl_out) ||
+		dpufb_display_effect_check_bl_delta(delta, last_delta)) {
+		if (count == 0) {
+			DPU_FB_INFO("[effect] last delta:%d bl:%d->%d\n", last_delta, last_bl, last_bl_out);
+		}
+		count = DISPLAYENGINE_BL_DEBUG_FRAMES;
+	}
+	if (count > 0) {
+		DPU_FB_INFO("[effect] delta:%d bl:%d->%d\n", delta, bl_in, bl_out);
+		count--;
+	}
+	last_delta = delta;
+	last_bl = bl_in;
+	last_bl_out = bl_out;
+}
+
+unsigned short dbv_curve_noliner_to_liner_map[DBV_MAP_INDEX][DBV_MAP_COUNTS] = {
+	{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+		20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+		30, 31, 39, 55, 79, 94, 104, 119, 136, 142,
+		146, 152, 156, 161, 162, 167, 171, 177, 182, 186,
+		189, 192, 195, 201, 202, 206, 210, 214, 216, 219,
+		225, 225, 229, 231, 234, 236, 240, 243, 245, 245,
+		248, 250, 253, 257, 259, 262, 264, 267, 270, 273,
+		276, 276, 278, 281, 284, 287, 290, 293, 293, 295,
+		299, 301, 304, 306, 307, 309, 310, 311, 313, 316,
+		319, 320, 320, 323, 325, 328, 330, 330, 332, 332,
+		335, 337, 340, 340, 342, 344, 347, 349, 350, 350,
+		351, 354, 356, 359, 360, 361, 361, 363, 366, 368,
+		368, 371, 371, 372, 375, 377, 378, 380, 380, 382,
+		385, 385, 387, 387, 390, 391, 394, 394, 394, 397,
+		399, 401, 402, 402, 403, 406, 407, 408, 409, 411,
+		411, 412, 413, 415, 416, 418, 418, 419, 421, 422,
+		424, 424, 424, 425, 426, 428, 430, 431, 432, 432,
+		434, 435, 437, 438, 440, 441, 441, 442, 444, 445,
+		447, 449, 450, 450, 451, 452, 454, 456, 457, 458,
+		458, 459, 460, 461, 463, 463, 464, 466, 467, 469,
+		470, 470, 471, 474, 474, 476, 478, 479, 480, 482,
+		483, 483, 485, 486, 486, 486, 488, 489, 490, 492,
+		492, 493, 495, 497, 498, 499, 501, 502, 502, 504,
+		505, 507, 508, 509, 509, 510, 511, 511, 512, 514,
+		515, 517, 519, 520, 521, 521, 522, 524, 526, 527,
+		529, 530, 531, 532, 532, 533, 534, 535, 536, 537,
+		539, 540, 542, 543, 544, 544, 544, 545, 546, 547,
+		548, 549, 550, 551, 551, 551, 551, 552, 553, 554,
+		555, 555, 556, 557, 558, 559, 560, 561, 562, 563,
+		564, 565, 565, 566, 566, 567, 567, 568, 569, 569,
+		571, 571, 572, 573, 574, 575, 576, 577, 577, 578,
+		579, 579, 580, 581, 582, 583, 583, 583, 583, 584,
+		585, 586, 587, 588, 589, 590, 591, 592, 593, 594,
+		595, 596, 597, 598, 598, 599, 599, 599, 600, 601,
+		601, 603, 603, 603, 604, 606, 606, 607, 608, 609,
+		610, 611, 612, 613, 614, 615, 615, 615, 615, 615,
+		616, 617, 619, 620, 621, 622, 623, 624, 625, 626,
+		627, 627, 628, 629, 630, 630, 631, 631, 631, 631,
+		632, 633, 633, 635, 635, 636, 638, 639, 640, 641,
+		642, 642, 643, 644, 645, 646, 646, 646, 646, 647,
+		647, 648, 649, 650, 650, 652, 653, 654, 655, 656,
+		657, 658, 659, 661, 662, 662, 662, 662, 662, 663,
+		664, 664, 665, 666, 667, 667, 669, 670, 671, 672,
+		672, 674, 675, 676, 677, 678, 678, 678, 678, 678,
+		679, 680, 681, 681, 682, 684, 685, 686, 686, 686,
+		687, 689, 690, 691, 692, 693, 694, 694, 694, 694,
+		694, 695, 696, 696, 697, 699, 699, 701, 702, 703,
+		704, 705, 706, 707, 708, 709, 710, 710, 710, 710,
+		710, 710, 711, 712, 713, 714, 714, 716, 717, 719,
+		720, 720, 722, 722, 725, 725, 725, 725, 726, 726,
+		726, 726, 726, 727, 730, 730, 732, 733, 735, 735,
+		735, 735, 735, 735, 735, 735, 735, 735, 735, 736,
+		736, 737, 737, 738, 738, 738, 739, 739, 739, 740,
+		740, 741, 741, 742, 742, 742, 743, 743, 744, 744,
+		744, 745, 745, 746, 746, 746, 747, 747, 747, 747,
+		748, 748, 749, 749, 750, 750, 751, 751, 751, 752,
+		752, 752, 753, 753, 754, 754, 754, 754, 755, 756,
+		756, 756, 757, 757, 758, 758, 758, 759, 759, 759,
+		759, 760, 760, 761, 762, 762, 762, 762, 763, 763,
+		764, 764, 764, 764, 765, 765, 765, 766, 766, 766,
+		767, 768, 768, 769, 769, 769, 769, 770, 770, 771,
+		772, 772, 773, 774, 775, 776, 776, 777, 777, 779,
+		779, 779, 780, 781, 781, 781, 782, 783, 783, 784,
+		785, 786, 786, 787, 788, 788, 789, 789, 790, 791,
+		792, 792, 793, 793, 794, 795, 795, 796, 797, 797,
+		798, 798, 799, 799, 799, 804, 805, 805, 806, 806,
+		807, 808, 809, 810, 810, 811, 812, 812, 813, 813,
+		814, 815, 816, 816, 817, 817, 818, 818, 819, 820,
+		820, 821, 821, 822, 822, 823, 824, 824, 824, 826,
+		827, 827, 828, 828, 829, 830, 830, 831, 832, 833,
+		833, 833, 834, 835, 835, 836, 836, 837, 838, 838,
+		838, 839, 840, 840, 841, 841, 842, 843, 844, 845,
+		845, 845, 846, 847, 848, 848, 848, 850, 850, 851,
+		851, 852, 852, 853, 853, 853, 854, 855, 856, 856,
+		857, 857, 858, 858, 859, 859, 861, 861, 862, 862,
+		863, 864, 864, 864, 865, 866, 867, 867, 868, 868,
+		869, 869, 870, 870, 871, 871, 872, 873, 873, 874,
+		874, 875, 875, 876, 876, 876, 878, 879, 879, 880,
+		881, 881, 882, 882, 883, 884, 884, 885, 885, 886,
+		886, 887, 887, 887, 888, 889, 890, 890, 891, 891,
+		892, 892, 893, 893, 894, 894, 895, 896, 896, 897,
+		898, 899, 899, 899, 901, 901, 902, 902, 902, 903,
+		903, 904, 904, 905, 905, 906, 907, 907, 908, 908,
+		909, 909, 910, 910, 911, 912, 912, 913, 914, 915,
+		915, 915, 916, 917, 918, 918, 919, 919, 919, 920,
+		920, 921, 921, 921, 922, 922, 923, 924, 924, 925,
+		926, 926, 926, 927, 928, 928, 928, 929, 930, 930,
+		931, 932, 932, 933, 933, 934, 935, 935, 936, 936,
+		937, 937, 938, 938, 938, 939, 940, 940, 941, 942,
+		942, 943, 943, 944, 944, 944, 946, 946, 947, 947,
+		948, 949, 949, 950, 950, 950, 951, 952, 953, 953,
+		954, 954, 955, 955, 955, 956, 956, 957, 958, 958,
+		959, 959, 960, 960, 961, 961, 962, 963, 963, 964,
+		964, 965, 966, 966, 966, 967, 967, 968, 969, 969,
+		970, 970, 970, 971, 972, 972, 972, 973, 973, 974,
+		975, 976, 976, 976, 977, 977, 978, 978, 979, 980,
+		980, 981, 981, 982, 983, 983, 984, 984, 984, 985,
+		986, 986, 987, 987, 988, 988, 989, 989, 989, 990,
+		990, 991, 992, 993, 994, 995, 996, 997, 998, 999,
+		1000, 1000, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,
+		1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019,
+		1020, 1021, 1022, 1023,
+	},
+	{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+		20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+		30, 31, 38, 51, 52, 60, 64, 73, 74, 82,
+		84, 90, 94, 94, 99, 105, 105, 109, 114, 114,
+		118, 123, 123, 129, 133, 133, 138, 138, 143, 147,
+		147, 152, 152, 155, 159, 159, 163, 166, 166, 170,
+		173, 177, 181, 181, 184, 188, 190, 190, 194, 198,
+		201, 201, 205, 208, 208, 212, 216, 218, 222, 225,
+		225, 229, 233, 234, 235, 235, 237, 238, 241, 241,
+		243, 244, 246, 246, 249, 250, 252, 252, 254, 256,
+		258, 258, 260, 262, 263, 263, 266, 268, 269, 269,
+		271, 273, 275, 275, 277, 279, 281, 282, 282, 285,
+		287, 288, 288, 290, 292, 294, 294, 296, 298, 300,
+		301, 301, 301, 301, 304, 306, 307, 309, 309, 311,
+		313, 315, 315, 317, 319, 321, 322, 322, 324, 324,
+		325, 326, 326, 327, 328, 330, 330, 330, 332, 333,
+		333, 334, 335, 336, 337, 337, 339, 339, 340, 341,
+		342, 344, 344, 345, 346, 347, 347, 348, 349, 350,
+		351, 353, 355, 355, 355, 357, 358, 359, 360, 360,
+		361, 362, 363, 364, 364, 365, 366, 367, 369, 370,
+		371, 372, 372, 373, 374, 375, 376, 376, 377, 378,
+		380, 380, 382, 382, 382, 384, 385, 386, 386, 387,
+		388, 389, 390, 391, 391, 392, 393, 394, 396, 396,
+		398, 398, 399, 400, 401, 402, 403, 403, 404, 405,
+		406, 407, 408, 410, 411, 412, 413, 413, 414, 415,
+		416, 417, 418, 419, 419, 420, 421, 423, 423, 425,
+		426, 426, 427, 428, 429, 430, 431, 432, 432, 433,
+		434, 434, 434, 436, 437, 438, 439, 441, 441, 442,
+		443, 444, 446, 447, 448, 449, 449, 450, 452, 453,
+		454, 454, 454, 454, 454, 455, 456, 458, 459, 460,
+		462, 462, 462, 464, 465, 466, 468, 469, 470, 471,
+		471, 472, 474, 475, 476, 478, 478, 480, 481, 482,
+		482, 485, 485, 486, 487, 488, 490, 491, 492, 494,
+		494, 494, 494, 494, 494, 495, 496, 497, 499, 500,
+		501, 502, 503, 504, 504, 507, 507, 508, 510, 510,
+		512, 513, 514, 515, 517, 518, 519, 520, 521, 521,
+		523, 524, 525, 526, 528, 529, 530, 531, 533, 534,
+		534, 534, 534, 534, 534, 535, 536, 537, 537, 539,
+		540, 541, 542, 543, 545, 546, 547, 549, 550, 551,
+		552, 553, 555, 556, 556, 557, 558, 559, 561, 562,
+		563, 565, 565, 567, 568, 569, 569, 569, 569, 569,
+		571, 572, 573, 574, 574, 574, 575, 577, 578, 579,
+		580, 581, 583, 584, 585, 587, 587, 589, 590, 591,
+		593, 594, 594, 596, 597, 597, 599, 599, 599, 599,
+		599, 600, 601, 602, 603, 605, 606, 607, 608, 610,
+		611, 611, 612, 613, 615, 615, 616, 618, 619, 621,
+		622, 623, 624, 625, 627, 627, 628, 629, 629, 629,
+		629, 629, 630, 631, 632, 633, 634, 635, 638, 639,
+		640, 641, 642, 644, 644, 645, 646, 647, 648, 650,
+		651, 652, 654, 654, 655, 656, 658, 659, 659, 659,
+		659, 659, 659, 661, 661, 662, 663, 664, 666, 668,
+		670, 670, 672, 674, 674, 674, 674, 674, 674, 674,
+		674, 674, 674, 674, 675, 675, 675, 676, 676, 677,
+		677, 677, 677, 678, 679, 679, 679, 680, 680, 681,
+		681, 681, 682, 682, 683, 683, 683, 684, 684, 685,
+		685, 685, 686, 686, 687, 687, 687, 688, 689, 689,
+		689, 690, 690, 693, 693, 694, 694, 695, 696, 696,
+		696, 696, 697, 698, 698, 698, 698, 699, 699, 700,
+		700, 700, 701, 702, 702, 702, 703, 704, 704, 704,
+		704, 705, 706, 706, 706, 706, 707, 708, 708, 708,
+		709, 709, 710, 710, 710, 711, 711, 712, 712, 712,
+		713, 713, 714, 714, 715, 715, 715, 716, 716, 717,
+		717, 718, 719, 719, 719, 720, 721, 722, 727, 727,
+		729, 729, 730, 731, 731, 732, 733, 733, 734, 735,
+		735, 736, 736, 737, 738, 738, 740, 740, 741, 742,
+		742, 743, 744, 744, 745, 746, 747, 747, 748, 749,
+		750, 750, 751, 752, 752, 752, 753, 754, 760, 761,
+		761, 762, 763, 763, 765, 765, 765, 766, 767, 768,
+		769, 769, 770, 771, 771, 771, 772, 773, 773, 774,
+		776, 776, 776, 777, 778, 778, 779, 780, 780, 781,
+		782, 782, 783, 784, 784, 785, 786, 786, 791, 792,
+		792, 794, 794, 795, 796, 797, 797, 798, 799, 799,
+		799, 801, 801, 802, 803, 803, 803, 804, 805, 805,
+		806, 807, 807, 809, 809, 810, 811, 811, 812, 813,
+		813, 814, 815, 816, 816, 816, 817, 818, 824, 824,
+		825, 825, 826, 826, 827, 828, 828, 829, 830, 831,
+		831, 832, 832, 833, 834, 835, 835, 836, 837, 837,
+		838, 839, 839, 839, 840, 841, 841, 842, 843, 843,
+		843, 844, 845, 845, 846, 847, 848, 848, 849, 849,
+		849, 855, 857, 857, 858, 859, 859, 860, 861, 861,
+		862, 862, 863, 864, 864, 864, 865, 865, 866, 866,
+		867, 868, 868, 869, 870, 870, 870, 871, 872, 873,
+		873, 874, 874, 877, 878, 878, 879, 879, 880, 880,
+		881, 882, 882, 889, 889, 889, 890, 891, 891, 892,
+		893, 894, 895, 895, 895, 896, 897, 897, 897, 899,
+		899, 899, 900, 901, 901, 901, 902, 903, 903, 904,
+		904, 905, 905, 906, 907, 907, 907, 909, 909, 910,
+		911, 911, 912, 912, 913, 913, 914, 920, 920, 920,
+		921, 922, 922, 923, 923, 924, 925, 925, 926, 927,
+		927, 928, 928, 929, 930, 930, 931, 932, 932, 933,
+		933, 934, 934, 935, 935, 936, 936, 936, 938, 938,
+		938, 938, 939, 940, 940, 941, 942, 943, 943, 944,
+		945, 945, 946, 952, 953, 953, 954, 954, 956, 957,
+		957, 957, 958, 959, 959, 960, 960, 961, 961, 963,
+		963, 963, 964, 965, 966, 966, 967, 968, 968, 968,
+		969, 970, 970, 970, 971, 971, 972, 972, 973, 974,
+		974, 974, 975, 976, 976, 976, 977, 978, 978, 978,
+		986, 986, 987, 987, 988, 988, 989, 989, 990, 990,
+		991, 991, 992, 992, 994, 995, 996, 997, 998, 999,
+		1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,
+		1010, 1011, 1011, 1013, 1014, 1015, 1016, 1017, 1018, 1019,
+		1020, 1021, 1022, 1023,
+	},
+	{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+		20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+		30, 31, 38, 46, 54, 59, 66, 72, 79, 87,
+		93, 98, 103, 109, 116, 119, 122, 123, 125, 127,
+		129, 130, 131, 133, 134, 136, 138, 140, 141, 143,
+		145, 146, 147, 149, 150, 151, 155, 158, 162, 167,
+		170, 174, 178, 182, 185, 189, 192, 196, 199, 202,
+		206, 209, 213, 215, 219, 222, 225, 228, 231, 235,
+		236, 237, 238, 240, 241, 243, 243, 246, 247, 249,
+		250, 252, 252, 254, 255, 256, 258, 259, 260, 262,
+		263, 265, 266, 268, 269, 271, 273, 274, 275, 277,
+		278, 280, 281, 282, 284, 285, 287, 288, 289, 290,
+		292, 294, 295, 297, 298, 299, 301, 303, 304, 306,
+		308, 309, 310, 311, 313, 314, 315, 317, 319, 320,
+		322, 323, 324, 324, 326, 327, 327, 329, 330, 331,
+		332, 333, 334, 335, 336, 337, 338, 340, 341, 341,
+		343, 344, 344, 346, 347, 348, 349, 350, 350, 352,
+		353, 354, 355, 356, 356, 358, 358, 359, 361, 361,
+		362, 364, 364, 365, 366, 367, 368, 369, 370, 370,
+		372, 372, 373, 374, 375, 376, 377, 378, 378, 379,
+		380, 381, 382, 383, 384, 384, 385, 386, 387, 388,
+		389, 390, 390, 391, 392, 393, 394, 395, 396, 396,
+		398, 398, 399, 400, 401, 402, 402, 403, 404, 405,
+		405, 406, 407, 408, 408, 410, 410, 411, 412, 413,
+		413, 414, 415, 416, 417, 417, 418, 419, 420, 421,
+		421, 422, 422, 424, 424, 425, 426, 427, 427, 428,
+		429, 430, 430, 431, 432, 433, 433, 434, 434, 434,
+		435, 436, 437, 437, 439, 440, 441, 442, 443, 444,
+		445, 446, 447, 447, 449, 450, 451, 452, 453, 453,
+		455, 456, 457, 458, 459, 459, 460, 461, 462, 464,
+		465, 465, 466, 467, 468, 469, 469, 472, 472, 473,
+		474, 474, 475, 477, 478, 479, 480, 481, 482, 483,
+		484, 485, 485, 487, 488, 489, 490, 491, 491, 493,
+		494, 495, 496, 496, 497, 499, 500, 501, 502, 502,
+		504, 505, 506, 507, 507, 508, 510, 511, 512, 513,
+		513, 514, 516, 517, 518, 518, 520, 520, 522, 523,
+		524, 524, 526, 527, 528, 529, 529, 530, 532, 533,
+		534, 534, 535, 535, 537, 538, 539, 540, 540, 542,
+		544, 545, 545, 546, 548, 549, 550, 551, 551, 552,
+		554, 555, 556, 556, 557, 558, 560, 561, 562, 562,
+		564, 565, 566, 567, 567, 568, 570, 571, 572, 573,
+		573, 574, 576, 577, 578, 578, 580, 581, 583, 584,
+		584, 584, 586, 587, 588, 589, 589, 590, 592, 593,
+		594, 594, 595, 596, 599, 600, 600, 601, 602, 604,
+		605, 605, 605, 606, 607, 609, 610, 611, 611, 614,
+		614, 615, 616, 616, 618, 620, 621, 622, 622, 622,
+		623, 626, 626, 627, 627, 628, 629, 632, 633, 633,
+		633, 635, 637, 638, 638, 639, 639, 641, 642, 644,
+		644, 645, 645, 647, 647, 649, 650, 651, 653, 654,
+		654, 655, 656, 657, 659, 660, 660, 661, 662, 663,
+		664, 665, 667, 669, 670, 671, 671, 673, 673, 674,
+		674, 674, 674, 674, 674, 674, 674, 674, 674, 675,
+		676, 676, 677, 678, 679, 680, 680, 681, 681, 682,
+		682, 683, 683, 683, 683, 683, 683, 683, 684, 685,
+		686, 687, 688, 688, 689, 690, 691, 691, 692, 693,
+		693, 694, 695, 695, 696, 697, 697, 698, 699, 699,
+		700, 700, 700, 701, 702, 703, 703, 703, 703, 703,
+		703, 703, 704, 705, 706, 706, 707, 708, 708, 709,
+		710, 710, 711, 712, 712, 713, 714, 714, 715, 716,
+		717, 717, 718, 718, 718, 719, 720, 720, 721, 721,
+		722, 723, 723, 723, 723, 723, 723, 723, 724, 725,
+		725, 726, 727, 727, 728, 729, 729, 730, 730, 731,
+		731, 733, 733, 734, 735, 735, 736, 736, 737, 737,
+		738, 739, 739, 740, 741, 742, 742, 743, 743, 743,
+		743, 743, 743, 743, 743, 744, 745, 745, 746, 746,
+		747, 748, 748, 749, 750, 750, 751, 752, 752, 753,
+		753, 753, 754, 754, 755, 756, 757, 757, 758, 761,
+		762, 763, 763, 763, 763, 763, 763, 763, 763, 764,
+		765, 766, 766, 768, 769, 770, 771, 772, 773, 774,
+		775, 776, 778, 780, 780, 783, 783, 783, 783, 783,
+		783, 783, 783, 784, 785, 786, 787, 788, 789, 789,
+		790, 791, 792, 794, 796, 796, 798, 798, 799, 801,
+		802, 802, 803, 803, 803, 803, 803, 803, 803, 804,
+		806, 807, 807, 808, 809, 809, 811, 812, 813, 815,
+		815, 817, 818, 819, 820, 821, 822, 823, 823, 823,
+		823, 823, 823, 823, 824, 825, 825, 825, 827, 827,
+		829, 831, 832, 833, 834, 835, 836, 837, 838, 838,
+		840, 841, 842, 842, 843, 843, 843, 843, 843, 843,
+		843, 843, 844, 844, 846, 847, 850, 852, 853, 854,
+		855, 856, 857, 857, 857, 858, 859, 861, 862, 863,
+		863, 863, 863, 863, 863, 863, 863, 863, 864, 865,
+		867, 868, 870, 871, 872, 873, 873, 873, 875, 876,
+		876, 878, 878, 879, 880, 882, 883, 883, 883, 883,
+		883, 883, 883, 883, 883, 885, 886, 888, 888, 889,
+		889, 890, 891, 891, 894, 894, 895, 896, 897, 898,
+		899, 900, 902, 903, 903, 903, 903, 903, 903, 903,
+		904, 904, 905, 906, 906, 907, 908, 909, 910, 911,
+		912, 913, 914, 915, 916, 917, 918, 920, 921, 921,
+		921, 922, 923, 923, 923, 923, 923, 923, 923, 923,
+		923, 925, 927, 927, 929, 929, 930, 931, 932, 933,
+		934, 936, 937, 937, 938, 939, 940, 941, 942, 943,
+		943, 943, 943, 943, 943, 943, 943, 943, 944, 944,
+		946, 947, 948, 949, 949, 950, 951, 952, 953, 953,
+		953, 954, 959, 960, 961, 961, 962, 963, 963, 963,
+		963, 963, 963, 963, 963, 963, 964, 965, 966, 966,
+		968, 969, 969, 969, 970, 971, 972, 973, 974, 978,
+		979, 979, 980, 982, 983, 983, 983, 983, 983, 983,
+		983, 983, 983, 983, 984, 985, 985, 985, 986, 986,
+		989, 990, 991, 992, 994, 995, 996, 997, 998, 999,
+		1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,
+		1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019,
+		1020, 1021, 1022, 1023,
+	}
+};
+
+static void dpufb_dbv_curve_mapped(struct dpu_fb_data_type *dpufd, int backlight_in, int *backlight_out) {
+	if (NULL == dpufd || NULL == backlight_out) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
+		return;
+	}
+	if (dpufd->panel_info.dbv_curve_mapped_support && dpufd->panel_info.is_dbv_need_mapped
+		&& (backlight_in < DBV_MAP_COUNTS) && (backlight_in >= 0)
+		&& (dpufd->panel_info.dbv_map_index < DBV_MAP_INDEX)) {
+		int bl = (int)dbv_curve_noliner_to_liner_map[dpufd->panel_info.dbv_map_index][backlight_in];
+
+		*backlight_out = bl;
+		DPU_FB_DEBUG("[effect] delta:%d bl:%d(bl_in:%d)->%d\n",
+			dpufd->de_info.blc_delta, dpufd->bl_level, backlight_in, *backlight_out);
+	}
+}
+
+bool dpufb_display_effect_is_low_precision_mapping(int manufacture_brightness_mode) {
+	return (runmode_is_factory() && (manufacture_brightness_mode == 0));
+}
+
+void dpufb_display_effect_handle_first_deltabl(struct dpu_fb_data_type *dpufd, int backlight_in) {
+	if (dpufd == NULL) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
+		return;
+	}
+	if (dpufd->de_param.manufacture_brightness.engine_mode == 0) {
+		handle_first_deltabl(dpufd,backlight_in);
+	} else if (dpufd->de_param.manufacture_brightness.engine_mode == 1 &&
+		dpufd->de_info.blc_delta == SCREEN_OFF_BLC_DELTA) {
+		dpufd->de_info.blc_delta = 0;
+	}
+}
+
+bool dpufb_display_effect_fine_tune_backlight(struct dpu_fb_data_type *dpufd, int backlight_in, int *backlight_out)
 {
 	bool changed = false;
-	struct hisi_panel_info* pinfo = NULL;
-
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	struct dpu_panel_info* pinfo = NULL;
+	int delta = 0;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return false;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if(NULL == pinfo) {
-		HISI_FB_ERR("pinfo is NULL!\n");
+		DPU_FB_ERR("pinfo is NULL!\n");
 		return false;
 	}
 
 	if (NULL == backlight_out) {
-		HISI_FB_ERR("[effect] backlight_out is NULL\n");
+		DPU_FB_ERR("[effect] backlight_out is NULL\n");
 		return false;
 	}
 
-	handle_first_deltabl(hisifd,backlight_in);
-
-
-	if ((pinfo->hbm_support == 1) && (backlight_in <= (int)hisifd->panel_info.bl_min)) {
-		HISI_FB_DEBUG("[effect] don't need add delta_bl for bl_min\n");
-		return false;
+	if (dpufd->panel_info.need_skip_delta) {
+		dpufd->panel_info.need_skip_delta = 0;
+		return changed;
 	}
+		handle_first_deltabl(dpufd,backlight_in);
 
-	if (hisifd->bl_level > 0) {
-		if (hisifb_display_effect_is_need_blc(hisifd)) {
-			int bl = MIN((int)hisifd->panel_info.bl_max, MAX((int)hisifd->panel_info.bl_min, backlight_in + hisifd->de_info.blc_delta));
+
+	dpufb_display_effect_handle_first_deltabl(dpufd, backlight_in);
+
+	if (dpufd->bl_level > 0) {
+		if (dpufb_display_effect_is_need_blc(dpufd)) {
+			int bl = MIN((int)dpufd->panel_info.bl_max,
+				MAX((int)dpufd->panel_info.bl_min,
+				backlight_in + dpufd->de_info.blc_delta));
+			if (dpufd->de_info.amoled_param.dc_brightness_dimming_enable_real) {
+				if (backlight_in <=
+					dpufd->de_info.amoled_param.dc_lowac_dbv_thre) {
+					bl = dpufd->de_info.amoled_param.dc_lowac_fixed_dbv_thres;
+				}
+			} else if (dpufd->de_info.amoled_param.amoled_diming_enable) {
+				if (backlight_in >= dpufd->de_info.amoled_param.Lowac_DBV_XCCThres
+					&& backlight_in <= dpufd->de_info.amoled_param.Lowac_DBVThres) {
+					bl = dpufd->de_info.amoled_param.Lowac_Fixed_DBVThres;
+				}
+			}
 			if (*backlight_out != bl) {
-				HISI_FB_DEBUG("[effect] delta:%d bl:%d(%d)->%d\n", hisifd->de_info.blc_delta, backlight_in, hisifd->bl_level, bl);
+				DPU_FB_DEBUG("[effect] delta:%d bl:%d(%d)->%d\n", dpufd->de_info.blc_delta, backlight_in, dpufd->bl_level, bl);
 				*backlight_out = bl;
 				changed = true;
-				hisifd->de_info.blc_used = true;
+				dpufd->de_info.blc_used = true;
 			}
+			delta = dpufd->de_info.blc_delta;
 		} else {
-			if (hisifd->de_info.blc_used) {
+			if (dpufd->de_info.blc_used) {
 			if (*backlight_out != backlight_in) {
-				HISI_FB_DEBUG("[effect] bl:%d->%d\n", *backlight_out, backlight_in);
+				DPU_FB_DEBUG("[effect] bl:%d->%d\n", *backlight_out, backlight_in);
 				*backlight_out = backlight_in;
 				changed = true;
 				}
-				hisifd->de_info.blc_used = false;
+				dpufd->de_info.blc_used = false;
 			}
+			delta = 0;
 		}
 	}
 
+	if (dpufb_display_effect_is_low_precision_mapping(dpufd->de_param.manufacture_brightness.engine_mode)) {
+		dpufb_dbv_curve_mapped(dpufd,*backlight_out,backlight_out);
+		DPU_FB_ERR("[effect] runmode_is_factory bl:%d->%d\n", *backlight_out, backlight_in);
+	}
+	display_engine_bl_debug_print(backlight_in, *backlight_out, delta);
 	return changed;
 }
 
 
-int hisifb_display_effect_blc_cabc_update(struct hisi_fb_data_type *hisifd)
+int dpufb_display_effect_blc_cabc_update(struct dpu_fb_data_type *dpufd)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -1;
 	}
 
-	if ((hisifd->panel_info.blpwm_input_ena || hisifb_display_effect_is_need_blc(hisifd)) && hisifd->cabc_update) {
-		hisifd->cabc_update(hisifd);
+	if ((dpufd->panel_info.blpwm_input_ena || dpufb_display_effect_is_need_blc(dpufd)) && dpufd->cabc_update) {
+		dpufd->cabc_update(dpufd);
 	}
 
 	return 0;
 }
 
-void init_hiace(struct hisi_fb_data_type *hisifd)
+void init_hiace(struct dpu_fb_data_type *dpufd)
 {
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	char __iomem *hiace_base = NULL;
 
 	unsigned long dw_jiffies = 0;
@@ -1123,26 +1607,26 @@ void init_hiace(struct hisi_fb_data_type *hisifd)
 	uint32_t max_lhist_block_pixel_num;
 	uint32_t max_lhist_bin_reg_num;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (pinfo->hiace_support == 0) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] HIACE is not supported!\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] HIACE is not supported!\n");
 		return;
 	}
 
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
-		hiace_base = hisifd->dss_base + DSS_HI_ACE_OFFSET;
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
+		hiace_base = dpufd->dss_base + DSS_HI_ACE_OFFSET;
 	} else {
-		HISI_FB_ERR("[effect] fb%d, not support!", hisifd->index);
+		DPU_FB_ERR("[effect] fb%d, not support!", dpufd->index);
 		return;
 	}
 
-	if(!check_underflow_clear_ack(hisifd)){
-		HISI_FB_ERR("[effect] fb%d, clear_ack is not return!\n", hisifd->index);
+	if(!check_underflow_clear_ack(dpufd)){
+		DPU_FB_ERR("[effect] fb%d, clear_ack is not return!\n", dpufd->index);
 		return;
 	}
 
@@ -1151,8 +1635,8 @@ void init_hiace(struct hisi_fb_data_type *hisifd)
 	set_reg(hiace_base + HIACE_UPDATE_LOCAL, 0x1, 1, 0);
 
 	//parameters
-	width = hisifd->panel_info.xres & 0x1fff;
-	height = hisifd->panel_info.yres & 0x1fff;
+	width = dpufd->panel_info.xres & 0x1fff;
+	height = dpufd->panel_info.yres & 0x1fff;
 	set_reg(hiace_base + HIACE_IMAGE_INFO, (height << 16) | width, 32, 0);
 
 	half_block_w = (width / 12) & 0x1ff;
@@ -1205,7 +1689,7 @@ void init_hiace(struct hisi_fb_data_type *hisifd)
 	set_reg(hiace_base + HIACE_XYWEIGHT, (fixbit_y << 26) | (reciprocal_y << 16)
 		| (fixbit_x << 10) | reciprocal_x, 32, 0);
 
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] half_block_w:%d, half_block_h:%d, fixbit_x:%d, fixbit_y:%d, reciprocal_x:%d, reciprocal_y:%d, lhist_sft:%d\n",
+	effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] half_block_w:%d, half_block_h:%d, fixbit_x:%d, fixbit_y:%d, reciprocal_x:%d, reciprocal_y:%d, lhist_sft:%d\n",
 					 half_block_w, half_block_h, fixbit_x, fixbit_y, reciprocal_x, reciprocal_y, lhist_sft);
 
 	//wait for gamma init finishing
@@ -1219,8 +1703,8 @@ void init_hiace(struct hisi_fb_data_type *hisifd)
 	} while (time_after(dw_jiffies, jiffies)); //lint !e550
 
 	if (!is_ready) {
-		HISI_FB_INFO("[effect] fb%d, HIACE_INIT_GAMMA is not ready! HIACE_INIT_GAMMA=0x%08X.\n",
-					 hisifd->index, tmp);
+		DPU_FB_INFO("[effect] fb%d, HIACE_INIT_GAMMA is not ready! HIACE_INIT_GAMMA=0x%08X.\n",
+					 dpufd->index, tmp);
 	}
 
 	global_hist_ab_work = inp32(hiace_base + HIACE_GLOBAL_HIST_AB_WORK);
@@ -1238,45 +1722,45 @@ void init_hiace(struct hisi_fb_data_type *hisifd)
 #endif
 }
 
-void hisi_dss_dpp_hiace_set_reg(struct hisi_fb_data_type *hisifd)
+void hisi_dss_dpp_hiace_set_reg(struct dpu_fb_data_type *dpufd)
 {
 	char __iomem *hiace_base = NULL;
 	dss_ce_info_t *ce_info = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return;
 	}
 
-	if (NULL == hisifd->dss_base) {
-		HISI_FB_ERR("[effect] dss_base is NULL\n");
+	if (NULL == dpufd->dss_base) {
+		DPU_FB_ERR("[effect] dss_base is NULL\n");
 		return;
 	}
 
-	if (hisifd->panel_info.hiace_support == 0) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] HIACE is not support!\n");
+	if (dpufd->panel_info.hiace_support == 0) {
+		effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] HIACE is not support!\n");
 		return;
 	}
 
-	if (PRIMARY_PANEL_IDX == hisifd->index) {
-		hiace_base = hisifd->dss_base + DSS_HI_ACE_OFFSET;
-		ce_info = &(hisifd->hiace_info);
+	if (PRIMARY_PANEL_IDX == dpufd->index) {
+		hiace_base = dpufd->dss_base + DSS_HI_ACE_OFFSET;
+		ce_info = &(dpufd->hiace_info[dpufd->panel_info.disp_panel_id]);
 	} else {
-		HISI_FB_ERR("[effect] fb%d, not support!\n", hisifd->index);
+		DPU_FB_ERR("[effect] fb%d, not support!\n", dpufd->index);
 		return;
 	}
 
-	if (!hisifb_display_effect_is_need_ace(hisifd)) {
+	if (!dpufb_display_effect_is_need_ace(dpufd)) {
 		g_hiace_service.use_last_value = false;
 		return;
 	}
 
-	if(!check_underflow_clear_ack(hisifd)){
-		HISI_FB_ERR("[effect] fb%d, clear_ack is not return!\n", hisifd->index);
+	if(!check_underflow_clear_ack(dpufd)){
+		DPU_FB_ERR("[effect] fb%d, clear_ack is not return!\n", dpufd->index);
 		return;
 	}
 
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] step in\n");
+	effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] step in\n");
 
 	//lint -e{438}
 	if (g_hiace_service.use_last_value) {
@@ -1294,7 +1778,7 @@ void hisi_dss_dpp_hiace_set_reg(struct hisi_fb_data_type *hisifd)
 			mutex_lock(&ce_info->lut_lock);
 			for (i = 0; i < (6 * 6 * 11); i++) {
 				// cppcheck-suppress *
-				outp32(hiace_base + HIACE_GAMMA_VxHy_3z2_3z1_3z_W, hisifd->hiace_info.lut_table[i]);
+				outp32(hiace_base + HIACE_GAMMA_VxHy_3z2_3z1_3z_W, dpufd->hiace_info[dpufd->panel_info.disp_panel_id].lut_table[i]);
 			}
 			mutex_unlock(&ce_info->lut_lock);
 
@@ -1310,7 +1794,7 @@ void hisi_dss_dpp_hiace_set_reg(struct hisi_fb_data_type *hisifd)
 
 void hisi_dpp_hiace_end_handle_func(struct work_struct *work)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	char __iomem *hiace_base = NULL;
 	uint32_t * global_hist_ptr = NULL;
 	uint32_t * local_hist_ptr = NULL;
@@ -1324,68 +1808,68 @@ void hisi_dpp_hiace_end_handle_func(struct work_struct *work)
 	time_interval_t interval_total = {0};
 	time_interval_t interval_hist_global = {0};
 	time_interval_t interval_hist_local = {0};
-	DEFINE_DELAY_RECORD(delay_total, "interrupt handling");
-	DEFINE_DELAY_RECORD(delay_hist_global, "global hist reading");
-	DEFINE_DELAY_RECORD(delay_hist_local, "local hist reading");
+	define_delay_record(delay_total, "interrupt handling");
+	define_delay_record(delay_hist_global, "global hist reading");
+	define_delay_record(delay_hist_local, "local hist reading");
 
-	hisifd = container_of(work, struct hisi_fb_data_type, hiace_end_work);
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = container_of(work, struct dpu_fb_data_type, hiace_end_work);
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return;
 	}
 
-	if (hisifd->panel_info.hiace_support == 0) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] HIACE is not support!\n");
+	if (dpufd->panel_info.hiace_support == 0) {
+		effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] HIACE is not support!\n");
 		return;
 	}
 
-	if (PRIMARY_PANEL_IDX == hisifd->index) {
-		ce_info = &(hisifd->hiace_info);
-		hiace_base = hisifd->dss_base + DSS_HI_ACE_OFFSET;
+	if (PRIMARY_PANEL_IDX == dpufd->index) {
+		ce_info = &(dpufd->hiace_info[dpufd->panel_info.disp_panel_id]);
+		hiace_base = dpufd->dss_base + DSS_HI_ACE_OFFSET;
 	} else {
-		HISI_FB_ERR("[effect] fb%d, not support!\n", hisifd->index);
+		DPU_FB_ERR("[effect] fb%d, not support!\n", dpufd->index);
 		return;
 	}
 
-	if (!hisifb_display_effect_is_need_ace(hisifd)) {
-		enable_hiace(hisifd, false);
+	if (!dpufb_display_effect_is_need_ace(dpufd)) {
+		enable_hiace(dpufd, false);
 		return;
 	}
 
-	down(&hisifd->blank_sem);
-	if (!hisifd->panel_power_on) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] panel power off!\n");
+	down(&dpufd->blank_sem);
+	if (!dpufd->panel_power_on) {
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] panel power off!\n");
 		goto ERR_OUT;
 	}
 
-	if(!check_underflow_clear_ack(hisifd)){
-		HISI_FB_ERR("[effect] fb%d, clear_ack is not return!\n", hisifd->index);
+	if(!check_underflow_clear_ack(dpufd)){
+		DPU_FB_ERR("[effect] fb%d, clear_ack is not return!\n", dpufd->index);
 		goto ERR_OUT;
 	}
 
 	if (g_hiace_service.is_ready) {
 		g_hiace_service.is_ready = false;
 	} else {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] service is not ready!\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] service is not ready!\n");
 		goto ERR_OUT;
 	}
 
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] step in\n");
+	effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] step in\n");
 
 	if (g_debug_effect & DEBUG_EFFECT_DELAY) {
 		interval_total.start = get_timestamp_in_us();
 	}
 
-	hisifb_activate_vsync(hisifd);
+	dpufb_activate_vsync(dpufd);
 
-	down(&hisifd->hiace_clear_sem);
+	down(&dpufd->hiace_clear_sem);
 
 	mutex_lock(&ce_info->hist_lock);
 
 	local_valid = inp32(hiace_base + HIACE_LOCAL_VALID);
 	if (local_valid == 1) {
 		//read local hist
-		local_hist_ptr = &hisifd->hiace_info.histogram[HIACE_GHIST_RANK];
+		local_hist_ptr = &dpufd->hiace_info[dpufd->panel_info.disp_panel_id].histogram[HIACE_GHIST_RANK];
 		outp32(hiace_base + HIACE_LHIST_EN, (1 << 31));
 
 		if (g_debug_effect & DEBUG_EFFECT_DELAY) {
@@ -1407,7 +1891,7 @@ void hisi_dpp_hiace_end_handle_func(struct work_struct *work)
 	global_hist_ab_work = inp32(hiace_base + HIACE_GLOBAL_HIST_AB_WORK);
 	if (global_hist_ab_shadow == global_hist_ab_work) {
 		//read global hist
-		global_hist_ptr = &hisifd->hiace_info.histogram[0];//HIACE_GHIST_RANK
+		global_hist_ptr = &dpufd->hiace_info[dpufd->panel_info.disp_panel_id].histogram[0];//HIACE_GHIST_RANK
 
 		if (g_debug_effect & DEBUG_EFFECT_DELAY) {
 			interval_hist_global.start = get_timestamp_in_us();
@@ -1425,33 +1909,33 @@ void hisi_dpp_hiace_end_handle_func(struct work_struct *work)
 
 	mutex_unlock(&ce_info->hist_lock);
 
-	up(&hisifd->hiace_clear_sem);
+	up(&dpufd->hiace_clear_sem);
 
-	hisifb_deactivate_vsync(hisifd);
+	dpufb_deactivate_vsync(dpufd);
 
-	up(&hisifd->blank_sem);
+	up(&dpufd->blank_sem);
 
 	if ((local_valid == 1) || (global_hist_ab_shadow == global_hist_ab_work)) { // global or local hist is updated
-		ce_info->algorithm_result = hisifb_ce_do_contrast(hisifd);
+		ce_info->algorithm_result = dpufb_ce_do_contrast(dpufd);
 	}
 	g_hiace_service.is_ready = true;
 
-	down(&hisifd->blank_sem);
-	if (!hisifd->panel_power_on) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] panel power off!\n");
+	down(&dpufd->blank_sem);
+	if (!dpufd->panel_power_on) {
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] panel power off!\n");
 		goto ERR_OUT;
 	}
 
-	hisifb_activate_vsync(hisifd);
+	dpufb_activate_vsync(dpufd);
 
-	down(&hisifd->hiace_clear_sem);
+	down(&dpufd->hiace_clear_sem);
 
 	//lint -e{438}
 	if (ce_info->algorithm_result == 0) {
 		int gamma_ab_shadow = inp32(hiace_base + HIACE_GAMMA_AB_SHADOW);
 		int gamma_ab_work = inp32(hiace_base + HIACE_GAMMA_AB_WORK);
 		time_interval_t interval_lut = {0};
-		DEFINE_DELAY_RECORD(delay_lut, "lut writing");
+		define_delay_record(delay_lut, "lut writing");
 
 		set_reg(hiace_base + HIACE_VALUE, (uint32_t)ce_info->thminv, 12, 0);
 
@@ -1465,7 +1949,7 @@ void hisi_dpp_hiace_end_handle_func(struct work_struct *work)
 			mutex_lock(&ce_info->lut_lock);
 			for (i = 0; i < (6 * 6 * 11); i++) {
 				// cppcheck-suppress *
-				outp32(hiace_base + HIACE_GAMMA_VxHy_3z2_3z1_3z_W, hisifd->hiace_info.lut_table[i]);
+				outp32(hiace_base + HIACE_GAMMA_VxHy_3z2_3z1_3z_W, dpufd->hiace_info[dpufd->panel_info.disp_panel_id].lut_table[i]);
 			}
 			mutex_unlock(&ce_info->lut_lock);
 			if (g_debug_effect & DEBUG_EFFECT_DELAY) {
@@ -1487,9 +1971,9 @@ void hisi_dpp_hiace_end_handle_func(struct work_struct *work)
 	outp32(hiace_base + HIACE_INT_STAT, 0x1);
 #endif
 
-	up(&hisifd->hiace_clear_sem);
+	up(&dpufd->hiace_clear_sem);
 
-	hisifb_deactivate_vsync(hisifd);
+	dpufb_deactivate_vsync(dpufd);
 
 	if (ce_info->gradual_frames > 0) {
 		ce_info->gradual_frames--;
@@ -1501,27 +1985,9 @@ void hisi_dpp_hiace_end_handle_func(struct work_struct *work)
 	}
 
 ERR_OUT:
-	up(&hisifd->blank_sem);
+	up(&dpufd->blank_sem);
 } //lint !e550
 //lint +e845, +e732, +e774
-
-////////////////////////////////////////////////////////////////////////////////
-//ACE
-
-void init_acm_ce(struct hisi_fb_data_type *hisifd)
-{
-	(void)hisifd;
-}
-
-void hisi_dss_dpp_ace_set_reg(struct hisi_fb_data_type *hisifd)
-{
-	(void)hisifd;
-}
-
-void hisi_dpp_ace_end_handle_func(struct work_struct *work)
-{
-	(void)work;
-}
 
 /*******************************************************************************
 ** GM IGM
@@ -1530,14 +1996,14 @@ void hisi_dpp_ace_end_handle_func(struct work_struct *work)
 #define GM_LUT_MHLEN 254
 static uint16_t degm_gm_lut[GM_LUT_LEN *6];
 
-int hisifb_use_dynamic_gamma(struct hisi_fb_data_type *hisifd, char __iomem *dpp_base)
+int dpufb_use_dynamic_gamma(struct dpu_fb_data_type *dpufd, char __iomem *dpp_base)
 {
 	uint32_t i = 0;
 	uint32_t index = 0;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	char __iomem *gamma_pre_lut_base = NULL;//lint !e838
 
-	if (hisifd == NULL) {
+	if (dpufd == NULL) {
 		return -1;
 	}
 
@@ -1545,9 +2011,9 @@ int hisifb_use_dynamic_gamma(struct hisi_fb_data_type *hisifd, char __iomem *dpp
 		return -1;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 
-	if(hisifd->dynamic_gamma_info.use_dynamic_gm_init == 1) {
+	if(dpufd->dynamic_gamma_info.use_dynamic_gm_init == 1) {
 		uint16_t* gm_lut_r =  degm_gm_lut;
 		uint16_t* gm_lut_g =  gm_lut_r + GM_LUT_LEN;
 		uint16_t* gm_lut_b =  gm_lut_g + GM_LUT_LEN;
@@ -1563,7 +2029,7 @@ int hisifb_use_dynamic_gamma(struct hisi_fb_data_type *hisifd, char __iomem *dpp
 			outp32(dpp_base + (U_GAMA_B_COEF + i * 4), gm_lut_b[index] | gm_lut_b[index+1] << 16);
 
 			if (g_dss_version_tag == FB_ACCEL_KIRIN970) {
-				gamma_pre_lut_base = hisifd->dss_base + DSS_DPP_GAMA_PRE_LUT_OFFSET;
+				gamma_pre_lut_base = dpufd->dss_base + DSS_DPP_GAMA_PRE_LUT_OFFSET;
 				//GAMA PRE LUT
 				outp32(gamma_pre_lut_base + (U_GAMA_PRE_R_COEF + i * 4), gm_lut_r[index] | gm_lut_r[index+1] << 16);
 				outp32(gamma_pre_lut_base + (U_GAMA_PRE_G_COEF + i * 4), gm_lut_g[index] | gm_lut_g[index+1] << 16);
@@ -1587,13 +2053,13 @@ int hisifb_use_dynamic_gamma(struct hisi_fb_data_type *hisifd, char __iomem *dpp
 
 }//lint !e550
 
-int hisifb_use_dynamic_degamma(struct hisi_fb_data_type *hisifd, char __iomem *dpp_base)
+int dpufb_use_dynamic_degamma(struct dpu_fb_data_type *dpufd, char __iomem *dpp_base)
 {
 	uint32_t i = 0;
 	uint32_t index = 0;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 
-	if (hisifd == NULL) {
+	if (dpufd == NULL) {
 		return -1;
 	}
 
@@ -1601,9 +2067,9 @@ int hisifb_use_dynamic_degamma(struct hisi_fb_data_type *hisifd, char __iomem *d
 		return -1;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 
-	if(hisifd->dynamic_gamma_info.use_dynamic_gm_init == 1) {
+	if(dpufd->dynamic_gamma_info.use_dynamic_gm_init == 1) {
 
 		uint16_t* degm_lut_r = degm_gm_lut + GM_LUT_LEN * 3;
 		uint16_t* degm_lut_g = degm_lut_r + GM_LUT_LEN;
@@ -1630,14 +2096,14 @@ int hisifb_use_dynamic_degamma(struct hisi_fb_data_type *hisifd, char __iomem *d
 
 }
 
-void hisifb_update_dynamic_gamma(struct hisi_fb_data_type *hisifd, const char* buffer, size_t len)
+void dpufb_update_dynamic_gamma(struct dpu_fb_data_type *dpufd, const char* buffer, size_t len)
 {
-	struct hisi_panel_info *pinfo = NULL;
-	if (hisifd == NULL || buffer == NULL) {
+	struct dpu_panel_info *pinfo = NULL;
+	if (dpufd == NULL || buffer == NULL) {
 		return;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (pinfo == NULL) { //lint !e774
 		return;
 	}
@@ -1646,20 +2112,20 @@ void hisifb_update_dynamic_gamma(struct hisi_fb_data_type *hisifd, const char* b
 		return;
 	}
 
-	hisifd->dynamic_gamma_info.use_dynamic_gm = 0;
-	hisifd->dynamic_gamma_info.use_dynamic_gm_init = 0;
+	dpufd->dynamic_gamma_info.use_dynamic_gm = 0;
+	dpufd->dynamic_gamma_info.use_dynamic_gm_init = 0;
 
 	if (pinfo->gamma_support == 1) {
 		if ((len > 0) && (len <= (int)sizeof(degm_gm_lut))) {
 			memcpy((char*)degm_gm_lut, buffer, len);
-			hisifd->dynamic_gamma_info.use_dynamic_gm = 1;
-			hisifd->dynamic_gamma_info.use_dynamic_gm_init = 1;
+			dpufd->dynamic_gamma_info.use_dynamic_gm = 1;
+			dpufd->dynamic_gamma_info.use_dynamic_gm_init = 1;
 		}
 	}
 
 }
 
-void hisifb_update_gm_from_reserved_mem(uint32_t *gm_r, uint32_t *gm_g, uint32_t *gm_b,
+void dpufb_update_gm_from_reserved_mem(uint32_t *gm_r, uint32_t *gm_g, uint32_t *gm_b,
 	uint32_t *igm_r, uint32_t *igm_g, uint32_t *igm_b)
 {
 	int i = 0;
@@ -1684,17 +2150,17 @@ void hisifb_update_gm_from_reserved_mem(uint32_t *gm_r, uint32_t *gm_g, uint32_t
 	gm_addr = HISI_SUB_RESERVED_LCD_GAMMA_MEM_PHYMEM_BASE;
 	gm_size = HISI_SUB_RESERVED_LCD_GAMMA_MEM_PHYMEM_SIZE;
 
-	HISI_FB_INFO("gamma kernel gm_addr = 0x%lx  gm_size = 0x%lx \n", gm_addr, gm_size);
+	DPU_FB_INFO("gamma kernel gm_addr = 0x%lx  gm_size = 0x%lx \n", gm_addr, gm_size);
 
 	mem = (void *)ioremap_wc(gm_addr, gm_size);
 	if (mem == NULL) {
-		HISI_FB_ERR("mem ioremap error ! \n");
+		DPU_FB_ERR("mem ioremap error ! \n");
 		return;
 	}
 	memcpy(&len, mem, 4UL);
-	HISI_FB_INFO("gamma read len = %d \n", len);
+	DPU_FB_INFO("gamma read len = %d \n", len);
 	if (len != GM_IGM_LEN) {
-		HISI_FB_ERR("gamma read len error ! \n");
+		DPU_FB_ERR("gamma read len error ! \n");
 		iounmap(mem);
 		return;
 	}
@@ -1722,7 +2188,7 @@ void hisifb_update_gm_from_reserved_mem(uint32_t *gm_r, uint32_t *gm_g, uint32_t
 	return;
 }
 
-/*lint -e571, -e573, -e737, -e732, -e850, -e730, -e713, -e529, -e574, -e679, -e732, -e845, -e570, -e774*/
+/*lint -e571, -e573, -e737, -e732, -e850, -e730, -e713, -e574, -e679, -e732, -e845, -e570, -e774*/
 
 #define ACM_HUE_LUT_LENGTH ((uint32_t)256)
 #define ACM_SATA_LUT_LENGTH ((uint32_t)256)
@@ -1741,14 +2207,14 @@ static int hisi_effect_copy_to_user(uint32_t *table_dst, uint32_t *table_src, ui
 	unsigned long table_size = 0;
 
 	if ((NULL == table_dst) || (NULL == table_src) || (table_length == 0)) {
-		HISI_FB_ERR("invalid input parameters.\n");
+		DPU_FB_ERR("invalid input parameters.\n");
 		return -EINVAL;
 	}
 
 	table_size = (unsigned long)table_length * BYTES_PER_TABLE_ELEMENT;
 
 	if (copy_to_user(table_dst, table_src, table_size)) {
-		HISI_FB_ERR("failed to copy table to user.\n");
+		DPU_FB_ERR("failed to copy table to user.\n");
 		return -EINVAL;
 	}
 
@@ -1762,7 +2228,7 @@ static int hisi_effect_alloc_and_copy(uint32_t **table_dst, uint32_t *table_src,
 	unsigned long table_size = 0;
 
 	if ((NULL == table_dst) ||(NULL == table_src) ||  (lut_table_length == 0)) {
-		HISI_FB_ERR("invalid input parameter");
+		DPU_FB_ERR("invalid input parameter");
 		return -EINVAL;
 	}
 
@@ -1774,14 +2240,14 @@ static int hisi_effect_alloc_and_copy(uint32_t **table_dst, uint32_t *table_src,
 			memset(table_new, 0, table_size);
 			*table_dst = table_new;
 		} else {
-			HISI_FB_ERR("failed to kmalloc lut_table!\n");
+			DPU_FB_ERR("failed to kmalloc lut_table!\n");
 			return -EINVAL;
 		}
 	}
 
 	if (copy_user) {
 		if (copy_from_user(*table_dst, table_src, table_size)) {
-			HISI_FB_ERR("failed to copy table from user\n");
+			DPU_FB_ERR("failed to copy table from user\n");
 			if (table_new)
 				kfree(table_new);
 			*table_dst = NULL;
@@ -1805,7 +2271,7 @@ static void hisi_effect_kfree(uint32_t **free_table)
 static void free_acm_table(struct acm_info *acm)
 {
 	if(acm == NULL){
-		HISI_FB_ERR("acm is NULL!\n");
+		DPU_FB_ERR("acm is NULL!\n");
 		return;
 	}
 
@@ -1824,7 +2290,7 @@ static void free_acm_table(struct acm_info *acm)
 static void free_gamma_table(struct gamma_info *gamma)
 {
 	if(gamma == NULL){
-		HISI_FB_ERR("gamma is NULL!\n");
+		DPU_FB_ERR("gamma is NULL!\n");
 		return;
 	}
 
@@ -1833,60 +2299,60 @@ static void free_gamma_table(struct gamma_info *gamma)
 	hisi_effect_kfree(&gamma->gamma_b_table);
 }
 
-int hisi_effect_arsr2p_info_get(struct hisi_fb_data_type *hisifd, struct arsr2p_info *arsr2p)
+int hisi_effect_arsr2p_info_get(struct dpu_fb_data_type *dpufd, struct arsr2p_info *arsr2p)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == arsr2p) {
-		HISI_FB_ERR("fb%d, arsr2p is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, arsr2p is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	if (!hisifd->effect_ctl.arsr2p_sharp_support) {
-		HISI_FB_INFO("fb%d, arsr2p is not supported!\n", hisifd->index);
+	if (!dpufd->effect_ctl.arsr2p_sharp_support) {
+		DPU_FB_INFO("fb%d, arsr2p is not supported!\n", dpufd->index);
 		return 0;
 	}
 
-	memcpy(&arsr2p[0], &(hisifd->dss_module_default.arsr2p[DSS_RCHN_V1].arsr2p_effect), sizeof(struct arsr2p_info));
-	memcpy(&arsr2p[1], &(hisifd->dss_module_default.arsr2p[DSS_RCHN_V1].arsr2p_effect_scale_up), sizeof(struct arsr2p_info));
-	memcpy(&arsr2p[2], &(hisifd->dss_module_default.arsr2p[DSS_RCHN_V1].arsr2p_effect_scale_down), sizeof(struct arsr2p_info));
-	arsr2p[0].sharp_enable = hisifd->panel_info.prefix_sharpness2D_support;
-	arsr2p[1].sharp_enable = hisifd->panel_info.prefix_sharpness2D_support;
-	arsr2p[2].sharp_enable = hisifd->panel_info.prefix_sharpness2D_support;
+	memcpy(&arsr2p[0], &(dpufd->dss_module_default.arsr2p[DSS_RCHN_V1].arsr2p_effect), sizeof(struct arsr2p_info));
+	memcpy(&arsr2p[1], &(dpufd->dss_module_default.arsr2p[DSS_RCHN_V1].arsr2p_effect_scale_up), sizeof(struct arsr2p_info));
+	memcpy(&arsr2p[2], &(dpufd->dss_module_default.arsr2p[DSS_RCHN_V1].arsr2p_effect_scale_down), sizeof(struct arsr2p_info));
+	arsr2p[0].sharp_enable = dpufd->panel_info.prefix_sharpness2D_support;
+	arsr2p[1].sharp_enable = dpufd->panel_info.prefix_sharpness2D_support;
+	arsr2p[2].sharp_enable = dpufd->panel_info.prefix_sharpness2D_support;
 
 	return 0;
 }
 
-int hisi_effect_arsr1p_info_get(struct hisi_fb_data_type *hisifd, struct arsr1p_info *arsr1p)
+int hisi_effect_arsr1p_info_get(struct dpu_fb_data_type *dpufd, struct arsr1p_info *arsr1p)
 {
-    (void)hisifd, (void)arsr1p;
+    (void)dpufd, (void)arsr1p;
     return 0;
 
 }
 
-int hisi_effect_acm_info_get(struct hisi_fb_data_type *hisifd, struct acm_info *acm_dst)
+int hisi_effect_acm_info_get(struct dpu_fb_data_type *dpufd, struct acm_info *acm_dst)
 {
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == acm_dst) {
-		HISI_FB_ERR("fb%d, acm is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, acm is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	if (!hisifd->effect_ctl.acm_support) {
-		HISI_FB_INFO("fb%d, acm is not supported!\n", hisifd->index);
+	if (!dpufd->effect_ctl.acm_support) {
+		DPU_FB_INFO("fb%d, acm is not supported!\n", dpufd->index);
 		return 0;
 	}
 
-	pinfo = &hisifd->panel_info;
+	pinfo = &dpufd->panel_info;
 
 	acm_dst->acm_hue_rlh01 = (pinfo->r1_lh<<16) | pinfo->r0_lh;
 	acm_dst->acm_hue_rlh23 = (pinfo->r3_lh<<16) | pinfo->r2_lh;
@@ -1919,113 +2385,113 @@ int hisi_effect_acm_info_get(struct hisi_fb_data_type *hisifd, struct acm_info *
 	acm_dst->acm_en = pinfo->acm_ce_support;
 
 	if (hisi_effect_copy_to_user(acm_dst->hue_table, pinfo->acm_lut_hue_table, ACM_HUE_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm hue table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm hue table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->sata_table, pinfo->acm_lut_sata_table, ACM_SATA_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm sata table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm sata table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr0_table, pinfo->acm_lut_satr0_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr0 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr0 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr1_table, pinfo->acm_lut_satr1_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr1 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr1 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr2_table, pinfo->acm_lut_satr2_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr2 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr2 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr3_table, pinfo->acm_lut_satr3_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr3 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr3 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr4_table, pinfo->acm_lut_satr4_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr4 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr4 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr5_table, pinfo->acm_lut_satr5_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr5 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr5 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr6_table, pinfo->acm_lut_satr6_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr6 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr6 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	if (hisi_effect_copy_to_user(acm_dst->satr7_table, pinfo->acm_lut_satr7_table, ACM_SATR_LUT_LENGTH)) {
-		HISI_FB_ERR("fb%d, failed to copy acm satr7 table to user!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to copy acm satr7 table to user!\n", dpufd->index);
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-int hisi_effect_lcp_info_get(struct hisi_fb_data_type *hisifd, struct lcp_info *lcp)
+int hisi_effect_lcp_info_get(struct dpu_fb_data_type *dpufd, struct lcp_info *lcp)
 {
 	int ret = 0;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == lcp) {
-		HISI_FB_ERR("fb%d, lcp is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, lcp is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 
-	if (hisifd->effect_ctl.lcp_gmp_support && (pinfo->gmp_lut_table_len == LCP_GMP_LUT_LENGTH)) {
+	if (dpufd->effect_ctl.lcp_gmp_support && (pinfo->gmp_lut_table_len == LCP_GMP_LUT_LENGTH)) {
 		ret = hisi_effect_copy_to_user(lcp->gmp_table_low32, pinfo->gmp_lut_table_low32bit, LCP_GMP_LUT_LENGTH);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy gmp_table_low32 to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy gmp_table_low32 to user!\n", dpufd->index);
 			goto err_ret;
 		}
 
 		ret = hisi_effect_copy_to_user(lcp->gmp_table_high4, pinfo->gmp_lut_table_high4bit, LCP_GMP_LUT_LENGTH);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy gmp_table_high4 to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy gmp_table_high4 to user!\n", dpufd->index);
 			goto err_ret;
 		}
 	}
 
-	if (hisifd->effect_ctl.lcp_xcc_support && (pinfo->xcc_table_len == LCP_XCC_LUT_LENGTH)) {
+	if (dpufd->effect_ctl.lcp_xcc_support && (pinfo->xcc_table_len == LCP_XCC_LUT_LENGTH)) {
 		ret = hisi_effect_copy_to_user(lcp->xcc_table, pinfo->xcc_table, LCP_XCC_LUT_LENGTH);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy xcc_table to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy xcc_table to user!\n", dpufd->index);
 			goto err_ret;
 		}
 	}
 
-	if (hisifd->effect_ctl.lcp_igm_support && (pinfo->igm_lut_table_len == IGM_LUT_LEN)) {
+	if (dpufd->effect_ctl.lcp_igm_support && (pinfo->igm_lut_table_len == IGM_LUT_LEN)) {
 		ret = hisi_effect_copy_to_user(lcp->igm_r_table, pinfo->igm_lut_table_R, IGM_LUT_LEN);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy igm_r_table to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy igm_r_table to user!\n", dpufd->index);
 			goto err_ret;
 		}
 
 		ret = hisi_effect_copy_to_user(lcp->igm_g_table, pinfo->igm_lut_table_G, IGM_LUT_LEN);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy igm_g_table to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy igm_g_table to user!\n", dpufd->index);
 			goto err_ret;
 		}
 
 		ret = hisi_effect_copy_to_user(lcp->igm_b_table, pinfo->igm_lut_table_B, IGM_LUT_LEN);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy igm_b_table to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy igm_b_table to user!\n", dpufd->index);
 			goto err_ret;
 		}
 	}
@@ -2033,50 +2499,47 @@ int hisi_effect_lcp_info_get(struct hisi_fb_data_type *hisifd, struct lcp_info *
 err_ret:
 	return ret;
 }
-int hisi_effect_hiace_info_get(struct hisi_fb_data_type *hisifd, struct hiace_info *hiace) {
-	(void)hisifd, (void)hiace;
-	return 0;
-}
-int hisi_effect_gamma_info_get(struct hisi_fb_data_type *hisifd, struct gamma_info *gamma)
+
+int hisi_effect_gamma_info_get(struct dpu_fb_data_type *dpufd, struct gamma_info *gamma)
 {
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	int ret = 0;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == gamma) {
-		HISI_FB_ERR("fb%d, gamma is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, gamma is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	if (!hisifd->effect_ctl.gamma_support) {
-		HISI_FB_INFO("fb%d, gamma is not supported!\n", hisifd->index);
+	if (!dpufd->effect_ctl.gamma_support) {
+		DPU_FB_INFO("fb%d, gamma is not supported!\n", dpufd->index);
 		return 0;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 
-	if (hisifd->effect_ctl.lcp_gmp_support && (pinfo->gamma_lut_table_len== GAMMA_LUT_LEN)) {
+	if (dpufd->effect_ctl.lcp_gmp_support && (pinfo->gamma_lut_table_len== GAMMA_LUT_LEN)) {
 		gamma->para_mode = 0;
 
 		ret = hisi_effect_copy_to_user(gamma->gamma_r_table, pinfo->gamma_lut_table_R, GAMMA_LUT_LEN);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy gamma_r_table to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy gamma_r_table to user!\n", dpufd->index);
 			goto err_ret;
 		}
 
 		ret = hisi_effect_copy_to_user(gamma->gamma_g_table, pinfo->gamma_lut_table_G, GAMMA_LUT_LEN);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy gamma_g_table to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy gamma_g_table to user!\n", dpufd->index);
 			goto err_ret;
 		}
 
 		ret = hisi_effect_copy_to_user(gamma->gamma_b_table, pinfo->gamma_lut_table_B, GAMMA_LUT_LEN);
 		if (ret) {
-			HISI_FB_ERR("fb%d, failed to copy gamma_b_table to user!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, failed to copy gamma_b_table to user!\n", dpufd->index);
 			goto err_ret;
 		}
 
@@ -2087,60 +2550,59 @@ err_ret:
 }
 #define ARSR2P_MAX_NUM 3
 
-int hisi_effect_arsr2p_info_set(struct hisi_fb_data_type *hisifd, struct arsr2p_info *arsr2p)
+int hisi_effect_save_arsr2p_info(struct dpu_fb_data_type *dpufd, struct dss_effect_info *effect_info_src)
 {
 	uint32_t i;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (dpufd == NULL) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
-	if (NULL == arsr2p) {
-		HISI_FB_ERR("fb%d, arsr2p is NULL!\n", hisifd->index);
+	if (effect_info_src == NULL) {
+		DPU_FB_ERR("fb%d, effect_info_src is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	if (!hisifd->effect_ctl.arsr2p_sharp_support) {
-		HISI_FB_INFO("fb%d, arsr2p sharp is not supported!\n", hisifd->index);
+	if (!dpufd->effect_ctl.arsr2p_sharp_support) {
+		DPU_FB_INFO("fb%d, arsr2p sharp is not supported!\n", dpufd->index);
 		return 0;
 	}
 
 	for (i = 0; i < ARSR2P_MAX_NUM; i++) {
-		if (arsr2p[i].update == 1) {
-			memcpy(&(hisifd->effect_info.arsr2p[i]), &(arsr2p[i]), sizeof(struct arsr2p_info));
-		}
+		if (effect_info_src->arsr2p[i].update == 1)
+			memcpy(&(dpufd->effect_info[effect_info_src->disp_panel_id].arsr2p[i]), &(effect_info_src->arsr2p[i]), sizeof(struct arsr2p_info));
 	}
 
-	hisifd->effect_updated_flag.arsr2p_effect_updated = true;
+	dpufd->effect_updated_flag[effect_info_src->disp_panel_id].arsr2p_effect_updated = true;
 
-	//debug info
 	for (i = 0; i < ARSR2P_MAX_NUM; i++) {
-		if (hisifd->effect_info.arsr2p[i].update) {
-			HISI_FB_INFO("mode %d: enable : %u, sharp_enable:%u, shoot_enable:%u, skin_enable:%u, update: %u\n",
-				i, hisifd->effect_info.arsr2p[i].enable, hisifd->effect_info.arsr2p[i].sharp_enable, hisifd->effect_info.arsr2p[i].shoot_enable, hisifd->effect_info.arsr2p[i].skin_enable,
-                hisifd->effect_info.arsr2p[i].update);
-		}
+		if (dpufd->effect_info[effect_info_src->disp_panel_id].arsr2p[i].update)
+			DPU_FB_INFO("mode %d: enable : %u, sharp_enable:%u, shoot_enable:%u, skin_enable:%u, update: %u\n",
+				i, dpufd->effect_info[effect_info_src->disp_panel_id].arsr2p[i].enable,
+				dpufd->effect_info[effect_info_src->disp_panel_id].arsr2p[i].sharp_enable,
+				dpufd->effect_info[effect_info_src->disp_panel_id].arsr2p[i].shoot_enable,
+				dpufd->effect_info[effect_info_src->disp_panel_id].arsr2p[i].skin_enable,
+				dpufd->effect_info[effect_info_src->disp_panel_id].arsr2p[i].update);
 	}
 
 	return 0;
 }
 
-int hisi_effect_arsr1p_info_set(struct hisi_fb_data_type *hisifd, struct arsr1p_info *arsr1p)
+int hisi_effect_save_arsr1p_info(struct dpu_fb_data_type *dpufd, struct dss_effect_info *effect_info_src)
 {
-    (void)hisifd, (void)arsr1p;
-    return 0;
-
+	(void)dpufd, (void)effect_info_src;
+	return 0;
 }
 
-static int set_acm_normal_param(struct acm_info *acm_dst, struct hisi_panel_info *pinfo)
+static int set_acm_normal_param(struct acm_info *acm_dst, struct dpu_panel_info *pinfo)
 {
 	if (acm_dst == NULL) {
-		HISI_FB_DEBUG("acm_dst is NULL!\n");
+		DPU_FB_DEBUG("acm_dst is NULL!\n");
 		return -1;
 	}
 
 	if (pinfo == NULL) {
-		HISI_FB_DEBUG("pinfo is NULL!\n");
+		DPU_FB_DEBUG("pinfo is NULL!\n");
 		return -1;
 	}
 
@@ -2174,67 +2636,67 @@ static int set_acm_normal_param(struct acm_info *acm_dst, struct hisi_panel_info
 	/* malloc acm_dst lut table memory*/
 	if (hisi_effect_alloc_and_copy(&acm_dst->hue_table, pinfo->acm_lut_hue_table,
 		ACM_HUE_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm hut table from panel\n");
+		DPU_FB_ERR("failed to set acm hut table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->sata_table, pinfo->acm_lut_sata_table,
 		ACM_SATA_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm sata table from panel\n");
+		DPU_FB_ERR("failed to set acm sata table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr0_table, pinfo->acm_lut_satr0_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr0 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr0 table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr1_table, pinfo->acm_lut_satr1_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr1 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr1 table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr2_table, pinfo->acm_lut_satr2_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr2 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr2 table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr3_table, pinfo->acm_lut_satr3_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr3 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr3 table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr4_table, pinfo->acm_lut_satr4_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr4 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr4 table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr5_table, pinfo->acm_lut_satr5_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr5 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr5 table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr6_table, pinfo->acm_lut_satr6_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr6 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr6 table from panel\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr7_table, pinfo->acm_lut_satr7_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr7 table from panel\n");
+		DPU_FB_ERR("failed to set acm satr7 table from panel\n");
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-static int set_acm_cinema_param(struct acm_info *acm_dst, struct hisi_panel_info *pinfo)
+static int set_acm_cinema_param(struct acm_info *acm_dst, struct dpu_panel_info *pinfo)
 {
 	if (acm_dst == NULL) {
-		HISI_FB_DEBUG("acm_dst is NULL!\n");
+		DPU_FB_DEBUG("acm_dst is NULL!\n");
 		return -1;
 	}
 
 	if (pinfo == NULL) {
-		HISI_FB_DEBUG("pinfo is NULL!\n");
+		DPU_FB_DEBUG("pinfo is NULL!\n");
 		return -1;
 	}
 
@@ -2268,52 +2730,52 @@ static int set_acm_cinema_param(struct acm_info *acm_dst, struct hisi_panel_info
 	/* malloc acm_dst lut table memory*/
 	if (hisi_effect_alloc_and_copy(&acm_dst->hue_table, pinfo->cinema_acm_lut_hue_table,
 		ACM_HUE_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm hut table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm hut table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->sata_table, pinfo->cinema_acm_lut_sata_table,
 		ACM_SATA_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm sata table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm sata table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr0_table, pinfo->cinema_acm_lut_satr0_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr0 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr0 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr1_table, pinfo->cinema_acm_lut_satr1_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr1 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr1 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr2_table, pinfo->cinema_acm_lut_satr2_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr2 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr2 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr3_table, pinfo->cinema_acm_lut_satr3_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr3 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr3 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr4_table, pinfo->cinema_acm_lut_satr4_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr4 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr4 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr5_table, pinfo->cinema_acm_lut_satr5_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr5 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr5 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr6_table, pinfo->cinema_acm_lut_satr6_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr6 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr6 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr7_table, pinfo->cinema_acm_lut_satr7_table,
 		ACM_SATR_LUT_LENGTH, false)) {
-		HISI_FB_ERR("failed to set acm satr7 table from panel cinema mode\n");
+		DPU_FB_ERR("failed to set acm satr7 table from panel cinema mode\n");
 		return -EINVAL;
 	}
 
@@ -2323,12 +2785,12 @@ static int set_acm_cinema_param(struct acm_info *acm_dst, struct hisi_panel_info
 static int set_acm_user_param(struct acm_info *acm_dst, struct acm_info *acm_src)
 {
 	if (acm_dst == NULL) {
-		HISI_FB_DEBUG("acm_dst is NULL!\n");
+		DPU_FB_DEBUG("acm_dst is NULL!\n");
 		return -1;
 	}
 
 	if (acm_src == NULL) {
-		HISI_FB_DEBUG("acm_src is NULL!\n");
+		DPU_FB_DEBUG("acm_src is NULL!\n");
 		return -1;
 	}
 
@@ -2364,106 +2826,106 @@ static int set_acm_user_param(struct acm_info *acm_dst, struct acm_info *acm_src
 	/* malloc acm_dst lut table memory*/
 	if (hisi_effect_alloc_and_copy(&acm_dst->hue_table, acm_src->hue_table,
 		ACM_HUE_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm hut table from user\n");
+		DPU_FB_ERR("failed to copy acm hut table from user\n");
 		return -EINVAL;
 	}
 
 	if (hisi_effect_alloc_and_copy(&acm_dst->sata_table, acm_src->sata_table,
 		ACM_SATA_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm sata table from user\n");
+		DPU_FB_ERR("failed to copy acm sata table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr0_table, acm_src->satr0_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr0 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr0 table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr1_table, acm_src->satr1_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr1 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr1 table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr2_table, acm_src->satr2_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr2 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr2 table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr3_table, acm_src->satr3_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr3 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr3 table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr4_table, acm_src->satr4_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr4 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr4 table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr5_table, acm_src->satr5_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr5 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr5 table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr6_table, acm_src->satr6_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr6 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr6 table from user\n");
 		return -EINVAL;
 	}
 	if (hisi_effect_alloc_and_copy(&acm_dst->satr7_table, acm_src->satr7_table,
 		ACM_SATR_LUT_LENGTH, true)) {
-		HISI_FB_ERR("failed to copy acm satr7 table from user\n");
+		DPU_FB_ERR("failed to copy acm satr7 table from user\n");
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-int hisi_effect_acm_info_set(struct hisi_fb_data_type *hisifd, struct acm_info *acm_src)
+int hisi_effect_save_acm_info(struct dpu_fb_data_type *dpufd, struct dss_effect_info *effect_info_src)
 {
 	struct acm_info *acm_dst = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
-	if (NULL == acm_src) {
-		HISI_FB_ERR("fb%d, acm_src is NULL!\n", hisifd->index);
+	if (effect_info_src == NULL) {
+		DPU_FB_ERR("fb%d, effect_info_src is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	acm_dst = &(hisifd->effect_info.acm);
-	pinfo = &(hisifd->panel_info);
+	acm_dst = &(dpufd->effect_info[effect_info_src->disp_panel_id].acm);
+	pinfo = &(dpufd->panel_info);
 
-	if (!hisifd->effect_ctl.acm_support) {
-		HISI_FB_INFO("fb%d, acm is not supported!\n", hisifd->index);
+	if (!dpufd->effect_ctl.acm_support) {
+		DPU_FB_INFO("fb%d, acm is not supported!\n", dpufd->index);
 		return 0;
 	}
 
 	/*set acm info*/
-	if (hisifd->effect_updated_flag.acm_effect_updated == false) {
-		acm_dst->acm_en = acm_src->acm_en;
-		if (acm_src->param_mode == 0) {
+	if (dpufd->effect_updated_flag[effect_info_src->disp_panel_id].acm_effect_updated == false) {
+		acm_dst->acm_en = effect_info_src->acm.acm_en;
+		if (effect_info_src->acm.param_mode == 0) {
 			if (set_acm_normal_param(acm_dst, pinfo)) {
-				HISI_FB_ERR("fb%d, failed to set acm normal mode parameters\n", hisifd->index);
+				DPU_FB_ERR("fb%d, failed to set acm normal mode parameters\n", dpufd->index);
 				goto err_ret;
 			}
-		} else if (acm_src->param_mode == 1) {
+		} else if (effect_info_src->acm.param_mode == 1) {
 			if (set_acm_cinema_param(acm_dst, pinfo)) {
-				HISI_FB_ERR("fb%d, failed to set acm cinema mode parameters\n", hisifd->index);
+				DPU_FB_ERR("fb%d, failed to set acm cinema mode parameters\n", dpufd->index);
 				goto err_ret;
 			}
-		} else if (acm_src->param_mode == 2) {
-			if (set_acm_user_param(acm_dst, acm_src)) {
-				HISI_FB_ERR("fb%d, failed to set acm user mode parameters\n", hisifd->index);
+		} else if (effect_info_src->acm.param_mode == 2) {
+			if (set_acm_user_param(acm_dst, &effect_info_src->acm)) {
+				DPU_FB_ERR("fb%d, failed to set acm user mode parameters\n", dpufd->index);
 				goto err_ret;
 			}
 		} else {
-			HISI_FB_ERR("fb%d, invalid acm para mode!\n", hisifd->index);
+			DPU_FB_ERR("fb%d, invalid acm para mode!\n", dpufd->index);
 			return -EINVAL;
 		}
 
-		hisifd->effect_updated_flag.acm_effect_updated = true;
+		dpufd->effect_updated_flag[effect_info_src->disp_panel_id].acm_effect_updated = true;
 	}
 	return 0;
 
@@ -2472,30 +2934,30 @@ err_ret:
 	return -EINVAL;
 }
 
-int hisi_effect_gmp_info_set(struct hisi_fb_data_type *hisifd, struct lcp_info *lcp_src){
+int hisi_effect_gmp_info_set(struct dpu_fb_data_type *dpufd, struct lcp_info *lcp_src){
 	struct lcp_info *lcp_dst = NULL;
 	struct dss_effect *effect = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (!g_is_effect_lock_init) {
-		HISI_FB_INFO("display effect lock is not init!\n");
+		DPU_FB_INFO("display effect lock is not init!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == lcp_src) {
-		HISI_FB_ERR("fb%d, lcp_src is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, lcp_src is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	lcp_dst = &(hisifd->effect_info.lcp);
-	effect = &(hisifd->effect_ctl);
+	lcp_dst = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].lcp);
+	effect = &(dpufd->effect_ctl);
 
 	if (!effect->lcp_gmp_support) {
-		HISI_FB_INFO("fb%d, lcp gmp is not supported!\n", hisifd->index);
+		DPU_FB_INFO("fb%d, lcp gmp is not supported!\n", dpufd->index);
 		return 0;
 	}
 
@@ -2504,17 +2966,17 @@ int hisi_effect_gmp_info_set(struct hisi_fb_data_type *hisifd, struct lcp_info *
 	lcp_dst->gmp_enable = lcp_src->gmp_enable;
 	if (hisi_effect_alloc_and_copy(&lcp_dst->gmp_table_high4, lcp_src->gmp_table_high4,
 		LCP_GMP_LUT_LENGTH, true)) {
-		HISI_FB_ERR("fb%d, failed to set gmp_table_high4!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to set gmp_table_high4!\n", dpufd->index);
 		goto err_ret;
 	}
 
 	if (hisi_effect_alloc_and_copy(&lcp_dst->gmp_table_low32, lcp_src->gmp_table_low32,
 		LCP_GMP_LUT_LENGTH, true)) {
-		HISI_FB_ERR("fb%d, failed to set gmp_lut_table_low32bit!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to set gmp_lut_table_low32bit!\n", dpufd->index);
 		goto err_ret;
 	}
 
-	hisifd->effect_updated_flag.gmp_effect_updated = true;
+	dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].gmp_effect_updated = true;
 
 	spin_unlock(&g_gmp_effect_lock);
 	return 0;
@@ -2527,30 +2989,30 @@ err_ret:
 	return -EINVAL;
 }
 
-int hisi_effect_igm_info_set(struct hisi_fb_data_type *hisifd, struct lcp_info *lcp_src){
+int hisi_effect_igm_info_set(struct dpu_fb_data_type *dpufd, struct lcp_info *lcp_src){
 	struct lcp_info *lcp_dst = NULL;
 	struct dss_effect *effect = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (!g_is_effect_lock_init) {
-		HISI_FB_INFO("display effect lock is not init!\n");
+		DPU_FB_INFO("display effect lock is not init!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == lcp_src) {
-		HISI_FB_ERR("fb%d, lcp_src is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, lcp_src is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	lcp_dst = &(hisifd->effect_info.lcp);
-	effect = &(hisifd->effect_ctl);
+	lcp_dst = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].lcp);
+	effect = &(dpufd->effect_ctl);
 
 	if (!effect->lcp_igm_support) {
-		HISI_FB_INFO("fb%d, lcp degamma is not supported!\n", hisifd->index);
+		DPU_FB_INFO("fb%d, lcp degamma is not supported!\n", dpufd->index);
 		return 0;
 	}
 
@@ -2560,23 +3022,23 @@ int hisi_effect_igm_info_set(struct hisi_fb_data_type *hisifd, struct lcp_info *
 
 	if (hisi_effect_alloc_and_copy(&lcp_dst->igm_r_table, lcp_src->igm_r_table,
 		IGM_LUT_LEN, true)) {
-		HISI_FB_ERR("fb%d, failed to set igm_r_table!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to set igm_r_table!\n", dpufd->index);
 		goto err_ret;
 	}
 
 	if (hisi_effect_alloc_and_copy(&lcp_dst->igm_g_table, lcp_src->igm_g_table,
 		IGM_LUT_LEN, true)) {
-		HISI_FB_ERR("fb%d, failed to set igm_g_table!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to set igm_g_table!\n", dpufd->index);
 		goto err_ret;
 	}
 
 	if (hisi_effect_alloc_and_copy(&lcp_dst->igm_b_table, lcp_src->igm_b_table,
 		IGM_LUT_LEN, true)) {
-		HISI_FB_ERR("fb%d, failed to set igm_b_table!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to set igm_b_table!\n", dpufd->index);
 		goto err_ret;
 	}
 
-	hisifd->effect_updated_flag.igm_effect_updated = true;
+	dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].igm_effect_updated = true;
 
 	spin_unlock(&g_igm_effect_lock);
 	return 0;
@@ -2590,30 +3052,30 @@ err_ret:
 	return -EINVAL;
 }
 
-int hisi_effect_xcc_info_set(struct hisi_fb_data_type *hisifd, struct lcp_info *lcp_src){
+int hisi_effect_xcc_info_set(struct dpu_fb_data_type *dpufd, struct lcp_info *lcp_src){
 	struct lcp_info *lcp_dst = NULL;
 	struct dss_effect *effect = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (!g_is_effect_lock_init) {
-		HISI_FB_INFO("display effect lock is not init!\n");
+		DPU_FB_INFO("display effect lock is not init!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == lcp_src) {
-		HISI_FB_ERR("fb%d, lcp_src is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, lcp_src is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	lcp_dst = &(hisifd->effect_info.lcp);
-	effect = &(hisifd->effect_ctl);
+	lcp_dst = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].lcp);
+	effect = &(dpufd->effect_ctl);
 
 	if (!effect->lcp_xcc_support) {
-		HISI_FB_INFO("fb%d, lcp xcc are not supported!\n", hisifd->index);
+		DPU_FB_INFO("fb%d, lcp xcc are not supported!\n", dpufd->index);
 		return 0;
 	}
 
@@ -2623,11 +3085,11 @@ int hisi_effect_xcc_info_set(struct hisi_fb_data_type *hisifd, struct lcp_info *
 
 	if (hisi_effect_alloc_and_copy(&lcp_dst->xcc_table, lcp_src->xcc_table,
 		LCP_XCC_LUT_LENGTH, true)) {
-		HISI_FB_ERR("fb%d, failed to set xcc_table!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to set xcc_table!\n", dpufd->index);
 		goto err_ret;
 	}
 
-	hisifd->effect_updated_flag.xcc_effect_updated = true;
+	dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].xcc_effect_updated = true;
 
 	spin_unlock(&g_xcc_effect_lock);
 	return 0;
@@ -2639,11 +3101,71 @@ err_ret:
 	return -EINVAL;
 }
 
+int hisi_effect_xcc_info_set_kernel(struct dpu_fb_data_type *dpufd, struct dss_display_effect_xcc *lcp_src) {
+	struct lcp_info *lcp_dst = NULL;
+	struct dss_effect *effect = NULL;
+	struct dpu_fb_data_type *dpufd_primary = NULL;
+
+	dpufd_primary = dpufd_list[PRIMARY_PANEL_IDX];
+
+	if (dpufd_primary == NULL) {
+		DPU_FB_ERR("dpufd_primary is NULL pointer, return!\n");
+		return -EINVAL;
+	}
+
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
+		return -EINVAL;
+	}
+
+	if (!g_is_effect_lock_init) {
+		DPU_FB_INFO("display effect lock is not init!\n");
+		return -EINVAL;
+	}
+
+	if (NULL == lcp_src) {
+		DPU_FB_ERR("fb%d, lcp_src is NULL!\n", dpufd->index);
+		return -EINVAL;
+	}
+
+	lcp_dst = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].lcp);
+	effect = &(dpufd->effect_ctl);
+
+	if (!effect->lcp_xcc_support) {
+		DPU_FB_INFO("fb%d, lcp xcc are not supported!\n", dpufd->index);
+		return 0;
+	}
+
+	spin_lock(&g_xcc_effect_lock);
+
+	lcp_dst->xcc_enable = lcp_src->xcc_enable;
+
+	if (hisi_effect_alloc_and_copy(&lcp_dst->xcc_table, lcp_src->xcc_table,
+		LCP_XCC_LUT_LENGTH, false)) {
+		DPU_FB_ERR("fb%d, failed to set xcc_table!\n", dpufd->index);
+		goto err_ret;
+	}
+	/*the display effect is not allowed to set reg when the partical update*/
+	if (dpufd_primary->display_effect_flag < 5)
+		dpufd_primary->display_effect_flag = 4;
+
+	dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].xcc_effect_updated = true;
+	spin_unlock(&g_xcc_effect_lock);
+
+	return 0;
+
+err_ret:
+	hisi_effect_kfree(&lcp_dst->xcc_table);
+
+	spin_unlock(&g_xcc_effect_lock);
+	return -EINVAL;
+}
+
 static int hisi_efffect_gamma_param_set(struct gamma_info *gammaDst, struct gamma_info *gammaSrc,
-                                  struct hisi_panel_info* pInfo) {
+                                  struct dpu_panel_info* pInfo) {
 
 	if((gammaDst == NULL) || (gammaSrc == NULL) || (pInfo == NULL)){
-		HISI_FB_ERR("gammaDst or gammaSrc or pInfo is null pointer\n");
+		DPU_FB_ERR("gammaDst or gammaSrc or pInfo is null pointer\n");
 		return -1;
 	}
 
@@ -2651,60 +3173,60 @@ static int hisi_efffect_gamma_param_set(struct gamma_info *gammaDst, struct gamm
 		//Normal mode
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_r_table, pInfo->gamma_lut_table_R,
 			GAMMA_LUT_LEN, false)) {
-			HISI_FB_ERR("failed to set gamma_r_table!\n");
+			DPU_FB_ERR("failed to set gamma_r_table!\n");
 			goto err_ret;
 		}
 
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_g_table, pInfo->gamma_lut_table_G,
 			GAMMA_LUT_LEN, false)) {
-			HISI_FB_ERR("failed to set gamma_g_table!\n");
+			DPU_FB_ERR("failed to set gamma_g_table!\n");
 			goto err_ret;
 		}
 
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_b_table, pInfo->gamma_lut_table_B,
 			GAMMA_LUT_LEN, false)) {
-			HISI_FB_ERR("failed to set gamma_b_table!\n");
+			DPU_FB_ERR("failed to set gamma_b_table!\n");
 			goto err_ret;
 		}
 	} else if (gammaSrc->para_mode == 1) {
 		//Cinema mode
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_r_table, pInfo->cinema_gamma_lut_table_R,
 			GAMMA_LUT_LEN, false)) {
-			HISI_FB_ERR("failed to set gamma_r_table!\n");
+			DPU_FB_ERR("failed to set gamma_r_table!\n");
 			goto err_ret;
 		}
 
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_g_table, pInfo->cinema_gamma_lut_table_G,
 			GAMMA_LUT_LEN, false)) {
-			HISI_FB_ERR("failed to set gamma_g_table!\n");
+			DPU_FB_ERR("failed to set gamma_g_table!\n");
 			goto err_ret;
 		}
 
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_b_table, pInfo->cinema_gamma_lut_table_B,
 			GAMMA_LUT_LEN, false)) {
-			HISI_FB_ERR("failed to set gamma_b_table!\n");
+			DPU_FB_ERR("failed to set gamma_b_table!\n");
 			goto err_ret;
 		}
 	} else if (gammaSrc->para_mode == 2) {
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_r_table, gammaSrc->gamma_r_table,
 			GAMMA_LUT_LEN, true)) {
-			HISI_FB_ERR("failed to copy gamma_r_table from user!\n");
+			DPU_FB_ERR("failed to copy gamma_r_table from user!\n");
 			goto err_ret;
 		}
 
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_g_table, gammaSrc->gamma_g_table,
 			GAMMA_LUT_LEN, true)) {
-			HISI_FB_ERR("failed to copy gamma_g_table from user!\n");
+			DPU_FB_ERR("failed to copy gamma_g_table from user!\n");
 			goto err_ret;
 		}
 
 		if (hisi_effect_alloc_and_copy(&gammaDst->gamma_b_table, gammaSrc->gamma_b_table,
 			GAMMA_LUT_LEN, true)) {
-			HISI_FB_ERR("failed to copy gamma_b_table from user!\n");
+			DPU_FB_ERR("failed to copy gamma_b_table from user!\n");
 			goto err_ret;
 		}
 	} else {
-		HISI_FB_ERR("not supported gamma para_mode!\n");
+		DPU_FB_ERR("not supported gamma para_mode!\n");
 		return -EINVAL;
 	}
 
@@ -2716,32 +3238,32 @@ err_ret:
 	return -EINVAL;
 }
 
-int hisi_effect_gamma_info_set(struct hisi_fb_data_type *hisifd, struct gamma_info *gamma_src)
+int hisi_effect_gamma_info_set(struct dpu_fb_data_type *dpufd, struct gamma_info *gamma_src)
 {
 	struct gamma_info *gamma_dst = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	int ret;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!\n");
 		return -EINVAL;
 	}
 
 	if (!g_is_effect_lock_init) {
-		HISI_FB_INFO("display effect lock is not init!\n");
+		DPU_FB_INFO("display effect lock is not init!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == gamma_src) {
-		HISI_FB_ERR("fb%d, gamma_src is NULL!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, gamma_src is NULL!\n", dpufd->index);
 		return -EINVAL;
 	}
 
-	gamma_dst = &(hisifd->effect_info.gamma);
-	pinfo = &(hisifd->panel_info);
+	gamma_dst = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].gamma);
+	pinfo = &(dpufd->panel_info);
 
-	if (!hisifd->effect_ctl.gamma_support) {
-		HISI_FB_INFO("fb%d, gamma is not supported!\n", hisifd->index);
+	if (!dpufd->effect_ctl.gamma_support) {
+		DPU_FB_INFO("fb%d, gamma is not supported!\n", dpufd->index);
 		return 0;
 	}
 
@@ -2751,19 +3273,19 @@ int hisi_effect_gamma_info_set(struct hisi_fb_data_type *hisifd, struct gamma_in
 	gamma_dst->para_mode = gamma_src->para_mode;
 	ret = hisi_efffect_gamma_param_set(gamma_dst, gamma_src, pinfo);
 	if (ret < 0) {
-		HISI_FB_ERR("fb%d, failed to set gamma table!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, failed to set gamma table!\n", dpufd->index);
 		spin_unlock(&g_gamma_effect_lock);
 		return ret;
 	}
 
-	hisifd->effect_updated_flag.gamma_effect_updated = true;
+	dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].gamma_effect_updated = true;
 
 	spin_unlock(&g_gamma_effect_lock);
 
 	return 0;
 }
 
-void hisi_effect_acm_set_reg(struct hisi_fb_data_type *hisifd)
+void hisi_effect_acm_set_reg(struct dpu_fb_data_type *dpufd)
 {
 	struct acm_info *acm_param = NULL;
 	char __iomem *acm_base = NULL;
@@ -2771,21 +3293,21 @@ void hisi_effect_acm_set_reg(struct hisi_fb_data_type *hisifd)
 	static uint32_t acm_config_flag = 0;
 	uint32_t acm_lut_sel;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!");
 		return;
 	}
 
-	if (!hisifd->effect_ctl.acm_support) {
+	if (!dpufd->effect_ctl.acm_support) {
 		return;
 	}
 
-	if (!hisifd->effect_updated_flag.acm_effect_updated) {
+	if (!dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].acm_effect_updated) {
 		return;
 	}
 
-	acm_base = hisifd->dss_base + DSS_DPP_ACM_OFFSET;
-	acm_lut_base = hisifd->dss_base + DSS_DPP_ACM_LUT_OFFSET;
+	acm_base = dpufd->dss_base + DSS_DPP_ACM_OFFSET;
+	acm_lut_base = dpufd->dss_base + DSS_DPP_ACM_LUT_OFFSET;
 
 	if (acm_config_flag == 0) {
 		//Disable ACM
@@ -2794,15 +3316,15 @@ void hisi_effect_acm_set_reg(struct hisi_fb_data_type *hisifd)
 		return;
 	}
 
-	acm_param = &(hisifd->effect_info.acm);
+	acm_param = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].acm);
 
 	if (NULL == acm_param->hue_table) {
-		HISI_FB_ERR("fb%d, invalid acm hue table param!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, invalid acm hue table param!\n", dpufd->index);
 		goto err_ret;
 	}
 
 	if (NULL == acm_param->sata_table) {
-		HISI_FB_ERR("fb%d, invalid acm sata table param!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, invalid acm sata table param!\n", dpufd->index);
 		goto err_ret;
 	}
 
@@ -2810,7 +3332,7 @@ void hisi_effect_acm_set_reg(struct hisi_fb_data_type *hisifd)
 		|| (NULL == acm_param->satr2_table) || (NULL == acm_param->satr3_table)
 		|| (NULL == acm_param->satr4_table) || (NULL == acm_param->satr5_table)
 		|| (NULL == acm_param->satr6_table) || (NULL == acm_param->satr7_table)) {
-		HISI_FB_ERR("fb%d, invalid acm satr table param!\n", hisifd->index);
+		DPU_FB_ERR("fb%d, invalid acm satr table param!\n", dpufd->index);
 		goto err_ret;
 	}
 
@@ -2858,7 +3380,7 @@ void hisi_effect_acm_set_reg(struct hisi_fb_data_type *hisifd)
 
 	set_reg(acm_base + ACM_EN, acm_param->acm_en, 1, 0);
 err_ret:
-	hisifd->effect_updated_flag.acm_effect_updated = false;
+	dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].acm_effect_updated = false;
 
 	//free_acm_table(acm_param);
 	acm_config_flag = 0;
@@ -2875,17 +3397,17 @@ static bool lcp_igm_set_reg(char __iomem *degamma_lut_base, struct lcp_info *lcp
 	int cnt;
 
 	if (degamma_lut_base == NULL) {
-		HISI_FB_ERR("lcp_lut_base is NULL!\n");
+		DPU_FB_ERR("lcp_lut_base is NULL!\n");
 		return false;
 	}
 
 	if (lcp_param == NULL) {
-		HISI_FB_ERR("lcp_param is NULL!\n");
+		DPU_FB_ERR("lcp_param is NULL!\n");
 		return false;
 	}
 
 	if (lcp_param->igm_r_table == NULL || lcp_param->igm_g_table == NULL || lcp_param->igm_b_table == NULL) {
-		HISI_FB_ERR("igm_r_table or igm_g_table or igm_b_table	is NULL!\n");
+		DPU_FB_INFO("igm_r_table or igm_g_table or igm_b_table is NULL!\n");
 		return false;
 	}
 
@@ -2910,17 +3432,17 @@ static bool lcp_xcc_set_reg(char __iomem *xcc_base, struct lcp_info *lcp_param)
 	int cnt;
 
 	if (xcc_base == NULL) {
-		HISI_FB_DEBUG("lcp_base is NULL!\n");
+		DPU_FB_DEBUG("lcp_base is NULL!\n");
 		return false;
 	}
 
 	if (lcp_param == NULL) {
-		HISI_FB_DEBUG("lcp_param is NULL!\n");
+		DPU_FB_DEBUG("lcp_param is NULL!\n");
 		return false;
 	}
 
 	if (lcp_param->xcc_table == NULL) {
-		HISI_FB_DEBUG("xcc_table is NULL!\n");
+		DPU_FB_DEBUG("xcc_table is NULL!\n");
 		return false;
 	}
 	for (cnt = 0; cnt < XCC_COEF_LEN; cnt++) {
@@ -2929,21 +3451,131 @@ static bool lcp_xcc_set_reg(char __iomem *xcc_base, struct lcp_info *lcp_param)
 	return true;
 }
 
+static void reset_xcc_reg(char __iomem *xcc_base)
+{
+	int cnt;
+	uint32_t coef_01 = 0;
+	uint32_t coef_12 = 0;
+	uint32_t coef_23 = 0;
+	uint32_t max_coef = 0;
+
+	coef_01 = inp32(xcc_base + LCP_XCC_COEF_01);
+	coef_12 = inp32(xcc_base + LCP_XCC_COEF_12);
+	coef_23 = inp32(xcc_base + LCP_XCC_COEF_23);
+	max_coef = max(coef_01, coef_12);
+	max_coef = max(max_coef, coef_23);
+	if (max_coef > 0xFFFF) {
+		DPU_FB_INFO("xcc coef is negative!\n");
+		return;
+	}
+	if (max_coef != 0) {
+		coef_01 = coef_01 * XCC_DEFAULT / max_coef;
+		coef_12 = coef_12 * XCC_DEFAULT / max_coef;
+		coef_23 = coef_23 * XCC_DEFAULT / max_coef;
+	} else {
+		coef_01 = XCC_DEFAULT;
+		coef_12 = XCC_DEFAULT;
+		coef_23 = XCC_DEFAULT;
+	}
+	set_reg(xcc_base + LCP_XCC_COEF_01,  coef_01, 17, 0);
+	set_reg(xcc_base + LCP_XCC_COEF_12,  coef_12, 17, 0);
+	set_reg(xcc_base + LCP_XCC_COEF_23,  coef_23, 17, 0);
+
+	for (cnt = 0; cnt < XCC_COEF_LEN; cnt++) {
+		if (cnt == XCC_COEF_INDEX_01 || cnt == XCC_COEF_INDEX_12 || cnt == XCC_COEF_INDEX_23) {
+		} else {
+			set_reg(xcc_base + LCP_XCC_COEF_00 +cnt * 4,  0x0, 17, 0);
+		}
+	}
+}
+
+
+void clear_xcc_table(struct dpu_fb_data_type *dpufd)
+{
+	char __iomem *xcc_base = NULL;
+	int cnt;
+
+	if (dpufd == NULL) {
+		DPU_FB_ERR("dpufd is null!\n");
+		return;
+	}
+
+	xcc_base = dpufd->dss_base + DSS_DPP_XCC_OFFSET;
+
+	for (cnt = 0; cnt < XCC_COEF_LEN; cnt++) {
+		xcc_table_temp[cnt] = inp32(xcc_base + LCP_XCC_COEF_00 +cnt * 4);//lint !e679
+	}
+
+	//bypass xcc
+	reset_xcc_reg(xcc_base);
+	xcc_enable_state = inp32(xcc_base + LCP_XCC_BYPASS_EN);
+}
+
+void restore_xcc_table(struct dpu_fb_data_type *dpufd)
+{
+	int cnt;
+	char __iomem *xcc_base = NULL;
+	struct lcp_info *lcp_param = NULL;
+
+	if (dpufd == NULL) {
+		DPU_FB_ERR("dpufd is null!\n");
+		return;
+	}
+
+	xcc_base = dpufd->dss_base + DSS_DPP_XCC_OFFSET;
+	lcp_param = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].lcp);
+
+	if (xcc_base == NULL) {
+		DPU_FB_DEBUG("lcp_base is NULL!\n");
+		return;
+	}
+
+	if (lcp_param == NULL) {
+		DPU_FB_ERR("lcp_param is null!\n");
+		return;
+	}
+
+	if (lcp_param->xcc_table == NULL) {
+		DPU_FB_DEBUG("xcc_table is NULL!\n");
+		return;
+	}
+
+	//enable xcc
+	if (spin_can_lock(&g_xcc_effect_lock)) {
+		spin_lock(&g_xcc_effect_lock);
+		if (!dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].xcc_effect_updated) {
+			for (cnt = 0; cnt < XCC_COEF_LEN; cnt++) {
+				lcp_param->xcc_table[cnt] = xcc_table_temp[cnt];
+			}
+			lcp_xcc_set_reg(xcc_base, lcp_param);
+			set_reg(xcc_base + LCP_XCC_BYPASS_EN, xcc_enable_state & 0x1, 1, 0);
+		} else {
+			lcp_xcc_set_reg(xcc_base, lcp_param);
+			set_reg(xcc_base + LCP_XCC_BYPASS_EN, ~(lcp_param->xcc_enable & 0x1), 1, 0);
+			dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].xcc_effect_updated = FALSE;
+		}
+		spin_unlock(&g_xcc_effect_lock);
+	} else {
+		DPU_FB_INFO("xcc effect param is being updated, delay set reg to next frame!\n");
+	}
+
+}
+
 static bool lcp_gmp_set_reg(char __iomem *gmp_lut_base, struct lcp_info *lcp_param)
 {
 	int i;
 
 	if (gmp_lut_base == NULL) {
-		HISI_FB_DEBUG("lcp_lut_base is NULL!\n");
+		DPU_FB_DEBUG("lcp_lut_base is NULL!\n");
 		return false;
 	}
 
 	if (lcp_param == NULL) {
-		HISI_FB_DEBUG("lcp_param is NULL!\n");
+		DPU_FB_DEBUG("lcp_param is NULL!\n");
 		return false;
 	}
 	if (lcp_param->gmp_table_low32 == NULL || lcp_param->gmp_table_high4 == NULL) {
-		HISI_FB_DEBUG("gmp_table_low32 or gmp_table_high4 is NULL!\n");
+		DPU_FB_DEBUG("gmp_table_low32 or gmp_table_high4 is NULL!\n");
 		return false;
 	}
 	for (i = 0; i < GMP_COFE_CNT; i++) {
@@ -2953,7 +3585,7 @@ static bool lcp_gmp_set_reg(char __iomem *gmp_lut_base, struct lcp_info *lcp_par
 	return true;
 }
 
-void hisi_effect_lcp_set_reg(struct hisi_fb_data_type *hisifd)
+void hisi_effect_lcp_set_reg(struct dpu_fb_data_type *dpufd)
 {
 	struct dss_effect *effect = NULL;
 	struct lcp_info *lcp_param = NULL;
@@ -2967,29 +3599,29 @@ void hisi_effect_lcp_set_reg(struct hisi_fb_data_type *hisifd)
 	uint32_t gmp_lut_sel;
 	bool ret = false;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!");
 		return;
 	}
 
 	if (!g_is_effect_lock_init) {
-		HISI_FB_INFO("display effect lock is not init!\n");
+		DPU_FB_INFO("display effect lock is not init!\n");
 		return;
 	}
 
-	effect = &hisifd->effect_ctl;
+	effect = &dpufd->effect_ctl;
 
-	lcp_base = hisifd->dss_base + DSS_DPP_LCP_OFFSET;
-	xcc_base = hisifd->dss_base + DSS_DPP_XCC_OFFSET;
-	gmp_base = hisifd->dss_base + DSS_DPP_GMP_OFFSET;
-	degamma_base = hisifd->dss_base + DSS_DPP_DEGAMMA_OFFSET;
-	degamma_lut_base = hisifd->dss_base + DSS_DPP_DEGAMMA_LUT_OFFSET;
-	gmp_lut_base = hisifd->dss_base + DSS_DPP_GMP_LUT_OFFSET;
+	lcp_base = dpufd->dss_base + DSS_DPP_LCP_OFFSET;
+	xcc_base = dpufd->dss_base + DSS_DPP_XCC_OFFSET;
+	gmp_base = dpufd->dss_base + DSS_DPP_GMP_OFFSET;
+	degamma_base = dpufd->dss_base + DSS_DPP_DEGAMMA_OFFSET;
+	degamma_lut_base = dpufd->dss_base + DSS_DPP_DEGAMMA_LUT_OFFSET;
+	gmp_lut_base = dpufd->dss_base + DSS_DPP_GMP_LUT_OFFSET;
 
-	lcp_param = &(hisifd->effect_info.lcp);
+	lcp_param = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].lcp);
 
 	//Update De-Gamma LUT
-	if (effect->lcp_igm_support && hisifd->effect_updated_flag.igm_effect_updated) {
+	if (effect->lcp_igm_support && dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].igm_effect_updated) {
 		if (spin_can_lock(&g_igm_effect_lock)) {
 			spin_lock(&g_igm_effect_lock);
 			ret = lcp_igm_set_reg(degamma_lut_base, lcp_param);
@@ -2999,15 +3631,16 @@ void hisi_effect_lcp_set_reg(struct hisi_fb_data_type *hisifd)
 				set_reg(degamma_base + DEGAMA_LUT_SEL, (~(degama_lut_sel & 0x1)) & 0x1, 1, 0);
 				//set_reg(degamma_base + DEGAMA_EN,  lcp_param->igm_enable, 1, 0);
 			}
-			hisifd->effect_updated_flag.igm_effect_updated = false;
+			dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].igm_effect_updated = false;
 			spin_unlock(&g_igm_effect_lock);
 		} else {
-			HISI_FB_INFO("igm effect param is being updated, delay set reg to next frame!\n");
+			DPU_FB_INFO("igm effect param is being updated, delay set reg to next frame!\n");
 		}
 	}
 
 	//Update XCC Coef
-	if (effect->lcp_xcc_support && hisifd->effect_updated_flag.xcc_effect_updated) {
+	if (effect->lcp_xcc_support && dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].xcc_effect_updated
+		&& !dpufd->mask_layer_xcc_flag && dpufd->dirty_region_updt_enable == 0) {
 		if (spin_can_lock(&g_xcc_effect_lock)) {
 			spin_lock(&g_xcc_effect_lock);
 			ret = lcp_xcc_set_reg(xcc_base, lcp_param);
@@ -3017,16 +3650,21 @@ void hisi_effect_lcp_set_reg(struct hisi_fb_data_type *hisifd)
 				//set_reg(xcc_base + LCP_XCC_BYPASS_EN,	lcp_param->xcc_enable, 1, 0);
 				//Enable XCC pre
 				//set_reg(xcc_base + XCC_EN,  lcp_param->xcc_enable, 1, 1);
+				dpufd->panel_info.dc_switch_xcc_updated =
+					dpufd->de_info.amoled_param.dc_brightness_dimming_enable_real !=
+					dpufd->de_info.amoled_param.dc_brightness_dimming_enable ||
+					(dpufd->de_info.amoled_param.amoled_diming_enable !=
+					dpufd->de_info.amoled_param.amoled_enable_from_hal);
 			}
-			hisifd->effect_updated_flag.xcc_effect_updated = false;
+			dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].xcc_effect_updated = false;
 			spin_unlock(&g_xcc_effect_lock);
 		} else {
-			HISI_FB_INFO("xcc effect param is being updated, delay set reg to next frame!\n");
+			DPU_FB_INFO("xcc effect param is being updated, delay set reg to next frame!\n");
 		}
 	}
 
 	//Update GMP LUT
-	if (effect->lcp_gmp_support && hisifd->effect_updated_flag.gmp_effect_updated) {
+	if (effect->lcp_gmp_support && dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].gmp_effect_updated) {
 		if (spin_can_lock(&g_gmp_effect_lock)) {
 			spin_lock(&g_gmp_effect_lock);
 			ret = lcp_gmp_set_reg(gmp_lut_base, lcp_param);
@@ -3036,10 +3674,10 @@ void hisi_effect_lcp_set_reg(struct hisi_fb_data_type *hisifd)
 				set_reg(gmp_base + GMP_LUT_SEL, (~(gmp_lut_sel & 0x1)) & 0x1, 1, 0);
 				set_reg(gmp_base + GMP_EN, lcp_param->gmp_enable, 1, 0);
 			}
-			hisifd->effect_updated_flag.gmp_effect_updated = false;
+			dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].gmp_effect_updated = false;
 			spin_unlock(&g_gmp_effect_lock);
 		} else {
-			HISI_FB_INFO("gmp effect param is being updated, delay set reg to next frame!\n");
+			DPU_FB_INFO("gmp effect param is being updated, delay set reg to next frame!\n");
 		}
 	}
 
@@ -3047,7 +3685,7 @@ void hisi_effect_lcp_set_reg(struct hisi_fb_data_type *hisifd)
 	return;
 }
 
-void hisi_effect_gamma_set_reg(struct hisi_fb_data_type *hisifd)
+void hisi_effect_gamma_set_reg(struct dpu_fb_data_type *dpufd)
 {
 	struct gamma_info *gamma_param = NULL;
 	char __iomem *gamma_base = NULL;
@@ -3056,32 +3694,32 @@ void hisi_effect_gamma_set_reg(struct hisi_fb_data_type *hisifd)
 	int cnt = 0;
 	uint32_t gama_lut_sel;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!");
 		return;
 	}
 
 	if (!g_is_effect_lock_init) {
-		HISI_FB_INFO("display effect lock is not init!\n");
+		DPU_FB_INFO("display effect lock is not init!\n");
 		return;
 	}
 
-	if (!hisifd->effect_ctl.gamma_support) {
+	if (!dpufd->effect_ctl.gamma_support) {
 		return;
 	}
 
-	if (!hisifd->effect_updated_flag.gamma_effect_updated) {
+	if (!dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].gamma_effect_updated) {
 		return;
 	}
 
-	gamma_base = hisifd->dss_base + DSS_DPP_GAMA_OFFSET;
-	gamma_lut_base = hisifd->dss_base + DSS_DPP_GAMA_LUT_OFFSET;
-	gamma_pre_lut_base = hisifd->dss_base + DSS_DPP_GAMA_PRE_LUT_OFFSET;
+	gamma_base = dpufd->dss_base + DSS_DPP_GAMA_OFFSET;
+	gamma_lut_base = dpufd->dss_base + DSS_DPP_GAMA_LUT_OFFSET;
+	gamma_pre_lut_base = dpufd->dss_base + DSS_DPP_GAMA_PRE_LUT_OFFSET;
 
-	gamma_param = &(hisifd->effect_info.gamma);
+	gamma_param = &(dpufd->effect_info[dpufd->panel_info.disp_panel_id].gamma);
 
 	if (!spin_can_lock(&g_gamma_effect_lock)) {
-	    HISI_FB_INFO("gamma effect param is being updated, delay set reg to next frame!\n");
+	    DPU_FB_INFO("gamma effect param is being updated, delay set reg to next frame!\n");
 	    return;
 	}
 	spin_lock(&g_gamma_effect_lock);
@@ -3089,7 +3727,7 @@ void hisi_effect_gamma_set_reg(struct hisi_fb_data_type *hisifd)
 	if ((NULL == gamma_param->gamma_r_table) ||
 		(NULL == gamma_param->gamma_g_table) ||
 		(NULL == gamma_param->gamma_b_table)) {
-		HISI_FB_INFO("fb%d, gamma table is null!\n", hisifd->index);
+		DPU_FB_INFO("fb%d, gamma table is null!\n", dpufd->index);
 		goto err_ret;
 	}
 
@@ -3114,7 +3752,7 @@ void hisi_effect_gamma_set_reg(struct hisi_fb_data_type *hisifd)
 	set_reg(gamma_base + GAMA_EN,  gamma_param->enable, 1, 0);
 
 err_ret:
-	hisifd->effect_updated_flag.gamma_effect_updated = false;
+	dpufd->effect_updated_flag[dpufd->panel_info.disp_panel_id].gamma_effect_updated = false;
 	//free_gamma_table(gamma_param);
 
 	spin_unlock(&g_gamma_effect_lock);
@@ -3218,23 +3856,23 @@ static inline void cal_cur_acm_reg(int count,acm_reg_t *cur_acm_reg,acm_reg_tabl
 }
 
 /*lint -e838*/
-void hisi_effect_color_dimming_acm_reg_set(struct hisi_fb_data_type *hisifd, acm_reg_t *cur_acm_reg) {
+void hisi_effect_color_dimming_acm_reg_set(struct dpu_fb_data_type *dpufd, acm_reg_t *cur_acm_reg) {
 	acm_reg_table_t target_acm_reg = {0};
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL!");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd is NULL!");
 		return;
 	}
 
 	if (NULL == cur_acm_reg) {
-		HISI_FB_ERR("cur_acm_reg is NULL!");
+		DPU_FB_ERR("cur_acm_reg is NULL!");
 		return;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 
-	if (SCENE_MODE_GALLERY == hisifd->user_scene_mode || SCENE_MODE_DEFAULT == hisifd->user_scene_mode) {
+	if (SCENE_MODE_GALLERY == dpufd->user_scene_mode || SCENE_MODE_DEFAULT == dpufd->user_scene_mode) {
 		target_acm_reg.acm_lut_hue_table = pinfo->acm_lut_hue_table;
 		target_acm_reg.acm_lut_sata_table = pinfo->acm_lut_sata_table;
 		target_acm_reg.acm_lut_satr0_table = pinfo->acm_lut_satr0_table;
@@ -3258,25 +3896,25 @@ void hisi_effect_color_dimming_acm_reg_set(struct hisi_fb_data_type *hisifd, acm
 		target_acm_reg.acm_lut_satr7_table = pinfo->video_acm_lut_satr7_table;
 	}
 
-	cal_cur_acm_reg(hisifd->dimming_count,cur_acm_reg,&target_acm_reg);
+	cal_cur_acm_reg(dpufd->dimming_count,cur_acm_reg,&target_acm_reg);
 }
 
 /*lint -e838*/
-void hisi_effect_color_dimming_acm_reg_init(struct hisi_fb_data_type *hisifd) {//add dimming reg init
-	struct hisi_panel_info *pinfo = NULL;
+void hisi_effect_color_dimming_acm_reg_init(struct dpu_fb_data_type *dpufd) {//add dimming reg init
+	struct dpu_panel_info *pinfo = NULL;
 	acm_reg_t *cur_acm_reg = NULL;
 	int index = 0;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd, null pointer warning.\n");
+	if (NULL == dpufd) {
+		DPU_FB_ERR("dpufd, null pointer warning.\n");
 		return;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 
-	cur_acm_reg = &(hisifd->acm_reg);
+	cur_acm_reg = &(dpufd->acm_reg);
 
-	if (SCENE_MODE_GALLERY == hisifd->user_scene_mode || SCENE_MODE_DEFAULT == hisifd->user_scene_mode) {
+	if (SCENE_MODE_GALLERY == dpufd->user_scene_mode || SCENE_MODE_DEFAULT == dpufd->user_scene_mode) {
 		for (index = 0;index < ACM_HUE_SIZE;index++) {
 			cur_acm_reg->acm_lut_hue_table[index] = pinfo->acm_lut_hue_table[index];
 		}
@@ -3313,47 +3951,45 @@ void hisi_effect_color_dimming_acm_reg_init(struct hisi_fb_data_type *hisifd) {/
 	}
 }
 
-static void hisi_effect_arsr2p_update(struct hisi_fb_data_type *hisifd, struct dss_arsr2p *arsr2p) {
-	if (hisifd == NULL || arsr2p == NULL) {
-		HISI_FB_ERR("hisifd or arsr2p is null. return\n");
-		return;
+static void hisi_effect_arsr2p_update(struct dpu_fb_data_type *dpufd, struct dss_arsr2p *arsr2p)
+{
+	int disp_panel_id = dpufd->panel_info.disp_panel_id;
+
+	if (dpufd->effect_info[disp_panel_id].arsr2p[0].update == 1) {
+		memcpy(&(arsr2p->arsr2p_effect), &(dpufd->effect_info[disp_panel_id].arsr2p[0]), sizeof(struct arsr2p_info));
+		dpufd->effect_info[disp_panel_id].arsr2p[0].update = 0;
 	}
 
-	if (hisifd->effect_info.arsr2p[0].update == 1) {
-		memcpy(&(arsr2p->arsr2p_effect), &(hisifd->effect_info.arsr2p[0]), sizeof(struct arsr2p_info));
-		hisifd->effect_info.arsr2p[0].update = 0;
+	if (dpufd->effect_info[disp_panel_id].arsr2p[1].update == 1) {
+		memcpy(&(arsr2p->arsr2p_effect_scale_up), &(dpufd->effect_info[disp_panel_id].arsr2p[1]), sizeof(struct arsr2p_info));
+		dpufd->effect_info[disp_panel_id].arsr2p[1].update = 0;
 	}
 
-	if (hisifd->effect_info.arsr2p[1].update == 1) {
-		memcpy(&(arsr2p->arsr2p_effect_scale_up), &(hisifd->effect_info.arsr2p[1]), sizeof(struct arsr2p_info));
-		hisifd->effect_info.arsr2p[1].update = 0;
-	}
-
-	if (hisifd->effect_info.arsr2p[2].update == 1) {
-		memcpy(&(arsr2p->arsr2p_effect_scale_down), &(hisifd->effect_info.arsr2p[2]), sizeof(struct arsr2p_info));
-		hisifd->effect_info.arsr2p[2].update = 0;
+	if (dpufd->effect_info[disp_panel_id].arsr2p[2].update == 1) {
+		memcpy(&(arsr2p->arsr2p_effect_scale_down), &(dpufd->effect_info[disp_panel_id].arsr2p[2]), sizeof(struct arsr2p_info));
+		dpufd->effect_info[disp_panel_id].arsr2p[2].update = 0;
 	}
 }
 
 
 int hisi_effect_arsr2p_config(struct arsr2p_info *arsr2p_effect_dst, int ih_inc, int iv_inc)
 {
-	struct hisi_fb_data_type *hisifd_primary = NULL;
+	struct dpu_fb_data_type *dpufd_primary = NULL;
 	struct dss_arsr2p *arsr2p = NULL;
 
-	hisifd_primary = hisifd_list[PRIMARY_PANEL_IDX];
-	if (NULL == hisifd_primary) {
-		HISI_FB_ERR("hisifd_primary is NULL pointer, return!\n");
+	dpufd_primary = dpufd_list[PRIMARY_PANEL_IDX];
+	if (NULL == dpufd_primary) {
+		DPU_FB_ERR("dpufd_primary is NULL pointer, return!\n");
 		return -EINVAL;
 	}
 
 	if (NULL == arsr2p_effect_dst) {
-		HISI_FB_ERR("arsr2p_effect_dst is NULL pointer, return!\n");
+		DPU_FB_ERR("arsr2p_effect_dst is NULL pointer, return!\n");
 		return -EINVAL;
 	}
 
-	arsr2p = &(hisifd_primary->dss_module_default.arsr2p[DSS_RCHN_V1]);
-	hisi_effect_arsr2p_update(hisifd_primary, arsr2p);
+	arsr2p = &(dpufd_primary->dss_module_default.arsr2p[DSS_RCHN_V1]);
+	hisi_effect_arsr2p_update(dpufd_primary, arsr2p);
 
 	if ((ih_inc == ARSR2P_INC_FACTOR) && (iv_inc == ARSR2P_INC_FACTOR)) {
 		memcpy(arsr2p_effect_dst, &(arsr2p->arsr2p_effect), sizeof(struct arsr2p_info));
@@ -3365,48 +4001,48 @@ int hisi_effect_arsr2p_config(struct arsr2p_info *arsr2p_effect_dst, int ih_inc,
 
 	return 0;
 }
-int hisifb_ce_service_enable_hiace(struct fb_info *info, const void __user *argp)
+int dpufb_ce_service_enable_hiace(struct fb_info *info, const void __user *argp)
 {
-	struct hisi_panel_info *pinfo = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	dss_display_effect_ce_t *ce_ctrl = NULL;
 	dss_ce_info_t *ce_info = NULL;
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 	dss_display_effect_metadata_t *metadata_ctrl = NULL;
-	int enable;
+	struct hiace_enable_set enable_set = { 0 };
 	int ret;
 	int mode;
 	if (NULL == info) {
-		HISI_FB_ERR("info is NULL\n");
+		DPU_FB_ERR("info is NULL\n");
 		return -EINVAL;
 	}
 	if (NULL == argp) {
-		HISI_FB_ERR("[effect] argp is NULL\n");
+		DPU_FB_ERR("[effect] argp is NULL\n");
 		return -EINVAL;
 	}
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -EINVAL;
 	}
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (pinfo->hiace_support == 0) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] HIACE is not supported!\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] HIACE is not supported!\n");
 		return -1;
 	}
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
-		ce_ctrl = &(hisifd->ce_ctrl);
-		ce_info = &(hisifd->hiace_info);
-		metadata_ctrl = &(hisifd->metadata_ctrl);
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
+		ce_ctrl = &(dpufd->ce_ctrl);
+		ce_info = &(dpufd->hiace_info[dpufd->panel_info.disp_panel_id]);
+		metadata_ctrl = &(dpufd->metadata_ctrl);
 	} else {
-		HISI_FB_ERR("[effect] fb%d, not support!", hisifd->index);
+		DPU_FB_ERR("[effect] fb%d, not support!", dpufd->index);
 		return -1;
 	}
-	ret = (int)copy_from_user(&enable, argp, sizeof(enable));
+	ret = (int)copy_from_user(&enable_set, argp, sizeof(enable_set));
 	if (ret) {
-		HISI_FB_ERR("[effect] arg is invalid");
+		DPU_FB_ERR("[effect] arg is invalid");
 		return -EINVAL;
 	}
-	mode = enable;
+	mode = enable_set.enable;
 	if (mode < 0) {
 		mode = 0;
 	} else if (mode >= CE_MODE_COUNT) {
@@ -3420,39 +4056,39 @@ int hisifb_ce_service_enable_hiace(struct fb_info *info, const void __user *argp
 			ce_info->gradual_frames = EFFECT_GRADUAL_REFRESH_FRAMES;
 			ce_info->to_stop_hdr = true;
 		}
-		enable_hiace(hisifd, mode);
+		enable_hiace(dpufd, mode);
 	}
 	return 0;
 }
-int hisifb_get_reg_val(struct fb_info *info, void __user *argp) {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+int dpufb_get_reg_val(struct fb_info *info, void __user *argp) {
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	struct dss_reg reg;
 	uint32_t addr;
 	int ret = 0;
 	if (NULL == info) {
-		HISI_FB_ERR("info is NULL\n");
+		DPU_FB_ERR("info is NULL\n");
 		return -EINVAL;
 	}
 	if (NULL == argp) {
-		HISI_FB_ERR("[effect] argp is NULL\n");
+		DPU_FB_ERR("[effect] argp is NULL\n");
 		return -EINVAL;
 	}
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -EINVAL;
 	}
 
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (!pinfo->hiace_support) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
 		return -EINVAL;
 	}
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] step in\n");
+	effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] step in\n");
 	ret = (int)copy_from_user(&reg, argp, sizeof(struct dss_reg));
 	if (ret) {
-		HISI_FB_ERR("[effect] copy_from_user(param) failed! ret=%d.\n", ret);
+		DPU_FB_ERR("[effect] copy_from_user(param) failed! ret=%d.\n", ret);
 		return -2;
 	}
 
@@ -3476,102 +4112,112 @@ int hisifb_get_reg_val(struct fb_info *info, void __user *argp) {
 			addr = DSS_HI_ACE_OFFSET + DPE_LHIST_SFT;
 			break;
 		default:
-			HISI_FB_ERR("[effect] invalid tag : %u", reg.tag);
+			DPU_FB_ERR("[effect] invalid tag : %u", reg.tag);
 			return -EINVAL;
 	}
 
-	down(&hisifd->blank_sem);
-	if (hisifd->panel_power_on == false) {
-		HISI_FB_ERR("[effect] panel power off\n");
-		up(&hisifd->blank_sem);
+	down(&dpufd->blank_sem);
+	if (dpufd->panel_power_on == false) {
+		DPU_FB_ERR("[effect] panel power off\n");
+		up(&dpufd->blank_sem);
 		return -EINVAL;
 	}
-	hisifb_activate_vsync(hisifd);
+	dpufb_activate_vsync(dpufd);
 
-	reg.value = (uint32_t)inp32(hisifd->dss_base + addr);
+	reg.value = (uint32_t)inp32(dpufd->dss_base + addr);
 
-	hisifb_deactivate_vsync(hisifd);
-	up(&hisifd->blank_sem);
+	dpufb_deactivate_vsync(dpufd);
+	up(&dpufd->blank_sem);
 
 	ret = (int)copy_to_user(argp, &reg, sizeof(struct dss_reg));
 	if (ret) {
-		HISI_FB_ERR("[effect] copy_to_user failed(param)! ret=%d.\n", ret);
+		DPU_FB_ERR("[effect] copy_to_user failed(param)! ret=%d.\n", ret);
 		ret = -EINVAL;
 	}
 	return 0;
 }
 
-int hisifb_ce_service_set_param(struct fb_info *info, const void __user *argp) {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_panel_info *pinfo = NULL;
+int dpufb_ce_service_set_param(struct fb_info *info, const void __user *argp) {
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_panel_info *pinfo = NULL;
 	int ret = 0;
 	if (NULL == info) {
-		HISI_FB_ERR("[effect] info is NULL\n");
+		DPU_FB_ERR("[effect] info is NULL\n");
 		return -EINVAL;
 	}
 	if (NULL == argp) {
-		HISI_FB_ERR("[effect] argp is NULL\n");
+		DPU_FB_ERR("[effect] argp is NULL\n");
 		return -EINVAL;
 	}
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("[effect] hisifd is NULL\n");
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	if (NULL == dpufd) {
+		DPU_FB_ERR("[effect] dpufd is NULL\n");
 		return -EINVAL;
 	}
-	pinfo = &(hisifd->panel_info);
+	pinfo = &(dpufd->panel_info);
 	if (!pinfo->hiace_support) {
-		EFFECT_DEBUG_LOG(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
+		effect_debug_log(DEBUG_EFFECT_ENTRY, "[effect] Don't support HIACE\n");
 		return -EINVAL;
 	}
-	EFFECT_DEBUG_LOG(DEBUG_EFFECT_FRAME, "[effect] step in\n");
-	ret = (int)copy_from_user(&(hisifd->effect_info.hiace), argp, sizeof(struct hiace_info));
+	effect_debug_log(DEBUG_EFFECT_FRAME, "[effect] step in\n");
+	ret = (int)copy_from_user(&(dpufd->effect_info[pinfo->disp_panel_id].hiace), argp, sizeof(struct hiace_info));
 	if (ret) {
-		HISI_FB_ERR("[effect] copy_from_user(param) failed! ret=%d.\n", ret);
+		DPU_FB_ERR("[effect] copy_from_user(param) failed! ret=%d.\n", ret);
 		return -2;
 	}
 
-	hisifd->effect_updated_flag.hiace_effect_updated = true;
+	dpufd->effect_updated_flag[pinfo->disp_panel_id].hiace_effect_updated = true;
 	return ret;
 }
 
-static int set_hiace_param(struct hisi_fb_data_type *hisifd) {
+static int set_hiace_param(struct dpu_fb_data_type *dpufd) {
 	char __iomem *hiace_base = NULL;
-	if (hisifd == NULL) {
-		HISI_FB_DEBUG("hisifd is NULL!\n");
+	int disp_panel_id;
+
+	if (dpufd == NULL) {
+		DPU_FB_DEBUG("dpufd is NULL!\n");
 		return -1;
 	}
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
-		hiace_base = hisifd->dss_base + DSS_HI_ACE_OFFSET;
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
+		hiace_base = dpufd->dss_base + DSS_HI_ACE_OFFSET;
 	} else {
-		HISI_FB_DEBUG("[effect] fb%d, not support!", hisifd->index);
+		DPU_FB_DEBUG("[effect] fb%d, not support!", dpufd->index);
 		return 0;
 	}
 
-	if(!check_underflow_clear_ack(hisifd)){
-		HISI_FB_ERR("[effect] fb%d, clear_ack is not return!\n", hisifd->index);
+	if(!check_underflow_clear_ack(dpufd)){
+		DPU_FB_ERR("[effect] fb%d, clear_ack is not return!\n", dpufd->index);
 		return -1;
 	}
 
-	if (hisifd->effect_updated_flag.hiace_effect_updated) {
-		set_reg(hiace_base + HIACE_HALF_BLOCK_H_W, hisifd->effect_info.hiace.half_block_info, 32, 0);
-		set_reg(hiace_base + HIACE_XYWEIGHT, hisifd->effect_info.hiace.xyweight, 32, 0);
-		set_reg(hiace_base + HIACE_LHIST_SFT, hisifd->effect_info.hiace.lhist_sft, 32, 0);
-		set_reg(hiace_base + HIACE_HUE, hisifd->effect_info.hiace.hue, 32, 0);
-		set_reg(hiace_base + HIACE_SATURATION, hisifd->effect_info.hiace.saturation, 32, 0);
-		set_reg(hiace_base + HIACE_VALUE, hisifd->effect_info.hiace.value, 32, 0);
-		set_reg(hiace_base + HIACE_SKIN_GAIN, hisifd->effect_info.hiace.skin_gain, 32, 0);
-		set_reg(hiace_base + HIACE_UP_LOW_TH, hisifd->effect_info.hiace.up_low_th, 32, 0);
-		set_reg(hiace_base + HIACE_UP_CNT, hisifd->effect_info.hiace.up_cnt, 32, 0);
-		set_reg(hiace_base + HIACE_LOW_CNT, hisifd->effect_info.hiace.low_cnt, 32, 0);
-		set_reg(hiace_base + HIACE_GAMMA_EN, hisifd->effect_info.hiace.gamma_w, 32, 0);
-		set_reg(hiace_base + HIACE_GAMMA_EN_HV_R, hisifd->effect_info.hiace.gamma_r, 32, 0);
+	disp_panel_id = dpufd->panel_info.disp_panel_id;
+
+	if (dpufd->effect_updated_flag[disp_panel_id].hiace_effect_updated) {
+		set_reg(hiace_base + HIACE_HALF_BLOCK_H_W, dpufd->effect_info[disp_panel_id].hiace.half_block_info, 32, 0);
+		set_reg(hiace_base + HIACE_XYWEIGHT, dpufd->effect_info[disp_panel_id].hiace.xyweight, 32, 0);
+		set_reg(hiace_base + HIACE_LHIST_SFT, dpufd->effect_info[disp_panel_id].hiace.lhist_sft, 32, 0);
+		set_reg(hiace_base + HIACE_HUE, dpufd->effect_info[disp_panel_id].hiace.hue, 32, 0);
+		set_reg(hiace_base + HIACE_SATURATION, dpufd->effect_info[disp_panel_id].hiace.saturation, 32, 0);
+		set_reg(hiace_base + HIACE_VALUE, dpufd->effect_info[disp_panel_id].hiace.value, 32, 0);
+		set_reg(hiace_base + HIACE_SKIN_GAIN, dpufd->effect_info[disp_panel_id].hiace.skin_gain, 32, 0);
+		set_reg(hiace_base + HIACE_UP_LOW_TH, dpufd->effect_info[disp_panel_id].hiace.up_low_th, 32, 0);
+		set_reg(hiace_base + HIACE_UP_CNT, dpufd->effect_info[disp_panel_id].hiace.up_cnt, 32, 0);
+		set_reg(hiace_base + HIACE_LOW_CNT, dpufd->effect_info[disp_panel_id].hiace.low_cnt, 32, 0);
+		set_reg(hiace_base + HIACE_GAMMA_EN, dpufd->effect_info[disp_panel_id].hiace.gamma_w, 32, 0);
+		set_reg(hiace_base + HIACE_GAMMA_EN_HV_R, dpufd->effect_info[disp_panel_id].hiace.gamma_r, 32, 0);
 	}
-	hisifd->effect_updated_flag.hiace_effect_updated = false;
+	dpufd->effect_updated_flag[disp_panel_id].hiace_effect_updated = false;
 	return 0;
 }
 
-int hisi_effect_hiace_config(struct hisi_fb_data_type *hisifd) {
-	return set_hiace_param(hisifd);
+int hisi_effect_hiace_config(struct dpu_fb_data_type *dpufd) {
+	return set_hiace_param(dpufd);
 }
-/*lint +e571, +e573, +e737, +e732, +e850, +e730, +e713, +e529, +e574, +e679, +e732, +e845, +e570, +e774*/
+
+void deinit_effect(struct dpu_fb_data_type *dpufd)
+{
+	void_unused(dpufd);
+}
+
+/*lint +e571, +e573, +e737, +e732, +e850, +e730, +e713, +e574, +e679, +e732, +e845, +e570, +e774*/
 //lint +e747, +e838

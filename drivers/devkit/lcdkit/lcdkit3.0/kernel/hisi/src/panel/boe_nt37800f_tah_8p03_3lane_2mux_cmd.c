@@ -80,7 +80,7 @@ static int check_power_status(struct hisi_fb_data_type *hisifd)
 		return LCD_KIT_FAIL;
 	}
 	LCD_KIT_INFO("dsi0:reg 0x0a = 0x%x\n", read_value);
-	if (lcd_is_dual_mipi()) {
+	if (is_dual_mipi_panel(hisifd)) {
 		ret = mipi_dsi_lread_reg(&read_value, read_0a_cmds,
 			READ_REG0A_LEN, hisifd->mipi_dsi1_base);
 		if (ret) {
@@ -115,7 +115,7 @@ static int check_error_report(struct hisi_fb_data_type *hisifd)
 		return LCD_KIT_FAIL;
 	}
 	LCD_KIT_INFO("dsi0:reg 0xab = 0x%x\n", dsi0_value);
-	if (lcd_is_dual_mipi()) {
+	if (is_dual_mipi_panel(hisifd)) {
 		ret = mipi_dsi_lread_reg(&dsi1_value, read_ab_cmds,
 			READ_REGAB_LEN, hisifd->mipi_dsi1_base);
 		if (ret) {
@@ -128,7 +128,7 @@ static int check_error_report(struct hisi_fb_data_type *hisifd)
 		LCD_KIT_ERR("dsi0:reg 0xab = 0x%x\n", dsi0_value);
 		return LCD_KIT_FAIL;
 	}
-	if (lcd_is_dual_mipi()) {
+	if (is_dual_mipi_panel(hisifd)) {
 		if (dsi1_value & REPORT_ERR) {
 			LCD_KIT_ERR("dsi1:reg 0xab = 0x%x\n", dsi1_value);
 			return LCD_KIT_FAIL;

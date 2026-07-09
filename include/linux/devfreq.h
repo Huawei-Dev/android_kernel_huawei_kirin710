@@ -162,6 +162,9 @@ struct devfreq {
 	unsigned long last_stat_updated;
 
 	struct srcu_notifier_head transition_notifier_list;
+#ifdef CONFIG_DEVFREQ_THERMAL
+	int paras[5];
+#endif
 };
 
 struct devfreq_freqs {

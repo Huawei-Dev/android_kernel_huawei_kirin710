@@ -264,6 +264,10 @@ void kbase_destroy_context(struct kbase_context *kctx)
 	unsigned long pending_regions_to_clean;
 	unsigned long flags;
 	struct page *p;
+#ifdef CONFIG_MALI_LAST_BUFFER
+	struct kbase_context *walker = NULL;
+	bool found = false;
+#endif
 
 	if (WARN_ON(!kctx))
 		return;
@@ -283,11 +287,6 @@ void kbase_destroy_context(struct kbase_context *kctx)
 
 	dev_err(kbdev->dev, "kctx %pK being destroyed\n", (void *)kctx);
 	KBASE_TRACE_ADD(kbdev, CORE_CTX_DESTROY, kctx, NULL, 0u, 0u);
-
-	/* Ensure the core is powered up for the destroy process */
-	/* A suspend won't happen here, because we're in a syscall from a userspace
-	 * thread. */
-	kbase_pm_context_active(kbdev);
 
 	kbase_mem_pool_group_mark_dying(&kctx->mem_pools);
 
@@ -352,11 +351,13 @@ void kbase_destroy_context(struct kbase_context *kctx)
 
 	kbase_dma_fence_term(kctx);
 
+	mutex_lock(&kbdev->pm.lock);
 	mutex_lock(&kbdev->mmu_hw_mutex);
 	spin_lock_irqsave(&kctx->kbdev->hwaccess_lock, flags);
 	kbase_ctx_sched_remove_ctx(kctx);
 	spin_unlock_irqrestore(&kctx->kbdev->hwaccess_lock, flags);
 	mutex_unlock(&kbdev->mmu_hw_mutex);
+	mutex_unlock(&kbdev->pm.lock);
 
 	kbase_mmu_term(kbdev, &kctx->mmu);
 
@@ -370,9 +371,26 @@ void kbase_destroy_context(struct kbase_context *kctx)
 
 	WARN_ON(atomic_read(&kctx->nonmapped_pages) != 0);
 
+#ifdef CONFIG_MALI_LAST_BUFFER
+	/* If no last buffer's kbase_context exists on the list,
+	 * clear the device's memory pools.
+	 */
+	mutex_lock(&kbdev->kctx_list_lock);
+	list_for_each_entry(walker, &kbdev->kctx_list, kctx_list_link) {
+		if (kbase_ctx_flag(walker, KCTX_LAST_BUFFER) == true) {
+			found = true;
+			break;
+		}
+	}
+
+	/* Only clear the last buffer's pools, ignore the normal memory pools. */
+	if (!found)
+		kbase_mem_pool_group_detach(&kbdev->mem_pools);
+
+	mutex_unlock(&kbdev->kctx_list_lock);
+#endif
+
 	vfree(kctx);
 	kctx = NULL;
-
-	kbase_pm_context_idle(kbdev);
 }
 KBASE_EXPORT_SYMBOL(kbase_destroy_context);

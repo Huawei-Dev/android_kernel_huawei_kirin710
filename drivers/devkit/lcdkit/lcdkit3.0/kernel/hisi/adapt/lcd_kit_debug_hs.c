@@ -21,6 +21,11 @@
 #include "lcd_kit_dbg.h"
 #include "lcd_kit_disp.h"
 #include "lcd_kit_power.h"
+#include "lcd_kit_parse.h"
+#include <base.h>
+
+extern struct delayed_work detect_fs_work;
+extern int g_dpd_mode;
 
 static bool dbg_panel_power_on(void);
 
@@ -40,16 +45,20 @@ static int dbg_quickly_sleep_out_support(int val)
 }
 
 static int init_panel_info(struct hisi_fb_data_type *hisifd,
-	struct hisi_panel_info *pinfo)
+	struct hisi_panel_info **pinfo)
 {
 	hisifd = hisifd_list[PRIMARY_PANEL_IDX];
 	if (hisifd == NULL) {
 		LCD_KIT_ERR("hisifd is null\n");
 		return LCD_KIT_FAIL;
 	}
-	pinfo = &hisifd->panel_info;
 	if (pinfo == NULL) {
 		LCD_KIT_ERR("pinfo is null\n");
+		return LCD_KIT_FAIL;
+	}
+	*pinfo = &hisifd->panel_info;
+	if (*pinfo == NULL) {
+		LCD_KIT_ERR("*pinfo is null\n");
 		return LCD_KIT_FAIL;
 	}
 	return LCD_KIT_OK;
@@ -61,7 +70,7 @@ static int dbg_blpwm_input_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -77,7 +86,7 @@ static int dbg_dsi_upt_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -93,7 +102,7 @@ static int dbg_rgbw_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -110,7 +119,7 @@ static int dbg_gamma_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -126,7 +135,7 @@ static int dbg_gmp_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -142,7 +151,7 @@ static int dbg_hiace_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -158,7 +167,7 @@ static int dbg_xcc_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -174,7 +183,7 @@ static int dbg_arsr1psharpness_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -190,7 +199,7 @@ static int dbg_prefixsharptwo_d_support(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -227,7 +236,7 @@ static int dbg_video_idle_mode_support(int val)
 	uint32_t bl_level_cur;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -269,7 +278,7 @@ static int dbg_cmd_type(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -285,7 +294,7 @@ static int dbg_pxl_clk(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -301,7 +310,7 @@ static int dbg_pxl_clk_div(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -317,7 +326,7 @@ static int dbg_vsync_ctrl_type(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -333,7 +342,7 @@ static int dbg_hback_porch(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -349,7 +358,7 @@ static int dbg_hfront_porch(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -365,7 +374,7 @@ static int dbg_hpulse_width(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -381,7 +390,7 @@ static int dbg_vback_porch(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -397,7 +406,7 @@ static int dbg_vfront_porch(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -413,7 +422,7 @@ static int dbg_vpulse_width(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -429,7 +438,7 @@ static int dbg_mipi_burst_mode(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -445,7 +454,7 @@ static int dbg_mipi_max_tx_esc_clk(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -461,7 +470,7 @@ static int dbg_mipi_dsi_bit_clk(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -477,7 +486,7 @@ static int dbg_mipi_dsi_bit_clk_a(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -493,7 +502,7 @@ static int dbg_mipi_dsi_bit_clk_b(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -509,7 +518,7 @@ static int dbg_mipi_dsi_bit_clk_c(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -525,7 +534,7 @@ static int dbg_mipi_dsi_bit_clk_d(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -541,7 +550,7 @@ static int dbg_mipi_dsi_bit_clk_e(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -557,7 +566,7 @@ static int dbg_mipi_noncontinue_enable(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -573,7 +582,7 @@ static int dbg_mipi_rg_vcm_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -589,7 +598,7 @@ static int dbg_mipi_clk_post_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -605,7 +614,7 @@ static int dbg_mipi_clk_pre_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -621,7 +630,7 @@ static int dbg_mipi_clk_ths_prepare_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -637,7 +646,7 @@ static int dbg_mipi_clk_tlpx_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -653,7 +662,7 @@ static int dbg_mipi_clk_ths_trail_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -669,7 +678,7 @@ static int dbg_mipi_clk_ths_exit_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -685,7 +694,7 @@ static int dbg_mipi_clk_ths_zero_adjust(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -701,7 +710,7 @@ static int dbg_mipi_lp11_flag(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -717,7 +726,7 @@ static int dbg_mipi_phy_update(int val)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -836,13 +845,13 @@ static int dbg_dsi_cmds_rx(uint8_t *out, int out_len,
 		LCD_KIT_ERR("out is null or cmds is null\n");
 		return LCD_KIT_FAIL;
 	}
-	return lcd_kit_dsi_cmds_rx(hisifd, out, cmds);
+	return lcd_kit_dsi_cmds_rx(hisifd, out, out_len, cmds);
 }
 
 static bool dbg_panel_power_on(void)
 {
 	struct hisi_fb_data_type *hisifd = hisifd_list[PRIMARY_PANEL_IDX];
-	bool panel_power_on;
+	bool panel_power_on = false;
 
 	if (hisifd == NULL) {
 		LCD_KIT_ERR("hisifd is null\n");
@@ -860,7 +869,7 @@ static int dbg_esd_check_func(void)
 	struct hisi_panel_info *pinfo = NULL;
 	int ret;
 
-	ret = init_panel_info(hisifd, pinfo);
+	ret = init_panel_info(hisifd, &pinfo);
 	if (ret != LCD_KIT_OK) {
 		LCD_KIT_INFO("init_panel_info fail\n");
 		return ret;
@@ -935,3 +944,65 @@ int lcd_kit_dbg_init(void)
 	ret = lcd_kit_debug_register(&hisi_dbg_ops);
 	return ret;
 }
+
+static void dpd_power_init(const struct device_node *np)
+{
+	/* vci */
+	if (power_hdl->lcd_vci.buf == NULL)
+		lcd_kit_parse_array_data(np, "lcd-kit,lcd-vci",
+			&power_hdl->lcd_vci);
+	/* iovcc */
+	if (power_hdl->lcd_iovcc.buf == NULL)
+		lcd_kit_parse_array_data(np, "lcd-kit,lcd-iovcc",
+			&power_hdl->lcd_iovcc);
+	/* vsp */
+	if (power_hdl->lcd_vsp.buf == NULL)
+		lcd_kit_parse_array_data(np, "lcd-kit,lcd-vsp",
+			&power_hdl->lcd_vsp);
+	/* vsn */
+	if (power_hdl->lcd_vsn.buf == NULL)
+		lcd_kit_parse_array_data(np, "lcd-kit,lcd-vsn",
+			&power_hdl->lcd_vsn);
+	/* backlight */
+	if (power_hdl->lcd_backlight.buf == NULL)
+		lcd_kit_parse_array_data(np, "lcd-kit,lcd-backlight",
+			&power_hdl->lcd_backlight);
+	/* vdd */
+	if (power_hdl->lcd_vdd.buf == NULL)
+		lcd_kit_parse_array_data(np, "lcd-kit,lcd-vdd",
+			&power_hdl->lcd_vdd);
+}
+
+int dpd_init(struct platform_device *pdev)
+{
+	static bool is_first = true;
+	struct device_node *np = NULL;
+
+	if (!pdev) {
+		LCD_KIT_ERR("pdev is null\n");
+		return LCD_KIT_FAIL;
+	}
+	if (!g_dpd_mode)
+		return LCD_KIT_OK;
+	np = pdev->dev.of_node;
+	if (!np) {
+		LCD_KIT_ERR("NOT FOUND device node\n");
+		return LCD_KIT_FAIL;
+	}
+	if (is_first) {
+		is_first = false;
+		dpd_power_init(np);
+		lcd_kit_power_init(pdev);
+		/* register lcd ops */
+		lcd_kit_ops_register(&g_lcd_ops);
+		INIT_DELAYED_WORK(&detect_fs_work, detect_fs_wq_handler);
+		/* delay 500ms schedule work */
+		schedule_delayed_work(&detect_fs_work, msecs_to_jiffies(500));
+	}
+	if (file_sys_is_ready()) {
+		LCD_KIT_INFO("sysfs is not ready!\n");
+		return LCD_KIT_FAIL;
+	}
+	return LCD_KIT_OK;
+}
+

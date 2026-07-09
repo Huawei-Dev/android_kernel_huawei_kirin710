@@ -117,8 +117,9 @@ static void kbase_mmu_sync_pgd(struct kbase_device *kbdev,
  *        a 4kB physical page.
  */
 
-static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
-		struct kbase_as *as, const char *reason_str,
+static void kbase_mmu_report_fault_and_kill(struct kbase_va_region *region,
+		struct kbase_context *kctx, struct kbase_as *as,
+		const char *reason_str,
 		struct kbase_fault *fault);
 
 static int kbase_mmu_update_pages_no_flush(struct kbase_context *kctx, u64 vpfn,
@@ -236,7 +237,7 @@ static void kbase_gpu_mmu_handle_write_fault(struct kbase_context *kctx,
 			fault->addr);
 	if (kbase_is_region_invalid_or_free(region)) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Memory is not mapped on the GPU",
 				&faulting_as->pf_data);
 		return;
@@ -244,7 +245,7 @@ static void kbase_gpu_mmu_handle_write_fault(struct kbase_context *kctx,
 
 	if (!(region->flags & KBASE_REG_GPU_WR)) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Region does not have write permissions",
 				&faulting_as->pf_data);
 		return;
@@ -306,15 +307,15 @@ static void kbase_gpu_mmu_handle_permission_fault(struct kbase_context *kctx,
 		kbase_gpu_mmu_handle_write_fault(kctx, faulting_as);
 		break;
 	case AS_FAULTSTATUS_ACCESS_TYPE_EX:
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Execute Permission fault", fault);
 		break;
 	case AS_FAULTSTATUS_ACCESS_TYPE_READ:
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Read Permission fault", fault);
 		break;
 	default:
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Unknown Permission fault", fault);
 		break;
 	}
@@ -654,7 +655,7 @@ void page_fault_worker(struct work_struct *data)
 	KBASE_DEBUG_ASSERT(kctx->kbdev == kbdev);
 
 	if (unlikely(fault->protected_mode)) {
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Protected mode fault", fault);
 		kbase_mmu_hw_clear_fault(kbdev, faulting_as,
 				KBASE_MMU_FAULT_TYPE_PAGE);
@@ -681,12 +682,12 @@ void page_fault_worker(struct work_struct *data)
 		}
 #endif
 
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Permission failure", fault);
 		goto fault_done;
 
 	case AS_FAULTSTATUS_EXCEPTION_CODE_TRANSTAB_BUS_FAULT:
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Translation table bus fault", fault);
 		goto fault_done;
 
@@ -697,24 +698,24 @@ void page_fault_worker(struct work_struct *data)
 
 	case AS_FAULTSTATUS_EXCEPTION_CODE_ADDRESS_SIZE_FAULT:
 		if (kbase_hw_has_feature(kbdev, BASE_HW_FEATURE_AARCH64_MMU))
-			kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+			kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 					"Address size fault", fault);
 		else
-			kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+			kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 					"Unknown fault code", fault);
 		goto fault_done;
 
 	case AS_FAULTSTATUS_EXCEPTION_CODE_MEMORY_ATTRIBUTES_FAULT:
 		if (kbase_hw_has_feature(kbdev, BASE_HW_FEATURE_AARCH64_MMU))
-			kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+			kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 					"Memory attributes fault", fault);
 		else
-			kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+			kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 					"Unknown fault code", fault);
 		goto fault_done;
 
 	default:
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Unknown fault code", fault);
 		goto fault_done;
 	}
@@ -724,7 +725,7 @@ void page_fault_worker(struct work_struct *data)
 	for (i = 0; i != ARRAY_SIZE(prealloc_sas); ++i) {
 		prealloc_sas[i] = kmalloc(sizeof(*prealloc_sas[i]), GFP_KERNEL);
 		if (!prealloc_sas[i]) {
-			kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+			kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 					"Failed pre-allocating memory for sub-allocations' metadata",
 					fault);
 			goto fault_done;
@@ -741,21 +742,21 @@ page_fault_retry:
 			fault->addr);
 	if (kbase_is_region_invalid_or_free(region)) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Memory is not mapped on the GPU", fault);
 		goto fault_done;
 	}
 
 	if (region->gpu_alloc->type == KBASE_MEM_TYPE_IMPORTED_UMM) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"DMA-BUF is not mapped on the GPU", fault);
 		goto fault_done;
 	}
 
 	if (region->gpu_alloc->group_id >= MEMORY_GROUP_MANAGER_NR_GROUPS) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Bad physical memory group ID", fault);
 		goto fault_done;
 	}
@@ -763,7 +764,7 @@ page_fault_retry:
 #ifdef CONFIG_GPU_GMC_GENERIC
 	if ((region->flags & KBASE_REG_DONT_NEED)) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Don't need memory can't be grown", fault);
 		goto fault_done;
 	}
@@ -775,7 +776,7 @@ page_fault_retry:
 	} else if (err != GMC_PF_OUT_OF_BOUNDS) {
 		kbase_gpu_vm_unlock(kctx);
 		pr_emerg("can't decompress page on page fault, err %d\n", err);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"GMC can't decompress pages", fault);
 		goto fault_done;
 	}
@@ -783,7 +784,7 @@ page_fault_retry:
 	if ((region->flags & GROWABLE_FLAGS_REQUIRED)
 		!= GROWABLE_FLAGS_REQUIRED) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Memory is not growable", fault);
 		goto fault_done;
 	}
@@ -796,14 +797,14 @@ page_fault_retry:
 	if ((region->flags & GROWABLE_FLAGS_REQUIRED)
 			!= GROWABLE_FLAGS_REQUIRED) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Memory is not growable", fault);
 		goto fault_done;
 	}
 
 	if ((region->flags & KBASE_REG_DONT_NEED)) {
 		kbase_gpu_vm_unlock(kctx);
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(region, kctx, faulting_as,
 				"Don't need memory can't be grown", fault);
 		goto fault_done;
 	}
@@ -919,7 +920,7 @@ page_fault_retry:
 						new_pages);
 			kbase_gpu_vm_unlock(kctx);
 			/* The locked VA region will be unlocked and the cache invalidated in here */
-			kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+			kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 					"Page table update failure", fault);
 			goto fault_done;
 		}
@@ -1033,7 +1034,7 @@ page_fault_retry:
 		}
 		if (ret < 0) {
 			/* failed to extend, handle as a normal PF */
-			kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+			kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 					"Page allocation failure", fault);
 		} else {
 			goto page_fault_retry;
@@ -1275,7 +1276,7 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 	/* In case the insert_single_page only partially completes we need to be
 	 * able to recover */
 	bool recover_required = false;
-	u64 recover_vpfn = vpfn;
+	u64 start_vpfn = vpfn;
 	size_t recover_count = 0;
 	size_t remain = nr;
 	int err;
@@ -1331,8 +1332,8 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 				 * completed */
 				mmu_insert_pages_failure_recovery(kctx->kbdev,
 						&kctx->mmu,
-						recover_vpfn,
-						recover_vpfn + recover_count);
+						start_vpfn,
+						start_vpfn + recover_count);
 			}
 			goto fail_unlock;
 		}
@@ -1346,8 +1347,8 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 				 * completed */
 				mmu_insert_pages_failure_recovery(kctx->kbdev,
 						&kctx->mmu,
-						recover_vpfn,
-						recover_vpfn + recover_count);
+						start_vpfn,
+						start_vpfn + recover_count);
 			}
 			err = -ENOMEM;
 			goto fail_unlock;
@@ -1379,12 +1380,12 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 		recover_count += count;
 	}
 	mutex_unlock(&kctx->mmu.mmu_lock);
-	kbase_mmu_flush_invalidate(kctx, vpfn, nr, false);
+	kbase_mmu_flush_invalidate(kctx, start_vpfn, nr, false);
 	return 0;
 
 fail_unlock:
 	mutex_unlock(&kctx->mmu.mmu_lock);
-	kbase_mmu_flush_invalidate(kctx, vpfn, nr, false);
+	kbase_mmu_flush_invalidate(kctx, start_vpfn, nr, false);
 	return err;
 }
 
@@ -1636,7 +1637,7 @@ static void kbase_mmu_flush_invalidate_noretain(struct kbase_context *kctx,
 
 		kbdev->error_num.soft_reset++;
 		kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 		/*benchmark data collect */
 		if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 			rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
@@ -1693,7 +1694,7 @@ static void kbase_mmu_flush_invalidate_as(struct kbase_device *kbdev,
 
 				kbdev->error_num.soft_reset++;
 				kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 				/*benchmark data collect */
 				if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 					rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
@@ -1830,6 +1831,7 @@ int kbase_mmu_teardown_pages(struct kbase_device *kbdev,
 {
 	phys_addr_t pgd;
 	size_t requested_nr = nr;
+	u64 start_vpfn = vpfn;
 	struct kbase_mmu_mode const *mmu_mode;
 	int err = -EFAULT;
 
@@ -1939,9 +1941,9 @@ out:
 	mutex_unlock(&mmut->mmu_lock);
 
 	if (mmut->kctx)
-		kbase_mmu_flush_invalidate(mmut->kctx, vpfn, requested_nr, true);
+		kbase_mmu_flush_invalidate(mmut->kctx, start_vpfn, requested_nr, true);
 	else
-		kbase_mmu_flush_invalidate_no_ctx(kbdev, vpfn, requested_nr, true, as_nr);
+		kbase_mmu_flush_invalidate_no_ctx(kbdev, start_vpfn, requested_nr, true, as_nr);
 
 	return err;
 }
@@ -2330,7 +2332,7 @@ void bus_fault_worker(struct work_struct *data)
 	}
 
 	if (unlikely(fault->protected_mode)) {
-		kbase_mmu_report_fault_and_kill(kctx, faulting_as,
+		kbase_mmu_report_fault_and_kill(NULL, kctx, faulting_as,
 				"Permission failure", fault);
 		kbase_mmu_hw_clear_fault(kbdev, faulting_as,
 				KBASE_MMU_FAULT_TYPE_BUS_UNEXPECTED);
@@ -2349,7 +2351,7 @@ void bus_fault_worker(struct work_struct *data)
 
 		kbdev->error_num.soft_reset++;
 		kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 		/*benchmark data collect */
 		if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 			rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
@@ -2581,8 +2583,9 @@ static const char *access_type_name(struct kbase_device *kbdev,
 /**
  * The caller must ensure it's retained the ctx to prevent it from being scheduled out whilst it's being worked on.
  */
-static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
-		struct kbase_as *as, const char *reason_str,
+static void kbase_mmu_report_fault_and_kill(struct kbase_va_region *region,
+		struct kbase_context *kctx, struct kbase_as *as,
+		const char *reason_str,
 		struct kbase_fault *fault)
 {
 	unsigned long flags;
@@ -2616,7 +2619,8 @@ static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
 		"exception type 0x%X: %s\n"
 		"access type 0x%X: %s\n"
 		"source id 0x%X\n"
-		"pid: %d\n",
+		"pid: %u\n"
+		"tgid: %u\n",
 		as_no, fault->addr,
 		reason_str,
 		fault->status,
@@ -2624,7 +2628,23 @@ static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
 		exception_type, kbase_exception_name(kbdev, exception_type),
 		access_type, access_type_name(kbdev, fault->status),
 		source_id,
-		kctx->pid);
+		kctx->pid,
+		kctx->tgid);
+
+	if (region != NULL)
+		dev_err(kbdev->dev,
+			"kctx: %pK\n"
+			"reg: %pK\n"
+			"region_flags: %016lx\n"
+			"start: 0x%016llX\n"
+			"nr_page: %ld\n"
+			"extent: %ld\n",
+			kctx,
+			region,
+			region->flags,
+			region->start_pfn,
+			region->nr_pages,
+			region->extent);
 
 #ifdef CONFIG_HUAWEI_DSM
 	/* For normal runmode,report dmd every 30 times. */
@@ -2634,7 +2654,7 @@ static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
 #endif
 	kbdev->error_num.page_fault++;
 	kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 	/*benchmark data collect */
 	if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 		rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
@@ -2645,12 +2665,16 @@ static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
 		struct kbase_mem_pool *pool = &kctx->mem_pools.small[0];
 		kbase_mem_pool_lock(pool);
 		if (!pool->dying) {
+#ifdef CONFIG_HUAWEI_DSM
 			if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0018) && kbdev->runmode_normal) {
+#else
+			if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0018)) {
+#endif
 				kbdev->unhandled_page_fault_count++;
 				if (kbdev->unhandled_page_fault_count >= 3)
-					rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
+					dev_warn(kbdev->dev, "GPU page fault happened!");
 			} else {
-				rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
+				dev_warn(kbdev->dev, "GPU page fault happened!");
 			}
 		}
 		kbase_mem_pool_unlock(pool);
@@ -2670,11 +2694,12 @@ static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
 	 * out/rescheduled - this will occur on releasing the context's refcount */
 	spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
 	kbasep_js_clear_submit_allowed(js_devdata, kctx);
-	spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
 
 	/* Kill any running jobs from the context. Submit is disallowed, so no more jobs from this
 	 * context can appear in the job slots from this point on */
-	kbase_backend_jm_kill_jobs_from_kctx(kctx);
+	kbase_backend_jm_kill_running_jobs_from_kctx(kctx);
+	spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
+
 	/* AS transaction begin */
 	mutex_lock(&kbdev->mmu_hw_mutex);
 	if (kbase_hw_has_issue(kbdev, BASE_HW_ISSUE_8245)) {
@@ -2691,7 +2716,7 @@ static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
 #endif
 		kbdev->error_num.page_fault++;
 		kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 		/*benchmark data collect */
 		if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 			rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
@@ -2918,7 +2943,7 @@ void kbase_mmu_interrupt_process(struct kbase_device *kbdev,
 
 			kbdev->error_num.soft_reset++;
 			kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 			/*benchmark data collect */
 			if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 				rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730

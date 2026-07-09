@@ -101,6 +101,7 @@ static int rt4801h_reg_init(struct i2c_client *client, unsigned char vpos_cmd,
 
 	ret = i2c_smbus_read_byte_data(client, RT4801H_REG_APP_DIS);
 	if (ret < 0) {
+		lcd_bias_i2c_dmd();
 		LCD_KIT_ERR("%s: read app_dis failed\n", __func__);
 		return ret;
 	}
@@ -110,20 +111,24 @@ static int rt4801h_reg_init(struct i2c_client *client, unsigned char vpos_cmd,
 
 	ret = i2c_smbus_write_byte_data(client, RT4801H_REG_VPOS, vpos_cmd);
 	if (ret < 0) {
+		lcd_bias_i2c_dmd();
 		LCD_KIT_ERR("%s: write vpos failed\n", __func__);
 		return ret;
 	}
 
 	ret = i2c_smbus_write_byte_data(client, RT4801H_REG_VNEG, vneg_cmd);
 	if (ret < 0) {
+		lcd_bias_i2c_dmd();
 		LCD_KIT_ERR("%s: write vneg failed\n", __func__);
 		return ret;
 	}
 
 	ret = i2c_smbus_write_byte_data(client, RT4801H_REG_APP_DIS,
 		app_dis);
-	if (ret < 0)
+	if (ret < 0) {
+		lcd_bias_i2c_dmd();
 		LCD_KIT_ERR("%s: write app_dis failed\n", __func__);
+	}
 
 	return ret;
 }

@@ -20,7 +20,7 @@
 #include <linux/semaphore.h>
 #include "lm36274.h"
 #include "hisi_fb.h"
-#include <linux/hisi/hw_cmdline_parse.h> //for runmode_is_factory
+#include <linux/hisi/hw_cmdline_parse.h> // for runmode_is_factory
 #if defined(CONFIG_LCDKIT_DRIVER)
 #include "lcdkit_panel.h"
 #endif
@@ -29,7 +29,7 @@ struct class *lm36274_class = NULL;
 struct lm36274_chip_data *lm36274_g_chip = NULL;
 static bool lm36274_init_status = false;
 static unsigned int g_reg_val[LM36274_RW_REG_MAX] = {0};
-static int g_bl_level_enhance_mode = 0;
+static unsigned int g_bl_level_enhance_mode = 0;
 static int g_hidden_reg_support = 0;
 static int g_only_bias;
 #define MAX_TRY_NUM 3
@@ -43,7 +43,7 @@ static int g_force_resume_bl_flag = RESUME_IDLE;
 #define REG_MAX 0x14
 #define LOG_LEVEL_INFO 8
 
-static int g_resume_bl_duration = 0;  /* default not support auto resume*/
+static int g_resume_bl_duration = 0;  /* default not support auto resume */
 static enum hrtimer_restart lm36274_bl_resume_hrtimer_fnc(struct hrtimer *timer);
 static void lm36274_bl_resume_workqueue_handler(struct work_struct *work);
 extern int bl_lvl_map(int level);
@@ -57,6 +57,8 @@ struct backlight_information {
 	/* lm36274 hw_en gpio */
 	int lm36274_hw_en_gpio;
 	int lm36274_reg[LM36274_RW_REG_MAX];
+	int lm36274_vtc_line_boost;
+	int lm36274_vtc_end_boost;
 };
 
 static struct backlight_information bl_info;
@@ -93,7 +95,6 @@ static unsigned int lm36274_reg_addr[LM36274_RW_REG_MAX] = {
 	REG_BL_ENABLE,
 };
 
-#if defined(CONFIG_LCDKIT_DRIVER)
 static struct lm36274_vsp_vsn_voltage lm36274_voltage_table[] = {
 	{ 4000000, LM36274_VOL_400 },
 	{ 4050000, LM36274_VOL_405 },
@@ -135,14 +136,13 @@ static struct lm36274_vsp_vsn_voltage lm36274_voltage_table[] = {
 	{ 6450000, LM36274_VOL_645 },
 	{ 6500000, LM36274_VOL_650 },
 };
-#endif
 
 static struct backlight_work_mode_reg_info g_bl_work_mode_reg_indo;
 
 /*
-** for debug, S_IRUGO
-** /sys/module/hisifb/parameters
-*/
+ * for debug, S_IRUGO
+ * /sys/module/dpufb/parameters
+ */
 unsigned lm36274_msg_level = 7;
 module_param_named(debug_lm36274_msg_level, lm36274_msg_level, int, 0644);
 MODULE_PARM_DESC(debug_lm36274_msg_level, "backlight lm36274 msg level");
@@ -221,17 +221,14 @@ static int lm36274_parse_dts(struct device_node *np)
 #if defined(CONFIG_LCDKIT_DRIVER)
 	if (lcdkit_info.panel_infos.bias_change_lm36274_from_panel_support) {
 		lm36274_get_target_voltage(&vpos_target, &vneg_target);
-		/* bl_info.lm36274_reg[8] :8 is the position of vsp in bl_info.lm36274_reg during kernel*/
-		/* bl_info.lm36274_reg[9] :9 is the position of vsn in bl_info.lm36274_reg during kernel*/
-		if (bl_info.lm36274_reg[8] != vpos_target) {
+		/* bl_info.lm36274_reg[8] :8 is the position of vsp in bl_info.lm36274_reg during kernel */
+		/* bl_info.lm36274_reg[9] :9 is the position of vsn in bl_info.lm36274_reg during kernel */
+		if (bl_info.lm36274_reg[8] != vpos_target)
 			bl_info.lm36274_reg[8] = vpos_target;
-		}
-		if (bl_info.lm36274_reg[9] != vneg_target) {
+		if (bl_info.lm36274_reg[9] != vneg_target)
 			bl_info.lm36274_reg[9] = vneg_target;
-		}
 	}
 #endif
-
 	return ret;
 }
 
@@ -305,52 +302,42 @@ static void lm36274_bl_mode_reg_init(unsigned int reg[],unsigned int val[],unsig
 		case REG_BL_CONFIG_1:
 		case REG_BL_CONFIG_2:
 		case REG_BL_OPTION_2:
-		    reg_element_num = g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num;
-		    if (reg_element_num >= BL_MAX_CONFIG_REG_NUM)
-		    {
-		        break;
-		    }
-		    g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_addr[reg_element_num] = reg[i];
-		    g_bl_work_mode_reg_indo.bl_mode_config_reg.normal_reg_var[reg_element_num] = val[i];
-		    if (REG_BL_CONFIG_1 == reg[i])
-		    {
-		        g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var[reg_element_num] = BL_OVP_29V;
-		    }
-		    else if (REG_BL_CONFIG_2 == reg[i])
-		    {
-		        g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var[reg_element_num] = CURRENT_RAMP_5MS;
-		    }
-		    else
-		    {
-		        g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var[reg_element_num] = BL_OCP_2;
-		    }
+			reg_element_num = g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num;
+			if (reg_element_num >= BL_MAX_CONFIG_REG_NUM)
+				break;
+			g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_addr[reg_element_num] = reg[i];
+			g_bl_work_mode_reg_indo.bl_mode_config_reg.normal_reg_var[reg_element_num] = val[i];
+			if (REG_BL_CONFIG_1 == reg[i])
+				g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var[reg_element_num] = BL_OVP_29V;
+			else if (REG_BL_CONFIG_2 == reg[i])
+				g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var[reg_element_num] = CURRENT_RAMP_5MS;
+			else
+				g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var[reg_element_num] = BL_OCP_2;
 
 			LM36274_INFO("reg_addr:0x%x, normal_val=0x%x, enhance_val=0x%x\n",
 				g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_addr[reg_element_num],
 				g_bl_work_mode_reg_indo.bl_mode_config_reg.normal_reg_var[reg_element_num],
 				g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var[reg_element_num]);
 
-		    g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num++;
-		    break;
+			g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num++;
+			break;
 		case REG_BL_ENABLE:
-		    reg_element_num = g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num;
-		    if (reg_element_num >= BL_MAX_CONFIG_REG_NUM)
-		    {
+			reg_element_num = g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num;
+			if (reg_element_num >= BL_MAX_CONFIG_REG_NUM)
 				break;
-		    }
-		    g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_addr[reg_element_num] = reg[i];
-		    g_bl_work_mode_reg_indo.bl_enable_config_reg.normal_reg_var[reg_element_num] = val[i];
-		    g_bl_work_mode_reg_indo.bl_enable_config_reg.enhance_reg_var[reg_element_num] = EN_4_SINK;
+			g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_addr[reg_element_num] = reg[i];
+			g_bl_work_mode_reg_indo.bl_enable_config_reg.normal_reg_var[reg_element_num] = val[i];
+			g_bl_work_mode_reg_indo.bl_enable_config_reg.enhance_reg_var[reg_element_num] = EN_4_SINK;
 
 			LM36274_INFO("reg_addr:0x%x, normal_val=0x%x, enhance_val=0x%x\n",
 				g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_addr[reg_element_num],
 				g_bl_work_mode_reg_indo.bl_enable_config_reg.normal_reg_var[reg_element_num],
 				g_bl_work_mode_reg_indo.bl_enable_config_reg.enhance_reg_var[reg_element_num]);
 
-		    g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num++;
-		    break;
+			g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num++;
+			break;
 		default:
-		    break;
+			break;
 		}
 	}
 
@@ -441,41 +428,39 @@ out:
 /* initialize chip */
 static int lm36274_chip_init(struct lm36274_chip_data *pchip)
 {
-    int ret = -1;
-    struct device_node *np = NULL;
-    unsigned int enable_reg = 0;
+	int ret = -1;
+	struct device_node *np = NULL;
+	unsigned int enable_reg = 0;
 
-    LM36274_INFO("in!\n");
+	LM36274_INFO("in!\n");
 
 	if(pchip == NULL){
 		LM36274_ERR("pchip is NULL pointer\n");
 		return -1;
 	}
 
-    memset(&bl_info, 0, sizeof(struct backlight_information));
+	memset(&bl_info, 0, sizeof(struct backlight_information));
 
-    np = of_find_compatible_node(NULL, NULL, DTS_COMP_LM36274);
-    if (!np) {
-        LM36274_ERR("NOT FOUND device node %s!\n", DTS_COMP_LM36274);
-        goto out;
-    }
+	np = of_find_compatible_node(NULL, NULL, DTS_COMP_LM36274);
+	if (!np) {
+		LM36274_ERR("NOT FOUND device node %s!\n", DTS_COMP_LM36274);
+		goto out;
+	}
 
-    ret = lm36274_parse_dts(np);
-    if (ret < 0) {
-        LM36274_ERR("parse lm36274 dts failed");
-        goto out;
-    }
+	ret = lm36274_parse_dts(np);
+	if (ret < 0) {
+		LM36274_ERR("parse lm36274 dts failed");
+		goto out;
+	}
 
 	ret = of_property_read_u32(np, "lm36274_bl_max_level", &g_bl_level_enhance_mode);
-	if (ret) {
+	if (ret)
 		g_bl_level_enhance_mode = BL_MAX;
-	}
 	LM36274_INFO("g_bl_level_enhance_mode = %d\n", g_bl_level_enhance_mode);
 
 	ret = of_property_read_u32(np, LM36274_HIDDEN_REG_SUPPORT, &g_hidden_reg_support);
-	if (ret) {
+	if (ret)
 		g_hidden_reg_support = 0;
-	}
 	LM36274_INFO("g_hidden_reg_support = %d\n", g_hidden_reg_support);
 
 	ret = of_property_read_u32(np, LM36274_ONLY_BIAS, &g_only_bias);
@@ -483,118 +468,111 @@ static int lm36274_chip_init(struct lm36274_chip_data *pchip)
 		g_only_bias = 0;
 	LM36274_INFO("g_only_bias = %d\n", g_only_bias);
 
-    if (runmode_is_factory()) {
+	if (runmode_is_factory()) {
 		ret = of_property_read_u32(np, LM36274_RUNNING_RESUME_BL_TIMMER, &g_resume_bl_duration);
-		if (ret) {
+		if (ret)
 			g_resume_bl_duration = 0;
-		}
 	} else {
 		ret = of_property_read_u32(np, LM36274_UPDATE_RESUME_BL_TIMMER, &g_resume_bl_duration);
-		if (ret) {
+		if (ret)
 			g_resume_bl_duration = 0;
-		}
 	}
 
-	if (g_resume_bl_duration > MAX_BL_RESUME_TIMMER){
+	if (g_resume_bl_duration > MAX_BL_RESUME_TIMMER)
 		g_resume_bl_duration = MAX_BL_RESUME_TIMMER;
-	}
 
 	LM36274_INFO("g_resume_bl_duration = %d\n", g_resume_bl_duration);
 
 	if (g_hidden_reg_support)
 	{
 		ret = lm36274_set_hidden_reg(pchip);
-	    if (ret < 0) {
-	        LM36274_INFO("lm36274_set_hidden_reg failed");
-	    }
-    }
-
-    ret = lm36274_config_write(pchip, lm36274_reg_addr, bl_info.lm36274_reg, LM36274_RW_REG_MAX);
-    if (ret < 0) {
-        LM36274_ERR("lm36274 config register failed");
-        goto out;
-    }
-
-    ret = lm36274_config_read(pchip, lm36274_reg_addr, bl_info.lm36274_reg, LM36274_RW_REG_MAX);
-    if (ret < 0) {
-        LM36274_ERR("lm36274 config read failed");
-        goto out;
-    }
-
-    lm36274_bl_mode_reg_init(lm36274_reg_addr, bl_info.lm36274_reg, LM36274_RW_REG_MAX);
-	pchip->bl_resume_wq = create_singlethread_workqueue("bl_resume");
-	if (!pchip->bl_resume_wq) {
-		LM36274_ERR("create bl_resume_wq failed\n");
+		if (ret < 0)
+			LM36274_INFO("lm36274_set_hidden_reg failed");
 	}
+
+	ret = lm36274_config_write(pchip, lm36274_reg_addr, bl_info.lm36274_reg, LM36274_RW_REG_MAX);
+	if (ret < 0) {
+		LM36274_ERR("lm36274 config register failed");
+		goto out;
+	}
+
+	ret = lm36274_config_read(pchip, lm36274_reg_addr, bl_info.lm36274_reg, LM36274_RW_REG_MAX);
+	if (ret < 0) {
+		LM36274_ERR("lm36274 config read failed");
+		goto out;
+	}
+
+	lm36274_bl_mode_reg_init(lm36274_reg_addr, bl_info.lm36274_reg, LM36274_RW_REG_MAX);
+	pchip->bl_resume_wq = create_singlethread_workqueue("bl_resume");
+	if (!pchip->bl_resume_wq)
+		LM36274_ERR("create bl_resume_wq failed\n");
 
 	INIT_WORK(&pchip->bl_resume_worker, lm36274_bl_resume_workqueue_handler);
 	hrtimer_init(&pchip->bl_resume_hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	pchip->bl_resume_hrtimer.function = lm36274_bl_resume_hrtimer_fnc;
 
-    if (g_fake_lcd_flag) {
-        LM36274_INFO("is unknown lcd\n");
-        /* BL disable when fake lcd on */
-        ret = regmap_write(pchip->regmap, REG_BL_ENABLE, enable_reg);
-        if (ret < 0) {
-            goto out;
-        }
+	if (g_fake_lcd_flag) {
+		LM36274_INFO("is unknown lcd\n");
+		/* BL disable when fake lcd on */
+		ret = regmap_write(pchip->regmap, REG_BL_ENABLE, enable_reg);
+		if (ret < 0)
+			goto out;
 
-        /* Bias supply off when fake lcd on */
-        ret = regmap_update_bits(pchip->regmap, REG_DISPLAY_BIAS_CONFIG_1, MASK_LCM_EN,BIAS_SUPPLY_OFF);
-        LM36274_INFO("Bias supply off when fake lcd on\n");
-        if (ret < 0) {
-            goto out;
-        }
-    }
+		/* Bias supply off when fake lcd on */
+		ret = regmap_update_bits(pchip->regmap, REG_DISPLAY_BIAS_CONFIG_1, MASK_LCM_EN,BIAS_SUPPLY_OFF);
+		LM36274_INFO("Bias supply off when fake lcd on\n");
+		if (ret < 0)
+			goto out;
+	}
 
-    LM36274_INFO("ok!\n");
+	LM36274_INFO("ok!\n");
 
-    return ret;
+	return ret;
 
 out:
-    dev_err(pchip->dev, "i2c failed to access register\n");
-    return ret;
+	dev_err(pchip->dev, "i2c failed to access register\n");
+	return ret;
 }
 static int lm36274_check_ovp_error(void)
 {
-    int ret = -1;
+	int ret = -1;
 #if defined (CONFIG_HUAWEI_DSM)
-    unsigned int val = 0;
+	unsigned int val = 0;
 #endif
-    struct i2c_client *client;
+	struct i2c_client *client = NULL;
 
-    if (!lm36274_init_status)
-    {
-        LM36274_ERR("lm36274_init fail, return.\n");
-        return ret;
-    }
+	if (!lm36274_init_status)
+	{
+		LM36274_ERR("lm36274_init fail, return.\n");
+		return ret;
+	}
 
-    client = lm36274_g_chip->client;
+	client = lm36274_g_chip->client;
 
 #if defined (CONFIG_HUAWEI_DSM)
-    if (!g_fake_lcd_flag) {
-        ret = regmap_read(lm36274_g_chip->regmap, REG_FLAGS, &val);
-        LM36274_INFO("lm36274_check_ovp_error:regmap_read val %u \n", val);
-        if (ret < 0) {
-            dev_err(&client->dev, "fail : read chip reg REG_FAULT_FLAG error!\n");
-            goto err_out;
-        }
+	if (!g_fake_lcd_flag) {
+		ret = regmap_read(lm36274_g_chip->regmap, REG_FLAGS, &val);
+		LM36274_INFO("lm36274_check_ovp_error:regmap_read val %u \n", val);
+		if (ret < 0) {
+			dev_err(&client->dev, "fail : read chip reg REG_FAULT_FLAG error!\n");
+			goto err_out;
+		}
 
-        if (DEVICE_FAULT_OCCUR != val) {
+		if (DEVICE_FAULT_OCCUR != val) {
 			ret = dsm_client_ocuppy(lcd_dclient);
-	        if (!ret) {
-                dev_err(&client->dev, "fail : REG_FAULT_FLAG statues error 0X0F=%d!\n", val);
-                dsm_client_record(lcd_dclient, "REG_FAULT_FLAG statues error 0X0F=%d!\n", val);
-                dsm_client_notify(lcd_dclient, DSM_LCD_OVP_ERROR_NO);
-            } else {
-                dev_err(&client->dev, "dsm_client_ocuppy fail:  ret=%d!\n", ret);
-            }
-        }
-    }
+			if (!ret) {
+				dev_err(&client->dev, "fail : REG_FAULT_FLAG statues error 0X0F=%d!\n", val);
+				dsm_client_record(lcd_dclient, "REG_FAULT_FLAG statues error 0X0F=%d!\n", val);
+				dsm_client_notify(lcd_dclient, DSM_LCD_OVP_ERROR_NO);
+			} else {
+				dev_err(&client->dev, "dsm_client_ocuppy fail:  ret=%d!\n", ret);
+			}
+		}
+	}
 #endif
 
 err_out:
-    return ret;
+	return ret;
 }
 
 static void lm36274_check_fault(struct lm36274_chip_data *pchip,
@@ -602,7 +580,9 @@ static void lm36274_check_fault(struct lm36274_chip_data *pchip,
 {
 	unsigned int val = 0;
 	int ret;
+#if defined CONFIG_HUAWEI_DSM
 	int i;
+#endif
 
 	LM36274_INFO("backlight check FAULT_FLAG!\n");
 
@@ -611,13 +591,12 @@ static void lm36274_check_fault(struct lm36274_chip_data *pchip,
 		LM36274_ERR("read lm36274 FAULT_FLAG failed!\n");
 		return;
 	}
-
+#if defined CONFIG_HUAWEI_DSM
 	for (i = 0; i < FLAG_CHECK_NUM; i++) {
 		if (!(err_table[i].flag & val))
 			continue;
 		LM36274_ERR("last_bkl:%d, cur_bkl:%d\n FAULT_FLAG:0x%x!\n",
 			last_level, level, err_table[i].flag);
-#if defined CONFIG_HUAWEI_DSM
 		ret = dsm_client_ocuppy(lcd_dclient);
 		if (ret) {
 			LM36274_ERR("dsm_client_ocuppy fail: ret=%d!\n", ret);
@@ -627,8 +606,8 @@ static void lm36274_check_fault(struct lm36274_chip_data *pchip,
 			"lm36274 last_bkl:%d, cur_bkl:%d\n FAULT_FLAG:0x%x!\n",
 			last_level, level, err_table[i].flag);
 		dsm_client_notify(lcd_dclient, err_table[i].err_no);
-#endif
 	}
+#endif
 }
 
 /**
@@ -664,9 +643,8 @@ int lm36274_set_backlight_reg(unsigned int bl_level)
 
 	level = bl_level;
 
-	if (level > BL_MAX) {
+	if (level > BL_MAX)
 		level = BL_MAX;
-	}
 
 	if (g_fake_lcd_flag) {
 		if (level > 0) {
@@ -694,9 +672,8 @@ int lm36274_set_backlight_reg(unsigned int bl_level)
 
 	if ((BL_MIN == last_level && LOG_LEVEL_INFO == lm36274_msg_level)
 		|| (BL_MIN == level && LOG_LEVEL_INFO == lm36274_msg_level)
-		|| (-1 == last_level)) {
+		|| (-1 == last_level))
 		LM36274_INFO("level = %d, bl_msb = %d, bl_lsb = %d\n", level, bl_msb, bl_lsb);
-	}
 
 	LM36274_DEBUG("level = %d, bl_msb = %d, bl_lsb = %d\n", level, bl_msb, bl_lsb);
 
@@ -773,8 +750,8 @@ static ssize_t lm36274_reg_bl_show(struct device *dev,
 	struct lm36274_chip_data *pchip = NULL;
 	struct i2c_client *client = NULL;
 	ssize_t ret = -1;
-	int bl_lsb = 0;
-	int bl_msb = 0;
+	unsigned int bl_lsb = 0;
+	unsigned int bl_msb = 0;
 	int bl_level = 0;
 
 	if (!dev)
@@ -957,13 +934,12 @@ static enum hrtimer_restart lm36274_bl_resume_hrtimer_fnc(struct hrtimer *timer)
 
 	bl_chip_ctrl = container_of(timer, struct lm36274_chip_data, bl_resume_hrtimer);
 	if (bl_chip_ctrl == NULL){
-        LM36274_INFO("bl_chip_ctrl is NULL, return\n");
+		LM36274_INFO("bl_chip_ctrl is NULL, return\n");
 		return HRTIMER_NORESTART;
 	}
 
-	if (bl_chip_ctrl->bl_resume_wq) {
+	if (bl_chip_ctrl->bl_resume_wq)
 		queue_work(bl_chip_ctrl->bl_resume_wq, &(bl_chip_ctrl->bl_resume_worker));
-	}
 
 	return HRTIMER_NORESTART;
 }
@@ -976,42 +952,39 @@ static void lm36274_bl_resume_workqueue_handler(struct work_struct *work)
 
 	bl_chip_ctrl = container_of(work, struct lm36274_chip_data, bl_resume_worker);
 	if (bl_chip_ctrl == NULL){
-        LM36274_ERR("bl_chip_ctrl is NULL, return\n");
+		LM36274_ERR("bl_chip_ctrl is NULL, return\n");
 		return;
 	}
 
 	if (down_interruptible(&(lm36274_g_chip->test_sem))) {
-		if (bl_chip_ctrl->bl_resume_wq) {
+		if (bl_chip_ctrl->bl_resume_wq)
 			queue_work(bl_chip_ctrl->bl_resume_wq, &(bl_chip_ctrl->bl_resume_worker));
-		}
 		LM36274_INFO("down_trylock get sem fail return\n");
 		return ;
 	}
 
 	if (g_force_resume_bl_flag != RESUME_2_SINK
 		&& g_force_resume_bl_flag != RESUME_REMP_OVP_OCP) {
-        LM36274_ERR("g_force_resume_bl_flag = 0x%x, return \n",g_force_resume_bl_flag);
+		LM36274_ERR("g_force_resume_bl_flag = 0x%x, return \n",g_force_resume_bl_flag);
 		up(&(lm36274_g_chip->test_sem));
 		return;
 	}
 
 	error = lm36274_check_ovp_error();
-	if( error ) {
+	if( error )
 		LM36274_ERR("lm36274_check_ovp_error return error\n");
-	}
 
 	if ( RESUME_2_SINK == g_force_resume_bl_flag) {
 		LM36274_INFO("resume RESUME_LINK \n");
-		/* set 4 link to 2 link*/
+		/* set 4 link to 2 link */
 	    error = lm36274_config_write(lm36274_g_chip,
-	                                g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_addr,
-	                                g_bl_work_mode_reg_indo.bl_enable_config_reg.normal_reg_var,
-	                                g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num);
+			g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_addr,
+			g_bl_work_mode_reg_indo.bl_enable_config_reg.normal_reg_var,
+			g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num);
 	    if ( error ) {
 			LM36274_INFO("resume 2 sink fail return \n");
-			if (bl_chip_ctrl->bl_resume_wq) {
+			if (bl_chip_ctrl->bl_resume_wq)
 				queue_work(bl_chip_ctrl->bl_resume_wq, &(bl_chip_ctrl->bl_resume_worker));
-			}
 			up(&(lm36274_g_chip->test_sem));
 			return;
 		}
@@ -1020,9 +993,8 @@ static void lm36274_bl_resume_workqueue_handler(struct work_struct *work)
 									g_bl_work_mode_reg_indo.bl_current_config_reg.reg_addr,
 									g_bl_work_mode_reg_indo.bl_current_config_reg.normal_reg_var,
 									g_bl_work_mode_reg_indo.bl_current_config_reg.reg_element_num);
-		if( error ) {
+		if( error )
 			LM36274_ERR("set bl_current_config_reg fail\n");
-		}
 
 		g_force_resume_bl_flag = RESUME_REMP_OVP_OCP;
 
@@ -1038,9 +1010,8 @@ static void lm36274_bl_resume_workqueue_handler(struct work_struct *work)
 									g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num);
 	    if ( error ) {
 			LM36274_INFO("resume OVP fail return \n");
-			if (bl_chip_ctrl->bl_resume_wq) {
+			if (bl_chip_ctrl->bl_resume_wq)
 				queue_work(bl_chip_ctrl->bl_resume_wq, &(bl_chip_ctrl->bl_resume_worker));
-			}
 			up(&(lm36274_g_chip->test_sem));
 			return;
 		}
@@ -1054,7 +1025,7 @@ static void lm36274_bl_resume_workqueue_handler(struct work_struct *work)
 }
 int lm36274_get_bl_resume_timmer(int *timmer)
 {
-    int ret = -1;
+	int ret = -1;
 
 	if (timmer) {
 		*timmer = g_resume_bl_duration;
@@ -1066,102 +1037,99 @@ int lm36274_get_bl_resume_timmer(int *timmer)
 
 ssize_t blkit_set_normal_work_mode(void)
 {
-    ssize_t error = -1;
+	ssize_t error = -1;
 
-    if (!lm36274_init_status)
-    {
-        LM36274_ERR("lm36274_init fail, return.\n");
-        return error;
-    }
+	if (!lm36274_init_status)
+	{
+		LM36274_ERR("lm36274_init fail, return.\n");
+		return error;
+	}
 
 	LM36274_INFO("blkit_set_normal_work_mode in \n");
 	if (down_interruptible(&lm36274_g_chip->test_sem)) {
 		LM36274_ERR("down_trylock fail return\n");
 		return error;
-    }
+	}
 
 	error = lm36274_config_write(lm36274_g_chip,
-                                g_bl_work_mode_reg_indo.bl_current_config_reg.reg_addr,
-                                g_bl_work_mode_reg_indo.bl_current_config_reg.normal_reg_var,
-                                g_bl_work_mode_reg_indo.bl_current_config_reg.reg_element_num);
-    if( error ) {
-        LM36274_ERR("set bl_current_config_reg fail\n");
-    } else {
+		g_bl_work_mode_reg_indo.bl_current_config_reg.reg_addr,
+		g_bl_work_mode_reg_indo.bl_current_config_reg.normal_reg_var,
+		g_bl_work_mode_reg_indo.bl_current_config_reg.reg_element_num);
+	if( error ) {
+		LM36274_ERR("set bl_current_config_reg fail\n");
+	} else {
 	    /* 6ms */
 	    mdelay(BL_LOWER_POW_DELAY);
-    }
+	}
 
-	/* set 4  to 2 sink*/
-    error = lm36274_config_write(lm36274_g_chip,
-                                g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_addr,
-                                g_bl_work_mode_reg_indo.bl_enable_config_reg.normal_reg_var,
-                                g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num);
-    if ( error ) {
-        LM36274_ERR("set bl_enable_config_reg fail\n");
+	/* set 4  to 2 sink */
+	error = lm36274_config_write(lm36274_g_chip,
+		g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_addr,
+		g_bl_work_mode_reg_indo.bl_enable_config_reg.normal_reg_var,
+		g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num);
+	if ( error ) {
+		LM36274_ERR("set bl_enable_config_reg fail\n");
 		g_force_resume_bl_flag = RESUME_2_SINK;
 		goto out;
-    }
+	}
 
-	/*6ms*/
+	/* 6ms */
 	mdelay(BL_LOWER_POW_DELAY);
 
 	error = lm36274_check_ovp_error();
 	if( error )
-	{
 		LM36274_ERR("lm36274_check_ovp_error return error\n");
-	}
 
 	g_force_resume_bl_flag = RESUME_REMP_OVP_OCP;
-    error = lm36274_config_write(lm36274_g_chip,
-                                g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_addr,
-                                g_bl_work_mode_reg_indo.bl_mode_config_reg.normal_reg_var,
-                                g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num);
-    if( error ) {
-        LM36274_ERR("set bl_mode_config_reg fail\n");
-        goto out;
-    }
-
-	if (0 != g_resume_bl_duration) {
-		hrtimer_cancel(&lm36274_g_chip->bl_resume_hrtimer);
+	error = lm36274_config_write(lm36274_g_chip,
+		g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_addr,
+		g_bl_work_mode_reg_indo.bl_mode_config_reg.normal_reg_var,
+		g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num);
+	if( error ) {
+		LM36274_ERR("set bl_mode_config_reg fail\n");
+		goto out;
 	}
+
+	if (0 != g_resume_bl_duration)
+		hrtimer_cancel(&lm36274_g_chip->bl_resume_hrtimer);
 
 	g_force_resume_bl_flag = RESUME_IDLE;
 
-    up(&(lm36274_g_chip->test_sem));
-    LM36274_INFO("blkit_set_normal_work_mode exit!\n");
-    return error;
+	up(&(lm36274_g_chip->test_sem));
+	LM36274_INFO("blkit_set_normal_work_mode exit!\n");
+	return error;
 
 out:
-    up(&(lm36274_g_chip->test_sem));
-    LM36274_INFO("blkit_set_normal_work_mode failed \n");
-    return error;
+	up(&(lm36274_g_chip->test_sem));
+	LM36274_INFO("blkit_set_normal_work_mode failed \n");
+	return error;
 }
 
 ssize_t blkit_set_enhance_work_mode(void)
 {
-    ssize_t error = -1;
+	ssize_t error = -1;
 
-    if (!lm36274_init_status)
-    {
-        LM36274_ERR("lm36274_init fail, return.\n");
-        return error;
-    }
+	if (!lm36274_init_status)
+	{
+		LM36274_ERR("lm36274_init fail, return.\n");
+		return error;
+	}
 
-    LM36274_INFO("blkit_set_enhance_work_mode in!\n");
+	LM36274_INFO("blkit_set_enhance_work_mode in!\n");
 	if (down_interruptible(&lm36274_g_chip->test_sem)) {
 		LM36274_ERR("down_trylock fail return\n");
 		return error;
-    }
+	}
 
 	g_force_resume_bl_flag = RESUME_IDLE;
-    error = lm36274_config_write(lm36274_g_chip,
-                                g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_addr,
-                                g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var,
-                                g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num);
-    if( error ) {
-        LM36274_ERR("set bl_mode_config_reg fail\n");
+	error = lm36274_config_write(lm36274_g_chip,
+		g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_addr,
+		g_bl_work_mode_reg_indo.bl_mode_config_reg.enhance_reg_var,
+		g_bl_work_mode_reg_indo.bl_mode_config_reg.reg_element_num);
+	if( error ) {
+		LM36274_ERR("set bl_mode_config_reg fail\n");
 		goto out;
-    }
+	}
 
 	g_force_resume_bl_flag = RESUME_REMP_OVP_OCP;
 	error = lm36274_config_write(lm36274_g_chip,
@@ -1169,24 +1137,21 @@ ssize_t blkit_set_enhance_work_mode(void)
 								g_bl_work_mode_reg_indo.bl_enable_config_reg.enhance_reg_var,
 								g_bl_work_mode_reg_indo.bl_enable_config_reg.reg_element_num);
 	if( error ) {
-        LM36274_ERR("set bl_enable_config_reg fail\n");
+		LM36274_ERR("set bl_enable_config_reg fail\n");
 		goto out;
 	}
 
 	error = lm36274_check_ovp_error();
 	if( error )
-	{
 		LM36274_ERR("lm36274_check_ovp_error return error\n");
-	}
 
 	g_force_resume_bl_flag = RESUME_2_SINK;
 	error = lm36274_config_write(lm36274_g_chip,
 								g_bl_work_mode_reg_indo.bl_current_config_reg.reg_addr,
 								g_bl_work_mode_reg_indo.bl_current_config_reg.enhance_reg_var,
 								g_bl_work_mode_reg_indo.bl_current_config_reg.reg_element_num);
-	if( error ) {
-        LM36274_ERR("set bl_current_config_reg fail\n");
-	}
+	if( error )
+		LM36274_ERR("set bl_current_config_reg fail\n");
 
 	if (0 != g_resume_bl_duration) {
 		hrtimer_cancel(&lm36274_g_chip->bl_resume_hrtimer);
@@ -1195,12 +1160,12 @@ ssize_t blkit_set_enhance_work_mode(void)
 	}
 
 	up(&(lm36274_g_chip->test_sem));
-    LM36274_INFO("blkit_set_enhance_work_mode exit!\n");
-    return error;
+	LM36274_INFO("blkit_set_enhance_work_mode exit!\n");
+	return error;
 
 out:
-    up(&(lm36274_g_chip->test_sem));
-    return error;
+	up(&(lm36274_g_chip->test_sem));
+	return error;
 }
 
 static const struct regmap_config lm36274_regmap = {
@@ -1326,48 +1291,43 @@ err_out:
 
 static int lm36274_suspend(struct device *dev)
 {
-    int ret;
-    /* store reg val before suspend */
-    lm36274_config_read(lm36274_g_chip,lm36274_reg_addr,g_reg_val,LM36274_RW_REG_MAX);
-    /* reset backlight ic */
-    ret = regmap_write(lm36274_g_chip->regmap, REG_BL_ENABLE, BL_RESET);
-    if (ret < 0) {
-        dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
-    }
+	int ret;
+	/* store reg val before suspend */
+	lm36274_config_read(lm36274_g_chip,lm36274_reg_addr,g_reg_val,LM36274_RW_REG_MAX);
+	/* reset backlight ic */
+	ret = regmap_write(lm36274_g_chip->regmap, REG_BL_ENABLE, BL_RESET);
+	if (ret < 0)
+		dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
 
-    /* clean up bl val register */
-    ret = regmap_update_bits(lm36274_g_chip->regmap, REG_BL_BRIGHTNESS_LSB, MASK_BL_LSB,BL_DISABLE);
-    if (ret < 0) {
-        dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
-    }
+	/* clean up bl val register */
+	ret = regmap_update_bits(lm36274_g_chip->regmap, REG_BL_BRIGHTNESS_LSB, MASK_BL_LSB,BL_DISABLE);
+	if (ret < 0)
+		dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
 
-    ret = regmap_write(lm36274_g_chip->regmap, REG_BL_BRIGHTNESS_MSB, BL_DISABLE);
-    if (ret < 0) {
-        dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
-    }
+	ret = regmap_write(lm36274_g_chip->regmap, REG_BL_BRIGHTNESS_MSB, BL_DISABLE);
+	if (ret < 0)
+		dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
 
-    return ret;
+	return ret;
 }
 
 static int lm36274_resume(struct device *dev)
 {
-    int ret;
+	int ret;
 
-    lm36274_init_status = true;
+	lm36274_init_status = true;
 	if (g_hidden_reg_support)
 	{
 		ret = lm36274_set_hidden_reg(lm36274_g_chip);
-	    if (ret < 0) {
-	        dev_err(lm36274_g_chip->dev, "i2c access fail to lm36274 hidden register");
-	    }
-    }
+		if (ret < 0)
+			dev_err(lm36274_g_chip->dev, "i2c access fail to lm36274 hidden register");
+	}
 
-    ret = lm36274_config_write(lm36274_g_chip, lm36274_reg_addr, g_reg_val,LM36274_RW_REG_MAX);
-    if (ret < 0) {
-        dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
-    }
+	ret = lm36274_config_write(lm36274_g_chip, lm36274_reg_addr, g_reg_val,LM36274_RW_REG_MAX);
+	if (ret < 0)
+		dev_err(lm36274_g_chip->dev, "%s:i2c access fail to register\n", __func__);
 
-    return ret;
+	return ret;
 }
 
 static SIMPLE_DEV_PM_OPS(lm36274_pm_ops, lm36274_suspend, lm36274_resume);
@@ -1375,18 +1335,17 @@ static SIMPLE_DEV_PM_OPS(lm36274_pm_ops, lm36274_suspend, lm36274_resume);
 
 static int lm36274_remove(struct i2c_client *client)
 {
-    struct lm36274_chip_data *pchip = i2c_get_clientdata(client);
+	struct lm36274_chip_data *pchip = i2c_get_clientdata(client);
 
 	if (regmap_write(pchip->regmap, REG_BL_ENABLE, BL_DISABLE) < 0)
 		LM36274_ERR("regmap_write REG_BL_ENABLE err\n");
 
-    sysfs_remove_group(&client->dev.kobj, &lm36274_group);
+	sysfs_remove_group(&client->dev.kobj, &lm36274_group);
 
-	if (0 != g_resume_bl_duration) {
+	if (0 != g_resume_bl_duration)
 		hrtimer_cancel(&lm36274_g_chip->bl_resume_hrtimer);
-	}
 
-    return 0;
+	return 0;
 }
 
 static const struct i2c_device_id lm36274_id[] = {

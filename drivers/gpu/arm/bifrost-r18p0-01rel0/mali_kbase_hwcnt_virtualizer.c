@@ -788,3 +788,12 @@ void kbase_hwcnt_virtualizer_term(
 	kfree(hvirt);
 }
 KBASE_EXPORT_TEST_API(kbase_hwcnt_virtualizer_term);
+
+bool kbase_hwcnt_virtualizer_queue_work(struct kbase_hwcnt_virtualizer *hvirt,
+					struct work_struct *work)
+{
+	if (WARN_ON(!hvirt) || WARN_ON(!work))
+		return false;
+
+	return kbase_hwcnt_context_queue_work(hvirt->hctx, work);
+}

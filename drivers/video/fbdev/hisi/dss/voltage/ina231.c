@@ -27,9 +27,9 @@ struct ina231_data *g_idata = NULL;
 
 
 /*
-** for debug, S_IRUGO
-** /sys/module/hisifb/parameters
-*/
+ * for debug, S_IRUGO
+ * /sys/module/dpufb/parameters
+ */
 unsigned ina231_msg_level = INA231_DEBUG_LEVEL;
 module_param_named(debug_ina231_msg_level, ina231_msg_level, int, 0640);
 MODULE_PARM_DESC(debug_ina231_msg_level, "ADC ina231 msg level");
@@ -163,11 +163,11 @@ static ssize_t ina231_store_debug(struct device *dev, struct device_attribute *a
 
 	/* configuration */
 	i2c_smbus_write_word_swapped(client, INA231_CONFIG, config);
-	/* set calibrate*/
+	/* set calibrate */
 	i2c_smbus_write_word_swapped(client, INA231_CALIBRATION, calibration);
-	/*Mask_enable*/
+	/* Mask_enable */
 	i2c_smbus_write_word_swapped(client, INA231_MASK_ENABLE, mask_en);
-	/*set alert limit*/
+	/* set alert limit */
 	i2c_smbus_write_word_swapped(client, INA231_ALERT_LIMIT, alert_limit);
 
 	return count;
@@ -219,11 +219,11 @@ static ssize_t ina231_store_set(struct device *dev, struct device_attribute *att
 		INA231_INFO("goto work mode, starting testing\n");
 		/* configuration */
 		i2c_smbus_write_word_swapped(client, INA231_CONFIG, idata->config->config_work);
-		/* set calibrate*/
+		/* set calibrate */
 		i2c_smbus_write_word_swapped(client, INA231_CALIBRATION, idata->config->calibrate_content);
-		/*Mask_enable*/
+		/* Mask_enable */
 		i2c_smbus_write_word_swapped(client, INA231_MASK_ENABLE, idata->config->mask_enable_content);
-		/*set alert limit*/
+		/* set alert limit */
 		i2c_smbus_write_word_swapped(client, INA231_ALERT_LIMIT, idata->config->alert_limit_content);
 	} else {
 		INA231_INFO("goto sleep mode, ending testing\n");
@@ -233,10 +233,10 @@ static ssize_t ina231_store_set(struct device *dev, struct device_attribute *att
 	return count;
 }
 
-/* config for debug*/
+/* config for debug */
 static DEVICE_ATTR(ina231_debug, S_IWUSR, NULL, ina231_store_debug);
 
-/*test*/
+/* test */
 static DEVICE_ATTR(ina231_set, S_IWUSR, NULL, ina231_store_set);
 
 /* get value */
@@ -272,7 +272,7 @@ static void ina231_monitor_wq_handler(struct work_struct *work)
 
 	INA231_DEBUG("enter!\n");
 	if (idata->flag & LCD_RESUME) {
-		/* communication check and reset device*/
+		/* communication check and reset device */
 		ret = i2c_smbus_write_word_swapped(idata->client, INA231_CONFIG, idata->config->config_reset);
 		if (ret < 0) {
 			INA231_ERR("Reset failed\n");
@@ -285,7 +285,7 @@ static void ina231_monitor_wq_handler(struct work_struct *work)
 			INA231_ERR("Setting configuration failed\n");
 			return;
 		}
-		/* set calibrate*/
+		/* set calibrate */
 		ret = i2c_smbus_write_word_swapped(idata->client, INA231_CALIBRATION, idata->config->calibrate_content);
 		if (ret < 0) {
 			INA231_ERR("Setting calibrate failed\n");
@@ -309,13 +309,13 @@ static void ina231_monitor_wq_handler(struct work_struct *work)
 		}
 		INA231_DEBUG("current_data = %d\n", current_data);
 		mutex_lock(&idata->mutex_lock);
-	#ifdef CONFIG_HISI_COUL
-		battery_voltage = hisi_battery_voltage();
+	#ifdef CONFIG_COUL_DRV
+		battery_voltage = coul_drv_battery_voltage();
 	#endif
 		if (battery_voltage) {
 			s_battery_voltage = battery_voltage;
 		} else {
-			INA231_ERR("Read hisi_battery_voltage failed!\n");
+			INA231_ERR("Read battery_voltage failed!\n");
 		}
 		idata->acc_power += ((u64)s_battery_voltage * current_data * idata->config->current_lsb) / INA231_POWER_UNIT_CONVERSION;
 		idata->acc_current += current_data;
@@ -378,7 +378,7 @@ int ina231_power_monitor_off(void)
 static int ina231_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = client->adapter;
-	struct ina231_data *idata;
+	struct ina231_data *idata = NULL;
 	int ret = 0;
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_WORD_DATA))
@@ -393,7 +393,7 @@ static int ina231_probe(struct i2c_client *client, const struct i2c_device_id *i
 	idata->config = &ina231_config[idata->type];
 	idata->client = client;
 
-	/* communication check and reset device*/
+	/* communication check and reset device */
 	ret = i2c_smbus_write_word_swapped(client, INA231_CONFIG, idata->config->config_reset);
 	if (ret < 0) {
 		INA231_ERR("Reset failed\n");
@@ -407,7 +407,7 @@ static int ina231_probe(struct i2c_client *client, const struct i2c_device_id *i
 		INA231_ERR("Setting configuration failed\n");
 		return -ENODEV;
 	}
-	/* set calibrate*/
+	/* set calibrate */
 	ret = i2c_smbus_write_word_swapped(idata->client, INA231_CALIBRATION, idata->config->calibrate_content);
 	if (ret < 0) {
 		INA231_ERR("Setting calibrate failed\n");

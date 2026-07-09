@@ -28,6 +28,7 @@
  * macro definition
  */
 #define DTS_COMP_LCD_KIT_PANEL_TYPE     "huawei,lcd_panel_type"
+#define POWERKEY_RESTART_TYPE_PROP     "androidboot.powerkey_restart_type"
 #define LCD_KIT_PANEL_COMP_LENGTH       128
 // app setting default backlight
 #define MAX_BACKLIGHT_FROM_APP  993
@@ -53,13 +54,28 @@
 // elvdd detect type
 #define ELVDD_MIPI_CHECK_MODE   1
 #define ELVDD_GPIO_CHECK_MODE   2
+#define ELVDD_GPIO_CHECK_MODE_AP 3
+#define ELVDD_SH_MIPI_AP_GPIO_CHECK_MODE 4
 #define REC_DMD_NO_LIMIT      (-1)
 #define DMD_RECORD_BUF_LEN    100
 #define RECOVERY_TIMES          1
-#define PANEL_NAME_LEN          50
+/* project id length */
+#define PROJECTID_LEN 10
+
+#define LCD_NEED_ULPS 1
+#define LCD_NO_NEED_ULPS 0
+
+#define LCD_NV_READ 1
+#define LCD_NV_WRITE 0
+#define LCD_NV_NUMBER 451
+#define LCD_NV_OPS_TIMEOUT 50
+#define LCD_NV_SN_CODE_LEN 21
 
 struct lcd_kit_disp_info *lcd_kit_get_disp_info(void);
 #define disp_info lcd_kit_get_disp_info()
+struct lcd_kit_disp_lock *lcd_kit_get_disp_lock(void);
+#define DISP_LOCK lcd_kit_get_disp_lock()
+
 // ENUM
 enum alpm_mode {
 	ALPM_DISPLAY_OFF,
@@ -72,14 +88,89 @@ enum pcd_check_status {
 	PCD_CHECK_ON,
 	PCD_CHECK_OFF,
 };
+enum powerkey_restart_type {
+	PRESS_POWER_ONLY,
+	PRESS_POWER_VOL_DOWN,
+	PRESS_POWER_VOL_UP,
+};
+
+enum lcd_gpio_type {
+	NORMAL_GPIO_TYPE,
+	EXTEND_GPIO_TYPE,
+};
+
+struct amoled_power_ic_check {
+	uint32_t support;
+	uint32_t gpio;
+	uint32_t expect_value;
+};
 
 struct elvdd_detect {
 	u32 support;
 	u32 detect_type;
 	u32 detect_gpio;
+	u32 detect_gpio_type;
 	u32 exp_value;
 	u32 exp_value_mask;
+	u32 delay;
+	bool is_start_delay_timer;
 	struct lcd_kit_dsi_panel_cmds cmds;
+};
+
+struct poweric_detect_delay {
+	struct work_struct wq;
+	struct timer_list timer;
+	struct hisi_fb_data_type *hisifd;
+};
+enum ddic_alpha_mode {
+	DDIC_ALPHA_ON = 1,
+	DDIC_ALPHA_OFF,
+	DDIC_CIRCLE_ON,
+	DDIC_CIRCLE_OFF,
+	DDIC_ALPHA_CIRCLE_ON, // 5
+	DDIC_ALPHA_CIRCLE_OFF,
+	DDIC_CIRCLE_COORINATE, // 7
+	DDIC_CIRCLE_RADIUS,
+	DDIC_CIRCLE_COLOR,
+	DDIC_LOCAL_HBM, // 10
+};
+struct lcd_kit_disp_lock {
+	/* lcd kit semaphore */
+	struct semaphore lcd_kit_sem;
+	/* thp proximity semaphore */
+	struct semaphore thp_second_poweroff_sem;
+};
+struct lcd_kit_power_off_optimize_info {
+	u32 support;
+	u32 delay_time;
+};
+
+enum sot_repair_mode {
+	SOT_REPAIR_NONE,
+	SOT_REPAIR_11V = 1,
+	SOT_REPAIR_12V,
+	SOT_REPAIR_BUTT,
+};
+
+struct lcd_kit_sot_err_check {
+	uint32_t support;
+	uint32_t dsi0_sot_err_cnt;
+	uint32_t dsi1_sot_err_cnt;
+	enum sot_repair_mode dsi0_repair_flag;
+	enum sot_repair_mode dsi1_repair_flag;
+	struct lcd_kit_array_data check_value;
+	struct lcd_kit_dsi_panel_cmds check_cmds;
+	struct lcd_kit_dsi_panel_cmds repair11_cmds;
+	struct lcd_kit_dsi_panel_cmds repair12_cmds;
+};
+
+/* nv info 104 byte */
+struct lcd_kit_nv_sot_cfg {
+	u8 panel0_sncode[LCD_NV_SN_CODE_LEN];
+	u8 panel1_sncode[LCD_NV_SN_CODE_LEN];
+	u8 panel0_dsi0_flag;
+	u8 panel0_dsi1_flag;
+	u8 panel1_dsi0_flag;
 };
 
 // STRUCT
@@ -94,6 +185,8 @@ struct lcd_kit_disp_info {
 	struct lcd_kit_oem_info oeminfo;
 	/* rgbw function */
 	struct lcd_kit_rgbw rgbw;
+	/* demura */
+	struct lcd_kit_demura demura;
 	/* end */
 	/* normal */
 	u8 bl_is_shield_backlight;
@@ -106,16 +199,19 @@ struct lcd_kit_disp_info {
 	u32 board_version;
 	/* product id */
 	u32 product_id;
-	/* dsi1 support */
-	u32 dsi1_cmd_support;
 	/* vr support */
 	u32 vr_support;
-	/* lcd kit semaphore */
-	struct semaphore lcd_kit_sem;
-	/* thp proximity semaphore */
-	struct semaphore thp_second_poweroff_sem;
-	/* lcd kit mipi mutex lock */
-	struct mutex mipi_lock;
+	/* ulps support */
+	u8 ramless_aod;
+	/* PPS parameters calc algorithm support */
+	u32 calc_mode;
+	/* 0: Parse effect parameter from .h
+	   1: Parse effect parameter from dts */
+	u8 effect_para_is_from_dts;
+	/* dual dsi send need sync */
+	u32 dual_dsi_send_sync;
+	/* mipi cmds always run in lpmode */
+	u32 mipi_cmds_always_run_in_lpmode;
 	/* alpm -aod */
 	struct lcd_kit_alpm alpm;
 	/* quickly sleep out */
@@ -132,12 +228,23 @@ struct lcd_kit_disp_info {
 	struct dbv_stat_desc dbv_stat;
 	/* elvdd detect */
 	struct elvdd_detect elvdd_detect;
+	/* fps gamma code */
+	struct lcd_kit_fps_gamma fps_gamma;
+	/* frame odd even code */
+	struct lcd_kit_frame_odd_even frame_odd_even;
+	/* amoled power ic check */
+	struct amoled_power_ic_check amoled_power_ic_check;
+	/* power key press 6s */
+	struct lcd_kit_power_key_info pwrkey_press;
+	/* panel irc code */
+	struct lcd_kit_panel_irc panel_irc;
+	/* power off time optimize */
+	struct lcd_kit_power_off_optimize_info pwr_off_optimize_info;
+	/* separate transmission */
+	struct lcd_kit_transmission transmission;
+	/* sot error irc check */
+	struct lcd_kit_sot_err_check sot_err_check;
 	/* end */
-};
-
-struct lcd_panel_name_map {
-	char panel_name[PANEL_NAME_LEN];
-	char hide_panel_name[PANEL_NAME_LEN];
 };
 
 /*

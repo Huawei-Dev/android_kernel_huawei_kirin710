@@ -22,6 +22,7 @@
 
 struct lcd_kit_bl_ops {
 	int (*set_backlight)(unsigned int level);
+	int (*en_backlight)(unsigned int level);
 	ssize_t (*bl_self_test)(void);
 	int (*check_backlight)(void);
 	char *name;

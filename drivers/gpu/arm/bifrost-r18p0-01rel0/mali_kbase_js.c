@@ -59,6 +59,14 @@ const int kbasep_js_atom_priority_to_relative[BASE_JD_NR_PRIO_LEVELS] = {
 	KBASE_JS_ATOM_SCHED_PRIO_LOW  /* BASE_JD_PRIO_LOW */
 };
 
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+const int kbasep_js_atom_throttle_to_relative[BASE_JD_NR_THRO_LEVELS] = {
+	KBASE_JS_ATOM_SCHED_THRO_MED, /* BASE_JD_THRO_MEDIUM */
+	KBASE_JS_ATOM_SCHED_THRO_HIGH, /* BASE_JD_THRO_HIGH */
+	KBASE_JS_ATOM_SCHED_THRO_LOW  /* BASE_JD_THRO_LOW */
+};
+#endif
+
 const base_jd_prio
 kbasep_js_relative_priority_to_atom[KBASE_JS_ATOM_SCHED_PRIO_COUNT] = {
 	BASE_JD_PRIO_HIGH,   /* KBASE_JS_ATOM_SCHED_PRIO_HIGH */
@@ -2336,6 +2344,8 @@ static void js_return_worker(struct work_struct *data)
 	mutex_unlock(&js_devdata->queue_mutex);
 
 	katom->atom_flags &= ~KBASE_KATOM_FLAG_HOLDING_CTX_REF;
+	WARN_ON(kbasep_js_has_atom_finished(&retained_state));
+
 	kbasep_js_runpool_release_ctx_and_katom_retained_state(kbdev, kctx,
 							&retained_state);
 
@@ -2713,7 +2723,6 @@ void kbase_js_zap_context(struct kbase_context *kctx)
 	struct kbase_device *kbdev = kctx->kbdev;
 	struct kbasep_js_device_data *js_devdata = &kbdev->js_data;
 	struct kbasep_js_kctx_info *js_kctx_info = &kctx->jctx.sched_info;
-	int js;
 
 	/*
 	 * Critical assumption: No more submission is possible outside of the
@@ -2769,6 +2778,7 @@ void kbase_js_zap_context(struct kbase_context *kctx)
 	 */
 	if (!kbase_ctx_flag(kctx, KCTX_SCHEDULED)) {
 		unsigned long flags;
+		int js;
 
 		spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
 		for (js = 0; js < kbdev->gpu_props.num_job_slots; js++) {
@@ -2834,8 +2844,7 @@ void kbase_js_zap_context(struct kbase_context *kctx)
 		/* Cancel any remaining running jobs for this kctx - if any.
 		 * Submit is disallowed which takes effect immediately, so no
 		 * more new jobs will appear after we do this. */
-		for (js = 0; js < kbdev->gpu_props.num_job_slots; js++)
-			kbase_job_slot_hardstop(kctx, js, NULL);
+		kbase_backend_jm_kill_running_jobs_from_kctx(kctx);
 
 		spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
 		mutex_unlock(&js_kctx_info->ctx.jsctx_mutex);

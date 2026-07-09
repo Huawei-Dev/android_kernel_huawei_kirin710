@@ -43,9 +43,9 @@ config MALI_GPU_DRM_HI3660
 	help
 	  enable mali gpu drm feature
 
-config HISI_HW_VOTE_GPU_FREQ
+config HW_VOTE_GPU_FREQ
 	bool "Enable hardware vote gpu freq feature"
-	depends on PM_DEVFREQ && HISI_HW_VOTE
+	depends on PM_DEVFREQ && HW_VOTE
 	default n
 	help
 	  enable hardware vote gpu freq feature
@@ -64,7 +64,13 @@ config MALI_LAST_BUFFER
 	help
 	  Select  this option to enable last buffer support.
 
-config HISI_GPU_AI_FENCE_INFO
+config GPU_THROTTLE_DEVFREQ
+	bool "Enable gpu throttlel devfreq"
+	default y
+	help
+	  enable gpu throttlel devfreq for user
+
+config GPU_AI_FENCE_INFO
 	bool "GPU AI frequency schedule fence info"
 	default n
 	help

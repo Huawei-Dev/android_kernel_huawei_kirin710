@@ -1,19 +1,20 @@
-/* Copyright (c) 2013-2014, Hisilicon Tech. Co., Ltd. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 and
-* only version 2 as published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-* GNU General Public License for more details.
-*
-*/
+/* Copyright (c) 2013-2020, Hisilicon Tech. Co., Ltd. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU General Public License for more details.
+ *
+ */
+
 #ifndef HISI_OVERLAY_ONLINE_WRITEBACK_H
 #define HISI_OVERLAY_ONLINE_WRITEBACK_H
 
-struct hisifb_writeback {
+struct dpufb_writeback {
 	int online_wb_created;
 
 	bool mmu_enable;
@@ -43,16 +44,16 @@ struct hisifb_writeback {
 	struct mutex wb_ctrl_lock;
 	struct work_struct wb_ctrl_work;
 
-	void (* wb_init)(struct hisi_fb_data_type *hisifd);
-	int (* wb_alloc_buffer) (struct hisi_fb_data_type *hisifd);
-	int (* wb_free_buffer) (struct hisi_fb_data_type *hisifd);
-	void (* wb_save_buffer) (struct hisi_fb_data_type *hisifd);
+	void (*wb_init)(struct dpu_fb_data_type *dpufd);
+	int (*wb_alloc_buffer)(struct dpu_fb_data_type *dpufd);
+	int (*wb_free_buffer)(struct dpu_fb_data_type *dpufd);
+	void (*wb_save_buffer)(struct dpu_fb_data_type *dpufd);
 
-	struct hisi_fb_data_type *hisifd;
+	struct dpu_fb_data_type *dpufd;
 };
 
-void hisifb_ovl_online_wb_config(struct hisi_fb_data_type *hisifd);
-void hisifb_ovl_online_wb_register(struct platform_device *pdev);
-void hisifb_ovl_online_wb_unregister(struct platform_device *pdev);
+void dpufb_ovl_online_wb_config(struct dpu_fb_data_type *dpufd);
+void dpufb_ovl_online_wb_register(struct platform_device *pdev);
+void dpufb_ovl_online_wb_unregister(struct platform_device *pdev);
 
 #endif  /* HISI_OVERLAY_ONLINE_WRITEBACK_H */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2018, Hisilicon Tech. Co., Ltd. All rights reserved.
+/* Copyright (c) 2015-2020, Hisilicon Tech. Co., Ltd. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -6,7 +6,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  */
@@ -20,15 +20,15 @@
 #include "hisi_dss_sync.h"
 #include "hisi_fb.h"
 
-#define HISI_DSS_SYNC_NAME_SIZE		64
-#define HISI_DSS_SYNC_DRIVER_NAME	"hisi_dss"
+#define HISI_DSS_SYNC_NAME_SIZE 64
+#define HISI_DSS_SYNC_DRIVER_NAME "hisi_dss"
 
 #if defined(CONFIG_SYNC_FILE)
 /*
  * to_hisi_dss_fence - get hisi dss fence from fence base object
  * @fence: Pointer to fence base object
  */
-static struct hisi_dss_fence *to_hisi_dss_fence(dss_dma_fence_t *fence)
+static struct hisi_dss_fence *to_hisi_dss_fence(struct dma_fence *fence)
 {
 	return container_of(fence, struct hisi_dss_fence, base);
 }
@@ -37,7 +37,7 @@ static struct hisi_dss_fence *to_hisi_dss_fence(dss_dma_fence_t *fence)
  * to_hisi_dss_timeline - get hisi dss timeline from fence base object
  * @fence: Pointer to fence base object
  */
-static struct hisi_dss_timeline *to_hisi_dss_timeline(dss_dma_fence_t *fence)
+static struct hisi_dss_timeline *to_hisi_dss_timeline(struct dma_fence *fence)
 {
 	return container_of(fence->lock, struct hisi_dss_timeline, lock);
 }
@@ -61,7 +61,7 @@ static void hisi_dss_free_timeline(struct kref *kref)
 static void hisi_dss_put_timeline(struct hisi_dss_timeline *tl)
 {
 	if (!tl) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return;
 	}
 
@@ -75,31 +75,31 @@ static void hisi_dss_put_timeline(struct hisi_dss_timeline *tl)
 static void hisi_dss_get_timeline(struct hisi_dss_timeline *tl)
 {
 	if (!tl) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return;
 	}
 
 	kref_get(&tl->kref);
 }
 
-static const char *hisi_dss_fence_get_driver_name(dss_dma_fence_t *fence)
+static const char *hisi_dss_fence_get_driver_name(struct dma_fence *fence)
 {
 	return HISI_DSS_SYNC_DRIVER_NAME;
 }
 
-static const char *hisi_dss_fence_get_timeline_name(dss_dma_fence_t *fence)
+static const char *hisi_dss_fence_get_timeline_name(struct dma_fence *fence)
 {
 	struct hisi_dss_timeline *tl = to_hisi_dss_timeline(fence);
 
 	return tl->name;
 }
 
-static bool hisi_dss_fence_enable_signaling(dss_dma_fence_t *fence)
+static bool hisi_dss_fence_enable_signaling(struct dma_fence *fence)
 {
 	return true;
 }
 
-static bool hisi_dss_fence_signaled(dss_dma_fence_t *fence)
+static bool hisi_dss_fence_signaled(struct dma_fence *fence)
 {
 	struct hisi_dss_timeline *tl = to_hisi_dss_timeline(fence);
 	bool status;
@@ -108,29 +108,28 @@ static bool hisi_dss_fence_signaled(dss_dma_fence_t *fence)
 	return status;
 }
 
-static void hisi_dss_fence_release(dss_dma_fence_t *fence)
+static void hisi_dss_fence_release(struct dma_fence *fence)
 {
 	struct hisi_dss_fence *f = to_hisi_dss_fence(fence);
 	struct hisi_dss_timeline *tl = to_hisi_dss_timeline(fence);
-	unsigned long flags;
+	unsigned long flags = 0;
 
-	if (g_debug_fence_timeline) {
-		HISI_FB_INFO("release for fence %s\n", f->name);
-	}
+	if (g_debug_fence_timeline)
+		DPU_FB_INFO("release for fence %s\n", f->name);
 	spin_lock_irqsave(&tl->list_lock, flags);
 	if (!list_empty(&f->fence_list))
 		list_del(&f->fence_list);
 	spin_unlock_irqrestore(&tl->list_lock, flags);
 	hisi_dss_put_timeline(to_hisi_dss_timeline(fence));
-	kfree_rcu(f, base.rcu); //lint !e571 !e666
+	kfree_rcu(f, base.rcu); /*lint !e514*/
 }
 
-static void hisi_dss_fence_value_str(dss_dma_fence_t *fence, char *str, int size)
+static void hisi_dss_fence_value_str(struct dma_fence *fence, char *str, int size)
 {
 	snprintf(str, size, "%u", fence->seqno);
 }
 
-static void hisi_dss_fence_timeline_value_str(dss_dma_fence_t *fence, char *str,
+static void hisi_dss_fence_timeline_value_str(struct dma_fence *fence, char *str,
 		int size)
 {
 	struct hisi_dss_timeline *tl = to_hisi_dss_timeline(fence);
@@ -138,7 +137,6 @@ static void hisi_dss_fence_timeline_value_str(dss_dma_fence_t *fence, char *str,
 	snprintf(str, size, "%u", tl->value);
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
 static struct dma_fence_ops hisi_dss_fence_ops = {
 	.get_driver_name = hisi_dss_fence_get_driver_name,
 	.get_timeline_name = hisi_dss_fence_get_timeline_name,
@@ -149,28 +147,17 @@ static struct dma_fence_ops hisi_dss_fence_ops = {
 	.fence_value_str = hisi_dss_fence_value_str,
 	.timeline_value_str = hisi_dss_fence_timeline_value_str,
 };
-#else
-static struct fence_ops hisi_dss_fence_ops = {
-	.get_driver_name = hisi_dss_fence_get_driver_name,
-	.get_timeline_name = hisi_dss_fence_get_timeline_name,
-	.enable_signaling = hisi_dss_fence_enable_signaling,
-	.signaled = hisi_dss_fence_signaled,
-	.wait = fence_default_wait,
-	.release = hisi_dss_fence_release,
-	.fence_value_str = hisi_dss_fence_value_str,
-	.timeline_value_str = hisi_dss_fence_timeline_value_str,
-};
-#endif
+
 /*
  * hisi_dss_create_timeline - Create timeline object with the given name
  * @name: Pointer to name character string.
  */
 struct hisi_dss_timeline *hisi_dss_create_timeline(const char *name)
 {
-	struct hisi_dss_timeline *tl;
+	struct hisi_dss_timeline *tl = NULL;
 
 	if (!name) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return NULL;
 	}
 
@@ -182,11 +169,8 @@ struct hisi_dss_timeline *hisi_dss_create_timeline(const char *name)
 	snprintf(tl->name, sizeof(tl->name), "%s", name);
 	spin_lock_init(&tl->lock);
 	spin_lock_init(&tl->list_lock);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
 	tl->context = dma_fence_context_alloc(1);
-#else
-	tl->context = fence_context_alloc(1);
-#endif
+
 	INIT_LIST_HEAD(&tl->fence_list_head);
 
 	return tl;
@@ -209,17 +193,18 @@ void hisi_dss_destroy_timeline(struct hisi_dss_timeline *tl)
 static int hisi_dss_inc_timeline_locked(struct hisi_dss_timeline *tl,
 		int increment)
 {
-	struct hisi_dss_fence *f, *next;
+	struct hisi_dss_fence *f = NULL;
+	struct hisi_dss_fence *next = NULL;
 	s32 val;
 	bool is_signaled = false;
 	struct list_head local_list_head;
-	unsigned long flags;
+	unsigned long flags = 0;
 
 	INIT_LIST_HEAD(&local_list_head);
 
 	spin_lock(&tl->list_lock);
 	if (list_empty(&tl->fence_list_head)) {
-		HISI_FB_DEBUG("fence list is empty\n");
+		DPU_FB_DEBUG("fence list is empty\n");
 		tl->value += 1;
 		spin_unlock(&tl->list_lock);
 		return 0;
@@ -231,31 +216,22 @@ static int hisi_dss_inc_timeline_locked(struct hisi_dss_timeline *tl,
 
 	spin_lock_irqsave(&tl->lock, flags);
 	val = tl->next_value - tl->value;
-	if (val < increment) {
-		HISI_FB_INFO("timeline->value didnot update, val:%d, inc:%d, tl->value:%d!\n", val, increment, tl->value);
-	}
+	if (val < increment)
+		DPU_FB_INFO("timeline->value didnot update, val:%d, inc:%d, tl->value:%d!\n",
+			val, increment, tl->value);
 	tl->value += increment;
 
 	spin_unlock_irqrestore(&tl->lock, flags);
 
 	list_for_each_entry_safe(f, next, &local_list_head, fence_list) {
 		spin_lock_irqsave(&tl->lock, flags);
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
 		is_signaled = dma_fence_is_signaled_locked(&f->base);
-	#else
-		is_signaled = fence_is_signaled_locked(&f->base);
-	#endif
 		spin_unlock_irqrestore(&tl->lock, flags);
 		if (is_signaled) {
-			if (g_debug_fence_timeline) {
-				HISI_FB_INFO("%s signaled\n", f->name);
-			}
+			if (g_debug_fence_timeline)
+				DPU_FB_INFO("%s signaled\n", f->name);
 			list_del_init(&f->fence_list);
-		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
 			dma_fence_put(&f->base);
-		#else
-			fence_put(&f->base);
-		#endif
 		} else {
 			spin_lock(&tl->list_lock);
 			list_move(&f->fence_list, &tl->fence_list_head);
@@ -281,15 +257,13 @@ void hisi_dss_resync_timeline(struct hisi_dss_timeline *tl)
 
 	val = tl->next_value - tl->value;
 	if (val > 0) {
-		if (g_debug_fence_timeline) {
-			HISI_FB_INFO("flush %s:%d TL(Nxt %d , Crnt %d)\n", tl->name, val,
+		if (g_debug_fence_timeline)
+			DPU_FB_INFO("flush %s:%d TL(Nxt %d , Crnt %d)\n", tl->name, val,
 				tl->next_value, tl->value);
-		}
 		hisi_dss_inc_timeline_locked(tl, val);
 	}
 }
 
-/*lint -e429 */
 /*
  * hisi_dss_get_sync_fence - Create fence object from the given timeline
  * @tl: Pointer to timeline object
@@ -300,11 +274,11 @@ struct hisi_dss_fence *hisi_dss_get_sync_fence(
 		struct hisi_dss_timeline *tl, const char *fence_name,
 		u32 *timestamp, int value)
 {
-	struct hisi_dss_fence *f; //lint !e429
-	unsigned long flags;
+	struct hisi_dss_fence *f = NULL;
+	unsigned long flags = 0;
 
 	if (!tl) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return NULL;
 	}
 
@@ -315,11 +289,7 @@ struct hisi_dss_fence *hisi_dss_get_sync_fence(
 	INIT_LIST_HEAD(&f->fence_list);
 	spin_lock_irqsave(&tl->lock, flags);
 	tl->next_value = value;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
 	dma_fence_init(&f->base, &hisi_dss_fence_ops, &tl->lock, tl->context, value);
-#else
-	fence_init(&f->base, &hisi_dss_fence_ops, &tl->lock, tl->context, value);
-#endif
 	hisi_dss_get_timeline(tl);
 	spin_unlock_irqrestore(&tl->lock, flags);
 
@@ -331,14 +301,13 @@ struct hisi_dss_fence *hisi_dss_get_sync_fence(
 	if (timestamp)
 		*timestamp = value;
 
-	if (g_debug_fence_timeline) {
-		HISI_FB_INFO("fence created at val=%u tl->name=%s tl->value=%d tl->next_value=%d\n",
+	if (g_debug_fence_timeline)
+		DPU_FB_INFO("fence created at val=%u tl->name=%s tl->value=%d tl->next_value=%d\n",
 			value, tl->name, tl->value, tl->next_value);
-	}
 
-	return f; //lint !e429
+	return f;
 }
-/*lint +e429 */
+
 /*
  * hisi_dss_inc_timeline - Increment timeline by given amount
  * @tl: Pointer to timeline object.
@@ -349,7 +318,7 @@ int hisi_dss_inc_timeline(struct hisi_dss_timeline *tl, int increment)
 	int rc;
 
 	if (!tl) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return -EINVAL;
 	}
 
@@ -364,7 +333,7 @@ int hisi_dss_inc_timeline(struct hisi_dss_timeline *tl, int increment)
 u32 hisi_dss_get_timeline_commit_ts(struct hisi_dss_timeline *tl)
 {
 	if (!tl) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return 0;
 	}
 
@@ -378,7 +347,7 @@ u32 hisi_dss_get_timeline_commit_ts(struct hisi_dss_timeline *tl)
 u32 hisi_dss_get_timeline_retire_ts(struct hisi_dss_timeline *tl)
 {
 	if (!tl) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return 0;
 	}
 
@@ -392,14 +361,10 @@ u32 hisi_dss_get_timeline_retire_ts(struct hisi_dss_timeline *tl)
 void hisi_dss_put_sync_fence(struct hisi_dss_fence *fence)
 {
 	if (!fence) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return;
 	}
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-	dma_fence_put((dss_dma_fence_t *) fence);
-#else
-	fence_put((dss_dma_fence_t *) fence);
-#endif
+	dma_fence_put((struct dma_fence *) fence);
 }
 
 /*
@@ -410,32 +375,25 @@ void hisi_dss_put_sync_fence(struct hisi_dss_fence *fence)
 int hisi_dss_wait_sync_fence(struct hisi_dss_fence *fence,
 		long timeout)
 {
+	struct dma_fence *input_fence = NULL;
 	int rc;
 
 	if (!fence) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return -EINVAL;
 	}
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-	rc = dma_fence_wait_timeout((dss_dma_fence_t *) fence, false,
-			msecs_to_jiffies(timeout));
-#else
-	rc = fence_wait_timeout((dss_dma_fence_t *) fence, false,
-			msecs_to_jiffies(timeout));
-#endif
+	input_fence = (struct dma_fence *) fence;
+	rc = dma_fence_wait_timeout(input_fence, false, msecs_to_jiffies(timeout));
 	if (rc > 0) {
-		if (g_debug_fence_timeline) {
-			dss_dma_fence_t *input_fence = (dss_dma_fence_t *) fence;
-			HISI_FB_INFO(
+		if (g_debug_fence_timeline)
+			DPU_FB_INFO(
 				"drv:%s timeline:%s seqno:%d\n",
 				input_fence->ops->get_driver_name(input_fence),
 				input_fence->ops->get_timeline_name(input_fence),
 				input_fence->seqno);
-		}
 		rc = 0;
 	} else if (rc == 0) {
-		dss_dma_fence_t *input_fence = (dss_dma_fence_t *) fence;
-		HISI_FB_ERR(
+		DPU_FB_ERR(
 			"drv:%s timeline:%s seqno:%d.\n",
 			input_fence->ops->get_driver_name(input_fence),
 			input_fence->ops->get_timeline_name(input_fence),
@@ -463,23 +421,23 @@ struct hisi_dss_fence *hisi_dss_get_fd_sync_fence(int fd)
 int hisi_dss_get_sync_fence_fd(struct hisi_dss_fence *fence)
 {
 	int fd;
-	struct sync_file *sync_file;
+	struct sync_file *sync_file = NULL;
 
 	if (!fence) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return -EINVAL;
 	}
 
 	fd = get_unused_fd_flags(O_CLOEXEC);
 	if (fd < 0) {
-		HISI_FB_ERR("fail to get unused fd\n");
+		DPU_FB_ERR("fail to get unused fd\n");
 		return fd;
 	}
 
-	sync_file = sync_file_create((dss_dma_fence_t *) fence);
+	sync_file = sync_file_create((struct dma_fence *) fence);
 	if (!sync_file) {
 		put_unused_fd(fd);
-		HISI_FB_ERR("failed to create sync file\n");
+		DPU_FB_ERR("failed to create sync file\n");
 		return -ENOMEM;
 	}
 
@@ -496,7 +454,7 @@ int hisi_dss_get_sync_fence_fd(struct hisi_dss_fence *fence)
 const char *hisi_dss_get_sync_fence_name(struct hisi_dss_fence *fence)
 {
 	if (!fence) {
-		HISI_FB_ERR("invalid parameters\n");
+		DPU_FB_ERR("invalid parameters\n");
 		return NULL;
 	}
 

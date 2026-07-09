@@ -97,6 +97,7 @@ SRC := \
 	mali_kbase_gpu_memory_debugfs.c \
 	mali_kbase_mem_linux.c \
 	mali_kbase_core_linux.c \
+	mali_kbase_efuse.c \
 	mali_kbase_replay.c \
 	mali_kbase_mem_profile_debugfs.c \
 	mali_kbase_mmu_mode_lpae.c \

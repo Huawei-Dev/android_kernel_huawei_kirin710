@@ -1,14 +1,19 @@
 /*
  * drivers/huawei/drivers/rt4801h.c
  *
- * rt4801h driver reffer to lcd
+ * lcdkit backlight function for lcd driver
  *
- * Copyright (C) 2012-2015 HUAWEI, Inc.
- * Author: HUAWEI, Inc.
+ * Copyright (c) 2016-2020 Huawei Technologies Co., Ltd.
  *
- * This package is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
  */
 
 #include <linux/module.h>
@@ -45,7 +50,7 @@ static u8 vpos_cmd = 0;
 static u8 vneg_cmd = 0;
 static struct rt4801h_device_info *rt4801h_client = NULL;
 static bool is_rt4801h_device = false;
-
+static int rt4801h_app_dis;
 #define DTS_COMP_SHARP_DUKE_NT35597     "hisilicon,mipi_sharp_duke_NT35597"
 #define DTS_COMP_JDI_DUKE_R63450_5P7    "hisilicon,mipi_jdi_duke_R63450_5P7"
 #define DTS_COMP_TIANMA_DUKE_TD4302_5P7 "hisilicon,mipi_tianma_duke_TD4302_5P7"
@@ -64,82 +69,84 @@ static bool is_rt4801h_device = false;
 static int get_lcd_type(void)
 {
 	struct device_node *np = NULL;
-	int ret = 0;
+	int ret;
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_DUKE_NT35597);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_DUKE_NT35597);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_DUKE_NT35597);
 		return VAL_5V8;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_JDI_DUKE_R63450_5P7);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_JDI_DUKE_R63450_5P7);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_JDI_DUKE_R63450_5P7);
 		return VAL_5V5;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_TIANMA_DUKE_TD4302_5P7);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_TIANMA_DUKE_TD4302_5P7);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_TIANMA_DUKE_TD4302_5P7);
 		return VAL_5V5;
 	}
 
-	HISI_FB_INFO("not found device set vsp/vsn voltage 5.5V\n");
+	DPU_FB_INFO("not found device set vsp/vsn voltage 5.5V\n");
 	return VAL_5V5;
 }
 
 static int rt4801h_reg_init(struct i2c_client *client, u8 vpos, u8 vneg)
 {
-	int nRet = 0;
-	int app_dis = 0;
+	int ret = 0;
+	unsigned int app_dis;
 
-	if(client == NULL) {
-		pr_err("[%s,%d]: NULL point for client\n",__FUNCTION__,__LINE__);
+	if (client == NULL) {
+		pr_err("[%s,%d]: NULL point for client\n", __FUNCTION__, __LINE__);
 		goto exit;
 	}
 
-	nRet = i2c_smbus_read_byte_data(client, RT4801H_REG_APP_DIS);
-	if (nRet < 0) {
+	ret = i2c_smbus_read_byte_data(client, RT4801H_REG_APP_DIS);
+	if (ret < 0) {
 		pr_err("%s read app_dis failed\n", __func__);
 		goto exit;
 	}
-	app_dis = nRet;
+	app_dis = ret;
 
 	app_dis = app_dis | RT4801H_DISP_BIT | RT4801H_DISN_BIT | RT4801H_DISP_BIT;
 
-	nRet = i2c_smbus_write_byte_data(client, RT4801H_REG_VPOS, vpos);
-	if (nRet < 0) {
+	if (rt4801h_app_dis)
+		app_dis &= ~RT4801H_APPS_BIT;
+	ret = i2c_smbus_write_byte_data(client, RT4801H_REG_VPOS, vpos);
+	if (ret < 0) {
 		pr_err("%s write vpos failed\n", __func__);
 		goto exit;
 	}
 
-	nRet = i2c_smbus_write_byte_data(client, RT4801H_REG_VNEG, vneg);
-	if (nRet < 0) {
+	ret = i2c_smbus_write_byte_data(client, RT4801H_REG_VNEG, vneg);
+	if (ret < 0) {
 		pr_err("%s write vneg failed\n", __func__);
 		goto exit;
 	}
 
-	nRet = i2c_smbus_write_byte_data(client, RT4801H_REG_APP_DIS, (u8)app_dis);
-	if (nRet < 0) {
+	ret = i2c_smbus_write_byte_data(client, RT4801H_REG_APP_DIS, (u8)app_dis);
+	if (ret < 0) {
 		pr_err("%s write app_dis failed\n", __func__);
 		goto exit;
 	}
 
 exit:
-	return nRet;
+	return ret;
 }
 
 
 
 static bool rt4801h_device_verify(void)
 {
-	int nRet = 0;
-	nRet = i2c_smbus_read_byte_data(rt4801h_client->client, RT4801H_REG_APP_DIS);
-	if (nRet < 0) {
+	int ret;
+	ret = i2c_smbus_read_byte_data(rt4801h_client->client, RT4801H_REG_APP_DIS);
+	if (ret < 0) {
 		pr_err("%s read app_dis failed\n", __func__);
 		return false;
 	}
-	HISI_FB_INFO("RT4801H verify ok, app_dis = 0x%x\n", nRet);
+	DPU_FB_INFO("RT4801H verify ok, app_dis = 0x%x\n", ret);
 	return true;
 }
 
@@ -150,15 +157,15 @@ bool check_rt4801h_device(void)
 
 int rt4801h_set_voltage(void)
 {
-	HISI_FB_INFO("RT4801H set vol reg, vpos = 0x%x, vneg = 0x%x\n", vpos_cmd, vneg_cmd);
+	DPU_FB_INFO("RT4801H set vol reg, vpos = 0x%x, vneg = 0x%x\n", vpos_cmd, vneg_cmd);
 	return rt4801h_reg_init(rt4801h_client->client, vpos_cmd, vneg_cmd);
 }
 
 static void rt4801h_get_target_voltage(int *vpos_target, int *vneg_target)
 {
-	int ret = 0;
+	int ret;
 
-	if((vpos_target == NULL) || (vneg_target == NULL)) {
+	if ((vpos_target == NULL) || (vneg_target == NULL)) {
 		pr_err("%s: NULL point\n", __func__);
 		return;
 	}
@@ -168,15 +175,15 @@ static void rt4801h_get_target_voltage(int *vpos_target, int *vneg_target)
 
 	ret = get_lcd_type();
 	if (ret == VAL_5V8) {
-		HISI_FB_INFO("vpos and vneg target is 5.8V\n");
+		DPU_FB_INFO("vpos and vneg target is 5.8V\n");
 		*vpos_target = RT4801H_VOL_58;
 		*vneg_target = RT4801H_VOL_58;
 	} else if (ret == VAL_5V6) {
-		HISI_FB_INFO("vpos and vneg target is 5.6V\n");
+		DPU_FB_INFO("vpos and vneg target is 5.6V\n");
 		*vpos_target = RT4801H_VOL_56;
 		*vneg_target = RT4801H_VOL_56;
 	}else {
-		HISI_FB_INFO("vpos and vneg target is 5.5V\n");
+		DPU_FB_INFO("vpos and vneg target is 5.5V\n");
 		*vpos_target = RT4801H_VOL_55;
 		*vneg_target = RT4801H_VOL_55;
 	}
@@ -185,7 +192,7 @@ static void rt4801h_get_target_voltage(int *vpos_target, int *vneg_target)
 
 static int rt4801h_start_setting(void)
 {
-	int retval = 0;
+	int retval;
 
 	retval = gpio_request(gpio_vsp_enable, "gpio_lcd_p5v5_enable");
 	if (retval != 0) {
@@ -204,6 +211,7 @@ static int rt4801h_start_setting(void)
 		pr_err("failed to output gpio %d : gpio_lcd_p5v5_enable !\n", gpio_vsp_enable);
 		return retval;
 	}
+	/* delay 5ms */
 	mdelay(5);
 
 	retval = gpio_direction_output(gpio_vsn_enable, VSN_ENABLE);
@@ -211,6 +219,7 @@ static int rt4801h_start_setting(void)
 		pr_err("failed to output gpio %d : gpio_lcd_p5v5_enable !\n", gpio_vsn_enable);
 		return retval;
 	}
+	/* delay 5ms */
 	mdelay(5);
 
 	return retval;
@@ -218,13 +227,14 @@ static int rt4801h_start_setting(void)
 
 static int rt4801h_finish_setting(void)
 {
-	int retval = 0;
+	int retval;
 
 	retval = gpio_direction_output(gpio_vsn_enable, VSP_DISABLE);
 	if (retval != 0) {
 		pr_err("failed to output gpio %d : gpio_lcd_n5v5_enable !\n", gpio_vsn_enable);
 		return retval;
 	}
+	/* delay 10us */
 	udelay(10);
 
 	retval = gpio_direction_output(gpio_vsp_enable, VSP_DISABLE);
@@ -232,6 +242,7 @@ static int rt4801h_finish_setting(void)
 		pr_err("failed to output gpio %d : gpio_lcd_p5v5_enable !\n", gpio_vsp_enable);
 		return retval;
 	}
+	/* delay 10us */
 	udelay(10);
 
 	retval = gpio_direction_input(gpio_vsn_enable);
@@ -239,6 +250,7 @@ static int rt4801h_finish_setting(void)
 		pr_err("failed to set gpio %d input: gpio_lcd_n5v5_enable !\n", gpio_vsn_enable);
 		return retval;
 	}
+	/* delay 10us */
 	udelay(10);
 
 	retval = gpio_direction_input(gpio_vsp_enable);
@@ -246,6 +258,7 @@ static int rt4801h_finish_setting(void)
 		pr_err("failed to set gpio %d input: gpio_lcd_p5v5_enable !\n", gpio_vsp_enable);
 		return retval;
 	}
+	/* delay 10us */
 	udelay(10);
 
 	gpio_free(gpio_vsn_enable);
@@ -258,13 +271,13 @@ static int rt4801h_finish_setting(void)
 static int rt4801h_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	int retval = 0;
-	int nRet = 0;
+	int ret;
 	int vpos_target = 0;
 	int vneg_target = 0;
 	struct device_node *np = NULL;
 
-	if(client == NULL) {
-		pr_err("[%s,%d]: NULL point for client\n",__FUNCTION__,__LINE__);
+	if (client == NULL) {
+		pr_err("[%s,%d]: NULL point for client\n", __FUNCTION__, __LINE__);
 		retval = -ENODEV;
 		goto failed_1;
 	}
@@ -279,8 +292,11 @@ static int rt4801h_probe(struct i2c_client *client, const struct i2c_device_id *
 	gpio_vsp_enable = of_get_named_gpio(np, "gpios", GPIOS_NUM0);
 	gpio_vsn_enable = of_get_named_gpio(np, "gpios", GPIOS_NUM1);
 
+	ret = of_property_read_u32(np, "rt4801h_app_dis", &rt4801h_app_dis);
+	if (ret >= 0)
+		pr_info("rt4801h_app_dis is support\n");
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-		pr_err("[%s,%d]: need I2C_FUNC_I2C\n",__FUNCTION__,__LINE__);
+		pr_err("[%s, %d]: need I2C_FUNC_I2C\n", __FUNCTION__, __LINE__);
 		retval = -ENODEV;
 		goto failed_1;
 	}
@@ -296,15 +312,14 @@ static int rt4801h_probe(struct i2c_client *client, const struct i2c_device_id *
 	rt4801h_client->dev = &client->dev;
 	rt4801h_client->client = client;
 
-	if (!fastboot_display_enable) {
+	if (!fastboot_display_enable)
 		rt4801h_start_setting();
-	}
 
 	rt4801h_get_target_voltage(&vpos_target, &vneg_target);
 	vpos_cmd = (u8)vpos_target;
 	vneg_cmd = (u8)vneg_target;
 
-	if(rt4801h_device_verify()) {
+	if (rt4801h_device_verify()) {
 		is_rt4801h_device = true;
 	} else {
 		is_rt4801h_device = false;
@@ -313,8 +328,8 @@ static int rt4801h_probe(struct i2c_client *client, const struct i2c_device_id *
 		goto failed;
 	}
 
-	nRet = rt4801h_reg_init(rt4801h_client->client, (u8)vpos_target, (u8)vneg_target);
-	if (nRet) {
+	ret = rt4801h_reg_init(rt4801h_client->client, (u8)vpos_target, (u8)vneg_target);
+	if (ret) {
 		retval = -ENODEV;
 		pr_err("rt4801h_reg_init failed\n");
 		goto failed;
@@ -327,13 +342,12 @@ static int rt4801h_probe(struct i2c_client *client, const struct i2c_device_id *
 	set_hw_dev_flag(DEV_I2C_DC_DC);
 #endif
 
-	if (!fastboot_display_enable) {
+	if (!fastboot_display_enable)
 		rt4801h_finish_setting();
-	}
 failed_1:
 	return retval;
 failed:
-	if(rt4801h_client) {
+	if (rt4801h_client) {
 		kfree(rt4801h_client);
 		rt4801h_client = NULL;
 	}
@@ -377,7 +391,7 @@ static int __init rt4801h_module_init(void)
 }
 static void __exit rt4801h_exit(void)
 {
-	if(rt4801h_client) {
+	if (rt4801h_client) {
 		kfree(rt4801h_client);
 		rt4801h_client = NULL;
 	}

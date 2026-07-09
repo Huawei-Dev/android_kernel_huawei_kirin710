@@ -68,24 +68,29 @@ int lcd_kit_display_bias_vsp_enable(struct regulate_bias_desc vspconfig)
 int lcd_kit_display_bias_vsn_enable(struct regulate_bias_desc vsnconfig)
 {
 	int ret;
-	int retval = 0;
 
 	lcd_kit_display_bias_regulator_init();
 	/* set voltage with min & max */
 	ret = regulator_set_voltage(disp_bias_neg, vsnconfig.min_uv,
 		vsnconfig.max_uv);
-	if (ret < 0)
+	if (ret < 0) {
 		LCD_KIT_ERR("set voltage disp_bias_vsn fail, ret = %d\n", ret);
-	retval |= ret;
+		return ret;
+	}
+
 	ret = regulator_enable(disp_bias_pos);
-	if (ret < 0)
+	if (ret < 0) {
 		LCD_KIT_ERR("enable disp_bias_vsp fail, ret = %d\n", ret);
-	retval |= ret;
+		return ret;
+	}
+
 	ret = regulator_enable(disp_bias_neg);
-	if (ret < 0)
+	if (ret < 0) {
 		LCD_KIT_ERR("enable disp_bias_vsn fail, ret = %d\n", ret);
-	retval |= ret;
-	return retval;
+		return ret;
+	}
+
+	return ret;
 }
 
 int lcd_kit_display_bias_vsp_disable(void)

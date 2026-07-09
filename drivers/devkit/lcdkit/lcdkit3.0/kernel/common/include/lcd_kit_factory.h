@@ -20,6 +20,23 @@
 #define __LCD_KIT_FACTORY_H_
 #include "lcd_kit_common.h"
 
+/* ddic low voltage detect */
+#define DETECT_NUM     4
+#define DETECT_LOOPS   6
+#define ERR_THRESHOLD  4
+#define DET_START      1
+#define VAL_NUM        2
+#define VAL_0          0
+#define VAL_1          1
+#define DET1_INDEX     0
+#define DET2_INDEX     1
+#define DET3_INDEX     2
+#define DET4_INDEX     3
+#define DMD_DET_ERR_LEN      300
+#define ENABLE	        1
+#define DISABLE	        0
+#define INVALID_INDEX  0xFF
+
 /* checksum */
 #define TEST_PIC_0	0
 #define TEST_PIC_1	1
@@ -53,6 +70,15 @@
 #define GPIO_HIGH_PCDERRFLAG	1
 /* factory sysfs attrs max num */
 #define FAC_SYSFS_ATTRS_NUM	64
+/* poweric detect dbc */
+#define LCD_PMIC_LENGTH_MAX	100
+#define PULL_TYPE_NOR	1
+#define PULL_TYPE_REV	0
+#define POWERIC_NOR	1
+#define POWERIC_ERR	0
+#define OUTPUT_TYPE	0
+/* number of times that adc is read */
+#define ADC_READ_TIMES	10
 
 /* enum */
 enum inversion_mode {
@@ -70,9 +96,19 @@ enum {
 	LCD_KIT_CHECKSUM_START = 1,
 };
 
+enum oneside_mode {
+	ONESIDE_DRIVER_LEFT,
+	ONESIDE_DRIVER_RIGHT,
+	ONESIDE_MODE_EXIT,
+	COLOR_AOD_DETECT_ENTER, // use onside mode node to detect aod color
+	COLOR_AOD_DETECT_EXIT,
+};
+
 /* struct define */
 struct lcd_kit_checksum {
 	u32 support;
+	u32 special_support;
+	u32 clear_sram;
 	u32 pic_index;
 	u32 status;
 	u32 check_count;
@@ -84,6 +120,7 @@ struct lcd_kit_checksum {
 	struct lcd_kit_dsi_panel_cmds checksum_cmds;
 	struct lcd_kit_dsi_panel_cmds enable_cmds;
 	struct lcd_kit_dsi_panel_cmds disable_cmds;
+	struct lcd_kit_dsi_panel_cmds clear_sram_cmds;
 	struct lcd_kit_arrays_data value;
 	struct lcd_kit_arrays_data dsi1_value;
 };
@@ -117,15 +154,55 @@ struct lcd_kit_lv_detect {
 	struct lcd_kit_array_data value;
 };
 
+struct ddic_lv_detect_desc {
+	u32 support;
+	u32 pic_index;
+	u32 err_flag[DETECT_NUM];
+	u8 reg_val[DETECT_LOOPS][DETECT_NUM][VAL_NUM];
+	struct lcd_kit_array_data value[DETECT_NUM];
+	struct lcd_kit_dsi_panel_cmds rd_cmds[DETECT_NUM];
+	struct lcd_kit_dsi_panel_cmds enter_cmds[DETECT_NUM];
+};
+
 struct lcd_hor_line_desc {
 	u32 support;
 	u32 duration;
+	u32 hl_no_reset;
 	struct lcd_kit_dsi_panel_cmds hl_cmds;
 };
 
 struct vertical_line_desc {
 	u32 support;
 	struct lcd_kit_dsi_panel_cmds vtc_cmds;
+	u32 vtc_vsp;
+	u32 vtc_vsn;
+	u32 vtc_no_reset;
+};
+
+struct avdd_detect_desc {
+	u32 support;
+	u32 vb_channel;
+	u32 low_threshold;
+	u32 high_threshold;
+	u32 gpio_grp_ctrl;
+	struct lcd_kit_array_data gpio_grp;
+	struct lcd_kit_array_data gpio_ctrl_a;
+	struct lcd_kit_array_data gpio_ctrl_b;
+};
+
+struct lcd_oneside_driver {
+	u32 support;
+	u32 mode;
+	struct lcd_kit_dsi_panel_cmds left_cmds;
+	struct lcd_kit_dsi_panel_cmds right_cmds;
+	struct lcd_kit_dsi_panel_cmds exit_cmds;
+};
+
+struct lcd_color_aod_detect {
+	u32 support;
+	u32 mode;
+	struct lcd_kit_dsi_panel_cmds enter_cmds;
+	struct lcd_kit_dsi_panel_cmds exit_cmds;
 };
 
 struct lcd_fact_ops {
@@ -147,8 +224,14 @@ struct lcd_fact_ops {
 		struct device_attribute *attr, char *buf);
 	ssize_t (*sleep_ctrl_store)(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*poweric_det_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
+	ssize_t (*poweric_det_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count);
 	ssize_t (*pcd_errflag_check_show)(struct device *dev,
 		struct device_attribute *attr, char *buf);
+	ssize_t (*pcd_errflag_check_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf);
 	ssize_t (*test_config_show)(struct device *dev,
 		struct device_attribute *attr, char *buf);
 	ssize_t (*test_config_store)(struct device *dev,
@@ -170,6 +253,12 @@ struct lcd_fact_ops {
 	ssize_t (*hkadc_debug_store)(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
 	ssize_t (*bl_self_test_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
+	ssize_t (*avdd_detect_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
+	ssize_t (*oneside_mode_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*oneside_mode_show)(struct device *dev,
 		struct device_attribute *attr, char *buf);
 };
 
@@ -197,6 +286,8 @@ struct lcd_kit_pt_test {
 	u32 support;
 	u32 panel_ulps_support;
 	u32 mode;
+	struct lcd_kit_dsi_panel_cmds avdd_enable_cmds;
+	struct lcd_kit_dsi_panel_cmds avdd_disable_cmds;
 };
 
 struct lcd_kit_hkadc {
@@ -204,15 +295,27 @@ struct lcd_kit_hkadc {
 	int value;
 };
 
+struct lcd_kit_pcd_errflag_check {
+	u32 pcd_errflag_check_support;
+	struct lcd_kit_dsi_panel_cmds pcd_detect_open_cmds;
+	struct lcd_kit_dsi_panel_cmds pcd_detect_close_cmds;
+};
+
+struct poweric_detect {
+	u32 support;
+	u32 poweric_num;
+	u32 detect_gpio;
+	u32 detect_val;
+	struct lcd_kit_array_data gpio_list;
+	struct lcd_kit_array_data gpio_val;
+	struct lcd_kit_array_data gpio_num_list;
+};
+
 struct lcd_fact_desc {
 	/* test config */
 	char lcd_cmd_now[LCD_KIT_CMD_NAME_MAX];
 	/* backlight open short test */
 	u32 bl_open_short_support;
-	/* pcd err flag test */
-	u32 pcd_errflag_check_support;
-	u32 gpio_pcd;
-	u32 gpio_errflag;
 	/* inversion test */
 	struct lcd_kit_inversion inversion;
 	/* lcd forword/revert scan test */
@@ -229,16 +332,29 @@ struct lcd_fact_desc {
 	struct lcd_kit_current_detect current_det;
 	/* lv detect */
 	struct lcd_kit_lv_detect lv_det;
+	/* voltage detect test witch picture */
+	struct ddic_lv_detect_desc ddic_lv_detect;
 	/* ldo check */
 	struct lcd_kit_ldo_check ldo_check;
 	/* horizontal line test */
 	struct lcd_hor_line_desc hor_line;
 	/* vertical line test witch picture */
 	struct vertical_line_desc vtc_line;
+	/* pcd errflag check */
+	struct lcd_kit_pcd_errflag_check pcd_errflag_check;
+	/* poweric detect */
+	struct poweric_detect poweric_detect;
+	/* avdd detect */
+	struct avdd_detect_desc avdd_detect;
+	/* oneside mode test */
+	struct lcd_oneside_driver oneside_mode;
+	/* color aod detect */
+	struct lcd_color_aod_detect color_aod_det;
 };
 
 /* variable declare */
-extern struct lcd_fact_desc g_fact_info;
+struct lcd_fact_desc *lcd_kit_get_fact_info(void);
+#define FACT_INFO lcd_kit_get_fact_info()
 
 /* function declare */
 struct lcd_fact_ops *lcd_get_fact_ops(void);
@@ -253,11 +369,11 @@ int lcd_kit_is_enter_pt_mode(void);
 int lcd_kit_get_pt_station_status(void);
 int lcd_kit_get_sleep_mode(char *buf);
 int lcd_kit_set_sleep_mode(u32 mode);
-int lcd_kit_get_pt_ulps_support(struct platform_device *pdev);
 /* extern interface */
 void lcd_kit_fact_init(struct device_node *np);
 int lcd_create_fact_sysfs(struct kobject *obj);
 int lcd_kit_get_test_config(char *buf);
 int lcd_kit_set_test_config(const char *buf);
 int lcd_kit_is_enter_sleep_mode(void);
+int lcd_kit_avdd_mipi_ctrl(void *hld, int enable);
 #endif

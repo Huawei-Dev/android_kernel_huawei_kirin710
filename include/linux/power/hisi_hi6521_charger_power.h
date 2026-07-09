@@ -12,4 +12,13 @@ extern int scharger_flash_led_timeout_enable(void);
 extern int scharger_flash_led_timeout_disable(void);
 extern int scharger_flash_led_timeout_config(unsigned int timeoutMs);
 extern int scharger_flash_torch_timeout_config(unsigned int timeoutSec);
+
+#ifdef CONFIG_SCHARGER_V200
+int scharger_register_notifier(struct notifier_block *nb);
+#else
+static inline int scharger_register_notifier(struct notifier_block *nb)
+{
+	return 0;
+}
+#endif
 #endif

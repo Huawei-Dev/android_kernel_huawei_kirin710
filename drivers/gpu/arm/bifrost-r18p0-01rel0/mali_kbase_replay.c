@@ -126,8 +126,8 @@ static int kbasep_replay_reset_sfbd(struct kbase_context *kctx,
 
 	dev_dbg(kctx->kbdev->dev, "fbd_address: %llx\n", fbd_address);
 
-	fbd_tiler = kbase_vmap(kctx, fbd_address + SFBD_TILER_OFFSET,
-			sizeof(*fbd_tiler), &map);
+	fbd_tiler = kbase_vmap_prot(kctx, fbd_address + SFBD_TILER_OFFSET,
+			sizeof(*fbd_tiler), KBASE_REG_CPU_RD | KBASE_REG_CPU_WR, &map);
 	if (!fbd_tiler) {
 		dev_err(kctx->kbdev->dev, "kbasep_replay_reset_fbd: failed to map fbd\n");
 		return -EINVAL;
@@ -208,8 +208,8 @@ static int kbasep_replay_reset_mfbd(struct kbase_context *kctx,
 
 	dev_dbg(kctx->kbdev->dev, "fbd_address: %llx\n", fbd_address);
 
-	fbd_tiler = kbase_vmap(kctx, fbd_address + MFBD_TILER_OFFSET,
-			sizeof(*fbd_tiler), &map);
+	fbd_tiler = kbase_vmap_prot(kctx, fbd_address + MFBD_TILER_OFFSET,
+			sizeof(*fbd_tiler), KBASE_REG_CPU_RD | KBASE_REG_CPU_WR, &map);
 	if (!fbd_tiler) {
 		dev_err(kctx->kbdev->dev,
 			       "kbasep_replay_reset_fbd: failed to map fbd\n");
@@ -301,9 +301,9 @@ static int kbasep_replay_reset_tiler_job(struct kbase_context *kctx,
 	if (job_64) {
 		u64 *job_ext;
 
-		job_ext = kbase_vmap(kctx,
+		job_ext = kbase_vmap_prot(kctx,
 				job_header + JOB_HEADER_64_FBD_OFFSET,
-				sizeof(*job_ext), &map);
+				sizeof(*job_ext), KBASE_REG_CPU_RD, &map);
 
 		if (!job_ext) {
 			dev_err(kctx->kbdev->dev, "kbasep_replay_reset_tiler_job: failed to map jc\n");
@@ -316,9 +316,9 @@ static int kbasep_replay_reset_tiler_job(struct kbase_context *kctx,
 	} else {
 		u32 *job_ext;
 
-		job_ext = kbase_vmap(kctx,
+		job_ext = kbase_vmap_prot(kctx,
 				job_header + JOB_HEADER_32_FBD_OFFSET,
-				sizeof(*job_ext), &map);
+				sizeof(*job_ext), KBASE_REG_CPU_RD, &map);
 
 		if (!job_ext) {
 			dev_err(kctx->kbdev->dev, "kbasep_replay_reset_tiler_job: failed to map jc\n");
@@ -385,7 +385,7 @@ static int kbasep_replay_reset_job(struct kbase_context *kctx,
 	u64 new_job_header;
 	struct kbase_vmap_struct map;
 
-	frag_job = kbase_vmap(kctx, *job_header, sizeof(*frag_job), &map);
+	frag_job = kbase_vmap_prot(kctx, *job_header, sizeof(*frag_job), KBASE_REG_CPU_RD | KBASE_REG_CPU_WR, &map);
 	if (!frag_job) {
 		dev_err(kctx->kbdev->dev,
 				 "kbasep_replay_parse_jc: failed to map jc\n");
@@ -503,7 +503,7 @@ static int kbasep_replay_find_hw_job_id(struct kbase_context *kctx,
 		dev_dbg(kctx->kbdev->dev,
 			"kbasep_replay_find_hw_job_id: parsing jc=%llx\n", jc);
 
-		job = kbase_vmap(kctx, jc, sizeof(*job), &map);
+		job = kbase_vmap_prot(kctx, jc, sizeof(*job), KBASE_REG_CPU_RD, &map);
 		if (!job) {
 			dev_err(kctx->kbdev->dev, "failed to map jc\n");
 
@@ -731,7 +731,7 @@ static void payload_dump(struct kbase_context *kctx, base_jd_replay_payload *pay
 		struct kbase_vmap_struct map;
 		base_jd_replay_jc *jc_struct;
 
-		jc_struct = kbase_vmap(kctx, next, sizeof(*jc_struct), &map);
+		jc_struct = kbase_vmap_prot(kctx, next, sizeof(*jc_struct), KBASE_REG_CPU_RD, &map);
 
 		if (!jc_struct)
 			return;
@@ -772,7 +772,7 @@ static int kbasep_replay_parse_payload(struct kbase_context *kctx,
 	dev_dbg(kctx->kbdev->dev, "kbasep_replay_parse_payload: replay_atom->jc = %llx sizeof(payload) = %zu\n",
 			replay_atom->jc, sizeof(payload));
 
-	payload = kbase_vmap(kctx, replay_atom->jc, sizeof(*payload), &map);
+	payload = kbase_vmap_prot(kctx, replay_atom->jc, sizeof(*payload), KBASE_REG_CPU_RD, &map);
 	if (!payload) {
 		dev_err(kctx->kbdev->dev, "kbasep_replay_parse_payload: failed to map payload into kernel space\n");
 		return -EINVAL;
@@ -843,7 +843,7 @@ static int kbasep_replay_parse_payload(struct kbase_context *kctx,
 		struct kbase_vmap_struct jc_map;
 		u64 jc;
 
-		jc_struct = kbase_vmap(kctx, next, sizeof(*jc_struct), &jc_map);
+		jc_struct = kbase_vmap_prot(kctx, next, sizeof(*jc_struct), KBASE_REG_CPU_RD | KBASE_REG_CPU_WR, &jc_map);
 
 		if (!jc_struct) {
 			dev_err(kctx->kbdev->dev, "Failed to map jc struct\n");
@@ -1012,7 +1012,7 @@ static bool kbase_replay_fault_check(struct kbase_jd_atom *katom)
 	 * to find out whether the source of exception is POLYGON_LIST. Replay
 	 * is required if the source of fault is POLYGON_LIST.
 	 */
-	payload = kbase_vmap(kctx, katom->jc, sizeof(*payload), &map);
+	payload = kbase_vmap_prot(kctx, katom->jc, sizeof(*payload), KBASE_REG_CPU_RD, &map);
 	if (!payload) {
 		dev_err(dev, "kbase_replay_fault_check: failed to map payload.\n");
 		return false;
@@ -1032,7 +1032,7 @@ static bool kbase_replay_fault_check(struct kbase_jd_atom *katom)
 	job_header      = (u64) payload->fragment_jc;
 	job_loop_detect = job_header;
 	while (job_header) {
-		job = kbase_vmap(kctx, job_header, sizeof(*job), &job_map);
+		job = kbase_vmap_prot(kctx, job_header, sizeof(*job), KBASE_REG_CPU_RD, &job_map);
 		if (!job) {
 			dev_err(dev, "failed to map jc\n");
 			/* unmap payload*/

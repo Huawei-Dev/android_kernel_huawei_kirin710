@@ -61,6 +61,7 @@
 #include "mali_kbase_hwcnt_virtualizer.h"
 #include "mali_kbase_hwcnt_legacy.h"
 #include "mali_kbase_vinstr.h"
+#include "mali_kbase_efuse.h"
 
 #ifdef CONFIG_MALI_CINSTR_GWT
 #include "mali_kbase_gwt.h"
@@ -1896,24 +1897,26 @@ static ssize_t show_core_mask(struct device *dev, struct device_attribute *attr,
 {
 	struct kbase_device *kbdev;
 	ssize_t ret = 0;
+	u64 shader_present;
 
 	kbdev = to_kbase_device(dev);
 
 	if (!kbdev)
 		return -ENODEV;
 
+	shader_present = kbdev->gpu_props.props.raw_props.shader_present;
 	ret += scnprintf(buf + ret, PAGE_SIZE - ret,
 			"Current core mask (JS0) : 0x%llX\n",
-			kbdev->pm.debug_core_mask[0]);
+			kbdev->pm.debug_core_mask[0] & shader_present);
 	ret += scnprintf(buf + ret, PAGE_SIZE - ret,
 			"Current core mask (JS1) : 0x%llX\n",
-			kbdev->pm.debug_core_mask[1]);
+			kbdev->pm.debug_core_mask[1] & shader_present);
 	ret += scnprintf(buf + ret, PAGE_SIZE - ret,
 			"Current core mask (JS2) : 0x%llX\n",
-			kbdev->pm.debug_core_mask[2]);
+			kbdev->pm.debug_core_mask[2] & shader_present);
 	ret += scnprintf(buf + ret, PAGE_SIZE - ret,
 			"Available core mask : 0x%llX\n",
-			kbdev->gpu_props.props.raw_props.shader_present);
+			shader_present);
 
 	return ret;
 }
@@ -1959,6 +1962,7 @@ static ssize_t set_core_mask(struct device *dev, struct device_attribute *attr, 
 	if (items == 1)
 		new_core_mask[1] = new_core_mask[2] = new_core_mask[0];
 
+	mutex_lock(&kbdev->pm.lock);
 	spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
 
 	shader_present = kbdev->gpu_props.props.raw_props.shader_present;
@@ -2005,6 +2009,7 @@ static ssize_t set_core_mask(struct device *dev, struct device_attribute *attr, 
 
 unlock:
 	spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
+	mutex_unlock(&kbdev->pm.lock);
 end:
 	return err;
 }
@@ -3205,6 +3210,122 @@ static ssize_t set_gpu_error_info(struct device *dev, struct device_attribute *a
 
 static DEVICE_ATTR(gpu_error_info, S_IRUGO | S_IWUSR, show_gpu_error_info, set_gpu_error_info);
 
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+/*
+ * show_thro_hint - Show throttle info for GPU throttle devfreq.
+ *
+ * This function is called to get the contents of the throttle sysfs file.
+ *
+ * @dev: The device this sysfs file is for
+ * @attr: The attributes of the sysfs file
+ * @buf: The output buffer for the sysfs file contents
+ *
+ * Return: The number of bytes output to @buf.
+ */
+static ssize_t show_thro_hint(struct device *dev,
+	struct device_attribute *attr, char * const buf)
+{
+	struct kbase_device *kbdev;
+	unsigned long flags;
+	int thro_hint;
+
+	kbdev = to_kbase_device(dev);
+
+	if (!kbdev)
+		return -ENODEV;
+
+	spin_lock_irqsave(&kbdev->pm.backend.metrics.lock, flags);
+	thro_hint = kbdev->pm.backend.metrics.thro_hint;
+	spin_unlock_irqrestore(&kbdev->pm.backend.metrics.lock, flags);
+
+	return scnprintf(buf, PAGE_SIZE, "%i\n", thro_hint);
+}
+
+/*
+ * The sysfs file gpu throttle devfreq info.
+ *
+ * This is used to show gpu throttle devfreq info.
+ */
+static DEVICE_ATTR(thro_hint, 0440, show_thro_hint, NULL);
+
+/*
+ * show_thro_enable - Show gpu throttle devfreq switch sysfs file.
+ *
+ * This function is called to get the contents of the thro_enable sysfs file.
+ *
+ * @dev: The device this sysfs file is for
+ * @attr: The attributes of the sysfs file
+ * @buf: The output buffer for the sysfs file contents
+ *
+ * Return: The number of bytes output to @buf.
+ */
+static ssize_t show_thro_enable(struct device *dev,
+	struct device_attribute *attr, char * const buf)
+{
+	struct kbase_device *kbdev;
+
+	kbdev = to_kbase_device(dev);
+
+	if (!kbdev)
+		return -ENODEV;
+
+	return scnprintf(buf, PAGE_SIZE, "%i\n",
+		atomic_read(&kbdev->hisi_dev_data.thro_enable));
+}
+
+/**
+ * set_thro_enable - Store gpu throttle devfreq switch sysfs
+ * file.
+ *
+ * @dev: The device this sysfs file is for.
+ * @attr: The attributes of the sysfs file.
+ * @buf: The value written to the sysfs file.
+ * @count: The number of bytes written to the sysfs file.
+ *
+ * Return: count if the function succeeded. An error code on failure.
+ */
+static ssize_t set_thro_enable(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct kbase_device *kbdev;
+	int thro_enable;
+	int cur_thro_enable;
+	unsigned long flags;
+
+	kbdev = to_kbase_device(dev);
+	if (!kbdev)
+		return -ENODEV;
+
+	if ((kstrtoint(buf, 0, &thro_enable) != 0) ||
+		(thro_enable < 0))
+		return -EINVAL;
+
+	if (thro_enable != 0 &&
+		thro_enable != 1)
+		return -EINVAL;
+
+	cur_thro_enable = atomic_read(&kbdev->hisi_dev_data.thro_enable);
+	if (thro_enable != cur_thro_enable) {
+		atomic_set(&kbdev->hisi_dev_data.thro_enable, thro_enable);
+
+		spin_lock_irqsave(&kbdev->pm.backend.metrics.lock, flags);
+		kbdev->pm.backend.metrics.thro_hint =
+			KBASE_JS_ATOM_SCHED_THRO_COUNT;
+		spin_unlock_irqrestore(&kbdev->pm.backend.metrics.lock, flags);
+	}
+
+	return count;
+}
+
+/*
+ * The sysfs file gpu throttle devfreq switch.
+ *
+ * This is used to show / enable /disable gpu throttle devfreq.
+ */
+static DEVICE_ATTR(thro_enable, 0640,
+	show_thro_enable, set_thro_enable);
+#endif
+
 /**
  * show_js_ctx_scheduling_mode - Show callback for js_ctx_scheduling_mode sysfs
  *                               entry.
@@ -3540,7 +3661,7 @@ static int kbase_common_reg_map(struct kbase_device *kbdev)
 {
 	int err = 0;
 
-	if (!request_mem_region(kbdev->reg_start, kbdev->reg_size, dev_name(kbdev->dev))) {
+	if (!request_mem_region(kbdev->reg_start, kbdev->reg_size, "mali")) {
 		dev_err(kbdev->dev, "Register window unavailable\n");
 		err = -EIO;
 		goto out_region;
@@ -4043,6 +4164,10 @@ static struct attribute *kbase_attrs[] = {
 #endif
 	&dev_attr_js_ctx_scheduling_mode.attr,
 	&dev_attr_gpu_error_info.attr,
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+	&dev_attr_thro_hint.attr,
+	&dev_attr_thro_enable.attr,
+#endif
 	NULL
 };
 
@@ -4248,6 +4373,7 @@ static int initlize_device_tree(struct kbase_device * const kbdev)
 {
 	struct device_node *np = NULL;
 	int ret;
+	u32 lite_chip = 0;
 
 	KBASE_DEBUG_ASSERT(kbdev != NULL);
 
@@ -4256,6 +4382,7 @@ static int initlize_device_tree(struct kbase_device * const kbdev)
 	kbdev->gpu_fpga_exist = 0;
 	kbdev->gpu_chip_type = 0;
 	kbdev->lb_enabled = 0;
+	kbdev->shader_present_lo_cfg = 0;
 #ifdef CONFIG_OF
 	/* read outstanding value from dts*/
 	np = of_find_compatible_node(NULL, NULL, "arm,mali-midgard");
@@ -4278,20 +4405,29 @@ static int initlize_device_tree(struct kbase_device * const kbdev)
 		if (ret)
 			dev_warn(kbdev->dev,
 			"Failed to get gpu chip type setting, default means cs\n");
+		ret = of_property_read_u32(np, "shader-present-lo-cfg",
+			&kbdev->shader_present_lo_cfg);
+		if (ret)
+			dev_warn(kbdev->dev, "Failed to get shader present configuration!\n");
 	} else {
 		dev_err(kbdev->dev,
 		"not find device node arm,mali-midgard!\n");
 	}
-#endif
-	if (kbdev->gpu_fpga_exist) {
-		unsigned int pctrl_value;
-		pctrl_value = readl(kbdev->pctrlreg + PERI_STAT_FPGA_GPU_EXIST) & PERI_STAT_FPGA_GPU_EXIST_MASK;
-		if (pctrl_value == 0)
-                {
-			dev_err(kbdev->dev, "No gpu hardware implementation on fpga\n");
-			return -ENODEV;
+
+	/* only for cs2 */
+	if (kbdev->gpu_chip_type == 2) {
+		ret = get_gpu_efuse_cfg(kbdev, &kbdev->shader_present_lo_cfg, &lite_chip);
+		if (ret) {
+			kbdev->lb_enabled = 0;
+			dev_err(kbdev->dev, "Failed to get_gpu_efuse_cfg!\n");
+			return -ENOENT;
+		} else {
+			kbdev->lb_enabled = !lite_chip;
 		}
 	}
+
+#endif
+
 	return 0;
 }
 
@@ -4713,7 +4849,8 @@ static int kbase_device_suspend(struct device *dev)
 	if (!kbdev)
 		return -ENODEV;
 
-	dev_info(kbdev->dev, "%s: suspend +\n", __func__);
+	int refcount = atomic_read(&kbdev->regulator_refcount);
+	dev_info(kbdev->dev, "%s: suspend +, refcount:[%d]\n", __func__, refcount);
 
 	kbase_pm_suspend(kbdev);
 
@@ -4725,7 +4862,8 @@ static int kbase_device_suspend(struct device *dev)
 		flush_workqueue(kbdev->devfreq_queue.workq);
 	}
 #endif
-	dev_info(kbdev->dev, "%s: suspend -\n", __func__);
+	refcount = atomic_read(&kbdev->regulator_refcount);
+	dev_info(kbdev->dev, "%s: suspend -, refcount:[%d]\n", __func__, refcount);
 	return 0;
 }
 
@@ -4745,7 +4883,8 @@ static int kbase_device_resume(struct device *dev)
 	if (!kbdev)
 		return -ENODEV;
 
-	dev_info(kbdev->dev, "%s: resume +\n", __func__);
+	int refcount = atomic_read(&kbdev->regulator_refcount);
+	dev_info(kbdev->dev, "%s: resume +, refcount:[%d]\n", __func__, refcount);
 
 	kbase_pm_resume(kbdev);
 
@@ -4760,7 +4899,8 @@ static int kbase_device_resume(struct device *dev)
 		flush_workqueue(kbdev->devfreq_queue.workq);
 	}
 #endif
-	dev_info(kbdev->dev, "%s: resume -\n", __func__);
+	refcount = atomic_read(&kbdev->regulator_refcount);
+	dev_info(kbdev->dev, "%s: resume -, refcount:[%d]\n", __func__, refcount);
 	return 0;
 }
 
@@ -4899,6 +5039,10 @@ static int kbase_device_runtime_idle(struct device *dev)
 static const struct dev_pm_ops kbase_pm_ops = {
 	.suspend = kbase_device_suspend,
 	.resume = kbase_device_resume,
+	.freeze = kbase_device_suspend,
+	.thaw = kbase_device_resume,
+	.poweroff = kbase_device_suspend,
+	.restore = kbase_device_resume,
 #ifdef KBASE_PM_RUNTIME
 	.runtime_suspend = kbase_device_runtime_suspend,
 	.runtime_resume = kbase_device_runtime_resume,

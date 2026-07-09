@@ -893,6 +893,19 @@ static inline int kbasep_js_atom_prio_to_sched_prio(base_jd_prio atom_prio)
 	return kbasep_js_atom_priority_to_relative[atom_prio];
 }
 
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+extern const int
+kbasep_js_atom_throttle_to_relative[BASE_JD_NR_THRO_LEVELS];
+
+static inline int kbasep_js_atom_thro_to_sched_thro(base_jd_thro atom_thro)
+{
+	if (atom_thro >= BASE_JD_NR_THRO_LEVELS)
+		return KBASE_JS_ATOM_SCHED_THRO_INVALID;
+
+	return kbasep_js_atom_throttle_to_relative[atom_thro];
+}
+#endif
+
 static inline base_jd_prio kbasep_js_sched_prio_to_atom_prio(int sched_prio)
 {
 	unsigned int prio_idx;

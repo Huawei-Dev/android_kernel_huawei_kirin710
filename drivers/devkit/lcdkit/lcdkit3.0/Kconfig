@@ -13,4 +13,6 @@ source "drivers/devkit/lcdkit/lcdkit3.0/kernel/hisi/src/Kconfig"
 source "drivers/devkit/lcdkit/lcdkit3.0/kernel/hisi/adapt/Kconfig"
 source "drivers/devkit/lcdkit/lcdkit3.0/kernel/mtk/src/Kconfig"
 source "drivers/devkit/lcdkit/lcdkit3.0/kernel/mtk/adapt/Kconfig"
+source "drivers/devkit/lcdkit/lcdkit3.0/kernel/qcom/src/Kconfig"
+source "drivers/devkit/lcdkit/lcdkit3.0/kernel/qcom/adapt/Kconfig"
 

@@ -26,7 +26,7 @@
 #include <linux/types.h>
 #include <linux/gmc_storage.h>
 
-#define GMC_FS_MAX_DENTRIES 4
+#define GMC_FS_MAX_DENTRIES 5
 
 enum _gmc_op{
 	GMC_COMPRESS,
@@ -51,6 +51,7 @@ struct gmc_ops {
 	int (*compress_kctx) (pid_t, struct gmc_device *,long);
 	int (*decompress_kctx) (pid_t, struct gmc_device *);
 	int (*meminfo_open)(struct inode *in, struct file *file);
+	int (*cancel) (long, struct gmc_device *);
 };
 
 int gmc_register_device(struct gmc_ops *gmc_operations,

@@ -89,4 +89,13 @@ void kbase_mem_pool_group_mark_dying(struct kbase_mem_pool_group *mem_pools);
  */
 void kbase_mem_pool_group_term(struct kbase_mem_pool_group *mem_pools);
 
+#ifdef CONFIG_MALI_LAST_BUFFER
+/**
+ * kbase_mem_pool_group_detach - Detach the pool from last buffer
+ *
+ * @mem_pools:  Memory pool to detach
+ */
+void kbase_mem_pool_group_detach(struct kbase_mem_pool_group *mem_pools);
+#endif
+
 #endif /* _KBASE_MEM_POOL_GROUP_H_ */

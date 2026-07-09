@@ -923,6 +923,24 @@ typedef u8 base_jd_prio;
  * base_jd_prio setting */
 #define BASE_JD_NR_PRIO_LEVELS 3
 
+typedef u8 base_jd_thro;
+
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+/* Medium atom throttle. This is a performance higher than BASE_JD_THRO_LOW */
+#define BASE_JD_THRO_MEDIUM  ((base_jd_thro)0)
+/* High atom throttle. This is a performance higher than BASE_JD_THRO_MEDIUM and
+ * BASE_JD_THRO_LOW
+ */
+#define BASE_JD_THRO_HIGH    ((base_jd_thro)1)
+/* Low atom throttle. */
+#define BASE_JD_THRO_LOW     ((base_jd_thro)2)
+
+/* Count of the number of throttle levels. This itself is not a valid
+ * base_jd_thro setting
+ */
+#define BASE_JD_NR_THRO_LEVELS 3
+#endif
+
 enum kbase_jd_atom_state {
 	/** Atom is not used */
 	KBASE_JD_ATOM_STATE_UNUSED,
@@ -964,6 +982,7 @@ typedef struct base_jd_atom_v2 {
 	u8 device_nr;			    /**< coregroup when BASE_JD_REQ_SPECIFIC_COHERENT_GROUP specified */
 	u8 padding[1];
 	base_jd_core_req core_req;          /**< core requirements */
+	base_jd_thro thro;                  /**< Atom throttle. */
 } base_jd_atom_v2;
 
 typedef enum base_external_resource_access {

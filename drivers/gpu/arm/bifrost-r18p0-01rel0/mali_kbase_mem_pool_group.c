@@ -113,3 +113,18 @@ void kbase_mem_pool_group_term(
 		kbase_mem_pool_term(&mem_pools->large[gid]);
 	}
 }
+
+#ifdef CONFIG_MALI_LAST_BUFFER
+void kbase_mem_pool_group_detach(
+	struct kbase_mem_pool_group *const mem_pools)
+{
+	int gid;
+
+	for (gid = 0; gid < MEMORY_GROUP_MANAGER_NR_GROUPS; ++gid) {
+		if (gid != BASE_MEM_GROUP_DEFAULT) {
+			kbase_mem_pool_detach(&mem_pools->small[gid]);
+			kbase_mem_pool_detach(&mem_pools->large[gid]);
+		}
+	}
+}
+#endif

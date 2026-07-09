@@ -197,5 +197,6 @@ int thp_mt_wrapper_init(void);
 void thp_mt_wrapper_exit(void);
 int thp_mt_wrapper_wakeup_poll(void);
 void thp_clean_fingers(void);
+int thp_mt_wrapper_esd_event(unsigned int status);
 
 #endif /* _INPUT_MT_WRAPPER_H_ */

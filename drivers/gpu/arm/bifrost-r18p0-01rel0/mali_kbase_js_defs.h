@@ -189,6 +189,26 @@ enum {
  */
 #define KBASE_JS_ATOM_SCHED_PRIO_DEFAULT KBASE_JS_ATOM_SCHED_PRIO_MED
 
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+/*
+ * Internal atom throttle defines for kbase_jd_atom::sched_thro
+ */
+enum {
+	KBASE_JS_ATOM_SCHED_THRO_HIGH = 0,
+	KBASE_JS_ATOM_SCHED_THRO_MED,
+	KBASE_JS_ATOM_SCHED_THRO_LOW,
+	KBASE_JS_ATOM_SCHED_THRO_COUNT,
+};
+
+/* Invalid throttle for kbase_jd_atom::sched_prio */
+#define KBASE_JS_ATOM_SCHED_THRO_INVALID -1
+
+/* Default throttle in the case of contexts with no atoms, or being lenient
+ * about invalid priorities from userspace.
+ */
+#define KBASE_JS_ATOM_SCHED_THRO_DEFAULT KBASE_JS_ATOM_SCHED_THRO_MED
+#endif
+
 /**
  * @brief KBase Device Data Job Scheduler sub-structure
  *

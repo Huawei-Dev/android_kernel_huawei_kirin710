@@ -259,7 +259,7 @@ static enum hrtimer_restart timer_callback(struct hrtimer *timer)
 
 		kbdev->error_num.soft_reset++;
 		kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 		/*benchmark data collect */
 		if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 			rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);

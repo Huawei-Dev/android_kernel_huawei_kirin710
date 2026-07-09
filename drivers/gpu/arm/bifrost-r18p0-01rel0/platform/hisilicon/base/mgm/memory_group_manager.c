@@ -61,6 +61,7 @@ struct mgm_group {
  * debugfs. Display is organized per group with small and large sized pages.
  */
 struct mgm_groups {
+	spinlock_t groups_lock;
 	struct mgm_group groups[MEMORY_GROUP_MANAGER_NR_GROUPS];
 	struct device *dev;
 #ifdef CONFIG_DEBUG_FS
@@ -172,6 +173,7 @@ static void update_size(struct memory_group_manager_device *mgm_dev, int
 {
 	struct mgm_groups *data = mgm_dev->data;
 
+	spin_lock(&data->groups_lock);
 	switch (order) {
 	case ORDER_SMALL_PAGE:
 		if (alloc) {
@@ -195,6 +197,7 @@ static void update_size(struct memory_group_manager_device *mgm_dev, int
 		dev_err(data->dev, "Unknown order(%d)\n", order);
 	break;
 	}
+	spin_unlock(&data->groups_lock);
 }
 
 static struct page *hisi_mgm_alloc_page(
@@ -256,6 +259,13 @@ static void hisi_mgm_free_page(
 	update_size(mgm_dev, group_id, order, false);
 }
 
+static void hisi_mgm_update_sizes(
+                    struct memory_group_manager_device *mgm_dev, int group_id,
+                    unsigned int order, bool is_alloc)
+{
+	update_size(mgm_dev, group_id, order, is_alloc);
+}
+
 static int hisi_mgm_get_import_mem_id(
 		struct memory_group_manager_device *mgm_dev,
 		struct memory_group_manager_import_data *data)
@@ -276,12 +286,12 @@ static u64 hisi_mgm_gpu_map_page(u8 mmu_level, u64 pte)
 #ifdef CONFIG_MALI_LAST_BUFFER
 	/* L.B intergration: Get the GID info.
 	 * 1. In order to get the phys's GID, we will call hisi-driver function
-	 *    lb_pte_attr(phy) here. like:
-	 *    u64 phy_gid = lb_pte_attr(as_phys_addr_t(phy));
+	 *    lb_pte_attr_gpu(phy) here. like:
+	 *    u64 phy_gid = lb_pte_attr_gpu(as_phys_addr_t(phy));
 	 *
 	 * 2. Call page_table_entry_set with the created phy_gid instead of phy.
 	 */
-	return lb_pte_attr(pte);
+	return lb_pte_attr_gpu(pte);
 #else
 	/* Nothing to do. */
 	return 0;
@@ -290,7 +300,9 @@ static u64 hisi_mgm_gpu_map_page(u8 mmu_level, u64 pte)
 
 #if (KERNEL_VERSION(4, 17, 0) > LINUX_VERSION_CODE)
 #define vm_fault_t int
+#endif
 
+#if (KERNEL_VERSION(4, 20, 0) > LINUX_VERSION_CODE)
 static inline vm_fault_t vmf_insert_pfn_prot(struct vm_area_struct *vma,
 			unsigned long addr, unsigned long pfn, pgprot_t pgprot)
 {
@@ -323,6 +335,10 @@ static vm_fault_t hisi_mgm_vm_insert_pfn(
 
 	BUG_ON(!gpu_page);
 	group_id = lb_page_to_gid(gpu_page);
+	if (group_id == LASTBUFFER_GID_DSS) {
+		dev_warn(data->dev, "wrong group id for gpu.group_id[%u]\n", group_id);
+		group_id = 0;
+	}
 
 	/* Build the last buffer page with prot. */
 	if (group_id && lb_prot_build(gpu_page, &pgprot)) {
@@ -351,6 +367,10 @@ static int hisi_mgm_remap_vmalloc_range(
 
 	BUG_ON(!gpu_page);
 	group_id = lb_page_to_gid(gpu_page);
+	if (group_id == LASTBUFFER_GID_DSS) {
+		dev_warn(data->dev, "wrong group id for gpu.group_id[%u]\n", group_id);
+		group_id = 0;
+	}
 
 	/* Build the last buffer page with prot. */
 	if (group_id && lb_prot_build(gpu_page, &vma->vm_page_prot)) {
@@ -395,6 +415,7 @@ static int mgm_initialize_data(struct mgm_groups *mgm_data)
 {
 	int i;
 
+	spin_lock_init(&mgm_data->groups_lock);
 	for (i = 0; i < MEMORY_GROUP_MANAGER_NR_GROUPS; i++) {
 		mgm_data->groups[i].size = 0;
 		mgm_data->groups[i].lp_size = 0;
@@ -437,6 +458,7 @@ static int memory_group_manager_probe(struct platform_device *pdev)
 	mgm_dev->ops.vm_insert_pfn = hisi_mgm_vm_insert_pfn;
 	mgm_dev->ops.remap_vmalloc_range = hisi_mgm_remap_vmalloc_range;
 	mgm_dev->ops.vmap = hisi_mgm_vmap;
+	mgm_dev->ops.mgm_update_sizes = hisi_mgm_update_sizes;
 
 	mgm_data = kzalloc(sizeof(*mgm_data), GFP_KERNEL);
 	if (!mgm_data) {

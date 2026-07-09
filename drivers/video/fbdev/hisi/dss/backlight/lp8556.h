@@ -12,7 +12,7 @@
 #define __LINUX_LP8556_H
 
 #include "hisi_fb.h"
-#include <linux/hisi/hw_cmdline_parse.h> //for runmode_is_factory
+#include <linux/hisi/hw_cmdline_parse.h> // for runmode_is_factory
 
 #if defined(CONFIG_LCDKIT_DRIVER)
 #include "lcdkit_panel.h"
@@ -47,8 +47,6 @@
 #define LP8556_LED1_OPEN_ERR_BIT    4
 #define LP8556_LED_NUM              6
 
-
-
 #define TEST_OK                  0
 #define TEST_ERROR_DEV_NULL      BIT(0)
 #define TEST_ERROR_DATA_NULL     BIT(1)
@@ -64,36 +62,62 @@
 #define LP8556_BL_MIN            0
 #define LP8556_BL_MAX            4095
 
-
+/* I2C Bus number */
+#define I2C3_BUSNUM	3
+#define I2C4_BUSNUM	4
 
 #ifndef BIT
 #define BIT(x)  (1<<(x))
 #endif
 
-#define LP8556_EMERG(msg, ...)    \
-	do { if (lp8556_msg_level > 0)  \
-		printk(KERN_EMERG "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LP8556_ALERT(msg, ...)    \
-	do { if (lp8556_msg_level > 1)  \
-		printk(KERN_ALERT "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LP8556_CRIT(msg, ...)    \
-	do { if (lp8556_msg_level > 2)  \
-		printk(KERN_CRIT "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LP8556_ERR(msg, ...)    \
-	do { if (lp8556_msg_level > 3)  \
-		printk(KERN_ERR "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LP8556_WARNING(msg, ...)    \
-	do { if (lp8556_msg_level > 4)  \
-		printk(KERN_WARNING "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LP8556_NOTICE(msg, ...)    \
-	do { if (lp8556_msg_level > 5)  \
-		printk(KERN_NOTICE "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LP8556_INFO(msg, ...)    \
-	do { if (lp8556_msg_level > 6)  \
-		printk(KERN_INFO "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LP8556_DEBUG(msg, ...)    \
-	do { if (lp8556_msg_level > 7)  \
-		printk(KERN_DEBUG "[lp8556]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
+#define LP8556_EMERG(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 0) \
+			printk(KERN_EMERG "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LP8556_ALERT(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 1) \
+			printk(KERN_ALERT "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LP8556_CRIT(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 2) \
+			printk(KERN_CRIT "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LP8556_ERR(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 3) \
+			printk(KERN_ERR "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LP8556_WARNING(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 4) \
+			printk(KERN_WARNING "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LP8556_NOTICE(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 5) \
+			printk(KERN_NOTICE "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LP8556_INFO(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 6) \
+			printk(KERN_INFO "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LP8556_DEBUG(msg, ...) \
+	do { \
+		if (lp8556_msg_level > 7) \
+			printk(KERN_DEBUG "[lp8556]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
 
 struct lp8556_chip_data {
 	struct device *dev;
@@ -105,14 +129,25 @@ struct lp8556_chip_data {
 #define GPIO_LP8556_EN_NAME "lp8556_hw_en"
 #define LP8556_RW_REG_MAX  15
 
+enum lp8556_dual_ic {
+	DUAL_LP8556_NONE = 0,
+	DUAL_LP8556_I3C,
+	DUAL_LP8556_I2C,
+};
+
 struct lp8556_backlight_information {
 	/* whether support lp8556 or not */
 	int lp8556_support;
 	/* which i2c bus controller lp8556 mount */
 	int lp8556_i2c_bus_id;
+	/* which i2c bus controller the second lp8556 mount */
+	int lp8556_2_i2c_bus_id;
 	/* lp8556 hw_en gpio */
 	int lp8556_hw_en_gpio;
+	/* lp8556 2 hw_en gpio */
+	int lp8556_2_hw_en_gpio;
 	int lp8556_reg[LP8556_RW_REG_MAX];
+	int dual_ic;
 	int bl_on_kernel_mdelay;
 	int lp8556_level_lsb;
 	int lp8556_level_msb;

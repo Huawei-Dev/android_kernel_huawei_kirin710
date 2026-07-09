@@ -47,7 +47,7 @@ static int hisi_ion_debug_process_cb(const void *data,
 	return 0;
 }
 
-int hisi_ion_proecss_info(void)
+int mm_ion_proecss_info(void)
 {
 	struct task_struct *tsk = NULL;
 
@@ -166,6 +166,31 @@ size_t hisi_get_ion_size_by_pid(pid_t pid)
 	return size;
 }
 
+void mm_ion_process_summary_info(void)
+{
+	struct task_struct *tsk = NULL;
+	size_t tsksize;
+
+	pr_err("Summary process info is below:\n");
+	pr_err("%-16.s%3s%-16s%-16s\n", "taskname", "",
+	"pid", "totalsize");
+
+	rcu_read_lock();
+	for_each_process(tsk) {
+		if (tsk->flags & PF_KTHREAD)
+			continue;
+
+		task_lock(tsk);
+		tsksize = ion_iterate_fd(tsk->files, 0,
+				hisi_ion_detail_cb, (void *)tsk);
+		if (tsksize)
+			pr_err("%-16.s%3s%-16d%-16zu\n",
+			tsk->comm, "", tsk->pid, tsksize);
+		task_unlock(tsk);
+	}
+	rcu_read_unlock();
+}
+
 int hisi_ion_memory_info(bool verbose)
 {
 	struct rb_node *n = NULL;
@@ -190,8 +215,10 @@ int hisi_ion_memory_info(bool verbose)
 				buffer->pid, buffer->size, buffer->heap->name);
 	}
 	mutex_unlock(&dev->buffer_lock);
+	
+	mm_ion_process_summary_info();
 
-	hisi_ion_proecss_info();
+	mm_ion_proecss_info();
 
 #ifdef CONFIG_HISI_CMA_DEBUG
 	dump_cma_mem_info();

@@ -78,6 +78,13 @@ int kbasep_pm_metrics_init(struct kbase_device *kbdev)
 	kbdev->pm.backend.metrics.utilisation = 0;
 	kbdev->pm.backend.metrics.vsync_hit = 0;
 	kbdev->pm.backend.metrics.cl_boost = 0;
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+	kbdev->pm.backend.metrics.thro_hint =
+		KBASE_JS_ATOM_SCHED_THRO_DEFAULT;
+	kbdev->pm.backend.metrics.thro_hint_prev=
+		KBASE_JS_ATOM_SCHED_THRO_DEFAULT;
+	atomic_set(&kbdev->hisi_dev_data.thro_enable, 1);
+#endif
 
 	kbdev->pm.backend.metrics.time_period_start = ktime_get();
 	kbdev->pm.backend.metrics.gpu_active = false;
@@ -275,6 +282,9 @@ KBASE_EXPORT_TEST_API(kbase_pm_metrics_is_active);
 static void kbase_pm_metrics_active_calc(struct kbase_device *kbdev)
 {
 	int js;
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+	int cur_thro;
+#endif
 
 	lockdep_assert_held(&kbdev->pm.backend.metrics.lock);
 
@@ -308,6 +318,12 @@ static void kbase_pm_metrics_active_calc(struct kbase_device *kbdev)
 					kbdev->pm.backend.metrics.
 						active_gl_ctx[js] = 1; /* [false alarm]: thirdparty code */ //lint !e661
 			}
+#ifdef CONFIG_GPU_THROTTLE_DEVFREQ
+			cur_thro = katom->sched_throttle;
+			if (kbdev->pm.backend.metrics.thro_hint  != cur_thro &&
+				kbdev->pm.backend.metrics.thro_hint > cur_thro)
+				kbdev->pm.backend.metrics.thro_hint = cur_thro;
+#endif
 			kbdev->pm.backend.metrics.gpu_active = true;
 		}
 	}

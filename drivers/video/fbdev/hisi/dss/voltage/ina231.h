@@ -32,7 +32,7 @@
 #define LCD_RESUME        (1 << 2)
 #define INA231_OK         0
 #define INA231_FALSE      -1
-#define INA231_SAMPLE_TIME  3    //every 3s sampling value from ina231
+#define INA231_SAMPLE_TIME  3    // every 3s sampling value from ina231
 #define INA231_POWER_UNIT_CONVERSION    1000
 
 struct ina231_config {
@@ -45,12 +45,12 @@ struct ina231_config {
 
 	int shunt_lsb;
 	int shunt_max;
-	int bus_voltage_lsb;	/* uV */
+	int bus_voltage_lsb; /* uV */
 	int bus_voltage_max;
 
-	int current_lsb;	/* uA */
+	int current_lsb; /* uA */
 	int current_max;
-	int power_lsb;		/* uW */
+	int power_lsb; /* uW */
 	int power_max;
 };
 

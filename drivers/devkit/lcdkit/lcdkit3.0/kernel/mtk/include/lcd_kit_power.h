@@ -28,13 +28,20 @@
 #define VSN_NAME  "dsv_pos"
 #define VSP_NAME  "dsv_neg"
 /* vci */
-#define VCI_NAME  "vci"
+#define VCI_NAME  "lcd_vci"
 /* iovcc */
 #define IOVCC_NAME "iovcc"
 /* vdd */
 #define VDD_NAME  "vdd"
 /* gpio */
 #define GPIO_NAME "gpio"
+
+#define POWER_MODE 0
+#define POWER_NUMBER 1
+#define POWER_VOLTAGE 2
+
+#define LDO_ENABLE 1
+#define LDO_DISABLE 0
 
 enum {
 	WAIT_TYPE_US = 0,

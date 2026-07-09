@@ -1,90 +1,92 @@
-/* Copyright (c) 2013-2014, Hisilicon Tech. Co., Ltd. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 and
-* only version 2 as published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-* GNU General Public License for more details.
-*
-*/
+/* Copyright (c) 2013-2020, Hisilicon Tech. Co., Ltd. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat"
 
 #include "hisi_fb.h"
 
-/*
-** /sys/class/graphics/fb0/vsync_event
-*/
-#define VSYNC_CTRL_EXPIRE_COUNT	(4)
-#define MASKLAYER_BACKLIGHT_WAIT_VSYNC_COUNT  (2)
-
-#ifdef CONFIG_REPORT_VSYNC
-extern void mali_kbase_pm_report_vsync(int);
+#if defined(CONFIG_HISI_FB_AOD) && !defined(CONFIG_HISI_FB_970) || \
+	defined(CONFIG_HISI_FB_V350) || defined(CONFIG_FINGERPRINT)
+#include <huawei_platform/fingerprint_interface/fingerprint_interface.h>
 #endif
-extern int mipi_dsi_ulps_cfg(struct hisi_fb_data_type *hisifd, int enable);
-extern bool hisi_dss_check_reg_reload_status(struct hisi_fb_data_type *hisifd);
 
-void hisifb_masklayer_backlight_flag_config(struct hisi_fb_data_type *hisifd,
+/* /sys/class/graphics/fb0/vsync_event */
+#define VSYNC_CTRL_EXPIRE_COUNT 4
+#define MASKLAYER_BACKLIGHT_WAIT_VSYNC_COUNT 2
+
+void dpufb_masklayer_backlight_flag_config(struct dpu_fb_data_type *dpufd,
 	bool masklayer_backlight_flag)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return;
 	}
 
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
-		if (masklayer_backlight_flag == true) {
-			hisifd->masklayer_maxbacklight_flag = true;
-		}
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
+		if (masklayer_backlight_flag == true)
+			dpufd->masklayer_maxbacklight_flag = true;
 	}
 }
 
-static void hisifb_masklayer_backlight_notify(struct hisi_fb_data_type *hisifd)
+static void dpufb_masklayer_backlight_notify(struct dpu_fb_data_type *dpufd)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return;
 	}
 
-	if (hisifd->index == PRIMARY_PANEL_IDX) {
-		if (hisifd->masklayer_backlight_notify_wq != NULL) {
-			queue_work(hisifd->masklayer_backlight_notify_wq, &hisifd->masklayer_backlight_notify_work);
-		}
+	if (dpufd->index == PRIMARY_PANEL_IDX) {
+		if (dpufd->masklayer_backlight_notify_wq)
+			queue_work(dpufd->masklayer_backlight_notify_wq, &dpufd->masklayer_backlight_notify_work);
 	}
 }
 
-void hisifb_masklayer_backlight_notify_handler(struct work_struct *work)
+static bool is_primary_panel_at_diff_soc(struct dpu_fb_data_type *dpufd)
 {
-	static uint32_t vsync_count = 0;
-	struct hisi_fb_data_type *hisifd = NULL;
+	return ((dpufd->index == PRIMARY_PANEL_IDX) &&
+			(g_dss_version_tag != FB_ACCEL_KIRIN970));
+}
 
-	if (NULL == work) {
-		HISI_FB_ERR("work is NULL.\n");
+void dpufb_masklayer_backlight_notify_handler(struct work_struct *work)
+{
+	static uint32_t vsync_count;
+	struct dpu_fb_data_type *dpufd = NULL;
+
+	if (!work) {
+		DPU_FB_ERR("work is NULL.\n");
 		return;
 	}
 
-	hisifd = container_of(work, struct hisi_fb_data_type, masklayer_backlight_notify_work);
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL.\n");
+	dpufd = container_of(work, struct dpu_fb_data_type, masklayer_backlight_notify_work);
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL.\n");
 		return;
 	}
 
-	//CONFIG_SH_AOD_ENABLE
-	if ((hisifd->index == PRIMARY_PANEL_IDX) && ((g_dss_version_tag == FB_ACCEL_DSSV501)
-        || (g_dss_version_tag == FB_ACCEL_DSSV330) || (g_dss_version_tag == FB_ACCEL_DSSV510) || (g_dss_version_tag == FB_ACCEL_DSSV350))) {
-		if (g_debug_online_vsync) {
-			HISI_FB_DEBUG("flag=%d, vsync_count=%d.\n", hisifd->masklayer_maxbacklight_flag, vsync_count);
-		}
+	if (is_primary_panel_at_diff_soc(dpufd)) {
+		if (g_debug_online_vsync)
+			DPU_FB_DEBUG("flag=%d, vsync_count=%d.\n", dpufd->masklayer_maxbacklight_flag, vsync_count);
 
-		if (hisifd->masklayer_maxbacklight_flag == true) {
+		if (dpufd->masklayer_maxbacklight_flag == true) {
 			vsync_count += 1;
 			if (vsync_count == MASKLAYER_BACKLIGHT_WAIT_VSYNC_COUNT) {
-				HISI_FB_INFO("mask layer max backlight done notify.\n");
+				DPU_FB_INFO("mask layer max backlight done notify.\n");
 				vsync_count = 0;
-				hisifd->masklayer_maxbacklight_flag = false;
+				dpufd->masklayer_maxbacklight_flag = false;
+#if defined(CONFIG_HISI_FB_V501) || defined(CONFIG_HISI_FB_V330) || defined(CONFIG_HISI_FB_V510) || \
+	defined(CONFIG_HISI_FB_V320) || defined(CONFIG_HISI_FB_V350) || defined(CONFIG_FINGERPRINT)
+				ud_fp_on_hbm_completed();
+#endif
 			}
 		} else {
 			vsync_count = 0;
@@ -92,57 +94,42 @@ void hisifb_masklayer_backlight_notify_handler(struct work_struct *work)
 	}
 }
 
-void hisifb_frame_updated(struct hisi_fb_data_type *hisifd)
+void dpufb_frame_updated(struct dpu_fb_data_type *dpufd)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return;
 	}
 
-	if (hisifd->vsync_ctrl.vsync_report_fnc) {
-		atomic_inc(&(hisifd->vsync_ctrl.buffer_updated));
-	}
+	if (dpufd->vsync_ctrl.vsync_report_fnc)
+		atomic_inc(&(dpufd->vsync_ctrl.buffer_updated));
 }
 
-void hisifb_vsync_isr_handler(struct hisi_fb_data_type *hisifd)
+void dpufb_vsync_isr_handler(struct dpu_fb_data_type *dpufd)
 {
-	struct hisifb_vsync *vsync_ctrl = NULL;
-	struct hisi_fb_panel_data *pdata = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
+	struct dpu_fb_panel_data *pdata = NULL;
 	int buffer_updated = 0;
 	ktime_t pre_vsync_timestamp;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
-		return;
-	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	pdata = dev_get_platdata(&hisifd->pdev->dev);
-	if (NULL == pdata) {
-		HISI_FB_ERR("pdata is NULL");
-		return;
-	}
+	dpu_check_and_no_retval(!dpufd, ERR, "dpufd is NULL\n");
+
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	pdata = dev_get_platdata(&dpufd->pdev->dev);
+	dpu_check_and_no_retval(!pdata, ERR, "pdata is NULL\n");
 
 	pre_vsync_timestamp = vsync_ctrl->vsync_timestamp;
 	vsync_ctrl->vsync_timestamp = ktime_get();
 
-	hisifb_masklayer_backlight_notify(hisifd);
+	dpufb_masklayer_backlight_notify(dpufd);
 
-	if (hisifd->vsync_ctrl.vsync_enabled) {
+	if (dpufd->vsync_ctrl.vsync_enabled)
 		wake_up_interruptible_all(&(vsync_ctrl->vsync_wait));
-	}
 
-	if (hisifd->panel_info.vsync_ctrl_type != VSYNC_CTRL_NONE) {
+	if (dpufd->panel_info.vsync_ctrl_type != VSYNC_CTRL_NONE) {
 		spin_lock(&vsync_ctrl->spin_lock);
 		if (vsync_ctrl->vsync_ctrl_expire_count) {
 			vsync_ctrl->vsync_ctrl_expire_count--;
-
-			if (vsync_ctrl->vsync_ctrl_expire_count == 1) {
-				if (hisifd->panel_info.fps_updt_support
-					&& (!hisifd->panel_info.fps_updt_panel_only)
-					&& pdata->lcd_fps_scence_handle) {
-					pdata->lcd_fps_scence_handle(hisifd->pdev, LCD_FPS_SCENCE_IDLE);
-				}
-			}
 
 			if (vsync_ctrl->vsync_ctrl_expire_count == 0)
 				schedule_work(&vsync_ctrl->vsync_ctrl_work);
@@ -150,118 +137,95 @@ void hisifb_vsync_isr_handler(struct hisi_fb_data_type *hisifd)
 		spin_unlock(&vsync_ctrl->spin_lock);
 	}
 
-	if (vsync_ctrl->vsync_report_fnc != NULL) {
-		if (hisifd->vsync_ctrl.vsync_enabled) {
+	if (vsync_ctrl->vsync_report_fnc) {
+		if (dpufd->vsync_ctrl.vsync_enabled)
 			buffer_updated = atomic_dec_return(&(vsync_ctrl->buffer_updated));
-		} else {
+		else
 			buffer_updated = 1;
-		}
 
-		if (buffer_updated < 0) {
-			atomic_cmpxchg(&(vsync_ctrl->buffer_updated), buffer_updated, 1);
-		} else if (is_mipi_video_panel(hisifd)){
+		if (buffer_updated < 0)
+			atomic_cmpxchg(&(vsync_ctrl->buffer_updated), buffer_updated, 1);  /*lint !e571*/
+		else if (is_mipi_video_panel(dpufd))
 			vsync_ctrl->vsync_report_fnc(0);
-		} else {
+		else
 			vsync_ctrl->vsync_report_fnc(buffer_updated);
-		}
 	}
 
-	if (g_debug_online_vsync) {
-		HISI_FB_INFO("fb%d, VSYNC=%llu, time_diff=%llu.\n", hisifd->index,
-			ktime_to_ns(hisifd->vsync_ctrl.vsync_timestamp),
-			(ktime_to_ns(hisifd->vsync_ctrl.vsync_timestamp) - ktime_to_ns(pre_vsync_timestamp)));
-	}
+	if (g_debug_online_vsync)
+		DPU_FB_INFO("fb%d, VSYNC=%llu, time_diff=%llu.\n", dpufd->index,
+			ktime_to_ns(dpufd->vsync_ctrl.vsync_timestamp),
+			(ktime_to_ns(dpufd->vsync_ctrl.vsync_timestamp) - ktime_to_ns(pre_vsync_timestamp)));
 }
 
-static int vsync_timestamp_changed(struct hisi_fb_data_type *hisifd,
+static int vsync_timestamp_changed(struct dpu_fb_data_type *dpufd,
 	ktime_t prev_timestamp)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return -EINVAL;
 	}
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-	return !(prev_timestamp == hisifd->vsync_ctrl.vsync_timestamp);
-#else
-	return !ktime_equal(prev_timestamp, hisifd->vsync_ctrl.vsync_timestamp);
-#endif
+	return !(prev_timestamp == dpufd->vsync_ctrl.vsync_timestamp);
 }
 
-static ssize_t vsync_show_event(struct device *dev,
-	struct device_attribute *attr, char *buf)
+static ssize_t vsync_show_event(struct device *dev, struct device_attribute *attr, char *buf)
 {
-	ssize_t ret = -1;
-	int vsync_flag = 0;
+	ssize_t ret;
+	int vsync_flag;
 	bool report_flag = false;
 	struct fb_info *fbi = NULL;
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisifb_secure *secure_ctrl = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpufb_secure *secure_ctrl = NULL;
 	ktime_t prev_timestamp;
 
-	if (NULL == dev) {
-		HISI_FB_ERR("NULL Pointer.\n");
-		return -1;
-	}
+	dpu_check_and_return((!dev), -1, ERR, "dev is NULL.\n");
 
 	fbi = dev_get_drvdata(dev);
-	if (NULL == fbi) {
-		HISI_FB_ERR("NULL Pointer.\n");
-		return -1;
-	}
+	dpu_check_and_return((!fbi), -1, ERR, "fbi is NULL.\n");
 
-	hisifd = (struct hisi_fb_data_type *)fbi->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("NULL Pointer.\n");
-		return -1;
-	}
+	dpufd = (struct dpu_fb_data_type *)fbi->par;
+	dpu_check_and_return((!dpufd), -1, ERR, "dpufd is NULL.\n");
 
-	if (NULL == buf) {
-		HISI_FB_ERR("NULL Pointer.\n");
-		return -1;
-	}
+	dpu_check_and_return((!buf), -1, ERR, "buf is NULL.\n");
 
-	secure_ctrl = &(hisifd->secure_ctrl);
-	prev_timestamp = hisifd->vsync_ctrl.vsync_timestamp;
+	secure_ctrl = &(dpufd->secure_ctrl);
+	prev_timestamp = dpufd->vsync_ctrl.vsync_timestamp;
 
 	/*lint -e666*/
-	ret = wait_event_interruptible(hisifd->vsync_ctrl.vsync_wait,
-		(vsync_timestamp_changed(hisifd, prev_timestamp) && hisifd->vsync_ctrl.vsync_enabled)
-		|| (!!secure_ctrl->tui_need_switch));
+	ret = wait_event_interruptible(dpufd->vsync_ctrl.vsync_wait, /*lint !e578*/
+		(vsync_timestamp_changed(dpufd, prev_timestamp) && dpufd->vsync_ctrl.vsync_enabled) ||
+		(!!secure_ctrl->tui_need_switch));
 	/*lint +e666*/
 
-	vsync_flag = (vsync_timestamp_changed(hisifd, prev_timestamp) &&
-						hisifd->vsync_ctrl.vsync_enabled);
+	vsync_flag = (vsync_timestamp_changed(dpufd, prev_timestamp) && dpufd->vsync_ctrl.vsync_enabled);
 
 	report_flag = !!secure_ctrl->tui_need_switch;
 
 	if (vsync_flag && report_flag) {
-		HISI_FB_INFO("report (secure_event = %d) to hwc with vsync at (frame_no = %d).\n",
-						secure_ctrl->secure_event, hisifd->ov_req.frame_no);
+		DPU_FB_INFO("report (secure_event = %d) to hwc with vsync at (frame_no = %d).\n",
+			secure_ctrl->secure_event, dpufd->ov_req.frame_no);
 
-		ret = snprintf(buf, PAGE_SIZE, "VSYNC=%llu, SecureEvent=%d \n",
-			ktime_to_ns(hisifd->vsync_ctrl.vsync_timestamp), secure_ctrl->secure_event);
+		ret = snprintf(buf, PAGE_SIZE, "VSYNC=%llu, SecureEvent=%d\n",
+			ktime_to_ns(dpufd->vsync_ctrl.vsync_timestamp), secure_ctrl->secure_event);
 		buf[strlen(buf) + 1] = '\0';
-		if (secure_ctrl->secure_event == DSS_SEC_DISABLE) {
+		if (secure_ctrl->secure_event == DSS_SEC_DISABLE)
 			secure_ctrl->tui_need_switch = 0;
-		}
 
 	} else if (vsync_flag) {
-		ret = snprintf(buf, PAGE_SIZE, "VSYNC=%llu, xxxxxxEvent=x \n",
-			ktime_to_ns(hisifd->vsync_ctrl.vsync_timestamp));
+		ret = snprintf(buf, PAGE_SIZE, "VSYNC=%llu, xxxxxxEvent=x\n",
+			ktime_to_ns(dpufd->vsync_ctrl.vsync_timestamp));
 		buf[strlen(buf) + 1] = '\0';
 		secure_ctrl->tui_need_skip_report = 0;
 
 	} else if (report_flag && !secure_ctrl->tui_need_skip_report) {
-		HISI_FB_INFO("report (secure_event = %d) to hwc at (frame_no = %d).\n",
-						secure_ctrl->secure_event, hisifd->ov_req.frame_no);
+		DPU_FB_INFO("report (secure_event = %d) to hwc at (frame_no = %d).\n",
+			secure_ctrl->secure_event, dpufd->ov_req.frame_no);
 
-		ret = snprintf(buf, PAGE_SIZE, "xxxxx=%llu, SecureEvent=%d \n",
-			ktime_to_ns(hisifd->vsync_ctrl.vsync_timestamp), secure_ctrl->secure_event);
+		ret = snprintf(buf, PAGE_SIZE, "xxxxx=%llu, SecureEvent=%d\n",
+			ktime_to_ns(dpufd->vsync_ctrl.vsync_timestamp), secure_ctrl->secure_event);
 		buf[strlen(buf) + 1] = '\0';
 		secure_ctrl->tui_need_skip_report = 1;
-		if (secure_ctrl->secure_event == DSS_SEC_DISABLE) {
+		if (secure_ctrl->secure_event == DSS_SEC_DISABLE)
 			secure_ctrl->tui_need_switch = 0;
-		}
 
 	} else {
 		return -1;
@@ -273,161 +237,165 @@ static ssize_t vsync_show_event(struct device *dev,
 static ssize_t vsync_timestamp_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
-	ssize_t ret = -1;
+	ssize_t ret;
 	struct fb_info *fbi = NULL;
-	struct hisi_fb_data_type *hisifd = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
 
-	if (NULL == dev) {
-		HISI_FB_ERR("NULL Pointer.\n");
+	if (!dev) {
+		DPU_FB_ERR("NULL Pointer.\n");
 		return -1;
 	}
 
 	fbi = dev_get_drvdata(dev);
-	if (NULL == fbi) {
-		HISI_FB_ERR("NULL Pointer.\n");
+	if (!fbi) {
+		DPU_FB_ERR("NULL Pointer.\n");
 		return -1;
 	}
 
-	hisifd = (struct hisi_fb_data_type *)fbi->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("NULL Pointer.\n");
+	dpufd = (struct dpu_fb_data_type *)fbi->par;
+	if (!dpufd) {
+		DPU_FB_ERR("NULL Pointer.\n");
 		return -1;
 	}
 
-	if (NULL == buf) {
-		HISI_FB_ERR("NULL Pointer.\n");
+	if (!buf) {
+		DPU_FB_ERR("NULL Pointer.\n");
 		return -1;
 	}
 
-	ret = snprintf(buf, PAGE_SIZE, "%llu \n",
-		ktime_to_ns(hisifd->vsync_ctrl.vsync_timestamp));
+	ret = snprintf(buf, PAGE_SIZE, "%llu\n", ktime_to_ns(dpufd->vsync_ctrl.vsync_timestamp));
 	buf[strlen(buf) + 1] = '\0';
 
 	return ret;
 }
 
-static DEVICE_ATTR(vsync_event, S_IRUGO, vsync_show_event, NULL);
-static DEVICE_ATTR(vsync_timestamp, S_IRUGO, vsync_timestamp_show, NULL);
+static DEVICE_ATTR(vsync_event, 0444, vsync_show_event, NULL);
+static DEVICE_ATTR(vsync_timestamp, 0444, vsync_timestamp_show, NULL);
 
-
-static void hisifb_vsync_ctrl_workqueue_handler(struct work_struct *work)
+static void dpufb_handle_vsync_ctrl(struct dpu_fb_data_type *dpufd,
+	struct dpufb_vsync *vsync_ctrl, struct dpu_fb_panel_data *pdata)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisifb_vsync *vsync_ctrl = NULL;
-	struct hisi_fb_panel_data *pdata = NULL;
 	unsigned long flags = 0;
 
-	vsync_ctrl = container_of(work, typeof(*vsync_ctrl), vsync_ctrl_work);
-	if (NULL == vsync_ctrl) {
-		HISI_FB_ERR("vsync_ctrl is NULL");
-		return;
-	}
-	hisifd = vsync_ctrl->hisifd;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
-		return;
-	}
-	pdata = dev_get_platdata(&hisifd->pdev->dev);
-	if (NULL == pdata) {
-		HISI_FB_ERR("pdata is NULL");
-		return;
-	}
-
-	down(&(hisifd->blank_sem));
-
-	if (!hisifd->panel_power_on) {
-		HISI_FB_INFO("fb%d, panel is power off!", hisifd->index);
-		up(&(hisifd->blank_sem));
-		return;
-	}
-
-	mutex_lock(&(vsync_ctrl->vsync_lock));
-	if (vsync_ctrl->vsync_ctrl_disabled_set &&
-		!vsync_ctrl->vsync_disable_enter_idle &&
-		(vsync_ctrl->vsync_ctrl_expire_count == 0) &&
-		vsync_ctrl->vsync_ctrl_enabled &&
+	if (vsync_ctrl->vsync_ctrl_disabled_set && !vsync_ctrl->vsync_disable_enter_idle &&
+		(vsync_ctrl->vsync_ctrl_expire_count == 0) && vsync_ctrl->vsync_ctrl_enabled &&
 		!vsync_ctrl->vsync_enabled && !vsync_ctrl->vsync_ctrl_offline_enabled) {
-		HISI_FB_DEBUG("fb%d, dss clk off!\n", hisifd->index);
+
+		DPU_FB_DEBUG("fb%d, dss clk off!\n", dpufd->index);
 
 		spin_lock_irqsave(&(vsync_ctrl->spin_lock), flags);
-		if (pdata->vsync_ctrl != NULL) {
-			pdata->vsync_ctrl(hisifd->pdev, 0);
-		} else {
-			HISI_FB_ERR("fb%d, vsync_ctrl not supported!\n", hisifd->index);
-		}
+		if (pdata->vsync_ctrl)
+			pdata->vsync_ctrl(dpufd->pdev, 0);
+		else
+			DPU_FB_ERR("fb%d, vsync_ctrl not supported!\n", dpufd->index);
 		vsync_ctrl->vsync_ctrl_enabled = 0;
 		vsync_ctrl->vsync_ctrl_disabled_set = 0;
 		spin_unlock_irqrestore(&(vsync_ctrl->spin_lock), flags);
 
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_MIPI_ULPS) {
-			mipi_dsi_ulps_cfg(hisifd, 0);
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_MIPI_ULPS)
+			mipi_dsi_ulps_cfg(dpufd, 0);
+
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF) {
+			if (dpufd->lp_fnc)
+				dpufd->lp_fnc(dpufd, true);
 		}
 
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF) {
-			if (hisifd->lp_fnc != NULL)
-				hisifd->lp_fnc(hisifd, true);
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_CLK_OFF) {
+
+			dpe_inner_clk_disable(dpufd);
+#if defined(CONFIG_HISI_FB_V320)
+			/* we cannot close aclk & pclk in watch cmd panel
+			 * because they can cause system reset (panic)
+			 */
+			dpe_common_clk_disable_mmbuf_clk(dpufd);
+#else
+			dpe_common_clk_disable(dpufd);
+#endif
+			mipi_dsi_clk_disable(dpufd);
 		}
 
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_CLK_OFF) {
-			dpe_inner_clk_disable(hisifd);
-			dpe_common_clk_disable(hisifd);
-			mipi_dsi_clk_disable(hisifd);
-		}
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF)
+			dpe_regulator_disable(dpufd);
 
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF) {
-			dpe_regulator_disable(hisifd);
-		}
-
-		hisifd->enter_idle = true;
-		//hisifb_buf_sync_suspend(hisifd);
+		dpufd->enter_idle = true;
 	}
+}
+
+static void dpufb_vsync_ctrl_workqueue_handler(struct work_struct *work)
+{
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
+	struct dpu_fb_panel_data *pdata = NULL;
+
+	vsync_ctrl = container_of(work, typeof(*vsync_ctrl), vsync_ctrl_work);
+	dpu_check_and_no_retval((!vsync_ctrl), ERR, "vsync_ctrl is NULL.\n");
+
+	dpufd = vsync_ctrl->dpufd;
+	dpu_check_and_no_retval((!dpufd), ERR, "dpufd is NULL.\n");
+
+	pdata = dev_get_platdata(&dpufd->pdev->dev);
+	dpu_check_and_no_retval((!pdata), ERR, "pdata is NULL.\n");
+
+	down(&(dpufd->blank_sem));
+	down(&dpufd->blank_sem_effect_hiace);
+	down(&dpufd->blank_sem_effect_gmp);
+
+	if (!dpufd->panel_power_on) {
+		DPU_FB_INFO("fb%d, panel is power off!\n", dpufd->index);
+		goto exit;
+	}
+
+	mutex_lock(&(vsync_ctrl->vsync_lock));
+	dpufb_handle_vsync_ctrl(dpufd, vsync_ctrl, pdata);
 	mutex_unlock(&(vsync_ctrl->vsync_lock));
 
 	if (vsync_ctrl->vsync_report_fnc != NULL) {
-		if (is_mipi_video_panel(hisifd)) {
+		if (is_mipi_video_panel(dpufd))
 			vsync_ctrl->vsync_report_fnc(0);
-		} else {
+		else
 			vsync_ctrl->vsync_report_fnc(1);
-		}
 	}
 
-	up(&(hisifd->blank_sem));
+exit:
+	up(&dpufd->blank_sem_effect_gmp);
+	up(&dpufd->blank_sem_effect_hiace);
+	up(&(dpufd->blank_sem));
 }
 
-void hisifb_vsync_register(struct platform_device *pdev)
+void dpufb_vsync_register(struct platform_device *pdev)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 
-	if (NULL == pdev) {
-		HISI_FB_ERR("pdev is NULL");
+	if (!pdev) {
+		DPU_FB_ERR("pdev is NULL\n");
 		return;
 	}
-	hisifd = platform_get_drvdata(pdev);
-	if (NULL == hisifd) {
-		dev_err(&pdev->dev, "hisifd is NULL");
+	dpufd = platform_get_drvdata(pdev);
+	if (!dpufd) {
+		dev_err(&pdev->dev, "dpufd is NULL\n");
 		return;
 	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		dev_err(&pdev->dev, "vsync_ctrl is NULL");
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	if (!vsync_ctrl) {
+		dev_err(&pdev->dev, "vsync_ctrl is NULL\n");
 		return;
 	}
 
 	if (vsync_ctrl->vsync_created)
 		return;
-
-	vsync_ctrl->hisifd = hisifd;
+	mutex_init(&(vsync_ctrl->vsync_lock));
+	mutex_lock(&(vsync_ctrl->vsync_lock));
+	vsync_ctrl->dpufd = dpufd;
 	vsync_ctrl->vsync_infinite = 0;
 	vsync_ctrl->vsync_enabled = 0;
 	vsync_ctrl->vsync_ctrl_offline_enabled = 0;
+	mutex_unlock(&(vsync_ctrl->vsync_lock));
 	vsync_ctrl->vsync_timestamp = ktime_get();
 	vsync_ctrl->vactive_timestamp = ktime_get();
 	init_waitqueue_head(&(vsync_ctrl->vsync_wait));
 	spin_lock_init(&(vsync_ctrl->spin_lock));
-	INIT_WORK(&vsync_ctrl->vsync_ctrl_work, hisifb_vsync_ctrl_workqueue_handler);
-
-	mutex_init(&(vsync_ctrl->vsync_lock));
+	INIT_WORK(&vsync_ctrl->vsync_ctrl_work, dpufb_vsync_ctrl_workqueue_handler);
 
 	atomic_set(&(vsync_ctrl->buffer_updated), 1);
 #ifdef CONFIG_REPORT_VSYNC
@@ -436,31 +404,31 @@ void hisifb_vsync_register(struct platform_device *pdev)
 	vsync_ctrl->vsync_report_fnc = NULL;
 #endif
 
-	if (hisifd->sysfs_attrs_append_fnc != NULL) {
-		hisifd->sysfs_attrs_append_fnc(hisifd, &dev_attr_vsync_event.attr);
-		hisifd->sysfs_attrs_append_fnc(hisifd, &dev_attr_vsync_timestamp.attr);
+	if (dpufd->sysfs_attrs_append_fnc) {
+		dpufd->sysfs_attrs_append_fnc(dpufd, &dev_attr_vsync_event.attr);
+		dpufd->sysfs_attrs_append_fnc(dpufd, &dev_attr_vsync_timestamp.attr);
 	}
 
 	vsync_ctrl->vsync_created = 1;
 }
 
-void hisifb_vsync_unregister(struct platform_device *pdev)
+void dpufb_vsync_unregister(struct platform_device *pdev)
 {
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 
-	if (NULL == pdev) {
-		HISI_FB_ERR("pdev is NULL");
+	if (!pdev) {
+		DPU_FB_ERR("pdev is NULL\n");
 		return;
 	}
-	hisifd = platform_get_drvdata(pdev);
-	if (NULL == hisifd) {
-		dev_err(&pdev->dev, "hisifd is NULL");
+	dpufd = platform_get_drvdata(pdev);
+	if (!dpufd) {
+		dev_err(&pdev->dev, "dpufd is NULL\n");
 		return;
 	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		dev_err(&pdev->dev, "vsync_ctrl is NULL");
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	if (!vsync_ctrl) {
+		dev_err(&pdev->dev, "vsync_ctrl is NULL\n");
 		return;
 	}
 
@@ -470,149 +438,140 @@ void hisifb_vsync_unregister(struct platform_device *pdev)
 	vsync_ctrl->vsync_created = 0;
 }
 
-void hisifb_set_vsync_activate_state(struct hisi_fb_data_type *hisifd, bool infinite)
+void dpufb_set_vsync_activate_state(struct dpu_fb_data_type *dpufd, bool infinite)
 {
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return;
 	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		HISI_FB_ERR("vsync_ctrl is NULL");
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	if (!vsync_ctrl) {
+		DPU_FB_ERR("vsync_ctrl is NULL\n");
 		return;
 	}
 
-	if (hisifd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
+	if (dpufd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
 		return;
 
 	mutex_lock(&(vsync_ctrl->vsync_lock));
 
-	if (infinite) {
+	if (infinite)
 		vsync_ctrl->vsync_infinite_count += 1;
-	} else {
+	else
 		vsync_ctrl->vsync_infinite_count -= 1;
-	}
 
-	if (vsync_ctrl->vsync_infinite_count >= 1) {
+	if (vsync_ctrl->vsync_infinite_count >= 1)
 		vsync_ctrl->vsync_infinite = 1;
-	}
 
-	if (vsync_ctrl->vsync_infinite_count == 0) {
+	if (vsync_ctrl->vsync_infinite_count == 0)
 		vsync_ctrl->vsync_infinite = 0;
-	}
 
 	mutex_unlock(&(vsync_ctrl->vsync_lock));
 }
 
-void hisifb_activate_vsync(struct hisi_fb_data_type *hisifd)
+static bool dpufb_vsync_ctrl_enabled(struct dpu_fb_data_type *dpufd, struct dpufb_vsync *vsync_ctrl)
 {
-	struct hisi_fb_panel_data *pdata = NULL;
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	if (vsync_ctrl->vsync_ctrl_enabled == 0) {
+		DPU_FB_DEBUG("fb%d, dss clk on!\n", dpufd->index);
+
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF)
+			dpe_regulator_enable(dpufd);
+
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_CLK_OFF) {
+			mipi_dsi_clk_enable(dpufd);
+#ifdef CONFIG_HISI_FB_V320
+			/* we cannot close aclk & pclk in watch cmd panel
+			 * because they can cause system reset (panic)
+			 */
+			(void)dpe_common_clk_enable_mmbuf_clk(dpufd);
+#else
+			(void)dpe_common_clk_enable(dpufd);
+#endif
+			(void)dpe_inner_clk_enable(dpufd);
+		}
+
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF) {
+			if (dpufd->lp_fnc != NULL)
+				dpufd->lp_fnc(dpufd, false);
+		}
+
+		if (dpufd->panel_info.vsync_ctrl_type & VSYNC_CTRL_MIPI_ULPS)
+			mipi_dsi_ulps_cfg(dpufd, 1);
+
+		vsync_ctrl->vsync_ctrl_enabled = 1;
+		return true;
+	} else if (vsync_ctrl->vsync_ctrl_isr_enabled) {
+		vsync_ctrl->vsync_ctrl_isr_enabled = 0;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void dpufb_activate_vsync(struct dpu_fb_data_type *dpufd)
+{
+	struct dpu_fb_panel_data *pdata = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 	unsigned long flags = 0;
-	int clk_enabled = 0;
+	bool clk_enabled = false;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
-		return;
-	}
-	pdata = dev_get_platdata(&hisifd->pdev->dev);
-	if (NULL == pdata) {
-		HISI_FB_ERR("pdata is NULL");
-		return;
-	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		HISI_FB_ERR("vsync_ctrl is NULL");
-		return;
-	}
+	dpu_check_and_no_retval((!dpufd), ERR, "dpufd is NULL.\n");
 
-	if (hisifd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
+	pdata = dev_get_platdata(&dpufd->pdev->dev);
+	dpu_check_and_no_retval((!pdata), ERR, "pdata is NULL.\n");
+
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	dpu_check_and_no_retval((!vsync_ctrl), ERR, "vsync_ctrl is NULL.\n");
+
+	if (dpufd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
 		return;
 
 	mutex_lock(&(vsync_ctrl->vsync_lock));
-
-	if (vsync_ctrl->vsync_ctrl_enabled == 0) {
-		HISI_FB_DEBUG("fb%d, dss clk on!\n", hisifd->index);
-
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF) {
-			dpe_regulator_enable(hisifd);
-		}
-
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_CLK_OFF) {
-			mipi_dsi_clk_enable(hisifd);
-			(void)dpe_common_clk_enable(hisifd);
-			(void)dpe_inner_clk_enable(hisifd);
-		}
-
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_VCC_OFF) {
-			if (hisifd->lp_fnc != NULL)
-				hisifd->lp_fnc(hisifd, false);
-		}
-
-		if (hisifd->panel_info.vsync_ctrl_type & VSYNC_CTRL_MIPI_ULPS) {
-			mipi_dsi_ulps_cfg(hisifd, 1);
-		}
-
-		vsync_ctrl->vsync_ctrl_enabled = 1;
-		clk_enabled = 1;
-	} else if (vsync_ctrl->vsync_ctrl_isr_enabled) {
-		clk_enabled = 1;
-		vsync_ctrl->vsync_ctrl_isr_enabled = 0;
-	} else {
-		;
-	}
+	clk_enabled = dpufb_vsync_ctrl_enabled(dpufd, vsync_ctrl);
 
 	spin_lock_irqsave(&(vsync_ctrl->spin_lock), flags);
 	vsync_ctrl->vsync_ctrl_disabled_set = 0;
 	vsync_ctrl->vsync_ctrl_expire_count = 0;
 
-	if (hisifd->panel_info.fps_updt_support
-		&& (!hisifd->panel_info.fps_updt_panel_only)
-		&& pdata->lcd_fps_scence_handle) {
-		pdata->lcd_fps_scence_handle(hisifd->pdev, LCD_FPS_SCENCE_NORMAL);
-	}
-
 	if (clk_enabled) {
-		if (pdata->vsync_ctrl != NULL) {
-			pdata->vsync_ctrl(hisifd->pdev, 1);
-		} else {
-			HISI_FB_ERR("fb%d, vsync_ctrl not supported!\n", hisifd->index);
-		}
+		if (pdata->vsync_ctrl)
+			pdata->vsync_ctrl(dpufd->pdev, 1);
+		else
+			DPU_FB_ERR("fb%d, vsync_ctrl not supported!\n", dpufd->index);
 	}
 	spin_unlock_irqrestore(&(vsync_ctrl->spin_lock), flags);
 
 	mutex_unlock(&(vsync_ctrl->vsync_lock));
 }
 
-void hisifb_deactivate_vsync(struct hisi_fb_data_type *hisifd)
+void dpufb_deactivate_vsync(struct dpu_fb_data_type *dpufd)
 {
-	struct hisi_fb_panel_data *pdata = NULL;
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	struct dpu_fb_panel_data *pdata = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 	unsigned long flags = 0;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return;
 	}
-	pdata = dev_get_platdata(&hisifd->pdev->dev);
-	if (NULL == pdata) {
-		HISI_FB_ERR("pdata is NULL");
+	pdata = dev_get_platdata(&dpufd->pdev->dev);
+	if (!pdata) {
+		DPU_FB_ERR("pdata is NULL\n");
 		return;
 	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		HISI_FB_ERR("vsync_ctrl is NULL");
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	if (!vsync_ctrl) {
+		DPU_FB_ERR("vsync_ctrl is NULL\n");
 		return;
 	}
 
-	if (hisifd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
+	if (dpufd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
 		return;
 
-	if (hisifd->secure_ctrl.secure_event == DSS_SEC_ENABLE) {
+	if (dpufd->secure_ctrl.secure_event == DSS_SEC_ENABLE)
 		return;
-	}
 
 	mutex_lock(&(vsync_ctrl->vsync_lock));
 
@@ -627,53 +586,32 @@ void hisifb_deactivate_vsync(struct hisi_fb_data_type *hisifd)
 	mutex_unlock(&(vsync_ctrl->vsync_lock));
 }
 
-int hisifb_vsync_ctrl(struct fb_info *info, const void __user *argp)
+int dpufb_vsync_ctrl(struct fb_info *info, const void __user *argp)
 {
-	int ret = 0;
-	struct hisi_fb_data_type *hisifd = NULL;
-	struct hisi_fb_panel_data *pdata = NULL;
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	int ret;
+	struct dpu_fb_data_type *dpufd = NULL;
+	struct dpu_fb_panel_data *pdata = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 	int enable = 0;
 
-	if (NULL == info) {
-		HISI_FB_ERR("vsync ctrl info NULL Pointer!\n");
-		return -EINVAL;
-	}
+	dpu_check_and_return((!info), -EINVAL, ERR, "vsync ctrl info NULL Pointer!\n");
 
-	hisifd = (struct hisi_fb_data_type *)info->par;
-	if (NULL == hisifd) {
-		HISI_FB_ERR("vsync ctrl hisifd NULL Pointer!\n");
-		return -EINVAL;
-	}
+	dpufd = (struct dpu_fb_data_type *)info->par;
+	dpu_check_and_return((!dpufd), -EINVAL, ERR, "vsync ctrl dpufd NULL Pointer!\n");
 
-	if ((hisifd->index != PRIMARY_PANEL_IDX)
-		&& (hisifd->index != EXTERNAL_PANEL_IDX)) {
-		HISI_FB_ERR("fb%d, vsync ctrl not supported!\n", hisifd->index);
-		return -EINVAL;
-	}
+	dpu_check_and_return(((dpufd->index != PRIMARY_PANEL_IDX) && (dpufd->index != EXTERNAL_PANEL_IDX)),
+		-EINVAL, ERR, "fb%d, vsync ctrl not supported!\n", dpufd->index);
 
-	pdata = dev_get_platdata(&hisifd->pdev->dev);
-	if (NULL == pdata) {
-		HISI_FB_ERR("NULL Pointer!\n");
-		return -EINVAL;
-	}
+	pdata = dev_get_platdata(&dpufd->pdev->dev);
+	dpu_check_and_return((!pdata), -EINVAL, ERR, "pdata NULL Pointer!\n");
 
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		HISI_FB_ERR("NULL Pointer!\n");
-		return -EINVAL;
-	}
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	dpu_check_and_return((!vsync_ctrl), -EINVAL, ERR, "vsync_ctrl NULL Pointer!\n");
 
-	if (NULL == argp) {
-		HISI_FB_ERR("NULL Pointer!\n");
-		return -EINVAL;
-	}
+	dpu_check_and_return((!argp), -EINVAL, ERR, "argp NULL Pointer!\n");
 
 	ret = copy_from_user(&enable, argp, sizeof(enable));
-	if (ret) {
-		HISI_FB_ERR("hisifb_vsync_ctrl ioctl failed!\n");
-		return ret;
-	}
+	dpu_check_and_return(ret, ret, ERR, "vsync ctrl ioctl failed!\n");
 
 	enable = (enable) ? 1 : 0;
 
@@ -685,90 +623,91 @@ int hisifb_vsync_ctrl(struct fb_info *info, const void __user *argp)
 	}
 
 	if (g_debug_online_vsync)
-		HISI_FB_INFO("fb%d, enable=%d!\n", hisifd->index, enable);
+		DPU_FB_INFO("fb%d, enable=%d!\n", dpufd->index, enable);
 
 	vsync_ctrl->vsync_enabled = enable;
 
 	mutex_unlock(&(vsync_ctrl->vsync_lock));
 
-	down(&hisifd->blank_sem);
+	down(&dpufd->blank_sem);
 
-	if (!hisifd->panel_power_on) {
-		HISI_FB_INFO("fb%d, panel is power off!", hisifd->index);
-		up(&hisifd->blank_sem);
+	if (!dpufd->panel_power_on) {
+		DPU_FB_INFO("fb%d, panel is power off!", dpufd->index);
+		up(&dpufd->blank_sem);
 		return 0;
 	}
 
-	if (enable) {
-		hisifb_activate_vsync(hisifd);
-	} else {
-		hisifb_deactivate_vsync(hisifd);
-	}
+	if (enable)
+		dpufb_activate_vsync(dpufd);
+	else
+		dpufb_deactivate_vsync(dpufd);
 
-	up(&hisifd->blank_sem);
+	up(&dpufd->blank_sem);
 
 	return 0;
 }
 
-void hisifb_vsync_disable_enter_idle(struct hisi_fb_data_type *hisifd, bool disable)
+void dpufb_vsync_disable_enter_idle(struct dpu_fb_data_type *dpufd, bool disable)
 {
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return;
 	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		HISI_FB_ERR("vsync_ctrl is NULL");
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	if (!vsync_ctrl) {
+		DPU_FB_ERR("vsync_ctrl is NULL\n");
 		return;
 	}
 
-	if (hisifd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
+	if (dpufd->panel_info.vsync_ctrl_type == VSYNC_CTRL_NONE)
 		return;
 
 	mutex_lock(&(vsync_ctrl->vsync_lock));
-	if (disable) {
+	if (disable)
 		vsync_ctrl->vsync_disable_enter_idle = 1;
-	} else {
+	else
 		vsync_ctrl->vsync_disable_enter_idle = 0;
-	}
 	mutex_unlock(&(vsync_ctrl->vsync_lock));
 }
 
-int hisifb_vsync_resume(struct hisi_fb_data_type *hisifd)
+int dpufb_vsync_resume(struct dpu_fb_data_type *dpufd)
 {
-	struct hisifb_vsync *vsync_ctrl = NULL;
+	struct dpufb_vsync *vsync_ctrl = NULL;
 
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return -EINVAL;
 	}
-	vsync_ctrl = &(hisifd->vsync_ctrl);
-	if (NULL == vsync_ctrl) {
-		HISI_FB_ERR("vsync_ctrl is NULL");
+	vsync_ctrl = &(dpufd->vsync_ctrl);
+	if (!vsync_ctrl) {
+		DPU_FB_ERR("vsync_ctrl is NULL\n");
 		return -EINVAL;
 	}
 
+	mutex_lock(&(vsync_ctrl->vsync_lock));
 	vsync_ctrl->vsync_ctrl_expire_count = 0;
 	vsync_ctrl->vsync_ctrl_disabled_set = 0;
 	vsync_ctrl->vsync_ctrl_enabled = 1;
 	vsync_ctrl->vsync_ctrl_isr_enabled = 1;
-	//vsync_ctrl->vsync_infinite = 0;
+	mutex_unlock(&(vsync_ctrl->vsync_lock));
 
 	atomic_set(&(vsync_ctrl->buffer_updated), 1);
 
 	return 0;
 }
 
-int hisifb_vsync_suspend(struct hisi_fb_data_type *hisifd)
+int dpufb_vsync_suspend(struct dpu_fb_data_type *dpufd)
 {
-	if (NULL == hisifd) {
-		HISI_FB_ERR("hisifd is NULL");
+	if (!dpufd) {
+		DPU_FB_ERR("dpufd is NULL\n");
 		return -EINVAL;
 	}
 
-	hisifd->vsync_ctrl.vsync_enabled = 0;
+	dpufd->vsync_ctrl.vsync_enabled = 0;
+
 	return 0;
 }
 #pragma GCC diagnostic pop
+

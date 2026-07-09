@@ -20,15 +20,28 @@
 #define __LCD_KIT_SYSFS_HS_H_
 /* oem info */
 #define OEM_INFO_SIZE_MAX 500
+#define OEM_INFO_BLOCK_NUM 1
 /* 2d barcode */
 #define BARCODE_LENGTH    46
 #define BARCODE_BLOCK_NUM 3
 #define BARCODE_BLOCK_LEN 16
+/* project id */
+#define PROJECT_ID_LENGTH 10
+
+#define INVALID_TYPE (-1)
+#define DATA_INDEX 1
+
+#define ORDER_DELAY 200
 
 enum oem_type {
-	PRODUCT_ID_TYPE,
+	PROJECT_ID_TYPE,
 	BARCODE_2D_TYPE,
 	BRIGHTNESS_TYPE,
 };
 
+/* oem info cmd */
+struct oem_info_cmd {
+	unsigned char type;
+	int (*func)(char *oem_data);
+};
 #endif

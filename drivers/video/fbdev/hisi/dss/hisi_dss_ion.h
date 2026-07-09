@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2019, Hisilicon Tech. Co., Ltd. All rights reserved.
+/* Copyright (c) 2018-2020, Hisilicon Tech. Co., Ltd. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -6,7 +6,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  */
@@ -21,16 +21,10 @@
 #include <linux/version.h>
 #include <linux/hisi-iommu.h>
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-#define CONFIG_ION_ALLOC_BUFFER (0)
+#if !defined(CONFIG_SWITCH) || !defined(CONFIG_DP_AUX_SWITCH) || !defined(CONFIG_HW_DP_SOURCE)
+#define CONFIG_DP_ENABLE 0
 #else
-#define CONFIG_ION_ALLOC_BUFFER (1)
-#endif
-
-#if !defined(CONFIG_SWITCH)
-#define CONFIG_DP_ENABLE (0)
-#else
-#define CONFIG_DP_ENABLE (1)
+#define CONFIG_DP_ENABLE 1
 #endif
 
 struct iommu_page_info {
@@ -39,15 +33,9 @@ struct iommu_page_info {
 	struct list_head list;
 };
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-void *hisifb_iommu_map_kernel(struct sg_table *sg_table, size_t size);
-void hisifb_iommu_unmap_kernel(const void *vaddr);
-#else
-int hisifb_get_ion_phys(struct fb_info *info, void __user *arg);
-int hisifb_ion_phys(struct ion_client *client, struct ion_handle *handle,
-	struct device *dev, unsigned long *addr, size_t *len);
-#endif
+void *dpufb_iommu_map_kernel(struct sg_table *sg_table, size_t size);
+void dpufb_iommu_unmap_kernel(const void *vaddr);
 
-int hisi_fb_mmap(struct fb_info *info, struct vm_area_struct * vma);
+int hisi_fb_mmap(struct fb_info *info, struct vm_area_struct *vma);
 
 #endif

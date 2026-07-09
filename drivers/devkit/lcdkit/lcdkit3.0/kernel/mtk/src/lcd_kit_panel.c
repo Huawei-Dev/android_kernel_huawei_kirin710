@@ -18,11 +18,14 @@
 
 #include "lcd_kit_disp.h"
 #include "lcd_kit_panel.h"
+#include "panel/090_703_6p53.c"
 
 static struct lcd_kit_panel_map panel_map[] = {
+	{ PRODUCT_JM, PANEL_090_703, panel_090_703_6p53_probe },
+	{ PRODUCT_JSCH, PANEL_090_703, panel_090_703_6p53_probe },
 };
 
-struct lcd_kit_panel_ops *g_lcd_kit_panel_ops;
+struct lcd_kit_panel_ops *g_lcd_kit_panel_ops = NULL;
 int lcd_kit_panel_ops_register(struct lcd_kit_panel_ops *ops)
 {
 	if (!ops) {

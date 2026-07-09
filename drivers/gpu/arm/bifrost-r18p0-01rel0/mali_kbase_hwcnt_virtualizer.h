@@ -31,6 +31,7 @@
 #define _KBASE_HWCNT_VIRTUALIZER_H_
 
 #include <linux/types.h>
+#include <linux/workqueue.h>
 
 struct kbase_hwcnt_context;
 struct kbase_hwcnt_virtualizer;
@@ -141,5 +142,20 @@ int kbase_hwcnt_virtualizer_client_dump(
 	u64 *ts_start_ns,
 	u64 *ts_end_ns,
 	struct kbase_hwcnt_dump_buffer *dump_buf);
+
+/**
+ * kbase_hwcnt_virtualizer_queue_work() - Queue hardware counter related async
+ *                                        work on a workqueue specialized for
+ *                                        hardware counters.
+ * @hvirt: Non-NULL pointer to the hardware counter virtualizer.
+ * @work:  Non-NULL pointer to work to queue.
+ *
+ * Return: false if work was already on a queue, true otherwise.
+ *
+ * This is a convenience function that directly calls the underlying
+ * kbase_hwcnt_context's kbase_hwcnt_context_queue_work.
+ */
+bool kbase_hwcnt_virtualizer_queue_work(struct kbase_hwcnt_virtualizer *hvirt,
+					struct work_struct *work);
 
 #endif /* _KBASE_HWCNT_VIRTUALIZER_H_ */

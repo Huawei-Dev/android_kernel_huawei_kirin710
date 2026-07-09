@@ -43,6 +43,8 @@
 static int gpio_vsp_enable;
 static int gpio_vsn_enable;
 static bool fastboot_display_enable = true;
+static int is_nt50358_support;
+static int is_aw37503_support;
 
 #define DTS_COMP_SHARP_NT35695_5P5 "hisilicon,mipi_sharp_NT35695_5P5"
 #define DTS_COMP_SHARP_NT35695_5P7 "hisilicon,mipi_sharp_NT35695_5p7"
@@ -66,172 +68,173 @@ static int get_lcd_type(void)
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_TD4322_6P0);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_TD4322_6P0);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_TD4322_6P0);
 		return VAL_5V8;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_NT35695_5P5);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_NT35695_5P5);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_NT35695_5P5);
 		return VAL_5V8;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_NT35695_5P7);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_NT35695_5P7);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_NT35695_5P7);
 		return VAL_5V8;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_KNT_NT35597);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_KNT_NT35597);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_KNT_NT35597);
 		return VAL_5V8;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_DUKE_NT35597);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_DUKE_NT35597);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_DUKE_NT35597);
 		return VAL_5V8;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_TIANMA_R63319_8P4);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.6\n", DTS_COMP_TIANMA_R63319_8P4);
+		DPU_FB_INFO("device %s! set voltage 5.6\n", DTS_COMP_TIANMA_R63319_8P4);
 		return VAL_5V6;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_NT35523_8P4);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.6\n", DTS_COMP_SHARP_NT35523_8P4);
+		DPU_FB_INFO("device %s! set voltage 5.6\n", DTS_COMP_SHARP_NT35523_8P4);
 		return VAL_5V6;
 	}
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_TD4322_5P5);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_TD4322_5P5);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_TD4322_5P5);
 		return VAL_5V8;
 	}
 
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_SHARP_NT36870);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_NT36870);
+		DPU_FB_INFO("device %s! set voltage 5.8V\n", DTS_COMP_SHARP_NT36870);
 		return VAL_5V8;
 	}
 
 	np = of_find_compatible_node(NULL, NULL, DTS_COMP_BOE_TD4320);
 	ret = of_device_is_available(np);
 	if (np && ret) {
-		HISI_FB_INFO("device %s! set voltage 5.5V\n", DTS_COMP_BOE_TD4320);
+		DPU_FB_INFO("device %s! set voltage 5.5V\n", DTS_COMP_BOE_TD4320);
 		return VAL_5V5;
 	}
 
-	HISI_FB_INFO("not found device %s! set voltage 5.5V\n", DTS_COMP_SHARP_NT35695_5P5);
+	DPU_FB_INFO("not found device %s! set voltage 5.5V\n", DTS_COMP_SHARP_NT35695_5P5);
 	return VAL_5V5;
 }
 
 static int tps65132_reg_inited(struct i2c_client *client, u8 vpos_target_cmd, u8 vneg_target_cmd)
 {
-	int vpos = 0;
-	int vneg = 0;
-	int nRet = 0;
+	unsigned int vpos;
+	unsigned int vneg;
+	int ret = 0;
 
-	nRet = i2c_smbus_read_byte_data(client, TPS65132_REG_VPOS);
-	if (nRet < 0) {
+	ret = i2c_smbus_read_byte_data(client, TPS65132_REG_VPOS);
+	if (ret < 0) {
 		pr_err("%s read vpos voltage failed\n", __func__);
 		goto exit;
 	}
-	vpos = nRet;
+	vpos = ret;
 
-	nRet = i2c_smbus_read_byte_data(client, TPS65132_REG_VNEG);
-	if (nRet < 0) {
+	ret = i2c_smbus_read_byte_data(client, TPS65132_REG_VNEG);
+	if (ret < 0) {
 		pr_err("%s read vneg voltage failed\n", __func__);
 		goto exit;
 	}
-	vneg = nRet;
+	vneg = ret;
 
 	pr_err("vpos : 0x%x, vneg: 0x%x", vpos, vpos);
 
-	if(  ((vpos & TPS65132_REG_VOL_MASK) == vpos_target_cmd)
-      && ((vneg & TPS65132_REG_VOL_MASK) == vneg_target_cmd)
-      )
-		nRet = 1;
+	if (((vpos & TPS65132_REG_VOL_MASK) == vpos_target_cmd) &&
+		((vneg & TPS65132_REG_VOL_MASK) == vneg_target_cmd))
+		ret = 1;
 	else
-		nRet = 0;
+		ret = 0;
 
 exit:
-	return nRet;
+	return ret;
 }
 
 
 static int tps65132_reg_init(struct i2c_client *client, u8 vpos_cmd, u8 vneg_cmd)
 {
-	int vpos = 0;
-	int vneg = 0;
-	int nRet = 0;
-	int app_dis = 0;
-	int ctl = 0;
+	unsigned int vpos;
+	unsigned int vneg;
+	int ret = 0;
+	unsigned int app_dis;
+	unsigned int ctl;
 
-	nRet = i2c_smbus_read_byte_data(client, TPS65132_REG_VPOS);
-	if (nRet < 0) {
+	ret = i2c_smbus_read_byte_data(client, TPS65132_REG_VPOS);
+	if (ret < 0) {
 		pr_err("%s read vpos voltage failed\n", __func__);
 		goto exit;
 	}
-	vpos = nRet;
+	vpos = ret;
 
-	nRet = i2c_smbus_read_byte_data(client, TPS65132_REG_VNEG);
-	if (nRet < 0) {
+	ret = i2c_smbus_read_byte_data(client, TPS65132_REG_VNEG);
+	if (ret < 0) {
 		pr_err("%s read vneg voltage failed\n", __func__);
 		goto exit;
 	}
-	vneg = nRet;
+	vneg = ret;
 
-	nRet = i2c_smbus_read_byte_data(client, TPS65132_REG_APP_DIS);
-	if (nRet < 0) {
+	ret = i2c_smbus_read_byte_data(client, TPS65132_REG_APP_DIS);
+	if (ret < 0) {
 		pr_err("%s read app_dis failed\n", __func__);
 		goto exit;
 	}
-	app_dis = nRet;
+	app_dis = ret;
 
-	nRet = i2c_smbus_read_byte_data(client, TPS65132_REG_CTL);
-	if (nRet < 0) {
+	ret = i2c_smbus_read_byte_data(client, TPS65132_REG_CTL);
+	if (ret < 0) {
 		pr_err("%s read ctl failed\n", __func__);
 		goto exit;
 	}
-	ctl = nRet;
+	ctl = ret;
 
 	vpos = (vpos&(~TPS65132_REG_VOL_MASK)) | vpos_cmd;
 	vneg = (vneg&(~TPS65132_REG_VOL_MASK)) | vneg_cmd;
 	app_dis = app_dis | TPS65312_APPS_BIT | TPS65132_DISP_BIT | TPS65132_DISN_BIT;
 	ctl = ctl | TPS65132_WED_BIT;
+	if (is_nt50358_support)
+		app_dis &= ~TPS65312_APPS_BIT;
 
-	nRet = i2c_smbus_write_byte_data(client, TPS65132_REG_VPOS, (u8)vpos);
-	if (nRet < 0) {
+	ret = i2c_smbus_write_byte_data(client, TPS65132_REG_VPOS, (u8)vpos);
+	if (ret < 0) {
 		pr_err("%s write vpos failed\n", __func__);
 		goto exit;
 	}
 
-	nRet = i2c_smbus_write_byte_data(client, TPS65132_REG_VNEG, (u8)vneg);
-	if (nRet < 0) {
+	ret = i2c_smbus_write_byte_data(client, TPS65132_REG_VNEG, (u8)vneg);
+	if (ret < 0) {
 		pr_err("%s write vneg failed\n", __func__);
 		goto exit;
 	}
 
-	nRet = i2c_smbus_write_byte_data(client, TPS65132_REG_APP_DIS, (u8)app_dis);
-	if (nRet < 0) {
+	ret = i2c_smbus_write_byte_data(client, TPS65132_REG_APP_DIS, (u8)app_dis);
+	if (ret < 0) {
 		pr_err("%s write app_dis failed\n", __func__);
 		goto exit;
 	}
 
-	nRet = i2c_smbus_write_byte_data(client, TPS65132_REG_CTL, (u8)ctl);
-	if (nRet < 0) {
+	ret = i2c_smbus_write_byte_data(client, TPS65132_REG_CTL, (u8)ctl);
+	if (ret < 0) {
 		pr_err("%s write ctl failed\n", __func__);
 		goto exit;
 	}
 	msleep(60);
 
 exit:
-	return nRet;
+	return ret;
 }
 static void tps65132_get_target_voltage(int *vpos_target, int *vneg_target)
 {
@@ -240,7 +243,7 @@ static void tps65132_get_target_voltage(int *vpos_target, int *vneg_target)
 
 #if defined(CONFIG_LCDKIT_DRIVER)
 	if (get_lcdkit_support()) {
-		HISI_FB_INFO("vpos and vneg target from dts\n");
+		DPU_FB_INFO("vpos and vneg target from dts\n");
 		*vpos_target = lcdkit_get_vsp_voltage();
 		*vneg_target = lcdkit_get_vsn_voltage();
 		return;
@@ -250,15 +253,15 @@ static void tps65132_get_target_voltage(int *vpos_target, int *vneg_target)
 
 	ret = get_lcd_type();
 	if (ret == VAL_5V8) {
-		HISI_FB_INFO("vpos and vneg target is 5.8V\n");
+		DPU_FB_INFO("vpos and vneg target is 5.8V\n");
 		*vpos_target = TPS65132_VOL_58;
 		*vneg_target = TPS65132_VOL_58;
 	} else if (ret == VAL_5V6) {
-		HISI_FB_INFO("vpos and vneg target is 5.6V\n");
+		DPU_FB_INFO("vpos and vneg target is 5.6V\n");
 		*vpos_target = TPS65132_VOL_56;
 		*vneg_target = TPS65132_VOL_56;
 	}else {
-		HISI_FB_INFO("vpos and vneg target is 5.5V\n");
+		DPU_FB_INFO("vpos and vneg target is 5.5V\n");
 		*vpos_target = TPS65132_VOL_55;
 		*vneg_target = TPS65132_VOL_55;
 	}
@@ -338,10 +341,22 @@ static int tps65132_finish_setting(void)
 }
 
 
+static bool aw37503_biasic_verify(struct i2c_client *client)
+{
+	int vendorid = 0;
+
+	vendorid = i2c_smbus_read_byte_data(client, AW37503_REG_VENDORID);
+	if (vendorid != AW37503_ENABLE_FLAG) {
+		pr_err("%s read vendorid failed\n", __func__);
+		return false;
+	}
+	return true;
+}
+
 static int tps65132_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	int retval = 0;
-	int nRet = 0;
+	int ret = 0;
 	int vpos_target = 0;
 	int vneg_target = 0;
 	struct device_node *np = NULL;
@@ -356,6 +371,13 @@ static int tps65132_probe(struct i2c_client *client, const struct i2c_device_id 
 
 	gpio_vsp_enable = of_get_named_gpio(np, "gpios", 0);
 	gpio_vsn_enable = of_get_named_gpio(np, "gpios", 1);
+
+	ret = of_property_read_u32(np, "nt50358_support", &is_nt50358_support);
+	if (ret >= 0)
+		DPU_FB_INFO("nt50358 is support!\n");
+	ret = of_property_read_u32(np, "aw37503_support", &is_aw37503_support);
+	if (ret >= 0)
+		DPU_FB_INFO("aw37503 is support!\n");
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		pr_err("[%s,%d]: need I2C_FUNC_I2C\n",__FUNCTION__,__LINE__);
@@ -374,22 +396,28 @@ static int tps65132_probe(struct i2c_client *client, const struct i2c_device_id 
 	di->dev = &client->dev;
 	di->client = client;
 
-	if (!fastboot_display_enable) {
+	if (!fastboot_display_enable)
 		tps65132_start_setting();
-	}
 
+	if (is_aw37503_support) {
+		if (aw37503_biasic_verify(di->client)) {
+			pr_info("aw37503 device\n");
+			retval = -ENODEV;
+			goto failed_2;
+		}
+	}
 	tps65132_get_target_voltage(&vpos_target, &vneg_target);
 
-	nRet = tps65132_reg_inited(di->client, (u8)vpos_target, (u8)vneg_target);
-	if (nRet > 0) {
+	ret = tps65132_reg_inited(di->client, (u8)vpos_target, (u8)vneg_target);
+	if (ret > 0) {
 		pr_info("tps65132 inited needn't reset value\n");
-	} else if (nRet < 0) {
+	} else if (ret < 0) {
 		pr_err("tps65132 I2C read not success\n");
 		retval = -ENODEV;
 		goto failed_2;
 	} else {
-		nRet = tps65132_reg_init(di->client, (u8)vpos_target, (u8)vneg_target);
-		if (nRet) {
+		ret = tps65132_reg_init(di->client, (u8)vpos_target, (u8)vneg_target);
+		if (ret) {
 			pr_err("tps65132_reg_init failed\n");
 			retval = -ENODEV;
 			goto failed_2;
@@ -404,9 +432,8 @@ static int tps65132_probe(struct i2c_client *client, const struct i2c_device_id 
 
 
 failed_2:
-	if (!fastboot_display_enable) {
+	if (!fastboot_display_enable)
 		tps65132_finish_setting();
-	}
 
 	if (di)
 		kfree(di);

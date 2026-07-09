@@ -68,6 +68,7 @@
 #define EFUSE_FN_SET_HISEE                0xCA00002E
 #define EFUSE_FN_GET_HISEE                0xCA00002F
 #define EFUSE_FN_GET_AVS                  0xCA000030
+#define EFUSE_FN_GET_PARTIAL_PASS_INFO    0xCA000031
 
 /* efuse r&w func id */
 #define EFUSE_FN_WR_MODEM_HUK_VALUE       0xCA000040
@@ -405,6 +406,32 @@ s32 get_efuse_chipid_value(u8 *buf, u32 size, u32 timeout)
 
 	mutex_lock(&g_efusec.efuse_mutex);
 	ret = g_efusec.atf_fn(EFUSE_FN_GET_CHIPID, (u64)g_efusec.paddr,
+			      (u64)size, (u64)timeout);
+	if (ret == OK)
+		memmove((void *)buf, (void *)g_efusec.vaddr, size);
+
+	mutex_unlock(&g_efusec.efuse_mutex);
+
+	pr_info("%s: ret=%d.\n", __func__, ret);
+	return ret;
+}
+
+s32 get_partial_pass_info(u8 *buf, u32 size, u32 timeout)
+{
+	s32 ret;
+
+	if (!buf || size > EFUSE_PARTIAL_PASS_LENGTH_BYTES || size == 0) {
+		pr_err("%s: invalid params.\n", __func__);
+		return -EFAULT;
+	}
+	if (g_efusec.is_init_success != EFUSE_MODULE_INIT_SUCCESS) {
+		pr_err("%s: efuse module is not ready now.\n", __func__);
+		return -ENODEV;
+	}
+
+	mutex_lock(&g_efusec.efuse_mutex);
+	ret = g_efusec.atf_fn(EFUSE_FN_GET_PARTIAL_PASS_INFO,
+	                      (u64)g_efusec.paddr,
 			      (u64)size, (u64)timeout);
 	if (ret == OK)
 		memmove((void *)buf, (void *)g_efusec.vaddr, size);

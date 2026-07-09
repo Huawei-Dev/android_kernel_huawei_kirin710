@@ -127,6 +127,27 @@ struct dsm_client *dsm_thp_dclient;
 
 #endif
 
+int thp_send_esd_event(unsigned int status)
+{
+	struct thp_core_data *cd = thp_get_core_data();
+
+	THP_LOG_INFO("%s: enter\n", __func__);
+
+	if (cd == NULL) {
+		THP_LOG_ERR("%s: cd is null\n", __func__);
+		return -EINVAL;
+	}
+	if (cd->lcd_esd_event_upload == 0) {
+		THP_LOG_INFO("%s: not support esd\n", __func__);
+		return -EINVAL;
+	}
+	if (thp_mt_wrapper_esd_event(status)) {
+		THP_LOG_ERR("%s: gpio detect fail\n", __func__);
+		return -EINVAL;
+	}
+	return 0;
+}
+
 #define THP_DEVICE_NAME	"huawei_thp"
 #define THP_MISC_DEVICE_NAME "thp"
 #if defined(CONFIG_LCD_KIT_DRIVER)
@@ -135,6 +156,7 @@ int ts_kit_ops_register(struct ts_kit_ops *ops);
 struct ts_kit_ops thp_ops = {
 	.ts_power_notify = thp_power_control_notify,
 	.get_tp_proxmity = thp_get_prox_switch_status,
+	.send_esd_event = thp_send_esd_event,
 };
 #endif
 
@@ -3238,6 +3260,12 @@ int thp_parse_feature_config(struct device_node *thp_node,
 	if (!rc) {
 		cd->project_in_tp = value;
 		THP_LOG_INFO("%s:project_in_tp: %d\n", __func__, value);
+	}
+	
+	rc = of_property_read_u32(thp_node, "lcd_esd_event_upload", &value);
+	if (!rc) {
+		cd->lcd_esd_event_upload = value;
+		THP_LOG_INFO("%s:lcd_esd_event_upload: %u\n", __func__, value);
 	}
 
 	cd->project_id_dummy = "dummy";

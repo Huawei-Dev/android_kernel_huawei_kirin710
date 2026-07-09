@@ -38,6 +38,15 @@
 #define GMC_PF_OUT_OF_BOUNDS		1
 #define GMC_HANDLE_ALL_KCTXS		0
 
+/*
+ * In the test of the grass running scene of game com.tencent.tmgp.pubgmhd,
+ * the threshold of lost frames at the start of WeChat is 128. When this value is 128,
+ * the probability of the occurrence of lost frames is low and the phenomenon is not obvious.
+ * When the value is set to 64, the memory compression time increases by 20%, about 25ms,
+ * Application startup animation most flow
+ */
+#define GMC_BATCH_OPERATION_SIZE 64
+
 struct kbase_gmc_arg {
 	gmc_op op;
 	long compress_size;
@@ -54,6 +63,7 @@ struct kbase_gmc_tsk {
 int kbase_gmc_compress(pid_t pid, struct gmc_device *gmc_dev,
 			long compress_size);
 int kbase_gmc_decompress(pid_t pid, struct gmc_device *gmc_dev);
+int kbase_gmc_cancel(long cancel, struct gmc_device *gmc_dev);
 int kbase_gmc_meminfo_open(struct inode *in, struct file *file);
 struct kbase_context *kbase_reg_flags_to_kctx(struct kbase_va_region *reg);
 

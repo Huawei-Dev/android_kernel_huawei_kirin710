@@ -89,15 +89,22 @@
 #define LCD_KIT_INIT_TEST_PARAM      "/data/lcd_kit_init_param.txt"
 #define LCD_KIT_CONFIG_TABLE_MAX_NUM (2 * PAGE_SIZE)
 #define LCD_KIT_CMD_MAX_NUM          (PAGE_SIZE)
+#define LCD_KIT_DCS_CMD_MAX_NUM (4 * PAGE_SIZE)
 
 #define LCD_KIT_PARAM_FILE_PATH "/data/lcd_param_config.xml"
 #define LCD_KIT_ITEM_NAME_MAX   100
 #define LCD_KIT_DBG_BUFF_MAX    2048
+/* cmdline buffer max */
+#define CMDLINE_MAX 10
+#define XML_FILE_MAX 100
+#define XML_NAME_MAX 100
 
 enum lcd_kit_parse_status {
 	PARSE_HEAD,
 	RECEIVE_DATA,
 	PARSE_FINAL,
+	NOT_MATCH,
+	INVALID_DATA,
 };
 enum lcd_kit_cmds_type {
 	LCD_KIT_DBG_LEVEL_SET = 0,
@@ -123,7 +130,7 @@ struct lcd_kit_dbg_cmds {
 	char pstr[PSTR_LEN];
 };
 
-typedef int (*DBG_FUNC)(const char *PAR);
+typedef int (*DBG_FUNC)(char *PAR);
 struct lcd_kit_dbg_func {
 	unsigned char *name;
 	DBG_FUNC func;
@@ -211,7 +218,7 @@ struct lcd_kit_dbg_ops {
 	int (*dbg_mipi_rx)(uint8_t *out, int out_len,
 		struct lcd_kit_dsi_panel_cmds *cmds);
 	bool (*panel_power_on)(void);
-	void (*esd_check_func)(void);
+	int (*esd_check_func)(void);
 };
 
 int lcd_kit_debugfs_init(void);
@@ -222,4 +229,31 @@ int lcd_kit_dbg_parse_cmd(struct lcd_kit_dsi_panel_cmds *pcmds, char *buf,
 	int length);
 bool lcd_kit_is_valid_char(char ch);
 bool is_valid_char(char ch);
+int lcd_parse_u32(const struct device_node *np, const char *item,
+	unsigned int *out, unsigned int def);
+int lcd_parse_u8(const struct device_node *np, const char *item,
+	unsigned char *out, unsigned char def);
+int lcd_parse_dcs(const struct device_node *np, const char *item,
+	const char *item_state, struct lcd_kit_dsi_panel_cmds *pcmds);
+int lcd_parse_arrays(const struct device_node *np, const char *item,
+	struct lcd_kit_arrays_data *out, int size);
+int lcd_parse_array(const struct device_node *np, const char *item,
+	struct lcd_kit_array_data *out);
+char *lcd_parse_string(const struct device_node *np, const char *item);
+int lcd_parse_string_array(const struct device_node *np, const char *item,
+	const char **out);
+void lcd_parse_dirty_region(const struct device_node *np, const char *item,
+	int *out);
+bool is_valid_char(char ch);
+int lcd_kit_str_to_del_invalid_ch(char *str);
+int lcd_kit_parse_u32_digit(char *in, unsigned int *out, int len);
+int lcd_kit_parse_u8_digit(char *in, char *out, int max);
+int lcd_kit_dbg_parse_cmd(struct lcd_kit_dsi_panel_cmds *pcmds, char *buf,
+	int length);
+int lcd_kit_str_to_del_ch(char *str, char ch);
+int lcd_kit_dbg_parse_array(char *in, unsigned int *array,
+	struct lcd_kit_arrays_data *out, int len);
+int is_dpd_mode(void);
+int file_sys_is_ready(void);
+void detect_fs_wq_handler(struct work_struct *work);
 #endif

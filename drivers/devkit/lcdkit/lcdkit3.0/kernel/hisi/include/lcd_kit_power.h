@@ -61,13 +61,21 @@ struct event_callback {
 
 /* variable declare */
 extern uint32_t g_lcd_kit_gpio;
+extern uint32_t poweric_gpio;
 
 /* function declare */
 int lcd_kit_pmu_ctrl(uint32_t type, uint32_t enable);
+int lcd_kit_pmu_ctrl_plugin(uint32_t type, uint32_t enable);
 int lcd_kit_charger_ctrl(uint32_t type, uint32_t enable);
-void lcd_kit_gpio_tx(uint32_t type, uint32_t op);
+int lcd_kit_gpio_tx(uint32_t type, uint32_t op);
+int lcd_kit_gpio_tx_plugin(uint32_t type, uint32_t op);
 int lcd_kit_power_finit(struct platform_device *pdev);
 int lcd_kit_power_init(struct platform_device *pdev);
 int lcd_kit_dbg_set_voltage(void);
 int lcd_power_set_vol(uint32_t type);
+void lcd_poweric_gpio_operator(uint32_t gpio, uint32_t op);
+
+#ifdef LCD_KIT_DEBUG_ENABLE
+int dpd_regu_init(struct platform_device *pdev);
+#endif
 #endif

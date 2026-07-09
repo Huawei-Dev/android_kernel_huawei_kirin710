@@ -34,6 +34,8 @@ static struct regulator *vci;
 static struct regulator *vdd;
 /* global gpio */
 uint32_t g_lcd_kit_gpio;
+/* poweric detect gpio */
+uint32_t poweric_gpio;
 
 /*
  * power type
@@ -204,14 +206,38 @@ struct gpio_power_arra gpio_power[] = {
 	{ GPIO_FREE, ARRAY_SIZE(gpio_free_cmds), gpio_free_cmds },
 };
 
-void lcd_kit_gpio_tx(uint32_t type, uint32_t op)
+void lcd_poweric_gpio_operator(uint32_t gpio, uint32_t op)
+{
+	poweric_gpio = gpio;
+	LCD_KIT_INFO("poweric_det gpio = %d", poweric_gpio);
+
+	if (op == GPIO_HIGH) {
+		LCD_KIT_INFO("gpio pull high %d", __LINE__);
+		lcd_kit_gpio_tx(LCD_KIT_POWERIC_DET_DBC, GPIO_HIGH);
+	}
+	if (op == GPIO_LOW) {
+		LCD_KIT_INFO("gpio pull low %d", __LINE__);
+		lcd_kit_gpio_tx(LCD_KIT_POWERIC_DET_DBC, GPIO_LOW);
+	}
+	if (op == GPIO_REQ) {
+		LCD_KIT_INFO("gpio request %d", __LINE__);
+		lcd_kit_gpio_tx(LCD_KIT_POWERIC_DET_DBC, GPIO_REQ);
+	}
+	if (op == GPIO_FREE) {
+		LCD_KIT_INFO("gpio free %d", __LINE__);
+		lcd_kit_gpio_tx(LCD_KIT_POWERIC_DET_DBC, GPIO_FREE);
+	}
+}
+
+int lcd_kit_gpio_tx(uint32_t type, uint32_t op)
 {
 	int i;
+	int ret;
 	struct gpio_power_arra *gpio_cm = NULL;
 
-	if (lcd_kit_get_power_status()) {
+	if (lcd_kit_get_power_status() && (type != LCD_KIT_MIPI_SWITCH)) {
 		LCD_KIT_INFO("panel is power on, not need operate gpio, type = %d, op = %d\n", type, op);
-		return;
+		return LCD_KIT_FAIL;
 	}
 
 	switch (type) {
@@ -239,6 +265,13 @@ void lcd_kit_gpio_tx(uint32_t type, uint32_t op)
 	case LCD_KIT_AOD:
 		g_lcd_kit_gpio = power_hdl->lcd_aod.buf[POWER_NUM];
 		break;
+	case LCD_KIT_POWERIC_DET_DBC:
+		g_lcd_kit_gpio = poweric_gpio;
+		break;
+	case LCD_KIT_MIPI_SWITCH:
+		g_lcd_kit_gpio = power_hdl->lcd_mipi_switch.buf[POWER_NUM];
+		break;
+
 	default:
 		LCD_KIT_ERR("not support type:%d\n", type);
 		break;
@@ -252,18 +285,19 @@ void lcd_kit_gpio_tx(uint32_t type, uint32_t op)
 	}
 	if (i >= ARRAY_SIZE(gpio_power)) {
 		LCD_KIT_ERR("not found cm from gpio_power\n");
-		return;
+		return LCD_KIT_FAIL;
 	}
 	if (!gpio_cm) {
 		LCD_KIT_ERR("gpio_cm is null!\n");
-		return;
+		return LCD_KIT_FAIL;
 	}
 	if (gpio_cm->num > 0) {
-		gpio_cmds_tx(gpio_cm->cm, gpio_cm->num);
+		ret = gpio_cmds_tx(gpio_cm->cm, gpio_cm->num);
 		LCD_KIT_INFO("gpio:%d ,op:%d\n", *gpio_cm->cm->gpio, op);
-		return;
+		return ret;
 	}
 	LCD_KIT_INFO("gpio is not bigger than 0\n");
+	return LCD_KIT_FAIL;
 }
 int lcd_kit_pmu_ctrl(uint32_t type, uint32_t enable)
 {
@@ -299,6 +333,35 @@ int lcd_kit_pmu_ctrl(uint32_t type, uint32_t enable)
 		else
 			ret = vcc_cmds_tx(NULL, vdd_disable_cmds,
 				ARRAY_SIZE(vdd_disable_cmds));
+		break;
+	default:
+		ret = LCD_KIT_FAIL;
+		LCD_KIT_ERR("error type\n");
+		break;
+	}
+	return ret;
+}
+int lcd_kit_pmu_ctrl_plugin(uint32_t type, uint32_t event_data)
+{
+	int ret = LCD_KIT_OK;
+
+	if (event_data > 0) {
+		LCD_KIT_ERR("do not handle power on event.\n");
+		return LCD_KIT_FAIL;
+	}
+
+	switch (type) {
+	case LCD_KIT_VCI:
+		ret = vcc_cmds_tx(NULL, vci_disable_cmds,
+			ARRAY_SIZE(vci_disable_cmds));
+		break;
+	case LCD_KIT_IOVCC:
+		ret = vcc_cmds_tx(NULL, iovcc_disable_cmds,
+			ARRAY_SIZE(iovcc_disable_cmds));
+		break;
+	case LCD_KIT_VDD:
+		ret = vcc_cmds_tx(NULL, vdd_disable_cmds,
+			ARRAY_SIZE(vdd_disable_cmds));
 		break;
 	default:
 		ret = LCD_KIT_FAIL;
@@ -649,3 +712,150 @@ int lcd_kit_dbg_set_voltage(void)
 	}
 	return ret;
 }
+
+/*
+ * lcd dpd
+ */
+#ifdef LCD_KIT_DEBUG_ENABLE
+static int dpd_vsp_init(struct platform_device *pdev)
+{
+	int ret;
+
+	if (power_hdl->lcd_vsp.buf &&
+		power_hdl->lcd_vsp.buf[POWER_MODE] == REGULATOR_MODE) {
+		/* lcd scharger vcc get */
+		ret = vcc_cmds_tx(pdev, bias_get_cmds,
+			ARRAY_SIZE(bias_get_cmds));
+		if (ret != 0) {
+			LCD_KIT_ERR("LCD scharger vcc get failed!\n");
+			return ret;
+		}
+		/* init bias/vsp/vsn */
+		lcd_kit_power_set(bias_set_cmds, ARRAY_SIZE(bias_set_cmds));
+		/* set scharger vcc */
+		ret = vcc_cmds_tx(NULL, bias_set_cmds,
+			ARRAY_SIZE(bias_set_cmds));
+		if (ret != 0) {
+			LCD_KIT_ERR("LCD scharger vcc set failed!\n");
+			return ret;
+		}
+	}
+	return LCD_KIT_OK;
+}
+
+static int dpd_bl_init(struct platform_device *pdev)
+{
+	int ret;
+
+	if (power_hdl->lcd_backlight.buf &&
+		power_hdl->lcd_backlight.buf[POWER_MODE] == REGULATOR_MODE) {
+		/* lcd scharger vcc get */
+		ret = vcc_cmds_tx(pdev, bl_get_cmds, ARRAY_SIZE(bl_get_cmds));
+		if (ret != 0) {
+			LCD_KIT_ERR("LCD scharger vcc get failed!\n");
+			return ret;
+		}
+	}
+	return LCD_KIT_OK;
+}
+
+static int dpd_vdd_init(struct platform_device *pdev)
+{
+	int ret;
+
+	if (power_hdl->lcd_vdd.buf &&
+		power_hdl->lcd_vdd.buf[POWER_MODE] == REGULATOR_MODE) {
+		/* judge vdd is valid */
+		if (power_hdl->lcd_vdd.buf[POWER_NUM] > 0) {
+			lcd_kit_power_set(vdd_init_cmds,
+				ARRAY_SIZE(vdd_init_cmds));
+			ret = vcc_cmds_tx(pdev, vdd_init_cmds,
+				ARRAY_SIZE(vdd_init_cmds));
+			if (ret != 0) {
+				LCD_KIT_ERR("LCD vdd init failed!\n");
+				return ret;
+			}
+		}
+	}
+	return LCD_KIT_OK;
+}
+
+static int dpd_iovcc_init(struct platform_device *pdev)
+{
+	int ret;
+
+	if (power_hdl->lcd_iovcc.buf &&
+		power_hdl->lcd_iovcc.buf[POWER_MODE] == REGULATOR_MODE) {
+		/* judge iovcc is valid */
+		if (power_hdl->lcd_iovcc.buf[POWER_NUM] > 0) {
+			lcd_kit_power_set(iovcc_init_cmds,
+				ARRAY_SIZE(iovcc_init_cmds));
+			ret = vcc_cmds_tx(pdev, iovcc_init_cmds,
+				ARRAY_SIZE(iovcc_init_cmds));
+			if (ret != 0) {
+				LCD_KIT_ERR("LCD iovcc init failed!\n");
+				return ret;
+			}
+		}
+	}
+	return LCD_KIT_OK;
+}
+
+static int dpd_vci_init(struct platform_device *pdev)
+{
+	int ret;
+
+	if (power_hdl->lcd_vci.buf &&
+		power_hdl->lcd_vci.buf[POWER_MODE] == REGULATOR_MODE) {
+		/* judge vci is valid */
+		if (power_hdl->lcd_vci.buf[POWER_NUM] > 0) {
+			/* init vci */
+			lcd_kit_power_set(vci_init_cmds,
+				ARRAY_SIZE(vci_init_cmds));
+			ret = vcc_cmds_tx(pdev, vci_init_cmds,
+				ARRAY_SIZE(vci_init_cmds));
+			if (ret != 0) {
+				LCD_KIT_ERR("LCD vci init failed!\n");
+				return ret;
+			}
+		}
+	}
+	return LCD_KIT_OK;
+}
+
+int dpd_regu_init(struct platform_device *pdev)
+{
+	int ret;
+
+	if (!pdev) {
+		LCD_KIT_ERR("pdev is null\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = dpd_vsp_init(pdev);
+	if (ret) {
+		LCD_KIT_ERR("dpd vsp init fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = dpd_bl_init(pdev);
+	if (ret) {
+		LCD_KIT_ERR("dpd bl init fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = dpd_vdd_init(pdev);
+	if (ret) {
+		LCD_KIT_ERR("dpd vdd init fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = dpd_iovcc_init(pdev);
+	if (ret) {
+		LCD_KIT_ERR("dpd iovcc init fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = dpd_vci_init(pdev);
+	if (ret) {
+		LCD_KIT_ERR("dpd vci init fail\n");
+		return LCD_KIT_FAIL;
+	}
+	return LCD_KIT_OK;
+}
+#endif

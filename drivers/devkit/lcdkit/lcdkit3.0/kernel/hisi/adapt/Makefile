@@ -13,5 +13,6 @@ EXTRA_CFLAGS += -Idrivers/video/fbdev/hisi/dss \
 		-Idrivers/staging/android \
 		-Idrivers/atfdriver \
 		-Idrivers/hisi/tzdriver \
+		-Idrivers/base \
 		-Idrivers/devkit/lcdkit/lcdkit3.0/kernel/common/include \
 		-Idrivers/devkit/lcdkit/lcdkit3.0/kernel/hisi/include

@@ -56,7 +56,11 @@ struct kbase_hisi_device_data {
 	unsigned long bound_detect_btime;
 #ifdef CONFIG_GPU_GMC_GENERIC
 	struct gmc_device kbase_gmc_device;
+	struct workqueue_struct *gmc_workqueue;
+	int gmc_cancel;
 #endif
+	/* GPU Throttle devfreq switch */
+	atomic_t thro_enable;
 };
 
 /**

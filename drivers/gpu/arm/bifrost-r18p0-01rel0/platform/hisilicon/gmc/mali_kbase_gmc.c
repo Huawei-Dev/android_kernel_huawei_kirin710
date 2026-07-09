@@ -36,6 +36,8 @@
 #include <linux/wait.h>
 #include <linux/seq_file.h>
 #include <linux/hisi/rdr_hisi_platform.h>
+#include <backend/gpu/mali_kbase_jm_rb.h>
+#include <mali_kbase_hwaccess_jm.h>
 
 static atomic_t n_gmc_workers = ATOMIC_INIT(0);
 static atomic_t n_gmc_workers_failed = ATOMIC_INIT(0);
@@ -380,7 +382,6 @@ dma_addr_t kbase_gmc_dma_map_page(struct kbase_device *kbdev, struct page *page)
  *
  * Return: 0 if page was decompressed or error code if something is wrong.
  */
-/*lint -e514*/
 static int kbase_gmc_page_decompress(struct tagged_addr *p,
 				struct kbase_device *kbdev, int group_id)
 {
@@ -399,7 +400,7 @@ static int kbase_gmc_page_decompress(struct tagged_addr *p,
 
 	handle = kbase_get_gmc_handle(p);
 #if defined(CONFIG_ARM) && !defined(CONFIG_HAVE_DMA_ATTRS) && \
-		KERNEL_VERSION(3, 5, 0 > LINUX_VERSION_CODE)
+		KERNEL_VERSION(3, 5, 0 > LINUX_VERSION_CODE) //lint !e514
 	flags = GFP_USER | __GFP_ZERO;
 #else
 	flags = GFP_HIGHUSER | __GFP_ZERO;
@@ -443,8 +444,10 @@ static int kbase_gmc_page_decompress(struct tagged_addr *p,
 static int kbase_gmc_page_compress(struct tagged_addr *p,
 				struct kbase_device *kbdev)
 {
+	u8 group_id = 0;
 	struct page *page = NULL;
 	struct gmc_storage_handle *handle = NULL;
+	struct memory_group_manager_ops *mgm_ops = &kbdev->mgm_dev->ops;
 
 	if (kbase_is_entry_compressed(*p))
 		rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU,
@@ -478,8 +481,14 @@ static int kbase_gmc_page_compress(struct tagged_addr *p,
 		return 0;
 	}
 
+#ifdef CONFIG_MALI_LAST_BUFFER
+	group_id = lb_page_to_gid(page);
+#endif
+
 	kbase_set_gmc_handle(handle, p);
 	put_page(page);
+
+	mgm_ops->mgm_update_sizes(kbdev->mgm_dev, group_id, 0, false);
 	return 0;
 }
 
@@ -494,18 +503,18 @@ static bool region_should_be_compressed(struct kbase_va_region *reg)
 {
 	bool compress = true;
 
-	if (reg->cpu_alloc != reg->gpu_alloc)
-		/* Now don't touch regions with infinite cache feature */
-		compress = false;
-	else if (reg->flags & KBASE_REG_DONT_NEED)
-		/* This region will be deleted soon */
-		compress = false;
-	/* Cannot compress the alias region. */
-	if (reg->gpu_alloc->type == KBASE_MEM_TYPE_ALIAS)
-		compress = false;
-	/* Cannot compress the region be aliased. */
-	if (atomic_read(&reg->gpu_alloc->gpu_mappings) > 1)
-		compress = false;
+        /*
+         * 1. Don't touch regions with infinite cache feature.
+         * 2. Don't touch regions with KBASE_REG_NO_GMC flag set.
+         * 3. Don't touch the alias region and the region be alised.
+         */
+        if (reg->cpu_alloc != reg->gpu_alloc ||
+                reg->flags & KBASE_REG_NO_GMC ||
+                reg->gpu_alloc->type == KBASE_MEM_TYPE_ALIAS ||
+                atomic_read(&reg->gpu_alloc->gpu_mappings) > 1)
+                compress = false;
+
+
 	return compress;
 }
 
@@ -766,6 +775,146 @@ void kbase_gmc_walk_region_work(struct work_struct *work)
 	wake_up_interruptible(&gmc_wait);
 }
 
+#ifdef CONFIG_MALI_NORR_PHX
+/*
+ * kbase_gmc_work_execute_wait - Wait for the work execution to complete.
+ * Return: 0 on success or error.
+ */
+static int kbase_gmc_work_execute_wait()
+{
+	int ret = 0;
+	long timeout_jiff = msecs_to_jiffies(GMC_WORKER_TIMEOUT_MS);
+	while (atomic_read(&n_gmc_workers) > 0) {
+		int err = wait_event_interruptible_timeout(gmc_wait,
+			!atomic_read(&n_gmc_workers), timeout_jiff);
+		if (err <= 0) {
+			pr_alert("Timeout while waiting GMC workers, \
+				it takes more than %d ms\n",
+				GMC_WORKER_TIMEOUT_MS);
+			return -ETIMEDOUT;
+		}
+	}
+	return ret;
+}
+
+/*
+ * kbase_gmc_queue_work - Compress and decompress the work enqueue.
+ *
+ * @kctx:      Graphical context
+ * @rb_root:   RB tree of the memory regions
+ *
+ * Return: 0 on success or error.
+ */
+static int kbase_gmc_work_enqueue(struct kbase_context *kctx,
+	struct kbase_gmc_arg arg, struct rb_root *va_rb_root, int *nr_pages_to_compressed)
+{
+	int ret = 0;
+	struct kbase_device *kbdev = kctx->kbdev;
+	struct kbase_va_region *reg = NULL;
+	struct workqueue_struct *local_workqueue = NULL;
+	struct rb_node *node = NULL;
+
+	if (kbdev->hisi_dev_data.gmc_workqueue != NULL)
+		local_workqueue = kbdev->hisi_dev_data.gmc_workqueue;
+	else
+		local_workqueue  = system_unbound_wq;
+
+	for_each_rb_node(va_rb_root, node) {
+		reg = rb_entry(node, struct kbase_va_region, rblink);
+		if (is_region_free(reg))
+			continue;
+		reg->op = arg.op;
+
+		atomic_inc(&n_gmc_workers);
+		queue_work(local_workqueue, &reg->gmc_work);
+
+		if (arg.op != GMC_COMPRESS)
+			continue;
+
+		*nr_pages_to_compressed -= reg->cpu_alloc->nents;
+		if (*nr_pages_to_compressed <= 0)
+			// only compress arg->compress_size
+			break;
+
+		if (kbdev->hisi_dev_data.gmc_cancel != 0)
+			break;
+		if (atomic_read(&n_gmc_workers) % GMC_BATCH_OPERATION_SIZE == 0) {
+			ret = kbase_gmc_work_execute_wait();
+			if (ret < 0) {
+				if (kbdev->hisi_dev_data.gmc_cancel != 0)
+					kbdev->hisi_dev_data.gmc_cancel = 0;
+				return ret;
+			}
+		}
+	}
+	return ret;
+}
+
+/*
+ * kbase_gmc_walk_kctx - Walk through not freed kctxs regions.
+ *
+ * @kctx:      Graphical context
+ * @op:         Operation - could be GMC_COMPRESS, GMC_DECOMPRESS or
+ *
+ * Return: 0 on success or error.
+ */
+static int kbase_gmc_walk_kctx(struct kbase_context *kctx,
+				struct kbase_gmc_arg arg)
+{
+	int ret;
+	struct kbase_gmc_tsk gmc_tsk;
+	int n_workers_failed;
+	int nr_pages_to_compressed = GMC_MAX_COMPRESS_SIZE_IN_MEGA *
+		GMC_PAGES_PER_MEGA;
+	struct kbase_device *kbdev = kctx->kbdev;
+	gmc_tsk.kctx = kctx;
+	gmc_tsk.task = NULL;
+
+	if (arg.op == GMC_COMPRESS) {
+		if (arg.compress_size >= GMC_MAX_COMPRESS_SIZE_IN_MEGA ||
+			arg.compress_size == 0)
+			arg.compress_size = GMC_MAX_COMPRESS_SIZE_IN_MEGA;
+		nr_pages_to_compressed = arg.compress_size *
+					GMC_PAGES_PER_MEGA; // in pages
+	}
+
+	KBASE_DEBUG_ASSERT(!atomic_read(&n_gmc_workers));
+	atomic_set(&n_gmc_workers_failed, 0);
+	ret = kbase_gmc_trylock_task(&gmc_tsk, arg.op);
+	if (ret)
+		return ret;
+
+	if (arg.op == GMC_DECOMPRESS)
+		kctx->hisi_ctx_data.set_pt_flag = true;
+
+	ret = kbase_gmc_work_enqueue(kctx, arg, &(kctx->reg_rbtree_same),
+		&nr_pages_to_compressed);
+	if (ret < 0) {
+		kbase_gmc_unlock_task(&gmc_tsk, arg.op);
+		return ret;
+	}
+
+	if ((arg.op == GMC_COMPRESS) && (kbdev->hisi_dev_data.gmc_cancel != 0))
+		kbdev->hisi_dev_data.gmc_cancel = 0;
+
+	ret = kbase_gmc_work_execute_wait();
+	if (ret < 0) {
+		kbase_gmc_unlock_task(&gmc_tsk, arg.op);
+		return ret;
+	}
+
+	if (arg.op == GMC_DECOMPRESS)
+		kctx->hisi_ctx_data.set_pt_flag = false;
+
+	kbase_gmc_unlock_task(&gmc_tsk, arg.op);
+	n_workers_failed = atomic_read(&n_gmc_workers_failed);
+	if (n_workers_failed > 0) {
+		pr_err("%d workers has failed to complete\n", n_workers_failed);
+		ret = -EINVAL;
+	}
+	return ret;
+}
+#else
 /**
  * kbase_gmc_walk_kctx - Walk through not freed kctxs regions.
  *
@@ -863,6 +1012,7 @@ static int kbase_gmc_walk_kctx(struct kbase_context *kctx,
 	}
 	return ret;
 }
+#endif
 
 int kbase_get_compressed_region(struct kbase_va_region *reg, u64 vpfn,
 				size_t nr)
@@ -892,10 +1042,37 @@ int kbase_gmc_walk_device(struct kbase_device *kbdev, pid_t pid,
 	int ret = 0;
 	struct kbase_context *kctx = NULL;
 	struct kbase_context *tmp = NULL;
+	unsigned long irq_flags = 0;
+	int js;
 
 	mutex_lock(&kbdev->kctx_list_lock);
 	list_for_each_entry_safe(kctx, tmp, &kbdev->kctx_list, kctx_list_link) {
-		if ((kctx->filp != NULL) && (kctx->tgid == pid || pid == GMC_HANDLE_ALL_KCTXS)) {
+		bool skip = false;
+		/* Add barrier to stop submit job to gpu hardware when gmc
+		 * start working, and let gmc do NOT touch memory of
+		 * current already submitted jobs. To avoid page fault
+		 * issues when compress memory of foregroud processes.
+		 */
+		spin_lock_irqsave(&kbdev->hwaccess_lock, irq_flags);
+		for (js = 0; js < kbdev->gpu_props.num_job_slots; js++) {
+			struct kbase_jd_atom *katom[2] = {NULL};
+
+			katom[0] = kbase_gpu_inspect(kbdev, js, 0);
+			katom[1] = kbase_gpu_inspect(kbdev, js, 1);
+
+			if (katom[0] && katom[0]->kctx->tgid == kctx->tgid) {
+				skip = true;
+				break;
+			}
+			if (katom[1] && katom[1]->kctx->tgid == kctx->tgid) {
+				skip = true;
+				break;
+			}
+		}
+		spin_unlock_irqrestore(&kbdev->hwaccess_lock, irq_flags);
+
+		if ((skip != true) && (kctx->filp != NULL) &&
+			(kctx->tgid == pid || pid == GMC_HANDLE_ALL_KCTXS)) {
 			ret = kbase_gmc_walk_kctx(kctx, arg);
 			if (ret)
 				goto out;
@@ -951,9 +1128,37 @@ int kbase_gmc_decompress(pid_t pid, struct gmc_device *gmc_dev)
 	return kbase_gmc_walk_device(kbdev, pid, arg);
 }
 
+#ifdef CONFIG_MALI_NORR_PHX
+int kbase_gmc_cancel(long cancel, struct gmc_device *gmc_dev)
+{
+	struct kbase_hisi_device_data *hisi_dev = container_of(gmc_dev,
+		struct kbase_hisi_device_data,
+		kbase_gmc_device);
+
+	struct kbase_device *kbdev = container_of(hisi_dev, struct kbase_device,
+		hisi_dev_data);
+	if (cancel == 1)
+		kbdev->hisi_dev_data.gmc_cancel = 1;
+	else
+		kbdev->hisi_dev_data.gmc_cancel = 0;
+	return 0;
+}
+#else
+/**
+ * Implement an empty interface.
+ * Because the cancel node created in the file gmc.c cannot distinguish between platforms,
+ * if there is no empty implementation here,
+ * there would be CFI problems if iware wrote cancel nodes
+ */
+int kbase_gmc_cancel(long cancel, struct gmc_device *gmc_dev)
+{
+	return 0;
+}
+#endif
+
 int kbase_gmc_meminfo_open(struct inode *in, struct file *file)
 {
 	return single_open_size(file, gmc_memory_info_show, NULL,
 			GPU_MEMORY_SEQ_BUF_SIZE);
 }
-/*lint +e514*/
+

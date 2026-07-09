@@ -29,7 +29,7 @@
 #include <linux/threads.h>
 #include <linux/gmc_storage.h>
 #include <linux/gmc.h>
-#include <linux/uaccess.h>
+#include <asm/uaccess.h>
 #include <linux/proc_fs.h>
 
 #define GMC_DEBUGFS_BUFMAX 1024
@@ -221,6 +221,27 @@ static ssize_t gmc_decompress_write(struct file *file, const char __user *ubuf,
 	return len; //lint !e429
 }
 
+static ssize_t gmc_cancel(struct file *file, const char __user *ubuf,
+	size_t len, loff_t *offp)
+{
+	struct gmc_device *device =
+		(struct gmc_device *)(PDE_DATA(file->f_inode));
+	int ret = 0;
+	long cancel = 0;
+
+	if (device == NULL)
+		return -EPERM;
+
+	ret = read_pid(ubuf, len, offp, &cancel, NULL);
+	if (ret)
+		return ret;
+
+	if (device->ops->cancel != NULL)
+		device->ops->cancel(cancel, device);
+
+	return len;
+}
+
 #ifdef GPU_GMC_DEBUG
 int gmc_meminfo_open(struct inode *in, struct file *file)
 {
@@ -292,6 +313,12 @@ static const struct file_operations gmc_decompress_fops = {
 	.write = gmc_decompress_write
 };
 
+static const struct file_operations gmc_cancel_fops = {
+	.open = simple_open,
+	.llseek = no_llseek,
+	.write = gmc_cancel
+};
+
 #ifdef GPU_GMC_DEBUG
 static const struct file_operations gmc_storage_stat_fops = {
 	.open = simple_open,
@@ -357,6 +384,7 @@ int gmc_register_device(struct gmc_ops *gmc_operations,
 	} files[] = {
 		{ "compress", &gmc_compress_fops },
 		{ "decompress", &gmc_decompress_fops },
+		{ "cancel", &gmc_cancel_fops },
 #ifdef GPU_GMC_DEBUG
 		{ "storage_stat", &gmc_storage_stat_fops },
 		{ "memory_info", &gmc_memory_info_fops },
@@ -368,6 +396,9 @@ int gmc_register_device(struct gmc_ops *gmc_operations,
 	id = gmc_alloc_device_number();
 	ret = snprintf(dirname, GMC_DIRNAME_LENGTH,
 		"device%d", id);
+	if (ret < 0)
+		pr_err("Snprintf the return value ret is less than 0.\n");
+
 	dirname[GMC_DIRNAME_LENGTH - 1] = '\0';
 
 	storage = gmc_storage_create();

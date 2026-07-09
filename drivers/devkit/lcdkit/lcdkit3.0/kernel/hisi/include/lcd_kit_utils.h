@@ -3,7 +3,7 @@
  *
  * lcdkit utils function for lcd driver head file
  *
- * Copyright (c) 2018-2019 Huawei Technologies Co., Ltd.
+ * Copyright (c) 2018-2021 Huawei Technologies Co., Ltd.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -19,6 +19,7 @@
 #ifndef __LCD_KIT_UTILS_H_
 #define __LCD_KIT_UTILS_H_
 #include <linux/kernel.h>
+#include <linux/hisi/powerkey_event.h>
 #include "lcd_kit_common.h"
 #include "lcd_kit_panel.h"
 #include "lcd_kit_sysfs.h"
@@ -40,6 +41,15 @@
 #define LCD_KIT_FPS_SCENCE_FORCE_30FPS          BIT(5)
 #define LCD_KIT_FPS_SCENCE_FUNC_DEFAULT_ENABLE  BIT(6)
 #define LCD_KIT_FPS_SCENCE_FUNC_DEFAULT_DISABLE BIT(7)
+#define LONG_PRESS_RST_CONFIG_BIT 0x06
+#define LONG_PRESS_RST_CONFIG1 0
+#define LONG_PRESS_RST_CONFIG2 2
+#define LONG_PRESS_RST_CONFIG3 4
+#define LONG_PRESS_RST_CONFIG4 6
+#define LONG_PRESS_7S_LCD_TIMER_LEN 700
+#define LONG_PRESS_8S_LCD_TIMER_LEN 1700
+#define LONG_PRESS_9S_LCD_TIMER_LEN 2700
+#define LONG_PRESS_10S_LCD_TIMER_LEN 3700
 /* lcd fps value */
 #define LCD_KIT_FPS_30 30
 #define LCD_KIT_FPS_55 55
@@ -49,8 +59,9 @@
 #define LCD_DDIC_INFO_LEN       64
 /* 2d barcode */
 #define BARCODE_LENGTH   46
+#define HASH_LEN 32
 /* lcd panel version */
-#define VERSION_VALUE_NUM_MAX 10
+#define VERSION_VALUE_NUM_MAX 30
 #define VERSION_NUM_MAX       20
 /* gamma max len, store tpic */
 #define GAMMA_MAX	146
@@ -59,9 +70,30 @@
 #define GRAY_HEAD	0x46
 #define GAMMA_LEN	0x0a
 
+/* Alsc pic width shift on baltimore */
+#define ALSC_PIC_WIDTH_SHIFT  13
 #define LCD_KIT_PCD_SIZE      3
 #define LCD_KIT_ERRFLAG_SIZE  8
 #define DMD_ERR_INFO_LEN      50
+/* ddic low voltage detect */
+#define DETECT_NUM     4
+#define DETECT_LOOPS   6
+#define ERR_THRESHOLD  4
+#define DET_START      1
+#define VAL_NUM        2
+#define VAL_0          0
+#define VAL_1          1
+#define DET1_INDEX     0
+#define DET2_INDEX     1
+#define DET3_INDEX     2
+#define DET4_INDEX     3
+#define DMD_DET_ERR_LEN      300
+/* checksum start index */
+#define INDEX_START  2
+/* checksum invalid index */
+#define INVALID_INDEX  0xFF
+#define LCD_KIT_PCD_DETECT_OPEN   1
+#define LCD_KIT_PCD_DETECT_CLOSE  0
 /* color uniform */
 #define C_LMT_NUM   3
 #define MXCC_ROW    3
@@ -75,6 +107,69 @@
 #define ERRFLAG_FAIL           2
 /* max bl level */
 #define MAX_BL_LEVEL	255
+#define READ_MAX_LEN	64
+#define READ_BUF_MAX	(64 << 2)
+#define WRITE_MAX_LEN	254
+#define LCD_DSI0	0
+#define LCD_DSI1	1
+#define LCD_DEMURA_READ_FIRST	1
+#define LCD_DEMURA_READ_CONTINUE	2
+#define LCD_DEMURA_READ_CHECKSUM	3
+#define LCD_DEMURA_READ_WRITED_CHKSUM	4
+#define LCD_DEMURA_WRITE_PREPARE	5
+#define LCD_DEMURA_WRITE_FIRST	6
+#define LCD_DEMURA_WRITE_CONTINUE	7
+#define LCD_DEMURA_WRITE_END	8
+#define LCD_DEMURA_WRITE_IRDROP_PREPARE	9
+#define LCD_DEMURA_WRITE_IRDROP	10
+#define LCD_DEMURA_WRITE_IRDROP_END	11
+
+/* lcd fps scence */
+enum {
+	LCD_FPS_SCENCE_60 = 0,
+	LCD_FPS_SCENCE_30 = 1,
+	LCD_FPS_SCENCE_45 = 2,
+	LCD_FPS_SCENCE_60P = 3,
+	LCD_FPS_SCENCE_90 = 4,
+	LCD_FPS_SCENCE_120 = 5,
+	LCD_FPS_SCENCE_180 = 6,
+	LCD_FPS_SCENCE_60P2 = 7,
+	LCD_FPS_SCENCE_60P6 = 8,
+	LCD_FPS_SCENCE_61 = 9,
+	LCD_FPS_SCENCE_MAX = 10,
+};
+
+/* fps dsi mipi parameter index */
+enum {
+	FPS_HSA_PARA_INDEX = 0,
+	FPS_HBP_PARA_INDEX = 1,
+	FPS_HSIZE_PARA_INDEX = 2,
+	FPS_HLINE_PARA_INDEX = 3,
+	FPS_VSA_PARA_INDEX = 4,
+	FPS_VBP_PARA_INDEX = 5,
+	FPS_VFP_PARA_INDEX = 6,
+	FPS_DSI_CLK_PARA_INDEX = 7,
+	FPS_DSI_TIMMING_PARA_NUM = 8,
+};
+
+/* fps config extend cmd type */
+enum {
+	EXTEND_MAX = 1,
+};
+
+/* lcd fps value */
+#define LCD_FPS_45 45
+#define LCD_FPS_60P 60
+#define LCD_FPS_60_HIGH 61
+#define LCD_FPS_90 90
+#define LCD_FPS_120 120
+#define LCD_FPS_180 180
+#define FPS_UPDATE_ENABLE 1
+#define FPS_UPDATE_DISABLE 0
+#define PWM_TYPE 0
+#define DC_TYPE 1
+#define FPS_CONFIG_EN 1
+#define MIN_FPS_LIST 1
 
 /* enum */
 enum {
@@ -82,6 +177,12 @@ enum {
 	RGBW_SET2_MODE = 2,
 	RGBW_SET3_MODE = 3,
 	RGBW_SET4_MODE = 4,
+};
+
+enum {
+	PCD_COMPARE_MODE_EQUAL = 0,
+	PCD_COMPARE_MODE_BIGGER = 1,
+	PCD_COMPARE_MODE_MASK = 2,
 };
 
 enum {
@@ -115,6 +216,13 @@ enum {
 	SLAVE_REGION = 1,
 	FOLD_REGION = 2,
 	REGION_MAX = 3,
+};
+
+enum {
+	PWR_OFF_NO_NEED_DISABLE_ESD = 0,
+	PWR_OFF_NEED_DISABLE_ESD = 1,
+	PWR_OFF_DISABLED_ESD = 2,
+	PWR_OFF_ESD_STATUS_BUTT,
 };
 
 /* struct define */
@@ -165,6 +273,45 @@ struct lcd_kit_brightness_color_oeminfo {
 	struct lcd_kit_color_measure_data color_mdata;
 };
 
+struct lcd_kit_power_key_info {
+	unsigned int support;
+	unsigned int power_off_flag;
+	unsigned int esd_status;
+	unsigned int long_press_flag;
+	unsigned int timer_val;
+	unsigned int rst_addr;
+	unsigned int configtime1;
+	unsigned int configtime2;
+	unsigned int configtime3;
+	unsigned int configtime4;
+	struct notifier_block nb;
+	struct delayed_work pf_work;
+	struct lcd_kit_dsi_panel_cmds cmds;
+};
+
+struct lcd_kit_demura {
+	unsigned int support;
+	struct lcd_kit_dsi_panel_cmds r_fir_cmds;
+	struct lcd_kit_dsi_panel_cmds r_con_cmds;
+	struct lcd_kit_dsi_panel_cmds rr_chksum_cmds;
+	struct lcd_kit_dsi_panel_cmds r_end_cmds;
+	struct lcd_kit_dsi_panel_cmds d0_w_pre_cmds;
+	struct lcd_kit_dsi_panel_cmds d1_w_pre_cmds;
+	struct lcd_kit_dsi_panel_cmds d0_w_fir_cmds;
+	struct lcd_kit_dsi_panel_cmds d1_w_fir_cmds;
+	struct lcd_kit_dsi_panel_cmds d0_w_con_cmds;
+	struct lcd_kit_dsi_panel_cmds d1_w_con_cmds;
+	struct lcd_kit_dsi_panel_cmds rw_chksum_cmds;
+	struct lcd_kit_dsi_panel_cmds d0_w_end_cmds;
+	struct lcd_kit_dsi_panel_cmds d1_w_end_cmds;
+	struct lcd_kit_dsi_panel_cmds d0_w_ird_pre_cmds;
+	struct lcd_kit_dsi_panel_cmds d1_w_ird_pre_cmds;
+	struct lcd_kit_dsi_panel_cmds d0_w_ird_cmds;
+	struct lcd_kit_dsi_panel_cmds d1_w_ird_cmds;
+	struct lcd_kit_dsi_panel_cmds d0_w_ird_end_cmds;
+	struct lcd_kit_dsi_panel_cmds d1_w_ird_end_cmds;
+};
+
 struct lcd_kit_2d_barcode {
 	u32 support;
 	u32 block_num;
@@ -180,32 +327,52 @@ struct lcd_kit_oem_info {
 };
 
 struct lcd_kit_project_id {
-	u32 support;
-	char *default_project_id;
 	char id[LCD_DDIC_INFO_LEN];
-	struct lcd_kit_dsi_panel_cmds cmds;
 };
 
 struct lcd_kit_panel_version {
 	u32 support;
 	u32 value_number;
 	u32 version_number;
+	u32 secend_value_number;
 	char read_value[VERSION_VALUE_NUM_MAX];
 	char lcd_version_name[VERSION_NUM_MAX][LCD_PANEL_VERSION_SIZE];
 	struct lcd_kit_arrays_data value;
 	struct lcd_kit_dsi_panel_cmds cmds;
 	struct lcd_kit_dsi_panel_cmds enter_cmds;
 	struct lcd_kit_dsi_panel_cmds exit_cmds;
+	struct lcd_kit_dsi_panel_cmds secend_cmds;
+	struct lcd_kit_dsi_panel_cmds secend_enter_cmds;
+	struct lcd_kit_dsi_panel_cmds secend_exit_cmds;
 };
 
 struct lcd_kit_fps {
 	u32 support;
+	bool fps_can_update_flag;
+	u32 fps_switch_support;
+	u32 fps_effective_frame_count;
+	u32 fps_send_dfr_cmd_in_vactive;
+	u32 fps_switch_mode;
+	u32 fps_need_high_60;
+	u32 last_update_fps;
+	u32 fps_need_extend_cmds;
+	u32 fps_ifbc_type;
+	u32 fps_disable_dsi_clk_upt;
+	u32 hfps_switch_no_need_cmd;
+	u32 fps_check_panel_on_delay;
+	u32 fps_need_update_on;
+	u32 fps_update_to_90;
 	struct lcd_kit_dsi_panel_cmds dfr_enable_cmds;
 	struct lcd_kit_dsi_panel_cmds dfr_disable_cmds;
 	struct lcd_kit_dsi_panel_cmds fps_to_30_cmds;
 	struct lcd_kit_dsi_panel_cmds fps_to_60_cmds;
 	struct lcd_kit_array_data low_frame_porch;
 	struct lcd_kit_array_data normal_frame_porch;
+	struct lcd_kit_array_data fps_switch_order;
+	struct lcd_kit_array_data panel_support_fps_list;
+	struct lcd_kit_dsi_panel_cmds fps_to_cmds[LCD_FPS_SCENCE_MAX];
+	struct lcd_kit_array_data fps_dsi_timming[LCD_FPS_SCENCE_MAX];
+	struct lcd_kit_dsi_panel_cmds fps_extend_cmds[EXTEND_MAX];
 };
 
 struct lcd_kit_rgbw {
@@ -258,6 +425,13 @@ struct lcd_kit_otp_gamma {
 struct lcd_kit_pcd_errflag {
 	u32 pcd_support;
 	u32 errflag_support;
+	u32 pcd_value_compare_mode;
+	u32 pcd_errflag_check_support;
+	u32 gpio_pcd;
+	u32 gpio_errflag;
+	u32 exp_pcd_mask;
+	u32 pcd_det_num;
+	u32 power_on_support;
 	struct lcd_kit_dsi_panel_cmds start_pcd_check_cmds;
 	struct lcd_kit_dsi_panel_cmds switch_page_cmds;
 	struct lcd_kit_dsi_panel_cmds read_pcd_cmds;
@@ -268,12 +442,88 @@ struct lcd_kit_pcd_errflag {
 struct dbv_stat_desc {
 	u32 support;
 	u32 dbv[REGION_MAX];
+	u32 ori_dbv[REGION_MAX];
 	u32 pwon[REGION_MAX];
+	u32 hbm[REGION_MAX];
+	u32 hbmon[REGION_MAX];
 	struct timeval last_time[REGION_MAX];
 	struct timeval pwon_last_time[REGION_MAX];
+	struct timeval hbm_last_time[REGION_MAX];
+	struct timeval hbmon_last_time[REGION_MAX];
+};
+
+struct local_hbm_position {
+	uint32_t x_coordinate;
+	uint32_t y_coordinate;
+};
+
+struct local_hbm_color {
+	uint8_t red[2];
+	uint8_t green[2];
+	uint8_t blue[2];
+};
+
+struct local_hbm {
+	uint32_t mode;
+	union {
+		uint32_t radius;
+		uint32_t alpha;
+		struct local_hbm_position position;
+		struct local_hbm_color color;
+	};
+};
+
+struct lcd_kit_fps_gamma {
+	uint32_t support;
+	uint32_t check_flag;
+	uint32_t flash_gamma_total_length;
+	struct lcd_kit_dsi_panel_cmds read_otp;
+	struct lcd_kit_dsi_panel_cmds read_flash_enter;
+	struct lcd_kit_dsi_panel_cmds read_flash;
+	struct lcd_kit_dsi_panel_cmds read_flash_exit;
+	struct lcd_kit_dsi_panel_cmds write_60hz;
+	struct lcd_kit_dsi_panel_cmds write_90hz;
+	/* noah, noahp workaround */
+	uint32_t swap_support;
+	uint32_t check_length_update_support;
+};
+
+struct lcd_kit_panel_irc {
+	uint32_t support;
+	uint32_t enable;
+	struct lcd_kit_dsi_panel_cmds on;
+	struct lcd_kit_dsi_panel_cmds off;
+};
+
+struct lcd_kit_tplcd_info {
+	uint8_t sn_check;
+	uint8_t sn_hash[HASH_LEN * 2 + 1];
+};
+
+struct lcd_kit_sn_code_info {
+	uint8_t mode_info;
+	uint8_t glass_info;
+	uint8_t cg_info;
+	uint8_t bl_info;
+};
+
+struct lcd_kit_frame_odd_even {
+	uint32_t support;
+	struct lcd_kit_dsi_panel_cmds read;
+};
+
+struct lcd_kit_transmission  {
+	u32 separate_support;
+	/* separate transmission status flag */
+	u32 separate_status_flag;
 };
 
 /* function declare */
+extern struct lcd_kit_ops g_lcd_ops;
+/* function declare */
+#ifdef LCD_KIT_DEBUG_ENABLE
+int dpd_init(struct platform_device *pdev);
+#endif
 extern int mipi_dsi_ulps_cfg(struct hisi_fb_data_type *hisifd, int enable);
 struct hisi_fb_data_type *dev_get_hisifd(struct device *dev);
 int lcd_kit_lread_reg(void *pdata, uint32_t *out,
@@ -290,6 +540,9 @@ int lcd_kit_blpwm_set_backlight(struct hisi_fb_data_type *hisifd, uint32_t level
 int lcd_kit_mipi_set_backlight(struct hisi_fb_data_type *hisifd, uint32_t level);
 int lcd_kit_start_pcd_check(struct hisi_fb_data_type *hisifd);
 int lcd_kit_check_pcd_errflag_check(struct hisi_fb_data_type *hisifd);
+int lcd_kit_gpio_pcd_errflag_check(void);
+void lcd_kit_ddic_lv_detect_dmd_report(
+	u8 reg_val[DETECT_LOOPS][DETECT_NUM][VAL_NUM]);
 int lcd_kit_read_gamma(struct hisi_fb_data_type *hisifd, uint8_t *read_value,
 	int len);
 int lcd_kit_parse_switch_cmd(struct hisi_fb_data_type *hisifd,
@@ -297,6 +550,8 @@ int lcd_kit_parse_switch_cmd(struct hisi_fb_data_type *hisifd,
 int lcd_kit_read_project_id(void);
 int lcd_kit_panel_version_init(struct hisi_fb_data_type *hisifd);
 int lcd_kit_alpm_setting(struct hisi_fb_data_type *hisifd, uint32_t mode);
+int lcd_kit_local_hbm(struct hisi_fb_data_type *hisifd, const char *cmd,
+	size_t count);
 int lcd_kit_utils_init(struct device_node *np, struct hisi_panel_info *pinfo);
 int lcd_kit_dsi_fifo_is_full(const char __iomem *dsi_base);
 int lcd_kit_dsi_fifo_is_empty(const char __iomem *dsi_base);
@@ -312,14 +567,24 @@ struct lcd_kit_brightness_color_oeminfo *lcd_kit_get_brightness_color_oeminfo(vo
 void lcd_kit_set_mipi_link(struct hisi_fb_data_type *hisifd, int link_state);
 void lcd_kit_set_mipi_link(struct hisi_fb_data_type *hisifd, int link_state);
 void lcd_kit_set_mipi_clk(struct hisi_fb_data_type *hisifd, uint32_t clk);
-int lcd_kit_get_value_from_dts(char *compatible, char *dts_name, u32 *value);
+int lcd_kit_get_value_from_dts(char *compatible, const char *dts_name, u32 *value);
 int lcd_kit_write_otp_gamma(u8 *buf);
 int lcd_kit_set_otp_gamma(struct hisi_fb_data_type *hisifd);
 int lcd_kit_set_otp_gray(struct hisi_fb_data_type *hisifd);
 void lcd_frame_refresh(struct hisi_fb_data_type *hisifd);
 void lcd_kit_recovery_display(struct hisi_fb_data_type *hisifd);
-void lcd_hardware_reset(void);
 void lcd_esd_enable(struct hisi_fb_data_type *hisifd, int enable);
 bool lcd_is_power_on(uint32_t level);
-bool lcd_is_dual_mipi(void);
+int lcd_set_demura_handle(struct hisi_fb_data_type *hisifd,
+	unsigned char type, const demura_set_info_t *info);
+int lcd_get_demura_handle(struct hisi_fb_data_type *hisifd,
+	unsigned char dsi, unsigned char *out, int out_len,
+	unsigned char read_type, unsigned char len);
+int lcd_kit_pcd_detect(struct hisi_fb_data_type *hisifd, uint32_t val);
+int lcd_kit_read_fps_gamma(void *hld);
+bool lcd_is_support_dfr(void);
+bool lcd_is_high_fps_state(struct hisi_fb_data_type *hisifd);
+void lcd_kit_sn_check(void);
+int lcd_kit_write_fps_gamma_by_scene(struct hisi_fb_data_type *hisifd,
+	int index);
 #endif

@@ -35,6 +35,7 @@
 #include <backend/gpu/mali_kbase_js_internal.h>
 #include <backend/gpu/mali_kbase_pm_internal.h>
 #include <backend/gpu/mali_kbase_jm_internal.h>
+#include <linux/delay.h>
 
 static void kbase_pm_gpu_poweroff_wait_wq(struct work_struct *data);
 static void kbase_pm_hwcnt_disable_worker(struct work_struct *data);
@@ -133,6 +134,7 @@ int kbase_hwaccess_pm_early_init(struct kbase_device *kbdev)
 
 	kbdev->pm.backend.ca_cores_enabled = ~0ull;
 	kbdev->pm.backend.gpu_powered = false;
+	kbdev->pm.backend.gpu_ready = false;
 	kbdev->pm.suspending = false;
 #ifdef CONFIG_MALI_DEBUG
 	kbdev->pm.backend.driver_ready_for_irqs = false;
@@ -392,6 +394,18 @@ bool kbase_pm_poweroff_done(struct kbase_device *kbdev)
 	return ret;
 }
 
+bool kbase_pm_poweroff_done_lock(struct kbase_device *kbdev)
+{
+	bool ret;
+	unsigned long flags;
+
+	spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
+	ret = kbase_pm_poweroff_done(kbdev);
+	spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
+
+	return ret;
+}
+
 static bool is_poweroff_in_progress(struct kbase_device *kbdev)
 {
 	bool ret;
@@ -406,8 +420,17 @@ static bool is_poweroff_in_progress(struct kbase_device *kbdev)
 
 void kbase_pm_wait_for_poweroff_complete(struct kbase_device *kbdev)
 {
+	int timeout = 0;
+
 	wait_event_killable(kbdev->pm.backend.poweroff_wait,
 			is_poweroff_in_progress(kbdev)); //lint !e666
+	/* Wait 1s for regulator_refcount to 0 */
+	while ((timeout < 10000) && !kbase_pm_poweroff_done_lock(kbdev)) {
+		timeout++;
+		udelay(100); // delay 100us each time
+	}
+	if (timeout == 10000)
+		dev_err(kbdev->dev, "Wait regulator refcount 1s\n");
 }
 
 int kbase_hwaccess_pm_powerup(struct kbase_device *kbdev,
@@ -462,6 +485,13 @@ int kbase_hwaccess_pm_powerup(struct kbase_device *kbdev,
 	spin_unlock_irqrestore(&kbdev->pm.backend.gpu_powered_lock, irq_flags);
 #endif
 	kbase_pm_enable_interrupts(kbdev);
+
+	WARN_ON(!kbdev->pm.backend.gpu_powered);
+	/* GPU has been powered up (by kbase_hwaccess_pm_early_init) and interrupts have
+	 * been enabled, so GPU is ready for use and PM state machine can be
+	 * exercised from this point onwards.
+	 */
+	kbdev->pm.backend.gpu_ready = true;
 
 	/* Turn on the GPU and any cores needed by the policy */
 	kbase_pm_do_poweron(kbdev, false);

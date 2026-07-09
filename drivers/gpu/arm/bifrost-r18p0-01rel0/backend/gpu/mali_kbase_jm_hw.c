@@ -121,7 +121,7 @@ void kbase_job_hw_submit(struct kbase_device *kbdev,
 	/* checked whether cross slot have diferent kctx,
 	 * if yes, force invalid and flush */
 	for (slot_nr = 0; slot_nr < kbdev->gpu_props.num_job_slots; slot_nr++) {
-		for (i = 0; i < kbdev->gpu_props.num_job_slots; i++) {
+		for (i = 0; i < SLOT_RB_SIZE; i++) {
 			if (kctx !=  kbdev->force_l2_flush.last_two_context_per_slot[slot_nr][i]) {
 				force_invalidate_flush = true;
 				break;
@@ -742,32 +742,15 @@ void kbasep_job_slot_soft_or_hard_stop_do_action(struct kbase_device *kbdev,
 #endif
 }
 
-void kbase_backend_jm_kill_jobs_from_kctx(struct kbase_context *kctx)
+void kbase_backend_jm_kill_running_jobs_from_kctx(struct kbase_context *kctx)
 {
-	unsigned long flags;
-	struct kbase_device *kbdev;
+	struct kbase_device *kbdev = kctx->kbdev;
 	int i;
 
-	KBASE_DEBUG_ASSERT(kctx != NULL);
-	kbdev = kctx->kbdev;
-	KBASE_DEBUG_ASSERT(kbdev != NULL);
-
-	/* Cancel any remaining running jobs for this kctx  */
-	mutex_lock(&kctx->jctx.lock);
-	spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
-
-	/* Invalidate all jobs in context, to prevent re-submitting */
-	for (i = 0; i < BASE_JD_ATOM_COUNT; i++) {
-		if (!work_pending(&kctx->jctx.atoms[i].work))
-			kctx->jctx.atoms[i].event_code =
-						BASE_JD_EVENT_JOB_CANCELLED;
-	}
+	lockdep_assert_held(&kbdev->hwaccess_lock);
 
 	for (i = 0; i < kbdev->gpu_props.num_job_slots; i++)
 		kbase_job_slot_hardstop(kctx, i, NULL);
-
-	spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
-	mutex_unlock(&kctx->jctx.lock);
 }
 
 void kbase_job_slot_ctx_priority_check_locked(struct kbase_context *kctx,
@@ -833,7 +816,7 @@ void kbase_jm_wait_for_zero_jobs(struct kbase_context *kctx)
 			ZAP_TIMEOUT);
 		kbdev->error_num.soft_reset++;
 		kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 		/*benchmark data collect */
 		if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 			rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);
@@ -1040,7 +1023,7 @@ void kbase_job_slot_hardstop(struct kbase_context *kctx, int js,
 
 			kbdev->error_num.soft_reset++;
 			kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 			/*benchmark data collect */
 			if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 				rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);

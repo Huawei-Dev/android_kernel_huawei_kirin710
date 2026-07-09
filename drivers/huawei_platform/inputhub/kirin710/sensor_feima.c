@@ -1313,6 +1313,10 @@ void save_light_to_sensorhub(uint32_t mipi_level, uint32_t bl_level)
 	}
 }
 
+inline void send_lcd_freq_to_sensorhub(uint32_t lcd_freq)
+{
+	return;
+}
 
 static DEVICE_ATTR(sleeve_test_prepare, 0220, NULL, store_sleeve_test_prepare);
 static DEVICE_ATTR(sleeve_test_threshhold, 0440, show_sleeve_test_threshhold, NULL);

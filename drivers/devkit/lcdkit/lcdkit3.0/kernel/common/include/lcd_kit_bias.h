@@ -24,6 +24,8 @@ struct lcd_kit_bias_ops {
 	int (*set_bias_power_down)(int vpos, int vneg);
 	int (*dbg_set_bias_voltage)(int vpos, int vneg);
 	int (*set_ic_disable)(void);
+	int (*set_vtc_bias_voltage)(int vpos, int vneg, bool state);
+	bool (*set_bias_is_need_disable)(void);
 };
 
 /* function declare */

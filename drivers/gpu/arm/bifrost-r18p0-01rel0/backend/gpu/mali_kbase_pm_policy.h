@@ -98,6 +98,9 @@ static inline bool kbase_pm_cores_requested(struct kbase_device *kbdev,
 		return false;
 
 	if (shader_required &&
+#ifndef CONFIG_HISI_GPU_CORE_HOTPLUG
+			kbdev->pm.backend.shaders_state != KBASE_SHADERS_PEND_ON_CORESTACK_ON &&
+#endif
 			kbdev->pm.backend.shaders_state != KBASE_SHADERS_ON_CORESTACK_ON &&
 			kbdev->pm.backend.shaders_state != KBASE_SHADERS_ON_CORESTACK_ON_RECHECK)
 		return false;

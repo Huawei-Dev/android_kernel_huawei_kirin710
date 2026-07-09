@@ -660,6 +660,7 @@ struct thp_core_data {
 	struct wakeup_source thp_wake_lock;
 	struct thp_power_supply thp_powers[THP_POWER_ID_MAX];
 	int project_in_tp;
+	unsigned int lcd_esd_event_upload;
 	char *project_id_dummy;
 	atomic_t register_flag;
 	u32 status;

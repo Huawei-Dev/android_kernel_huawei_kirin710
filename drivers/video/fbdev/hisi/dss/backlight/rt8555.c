@@ -31,7 +31,6 @@
 
 static bool g_rt8555_used;
 static bool g_init_status;
-static bool bl_set_slope_status;
 static struct class *g_rt_class;
 static struct rt8555_chip_data *g_rtdev;
 static struct rt8555_info g_bl_info;
@@ -44,18 +43,13 @@ static struct gpio_desc g_gpio_on_cmds[] = {
 		DELAY_5_MS, GPIO_RT8555_EN_NAME,
 		&g_bl_info.rt8555_hw_en_gpio, 1 },
 };
-static struct gpio_desc g_gpio_disable_cmds[] = {
-	{ DTYPE_GPIO_OUTPUT, WAIT_TYPE_US,
+static struct gpio_desc g_2_gpio_on_cmds[] = {
+	{ DTYPE_GPIO_REQUEST, WAIT_TYPE_US,
 		DELAY_0_US, GPIO_RT8555_EN_NAME,
-		&g_bl_info.rt8555_hw_en_gpio, 0 },
-	{ DTYPE_GPIO_INPUT, WAIT_TYPE_US,
-		DELAY_10_US, GPIO_RT8555_EN_NAME,
-		&g_bl_info.rt8555_hw_en_gpio, 0 },
-};
-static struct gpio_desc g_gpio_free_cmds[] = {
-	{ DTYPE_GPIO_FREE, WAIT_TYPE_US,
-		DELAY_50_US, GPIO_RT8555_EN_NAME,
-		&g_bl_info.rt8555_hw_en_gpio, 0 },
+		&g_bl_info.rt8555_2_hw_en_gpio, 0 },
+	{ DTYPE_GPIO_OUTPUT, WAIT_TYPE_MS,
+		DELAY_5_MS, GPIO_RT8555_EN_NAME,
+		&g_bl_info.rt8555_2_hw_en_gpio, 1 },
 };
 static char *g_dts_str[RT8555_RW_REG_MAX] = {
 	"rt8555_control_mode",       /* register 0x00 */
@@ -68,6 +62,7 @@ static char *g_dts_str[RT8555_RW_REG_MAX] = {
 	"rt8555_compensation_duty",  /* register 0x0B */
 	"rt8555_clk_pfm_enable",     /* register 0x0D */
 	"rt8555_led_protection",     /* register 0x0E */
+	"rt8555_reg_config_50",      /* register 0x50 */
 };
 static unsigned int g_reg_addr[RT8555_RW_REG_MAX] = {
 	RT8555_CONTROL_MODE_ADDR,
@@ -80,6 +75,7 @@ static unsigned int g_reg_addr[RT8555_RW_REG_MAX] = {
 	RT8555_COMPENSATION_DUTY_ADDR,
 	RT8555_CLK_PFM_ENABLE_ADDR,
 	RT8555_LED_PROTECTION_ADDR,
+	RT8555_REG_CONFIG_50,
 };
 
 unsigned int g_rt8555_msg_level = DEFAULT_MSG_LEVEL;
@@ -105,12 +101,34 @@ static int rt8555_parse_dts(struct device_node *np)
 	if (ret < 0)
 		RT8555_INFO(g_rtdev->dev,
 			"bl_set_long_slope dts don't config\n");
+	ret = of_property_read_u32(np, "dual_ic", &g_bl_info.dual_ic);
+	if (ret < 0)
+		RT8555_INFO(g_rtdev->dev, "can not get dual_ic dts node\n");
+		
+	if (g_bl_info.dual_ic == DUAL_RT8555_I3C) {
+		ret = of_property_read_u32(np, "rt8555_i2c_bus_id",
+			&g_bl_info.rt8555_i2c_bus_id);
+		if (ret < 0)
+			RT8555_INFO(g_rtdev->dev, "can not get rt8555_i2c_bus_id dts node\n");
+	} else if (g_bl_info.dual_ic == DUAL_RT8555_I2C) {
+		ret = of_property_read_u32(np, "rt8555_2_i2c_bus_id",
+			&g_bl_info.rt8555_2_i2c_bus_id);
+		if (ret < 0)
+			RT8555_INFO(g_rtdev->dev, "can not get rt8555_2_i2c_bus_id dts node\n");
+	}
 	ret = of_property_read_u32(np, "rt8555_hw_en_gpio",
 		&g_bl_info.rt8555_hw_en_gpio);
 	if (ret < 0) {
 		RT8555_ERR(g_rtdev->dev,
 			"get rt8555_hw_en_gpio dts config failed\n");
 		return ret;
+	}
+	if (g_bl_info.dual_ic == DUAL_RT8555_I2C) {
+		ret = of_property_read_u32(np, "rt8555_2_hw_en_gpio",
+			&g_bl_info.rt8555_2_hw_en_gpio);
+		if (ret < 0)
+			RT8555_ERR(g_rtdev->dev,
+				"get rt8555_2_hw_en_gpio dts config failed\n");
 	}
 	ret = of_property_read_u32(np, "bl_on_kernel_mdelay",
 		&g_bl_info.bl_on_kernel_mdelay);
@@ -125,6 +143,50 @@ static int rt8555_parse_dts(struct device_node *np)
 		RT8555_ERR(g_rtdev->dev, "get bl_led_num dts config failed\n");
 		return ret;
 	}
+	return ret;
+}
+
+static int rt8555_2_config_write(struct rt8555_chip_data *pchip,
+	unsigned int reg[], unsigned int val[], unsigned int size)
+{
+	struct i2c_adapter *adap = NULL;
+	struct i2c_msg msg = {0};
+	char buf[2];
+	int i2c_bus_id = 0;
+	int ret = 0;
+	int i;
+
+	if((pchip == NULL) || (reg == NULL) || (val == NULL) || (pchip->client == NULL)) {
+		RT8555_ERR(g_rtdev->dev, "pchip or reg or val or clinet is null pointer\n");
+		return -1;
+	}
+
+	RT8555_INFO(g_rtdev->dev, "rt8555_2_config_write\n");
+	/* get i2c adapter */
+	if (g_bl_info.dual_ic == DUAL_RT8555_I3C)
+		i2c_bus_id = g_bl_info.rt8555_i2c_bus_id;
+	else if (g_bl_info.dual_ic == DUAL_RT8555_I2C)
+		i2c_bus_id = g_bl_info.rt8555_2_i2c_bus_id;
+	adap = i2c_get_adapter(i2c_bus_id);
+	if (!adap) {
+		RT8555_ERR(g_rtdev->dev, "i2c device %d not found\n", i2c_bus_id);
+		ret = -ENODEV;
+		goto out;
+	}
+	msg.addr = pchip->client->addr;
+	msg.flags = pchip->client->flags;
+	msg.len = 2;
+	msg.buf = buf;
+	for(i = 0; i < size; i++) {
+		buf[0] = reg[i];
+		buf[1] = val[i];
+		if (val[i] != PARSE_FAILED) {
+			ret = i2c_transfer(adap, &msg, 1);
+			RT8555_INFO(g_rtdev->dev, "rt8555_2_config_write reg=0x%x,val=0x%x\n", buf[0], buf[1]);
+		}
+	}
+out:
+	i2c_put_adapter(adap);
 	return ret;
 }
 
@@ -174,6 +236,13 @@ static int rt8555_chip_init(struct rt8555_chip_data *pchip)
 	int ret;
 
 	RT8555_INFO(g_rtdev->dev, "in\n");
+	if (g_bl_info.dual_ic) {
+		ret = rt8555_2_config_write(pchip, g_reg_addr, g_bl_info.reg, RT8555_RW_REG_MAX);
+		if (ret < 0) {
+			RT8555_ERR(g_rtdev->dev, "rt8555 slave register failed\n");
+		goto out;
+		}
+	}
 	ret = rt8555_config_write(pchip, g_reg_addr,
 		g_bl_info.reg, RT8555_RW_REG_MAX);
 	if (ret < 0) {
@@ -203,6 +272,9 @@ ssize_t rt8555_set_backlight_init(uint32_t bl_level)
 		mdelay(g_bl_info.bl_on_kernel_mdelay);
 		gpio_cmds_tx(g_gpio_on_cmds,
 			ARRAY_SIZE(g_gpio_on_cmds));
+		if (g_bl_info.dual_ic == DUAL_RT8555_I2C)
+			gpio_cmds_tx(g_2_gpio_on_cmds,
+				ARRAY_SIZE(g_2_gpio_on_cmds));
 		/* chip initialize */
 		ret = rt8555_chip_init(g_rtdev);
 		if (ret < 0) {
@@ -266,12 +338,14 @@ static ssize_t rt8555_reg_show(struct device *dev,
 		"\rMode_devision_0x0A = 0x%x\n"
 		"Compensation_duty_0x0B = 0x%x\n"
 		"\rClk_pfm_enable_0x0D = 0x%x\n"
-		"Led_protection_0x0E = 0x%x\n",
+		"Led_protection_0x0E = 0x%x\n"
+		"\rConfig_reg_50 = 0x%x\n",
 		g_bl_info.reg[0], g_bl_info.reg[1],
 		g_bl_info.reg[2], g_bl_info.reg[3],
 		g_bl_info.reg[4], g_bl_info.reg[5],
 		g_bl_info.reg[6], g_bl_info.reg[7],
-		g_bl_info.reg[8], g_bl_info.reg[9]);
+		g_bl_info.reg[8], g_bl_info.reg[9],
+		g_bl_info.reg[10]);
 	return ret;
 i2c_error:
 	ret = snprintf(buf, PAGE_SIZE, "%s: i2c access failed\n", __func__);

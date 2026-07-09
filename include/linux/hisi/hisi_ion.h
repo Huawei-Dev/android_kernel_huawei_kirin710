@@ -189,8 +189,8 @@ static inline unsigned long hisi_ion_total(void)
 #endif
 
 int hisi_ion_memory_info(bool verbose);
-int hisi_ion_proecss_info(void);
-
+int mm_ion_proecss_info(void);
+void mm_ion_process_summary_info(void);
 int ion_secmem_get_phys(struct dma_buf *dmabuf, phys_addr_t *addr, size_t *len);
 int hisi_ion_cache_operate(int fd, unsigned long uaddr,
 	unsigned long offset, unsigned long length,

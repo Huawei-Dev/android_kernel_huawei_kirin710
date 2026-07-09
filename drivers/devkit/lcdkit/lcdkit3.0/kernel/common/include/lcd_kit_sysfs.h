@@ -43,6 +43,14 @@ enum lcd_kit_sysfs_index {
 	BL_MODE_INDEX,
 	BL_SUPPORT_MODE_INDEX,
 	EFFECT_BL_INDEX,
+	DDIC_LV_DETECT_INDEX,
+	HBM_MODE_INDEX,
+	DDIC_ALPHA_INDEX,
+	FPS_ORDER_INDEX,
+	PANEL_SNCODE_INDEX,
+	DISPLAY_IDLE_MODE,
+	PRE_CAMERA_POSITION,
+	PANEL_VERSION_INDEX,
 };
 /* sysfs support enum */
 enum lcd_kit_sysfs_support {
@@ -106,10 +114,14 @@ struct lcd_kit_sysfs_ops {
 		struct device_attribute *attr, char *buf);
 	ssize_t (*fps_scence_store)(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*fps_order_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
 	ssize_t (*alpm_function_show)(struct device *dev,
 		struct device_attribute *attr, char *buf);
 	ssize_t (*alpm_function_store)(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*alpm_setting_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
 	ssize_t (*alpm_setting_store)(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
 	ssize_t (*func_switch_show)(struct device *dev,
@@ -127,6 +139,26 @@ struct lcd_kit_sysfs_ops {
 	ssize_t (*effect_bl_show)(struct device *dev,
 		struct device_attribute *attr, char *buf);
 	ssize_t (*effect_bl_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*ddic_lv_detect_test_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
+	ssize_t (*ddic_lv_detect_test_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*hbm_mode_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*hbm_mode_show)(struct device *dev,
+		 struct device_attribute *attr, char *buf);
+	ssize_t (*ddic_local_hbm_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*panel_sncode_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
+	ssize_t (*panel_sncode_store)(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count);
+	ssize_t (*pre_camera_position_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
+	ssize_t (*panel_version_show)(struct device *dev,
+		struct device_attribute *attr, char *buf);
+	ssize_t (*idle_mode_store)(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
 };
 #endif

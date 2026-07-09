@@ -1,3 +1,21 @@
+/*
+ * lcdkit_tp.c
+ *
+ * lcdkit tp function for lcd driver
+ *
+ * Copyright (c) 2018-2020 Huawei Technologies Co., Ltd.
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ */
+
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/ctype.h>
@@ -61,7 +79,7 @@ char *trans_lcd_panel_name_to_tskit(void){
 }
 EXPORT_SYMBOL(trans_lcd_panel_name_to_tskit);
 
-volatile int g_tskit_ic_type= HYBRID;  //this type means oncell incell tddi ... in order to decide the power policy between lcd & tp
+volatile int g_tskit_ic_type= HYBRID;  // this type means oncell incell tddi ... in order to decide the power policy between lcd & tp
 EXPORT_SYMBOL(g_tskit_ic_type);
 bool isbulcked;
 EXPORT_SYMBOL(isbulcked);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2018, Hisilicon Tech. Co., Ltd. All rights reserved.
+/* Copyright (c) 2015-2020, Hisilicon Tech. Co., Ltd. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -6,7 +6,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  */
@@ -16,24 +16,14 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/version.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
 #include <linux/dma-fence.h>
-#else
-#include <linux/fence.h>
-#endif
 
-#define HISI_DSS_SYNC_NAME_SIZE             64
+#define HISI_DSS_SYNC_NAME_SIZE 64
 
 enum {
 	HISI_DSS_RELEASE_FENCE = 0,
 	HISI_DSS_RETIRE_FENCE,
 };
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0)
-typedef struct dma_fence dss_dma_fence_t;
-#else
-typedef struct fence dss_dma_fence_t;
-#endif
 
 /**
  * struct hisi_dss_fence - sync fence context
@@ -42,7 +32,7 @@ typedef struct fence dss_dma_fence_t;
  * @fence_list: linked list of outstanding sync fence
  */
 struct hisi_dss_fence {
-	dss_dma_fence_t base;
+	struct dma_fence base;
 	char name[HISI_DSS_SYNC_NAME_SIZE];
 	struct list_head fence_list;
 };
@@ -69,8 +59,6 @@ struct hisi_dss_timeline {
 	u64 context;
 	struct list_head fence_list_head;
 };
-
-#ifdef CONFIG_SYNC_FILE
 
 /*
  * hisi_dss_create_timeline - Create timeline object with the given name
@@ -141,34 +129,5 @@ int hisi_dss_inc_timeline(struct hisi_dss_timeline *tl, int increment);
  */
 void hisi_dss_resync_timeline(struct hisi_dss_timeline *tl);
 
-#else
-
-#define hisi_dss_timeline sw_sync_timeline
-
-struct hisi_dss_timeline *hisi_dss_create_timeline(const char *name)
-{
-	return sw_sync_timeline_create(name);
-}
-
-void hisi_dss_destroy_timeline(struct hisi_dss_timeline *tl)
-{
-	sync_timeline_destroy(tl);
-}
-
-int hisi_dss_inc_timeline(struct hisi_dss_timeline *tl, int increment)
-{
-	int rc;
-
-	if (tl == NULL) {
-		pr_err("invalid parameters\n");
-		return -EINVAL;
-	}
-
-	rc = sw_sync_timeline_inc(tl, increment);
-
-	return rc;
-}
-
 #endif
 
-#endif

@@ -1,15 +1,15 @@
-/* Copyright (c) 2013-2014, Hisilicon Tech. Co., Ltd. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 and
-* only version 2 as published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-* GNU General Public License for more details.
-*
-*/
+/* Copyright (c) 2013-2020, Hisilicon Tech. Co., Ltd. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ */
 #ifndef HISI_FB_DEBUG_H
 #define HISI_FB_DEBUG_H
 
@@ -64,32 +64,35 @@
 #include <linux/dma-buf.h>
 #include <linux/genalloc.h>
 #include <linux/hisi-iommu.h>
-#if defined (CONFIG_HUAWEI_DSM)
+#if defined(CONFIG_HUAWEI_DSM)
 #include <dsm/dsm_pub.h>
 #endif
 
-#if defined (CONFIG_HUAWEI_DSM)
-#define VACTIVE0_TIMEOUT_EXPIRE_COUNT   (6)
-#define UNDERFLOW_EXPIRE_COUNT   (6)
-#define UNDERFLOW_INTERVAL (1000)
-#define OFFLINE_COMPOSE_TIMEOUT_EXPECT_COUNT (6)
+#if defined(CONFIG_HUAWEI_DSM)
+#define VACTIVE0_TIMEOUT_EXPIRE_COUNT 6
+#define UNDERFLOW_EXPIRE_COUNT 6
+#define UNDERFLOW_INTERVAL 1000
+#define OFFLINE_COMPOSE_TIMEOUT_EXPECT_COUNT 6
 #endif
+#define ERR_RETURN_DUMP (0x12345678)
 
 /* DSS debug tag func */
 #ifdef CONFIG_HISI_FB_ENG_DBG
 #define DDTF(tag, func)    \
-   do {                    \
-      if (tag) func();     \
-   } while(0)
+	do {                    \
+		if (tag) func();     \
+	} while (0)
 #else
 #define DDTF(tag, func)
 #endif
 /******************************************************************************
-** FUNCTIONS PROTOTYPES
-*/
+ * FUNCTIONS PROTOTYPES
+ */
 extern int g_debug_ldi_underflow;
 extern int g_debug_ldi_underflow_clear;
-
+extern int g_dss_perf_debug;
+extern uint32_t g_dsi_pipe_switch_connector;
+extern uint32_t g_dss_dfr_debug;
 extern int g_debug_panel_mode_switch;
 extern int g_debug_mmu_error;
 extern int g_debug_underflow_error;
@@ -99,7 +102,7 @@ extern int g_debug_ovl_online_composer;
 extern int g_debug_ovl_online_composer_hold;
 extern int g_debug_ovl_online_composer_return;
 extern uint32_t g_debug_ovl_online_composer_timediff;
-extern int g_debug_ovl_online_composer_time_threshold;
+extern uint32_t g_debug_ovl_online_composer_time_threshold;
 
 extern int g_debug_ovl_offline_composer;
 extern int g_debug_ovl_block_composer;
@@ -107,10 +110,7 @@ extern int g_debug_ovl_offline_composer_hold;
 extern uint32_t g_debug_ovl_offline_composer_timediff;
 extern int g_debug_ovl_offline_composer_time_threshold;
 extern int g_debug_ovl_offline_block_num;
-extern int g_debug_ovl_copybit_composer;
-extern int g_debug_ovl_copybit_composer_hold;
-extern int g_debug_ovl_copybit_composer_timediff;
-extern int g_debug_ovl_copybit_composer_time_threshold;
+extern int g_enable_ovl_async_composer;
 extern int g_debug_ovl_mediacommon_composer;
 extern int g_debug_ovl_online_wb_count;
 
@@ -122,6 +122,7 @@ extern int g_smmu_global_bypass;
 extern int g_enable_ovl_cmdlist_offline;
 extern int g_rdma_stretch_threshold;
 extern int g_enable_dirty_region_updt;
+extern int g_enable_alsc;
 extern int g_debug_dirty_region_updt;
 extern int g_enable_mmbuf_debug;
 extern int g_ldi_data_gate_en;
@@ -135,27 +136,36 @@ extern int g_dss_effect_acm_ce_en;
 extern int g_debug_dump_mmbuf;
 extern int g_debug_dump_iova;
 extern int g_debug_online_play_bypass;
+extern int g_debug_dpp_cmdlist_dump;
+extern int g_debug_dpp_cmdlist_type;
+extern int g_debug_dpp_cmdlist_debug;
+extern int g_debug_effect_hihdr;
+extern int g_debug_mipi_phy_config;
 extern uint32_t g_mmbuf_addr_test;
 extern uint32_t g_dump_sensorhub_aod_hwlock;
-#if !defined(CONFIG_HISI_FB_3650) && !defined (CONFIG_HISI_FB_6250)
 extern uint32_t g_dss_min_bandwidth_inbusbusy;
-#endif
+extern uint32_t g_debug_wait_asy_vactive0_thr;
+extern uint32_t g_debug_enable_asynchronous_play;
 
 extern uint32_t g_err_status;
 extern int g_debug_enable_lcd_sleep_in;
 extern uint32_t g_underflow_count;
 
-#if defined (CONFIG_HUAWEI_DSM)
+#if defined(CONFIG_HUAWEI_DSM)
 extern struct dsm_client *lcd_dclient;
 #endif
 
-void hisi_dss_underflow_dump_cmdlist(struct hisi_fb_data_type *hisifd,
+#if defined(CONFIG_HUAWEI_DUBAI_RGB_STATS)
+extern int g_debug_rgb_stats_enable;
+#endif
+
+void hisi_dss_underflow_dump_cmdlist(struct dpu_fb_data_type *dpufd,
 	dss_overlay_t *pov_req_prev, dss_overlay_t *pov_req_prev_prev);
 
-void hisifb_debug_register(struct platform_device *pdev);
-void hisifb_debug_unregister(struct platform_device *pdev);
+void dpufb_debug_register(struct platform_device *pdev);
+void dpufb_debug_unregister(struct platform_device *pdev);
 
-#if defined (CONFIG_HUAWEI_DSM)
+#if defined(CONFIG_HUAWEI_DSM)
 void dss_underflow_debug_func(struct work_struct *work);
 #endif
 #endif /* HISI_FB_DEBUG_H */

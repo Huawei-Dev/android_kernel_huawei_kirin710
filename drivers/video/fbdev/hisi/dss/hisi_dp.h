@@ -1,17 +1,18 @@
 /* Copyright (c) 2013-2014, Hisilicon Tech. Co., Ltd. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 and
-* only version 2 as published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-* GNU General Public License for more details.
-*
-*/
-#ifndef HISI_DP_H
-#define HISI_DP_H
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ */
+
+#ifndef __HISI_DP_H__
+#define __HISI_DP_H__
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,27 +20,23 @@
 #include <linux/pci.h>
 #include "hisi_dss_ion.h"
 #include "hisi_dss.h"
+#include "hisi_fb_config.h"
+
 #if CONFIG_DP_ENABLE
 #include <linux/switch.h>
 #endif
-#include "dp/drm_dp_helper.h"
-#include "dp/drm_dp_helper_additions.h"
-#include "dp/reg.h"
-#include "dp/dbg.h"
-#include <huawei_platform/dp_source/dp_dsm.h>
-#include <huawei_platform/dp_source/dp_factory.h>
-#include <huawei_platform/dp_source/dp_debug.h>
+#include <drm/drm_dp_helper.h>
+#include "dp/link/drm_dp_helper_additions.h"
+#include "dp/dp_dbg.h"
+#include "dp/link/dp_aux.h"
 #include <drm/drm_fixed.h>
 #include <drm/drm_dp_mst_helper.h>
-
+#include "dsc/dsc_algorithm.h"
 
 #define PARSE_EST_TIMINGS_FROM_BYTE3
 #define DPTX_COMBO_PHY
 #define DPTX_TYPE_C
 #define DPTX_DEBUG_REG
-
-#define CONFIG_DP_HDCP_ENABLE
-//#define CONFIG_DP_GENERATOR_REF
 #define CONFIG_DP_EDID_DEBUG
 #define CONFIG_DP_SETTING_COMBOPHY 1
 #define DP_TIME_INFO_SIZE		(24)
@@ -93,44 +90,32 @@
 #define MSB_MASK 0xFF00
 #define SHIFT_8BIT 8
 
-/* The max rate and lanes supported by the core */
-#define DPTX_MAX_LINK_RATE		DPTX_PHYIF_CTRL_RATE_HBR2
-#define DPTX_MAX_LINK_LANES	(4)
-
-/* The default rate and lanes to use for link training */
-#define DPTX_DEFAULT_LINK_RATE DPTX_MAX_LINK_RATE
-#define DPTX_DEFAULT_LINK_LANES DPTX_MAX_LINK_LANES
-
 #define DP_SYSFS_ATTRS_NUM	(10)
 
+#if defined(CONFIG_DP_HDCP)
 #define DPTX_HDCP_REG_DPK_CRC_ORIG	0x331c1169
 #define DPTX_HDCP_MAX_AUTH_RETRY	10
 #define DPTX_HDCP_MAX_REPEATER_AUTH_RETRY 5
-#define DPTX_COMBOPHY_PARAM_NUM		21
+#endif
 
+#ifdef SUPPORT_HISI_DPTX
+#define DPTX_COMBOPHY_PARAM_NUM				20
+#define DPTX_COMBOPHY_SSC_PPM_PARAM_NUM		12
+#else
+#define DPTX_COMBOPHY_PARAM_NUM		21
+#endif
 
 #define DPTX_AUX_TIMEOUT	(2000)
 
 #define DEFAULT_AUXCLK_DPCTRL_RATE	16000000UL
 #define DEFAULT_ACLK_DPCTRL_RATE_ES	288000000UL
 
-//DSC definitions coming from RC files of DSC C model
-#define RC_MODEL_SIZE 8192
-#define INITIAL_OFFSET 6144
-#define INITIAL_DELAY 512
 #define PIXELS_PER_GROUP 3
 #define PIXEL_HOLD_DELAY 5
 #define PIXEL_GROUP_DELAY 3
 #define MUXER_INITIAL_BUFFERING_DELAY 9
 #define DSC_MAX_AUX_ORIG_WIDTH 24
 #define PIXEL_FLATNESSBUF_DELAY DSC_MAX_AUX_ORIG_WIDTH
-#define FLATNESS_MIN_QP 3
-#define FLATNESS_MAX_QP 12
-#define RC_EDGE_FACTOR 6
-#define RC_QUANT_INCR_LIMIT0 11
-#define RC_QUANT_INCR_LIMIT1 11
-#define RC_TGT_OFFSET_HIGH	 3
-#define RC_TGT_OFFSET_LOW 3
 #define INITIAL_SCALE_VALUE_SHIFT 3
 #define DSC_DEFAULT_DECODER 2
 
@@ -140,14 +125,50 @@ struct rc_range_param {
 	uint32_t offset      :6;
 };
 
-// Rounding up to the nearest multiple of a number
+/* Rounding up to the nearest multiple of a number */
 #define ROUND_UP_TO_NEAREST(numToRound, mult) (((numToRound+(mult)-1) / (mult)) * (mult))
+
+#ifdef SUPPORT_HISI_DPTX
+#define DEFAULT_ACLK_DPCTRL_RATE 207500000UL
+#define DEFAULT_MIDIA_PPLL7_CLOCK_FREQ 1290000000UL
+#define KIRIN_VCO_MIN_FREQ_OUPUT         800000 /* dssv501: 800 * 1000 */
+#define KIRIN_SYS_FREQ   38400 /* dssv501: 38.4 * 1000 */
+#define MIDIA_PPLL7_CTRL0	0x838
+#define MIDIA_PPLL7_CTRL1	0x83c
+#define TX_VBOOST_ADDR		0x21
+#define PERI_VOLTAGE_060V_CLK 207500000UL
+#define PERI_VOLTAGE_065V_CLK 332000000UL
+#define PERI_VOLTAGE_070V_CLK 415000000UL
+#define PERI_VOLTAGE_080V_CLK 533330000UL
+#define PPLL7_DIV_VOLTAGE_060V 7
+#define PPLL7_DIV_VOLTAGE_065V 4
+#define PPLL7_DIV_VOLTAGE_070V 4
+#define PPLL7_DIV_VOLTAGE_080V 3
+
+#define CTRL_TYPE_SELECT_OFFSET 0x54
+#define CTRL_TYPE_SELECT_BIT BIT(3)
+#define PHY_CLK_GATE_BIT BIT(4)
+
+#define DPTX_CTRL_RESET_OFFSET 0x20
+#define DPTX_CTRL_DIS_RESET_OFFSET 0x24
+#define HIDPTX_CTRL_DIS_RESET_BIT BIT(16)
+#define HIDPTX_CTRL_RESET_BIT BIT(16)
+#define HIDPC_CTRL_DIS_RESET_BIT BIT(3)
+#define HIDPC_CTRL_RESET_BIT BIT(3)
+#define DPTX_CTRL_STATUS_OFFSET 0x28
+#define HIDPTX_CTRL_RESET_STATUS_BIT BIT(16)
+#define HIDPC_CTRL_RESET_STATUS_BIT BIT(3)
+
+#define HIDPC_PCLK_HSDT1_GATE_OFFSET 0x10 /* pixel clock open gate */
+#define HIDPC_PCLK_HSDT1_GATE_CLOSE_OFFSET 0x14 /* pixel clock close gate */
+#define HIDPC_PCLK_HSDT1_GATE_MASK GENMASK(1, 0)
+#endif
 
 #ifdef CONFIG_HISI_FB_V510
 #define DEFAULT_ACLK_DPCTRL_RATE 207500000UL
 #define DEFAULT_MIDIA_PPLL7_CLOCK_FREQ 1290000000UL
-#define KIRIN_VCO_MIN_FREQ_OUPUT         800000 /*dssv501: 800 * 1000*/
-#define KIRIN_SYS_FREQ   38400 /*dssv501: 38.4 * 1000 */
+#define KIRIN_VCO_MIN_FREQ_OUPUT         800000 /* dssv501: 800 * 1000 */
+#define KIRIN_SYS_FREQ   38400 /* dssv501: 38.4 * 1000 */
 #define MIDIA_PPLL7_CTRL0	0x530
 #define MIDIA_PPLL7_CTRL1	0x534
 #define MIDIA_PERI_CTRL4	0x350
@@ -165,8 +186,8 @@ struct rc_range_param {
 #ifdef CONFIG_HISI_FB_V501
 #define DEFAULT_ACLK_DPCTRL_RATE 207500000UL
 #define DEFAULT_MIDIA_PPLL7_CLOCK_FREQ 1290000000UL
-#define KIRIN_VCO_MIN_FREQ_OUPUT         800000 /*dssv501: 800 * 1000*/
-#define KIRIN_SYS_FREQ   38400 /*dssv501: 38.4 * 1000 */
+#define KIRIN_VCO_MIN_FREQ_OUPUT         800000 /* dssv501: 800 * 1000 */
+#define KIRIN_SYS_FREQ   38400 /* dssv501: 38.4 * 1000 */
 #define MIDIA_PPLL7_CTRL0	0x530
 #define MIDIA_PPLL7_CTRL1	0x534
 #define MIDIA_PERI_CTRL4	0x350
@@ -182,8 +203,8 @@ struct rc_range_param {
 #ifdef CONFIG_HISI_FB_970
 #define DEFAULT_ACLK_DPCTRL_RATE	208000000UL
 #define DEFAULT_MIDIA_PPLL7_CLOCK_FREQ	1782000000UL
-#define KIRIN_VCO_MIN_FREQ_OUPUT         1000000 /*Boston: 1000 * 1000*/
-#define KIRIN_SYS_FREQ   19200 /*Boston: 19.2f * 1000 */
+#define KIRIN_VCO_MIN_FREQ_OUPUT         1000000 /* Boston: 1000 * 1000 */
+#define KIRIN_SYS_FREQ   19200 /* Boston: 19.2f * 1000 */
 #define MIDIA_PPLL7_CTRL0	0x50c
 #define MIDIA_PPLL7_CTRL1	0x510
 #define MIDIA_PERI_CTRL4	0x350
@@ -200,22 +221,30 @@ struct rc_range_param {
 
 #define MAX_DIFF_SOURCE_X_SIZE	1920
 
-
-
 #define MIDIA_PPLL7_FREQ_DEVIDER_MASK	GENMASK(25, 2)
 #define MIDIA_PPLL7_FRAC_MODE_MASK	GENMASK(25, 0)
+
+#ifndef SUPPORT_HISI_DPTX
 #define PMCTRL_PERI_CTRL4_TEMPERATURE_MASK		GENMASK(27, 26)
 #define PMCTRL_PERI_CTRL4_TEMPERATURE_SHIFT		26
 #define NORMAL_TEMPRATURE 0
+#endif
 
+#if defined(CONFIG_DP_HDCP)
 #define ACCESS_REGISTER_FN_MAIN_ID_HDCP           0xc500aa01
 #define ACCESS_REGISTER_FN_SUB_ID_HDCP_CTRL   (0x55bbccf1)
 #define ACCESS_REGISTER_FN_SUB_ID_HDCP_INT   (0x55bbccf2)
+#endif
 
 /* #define DPTX_DEVICE_INFO(pdev) platform_get_drvdata(pdev)->panel_info->dp */
 
 #define DPTX_CHANNEL_NUM_MAX 8
 #define DPTX_DATA_WIDTH_MAX 24
+
+enum dp_ctrl_type {
+	HIDPTX = 0,
+	HIDPC = 1,
+};
 
 enum dp_tx_hpd_states {
 	HPD_OFF,
@@ -229,7 +258,6 @@ enum pixel_enc_type {
 	YCBCR444 = 3,
 	YONLY = 4,
 	RAW = 5
-
 };
 
 enum color_depth {
@@ -291,6 +319,31 @@ enum iec_orig_samp_freq_value {
 	IEC_ORIG_SAMP_FREQ_44K = 15,
 };
 
+enum dptx_hot_plug_type {
+	HOT_PLUG_OUT = 0,
+	HOT_PLUG_IN,
+	HOT_PLUG_TEST,
+	HOT_PLUG_IN_VR,
+	HOT_PLUG_OUT_VR,
+	HOT_PLUG_HDCP13_SUCCESS,
+	HOT_PLUG_HDCP13_TIMEOUT,
+	HOT_PLUG_HDCP13_FAIL,
+	HOT_PLUG_HDCP13_POSTAUTH,
+	HOT_PLUG_HDCP_ENABLE,
+	HOT_PLUG_HDCP_DISABLE,
+	HOT_PLUG_HDCP_OUT,
+	HOT_PLUG_HDCP_CP_IRQ,
+	HOT_PLUG_TEST_OUT,
+	HOT_PLUG_MAINPANEL_UP,
+	HOT_PLUG_MAINPANEL_DOWN,
+};
+
+enum dptx_sdp_config_type {
+	SDP_CONFIG_TYPE_DSC,
+	SDP_CONFIG_TYPE_HDR,
+	SDP_CONFIG_TYPE_AUDIO,
+};
+
 /**
  * struct dptx_link - The link state.
  * @status: Holds the sink status register values.
@@ -344,31 +397,7 @@ struct hdr_infoframe {
 	uint8_t data[HDR_INFOFRAME_LENGTH];
 };
 
-struct hdcp_aksv {
-	uint32_t lsb;
-	uint32_t msb;
-};
-
-struct hdcp_dpk {
-	uint32_t lsb;
-	uint32_t msb;
-};
-
-struct hdcp_params {
-	struct hdcp_aksv aksv;
-	struct hdcp_dpk dpk[40];
-	uint32_t enc_key;
-	uint32_t crc32;
-	uint32_t auth_fail_count;
-	uint32_t hdcp13_is_en;
-	uint32_t hdcp22_is_en;
-};
-
-typedef struct hdcp13_int_params {
-	uint8_t auth_fail_count;
-	int hdcp13_is_en;
-}hdcp13_int_params_t;
-
+#if defined(CONFIG_DP_HDCP)
 enum _master_hdcp_op_type_ {
 	DSS_HDCP13_ENABLE = 1,
 	DSS_HDCP22_ENABLE,
@@ -379,8 +408,12 @@ enum _master_hdcp_op_type_ {
 	DSS_HDCP_CP_IRQ,
 	DSS_HDCP_DPC_SEC_EN,
 	DSS_HDCP_ENC_MODE_EN,
+#ifdef SUPPORT_HISI_DPTX
+	DSS_HDCP_DP_ENABLE,
+#endif
 	HDCP_OP_SECURITY_MAX,
 };
+#endif
 
 enum audio_sample_freq {
 	SAMPLE_FREQ_32 = 0,
@@ -392,8 +425,7 @@ enum audio_sample_freq {
 	SAMPLE_FREQ_192 = 6
 };
 
-struct audio_short_desc
-{
+struct audio_short_desc {
 	uint8_t max_num_of_channels;
 	enum audio_sample_freq max_sampling_freq;
 	uint8_t max_bit_per_sample;
@@ -431,6 +463,15 @@ struct dtd {
 	uint8_t interlaced; /* 1 for interlaced, 0 progressive */
 };
 
+struct dp_dsc_info {
+	uint32_t lsteer_xmit_delay;
+	uint32_t wait_cnt_int;
+	uint32_t wait_cnt_frac;
+	uint32_t encoders;
+	uint32_t h_active_new;
+	struct dsc_info dsc_info;
+};
+
 struct video_params {
 	enum pixel_enc_type pix_enc;
 	enum pattern_mode pattern_mode;
@@ -446,24 +487,11 @@ struct video_params {
 	uint8_t video_format;
 	uint8_t m_fps;
 
-	// DSC staff here TODO: move to special DSC struct
-	uint8_t encoders;
-	uint8_t first_line_bpg_offset;
-	uint16_t slice_width;
-	uint16_t chunk_size;
-	uint16_t slice_height;
-	uint16_t dsc_bpp;
-	uint16_t dsc_bpc;
-	uint16_t initial_scale_value;
-	uint32_t hrddelay;
-	uint32_t initial_dec_delay;
-	uint32_t minRateBufferSize;
-	uint32_t scale_decrement_interval;
+	struct dp_dsc_info dp_dsc_info;
 };
 
 /*edid info*/
-struct timing_info
-{
+struct timing_info {
 	struct list_head list_node;
 
 	uint8_t vSyncPolarity;
@@ -488,16 +516,14 @@ struct timing_info
 	uint16_t schemeDetail;
 };
 
-struct ext_timing
-{
+struct ext_timing {
 	uint16_t extFormatCode;
 	uint16_t extHPixels;
 	uint16_t extVPixels;
 	uint16_t extVFreq;
 };
 
-struct edid_video
-{
+struct edid_video {
 	uint8_t mainVCount;
 	uint8_t extVCount;
 
@@ -516,24 +542,21 @@ struct edid_video
 	char *dp_monitor_descriptor;
 };
 
-struct edid_audio_info
-{
+struct edid_audio_info {
 	uint16_t format;
 	uint16_t channels;
 	uint16_t sampling;
 	uint16_t bitrate;
 };
 
-struct edid_audio
-{
+struct edid_audio {
 	struct edid_audio_info *spec;
 	uint8_t basicAudio;
 	uint8_t extSpeaker;
 	uint8_t extACount;
 };
 
-struct edid_information
-{
+struct edid_information {
 	struct edid_video Video;
 	struct edid_audio Audio;
 };
@@ -560,7 +583,7 @@ struct edid_information
  * @edid: The sink's EDID.
  * @aux: AUX channel state for performing an AUX transfer.
  * @link: The current link state.
-  * @multipixel: Controls multipixel configuration. 0-Single, 1-Dual, 2-Quad.
+ * @multipixel: Controls multipixel configuration. 0-Single, 1-Dual, 2-Quad.
  */
 struct dp_ctrl {
 	struct mutex dptx_mutex; /* generic mutex for dptx */
@@ -575,6 +598,7 @@ struct dp_ctrl {
 	void __iomem *base;
 	uint32_t irq;
 
+	enum dp_ctrl_type ctrl_type;
 	uint32_t version;
 	uint8_t bstatus;
 	uint8_t streams;
@@ -582,6 +606,7 @@ struct dp_ctrl {
 	uint8_t max_rate;
 	uint8_t max_lanes;
 	uint8_t dsc_decoders;
+	uint8_t dsc_ifbc_type;
 
 	/*mst*/
 	uint8_t rad_port;
@@ -597,12 +622,15 @@ struct dp_ctrl {
 	bool ycbcr420;
 	bool cr_fail;
 	bool ssc_en;
+	bool efm_en;
 	bool need_rad;
 	bool logic_port;
 
 	bool dummy_dtds_present;
 
+#if defined(CONFIG_VR_DISPLAY)
 	bool dptx_vr;
+#endif
 	bool dptx_gate;
 	bool dptx_enable;
 	bool dptx_plug_type;
@@ -615,11 +643,10 @@ struct dp_ctrl {
 	struct switch_dev sdev;
 	struct switch_dev dp_switch;
 #endif
-	struct hisi_fb_data_type *hisifd;
+	struct dpu_fb_data_type *dpufd;
 
 	struct video_params vparams;
 	struct audio_params aparams;
-	struct hdcp_params hparams;
 	struct audio_short_desc audio_desc;
 	struct hdr_metadata hdr_metadata;
 	struct hdr_infoframe hdr_infoframe;
@@ -639,7 +666,7 @@ struct dp_ctrl {
 	uint8_t *edid;
 	uint8_t *edid_second;
 	uint32_t edid_try_count;
-	uint32_t edid_try_delay; // unit: ms
+	uint32_t edid_try_delay; /* unit: ms */
 
 	struct sdp_full_data sdp_list[DPTX_SDP_NUM];
 	struct dptx_aux aux;
@@ -651,6 +678,9 @@ struct dp_ctrl {
 	uint32_t hpd_state;
 	uint32_t user_mode;
 	uint32_t combophy_pree_swing[DPTX_COMBOPHY_PARAM_NUM];
+#ifdef SUPPORT_HISI_DPTX
+	uint32_t combophy_ssc_ppm[DPTX_COMBOPHY_SSC_PPM_PARAM_NUM];
+#endif
 	uint32_t max_edid_timing_hactive;
 	enum video_format_type user_mode_format;
 	enum established_timings selected_est_timing;
@@ -662,6 +692,116 @@ struct dp_ctrl {
 	struct hrtimer dptx_hrtimer;
 	struct workqueue_struct *dptx_check_wq;
 	struct work_struct dptx_check_work;
+
+	/*
+	 * aux read/write
+	 */
+	int (*aux_rw)(struct dp_ctrl *dptx, bool rw, bool i2c, bool mot,
+		bool addr_only, uint32_t addr, uint8_t *bytes, uint32_t len);
+
+	/*
+	 * irq
+	 */
+	irqreturn_t (*dptx_irq)(int irq, void *dev);
+	irqreturn_t (*dptx_threaded_irq)(int irq, void *dev);
+	void (*dptx_hpd_handler)(struct dp_ctrl *dptx, bool plugin, uint8_t dp_lanes);
+	void (*dptx_hpd_irq_handler)(struct dp_ctrl *dptx);
+
+	/*
+	 * link
+	 */
+	int (*handle_hotplug)(struct dpu_fb_data_type *dpufd);
+	int (*handle_hotunplug)(struct dpu_fb_data_type *dpufd);
+	int (*dptx_power_handler)(struct dp_ctrl *dptx, bool ublank, bool *bpresspowerkey);
+
+	/*
+	 * dsc
+	 */
+	int (*dptx_slice_height_limit)(struct dp_ctrl *dptx, uint32_t pic_height);
+	int (*dptx_line_buffer_depth_limit)(uint8_t line_buf_depth);
+	void (*dptx_dsc_check_rx_cap)(struct dp_ctrl *dptx);
+	void (*dptx_dsc_para_init)(struct dp_ctrl *dptx);
+	void (*dptx_dsc_sdp_manul_send)(struct dp_ctrl *dptx, bool enable);
+	void (*dptx_dsc_cfg)(struct dp_ctrl *dptx);
+
+	/*
+	 * link training
+	 */
+	int (*dptx_link_set_lane_status)(struct dp_ctrl *dptx); /* set lane num/rate/ssc ... */
+	void (*dptx_link_set_lane_after_training)(struct dp_ctrl *dptx);
+	void (*dptx_phy_set_pattern)(struct dp_ctrl *dptx, uint32_t pattern);
+	void (*dptx_link_set_preemp_vswing)(struct dp_ctrl *dptx);
+
+	/*
+	 * core config
+	 */
+	int (*dp_dis_reset)(struct dpu_fb_data_type *dpufd, bool benable);
+	int (*dptx_core_on)(struct dp_ctrl *dptx);
+	void (*dptx_core_off)(struct dpu_fb_data_type *dpufd, struct dp_ctrl *dptx);
+	void (*dptx_core_remove)(struct dp_ctrl *dptx);
+	void (*dptx_free_lanes)(struct dp_ctrl *dptx);
+	void (*dptx_link_core_reset)(struct dp_ctrl *dptx);
+	void (*dptx_default_params_from_core)(struct dp_ctrl *dptx); /* get default params decided by controller */
+	bool (*dptx_sink_device_connected)(struct dp_ctrl *dptx);
+
+	/*
+	 * hdr infoframe
+	 */
+	void (*dptx_hdr_infoframe_set_reg)(struct dp_ctrl *dptx, uint8_t enable);
+
+	/*
+	 * stream config
+	 */
+	void (*dptx_video_core_config)(struct dp_ctrl *dptx, int stream); /* only video param config */
+	void (*dptx_video_ts_change)(struct dp_ctrl *dptx, int stream); /* tu change config */
+	void (*dptx_sdp_config)(struct dp_ctrl *dptx, int stream, enum dptx_sdp_config_type sdp_type);
+	int (*dptx_video_ts_calculate)(struct dp_ctrl *dptx, int lane_num, int rate,
+		int bpc, int encoding, int pixel_clock);
+	/* include video/tu config and feature config like dsc */
+	int (*dptx_link_timing_config)(struct dpu_fb_data_type *dpufd, struct dp_ctrl *dptx);
+	/* disable stream when hotunplug */
+	void (*dptx_link_close_stream)(struct dpu_fb_data_type *dpufd, struct dp_ctrl *dptx);
+	/* enable/disable fec */
+	int (*dptx_fec_enable)(struct dp_ctrl *dptx, bool fec_enable);
+
+	/*
+	 * audio config
+	 */
+	void (*dptx_audio_config)(struct dp_ctrl *dptx);
+
+	/*
+	 * media enable/disable
+	 */
+	void (*dptx_enable_default_video_stream)(struct dp_ctrl *dptx, int stream); /* stream enable */
+	void (*dptx_disable_default_video_stream)(struct dp_ctrl *dptx, int stream); /* stream disable */
+	/* enable/disable ldi and audio channel */
+	int (*dptx_triger_media_transfer)(struct dp_ctrl *dptx, bool benable);
+	int (*dptx_resolution_switch)(struct dpu_fb_data_type *dpufd, enum dptx_hot_plug_type etype);
+	/* enable/disable phy transmitter on per lane */
+	void (*dptx_phy_enable_xmit)(struct dp_ctrl *dptx, uint32_t lane, bool enable);
+
+	/*
+	 * phy config
+	 */
+	void (*dptx_combophy_set_preemphasis_swing)(struct dp_ctrl *dptx,
+		uint32_t lane, uint32_t sw_level, uint32_t pe_level);
+	int (*dptx_change_physetting_hbr2)(struct dp_ctrl *dptx); /* V510 Hardware patch */
+	void (*dptx_combophy_set_rate)(struct dp_ctrl *dptx, int rate);
+	/* V510 Hardware patch, phy set before and after set ssc */
+	void (*dptx_combophy_set_ssc_addtions)(uint8_t link_rate, bool before);
+	void (*dptx_combophy_set_ssc_dis)(struct dp_ctrl *dptx, bool ssc_disable);
+	void (*dptx_aux_disreset)(struct dp_ctrl *dptx, bool enable);
+	void (*dptx_combophy_set_lanes_power)(bool bopen);
+
+	/*
+	 * for test
+	 */
+	void (*dptx_audio_num_ch_change)(struct dp_ctrl *dptx);
+	void (*dptx_video_timing_change)(struct dp_ctrl *dptx, int stream);
+	void (*dptx_video_bpc_change)(struct dp_ctrl *dptx, int stream);
+	void (*dptx_audio_infoframe_sdp_send)(struct dp_ctrl *dptx);
+	int (*handle_test_link_phy_pattern)(struct dp_ctrl *dptx);
+	void (*dptx_phy_set_ssc)(struct dp_ctrl *dptx, bool bswitchphy);
 };
 
 static inline uint32_t dptx_readl(struct dp_ctrl *dp, uint32_t offset)
@@ -694,12 +834,24 @@ static inline void dptx_writel(struct dp_ctrl *dp, uint32_t offset, uint32_t dat
 		__retval;						\
 	})
 
-
+bool dptx_check_low_temperature(struct dp_ctrl *dptx);
+void dptx_notify(struct dp_ctrl *dptx);
 void dptx_notify_shutdown(struct dp_ctrl *dptx);
 void dp_send_cable_notification(struct dp_ctrl *dptx, int val);
+int hisi_dptx_switch_source(uint32_t user_mode, uint32_t user_format);
 
-struct hisi_fb_data_type;
-int hisi_dp_hpd_register(struct hisi_fb_data_type *hisifd);
-void hisi_dp_hpd_unregister(struct hisi_fb_data_type *hisifd);
+int dptx_phy_rate_to_bw(uint8_t rate);
+int dptx_bw_to_phy_rate(uint8_t bw);
+void dptx_audio_params_reset(struct audio_params *aparams);
+void dptx_video_params_reset(struct video_params *params);
+void dwc_dptx_dtd_reset(struct dtd *mdtd);
+
+struct dpu_fb_data_type;
+int hisi_dp_hpd_register(struct dpu_fb_data_type *dpufd);
+void hisi_dp_hpd_unregister(struct dpu_fb_data_type *dpufd);
+
+bool dp_get_dptx_feature_status(struct dp_ctrl *dptx);
+
 
 #endif  /* HISI_DP_H */
+

@@ -47,6 +47,13 @@ int lcd_kit_parse_array_data(struct device_node *np, const char *name,
 	uint32_t *data = NULL;
 	uint32_t *buf = NULL;
 
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_array(np, name, out);
+		return LCD_KIT_OK;
+	}
+#endif
 	data = (uint32_t *)of_get_property(np, name, &blen);
 	if (!data) {
 		LCD_KIT_ERR("get data fail\n");
@@ -65,6 +72,31 @@ int lcd_kit_parse_array_data(struct device_node *np, const char *name,
 	return LCD_KIT_OK;
 }
 
+int lcd_kit_parse_u32_array(const struct device_node *np, const char *name,
+	uint32_t out[], int len)
+{
+	int blen = 0;
+	uint32_t *data = NULL;
+
+	if (!np || !name || !out) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+	data = (uint32_t *)of_get_property(np, name, &blen);
+	if (!data) {
+		LCD_KIT_ERR("get data fail\n");
+		return LCD_KIT_FAIL;
+	}
+	blen = blen / 4; // 4 means u32 divide u8
+	if (len != blen) {
+		LCD_KIT_ERR("blen not equal len\n");
+		return LCD_KIT_FAIL;
+	}
+	memcpy(out, data, blen * sizeof(uint32_t));
+	(void)conver2le(out, out, blen);
+	return LCD_KIT_OK;
+}
+
 int lcd_kit_parse_arrays_data(struct device_node *np, const char *name,
 	struct lcd_kit_arrays_data *out, int num)
 {
@@ -75,6 +107,13 @@ int lcd_kit_parse_arrays_data(struct device_node *np, const char *name,
 	uint32_t *buf = NULL;
 	uint32_t *bp = NULL;
 
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_arrays(np, name, out, num);
+		return LCD_KIT_OK;
+	}
+#endif
 	data = (uint32_t *)of_get_property(np, name, &blen);
 	if (!data) {
 		LCD_KIT_ERR("parse property %s error\n", name);
@@ -187,6 +226,17 @@ int lcd_kit_parse_dcs_cmds(struct device_node *np, char *cmd_key,
 	char *buf = NULL;
 	struct lcd_kit_dsi_cmd_desc_header *dchdr = NULL;
 
+	if (!np || !cmd_key || !link_key || !pcmds) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_dcs(np, cmd_key, link_key, pcmds);
+		return LCD_KIT_OK;
+	}
+#endif
 	adapt_ops = lcd_kit_get_adapt_ops();
 	if (!adapt_ops) {
 		LCD_KIT_ERR("adapt_ops is null!\n");
@@ -229,4 +279,133 @@ int lcd_kit_parse_dcs_cmds(struct device_node *np, char *cmd_key,
 			pcmds->link_state = LCD_KIT_DSI_HS_MODE;
 	}
 	return LCD_KIT_OK;
+}
+
+int lcd_kit_parse_dirty_info(const struct device_node *np, const char *prop_name,
+	int *out)
+{
+	unsigned int value = 0xffff; // init to 0xffff, represent - 1 with 0xffff
+
+	if (!np || !out || !prop_name) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_dirty_region(np, prop_name, out);
+		return LCD_KIT_OK;
+	}
+#endif
+	if (of_property_read_u32(np, prop_name, &value)) {
+		LCD_KIT_INFO("of_property_read_u32: %s not find\n", prop_name);
+		*out = -1; // read device-tree fail, use default value:-1
+	}
+	/* device-tree can not save -1, use 0xffff to stand for -1 */
+	if (value >= 0xffff)
+		*out = -1;
+	else
+		*out = (int)value;
+	return LCD_KIT_OK;
+}
+
+int lcd_kit_parse_u64(const struct device_node *np, const char *prop_name,
+	uint64_t *out, uint64_t def)
+{
+	uint64_t temp = 0;
+
+	if (!np || !out || !prop_name) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+	if (of_property_read_u64(np, prop_name, &temp)) {
+		LCD_KIT_INFO("of_property_read: %s not find\n", prop_name);
+		*out = def;
+		return LCD_KIT_OK;
+	}
+	*out = temp;
+	return LCD_KIT_OK;
+}
+
+int lcd_kit_parse_u32(const struct device_node *np, const char *prop_name,
+	unsigned int *out, unsigned int def)
+{
+	unsigned int temp = 0;
+
+	if (!np || !out || !prop_name) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_u32(np, prop_name, out, def);
+		return LCD_KIT_OK;
+	}
+#endif
+	if (of_property_read_u32(np, prop_name, &temp)) {
+		LCD_KIT_INFO("of_property_read: %s not find\n", prop_name);
+		*out = def;
+		return LCD_KIT_OK;
+	}
+	*out = temp;
+	return LCD_KIT_OK;
+}
+
+int lcd_kit_parse_u8(const struct device_node *np, const char *prop_name,
+	unsigned char *out, unsigned char def)
+{
+	unsigned int temp = 0;
+
+	if (!np || !out || !prop_name) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_u8(np, prop_name, out, def);
+		return LCD_KIT_OK;
+	}
+#endif
+	if (of_property_read_u32(np, prop_name, &temp)) {
+		LCD_KIT_INFO("of_property_read: %s not find\n", prop_name);
+		*out = def;
+		return LCD_KIT_OK;
+	}
+	*out = (unsigned char)temp;
+	return LCD_KIT_OK;
+}
+
+int lcd_kit_parse_string_array(const struct device_node *np, const char *prop_name,
+	const char **out_strs, size_t sz)
+{
+	if (!np || !prop_name || !out_strs) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_string_array(np, prop_name, out_strs);
+		return LCD_KIT_OK;
+	}
+#endif
+	return of_property_read_string_array(np, prop_name, out_strs, sz);
+}
+int lcd_kit_parse_string(const struct device_node *np, const char *prop_name,
+	const char **out_strs)
+{
+	if (!np || !prop_name || !out_strs) {
+		LCD_KIT_ERR("pointer is null\n");
+		return LCD_KIT_FAIL;
+	}
+#if defined(LCD_KIT_DEBUG_ENABLE) && \
+	(defined(CONFIG_LCD_KIT_HISI) || defined(CONFIG_LCD_KIT_MTK))
+	if (is_dpd_mode()) {
+		lcd_parse_string_array(np, prop_name, out_strs);
+		return LCD_KIT_OK;
+	}
+#endif
+	return of_property_read_string(np, prop_name, out_strs);
 }

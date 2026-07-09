@@ -1,3 +1,21 @@
+/*
+ * lcdkit_backlight_ic_common.h
+ *
+ * lcdkit backlight head file for lcd driver
+ *
+ * Copyright (c) 2018-2020 Huawei Technologies Co., Ltd.
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ */
+
 #ifndef _LCDKIT_BACKLIGHT_IC_COMMON_H_
 #define _LCDKIT_BACKLIGHT_IC_COMMON_H_
 #include <linux/semaphore.h>
@@ -5,6 +23,7 @@
 #define LCD_BACKLIGHT_IC_NAME_LEN 20
 #define LCD_BACKLIGHT_INIT_CMD_NUM 30
 
+#define LCD_BACKLIGHT_DIMMING_SUPPORT 1
 #ifndef BIT
 #define BIT(x)  (1<<(x))
 #endif
@@ -50,18 +69,18 @@ enum bl_resume_type
 
 struct backlight_ic_cmd
 {
-    unsigned char ops_type; //0:read  1:write  2:update
-    unsigned char cmd_reg;
-    unsigned char cmd_val;
-    unsigned char cmd_mask;
+	unsigned char ops_type; // 0:read  1:write  2:update
+	unsigned char cmd_reg;
+	unsigned char cmd_val;
+	unsigned char cmd_mask;
 };
 
 struct backlight_reg_info
 {
-    unsigned char val_bits;
+	unsigned char val_bits;
 	unsigned char cmd_reg;
-    unsigned char cmd_val;
-    unsigned char cmd_mask;	
+	unsigned char cmd_val;
+	unsigned char cmd_mask;	
 };
 
 
@@ -70,14 +89,16 @@ struct lcdkit_bl_ic_info
 	unsigned int   bl_level;
 	unsigned int   bl_ctrl_mod;
 	unsigned int   ic_type;
-    unsigned int   ic_before_init_delay;
-    unsigned int   ic_init_delay;
-    unsigned int   ovp_check_enable;
-    unsigned int   fake_lcd_ovp_check;
+	unsigned int   msb_before_lsb;
+	unsigned int   bl_skip_init;
+	unsigned int   ic_before_init_delay;
+	unsigned int   ic_init_delay;
+	unsigned int   ovp_check_enable;
+	unsigned int   fake_lcd_ovp_check;
 	struct backlight_ic_cmd init_cmds[LCD_BACKLIGHT_INIT_CMD_NUM];
 	unsigned int   num_of_init_cmds;
 	struct backlight_reg_info bl_lsb_reg_cmd;
-    struct backlight_reg_info bl_msb_reg_cmd;
+	struct backlight_reg_info bl_msb_reg_cmd;
 	struct backlight_ic_cmd bl_enable_cmd;
 	struct backlight_ic_cmd bl_disable_cmd;
 	struct backlight_ic_cmd disable_dev_cmd;
@@ -88,10 +109,10 @@ struct lcdkit_bl_ic_info
 	struct backlight_ic_cmd bl_fault_flag_cmd;
 	struct backlight_ic_cmd bias_enable_cmd;
 	struct backlight_ic_cmd bias_disable_cmd;
-    unsigned int   led_open_short_test;
-    unsigned int   led_num;
-    struct backlight_ic_cmd bl_brt_ctrl_cmd;
-    struct backlight_ic_cmd bl_fault_ctrl_cmd;
+	unsigned int   led_open_short_test;
+	unsigned int   led_num;
+	struct backlight_ic_cmd bl_brt_ctrl_cmd;
+	struct backlight_ic_cmd bl_fault_ctrl_cmd;
 	unsigned int   ic_hidden_reg_support;
 	struct backlight_ic_cmd security_reg_enable_cmd;
 	struct backlight_ic_cmd security_reg_disable_cmd;
@@ -117,13 +138,21 @@ struct lcdkit_bl_ic_info
 	unsigned int   bl_ocp_fault_bit;
 	unsigned int   bl_ovp_fault_bit;
 	unsigned int   bl_tsd_bit;
+	unsigned char  *name;
+	unsigned int   vboost_enable;
+	unsigned int   vboost_delay1;
+	unsigned int   vboost_delay2;
+	struct backlight_ic_cmd vboost_cmd1;
+	struct backlight_ic_cmd vboost_cmd2;
+	unsigned int   bl_dimming_support;
+	struct backlight_ic_cmd bl_dimming_cmd;
 };
 
 struct lcdkit_bl_ic_device {
-    struct device *dev;
+	struct device *dev;
 	struct i2c_client *client;
 	struct lcdkit_bl_ic_info bl_config;
-    struct semaphore test_sem;
+	struct semaphore test_sem;
 	struct work_struct bl_resume_worker;
 	struct workqueue_struct *bl_resume_wq;
 	struct hrtimer bl_resume_hrtimer;
@@ -140,7 +169,7 @@ void lcdkit_backlight_ic_get_chip_name(char *pname);
 void lcdkit_parse_backlight_ic_config(struct device_node *np);
 int lcdkit_backlight_ic_get_ctrl_mode(void);
 void lcdkit_pull_down_boost(void);
-struct lcdkit_bl_ic_info * lcdkit_get_lcd_backlight_ic_info(void);
+struct lcdkit_bl_ic_info *lcdkit_get_lcd_backlight_ic_info(void);
 void lcdkit_before_init_delay(void);
 #if defined (CONFIG_HUAWEI_DSM)
 void lcdkit_backlight_ic_ovp_check(void);

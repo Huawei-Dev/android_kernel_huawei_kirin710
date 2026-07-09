@@ -32,7 +32,7 @@
 
 #define RT8555_BL_MIN        0
 #define RT8555_BL_MAX        1023
-#define RT8555_RW_REG_MAX    10
+#define RT8555_RW_REG_MAX    11
 
 /* rt8555 reg address */
 #define RT8555_CONTROL_MODE_ADDR           0x00
@@ -45,6 +45,7 @@
 #define RT8555_COMPENSATION_DUTY_ADDR      0x0B
 #define RT8555_CLK_PFM_ENABLE_ADDR         0x0D
 #define RT8555_LED_PROTECTION_ADDR         0x0E
+#define RT8555_REG_CONFIG_50               0x50
 
 #define PARSE_FAILED        0xffff
 #define DELAY_0_US          0
@@ -52,7 +53,11 @@
 #define DELAY_10_US         10
 #define DELAY_50_US         50
 #define DEFAULT_MSG_LEVEL   7
+
+#define I2C3_BUSNUM 3
+#define I2C4_BUSNUM 4
 #define RT8555_DISABLE_DELAY               60
+#define RT8555_ENABLE_DELAY                100
 
 #ifndef BIT
 #define BIT(x)  (1<<(x))
@@ -105,19 +110,31 @@ struct rt8555_chip_data {
 	struct regmap *regmap;
 	struct semaphore test_sem;
 };
+
+enum rt8555_dual_ic {
+	DUAL_RT8555_NONE = 0,
+	DUAL_RT8555_I3C,
+	DUAL_RT8555_I2C,
+};
+
 struct rt8555_info {
 	/* whether support rt8555 or not */
 	int rt8555_support;
 	/* which i2c bus controller rt8555 mount */
 	int rt8555_i2c_bus_id;
+	/* which i2c bus controller the second rt8555 mount */
+	int rt8555_2_i2c_bus_id;
 	/* rt8555 hw_en gpio */
 	int rt8555_hw_en_gpio;
+	/* rt8555 2 hw_en gpio */
+	int rt8555_2_hw_en_gpio;
 	uint32_t reg[RT8555_RW_REG_MAX];
 	int bl_on_kernel_mdelay;
 	int rt8555_level_lsb;
 	int rt8555_level_msb;
 	int bl_led_num;
 	int bl_set_long_slope;
+	int dual_ic;
 };
 
 ssize_t rt8555_set_backlight_init(uint32_t bl_value);

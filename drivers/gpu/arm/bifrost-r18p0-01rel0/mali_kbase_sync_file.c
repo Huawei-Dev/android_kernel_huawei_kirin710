@@ -150,7 +150,7 @@ kbase_sync_fence_out_trigger(struct kbase_jd_atom *katom, int result)
 		}
 		return BASE_JD_EVENT_JOB_CANCELLED;
 	}
-#ifdef CONFIG_HISI_GPU_AI_FENCE_INFO
+#ifdef CONFIG_GPU_AI_FENCE_INFO
 	if ((katom->kctx->kbdev->game_pid == katom->kctx->tgid) && katom->ai_freq_flag) {
 		katom->kctx->kbdev->signaled_seqno++;
 	}

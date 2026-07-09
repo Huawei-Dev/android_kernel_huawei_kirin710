@@ -19,6 +19,7 @@
 #ifndef __LCD_KIT_UTILS_H_
 #define __LCD_KIT_UTILS_H_
 #include <linux/kernel.h>
+#include <linux/ctype.h>
 #include "lcd_kit_common.h"
 #include "lcd_kit_panel.h"
 #include "lcd_kit_sysfs.h"
@@ -41,11 +42,46 @@
 #define LCD_KIT_FPS_30 30
 #define LCD_KIT_FPS_55 55
 #define LCD_KIT_FPS_60 60
+#define LCD_KIT_FPS_90 90
+#define LCD_KIT_FPS_120 120
 #define MAX_BUF        60
 #define LCD_REG_LENGTH_MAX 200
 #define LCD_DDIC_INFO_LEN      64
 /* 2d barcode */
 #define BARCODE_LENGTH 46
+
+/* project id */
+#define PROJECTID_LEN 10
+#define SN_CODE_LENGTH_MAX 54
+#define MTK_MODE_STATE_OK 0
+#define MTK_MODE_STATE_FAIL 1
+
+/* ddic low voltage detect */
+#define DETECT_NUM     4
+#define DETECT_LOOPS   6
+#define ERR_THRESHOLD  4
+#define DET_START      1
+#define VAL_NUM        2
+#define VAL_0          0
+#define VAL_1          1
+#define DET1_INDEX     0
+#define DET2_INDEX     1
+#define DET3_INDEX     2
+#define DET4_INDEX     3
+#define DMD_DET_ERR_LEN      300
+#define ENABLE	        1
+#define DISABLE	        0
+#define INVALID_INDEX  0xFF
+
+/* pcd errflag detect */
+#define PCD_ERRFLAG_SUCCESS       0
+#define PCD_FAIL                  1
+#define ERRFLAG_FAIL              2
+#define LCD_KIT_PCD_SIZE          3
+#define LCD_KIT_ERRFLAG_SIZE      8
+#define DMD_ERR_INFO_LEN         50
+#define LCD_KIT_PCD_DETECT_OPEN   1
+#define LCD_KIT_PCD_DETECT_CLOSE  0
 
 struct ldi_panel_info {
 	u32 h_back_porch;
@@ -68,6 +104,101 @@ struct ldi_panel_info {
 	u32 v_front_porch_forlp;
 };
 
+struct mipi_hopping_info {
+	u32 h_back_porch;
+	u32 h_front_porch;
+	u32 h_pulse_width;
+	u32 v_back_porch;
+	u32 v_front_porch;
+	u32 v_pulse_width;
+	u32 vfp_lp_dyn;
+	u32 data_rate;
+	u32 switch_en;
+};
+
+struct display_engine_ddic_rgbw_param {
+	int ddic_panel_id;
+	int ddic_rgbw_mode;
+	int ddic_rgbw_backlight;
+	int pixel_gain_limit;
+};
+
+struct display_engine_panel_info_param {
+	int width;
+	int height;
+	int maxluminance;
+	int minluminance;
+	int maxbacklight;
+	int minbacklight;
+};
+
+struct display_engine {
+	u8 ddic_cabc_support;
+	u8 ddic_rgbw_support;
+};
+
+/* lcd fps set from app */
+enum {
+	LCD_FPS_APP_SET_60 = 3,
+	LCD_FPS_APP_SET_90,
+	LCD_FPS_APP_SET_120,
+};
+
+/* pcd errflag detect */
+enum {
+	PCD_COMPARE_MODE_EQUAL = 0,
+	PCD_COMPARE_MODE_BIGGER = 1,
+	PCD_COMPARE_MODE_MASK = 2,
+};
+
+/* lcd fps scence */
+enum {
+	LCD_FPS_SCENCE_60 = 0,
+	LCD_FPS_SCENCE_H60 = 1,
+	LCD_FPS_SCENCE_90 = 2,
+	LCD_FPS_SCENCE_120 = 3,
+	LCD_FPS_SCENCE_MAX = 4,
+};
+
+/* lcd fps index */
+enum {
+	LCD_FPS_60_INDEX = 0,
+	LCD_FPS_90_INDEX = 1,
+	LCD_FPS_120_INDEX = 2,
+};
+
+/* fps dsi mipi parameter index */
+enum {
+	FPS_HFP_INDEX = 0,
+	FPS_HBP_INDEX = 1,
+	FPS_HS_INDEX = 2,
+	FPS_VFP_INDEX = 3,
+	FPS_VBP_INDEX = 4,
+	FPS_VS_INDEX = 5,
+	FPS_VRE_INDEX = 6,
+	FPS_RATE_INDEX = 7,
+	FPS_LOWER_INDEX = 8,
+	FPS_DA_HS_EXIT = 9,
+	FPS_DSI_TIMMING_PARA_NUM = 10,
+};
+
+#ifdef CONFIG_MTK_ROUND_CORNER_SUPPORT
+struct panel_round_corner {
+	u32 round_corner_en;
+	u32 full_content;
+	u32 w;
+	u32 h;
+	u32 w_bot;
+	u32 h_bot;
+	u32 tp_size;
+	u32 bt_size;
+	void *lt_addr;
+	void *rt_addr;
+	void *lb_addr;
+	void *rb_addr;
+};
+#endif
+
 struct mipi_panel_info {
 	u8 dsi_version;
 	u8 vc;
@@ -86,6 +217,7 @@ struct mipi_panel_info {
 	u32 dsi_bit_clk_upt;
 	u32 hs_wr_to_time;
 	/* dphy config parameter adjust */
+	u32 mipi_ulpm_after_vci;
 	u32 clk_post_adjust;
 	u32 clk_pre_adjust;
 	u32 clk_pre_delay_adjust;
@@ -119,6 +251,8 @@ struct mtk_panel_info {
 	u32 panel_packtet_size;
 	u32 panel_ps;
 	u32 panel_density;
+	u32 output_mode; /* MTK_PANEL_OUTPUT_MODE */
+	u32 lcm_cmd_if; /* lcm_cmd_if is used to distinguish for Panel Cmd single or dual Port */
 	u32 type;
 	u32 xres;
 	u32 yres;
@@ -136,6 +270,7 @@ struct mtk_panel_info {
 	u32 bl_v200;
 	u32 bl_otm;
 	u32 bl_default;
+	u32 bl_current;
 	u32 blpwm_precision_type;
 	u32 blpwm_preci_no_convert;
 	u32 blpwm_out_div_value;
@@ -144,6 +279,7 @@ struct mtk_panel_info {
 	u32 blpwm_in_num;
 	u32 blpwm_input_precision;
 	u32 bl_ic_ctrl_mode;
+	unsigned int esd_recovery_bl_support;
 	u32 gpio_offset;
 	u64 pxl_clk_rate;
 	u64 pxl_clk_rate_adjust;
@@ -161,6 +297,8 @@ struct mtk_panel_info {
 	u32 ifbc_orise_ctl;
 	u32 ifbc_orise_ctr;
 	u32 ssc_disable;
+	u32 vrefresh;
+	u32 ssc_range;
 	u8 sbl_support;
 	u8 sre_support;
 	u8 color_temperature_support;
@@ -201,7 +339,15 @@ struct mtk_panel_info {
 	u8 arsr1p_sharpness_support;
 	struct ldi_panel_info ldi;
 	struct mipi_panel_info mipi;
-
+	struct mipi_hopping_info mipi_hopping;
+	int maxluminance;
+	int minluminance;
+	/* sn code */
+	uint32_t sn_code_length;
+	unsigned char sn_code[SN_CODE_LENGTH_MAX];
+#ifdef CONFIG_MTK_ROUND_CORNER_SUPPORT
+	struct panel_round_corner round_corner;
+#endif
 };
 /* enum */
 enum {
@@ -238,6 +384,7 @@ struct lcd_kit_panel_id {
 
 struct lcd_kit_2d_barcode {
 	u32 support;
+	int number_offset;
 	struct lcd_kit_dsi_panel_cmds cmds;
 };
 
@@ -257,17 +404,42 @@ struct lcd_kit_brightness_color_oeminfo {
 struct lcd_kit_project_id {
 	u32 support;
 	char id[LCD_DDIC_INFO_LEN];
+	char *default_project_id;
 	struct lcd_kit_dsi_panel_cmds cmds;
+};
+
+struct lcd_kit_pcd_errflag {
+	u32 pcd_support;
+	u32 errflag_support;
+	u32 pcd_value_compare_mode;
+	u32 pcd_errflag_check_support;
+	u32 gpio_pcd;
+	u32 gpio_errflag;
+	u32 exp_pcd_mask;
+	u32 pcd_det_num;
+	struct lcd_kit_dsi_panel_cmds start_pcd_check_cmds;
+	struct lcd_kit_dsi_panel_cmds switch_page_cmds;
+	struct lcd_kit_dsi_panel_cmds read_pcd_cmds;
+	struct lcd_kit_array_data pcd_value;
+	struct lcd_kit_dsi_panel_cmds read_errflag_cmds;
 };
 
 struct lcd_kit_fps {
 	u32 support;
+	u32 fps_switch_support;
+	unsigned int default_fps;
+	unsigned int current_fps;
+	unsigned int hop_support;
 	struct lcd_kit_dsi_panel_cmds dfr_enable_cmds;
 	struct lcd_kit_dsi_panel_cmds dfr_disable_cmds;
 	struct lcd_kit_dsi_panel_cmds fps_to_30_cmds;
 	struct lcd_kit_dsi_panel_cmds fps_to_60_cmds;
 	struct lcd_kit_array_data low_frame_porch;
 	struct lcd_kit_array_data normal_frame_porch;
+	struct lcd_kit_array_data panel_support_fps_list;
+	struct lcd_kit_dsi_panel_cmds fps_to_cmds[LCD_FPS_SCENCE_MAX];
+	struct lcd_kit_array_data fps_dsi_timming[LCD_FPS_SCENCE_MAX];
+	struct lcd_kit_array_data hop_info[LCD_FPS_SCENCE_MAX];
 };
 
 struct lcd_kit_rgbw {
@@ -290,10 +462,15 @@ struct lcd_kit_rgbw {
 struct lcd_kit_alpm {
 	u32 support;
 	u32 state;
+	u32 doze_delay;
+	u32 need_reset;
 	struct lcd_kit_dsi_panel_cmds exit_cmds;
 	struct lcd_kit_dsi_panel_cmds off_cmds;
 	struct lcd_kit_dsi_panel_cmds low_light_cmds;
+	struct lcd_kit_dsi_panel_cmds middle_light_cmds;
 	struct lcd_kit_dsi_panel_cmds high_light_cmds;
+	struct lcd_kit_dsi_panel_cmds double_clock_cmds;
+	struct lcd_kit_dsi_panel_cmds single_clock_cmds;
 };
 
 struct lcd_kit_snd_disp {
@@ -316,6 +493,10 @@ enum bl_control_mode {
 	MTK_PWM_HIGH_I2C_MODE,
 	MUTI_THEN_RAMP_MODE,
 	RAMP_THEN_MUTI_MODE,
+	MTK_AAL_I2C_MODE,
+	MTK_MIPI_MODE,
+	MTK_MIPI_BL_IC_PWM_MODE,
+	PWM_I2C_MODE,
 };
 
 enum bias_control_mode {
@@ -325,9 +506,67 @@ enum bias_control_mode {
 	GPIO_THEN_I2C_MODE,
 };
 
+struct display_engine_ddic_hbm_param {
+	int type;      // 0:fp   1:MMI   2:light
+	int level;
+	bool dimming;  // 0:no dimming  1:dimming
+};
+
+struct display_engine_share_memory {
+	uint64_t addr_virt;
+	uint64_t addr_phy;
+};
+
+struct display_engine_share_memory_param {
+	uint32_t x;
+	uint32_t y;
+	uint32_t width;
+	uint32_t height;
+	uint32_t interval;
+	uint32_t enable;
+} ;
+
+struct display_engine_share_memory_status {
+	uint32_t frame_index;
+	uint32_t buffer_index;
+};
+
+enum HBM_CFG_TYPE {
+	HBM_FOR_FP = 0,
+	HBM_FOR_MMI = 1,
+	HBM_FOR_LIGHT = 2
+};
+
+struct hbm_type_cfg {
+	int source;
+	void *dsi;
+	void *cb;
+	void *handle;
+};
+
 /* function declare */
+int lcd_kit_read_project_id(void);
 int lcd_kit_utils_init(struct device_node *np, struct mtk_panel_info *pinfo);
 bool lcd_kit_support(void);
 void lcd_kit_disp_on_record_time(void);
 int lcd_kit_get_bl_max_nit_from_dts(void);
+void lcd_kit_disp_on_check_delay(void);
+void lcd_kit_set_bl_cmd(uint32_t level);
+int lcd_kit_alpm_setting(uint32_t mode);
+int lcd_kit_mipi_set_backlight(struct hbm_type_cfg hbm_source, uint32_t level);
+#ifdef LCD_KIT_DEBUG_ENABLE
+int dpd_init(struct device_node *np);
+int lcd_kit_dbg_init(void);
+#endif
+struct mtk_panel_info *lcd_kit_get_mkt_panel_info(void);
+void lcd_esd_enable(int enable);
+void lcd_kit_recovery_display(void);
+void lcd_kit_ddic_lv_detect_dmd_report(
+	u8 reg_val[DETECT_LOOPS][DETECT_NUM][VAL_NUM]);
+int lcd_kit_check_pcd_errflag_check_fac(void);
+#ifdef LCD_FACTORY_MODE
+int lcd_kit_gpio_pcd_errflag_check(void);
+#endif
+int lcd_kit_start_pcd_check(void *hld);
+int lcd_kit_check_pcd_errflag_check(void *hld);
 #endif

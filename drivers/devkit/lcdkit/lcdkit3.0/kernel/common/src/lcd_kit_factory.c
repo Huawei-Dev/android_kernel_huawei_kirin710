@@ -19,7 +19,12 @@
 #include "lcd_kit_factory.h"
 #include "lcd_kit_common.h"
 #include "lcd_kit_parse.h"
-
+#if defined(CONFIG_LCD_KIT_HISI)
+#include "lcd_kit_ext_disp.h"
+#else
+#define LCD_ACTIVE_PANEL_BUTT 1
+#define LCD_ACTIVE_PANEL 0
+#endif
 static char *g_sence_array[] = {
 	"LCD_INCOME0",   "MMI0",   "RUNNINGTEST0", "PROJECT_MENU0",
 	"LCD_INCOME1",   "MMI1",   "RUNNINGTEST1",  "PROJECT_MENU1",
@@ -45,12 +50,24 @@ static char *g_sence_array[] = {
 	"LCD_INCOME21",  "MMI21",  "RUNNINGTEST21",  "PROJECT_MENU21",
 	"LCD_INCOME22",  "MMI22",  "RUNNINGTEST22",  "PROJECT_MENU22",
 	"LCD_INCOME23",  "MMI23",  "RUNNINGTEST23",  "PROJECT_MENU23",
+	"LCD_INCOME24",  "MMI24",  "RUNNINGTEST24",  "PROJECT_MENU24",
+	"LCD_INCOME25",  "MMI25",  "RUNNINGTEST25",  "PROJECT_MENU25",
+	"LCD_INCOME26",  "MMI26",  "RUNNINGTEST26",  "PROJECT_MENU26",
+	"LCD_INCOME27",  "MMI27",  "RUNNINGTEST27",  "PROJECT_MENU27",
+	"LCD_INCOME28",  "MMI28",  "RUNNINGTEST28",  "PROJECT_MENU28",
+	"LCD_INCOME29",  "MMI29",  "RUNNINGTEST29",  "PROJECT_MENU29",
+	"LCD_INCOME30",  "MMI30",  "RUNNINGTEST30",  "PROJECT_MENU30",
+	"LCD_INCOME31",  "MMI31",  "RUNNINGTEST31",  "PROJECT_MENU31",
+	"LCD_INCOME32",  "MMI32",  "RUNNINGTEST32",  "PROJECT_MENU32",
+	"LCD_INCOME33",  "MMI33",  "RUNNINGTEST33",  "PROJECT_MENU33",
+	"LCD_INCOME34",  "MMI34",  "RUNNINGTEST34",  "PROJECT_MENU34",
 	"CURRENT1_0",    "CURRENT1_1", "CURRENT1_2",  "CURRENT1_3",
 	"CURRENT1_4",    "CURRENT1_5", "CHECKSUM1",  "CHECKSUM2",
 	"CHECKSUM3",     "CHECKSUM4", "BL_OPEN_SHORT",  "PCD_ERRORFLAG",
 	"DOTINVERSION",  "CHECKREG", "COLUMNINVERSION",   "POWERONOFF",
 	"BLSWITCH", "CURRENT_TEST_MODE", "OVER_CURRENT_DETECTION",
 	"OVER_VOLTAGE_DETECTION", "GENERAL_TEST", "VERTICAL_LINE",
+	"DDIC_LV_DETECT", "AVDD_DETECT",  "ONESIDE_DETECT",
 };
 
 static char *g_cmd_array[] = {
@@ -79,7 +96,22 @@ static char *g_cmd_array[] = {
 	"VERTICAL_LINE_3", "VERTICAL_LINE_3", "VERTICAL_LINE_3",
 	"VERTICAL_LINE_4", "VERTICAL_LINE_4", "VERTICAL_LINE_4",
 	"VERTICAL_LINE_4", "VERTICAL_LINE_5", "VERTICAL_LINE_5",
-	"VERTICAL_LINE_5", "VERTICAL_LINE_5",
+	"VERTICAL_LINE_5", "VERTICAL_LINE_5", "DDIC_LV_DET_CMD_1",
+	"DDIC_LV_DET_CMD_1",    "DDIC_LV_DET_CMD_1",    "DDIC_LV_DET_CMD_1",
+	"DDIC_LV_DET_RESULT_1", "DDIC_LV_DET_RESULT_1", "DDIC_LV_DET_RESULT_1",
+	"DDIC_LV_DET_RESULT_1", "DDIC_LV_DET_CMD_2",    "DDIC_LV_DET_CMD_2",
+	"DDIC_LV_DET_CMD_2",    "DDIC_LV_DET_CMD_2",    "DDIC_LV_DET_RESULT_2",
+	"DDIC_LV_DET_RESULT_2", "DDIC_LV_DET_RESULT_2", "DDIC_LV_DET_RESULT_2",
+	"DDIC_LV_DET_CMD_3",    "DDIC_LV_DET_CMD_3",    "DDIC_LV_DET_CMD_3",
+	"DDIC_LV_DET_CMD_3",    "DDIC_LV_DET_RESULT_3", "DDIC_LV_DET_RESULT_3",
+	"DDIC_LV_DET_RESULT_3", "DDIC_LV_DET_RESULT_3", "DDIC_LV_DET_CMD_4",
+	"DDIC_LV_DET_CMD_4",    "DDIC_LV_DET_CMD_4",    "DDIC_LV_DET_CMD_4",
+	"DDIC_LV_DET_RESULT_4", "DDIC_LV_DET_RESULT_4", "DDIC_LV_DET_RESULT_4",
+	"DDIC_LV_DET_RESULT_4", "AVDD_DET_GET_RESULT", "AVDD_DET_GET_RESULT",
+	"AVDD_DET_GET_RESULT", "AVDD_DET_GET_RESULT",
+	"AOD_DET_CMD_ON", "AOD_DET_CMD_ON", "AOD_DET_CMD_ON", "AOD_DET_CMD_ON",
+	"AOD_DET_CMD_OFF", "AOD_DET_CMD_OFF", "AOD_DET_CMD_OFF",
+	"AOD_DET_CMD_OFF",
 	"/sys/class/ina231/ina231_0/ina231_set," \
 	"/sys/class/ina231/ina231_0/ina231_value," \
 	"1,9999999,1,9999999,1,99999",
@@ -114,10 +146,13 @@ static char *g_cmd_array[] = {
 	"OVER_VOLTAGE_DETECTION",
 	"/sys/class/graphics/fb0/lcd_general_test",
 	"/sys/class/graphics/fb0/vertical_line_test",
+	"/sys/class/graphics/fb0/ddic_lv_detect",
+	"/sys/class/graphics/fb0/avdd_detect",
+	"/sys/class/graphics/fb0/lcd_oneside_mode",
 };
 
 static struct lcd_fact_ops *g_lcd_fact_ops;
-struct lcd_fact_desc g_fact_info;
+struct lcd_fact_desc g_fact_info[LCD_ACTIVE_PANEL_BUTT];
 
 int lcd_fact_ops_register(struct lcd_fact_ops *ops)
 {
@@ -146,6 +181,10 @@ struct lcd_fact_ops *lcd_get_fact_ops(void)
 	return g_lcd_fact_ops;
 }
 
+struct lcd_fact_desc *lcd_kit_get_fact_info(void)
+{
+	return &g_fact_info[LCD_ACTIVE_PANEL];
+}
 
 static ssize_t lcd_kit_inversion_mode_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
@@ -261,11 +300,8 @@ static ssize_t lcd_kit_gram_check_store(struct device *dev,
 		LCD_KIT_ERR("fact_ops is NULL!\n");
 		return LCD_KIT_FAIL;
 	}
-	if (fact_ops->gram_check_store) {
-		ret = fact_ops->gram_check_store(dev, attr, buf, count);
-		if (ret)
-			LCD_KIT_ERR("gram check set fail!\n");
-	}
+	if (fact_ops->gram_check_store)
+		(void)fact_ops->gram_check_store(dev, attr, buf, count);
 	return count;
 }
 
@@ -301,6 +337,56 @@ static ssize_t lcd_kit_sleep_ctrl_store(struct device *dev,
 		if (ret)
 			LCD_KIT_ERR("sleep ctrl set fail!\n");
 	}
+	return count;
+}
+
+static ssize_t lcd_kit_poweric_det_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	ssize_t ret = LCD_KIT_OK;
+	struct lcd_fact_ops *fact_ops = NULL;
+
+	fact_ops = lcd_get_fact_ops();
+	if (!fact_ops) {
+		LCD_KIT_ERR("fact_ops is NULL!\n");
+		return LCD_KIT_FAIL;
+	}
+	if (fact_ops->poweric_det_show)
+		ret = fact_ops->poweric_det_show(dev, attr, buf);
+	return ret;
+}
+
+static ssize_t lcd_kit_poweric_det_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct lcd_fact_ops *fact_ops = NULL;
+	ssize_t ret;
+
+	fact_ops = lcd_get_fact_ops();
+	if (!fact_ops) {
+		LCD_KIT_ERR("fact_ops is NULL!\n");
+		return LCD_KIT_FAIL;
+	}
+	if (fact_ops->poweric_det_store) {
+		ret = fact_ops->poweric_det_store(dev, attr, buf, count);
+		if (!ret)
+			LCD_KIT_ERR("poweric det fail!\n");
+	}
+	return count;
+}
+
+static ssize_t lcd_kit_amoled_pcd_errflag_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct lcd_fact_ops *fact_ops = NULL;
+
+	fact_ops = lcd_get_fact_ops();
+	if (!fact_ops) {
+		LCD_KIT_ERR("fact_ops is NULL!\n");
+		return LCD_KIT_FAIL;
+	}
+	if (fact_ops->pcd_errflag_check_store)
+		fact_ops->pcd_errflag_check_store(dev, attr, buf);
 	return count;
 }
 
@@ -347,11 +433,8 @@ static ssize_t lcd_kit_test_config_store(struct device *dev,
 		LCD_KIT_ERR("fact_ops is NULL!\n");
 		return LCD_KIT_FAIL;
 	}
-	if (fact_ops->test_config_store) {
-		ret = fact_ops->test_config_store(dev, attr, buf, count);
-		if (ret)
-			LCD_KIT_ERR("test config set fail!\n");
-	}
+	if (fact_ops->test_config_store)
+		(void)fact_ops->test_config_store(dev, attr, buf, count);
 	return count;
 }
 
@@ -440,20 +523,16 @@ static ssize_t lcd_kit_vertical_line_test_store(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct lcd_fact_ops *fact_ops = NULL;
-	ssize_t ret;
 
 	fact_ops = lcd_get_fact_ops();
 	if (fact_ops == NULL) {
 		LCD_KIT_ERR("fact_ops is NULL!\n");
 		return LCD_KIT_FAIL;
 	}
-	if (fact_ops->vtc_line_test_store) {
-		ret = fact_ops->vtc_line_test_store(dev, attr,
+	if (fact_ops->vtc_line_test_store)
+		(void)fact_ops->vtc_line_test_store(dev, attr,
 			buf, count);
-		if (ret)
-			LCD_KIT_ERR("vertical line set fail\n");
-	}
-	return ret;
+	return count;
 }
 
 static ssize_t lcd_kit_hkadc_debug_show(struct device *dev,
@@ -507,6 +586,64 @@ static ssize_t lcd_kit_bl_self_test_show(struct device *dev,
 	return ret;
 }
 
+static ssize_t lcd_kit_avdd_detect_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	ssize_t ret = LCD_KIT_OK;
+	struct lcd_fact_ops *fact_ops = NULL;
+
+	fact_ops = lcd_get_fact_ops();
+	if (!fact_ops) {
+		LCD_KIT_ERR("sysfs_ops is NULL!\n");
+		return LCD_KIT_FAIL;
+	}
+	if (fact_ops->avdd_detect_show)
+		ret = fact_ops->avdd_detect_show(dev, attr, buf);
+	return ret;
+}
+
+static ssize_t lcd_kit_oneside_mode_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	ssize_t ret = LCD_KIT_OK;
+	struct lcd_fact_ops *fact_ops = NULL;
+
+	fact_ops = lcd_get_fact_ops();
+	if (!fact_ops) {
+		LCD_KIT_ERR("sysfs_ops is NULL!\n");
+		return LCD_KIT_FAIL;
+	}
+
+	if (fact_ops->oneside_mode_show)
+		ret = fact_ops->oneside_mode_show(dev, attr, buf);
+	return ret;
+}
+
+static ssize_t lcd_kit_oneside_mode_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct lcd_fact_ops *fact_ops = NULL;
+	ssize_t ret;
+
+	fact_ops = lcd_get_fact_ops();
+	if (!fact_ops) {
+		LCD_KIT_ERR("sysfs_ops is NULL!\n");
+		return LCD_KIT_FAIL;
+	}
+
+	if (!fact_ops->oneside_mode_store) {
+		LCD_KIT_ERR("oneside_mode_store is NULL!\n");
+		return LCD_KIT_FAIL;
+	}
+
+	if (fact_ops->oneside_mode_store) {
+		ret = fact_ops->oneside_mode_store(dev, attr, buf, count);
+		if (!ret)
+			LCD_KIT_ERR("oneside mode set fail\n");
+	}
+	return count;
+}
+
 static DEVICE_ATTR(lcd_inversion_mode, 0644, lcd_kit_inversion_mode_show,
 	lcd_kit_inversion_mode_store);
 static DEVICE_ATTR(lcd_scan_mode, 0644, lcd_kit_scan_mode_show,
@@ -517,7 +654,8 @@ static DEVICE_ATTR(lcd_checksum, 0644, lcd_kit_gram_check_show,
 static DEVICE_ATTR(lcd_sleep_ctrl, 0644, lcd_kit_sleep_ctrl_show,
 	lcd_kit_sleep_ctrl_store);
 static DEVICE_ATTR(amoled_pcd_errflag_check, 0644,
-	lcd_kit_amoled_pcd_errflag_show, NULL);
+	lcd_kit_amoled_pcd_errflag_show,
+	lcd_kit_amoled_pcd_errflag_store);
 static DEVICE_ATTR(lcd_test_config, 0640, lcd_kit_test_config_show,
 	lcd_kit_test_config_store);
 static DEVICE_ATTR(lv_detect, 0640, lcd_kit_lv_detect_show, NULL);
@@ -529,6 +667,12 @@ static DEVICE_ATTR(vertical_line_test, 0644,
 static DEVICE_ATTR(lcd_hkadc, 0644, lcd_kit_hkadc_debug_show,
 	lcd_kit_hkadc_debug_store);
 static DEVICE_ATTR(bl_self_test, 0644, lcd_kit_bl_self_test_show, NULL);
+static DEVICE_ATTR(lcd_poweric_det, 0644, lcd_kit_poweric_det_show,
+	lcd_kit_poweric_det_store);
+static DEVICE_ATTR(avdd_detect, 0644, lcd_kit_avdd_detect_show, NULL);
+static DEVICE_ATTR(lcd_oneside_mode, 0644, lcd_kit_oneside_mode_show,
+	lcd_kit_oneside_mode_store);
+
 /* factory attrs */
 struct attribute *lcd_factory_attrs[] = {
 	&dev_attr_lcd_inversion_mode.attr,
@@ -545,6 +689,9 @@ struct attribute *lcd_factory_attrs[] = {
 	&dev_attr_vertical_line_test.attr,
 	&dev_attr_lcd_hkadc.attr,
 	&dev_attr_bl_self_test.attr,
+	&dev_attr_lcd_poweric_det.attr,
+	&dev_attr_avdd_detect.attr,
+	&dev_attr_lcd_oneside_mode.attr,
 };
 
 static struct attribute* lcd_fac_sysfs_attrs[FAC_SYSFS_ATTRS_NUM] = { NULL };
@@ -574,11 +721,11 @@ int lcd_kit_inversion_get_mode(char *buf)
 		LCD_KIT_ERR("null pointer\n");
 		return LCD_KIT_FAIL;
 	}
-	if (!g_fact_info.inversion.support) {
+	if (!FACT_INFO->inversion.support) {
 		LCD_KIT_DEBUG("not support inversion\n");
 		return ret;
 	}
-	ret = snprintf(buf, PAGE_SIZE, "%d\n", g_fact_info.inversion.mode);
+	ret = snprintf(buf, PAGE_SIZE, "%d\n", FACT_INFO->inversion.mode);
 	return ret;
 }
 
@@ -592,23 +739,23 @@ int lcd_kit_inversion_set_mode(void *hdl, u32 mode)
 		LCD_KIT_ERR("can not register adapt_ops or mipi_tx!\n");
 		return LCD_KIT_FAIL;
 	}
-	if (!g_fact_info.inversion.support) {
+	if (!FACT_INFO->inversion.support) {
 		LCD_KIT_DEBUG("not support inversion\n");
 		return ret;
 	}
 	switch (mode) {
 	case COLUMN_MODE:
-		ret = adapt_ops->mipi_tx(hdl, &g_fact_info.inversion.column_cmds);
+		ret = adapt_ops->mipi_tx(hdl, &FACT_INFO->inversion.column_cmds);
 		break;
 	case DOT_MODE:
-		ret = adapt_ops->mipi_tx(hdl, &g_fact_info.inversion.dot_cmds);
+		ret = adapt_ops->mipi_tx(hdl, &FACT_INFO->inversion.dot_cmds);
 		break;
 	default:
 		return LCD_KIT_FAIL;
 	}
-	g_fact_info.inversion.mode = (int)mode;
+	FACT_INFO->inversion.mode = (int)mode;
 	LCD_KIT_INFO("inversion.support = %d,inversion.mode = %d\n",
-		g_fact_info.inversion.support, g_fact_info.inversion.mode);
+		FACT_INFO->inversion.support, FACT_INFO->inversion.mode);
 	return ret;
 }
 
@@ -616,8 +763,8 @@ int lcd_kit_scan_get_mode(char *buf)
 {
 	int ret = LCD_KIT_OK;
 
-	if (g_fact_info.scan.support)
-		ret = snprintf(buf, PAGE_SIZE, "%d\n", g_fact_info.scan.mode);
+	if (FACT_INFO->scan.support)
+		ret = snprintf(buf, PAGE_SIZE, "%d\n", FACT_INFO->scan.mode);
 	return ret;
 }
 
@@ -631,25 +778,25 @@ int lcd_kit_scan_set_mode(void *hdl,  u32 mode)
 		LCD_KIT_ERR("can not register adapt_ops!\n");
 		return LCD_KIT_FAIL;
 	}
-	if (!g_fact_info.scan.support) {
+	if (!FACT_INFO->scan.support) {
 		LCD_KIT_DEBUG("not support scan\n");
 		return ret;
 	}
 	switch (mode) {
 	case FORWORD_MODE:
-		ret = adapt_ops->mipi_tx(hdl, &g_fact_info.scan.forword_cmds);
+		ret = adapt_ops->mipi_tx(hdl, &FACT_INFO->scan.forword_cmds);
 		break;
 
 	case REVERT_MODE:
-		ret = adapt_ops->mipi_tx(hdl, &g_fact_info.scan.revert_cmds);
+		ret = adapt_ops->mipi_tx(hdl, &FACT_INFO->scan.revert_cmds);
 		break;
 
 	default:
 		return LCD_KIT_FAIL;
 	}
-	g_fact_info.scan.mode = (int)mode;
+	FACT_INFO->scan.mode = (int)mode;
 	LCD_KIT_INFO("scan.support = %d,scan.mode = %d\n",
-		g_fact_info.scan.support, g_fact_info.scan.mode);
+		FACT_INFO->scan.support, FACT_INFO->scan.mode);
 	return ret;
 }
 
@@ -666,12 +813,13 @@ int lcd_kit_check_reg(void *hdl, char *buf)
 		LCD_KIT_ERR("can not register adapt_ops!\n");
 		return LCD_KIT_FAIL;
 	}
-	if (g_fact_info.check_reg.support) {
-		expect_ptr = (char *)g_fact_info.check_reg.value.buf;
+	if (FACT_INFO->check_reg.support) {
+		expect_ptr = (char *)FACT_INFO->check_reg.value.buf;
 		if (adapt_ops->mipi_rx)
 			ret = adapt_ops->mipi_rx(hdl, read_value,
-				&g_fact_info.check_reg.cmds);
-		for (i = 0; i < g_fact_info.check_reg.cmds.cmd_cnt; i++) {
+				MAX_REG_READ_COUNT - 1,
+				&FACT_INFO->check_reg.cmds);
+		for (i = 0; i < FACT_INFO->check_reg.cmds.cmd_cnt; i++) {
 			if ((char)read_value[i] != expect_ptr[i]) {
 				ret = -1;
 				LCD_KIT_ERR("read_value[%u] = 0x%x, but expect_ptr[%u] = 0x%x!\n",
@@ -692,8 +840,8 @@ int lcd_kit_check_reg(void *hdl, char *buf)
 
 int lcd_kit_is_enter_pt_mode(void)
 {
-	if (g_fact_info.pt.support)
-		return g_fact_info.pt.mode;
+	if (FACT_INFO->pt.support)
+		return FACT_INFO->pt.mode;
 	return LCD_KIT_OK;
 }
 
@@ -701,8 +849,8 @@ int lcd_kit_get_pt_station_status(void)
 {
 	int mode = 0;
 
-	if (g_fact_info.pt.support)
-		mode = g_fact_info.pt.mode;
+	if (FACT_INFO->pt.support)
+		mode = FACT_INFO->pt.mode;
 	LCD_KIT_INFO("mode = %d\n", mode);
 	return mode;
 }
@@ -711,10 +859,10 @@ int lcd_kit_get_sleep_mode(char *buf)
 {
 	int ret = LCD_KIT_OK;
 
-	if (g_fact_info.pt.support)
+	if (FACT_INFO->pt.support)
 		ret = snprintf(buf, PAGE_SIZE,
 			"PT test mod = %d, PT test support = %d\n",
-			g_fact_info.pt.mode, g_fact_info.pt.support);
+			FACT_INFO->pt.mode, FACT_INFO->pt.support);
 	return ret;
 }
 
@@ -722,29 +870,11 @@ int lcd_kit_set_sleep_mode(u32 mode)
 {
 	int ret = LCD_KIT_OK;
 
-	if (g_fact_info.pt.support)
-		g_fact_info.pt.mode = mode;
+	if (FACT_INFO->pt.support)
+		FACT_INFO->pt.mode = mode;
 		LCD_KIT_INFO("pt.support = %d, pt.mode = %d\n",
-		g_fact_info.pt.support, g_fact_info.pt.mode);
+		FACT_INFO->pt.support, FACT_INFO->pt.mode);
 	return ret;
-}
-
-/*
- * name:lcd_kit_get_pt_ulps_support
- * function:enter and exit ulps when pt test
- */
-int lcd_kit_get_pt_ulps_support(struct platform_device *pdev)
-{
-	int support_flag;
-
-	if (lcd_kit_get_pt_station_status() == IN_POWER_TEST) {
-		support_flag = 1;
-		LCD_KIT_INFO("ulps need for PT,Support_flag=%d\n", support_flag);
-	} else {
-		support_flag = 0;
-		LCD_KIT_DEBUG("ulps not need for PT,Support_flag=%d!\n", support_flag);
-	}
-	return support_flag;
 }
 
 int lcd_kit_get_test_config(char *buf)
@@ -758,10 +888,10 @@ int lcd_kit_get_test_config(char *buf)
 			LCD_KIT_INFO("Sence cmd is end, total num is:%d\n", i);
 			break;
 		}
-		if (!strncmp(g_fact_info.lcd_cmd_now, g_sence_array[i],
-			strlen(g_fact_info.lcd_cmd_now))) {
+		if (!strncmp(FACT_INFO->lcd_cmd_now, g_sence_array[i],
+			strlen(FACT_INFO->lcd_cmd_now))) {
 			LCD_KIT_INFO("current test cmd:%s,return cmd:%s\n",
-				g_fact_info.lcd_cmd_now, g_cmd_array[i]);
+				FACT_INFO->lcd_cmd_now, g_cmd_array[i]);
 			return snprintf(buf, PAGE_SIZE, g_cmd_array[i]);
 		}
 	}
@@ -776,11 +906,11 @@ int lcd_kit_set_test_config(const char *buf)
 		return LCD_KIT_FAIL;
 	}
 	if (strlen(buf) < LCD_KIT_CMD_NAME_MAX) {
-		memcpy(g_fact_info.lcd_cmd_now, buf, strlen(buf) + 1);
-		LCD_KIT_INFO("current test cmd:%s\n", g_fact_info.lcd_cmd_now);
+		memcpy(FACT_INFO->lcd_cmd_now, buf, strlen(buf) + 1);
+		LCD_KIT_INFO("current test cmd:%s\n", FACT_INFO->lcd_cmd_now);
 	} else {
-		memcpy(g_fact_info.lcd_cmd_now, "INVALID", strlen("INVALID") + 1);
-		LCD_KIT_INFO("invalid test cmd:%s\n", g_fact_info.lcd_cmd_now);
+		memcpy(FACT_INFO->lcd_cmd_now, "INVALID", strlen("INVALID") + 1);
+		LCD_KIT_INFO("invalid test cmd:%s\n", FACT_INFO->lcd_cmd_now);
 	}
 	return LCD_KIT_OK;
 }
@@ -789,64 +919,190 @@ int lcd_kit_is_enter_sleep_mode(void)
 {
 	int sleep_mode = 0;
 
-	if (g_fact_info.pt.support)
-		sleep_mode = g_fact_info.pt.mode;
+	if (FACT_INFO->pt.support)
+		sleep_mode = FACT_INFO->pt.mode;
 	return sleep_mode;
 }
 
 static void parse_dt_inversion(struct device_node *np)
 {
 	/* dot-colomn inversion */
-	OF_PROPERTY_READ_U32_DEFAULT(np, "lcd-kit,inversion-support",
-		&g_fact_info.inversion.support, 0);
-	if (g_fact_info.inversion.support) {
+	lcd_kit_parse_u32(np, "lcd-kit,inversion-support",
+		&FACT_INFO->inversion.support, 0);
+	if (FACT_INFO->inversion.support) {
 		lcd_kit_parse_dcs_cmds(np, "lcd-kit,inversion-column-cmds",
 			"lcd-kit,inversion-column-cmds-state",
-			&g_fact_info.inversion.column_cmds);
+			&FACT_INFO->inversion.column_cmds);
 		lcd_kit_parse_dcs_cmds(np, "lcd-kit,inversion-dot-cmds",
 			"lcd-kit,inversion-dot-cmds-state",
-			&g_fact_info.inversion.dot_cmds);
+			&FACT_INFO->inversion.dot_cmds);
 	}
 }
 
 static void parse_dt_scan(struct device_node *np)
 {
 	/* forword-revert scan */
-	OF_PROPERTY_READ_U32_DEFAULT(np, "lcd-kit,scan-support",
-		&g_fact_info.scan.support, 0);
-	if (g_fact_info.scan.support) {
+	lcd_kit_parse_u32(np, "lcd-kit,scan-support",
+		&FACT_INFO->scan.support, 0);
+	if (FACT_INFO->scan.support) {
 		lcd_kit_parse_dcs_cmds(np, "lcd-kit,scan-forword-cmds",
 			"lcd-kit,scan-forword-cmds-state",
-			&g_fact_info.scan.forword_cmds);
+			&FACT_INFO->scan.forword_cmds);
 		lcd_kit_parse_dcs_cmds(np, "lcd-kit,scan-revert-cmds",
 			"lcd-kit,scan-revert-cmds-state",
-			&g_fact_info.scan.revert_cmds);
+			&FACT_INFO->scan.revert_cmds);
 	}
 }
 
 static void parse_dt_check_reg(struct device_node *np)
 {
 	/* check reg */
-	OF_PROPERTY_READ_U32_DEFAULT(np, "lcd-kit,check-reg-support",
-		&g_fact_info.check_reg.support, 0);
-	if (g_fact_info.check_reg.support) {
+	lcd_kit_parse_u32(np, "lcd-kit,check-reg-support",
+		&FACT_INFO->check_reg.support, 0);
+	if (FACT_INFO->check_reg.support) {
 		lcd_kit_parse_dcs_cmds(np, "lcd-kit,check-reg-cmds",
 			"lcd-kit,check-reg-cmds-state",
-			&g_fact_info.check_reg.cmds);
+			&FACT_INFO->check_reg.cmds);
 		lcd_kit_parse_array_data(np, "lcd-kit,check-reg-value",
-			&g_fact_info.check_reg.value);
+			&FACT_INFO->check_reg.value);
 	}
 }
 
 static void parse_dt_pt(struct device_node *np)
 {
 	/* pt test */
-	OF_PROPERTY_READ_U32_DEFAULT(np, "lcd-kit,pt-support",
-		&g_fact_info.pt.support, 0);
-	if (g_fact_info.pt.support)
-		OF_PROPERTY_READ_U32_DEFAULT(np,
+	lcd_kit_parse_u32(np, "lcd-kit,pt-support",
+		&FACT_INFO->pt.support, 0);
+	if (FACT_INFO->pt.support) {
+		lcd_kit_parse_u32(np,
 			"lcd-kit,pt-panel-ulps-support",
-			&g_fact_info.pt.panel_ulps_support, 0);
+			&FACT_INFO->pt.panel_ulps_support, 0);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,pt-avdd-enable-cmds",
+			"lcd-kit,pt-avdd-enable-cmds-state",
+			&FACT_INFO->pt.avdd_enable_cmds);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,pt-avdd-disable-cmds",
+			"lcd-kit,pt-avdd-disable-cmds-state",
+			&FACT_INFO->pt.avdd_disable_cmds);
+	}
+}
+
+static void parse_dt_lv_det(struct device_node *np)
+{
+	/* low voltage detect */
+	lcd_kit_parse_u32(np, "lcd-kit,lv-det-support",
+		&FACT_INFO->lv_det.support, 0);
+	if (FACT_INFO->lv_det.support) {
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,lv-det-cmds",
+			"lcd-kit,lv-det-cmds-state",
+			&FACT_INFO->lv_det.detect_cmds);
+		lcd_kit_parse_array_data(np, "lcd-kit,lv-det-value",
+			&FACT_INFO->lv_det.value);
+	}
+	/* ddic low voltage detect test */
+	lcd_kit_parse_u32(np, "lcd-kit,ddic-lv-det-support",
+		&FACT_INFO->ddic_lv_detect.support, 0);
+	if (FACT_INFO->ddic_lv_detect.support) {
+		FACT_INFO->ddic_lv_detect.pic_index = INVALID_INDEX;
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-enter1-cmds",
+			"lcd-kit,ddic-lv-det-enter1-cmds-state",
+			&FACT_INFO->ddic_lv_detect.enter_cmds[DET1_INDEX]);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-enter2-cmds",
+			"lcd-kit,ddic-lv-det-enter2-cmds-state",
+			&FACT_INFO->ddic_lv_detect.enter_cmds[DET2_INDEX]);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-enter3-cmds",
+			"lcd-kit,ddic-lv-det-enter3-cmds-state",
+			&FACT_INFO->ddic_lv_detect.enter_cmds[DET3_INDEX]);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-enter4-cmds",
+			"lcd-kit,ddic-lv-det-enter4-cmds-state",
+			&FACT_INFO->ddic_lv_detect.enter_cmds[DET4_INDEX]);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-rd1-cmds",
+			"lcd-kit,ddic-lv-det-rd1-cmds-state",
+			&FACT_INFO->ddic_lv_detect.rd_cmds[DET1_INDEX]);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-rd2-cmds",
+			"lcd-kit,ddic-lv-det-rd2-cmds-state",
+			&FACT_INFO->ddic_lv_detect.rd_cmds[DET2_INDEX]);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-rd3-cmds",
+			"lcd-kit,ddic-lv-det-rd3-cmds-state",
+			&FACT_INFO->ddic_lv_detect.rd_cmds[DET3_INDEX]);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,ddic-lv-det-rd4-cmds",
+			"lcd-kit,ddic-lv-det-rd4-cmds-state",
+			&FACT_INFO->ddic_lv_detect.rd_cmds[DET4_INDEX]);
+		lcd_kit_parse_array_data(np, "lcd-kit,ddic-lv-det-value1",
+			&FACT_INFO->ddic_lv_detect.value[DET1_INDEX]);
+		lcd_kit_parse_array_data(np, "lcd-kit,ddic-lv-det-value2",
+			&FACT_INFO->ddic_lv_detect.value[DET2_INDEX]);
+		lcd_kit_parse_array_data(np, "lcd-kit,ddic-lv-det-value3",
+			&FACT_INFO->ddic_lv_detect.value[DET3_INDEX]);
+		lcd_kit_parse_array_data(np, "lcd-kit,ddic-lv-det-value4",
+			&FACT_INFO->ddic_lv_detect.value[DET4_INDEX]);
+	}
+}
+
+static void parse_dt_vtc_line(struct device_node *np)
+{
+	/* vertical line test */
+	lcd_kit_parse_u32(np, "lcd-kit,vtc-line-support",
+		&FACT_INFO->vtc_line.support, 0);
+	if (FACT_INFO->vtc_line.support) {
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,vtc-line-cmds",
+			"lcd-kit,vtc-line-cmds-state",
+			&FACT_INFO->vtc_line.vtc_cmds);
+		lcd_kit_parse_u32(np, "lcd-kit,vtc-line-vsp",
+			&FACT_INFO->vtc_line.vtc_vsp, 0);
+		lcd_kit_parse_u32(np, "lcd-kit,vtc-line-vsn",
+			&FACT_INFO->vtc_line.vtc_vsn, 0);
+		lcd_kit_parse_u32(np, "lcd-kit,vtc-line-no-reset",
+			&FACT_INFO->vtc_line.vtc_no_reset, 0);
+	}
+}
+
+static void parse_dt_hor_line(struct device_node *np)
+{
+	/* horizontal line test */
+	lcd_kit_parse_u32(np, "lcd-kit,hor-line-support",
+		&FACT_INFO->hor_line.support, 0);
+	if (FACT_INFO->hor_line.support) {
+		lcd_kit_parse_u32(np, "lcd-kit,hor-line-duration",
+			&FACT_INFO->hor_line.duration, 0);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,hor-line-cmds",
+			"lcd-kit,hor-line-cmds-state",
+			&FACT_INFO->hor_line.hl_cmds);
+		lcd_kit_parse_u32(np, "lcd-kit,hor-line-no-reset",
+			&FACT_INFO->hor_line.hl_no_reset, 0);
+	}
+}
+
+static void parse_dt_oneside_mode(struct device_node *np)
+{
+	/* oneside mode test */
+	lcd_kit_parse_u32(np, "lcd-kit,oneside-mode-support",
+		&FACT_INFO->oneside_mode.support, 0);
+	if (FACT_INFO->oneside_mode.support) {
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,oneside-mode-left",
+			"lcd-kit,oneside-mode-left-state",
+			&FACT_INFO->oneside_mode.left_cmds);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,oneside-mode-right",
+			"lcd-kit,oneside-mode-right-state",
+			&FACT_INFO->oneside_mode.right_cmds);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,oneside-mode-exit",
+			"lcd-kit,oneside-mode-exit-state",
+			&FACT_INFO->oneside_mode.exit_cmds);
+	}
+}
+
+static void parse_dt_color_aod_detect(struct device_node *np)
+{
+	/* color aod detect */
+	lcd_kit_parse_u32(np, "lcd-kit,color-aod-detect-support",
+		&FACT_INFO->color_aod_det.support, 0);
+	if (FACT_INFO->color_aod_det.support) {
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,color-aod-detect-enter",
+			"lcd-kit,color-aod-detect-enter-state",
+			&FACT_INFO->color_aod_det.enter_cmds);
+		lcd_kit_parse_dcs_cmds(np, "lcd-kit,color-aod-detect-exit",
+			"lcd-kit,color-aod-detect-exit-state",
+			&FACT_INFO->color_aod_det.exit_cmds);
+	}
 }
 
 static void lcd_fact_parse_dt(struct device_node *np)
@@ -855,6 +1111,16 @@ static void lcd_fact_parse_dt(struct device_node *np)
 	parse_dt_scan(np);
 	parse_dt_check_reg(np);
 	parse_dt_pt(np);
+	/* parse low voltage detect */
+	parse_dt_lv_det(np);
+	/* parse vertical line test */
+	parse_dt_vtc_line(np);
+	/* parse horizontal line test */
+	parse_dt_hor_line(np);
+	/* parse oneside mode test */
+	parse_dt_oneside_mode(np);
+	/* parse color aod detect */
+	parse_dt_color_aod_detect(np);
 }
 
 void lcd_kit_fact_init(struct device_node *np)

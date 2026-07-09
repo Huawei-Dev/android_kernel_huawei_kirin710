@@ -15,9 +15,8 @@
  * GNU General Public License for more details.
  *
  */
-
-#include "lcd_kit_bias.h"
 #include "lcd_kit_common.h"
+#include "lcd_kit_bias.h"
 
 static struct lcd_kit_bias_ops *g_bias_ops;
 int lcd_kit_bias_register(struct lcd_kit_bias_ops *ops)

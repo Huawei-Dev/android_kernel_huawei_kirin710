@@ -26,15 +26,22 @@ struct lcd_kit_ops {
 	bool (*lcd_kit_support)(void);
 	int (*create_sysfs)(struct kobject *obj);
 	int (*get_project_id)(char *buff);
+	int (*read_project_id)(void);
+	int (*get_2d_barcode)(char *buff);
 	int (*get_status_by_type)(int type, int *status);
 	int (*get_pt_station_status)(void);
+	int (*avdd_mipi_ctrl)(void *hld, int enable);
 	int (*get_lcd_status)(void);
 	int (*get_panel_power_status)(void);
 	int (*power_monitor_on)(void);
 	int (*power_monitor_off)(void);
 	int (*set_vss_by_thermal)(void);
+	int (*set_power_by_thermal)(void);
 	int (*write_otp_gamma)(u8 *buf);
 	int (*proximity_power_off)(void);
+	int (*get_sn_code)(void);
+	bool (*panel_event_skip_delay)(void *hld,
+		uint32_t event, uint32_t data);
 };
 
 /* TS sync */
@@ -49,6 +56,7 @@ enum lcd_kit_ts_pm_type {
 	TS_AFTER_RESUME,
 	TS_EARLY_SUSPEND,
 	TS_IC_SHUT_DOWN,
+	TS_2ND_POWER_OFF,
 };
 
 /* ts type */
@@ -71,7 +79,11 @@ struct ts_kit_ops {
 	int (*ts_power_notify)(enum lcd_kit_ts_pm_type type, int sync);
 	int (*get_tp_status_by_type)(int type, int *status);
 	int (*read_otp_gamma)(u8 *buf, int len);
+	int (*send_esd_event)(u32 val);
 	bool (*get_tp_proxmity)(void);
+	int (*ts_multi_power_notify)(enum lcd_kit_ts_pm_type type,
+		int sync, int panel_index);
+	bool (*get_afe_status)(struct timeval *record_tv);
 };
 
 /* Function declare */

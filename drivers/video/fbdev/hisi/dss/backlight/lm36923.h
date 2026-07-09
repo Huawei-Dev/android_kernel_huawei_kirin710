@@ -1,12 +1,12 @@
 /*
-* Simple driver for Texas Instruments LM3630 LED Flash driver chip
-* Copyright (C) 2012 Texas Instruments
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 as
-* published by the Free Software Foundation.
-*
-*/
+ * Simple driver for LM36923 Backlight + Flash LED driver chip
+ * Copyright (c) 2012-2020 Huawei Technologies Co., Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ */
 
 #ifndef __LINUX_LM36923_H
 #define __LINUX_LM36923_H
@@ -54,6 +54,7 @@
 #define MASK_BL_LSB 0x07
 
 #define BL_MIN 0
+#define REG_VAL_LEN 14
 
 #ifndef BIT
 #define BIT(x)  (1<<(x))
@@ -72,33 +73,57 @@
 #define TEST_ERROR_LED3_SHORT BIT(9)
 
 #define LM36923_RW_REG_MAX 14
-#define LM36923_EMERG(msg, ...)    \
-	do { if (lm36923_msg_level > 0)  \
-		printk(KERN_EMERG "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LM36923_ALERT(msg, ...)    \
-	do { if (lm36923_msg_level > 1)  \
-		printk(KERN_ALERT "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LM36923_CRIT(msg, ...)    \
-	do { if (lm36923_msg_level > 2)  \
-		printk(KERN_CRIT "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LM36923_ERR(msg, ...)    \
-	do { if (lm36923_msg_level > 3)  \
-		printk(KERN_ERR "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
+#define LM36923_EMERG(msg, ...) \
+	do { \
+		if (lm36923_msg_level > 0) \
+			printk(KERN_EMERG "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LM36923_ALERT(msg, ...) \
+	do { \
+		if (lm36923_msg_level > 1) \
+			printk(KERN_ALERT "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LM36923_CRIT(msg, ...) \
+	do { \
+		if (lm36923_msg_level > 2) \
+			printk(KERN_CRIT "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LM36923_ERR(msg, ...) \
+	do { \
+		if (lm36923_msg_level > 3) \
+			printk(KERN_ERR "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
 #define LM36923_WARNING(msg, ...)    \
-	do { if (lm36923_msg_level > 4)  \
-		printk(KERN_WARNING "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LM36923_NOTICE(msg, ...)    \
-	do { if (lm36923_msg_level > 5)  \
-		printk(KERN_NOTICE "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LM36923_INFO(msg, ...)    \
-	do { if (lm36923_msg_level > 6)  \
-		printk(KERN_INFO "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
-#define LM36923_DEBUG(msg, ...)    \
-	do { if (lm36923_msg_level > 7)  \
-		printk(KERN_DEBUG "[lm36923]%s: "msg, __func__, ## __VA_ARGS__); } while (0)
+	do { \
+		if (lm36923_msg_level > 4) \
+			printk(KERN_WARNING "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LM36923_NOTICE(msg, ...) \
+	do { \
+		if (lm36923_msg_level > 5) \
+			printk(KERN_NOTICE "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LM36923_INFO(msg, ...) \
+	do { \
+		if (lm36923_msg_level > 6) \
+			printk(KERN_INFO "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
+#define LM36923_DEBUG(msg, ...) \
+	do { \
+		if (lm36923_msg_level > 7) \
+			printk(KERN_DEBUG "[lm36923]%s: "msg, \
+				__func__, ## __VA_ARGS__); \
+	} while (0)
 
-//0x12
-enum lm36923_pwm_filter{
+// 0x12
+enum lm36923_pwm_filter {
 	LM36923_PWM_FILTER_100 = 0x01,
 	LM36923_PWM_FILTER_150 = 0x02,
 	LM36923_PWM_FILTER_200 = 0x03,
@@ -124,7 +149,7 @@ enum lm36923_pwm_sample_rate {
 	LM36923_PWM_SAMPLE_RATE_40 = 0x40,
 	LM36923_PWM_SAMPLE_RATE_240 = 0x80,
 };
-//0x10
+// 0x10
 enum lm36923_bleds {
 	LM36923_BLED_DIASBLE_ALL = 0x00,
 	LM36923_BLED_EN_1 = 0x02,
@@ -136,7 +161,7 @@ enum lm36923_bled_mode {
 	LM36923_BLED_MODE_EXPONETIAL = 0x80,
 	LM36923_BLED_MODE_LINEAR = 0x00,
 };
-//0x11
+// 0x11
 enum lm36923_brt_mode {
 	BRT_REG_ONLY = 0x00,
 	BRT_PWM_ONLY = 0x20,
@@ -158,7 +183,7 @@ enum lm36923_brt_case {
 #define LM36923_RAMP_EN 0x10
 #define LM36923_RAMP_DIS 0x00
 
-enum lm36923_ramp_rate{
+enum lm36923_ramp_rate {
 	RAMP_RATE_0125 = 0x00,
 	RAMP_RATE_025 = 0x02,
 	RAMP_RATE_05 = 0x04,
@@ -169,8 +194,8 @@ enum lm36923_ramp_rate{
 	RAMP_RATE_16 = 0x0E,
 };
 
-#define BL_ADJ_HIGHT 	0x01
-#define BL_ADJ_LOW		0x00
+#define BL_ADJ_HIGHT 0x01
+#define BL_ADJ_LOW 0x00
 #define OVP_OCP_SHUTDOWN_ENABLE 0x04
 #define OVP_OCP_SHUTDOWN_DISABLE 0x07
 #define OCP_SHUTDOWN_OVP_DISABLE 0x05
@@ -191,8 +216,8 @@ struct lm36923_platform_data {
 	enum lm36923_bled_mode bled_mode;
 	enum lm36923_brt_mode brt_mode;
 
-	void (*pwm_set_intensity) (int brightness, int max_brightness);
-	int (*pwm_get_intensity) (void);
+	void (*pwm_set_intensity)(int brightness, int max_brightness);
+	int (*pwm_get_intensity)(void);
 };
 
 ssize_t lm36923_set_backlight_reg(uint32_t bl_level);

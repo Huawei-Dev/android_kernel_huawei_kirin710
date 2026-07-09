@@ -254,6 +254,27 @@ static int thp_mt_wrapper_ioctl_read_scene_info(unsigned long arg)
 	return 0;
 }
 
+int thp_mt_wrapper_esd_event(unsigned int status)
+{
+	struct input_dev *input_dev = g_thp_mt_wrapper->input_dev;
+
+	if (!input_dev) {
+		THP_LOG_ERR("%s:cd or input_dev is null\n", __func__);
+		return -EINVAL;
+	}
+	if (status < 0) {
+		THP_LOG_ERR("%s:status value is invalid\n", __func__);
+		return -EINVAL;
+	}
+	input_report_key(input_dev, KEY_F26, 1);
+	input_sync(input_dev);
+	input_report_key(input_dev, KEY_F26, 0);
+	input_sync(input_dev);
+	THP_LOG_INFO("%s:ESD EVENT\n", __func__);
+
+	return 0;
+}
+
 static int thp_mt_wrapper_ioctl_get_window_info(unsigned long arg)
 {
 	struct thp_window_info __user *window_info =

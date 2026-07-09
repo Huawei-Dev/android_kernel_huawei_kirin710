@@ -347,11 +347,8 @@ static enum hrtimer_restart kbasep_vinstr_dump_timer(struct hrtimer *timer)
 	 * cancelled, and the worker itself won't reschedule this timer if
 	 * suspend_count != 0.
 	 */
-#if KERNEL_VERSION(3, 16, 0) > LINUX_VERSION_CODE
-	queue_work(system_wq, &vctx->dump_work);
-#else
-	queue_work(system_highpri_wq, &vctx->dump_work);
-#endif
+	kbase_hwcnt_virtualizer_queue_work(vctx->hvirt, &vctx->dump_work);
+
 	return HRTIMER_NORESTART;
 }
 
@@ -545,11 +542,8 @@ void kbase_vinstr_resume(struct kbase_vinstr_context *vctx)
 			}
 
 			if (has_periodic_clients)
-#if KERNEL_VERSION(3, 16, 0) > LINUX_VERSION_CODE
-				queue_work(system_wq, &vctx->dump_work);
-#else
-				queue_work(system_highpri_wq, &vctx->dump_work);
-#endif
+				kbase_hwcnt_virtualizer_queue_work(
+					vctx->hvirt, &vctx->dump_work);
 		}
 	}
 
@@ -573,16 +567,6 @@ int kbase_vinstr_hwcnt_reader_setup(
 	if (errcode)
 		goto error;
 
-	errcode = anon_inode_getfd(
-		"[mali_vinstr_desc]",
-		&vinstr_client_fops,
-		vcli,
-		O_RDONLY | O_CLOEXEC);
-	if (errcode < 0)
-		goto error;
-
-	fd = errcode;
-
 	/* Add the new client. No need to reschedule worker, as not periodic */
 	mutex_lock(&vctx->lock);
 
@@ -591,7 +575,26 @@ int kbase_vinstr_hwcnt_reader_setup(
 
 	mutex_unlock(&vctx->lock);
 
+	/* Expose to user-space */
+	errcode = anon_inode_getfd(
+		"[mali_vinstr_desc]",
+		&vinstr_client_fops,
+		vcli,
+		O_RDONLY | O_CLOEXEC);
+	if (errcode < 0)
+		goto client_installed_error;
+
+	fd = errcode;
+
 	return fd;
+
+client_installed_error:
+	mutex_lock(&vctx->lock);
+
+	vctx->client_count--;
+	list_del(&vcli->node);
+
+	mutex_unlock(&vctx->lock);
 error:
 	kbasep_vinstr_client_destroy(vcli);
 	return errcode;
@@ -753,11 +756,8 @@ static long kbasep_vinstr_hwcnt_reader_ioctl_set_interval(
 	 * worker is already queued.
 	 */
 	if ((interval != 0) && (cli->vctx->suspend_count == 0))
-#if KERNEL_VERSION(3, 16, 0) > LINUX_VERSION_CODE
-		queue_work(system_wq, &cli->vctx->dump_work);
-#else
-		queue_work(system_highpri_wq, &cli->vctx->dump_work);
-#endif
+		kbase_hwcnt_virtualizer_queue_work(cli->vctx->hvirt,
+					&cli->vctx->dump_work);
 
 	mutex_unlock(&cli->vctx->lock);
 

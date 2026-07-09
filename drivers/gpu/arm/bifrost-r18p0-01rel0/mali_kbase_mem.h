@@ -105,7 +105,9 @@ struct kbase_aliased {
  * updated as part of the change.
  *
  * @kref: number of users of this alloc
- * @gpu_mappings: count number of times mapped on the GPU
+ * @gpu_mappings: count number of times mapped ont the GPU. Indicating the number
+ *                of references there are to the physical pages from different
+ *                GPU VA regions.
  * @nents: 0..N
  * @pages: N elements, only 0..nents are valid
  * @mappings: List of CPU mappings of this physical memory allocation.
@@ -285,8 +287,13 @@ struct kbase_va_region {
 #define KBASE_REG_SHARE_BOTH        (1ul << 10)
 
 /* Space for 4 different zones */
-#define KBASE_REG_ZONE_MASK         (3ul << 11)
-#define KBASE_REG_ZONE(x)           (((x) & 3) << 11)
+#define KBASE_REG_ZONE_MASK         ((KBASE_REG_ZONE_MAX - 1ul) << 11)
+#define KBASE_REG_ZONE(x)           (((x) & (KBASE_REG_ZONE_MAX - 1ul)) << 11)
+#define KBASE_REG_ZONE_IDX(x)       (((x) & KBASE_REG_ZONE_MASK) >> 11)
+
+#if ((KBASE_REG_ZONE_MAX - 1) & 0x3) != (KBASE_REG_ZONE_MAX - 1)
+#error KBASE_REG_ZONE_MAX too large for allocation of KBASE_REG_<...> bits
+#endif
 
 /* GPU read access */
 #define KBASE_REG_GPU_RD            (1ul<<13)
@@ -338,6 +345,14 @@ struct kbase_va_region {
  * e.g. in infinite cache simulation.
  */
 #define KBASE_REG_VA_FREED (1ul << 26)
+
+/* Region is transient mapped into kernel space. */
+#ifdef CONFIG_GPU_GMC_GENERIC
+#define KBASE_REG_TRANSIENT_KERNEL_MAPPING (1ul << 28)
+#define KBASE_REG_NO_GMC (KBASE_REG_DONT_NEED | KBASE_REG_NO_USER_FREE | \
+	KBASE_REG_PERMANENT_KERNEL_MAPPING | \
+	KBASE_REG_TRANSIENT_KERNEL_MAPPING)
+#endif
 
 /* Scramble memory */
 #define KBASE_REG_SCRAMBLE_BIT        (1ul << 31)
@@ -594,6 +609,9 @@ static inline int kbase_reg_prepare_native(struct kbase_va_region *reg,
 	mutex_unlock(&kctx->jit_evict_lock);
 
 	reg->flags &= ~KBASE_REG_FREE;
+
+	if (group_id != BASE_MEM_GROUP_DEFAULT)
+		kbase_ctx_flag_set(kctx, KCTX_LAST_BUFFER);
 
 	return 0;
 }
@@ -906,6 +924,18 @@ int kbase_mem_pool_grow(struct kbase_mem_pool *pool, size_t nr_to_grow);
  * If @new_size < @cur_size, shrink the pool by freeing pages to the kernel.
  */
 void kbase_mem_pool_trim(struct kbase_mem_pool *pool, size_t new_size);
+
+#ifdef CONFIG_MALI_LAST_BUFFER
+/**
+ * kbase_mem_pool_detach - Detach the pool from last buffer.
+ * @pool:     Memory pool to detach
+ *
+ * Only the device pool can detach, it will detach all the pages in @pool from last
+ * buffer and spill the pages to the pool with group id 0. If overspill, free the remaining
+ * pages to the kernel.
+ */
+int kbase_mem_pool_detach(struct kbase_mem_pool *pool);
+#endif
 
 /**
  * kbase_mem_pool_mark_dying - Mark that this pool is dying
@@ -1702,5 +1732,77 @@ void kbase_mem_umm_unmap(struct kbase_context *kctx,
 int kbase_mem_do_sync_imported(struct kbase_context *kctx,
 		struct kbase_va_region *reg, enum kbase_sync_type sync_fn);
 #endif /* CONFIG_DMA_SHARED_BUFFER */
+
+/**
+ * kbase_ctx_reg_zone_end_pfn - return the end Page Frame Number of @zone
+ * @zone: zone to query
+ *
+ * Return: The end of the zone corresponding to @zone
+ */
+static inline u64 kbase_reg_zone_end_pfn(struct kbase_reg_zone *zone)
+{
+	return zone->base_pfn + zone->va_size_pages;
+}
+
+/**
+ * kbase_ctx_reg_zone_init - initialize a zone in @kctx
+ * @kctx: Pointer to kbase context
+ * @zone_bits: A KBASE_REG_ZONE_<...> to initialize
+ * @base_pfn: Page Frame Number in GPU virtual address space for the start of
+ *            the Zone
+ * @va_size_pages: Size of the Zone in pages
+ */
+static inline void kbase_ctx_reg_zone_init(struct kbase_context *kctx,
+					   unsigned long zone_bits,
+					   u64 base_pfn, u64 va_size_pages)
+{
+	struct kbase_reg_zone *zone;
+
+	lockdep_assert_held(&kctx->reg_lock);
+	WARN_ON((zone_bits & KBASE_REG_ZONE_MASK) != zone_bits);
+
+	zone = &kctx->reg_zone[KBASE_REG_ZONE_IDX(zone_bits)];
+	*zone = (struct kbase_reg_zone){
+		.base_pfn = base_pfn, .va_size_pages = va_size_pages,
+	};
+}
+
+/**
+ * kbase_ctx_reg_zone_get_nolock - get a zone from @kctx where the caller does
+ *                                 not have @kctx 's region lock
+ * @kctx: Pointer to kbase context
+ * @zone_bits: A KBASE_REG_ZONE_<...> to retrieve
+ *
+ * This should only be used in performance-critical paths where the code is
+ * resilient to a race with the zone changing.
+ *
+ * Return: The zone corresponding to @zone_bits
+ */
+static inline struct kbase_reg_zone *
+kbase_ctx_reg_zone_get_nolock(struct kbase_context *kctx,
+			      unsigned long zone_bits)
+{
+	WARN_ON((zone_bits & KBASE_REG_ZONE_MASK) != zone_bits);
+
+	return &kctx->reg_zone[KBASE_REG_ZONE_IDX(zone_bits)];
+}
+
+/**
+ * kbase_ctx_reg_zone_get - get a zone from @kctx
+ * @kctx: Pointer to kbase context
+ * @zone_bits: A KBASE_REG_ZONE_<...> to retrieve
+ *
+ * The get is not refcounted - there is no corresponding 'put' operation
+ *
+ * Return: The zone corresponding to @zone_bits
+ */
+static inline struct kbase_reg_zone *
+kbase_ctx_reg_zone_get(struct kbase_context *kctx, unsigned long zone_bits)
+{
+	lockdep_assert_held(&kctx->reg_lock);
+	WARN_ON((zone_bits & KBASE_REG_ZONE_MASK) != zone_bits);
+
+	return &kctx->reg_zone[KBASE_REG_ZONE_IDX(zone_bits)];
+}
 
 #endif				/* _KBASE_MEM_H_ */

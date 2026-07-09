@@ -30,6 +30,7 @@
 #define BARCODE_BLOCK_LEN 16
 /* project id */
 #define PROJECT_ID_LENGTH 10
+#define FPS_ELEM_NUM 2
 
 enum oem_type {
 	PROJECT_ID_TYPE,

@@ -630,13 +630,9 @@ static int kbase_jm_enter_protected_mode(struct kbase_device *kbdev,
 
 		/* We couldn't disable atomically, so kick off a worker */
 		if (!kbdev->protected_mode_hwcnt_disabled) {
-#if KERNEL_VERSION(3, 16, 0) > LINUX_VERSION_CODE
-			queue_work(system_wq,
+			kbase_hwcnt_context_queue_work(
+				kbdev->hwcnt_gpu_ctx,
 				&kbdev->protected_mode_hwcnt_disable_work);
-#else
-			queue_work(system_highpri_wq,
-				&kbdev->protected_mode_hwcnt_disable_work);
-#endif
 			return -EAGAIN;
 		}
 
@@ -1185,7 +1181,7 @@ void kbase_gpu_complete_hw(struct kbase_device *kbdev, int js,
 					kbase_exception_name
 					(kbdev,
 					completion_code));
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 				/*benchmark data collect */
 				if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 					rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730
@@ -1490,11 +1486,10 @@ bool kbase_backend_soft_hard_stop_slot(struct kbase_device *kbdev,
 		else
 			katom_idx1_valid = false;
 	} else {
-		katom_idx0_valid = (katom_idx0 &&
-				(!kctx || katom_idx0->kctx == kctx));
-		katom_idx1_valid = (katom_idx1 &&
-				(!kctx || katom_idx1->kctx == kctx) &&
-				prio_idx0 == prio_idx1);
+		katom_idx0_valid =
+			(katom_idx0 && (!kctx || katom_idx0->kctx == kctx));
+		katom_idx1_valid =
+			(katom_idx1 && (!kctx || katom_idx1->kctx == kctx));
 	}
 
 	if (katom_idx0_valid)

@@ -18,21 +18,18 @@
 
 #include "lcd_kit_power.h"
 #include "lcd_kit_common.h"
+#ifdef CONFIG_DRM_MEDIATEK
+#include "lcd_kit_drm_panel.h"
+#else
+#include "lcd_kit_disp.h"
 #include "lcm_drv.h"
+#endif
 
+#ifndef CONFIG_DRM_MEDIATEK
 extern struct LCM_UTIL_FUNCS lcm_util_mtk;
 extern struct LCM_DRIVER lcdkit_mtk_common_panel;
 #define SET_RESET_PIN(v)	(lcm_util_mtk.set_reset_pin((v)))
-/* variable */
-/* scharg regulator */
-static struct regulator *bl_vcc;
-static struct regulator *bias_vcc;
-static struct regulator *vsn_vcc;
-static struct regulator *vsp_vcc;
-/* ldo regulator */
-static struct regulator *iovcc;
-static struct regulator *vci;
-static struct regulator *vdd;
+#endif
 /* global gpio */
 uint32_t g_lcd_kit_gpio;
 
@@ -98,6 +95,7 @@ int gpio_cmds_tx(struct gpio_desc *cmds, int cnt)
 	int ret;
 	struct gpio_desc *cm = NULL;
 	int i;
+	struct mtk_panel_info *plcd_kit_info = NULL;
 
 	if (!cmds) {
 		LCD_KIT_ERR("cmds is null point!\n");
@@ -116,7 +114,13 @@ int gpio_cmds_tx(struct gpio_desc *cmds, int cnt)
 			ret = -1;
 			goto error;
 		}
+#ifdef CONFIG_DRM_MEDIATEK
+		plcd_kit_info = lcm_get_panel_info();
+		if (plcd_kit_info != NULL)
+			*(cm->gpio) += plcd_kit_info->gpio_offset;
+#else
 		*(cm->gpio) += ((struct mtk_panel_info *)(lcdkit_mtk_common_panel.panel_info))->gpio_offset;
+#endif
 		if (cm->dtype == DTYPE_GPIO_INPUT) {
 			if (gpio_direction_input(*(cm->gpio)) != 0) {
 				LCD_KIT_ERR("failed to gpio_direction_input, lable=%s, gpio=%d!\n",
@@ -181,14 +185,22 @@ void lcd_kit_gpio_tx(uint32_t type, uint32_t op)
 		g_lcd_kit_gpio = power_hdl->lcd_vsn.buf[1];
 		break;
 	case LCD_KIT_RST:
+#ifndef CONFIG_DRM_MEDIATEK
 		if (op == GPIO_HIGH)
 			SET_RESET_PIN(1);
 		else if (op == GPIO_LOW)
 			SET_RESET_PIN(0);
+#endif
 		g_lcd_kit_gpio = power_hdl->lcd_rst.buf[1];
+		break;
+	case LCD_KIT_TP_RST:
+		g_lcd_kit_gpio = power_hdl->tp_rst.buf[1];
 		break;
 	case LCD_KIT_BL:
 		g_lcd_kit_gpio = power_hdl->lcd_backlight.buf[1];
+		break;
+	case LCD_KIT_VDD:
+		g_lcd_kit_gpio = power_hdl->lcd_vdd.buf[1];
 		break;
 	default:
 		LCD_KIT_ERR("not support type:%d\n", type);
@@ -207,6 +219,55 @@ void lcd_kit_gpio_tx(uint32_t type, uint32_t op)
 	}
 	gpio_cmds_tx(gpio_cm->cm, gpio_cm->num);
 	LCD_KIT_INFO("gpio:%d ,op:%d\n", *gpio_cm->cm->gpio, op);
+}
+
+static int lcd_kit_regulator_ctrl(char *regulator_name, uint32_t enable)
+{
+	int ret;
+	struct regulator *ldo_reg = regulator_get(NULL, regulator_name);
+
+	if (!ldo_reg) {
+		LCD_KIT_ERR("regulator_get %s failed\n", regulator_name);
+		return LCD_KIT_FAIL;
+	}
+	if (enable)
+		ret = regulator_enable(ldo_reg);
+	else
+		ret = regulator_disable(ldo_reg);
+
+	if (ret < 0) {
+		LCD_KIT_ERR("regulator_control %s failed, ret = %d\n",
+			regulator_name, ret);
+		return LCD_KIT_FAIL;
+	}
+	return LCD_KIT_OK;
+}
+
+int lcd_kit_pmu_ctrl(uint32_t type, uint32_t enable)
+{
+	int ret = LCD_KIT_FAIL;
+
+	switch (type) {
+	case LCD_KIT_VCI:
+		if (disp_info->vci_regulator_name)
+			ret = lcd_kit_regulator_ctrl(
+				disp_info->vci_regulator_name, enable);
+		break;
+	case LCD_KIT_IOVCC:
+		if (disp_info->iovcc_regulator_name)
+			ret = lcd_kit_regulator_ctrl(
+				disp_info->iovcc_regulator_name, enable);
+		break;
+	case LCD_KIT_VDD:
+		if (disp_info->vdd_regulator_name)
+			ret = lcd_kit_regulator_ctrl(
+				disp_info->vdd_regulator_name, enable);
+		break;
+	default:
+		LCD_KIT_ERR("error type\n");
+		break;
+	}
+	return ret;
 }
 
 int lcd_kit_charger_ctrl(uint32_t type, uint32_t enable)

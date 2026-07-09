@@ -22,90 +22,92 @@
 #ifdef LCD_FACTORY_MODE
 #include "lcd_kit_factory.h"
 #endif
+#include "lcd_kit_dpd.h"
+#include <base.h>
 
 #define VALUE_MAX 3
 
-static int lcd_kit_dbg_esd_support(const char *par);
-static int lcd_kit_dbg_fps_updt_support(const char *par);
-static int lcd_kit_dbg_quickly_sleep_out_support(const char *par);
-static int lcd_kit_dbg_dirty_region_support(const char *par);
-static int lcd_kit_dbg_blpwm_input_support(const char *par);
-static int lcd_kit_dbg_dsi_upt_support(const char *par);
+static int lcd_kit_dbg_esd_support(char *par);
+static int lcd_kit_dbg_fps_updt_support(char *par);
+static int lcd_kit_dbg_quickly_sleep_out_support(char *par);
+static int lcd_kit_dbg_dirty_region_support(char *par);
+static int lcd_kit_dbg_blpwm_input_support(char *par);
+static int lcd_kit_dbg_dsi_upt_support(char *par);
 #ifdef LCD_FACTORY_MODE
-static int lcd_kit_dbg_check_reg_support(const char *par);
+static int lcd_kit_dbg_check_reg_support(char *par);
 #endif
-static int lcd_kit_dbg_effect_on_support(const char *par);
-static int lcd_kit_dbg_rgbw_support(const char *par);
-static int lcd_kit_dbg_cabc_support(const char *par);
-static int lcd_kit_dbg_gamma_support(const char *par);
-static int lcd_kit_dbg_gmp_support(const char *par);
-static int lcd_kit_dbg_hiace_support(const char *par);
-static int lcd_kit_dbg_xcc_support(const char *par);
-static int lcd_kit_dbg_arsr1psharpness_support(const char *par);
-static int lcd_kit_dbg_prefixsharptwo_d_support(const char *par);
-static int lcd_kit_dbg_video_idle_mode_support(const char *par);
-static int lcd_kit_dbg_cmd_type(const char *par);
-static int lcd_kit_dbg_pxl_clk(const char *par);
-static int lcd_kit_dbg_pxl_clk_div(const char *par);
-static int lcd_kit_dbg_vsync_ctrl_type(const char *par);
-static int lcd_kit_dbg_bl_max_nit(const char *par);
-static int lcd_kit_dbg_hback_porch(const char *par);
-static int lcd_kit_dbg_hfront_porch(const char *par);
-static int lcd_kit_dbg_hpulse_width(const char *par);
-static int lcd_kit_dbg_vback_porch(const char *par);
-static int lcd_kit_dbg_vfront_porch(const char *par);
-static int lcd_kit_dbg_vpulse_width(const char *par);
-static int lcd_kit_dbg_mipi_burst_mode(const char *par);
-static int lcd_kit_dbg_mipi_max_tx_esc_clk(const char *par);
-static int lcd_kit_dbg_mipi_dsi_bit_clk(const char *par);
-static int lcd_kit_dbg_mipi_dsi_bit_clk_a(const char *par);
-static int lcd_kit_dbg_mipi_dsi_bit_clk_b(const char *par);
-static int lcd_kit_dbg_mipi_dsi_bit_clk_c(const char *par);
-static int lcd_kit_dbg_mipi_dsi_bit_clk_d(const char *par);
-static int lcd_kit_dbg_mipi_dsi_bit_clk_e(const char *par);
-static int lcd_kit_dbg_mipi_noncontinue_enable(const char *par);
-static int lcd_kit_dbg_mipi_rg_vcm_adjust(const char *par);
-static int lcd_kit_dbg_mipi_clk_post_adjust(const char *par);
-static int lcd_kit_dbg_mipi_clk_pre_adjust(const char *par);
-static int lcd_kit_dbg_mipi_clk_ths_prepare_adjust(const char *par);
-static int lcd_kit_dbg_mipi_clk_tlpx_adjust(const char *par);
-static int lcd_kit_dbg_mipi_clk_ths_trail_adjust(const char *par);
-static int lcd_kit_dbg_mipi_clk_ths_exit_adjust(const char *par);
-static int lcd_kit_dbg_mipi_clk_ths_zero_adjust(const char *par);
-static int lcd_kit_dbg_mipi_lp11_flag(const char *par);
-static int lcd_kit_dbg_mipi_phy_update(const char *par);
-static int lcd_kit_dbg_power_on_stage(const char *par);
-static int lcd_kit_dbg_lp_on_stage(const char *par);
-static int lcd_kit_dbg_hs_on_stage(const char *par);
-static int lcd_kit_dbg_hs_off_stage(const char *par);
-static int lcd_kit_dbg_lp_off_stage(const char *par);
-static int lcd_kit_dbg_power_off_stage(const char *par);
-static int lcd_kit_dbg_on_cmd(const char *par);
-static int lcd_kit_dbg_off_cmd(const char *par);
-static int lcd_kit_dbg_effect_on_cmd(const char *par);
-static int lcd_kit_dbg_cabc_off_mode(const char *par);
-static int lcd_kit_dbg_cabc_ui_mode(const char *par);
-static int lcd_kit_dbg_cabc_still_mode(const char *par);
-static int lcd_kit_dbg_cabc_moving_mode(const char *par);
-static int lcd_kit_dbg_rgbw_bl_max(const char *par);
-static int lcd_kit_dbg_rgbw_set_mode1(const char *par);
-static int lcd_kit_dbg_rgbw_set_mode2(const char *par);
-static int lcd_kit_dbg_rgbw_set_mode3(const char *par);
-static int lcd_kit_dbg_rgbw_set_mode4(const char *par);
-static int lcd_kit_dbg_rgbw_backlight_cmd(const char *par);
-static int lcd_kit_dbg_rgbw_pixel_gainlimit_cmd(const char *par);
-static int lcd_kit_dbg_esd_reg_cmd(const char *par);
-static int lcd_kit_dbg_esd_value(const char *par);
-static int lcd_kit_dbg_dirty_region_cmd(const char *par);
-static int lcd_kit_dbg_barcode_2d_cmd(const char *par);
-static int lcd_kit_dbg_brightness_color_cmd(const char *par);
-static int lcd_kit_dbg_vci_voltage(const char *par);
-static int lcd_kit_dbg_iovcc_voltage(const char *par);
-static int lcd_kit_dbg_vdd_voltage(const char *par);
-static int lcd_kit_dbg_vsp_voltage(const char *par);
-static int lcd_kit_dbg_vsn_voltage(const char *par);
-static int lcd_kit_dbg_cmd(const char *par);
-static int lcd_kit_dbg_cmdstate(const char *par);
+static int lcd_kit_dbg_effect_on_support(char *par);
+static int lcd_kit_dbg_rgbw_support(char *par);
+static int lcd_kit_dbg_cabc_support(char *par);
+static int lcd_kit_dbg_gamma_support(char *par);
+static int lcd_kit_dbg_gmp_support(char *par);
+static int lcd_kit_dbg_hiace_support(char *par);
+static int lcd_kit_dbg_xcc_support(char *par);
+static int lcd_kit_dbg_arsr1psharpness_support(char *par);
+static int lcd_kit_dbg_prefixsharptwo_d_support(char *par);
+static int lcd_kit_dbg_video_idle_mode_support(char *par);
+static int lcd_kit_dbg_cmd_type(char *par);
+static int lcd_kit_dbg_pxl_clk(char *par);
+static int lcd_kit_dbg_pxl_clk_div(char *par);
+static int lcd_kit_dbg_vsync_ctrl_type(char *par);
+static int lcd_kit_dbg_bl_max_nit(char *par);
+static int lcd_kit_dbg_hback_porch(char *par);
+static int lcd_kit_dbg_hfront_porch(char *par);
+static int lcd_kit_dbg_hpulse_width(char *par);
+static int lcd_kit_dbg_vback_porch(char *par);
+static int lcd_kit_dbg_vfront_porch(char *par);
+static int lcd_kit_dbg_vpulse_width(char *par);
+static int lcd_kit_dbg_mipi_burst_mode(char *par);
+static int lcd_kit_dbg_mipi_max_tx_esc_clk(char *par);
+static int lcd_kit_dbg_mipi_dsi_bit_clk(char *par);
+static int lcd_kit_dbg_mipi_dsi_bit_clk_a(char *par);
+static int lcd_kit_dbg_mipi_dsi_bit_clk_b(char *par);
+static int lcd_kit_dbg_mipi_dsi_bit_clk_c(char *par);
+static int lcd_kit_dbg_mipi_dsi_bit_clk_d(char *par);
+static int lcd_kit_dbg_mipi_dsi_bit_clk_e(char *par);
+static int lcd_kit_dbg_mipi_noncontinue_enable(char *par);
+static int lcd_kit_dbg_mipi_rg_vcm_adjust(char *par);
+static int lcd_kit_dbg_mipi_clk_post_adjust(char *par);
+static int lcd_kit_dbg_mipi_clk_pre_adjust(char *par);
+static int lcd_kit_dbg_mipi_clk_ths_prepare_adjust(char *par);
+static int lcd_kit_dbg_mipi_clk_tlpx_adjust(char *par);
+static int lcd_kit_dbg_mipi_clk_ths_trail_adjust(char *par);
+static int lcd_kit_dbg_mipi_clk_ths_exit_adjust(char *par);
+static int lcd_kit_dbg_mipi_clk_ths_zero_adjust(char *par);
+static int lcd_kit_dbg_mipi_lp11_flag(char *par);
+static int lcd_kit_dbg_mipi_phy_update(char *par);
+static int lcd_kit_dbg_power_on_stage(char *par);
+static int lcd_kit_dbg_lp_on_stage(char *par);
+static int lcd_kit_dbg_hs_on_stage(char *par);
+static int lcd_kit_dbg_hs_off_stage(char *par);
+static int lcd_kit_dbg_lp_off_stage(char *par);
+static int lcd_kit_dbg_power_off_stage(char *par);
+static int lcd_kit_dbg_on_cmd(char *par);
+static int lcd_kit_dbg_off_cmd(char *par);
+static int lcd_kit_dbg_effect_on_cmd(char *par);
+static int lcd_kit_dbg_cabc_off_mode(char *par);
+static int lcd_kit_dbg_cabc_ui_mode(char *par);
+static int lcd_kit_dbg_cabc_still_mode(char *par);
+static int lcd_kit_dbg_cabc_moving_mode(char *par);
+static int lcd_kit_dbg_rgbw_bl_max(char *par);
+static int lcd_kit_dbg_rgbw_set_mode1(char *par);
+static int lcd_kit_dbg_rgbw_set_mode2(char *par);
+static int lcd_kit_dbg_rgbw_set_mode3(char *par);
+static int lcd_kit_dbg_rgbw_set_mode4(char *par);
+static int lcd_kit_dbg_rgbw_backlight_cmd(char *par);
+static int lcd_kit_dbg_rgbw_pixel_gainlimit_cmd(char *par);
+static int lcd_kit_dbg_esd_reg_cmd(char *par);
+static int lcd_kit_dbg_esd_value(char *par);
+static int lcd_kit_dbg_dirty_region_cmd(char *par);
+static int lcd_kit_dbg_barcode_2d_cmd(char *par);
+static int lcd_kit_dbg_brightness_color_cmd(char *par);
+static int lcd_kit_dbg_vci_voltage(char *par);
+static int lcd_kit_dbg_iovcc_voltage(char *par);
+static int lcd_kit_dbg_vdd_voltage(char *par);
+static int lcd_kit_dbg_vsp_voltage(char *par);
+static int lcd_kit_dbg_vsn_voltage(char *par);
+static int lcd_kit_dbg_cmd(char *par);
+static int lcd_kit_dbg_cmdstate(char *par);
 
 struct lcd_kit_dbg_func item_func[] = {
 	{ "PanelEsdSupport", lcd_kit_dbg_esd_support },
@@ -353,7 +355,7 @@ static int lcd_kit_str_start_with(const char *str, const char *sub)
 	return ((strncmp(str, sub, strlen(sub)) == 0) ? 0 : -1);
 }
 
-static int lcd_kit_str_to_del_invalid_ch(char *str)
+int lcd_kit_str_to_del_invalid_ch(char *str)
 {
 	char *tmp = str;
 
@@ -372,7 +374,7 @@ static int lcd_kit_str_to_del_invalid_ch(char *str)
 	return 0;
 }
 
-static int lcd_kit_str_to_del_ch(char *str, char ch)
+int lcd_kit_str_to_del_ch(char *str, char ch)
 {
 	char *tmp = str;
 
@@ -391,7 +393,7 @@ static int lcd_kit_str_to_del_ch(char *str, char ch)
 }
 
 /* parse config xml */
-static int lcd_kit_parse_u8_digit(const char *in, char *out, int max)
+int lcd_kit_parse_u8_digit(char *in, char *out, int max)
 {
 	unsigned char ch = '\0';
 	unsigned char last_char = 'Z';
@@ -444,7 +446,7 @@ static int lcd_kit_parse_u8_digit(const char *in, char *out, int max)
 	return j;
 }
 
-static int lcd_kit_parse_u32_digit(char *in, unsigned int *out, int len)
+int lcd_kit_parse_u32_digit(char *in, unsigned int *out, int len)
 {
 	char *delim = ",";
 	int i = 0;
@@ -611,7 +613,7 @@ void lcd_kit_dbg_free(void)
 	kfree(lcd_kit_dbg.dbg_power_on_array);
 }
 
-static int lcd_kit_dbg_esd_support(const char *par)
+static int lcd_kit_dbg_esd_support(char *par)
 {
 	char ch;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -635,7 +637,7 @@ static int lcd_kit_dbg_esd_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_fps_updt_support(const char *par)
+static int lcd_kit_dbg_fps_updt_support(char *par)
 {
 	char ch;
 	int value;
@@ -658,7 +660,7 @@ static int lcd_kit_dbg_fps_updt_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_quickly_sleep_out_support(const char *par)
+static int lcd_kit_dbg_quickly_sleep_out_support(char *par)
 {
 	char ch;
 	int value;
@@ -681,7 +683,7 @@ static int lcd_kit_dbg_quickly_sleep_out_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_dirty_region_support(const char *par)
+static int lcd_kit_dbg_dirty_region_support(char *par)
 {
 	char ch;
 	int value;
@@ -703,7 +705,7 @@ static int lcd_kit_dbg_dirty_region_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_blpwm_input_support(const char *par)
+static int lcd_kit_dbg_blpwm_input_support(char *par)
 {
 	char ch;
 	int value;
@@ -726,7 +728,7 @@ static int lcd_kit_dbg_blpwm_input_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_dsi_upt_support(const char *par)
+static int lcd_kit_dbg_dsi_upt_support(char *par)
 {
 	char ch;
 	int value;
@@ -750,7 +752,7 @@ static int lcd_kit_dbg_dsi_upt_support(const char *par)
 }
 
 #ifdef LCD_FACTORY_MODE
-static int lcd_kit_dbg_check_reg_support(const char *par)
+static int lcd_kit_dbg_check_reg_support(char *par)
 {
 	char ch;
 	int value;
@@ -767,13 +769,13 @@ static int lcd_kit_dbg_check_reg_support(const char *par)
 	}
 	ch = *par;
 	value = lcd_kit_hex_char_to_value(ch);
-	g_fact_info.check_reg.support = value;
+	FACT_INFO->check_reg.support = value;
 	LCD_KIT_INFO("value = %d\n", value);
 	return LCD_KIT_OK;
 }
 #endif
 
-static int lcd_kit_dbg_effect_on_support(const char *par)
+static int lcd_kit_dbg_effect_on_support(char *par)
 {
 	char ch;
 	int value;
@@ -795,7 +797,7 @@ static int lcd_kit_dbg_effect_on_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_support(const char *par)
+static int lcd_kit_dbg_rgbw_support(char *par)
 {
 	char ch;
 	int value;
@@ -818,7 +820,7 @@ static int lcd_kit_dbg_rgbw_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_cabc_support(const char *par)
+static int lcd_kit_dbg_cabc_support(char *par)
 {
 	char ch;
 	int value;
@@ -840,7 +842,7 @@ static int lcd_kit_dbg_cabc_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_gamma_support(const char *par)
+static int lcd_kit_dbg_gamma_support(char *par)
 {
 	char ch;
 	int value;
@@ -863,7 +865,7 @@ static int lcd_kit_dbg_gamma_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_gmp_support(const char *par)
+static int lcd_kit_dbg_gmp_support(char *par)
 {
 	char ch;
 	int value;
@@ -886,7 +888,7 @@ static int lcd_kit_dbg_gmp_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_hiace_support(const char *par)
+static int lcd_kit_dbg_hiace_support(char *par)
 {
 	char ch;
 	int value;
@@ -909,7 +911,7 @@ static int lcd_kit_dbg_hiace_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_xcc_support(const char *par)
+static int lcd_kit_dbg_xcc_support(char *par)
 {
 	char ch;
 	int value;
@@ -932,7 +934,7 @@ static int lcd_kit_dbg_xcc_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_arsr1psharpness_support(const char *par)
+static int lcd_kit_dbg_arsr1psharpness_support(char *par)
 {
 	char ch;
 	int value;
@@ -955,7 +957,7 @@ static int lcd_kit_dbg_arsr1psharpness_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_prefixsharptwo_d_support(const char *par)
+static int lcd_kit_dbg_prefixsharptwo_d_support(char *par)
 {
 	char ch;
 	int value;
@@ -978,7 +980,7 @@ static int lcd_kit_dbg_prefixsharptwo_d_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_video_idle_mode_support(const char *par)
+static int lcd_kit_dbg_video_idle_mode_support(char *par)
 {
 	int value;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -999,7 +1001,7 @@ static int lcd_kit_dbg_video_idle_mode_support(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_cmd_type(const char *par)
+static int lcd_kit_dbg_cmd_type(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1016,7 +1018,7 @@ static int lcd_kit_dbg_cmd_type(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_pxl_clk(const char *par)
+static int lcd_kit_dbg_pxl_clk(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1033,7 +1035,7 @@ static int lcd_kit_dbg_pxl_clk(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_pxl_clk_div(const char *par)
+static int lcd_kit_dbg_pxl_clk_div(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1050,7 +1052,7 @@ static int lcd_kit_dbg_pxl_clk_div(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_vsync_ctrl_type(const char *par)
+static int lcd_kit_dbg_vsync_ctrl_type(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1067,7 +1069,7 @@ static int lcd_kit_dbg_vsync_ctrl_type(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_bl_max_nit(const char *par)
+static int lcd_kit_dbg_bl_max_nit(char *par)
 {
 	int value = 0;
 
@@ -1077,7 +1079,7 @@ static int lcd_kit_dbg_bl_max_nit(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_hback_porch(const char *par)
+static int lcd_kit_dbg_hback_porch(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1094,7 +1096,7 @@ static int lcd_kit_dbg_hback_porch(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_hfront_porch(const char *par)
+static int lcd_kit_dbg_hfront_porch(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1111,7 +1113,7 @@ static int lcd_kit_dbg_hfront_porch(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_hpulse_width(const char *par)
+static int lcd_kit_dbg_hpulse_width(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1128,7 +1130,7 @@ static int lcd_kit_dbg_hpulse_width(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_vback_porch(const char *par)
+static int lcd_kit_dbg_vback_porch(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1145,7 +1147,7 @@ static int lcd_kit_dbg_vback_porch(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_vfront_porch(const char *par)
+static int lcd_kit_dbg_vfront_porch(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1162,7 +1164,7 @@ static int lcd_kit_dbg_vfront_porch(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_vpulse_width(const char *par)
+static int lcd_kit_dbg_vpulse_width(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1179,7 +1181,7 @@ static int lcd_kit_dbg_vpulse_width(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_burst_mode(const char *par)
+static int lcd_kit_dbg_mipi_burst_mode(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1196,7 +1198,7 @@ static int lcd_kit_dbg_mipi_burst_mode(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_max_tx_esc_clk(const char *par)
+static int lcd_kit_dbg_mipi_max_tx_esc_clk(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1213,7 +1215,7 @@ static int lcd_kit_dbg_mipi_max_tx_esc_clk(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_dsi_bit_clk(const char *par)
+static int lcd_kit_dbg_mipi_dsi_bit_clk(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1230,7 +1232,7 @@ static int lcd_kit_dbg_mipi_dsi_bit_clk(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_dsi_bit_clk_a(const char *par)
+static int lcd_kit_dbg_mipi_dsi_bit_clk_a(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1247,7 +1249,7 @@ static int lcd_kit_dbg_mipi_dsi_bit_clk_a(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_dsi_bit_clk_b(const char *par)
+static int lcd_kit_dbg_mipi_dsi_bit_clk_b(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1264,7 +1266,7 @@ static int lcd_kit_dbg_mipi_dsi_bit_clk_b(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_dsi_bit_clk_c(const char *par)
+static int lcd_kit_dbg_mipi_dsi_bit_clk_c(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1281,7 +1283,7 @@ static int lcd_kit_dbg_mipi_dsi_bit_clk_c(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_dsi_bit_clk_d(const char *par)
+static int lcd_kit_dbg_mipi_dsi_bit_clk_d(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1298,7 +1300,7 @@ static int lcd_kit_dbg_mipi_dsi_bit_clk_d(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_dsi_bit_clk_e(const char *par)
+static int lcd_kit_dbg_mipi_dsi_bit_clk_e(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1315,7 +1317,7 @@ static int lcd_kit_dbg_mipi_dsi_bit_clk_e(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_noncontinue_enable(const char *par)
+static int lcd_kit_dbg_mipi_noncontinue_enable(char *par)
 {
 	char ch;
 	int value;
@@ -1338,7 +1340,7 @@ static int lcd_kit_dbg_mipi_noncontinue_enable(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_rg_vcm_adjust(const char *par)
+static int lcd_kit_dbg_mipi_rg_vcm_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1355,7 +1357,7 @@ static int lcd_kit_dbg_mipi_rg_vcm_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_clk_post_adjust(const char *par)
+static int lcd_kit_dbg_mipi_clk_post_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1372,7 +1374,7 @@ static int lcd_kit_dbg_mipi_clk_post_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_clk_pre_adjust(const char *par)
+static int lcd_kit_dbg_mipi_clk_pre_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1389,7 +1391,7 @@ static int lcd_kit_dbg_mipi_clk_pre_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_clk_ths_prepare_adjust(const char *par)
+static int lcd_kit_dbg_mipi_clk_ths_prepare_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1406,7 +1408,7 @@ static int lcd_kit_dbg_mipi_clk_ths_prepare_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_clk_tlpx_adjust(const char *par)
+static int lcd_kit_dbg_mipi_clk_tlpx_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1423,7 +1425,7 @@ static int lcd_kit_dbg_mipi_clk_tlpx_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_clk_ths_trail_adjust(const char *par)
+static int lcd_kit_dbg_mipi_clk_ths_trail_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1440,7 +1442,7 @@ static int lcd_kit_dbg_mipi_clk_ths_trail_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_clk_ths_exit_adjust(const char *par)
+static int lcd_kit_dbg_mipi_clk_ths_exit_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1457,7 +1459,7 @@ static int lcd_kit_dbg_mipi_clk_ths_exit_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_clk_ths_zero_adjust(const char *par)
+static int lcd_kit_dbg_mipi_clk_ths_zero_adjust(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1474,7 +1476,7 @@ static int lcd_kit_dbg_mipi_clk_ths_zero_adjust(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_lp11_flag(const char *par)
+static int lcd_kit_dbg_mipi_lp11_flag(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1491,7 +1493,7 @@ static int lcd_kit_dbg_mipi_lp11_flag(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_mipi_phy_update(const char *par)
+static int lcd_kit_dbg_mipi_phy_update(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1508,7 +1510,7 @@ static int lcd_kit_dbg_mipi_phy_update(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_power_on_stage(const char *par)
+static int lcd_kit_dbg_power_on_stage(char *par)
 {
 	struct lcd_kit_array_data *temp_arry = NULL;
 	int i;
@@ -1553,7 +1555,7 @@ static int lcd_kit_dbg_power_on_stage(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_lp_on_stage(const char *par)
+static int lcd_kit_dbg_lp_on_stage(char *par)
 {
 	struct lcd_kit_array_data *temp_arry = NULL;
 	int i;
@@ -1598,7 +1600,7 @@ static int lcd_kit_dbg_lp_on_stage(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_hs_on_stage(const char *par)
+static int lcd_kit_dbg_hs_on_stage(char *par)
 {
 	struct lcd_kit_array_data *temp_arry = NULL;
 	int i;
@@ -1644,7 +1646,7 @@ static int lcd_kit_dbg_hs_on_stage(const char *par)
 }
 
 
-static int lcd_kit_dbg_hs_off_stage(const char *par)
+static int lcd_kit_dbg_hs_off_stage(char *par)
 {
 	struct lcd_kit_array_data *temp_arry = NULL;
 	int i;
@@ -1689,7 +1691,7 @@ static int lcd_kit_dbg_hs_off_stage(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_lp_off_stage(const char *par)
+static int lcd_kit_dbg_lp_off_stage(char *par)
 {
 	struct lcd_kit_array_data *temp_arry = NULL;
 	int i;
@@ -1734,7 +1736,7 @@ static int lcd_kit_dbg_lp_off_stage(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_power_off_stage(const char *par)
+static int lcd_kit_dbg_power_off_stage(char *par)
 {
 	struct lcd_kit_array_data *temp_arry = NULL;
 	int i;
@@ -1779,7 +1781,7 @@ static int lcd_kit_dbg_power_off_stage(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_on_cmd(const char *par)
+static int lcd_kit_dbg_on_cmd(char *par)
 {
 	int len;
 
@@ -1790,14 +1792,13 @@ static int lcd_kit_dbg_on_cmd(const char *par)
 	}
 	len = lcd_kit_parse_u8_digit(par, lcd_kit_dbg.dbg_on_cmds,
 		LCD_KIT_CONFIG_TABLE_MAX_NUM);
-	if (len > 0) {
+	if (len > 0)
 		lcd_kit_dbg_parse_cmd(&common_info->panel_on_cmds,
 			lcd_kit_dbg.dbg_on_cmds, len);
-	}
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_off_cmd(const char *par)
+static int lcd_kit_dbg_off_cmd(char *par)
 {
 	int len;
 
@@ -1808,14 +1809,13 @@ static int lcd_kit_dbg_off_cmd(const char *par)
 	}
 	len = lcd_kit_parse_u8_digit(par, lcd_kit_dbg.dbg_off_cmds,
 		LCD_KIT_CMD_MAX_NUM);
-	if (len > 0) {
+	if (len > 0)
 		lcd_kit_dbg_parse_cmd(&common_info->panel_off_cmds,
 			lcd_kit_dbg.dbg_off_cmds, len);
-	}
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_effect_on_cmd(const char *par)
+static int lcd_kit_dbg_effect_on_cmd(char *par)
 {
 	int len;
 
@@ -1826,15 +1826,14 @@ static int lcd_kit_dbg_effect_on_cmd(const char *par)
 	}
 	len = lcd_kit_parse_u8_digit(par, lcd_kit_dbg.dbg_effect_on_cmds,
 		LCD_KIT_CONFIG_TABLE_MAX_NUM);
-	if (len > 0) {
+	if (len > 0)
 		lcd_kit_dbg_parse_cmd(&common_info->effect_on.cmds,
 			lcd_kit_dbg.dbg_effect_on_cmds, len);
-	}
 	return LCD_KIT_OK;
 }
 
 static struct lcd_kit_dsi_panel_cmds dbgcmds;
-static int lcd_kit_dbg_cmd(const char *par)
+static int lcd_kit_dbg_cmd(char *par)
 {
 #define LCD_DDIC_INFO_LEN 200
 #define PRI_LINE_LEN 8
@@ -1889,7 +1888,7 @@ static int lcd_kit_dbg_cmd(const char *par)
 	return LCD_KIT_FAIL;
 }
 
-static int lcd_kit_dbg_cmdstate(const char *par)
+static int lcd_kit_dbg_cmdstate(char *par)
 {
 	if (!par) {
 		LCD_KIT_ERR("par is null\n");
@@ -1900,7 +1899,7 @@ static int lcd_kit_dbg_cmdstate(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_cabc_off_mode(const char *par)
+static int lcd_kit_dbg_cabc_off_mode(char *par)
 {
 	int len;
 
@@ -1917,7 +1916,7 @@ static int lcd_kit_dbg_cabc_off_mode(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_cabc_ui_mode(const char *par)
+static int lcd_kit_dbg_cabc_ui_mode(char *par)
 {
 	int len;
 
@@ -1934,7 +1933,7 @@ static int lcd_kit_dbg_cabc_ui_mode(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_cabc_still_mode(const char *par)
+static int lcd_kit_dbg_cabc_still_mode(char *par)
 {
 	int len;
 
@@ -1951,7 +1950,7 @@ static int lcd_kit_dbg_cabc_still_mode(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_cabc_moving_mode(const char *par)
+static int lcd_kit_dbg_cabc_moving_mode(char *par)
 {
 	int len;
 
@@ -1968,7 +1967,7 @@ static int lcd_kit_dbg_cabc_moving_mode(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_bl_max(const char *par)
+static int lcd_kit_dbg_rgbw_bl_max(char *par)
 {
 	int value = 0;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -1985,7 +1984,7 @@ static int lcd_kit_dbg_rgbw_bl_max(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_set_mode1(const char *par)
+static int lcd_kit_dbg_rgbw_set_mode1(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2007,7 +2006,7 @@ static int lcd_kit_dbg_rgbw_set_mode1(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_set_mode2(const char *par)
+static int lcd_kit_dbg_rgbw_set_mode2(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2029,7 +2028,7 @@ static int lcd_kit_dbg_rgbw_set_mode2(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_set_mode3(const char *par)
+static int lcd_kit_dbg_rgbw_set_mode3(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2051,7 +2050,7 @@ static int lcd_kit_dbg_rgbw_set_mode3(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_set_mode4(const char *par)
+static int lcd_kit_dbg_rgbw_set_mode4(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2073,7 +2072,7 @@ static int lcd_kit_dbg_rgbw_set_mode4(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_backlight_cmd(const char *par)
+static int lcd_kit_dbg_rgbw_backlight_cmd(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2095,7 +2094,7 @@ static int lcd_kit_dbg_rgbw_backlight_cmd(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_rgbw_pixel_gainlimit_cmd(const char *par)
+static int lcd_kit_dbg_rgbw_pixel_gainlimit_cmd(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2117,7 +2116,7 @@ static int lcd_kit_dbg_rgbw_pixel_gainlimit_cmd(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_esd_reg_cmd(const char *par)
+static int lcd_kit_dbg_esd_reg_cmd(char *par)
 {
 	int len;
 
@@ -2133,7 +2132,7 @@ static int lcd_kit_dbg_esd_reg_cmd(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_esd_value(const char *par)
+static int lcd_kit_dbg_esd_value(char *par)
 {
 	int i;
 	int cnt;
@@ -2149,7 +2148,7 @@ static int lcd_kit_dbg_esd_value(const char *par)
 	return 0;
 }
 
-static int lcd_kit_dbg_dirty_region_cmd(const char *par)
+static int lcd_kit_dbg_dirty_region_cmd(char *par)
 {
 	int len;
 
@@ -2160,14 +2159,13 @@ static int lcd_kit_dbg_dirty_region_cmd(const char *par)
 	}
 	len = lcd_kit_parse_u8_digit(par, lcd_kit_dbg.dbg_dirty_region_cmds,
 		LCD_KIT_CMD_MAX_NUM);
-	if (len > 0) {
+	if (len > 0)
 		lcd_kit_dbg_parse_cmd(&common_info->dirty_region.cmds,
 			lcd_kit_dbg.dbg_dirty_region_cmds, len);
-	}
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_barcode_2d_cmd(const char *par)
+static int lcd_kit_dbg_barcode_2d_cmd(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2189,7 +2187,7 @@ static int lcd_kit_dbg_barcode_2d_cmd(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_brightness_color_cmd(const char *par)
+static int lcd_kit_dbg_brightness_color_cmd(char *par)
 {
 	int len;
 	struct lcd_kit_dbg_ops *dbg_ops = NULL;
@@ -2211,7 +2209,7 @@ static int lcd_kit_dbg_brightness_color_cmd(const char *par)
 	return LCD_KIT_OK;
 }
 
-static int lcd_kit_dbg_vci_voltage(const char *par)
+static int lcd_kit_dbg_vci_voltage(char *par)
 {
 	int i;
 	int cnt;
@@ -2240,7 +2238,7 @@ static int lcd_kit_dbg_vci_voltage(const char *par)
 	return 0;
 }
 
-static int lcd_kit_dbg_iovcc_voltage(const char *par)
+static int lcd_kit_dbg_iovcc_voltage(char *par)
 {
 	int i;
 	int cnt;
@@ -2269,7 +2267,7 @@ static int lcd_kit_dbg_iovcc_voltage(const char *par)
 	return 0;
 }
 
-static int lcd_kit_dbg_vdd_voltage(const char *par)
+static int lcd_kit_dbg_vdd_voltage(char *par)
 {
 	int i;
 	int cnt;
@@ -2298,7 +2296,7 @@ static int lcd_kit_dbg_vdd_voltage(const char *par)
 	return 0;
 }
 
-static int lcd_kit_dbg_vsp_voltage(const char *par)
+static int lcd_kit_dbg_vsp_voltage(char *par)
 {
 	int i;
 	int cnt;
@@ -2331,16 +2329,15 @@ static int lcd_kit_dbg_vsp_voltage(const char *par)
 			dbg_ops->set_voltage();
 	} else if (power_hdl->lcd_vsp.buf &&
 		power_hdl->lcd_vsp.buf[POWER_MODE] == GPIO_MODE) {
-		if (bias_ops->dbg_set_bias_voltage) {
+		if (bias_ops->dbg_set_bias_voltage)
 			bias_ops->dbg_set_bias_voltage(
 				power_hdl->lcd_vsp.buf[POWER_VOL],
 				power_hdl->lcd_vsn.buf[POWER_VOL]);
-		}
 	}
 	return 0;
 }
 
-static int lcd_kit_dbg_vsn_voltage(const char *par)
+static int lcd_kit_dbg_vsn_voltage(char *par)
 {
 	int i;
 	int cnt;
@@ -2561,21 +2558,21 @@ int lcd_kit_dbg_parse_config(void)
 	}
 	ret = parse_fd(&fd, data, item_name, tmp_name);
 	if (ret < 0) {
-		LCD_KIT_INFO("parse success\n");
+		LCD_KIT_INFO("parse fail\n");
 		sys_close(fd);
 		set_fs(fs);
 		kfree(data);
 		kfree(item_name);
 		kfree(tmp_name);
-		return LCD_KIT_OK;
+		return LCD_KIT_FAIL;
 	}
-	LCD_KIT_INFO("parse fail\n");
+	LCD_KIT_INFO("parse success\n");
 	sys_close(fd);
 	set_fs(fs);
 	kfree(data);
 	kfree(item_name);
 	kfree(tmp_name);
-	return LCD_KIT_FAIL;
+	return LCD_KIT_OK;
 }
 
 /* open function */
@@ -2748,3 +2745,811 @@ err_create_mipi:
 err_create_dir:
 	return LCD_KIT_FAIL;
 }
+
+/*
+ * lcd dpd
+ */
+int file_sys_is_ready(void)
+{
+	int fd = -1;
+	int ret;
+	struct device_node *np = NULL;
+	char *lcd_name = NULL;
+	char xml_name[XML_FILE_MAX];
+
+	np = of_find_compatible_node(NULL, NULL, "huawei,lcd_panel_type");
+	if (!np) {
+		LCD_KIT_ERR("NOT FOUND device node %s!\n",
+			"huawei,lcd_panel_type");
+		return LCD_KIT_FAIL;
+	}
+	lcd_name = (char *)of_get_property(np, "lcd_panel_type", NULL);
+	if (!lcd_name) {
+		LCD_KIT_ERR("can not get lcd kit compatible\n");
+		return LCD_KIT_FAIL;
+	}
+	memset(xml_name, 0, sizeof(xml_name));
+	ret = snprintf(xml_name, XML_FILE_MAX, "/odm/lcd/%s.xml", lcd_name);
+	if (ret < 0) {
+		LCD_KIT_ERR("snprintf error: %s\n", xml_name);
+		return LCD_KIT_FAIL;
+	}
+	fd = sys_access(xml_name, 0);
+	if (fd) {
+		LCD_KIT_ERR("can not access file %d %s!\n", fd, xml_name);
+		return LCD_KIT_FAIL;
+	}
+	return LCD_KIT_OK;
+}
+
+struct delayed_work detect_fs_work;
+int g_dpd_enter;
+void detect_fs_wq_handler(struct work_struct *work)
+{
+	if (file_sys_is_ready()) {
+		LCD_KIT_INFO("sysfs is not ready!\n");
+		device_unblock_probing();
+		/* delay 500ms schedule work */
+		schedule_delayed_work(&detect_fs_work, msecs_to_jiffies(500));
+		return;
+	}
+	LCD_KIT_INFO("sysfs is ready!\n");
+	g_dpd_enter = 1; // lcd dpd is ok, entry lcd dpd mode
+	device_unblock_probing();
+}
+
+/* previous attribute name in xml file */
+unsigned char item_name[LCD_KIT_ITEM_NAME_MAX];
+/* attribute name char count */
+static int item_cnt;
+/* attribute data char count */
+static int data_cnt;
+/* parse xml file status varial */
+static int par_status = PARSE_HEAD;
+static int receive_data(int status, const char *ch, char *out, int len)
+{
+	switch (status) {
+	case PARSE_HEAD:
+		if (is_valid_char(*ch)) {
+			if (item_cnt >= LCD_KIT_ITEM_NAME_MAX) {
+				LCD_KIT_ERR("item is too long\n");
+				return LCD_KIT_FAIL;
+			}
+			item_name[item_cnt++] = *ch;
+		}
+		break;
+	case RECEIVE_DATA:
+		if (data_cnt >= len) {
+			LCD_KIT_ERR("data is too long\n");
+			return LCD_KIT_FAIL;
+		}
+		out[data_cnt++] = *ch;
+		break;
+	case NOT_MATCH:
+	case PARSE_FINAL:
+	case INVALID_DATA:
+		break;
+	default:
+		break;
+	}
+	return LCD_KIT_OK;
+}
+
+static int parse_char(const char *item, const char *ch,
+	char *out, int len, int *find)
+{
+	int item_len;
+	int tmp_len;
+
+	switch (*ch) {
+	case '<':
+		if (par_status == RECEIVE_DATA) {
+			*find = 1;
+			return LCD_KIT_OK;
+		}
+		par_status = PARSE_HEAD;
+		data_cnt = 0;
+		item_cnt = 0;
+		memset(item_name, 0, LCD_KIT_ITEM_NAME_MAX);
+		break;
+	case '>':
+		if (par_status == PARSE_HEAD) {
+			tmp_len = strlen(item_name);
+			item_len = strlen(item);
+			if ((tmp_len != item_len) ||
+				strncmp(item_name, item, tmp_len)) {
+				par_status = NOT_MATCH;
+				return LCD_KIT_OK;
+			}
+			item_cnt = 0;
+			par_status = RECEIVE_DATA;
+		}
+		break;
+	case '/':
+		par_status = PARSE_FINAL;
+		break;
+	case '!':
+		if (par_status == PARSE_HEAD)
+			par_status = INVALID_DATA;
+		break;
+	default:
+		receive_data(par_status, ch, out, len);
+		break;
+	}
+	return LCD_KIT_OK;
+}
+
+static int parse_open(const char *path)
+{
+	int ret;
+	int fd = -1;
+
+	set_fs(get_ds()); //lint !e501
+	fd = sys_open((const char __force *)path, O_RDONLY, 0);
+	if (fd < 0) {
+		LCD_KIT_ERR("%s file doesn't exsit\n", path);
+		return LCD_KIT_FAIL;
+	}
+	ret = sys_lseek(fd, (off_t)0, 0);
+	if (ret < 0) {
+		LCD_KIT_ERR("sys_lseek error!\n");
+		sys_close(fd);
+		return LCD_KIT_FAIL;
+	}
+	return fd;
+}
+
+static int parse_xml(const char *path, const char *item, char *out, int len)
+{
+	char ch = '\0';
+	int ret;
+	int cur_seek = 0;
+	int find = 0;
+	int fd = -1;
+	mm_segment_t fs;
+
+	if (!out) {
+		LCD_KIT_ERR("null pointer\n");
+		return LCD_KIT_FAIL;
+	}
+	fs = get_fs(); /* save previous value */
+	fd = parse_open(path);
+	if (fd < 0) {
+		LCD_KIT_ERR("open file:%s fail!\n", path);
+		set_fs(fs);
+		return LCD_KIT_FAIL;
+	}
+	par_status = PARSE_HEAD;
+	while (1) {
+		/* read 1 char from file */
+		if ((unsigned int)sys_read(fd, &ch, 1) != 1) {
+			LCD_KIT_INFO("it's end of file\n");
+			break;
+		}
+		cur_seek++;
+		ret = sys_lseek(fd, (off_t)cur_seek, 0);
+		if (ret < 0) {
+			LCD_KIT_ERR("sys_lseek error!\n");
+			break;
+		}
+		ret = parse_char(item, &ch, out, len, &find);
+		if (ret < 0) {
+			LCD_KIT_ERR("parse ch error!\n");
+			break;
+		}
+		if (find) {
+			LCD_KIT_INFO("find item:%s = %s\n", item, out);
+			break;
+		}
+		continue;
+	}
+	if (find)
+		ret = LCD_KIT_OK;
+	else
+		ret = LCD_KIT_FAIL;
+	set_fs(fs);
+	sys_close(fd);
+	return ret;
+}
+
+static int stat_value_count(const char *in)
+{
+	char ch;
+	int cnt_num = 1;
+	int len;
+	int i = 0;
+
+	if (!in) {
+		LCD_KIT_ERR("in or out is null\n");
+		return LCD_KIT_FAIL;
+	}
+	len = strlen(in);
+	while (len--) {
+		ch = in[i++];
+		if (ch != ',' && ch != '\n')
+			continue;
+		cnt_num++; // calculate data number separate use ', '
+	}
+	return cnt_num;
+}
+
+static char *str_convert(const char *item)
+{
+	int i;
+	int len;
+	int tmp_len;
+	const int array_size = ARRAY_SIZE(xml_string_name_map);
+
+	tmp_len = strlen(item);
+	for (i = 0; i < array_size; i++) {
+		len = strlen(xml_string_name_map[i].dtsi_string_name);
+		if (tmp_len != len)
+			continue;
+		if (!strncmp(item,
+			xml_string_name_map[i].dtsi_string_name, len))
+			return xml_string_name_map[i].xml_string_name;
+	}
+	LCD_KIT_INFO("not find item:%s\n", item);
+	return NULL;
+}
+
+static int parse_u32(const char *path, const char *item,
+	unsigned int *out, unsigned int def)
+{
+	int ret;
+	char *data = NULL;
+	unsigned int value = 0;
+	/*
+	 * request (0xffffffff->4294967295) max 10 byte to save
+	 * string and 1 byte to save '\0'
+	 */
+	const int u32_str_size = 11;
+
+	data = kzalloc(u32_str_size, 0);
+	if (!data) {
+		LCD_KIT_ERR("data kzalloc fail\n");
+		return LCD_KIT_FAIL;
+	}
+	*out = def;
+	ret = parse_xml(path, item, data, u32_str_size);
+	if (ret < 0) {
+		LCD_KIT_INFO("parse fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	/* parse 1 digit */
+	lcd_kit_parse_u32_digit(data, &value, 1);
+	*out = value;
+	kfree(data);
+	return LCD_KIT_OK;
+}
+
+static int parse_u8(const char *path, const char *item,
+	unsigned char *out, unsigned char def)
+{
+	int ret;
+	char *data = NULL;
+	unsigned int value = 0;
+
+	data = kzalloc(sizeof(unsigned int), 0);
+	if (!data) {
+		LCD_KIT_ERR("data kzalloc fail\n");
+		return LCD_KIT_FAIL;
+	}
+	*out = def;
+	ret = parse_xml(path, item, data, sizeof(unsigned int));
+	if (ret < 0) {
+		LCD_KIT_INFO("parse fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	/* parse 1 digit */
+	lcd_kit_parse_u32_digit(data, &value, 1);
+	*out = (unsigned char)(value & 0xff);
+	kfree(data);
+	return LCD_KIT_OK;
+}
+
+static int parse_dcs(const char *path, const char *item,
+	const char *item_state, struct lcd_kit_dsi_panel_cmds *pcmds)
+{
+	int ret;
+	int len;
+	char *data = NULL;
+	char *temp_buff = NULL; // can not free, it will be used
+
+	data = kzalloc(LCD_KIT_DCS_CMD_MAX_NUM, 0);
+	if (!data) {
+		LCD_KIT_ERR("data kzalloc fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = parse_xml(path, item, data, LCD_KIT_DCS_CMD_MAX_NUM);
+	if (ret < 0) {
+		LCD_KIT_INFO("parse fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	len = stat_value_count(data);
+	if (len <= 0) {
+		LCD_KIT_ERR("invalid len\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	temp_buff = kzalloc(sizeof(int) * (len + 1), 0);
+	if (!temp_buff) {
+		LCD_KIT_ERR("kzalloc fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	len = lcd_kit_parse_u8_digit(data, temp_buff, len);
+	if (len <= 0) {
+		LCD_KIT_ERR("lcd_kit_parse_u8_digit error\n");
+		kfree(temp_buff);
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	lcd_kit_dbg_parse_cmd(pcmds, temp_buff, len);
+	ret = parse_u32(path, item_state, &(pcmds->link_state),
+		LCD_KIT_DSI_HS_MODE);
+	if (ret < 0)
+		LCD_KIT_INFO("parse link_state fail\n");
+	kfree(data);
+	return LCD_KIT_OK;
+}
+
+static int parse_arrays(const char *path, const char *item,
+	struct lcd_kit_arrays_data *out, int size)
+{
+	char ch = '"';
+	char *data = NULL;
+	unsigned int *temp_buff = NULL; // can not free, it will be used
+	int ret;
+	int len;
+
+	data = kzalloc(LCD_KIT_CMD_MAX_NUM, 0);
+	if (!data) {
+		LCD_KIT_ERR("data kzalloc fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = parse_xml(path, item, data, LCD_KIT_CMD_MAX_NUM);
+	if (ret < 0) {
+		LCD_KIT_INFO("parse fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	lcd_kit_str_to_del_ch(data, ch);
+	len = stat_value_count(data);
+	if (len <= 0) {
+		kfree(data);
+		LCD_KIT_ERR("invalid len\n");
+		return LCD_KIT_FAIL;
+	}
+	temp_buff = kzalloc(sizeof(int) * (len + 1), 0);
+	if (!temp_buff) {
+		LCD_KIT_ERR("temp_buff kzalloc fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	if (size <= 0) {
+		kfree(temp_buff);
+		kfree(data);
+		LCD_KIT_ERR("size is error\n");
+		return LCD_KIT_FAIL;
+	}
+	len = len / size;
+	if (len <= 0) {
+		kfree(temp_buff);
+		kfree(data);
+		LCD_KIT_ERR("len is error\n");
+		return LCD_KIT_FAIL;
+	}
+	out->arry_data = kzalloc(sizeof(struct lcd_kit_array_data) * len, 0);
+	if (!out->arry_data) {
+		LCD_KIT_ERR("out->arry_data kzalloc fail\n");
+		kfree(temp_buff);
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	lcd_kit_dbg_parse_array(data, temp_buff, out, size);
+	kfree(data);
+	return LCD_KIT_OK;
+}
+
+static int parse_array(const char *path, const char *item,
+	struct lcd_kit_array_data *out)
+{
+	char ch = '"';
+	char *data = NULL;
+	unsigned int *temp_buff = NULL; // can not free, it will be used
+	int ret;
+	int len;
+	int cnt_num;
+
+	data = kzalloc(LCD_KIT_CMD_MAX_NUM, 0);
+	if (!data) {
+		LCD_KIT_ERR("data kzalloc fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = parse_xml(path, item, data, LCD_KIT_CMD_MAX_NUM);
+	if (ret < 0) {
+		LCD_KIT_INFO("parse fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	lcd_kit_str_to_del_ch(data, ch);
+	len = stat_value_count(data);
+	if (len <= 0) {
+		kfree(data);
+		LCD_KIT_ERR("invalid len\n");
+		return LCD_KIT_FAIL;
+	}
+	temp_buff = kzalloc(sizeof(int) * (len + 1), 0);
+	if (!temp_buff) {
+		LCD_KIT_ERR("temp_buff kzalloc fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	cnt_num = lcd_kit_parse_u32_digit(data, temp_buff, len);
+	out->buf = temp_buff;
+	out->cnt = cnt_num;
+	kfree(data);
+	return LCD_KIT_OK;
+}
+
+static char *parse_string(const char *path, const char *item)
+{
+	char ch = '"';
+	char *data = NULL;
+	char *string = NULL;
+	int ret;
+	int len;
+
+	data = kzalloc(LCD_KIT_CMD_MAX_NUM, 0);
+	if (!data) {
+		LCD_KIT_ERR("data kzalloc fail\n");
+		return NULL;
+	}
+	ret = parse_xml(path, item, data, LCD_KIT_CMD_MAX_NUM);
+	if (ret < 0) {
+		LCD_KIT_INFO("parse fail\n");
+		kfree(data);
+		return NULL;
+	}
+	lcd_kit_str_to_del_ch(data, ch);
+	len = strlen(data);
+	if (len <= 0) {
+		kfree(data);
+		LCD_KIT_ERR("invalid len\n");
+		return NULL;
+	}
+	string = kzalloc((len + 1), 0);
+	if (!string) {
+		LCD_KIT_ERR("string kzalloc fail\n");
+		kfree(data);
+		return NULL;
+	}
+	strncpy(string, data, len);
+	kfree(data);
+	return string;
+}
+
+static int parse_string_array(const char *path, const char *item,
+	const char **out)
+{
+	char ch = '"';
+	char *data = NULL;
+	char *string = NULL;
+	char *str1 = NULL;
+	char *str2 = NULL;
+	int ret;
+	int len;
+
+	data = kzalloc(LCD_KIT_CMD_MAX_NUM, 0);
+	if (!data) {
+		LCD_KIT_ERR("data kzalloc fail\n");
+		return LCD_KIT_FAIL;
+	}
+	ret = parse_xml(path, item, data, LCD_KIT_CMD_MAX_NUM);
+	if (ret < 0) {
+		LCD_KIT_INFO("parse fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	lcd_kit_str_to_del_ch(data, ch);
+	len = strlen(data);
+	if (len <= 0) {
+		kfree(data);
+		LCD_KIT_ERR("invalid len\n");
+		return LCD_KIT_FAIL;
+	}
+	string = kzalloc((len + 1), 0);
+	if (!string) {
+		LCD_KIT_ERR("temp_buff kzalloc fail\n");
+		kfree(data);
+		return LCD_KIT_FAIL;
+	}
+	strncpy(string, data, len);
+	str1 = string;
+	do {
+		str2 = strstr(str1, ",");
+		if (str2 == NULL) {
+			*out++ = str1;
+			break;
+		}
+		*str2 = 0;
+		*out++ = str1;
+		str2++;
+		str1 = str2;
+	} while (str2 != NULL);
+	kfree(data);
+	return LCD_KIT_OK;
+}
+
+static void parse_dirty_region(const char *path, const char *item,
+	int *out)
+{
+	int value = 0;
+	int ret;
+
+	ret = parse_u32(path, item, &value, 0xffff);
+	if (ret)
+		LCD_KIT_INFO("parse item:%s fail\n", item);
+	if (value == 0xffff)
+		value = -1;
+	*out = value;
+}
+
+int g_dpd_mode;
+static int __init early_parse_debug_cmdline(char *arg)
+{
+	char debug[CMDLINE_MAX + 1];
+	int ret;
+
+	if (!arg) {
+		LCD_KIT_ERR("arg is NULL\n");
+		return 0;
+	}
+	memset(debug, 0, (CMDLINE_MAX + 1));
+	memcpy(debug, arg, CMDLINE_MAX);
+	debug[CMDLINE_MAX] = '\0';
+	ret = kstrtouint(debug, 10, &g_dpd_mode);
+	if (ret)
+		return ret;
+	LCD_KIT_INFO("g_dpd_mode = %d\n", g_dpd_mode);
+	return 0;
+}
+early_param("lcd_dpd", early_parse_debug_cmdline);
+
+char g_xml_name[XML_NAME_MAX];
+static char *dpd_get_xml_name(const struct device_node *np)
+{
+	char *comp = NULL;
+	int ret;
+
+	comp = (char *)of_get_property(np, "compatible", NULL);
+	if (!comp) {
+		LCD_KIT_ERR("comp is null\n");
+		return NULL;
+	}
+	memset(g_xml_name, 0, sizeof(g_xml_name));
+	ret = snprintf(g_xml_name, XML_NAME_MAX, "/odm/lcd/%s.xml", comp);
+	if (ret < 0) {
+		LCD_KIT_ERR("snprintf fail\n");
+		return NULL;
+	}
+	return g_xml_name;
+}
+
+int lcd_parse_u32(const struct device_node *np, const char *item,
+	unsigned int *out, unsigned int def)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+
+	if (!np || !item || !out) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return LCD_KIT_FAIL;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return LCD_KIT_FAIL;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return LCD_KIT_FAIL;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	return parse_u32(path, item_tmp, out, def);
+}
+
+int lcd_parse_u8(const struct device_node *np, const char *item,
+	unsigned char *out, unsigned char def)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+
+	if (!np || !item || !out) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return LCD_KIT_FAIL;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return LCD_KIT_FAIL;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return LCD_KIT_FAIL;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	return parse_u8(path, item_tmp, out, def);
+}
+
+int lcd_parse_dcs(const struct device_node *np, const char *item,
+	const char *item_state, struct lcd_kit_dsi_panel_cmds *pcmds)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+
+	if (!np || !item || !item_state || !pcmds) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return LCD_KIT_FAIL;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return LCD_KIT_FAIL;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return LCD_KIT_FAIL;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	return parse_dcs(path, item_tmp, item_state, pcmds);
+}
+
+int lcd_parse_arrays(const struct device_node *np, const char *item,
+	struct lcd_kit_arrays_data *out, int size)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+
+	if (!np || !item || !out) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return LCD_KIT_FAIL;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return LCD_KIT_FAIL;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return LCD_KIT_FAIL;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	return parse_arrays(path, item_tmp, out, size);
+}
+
+int lcd_parse_array(const struct device_node *np, const char *item,
+	struct lcd_kit_array_data *out)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+
+	if (!np || !item || !out) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return LCD_KIT_FAIL;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return LCD_KIT_FAIL;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return LCD_KIT_FAIL;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	return parse_array(path, item_tmp, out);
+}
+
+char *lcd_parse_string(const struct device_node *np, const char *item)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+
+	if (!np || !item) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return NULL;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return NULL;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return NULL;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	return parse_string(path, item_tmp);
+}
+
+
+int lcd_parse_string_array(const struct device_node *np, const char *item,
+	const char **out)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+	int ret;
+
+	if (!np || !item || !out) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return LCD_KIT_FAIL;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return LCD_KIT_FAIL;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return LCD_KIT_FAIL;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	ret = parse_string_array(path, item_tmp, out);
+	if (ret) {
+		LCD_KIT_ERR("parse string array fail\n");
+		return LCD_KIT_FAIL;
+	}
+	return LCD_KIT_OK;
+}
+
+void lcd_parse_dirty_region(const struct device_node *np, const char *item,
+	int *out)
+{
+	char *path = NULL;
+	char *item_tmp = NULL;
+
+	if (!np || !item || !out) {
+		LCD_KIT_ERR("np or item or out is null\n");
+		return;
+	}
+	path = dpd_get_xml_name(np);
+	if (!path) {
+		LCD_KIT_ERR("path is null\n");
+		return;
+	}
+	item_tmp = str_convert(item);
+	if (!item_tmp) {
+		LCD_KIT_ERR("string convert fail\n");
+		return;
+	}
+	LCD_KIT_INFO("item_tmp = %s\n", item_tmp);
+	LCD_KIT_INFO("path = %s\n", path);
+	parse_dirty_region(path, item_tmp, out);
+}
+
+int is_dpd_mode(void)
+{
+	if ((g_dpd_mode == 1) && (g_dpd_enter == 1))
+		return 1; // dpd mode
+	return 0; // normal mode
+}
+

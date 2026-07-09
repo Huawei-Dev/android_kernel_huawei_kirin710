@@ -117,6 +117,10 @@ struct kbase_hwcnt_accumulator {
  *                    state_lock.
  *                  - Can be read while holding either lock.
  * @accum:         Hardware counter accumulator structure.
+ * @wq:            Centralized workqueue for users of hardware counters to
+ *                 submit async hardware counter related work. Never directly
+ *                 called, but it's expected that a lot of the functions in this
+ *                 API will end up called from the enqueued async work.
  */
 struct kbase_hwcnt_context {
 	const struct kbase_hwcnt_backend_interface *iface;
@@ -125,6 +129,7 @@ struct kbase_hwcnt_context {
 	struct mutex accum_lock;
 	bool accum_inited;
 	struct kbase_hwcnt_accumulator accum;
+	struct workqueue_struct *wq;
 };
 
 int kbase_hwcnt_context_init(
@@ -138,7 +143,7 @@ int kbase_hwcnt_context_init(
 
 	hctx = kzalloc(sizeof(*hctx), GFP_KERNEL);
 	if (!hctx)
-		return -ENOMEM;
+		goto err_alloc_hctx;
 
 	hctx->iface = iface;
 	spin_lock_init(&hctx->state_lock);
@@ -146,9 +151,19 @@ int kbase_hwcnt_context_init(
 	mutex_init(&hctx->accum_lock);
 	hctx->accum_inited = false;
 
+	hctx->wq =
+		alloc_workqueue("mali_kbase_hwcnt", WQ_HIGHPRI | WQ_UNBOUND, 0);
+	if (!hctx->wq)
+		goto err_alloc_workqueue;
+
 	*out_hctx = hctx;
 
 	return 0;
+
+err_alloc_workqueue:
+	kfree(hctx);
+err_alloc_hctx:
+	return -ENOMEM;
 }
 KBASE_EXPORT_TEST_API(kbase_hwcnt_context_init);
 
@@ -159,6 +174,11 @@ void kbase_hwcnt_context_term(struct kbase_hwcnt_context *hctx)
 
 	/* Make sure we didn't leak the accumulator */
 	WARN_ON(hctx->accum_inited);
+
+	/* We don't expect any work to be pending on this workqueue.
+	 * Regardless, this will safely drain and complete the work.
+	 */
+	destroy_workqueue(hctx->wq);
 	kfree(hctx);
 }
 KBASE_EXPORT_TEST_API(kbase_hwcnt_context_term);
@@ -691,13 +711,6 @@ bool kbase_hwcnt_context_disable_atomic(struct kbase_hwcnt_context *hctx)
 		if (hctx->disable_count != 0) {
 			hctx->disable_count++;
 			atomic_disabled = true;
-		} else {
-			WARN_ON(!hctx->accum_inited);
-			if (!hctx->accum.enable_map_any_enabled) {
-				hctx->disable_count++;
-				hctx->accum.state = ACCUM_STATE_DISABLED;
-				atomic_disabled = true;
-			}
 		}
 	}
 
@@ -736,6 +749,15 @@ const struct kbase_hwcnt_metadata *kbase_hwcnt_context_metadata(
 	return hctx->iface->metadata;
 }
 KBASE_EXPORT_TEST_API(kbase_hwcnt_context_metadata);
+
+bool kbase_hwcnt_context_queue_work(struct kbase_hwcnt_context *hctx,
+				    struct work_struct *work)
+{
+	if (WARN_ON(!hctx) || WARN_ON(!work))
+		return false;
+
+	return queue_work(hctx->wq, work);
+}
 
 int kbase_hwcnt_accumulator_set_counters(
 	struct kbase_hwcnt_accumulator *accum,

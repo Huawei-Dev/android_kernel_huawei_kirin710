@@ -29,6 +29,9 @@
 #include <linux/atomic.h>
 #include <linux/version.h>
 #include <linux/delay.h>
+#ifdef CONFIG_MALI_LAST_BUFFER
+#include <linux/hisi/hisi_lb.h>
+#endif
 
 #define pool_dbg(pool, format, ...) \
 	dev_dbg(pool->kbdev->dev, "%s-mali_pool [%zu/%zu]: " format,	\
@@ -855,3 +858,89 @@ void kbase_mem_pool_free_pages_locked(struct kbase_mem_pool *pool,
 
 	pool_dbg(pool, "free_pages_locked(%zu) done\n", nr_pages);
 }
+
+#ifdef CONFIG_MALI_LAST_BUFFER
+int kbase_mem_pool_detach(struct kbase_mem_pool *pool)
+{
+	struct kbase_mem_pool *spill_pool = NULL;
+	struct page *p = NULL;
+	struct page *tmp = NULL;
+	size_t nr_to_spill = 0;
+	LIST_HEAD(spill_list);
+	LIST_HEAD(free_list);
+	struct kbase_device *kbdev = pool->kbdev;
+	struct memory_group_manager_ops *mgm_ops = &kbdev->mgm_dev->ops;
+
+	pool_dbg(pool, "detach()\n");
+
+	if (WARN_ON(pool->group_id <= 0) ||
+		WARN_ON(pool->group_id >= MEMORY_GROUP_MANAGER_NR_GROUPS))
+		return -EINVAL;
+
+	/* Only the device pool can detach, the context pool can spill to the device pool
+	 * firstly and then detach the device pool.
+	 */
+	if (WARN_ON(pool->next_pool != NULL))
+		return -EINVAL;
+
+	kbase_mem_pool_lock(pool);
+
+	if (pool->order == KBASE_MEM_POOL_4KB_PAGE_TABLE_ORDER)
+		spill_pool = &kbdev->mem_pools.small[0];
+	else
+		spill_pool = &kbdev->mem_pools.large[0];
+
+	if (spill_pool && !kbase_mem_pool_is_full(spill_pool)) {
+		int i;
+		int err;
+		/* Spill to the pool with group id 0 (may overspill) */
+		nr_to_spill = kbase_mem_pool_capacity(spill_pool);
+		nr_to_spill = min(kbase_mem_pool_size(pool), nr_to_spill);
+
+		/* Zero pages first without holding the spill_pool lock */
+		for (i = 0; i < nr_to_spill; i++) {
+			p = kbase_mem_pool_remove_locked(pool);
+
+			WARN_ON(p == NULL);
+			WARN_ON(pool->group_id != lb_page_to_gid(p));
+
+			err = lb_pages_detach(pool->group_id, p, 1ULL << pool->order);
+
+			if (err != 0)
+				pool_dbg(pool, "detach page failed. group_id = %u\n", pool->group_id);
+
+			mgm_ops->mgm_update_sizes(kbdev->mgm_dev, pool->group_id, pool->order, false);
+
+			list_add(&p->lru, &spill_list);
+
+		}
+	}
+
+	while (!kbase_mem_pool_is_empty(pool)) {
+		/* free remaining pages to kernel. */
+		p = kbase_mem_pool_remove_locked(pool);
+		list_add(&p->lru, &free_list);
+	}
+
+	kbase_mem_pool_unlock(pool);
+
+	if (spill_pool && nr_to_spill) {
+		list_for_each_entry(p, &spill_list, lru)
+			kbase_mem_pool_zero_page(pool, p);
+
+		/* Add new page list to spill_pool */
+		kbase_mem_pool_add_list(spill_pool, &spill_list, nr_to_spill);
+		mgm_ops->mgm_update_sizes(kbdev->mgm_dev, spill_pool->group_id, spill_pool->order, true);
+
+		pool_dbg(pool, "detach() spilled %zu pages\n", nr_to_spill);
+	}
+
+	list_for_each_entry_safe(p, tmp, &free_list, lru) {
+		list_del_init(&p->lru);
+		kbase_mem_pool_free_page(pool, p);
+	}
+
+	pool_dbg(pool, "detached\n");
+	return 0;
+}
+#endif

@@ -447,13 +447,8 @@ static void kbase_pm_trigger_hwcnt_disable(struct kbase_device *kbdev)
 	if (kbase_hwcnt_context_disable_atomic(kbdev->hwcnt_gpu_ctx)) {
 		backend->hwcnt_disabled = true;
 	} else {
-#if KERNEL_VERSION(3, 16, 0) > LINUX_VERSION_CODE
-		queue_work(system_wq,
-			&backend->hwcnt_disable_work);
-#else
-		queue_work(system_highpri_wq,
-			&backend->hwcnt_disable_work);
-#endif
+		kbase_hwcnt_context_queue_work(kbdev->hwcnt_gpu_ctx,
+				&backend->hwcnt_disable_work);
 	}
 }
 
@@ -1156,8 +1151,9 @@ void kbase_pm_update_state(struct kbase_device *kbdev)
 
 	lockdep_assert_held(&kbdev->hwaccess_lock);
 
-	if (kbase_pm_poweroff_done(kbdev)) {
-		return; /* Do nothing if the GPU is off */
+	if (!kbdev->pm.backend.gpu_ready &&
+		(atomic_read(&kbdev->regulator_refcount) == 0)) {
+		return; /* Do nothing if the GPU is not ready */
 	}
 
 	kbase_pm_l2_update_state(kbdev);
@@ -1445,9 +1441,6 @@ void kbase_pm_clock_on(struct kbase_device *kbdev, bool is_resume)
 		if (kbdev->poweroff_pending)
 			kbase_pm_enable_interrupts(kbdev);
 		kbdev->poweroff_pending = false;
-		spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
-		kbdev->pm.backend.l2_desired = true;
-		spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
 		KBASE_DEBUG_ASSERT(!is_resume);
 		return;
 	}
@@ -1486,6 +1479,7 @@ void kbase_pm_clock_on(struct kbase_device *kbdev, bool is_resume)
 
 	/* Turn on the L2 caches */
 	spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
+	kbdev->pm.backend.gpu_ready = true;
 	kbdev->pm.backend.l2_desired = true;
 	kbase_pm_update_state(kbdev);
 	spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
@@ -1531,6 +1525,8 @@ bool kbase_pm_clock_off(struct kbase_device *kbdev, bool is_suspend)
 	}
 
 	kbase_pm_cache_snoop_disable(kbdev);
+
+	kbdev->pm.backend.gpu_ready = false;
 
 	/* The GPU power may be turned off from this point */
 	kbdev->pm.backend.gpu_powered = false;
@@ -2012,7 +2008,7 @@ static int kbase_pm_do_reset(struct kbase_device *kbdev)
 #endif
 		kbdev->error_num.hard_reset++;
 		kbdev->error_num.ts = hisi_getcurtime();
-#ifdef CONFIG_HISI_ENABLE_HPM_DATA_COLLECT
+#ifdef CONFIG_LP_ENABLE_HPM_DATA_COLLECT
 		/*benchmark data collect */
 		if (kbase_has_hi_feature(kbdev, KBASE_FEATURE_HI0009)) {
 			rdr_syserr_process_for_ap((u32)MODID_AP_S_PANIC_GPU, 0ull, 0ull);//lint !e730

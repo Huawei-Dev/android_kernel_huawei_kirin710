@@ -574,7 +574,7 @@ int ion_alloc(size_t len, unsigned int heap_id_mask, unsigned int flags)
 			__func__, len, heap_id_mask, flags, _htimedelta, _timedelta);
 		pr_err("%s: alloc timeout, inactive_file:%lu, isolated_file:%lu, isolated_anon:%lu, free pages:%lu, kernel_stack:%luKB, free_cma:%lu, msleep_count_s:%ld, msleep_count_e:%ld\n",
 			__func__, nr_inactive_file, nr_isolated_file, nr_isolated_anon, free_page, kernel_stack, free_cma, msleep_count_s, msleep_count_e);
-		hisi_ion_proecss_info();
+		mm_ion_proecss_info();
 		show_mem(0, NULL);
 	}
 

@@ -126,7 +126,7 @@ void kbase_pm_update_active(struct kbase_device *kbdev)
 			 */
 			pm->backend.invoke_poweroff_wait_wq_when_l2_off = false;
 			pm->backend.poweroff_wait_in_progress = false;
-			pm->backend.l2_desired = false;
+			pm->backend.l2_desired = true;
 
 			spin_unlock_irqrestore(&kbdev->hwaccess_lock, flags);
 			kbase_pm_do_poweron(kbdev, false);

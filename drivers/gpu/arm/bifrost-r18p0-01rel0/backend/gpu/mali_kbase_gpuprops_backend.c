@@ -75,6 +75,11 @@ void kbase_backend_gpuprops_get(struct kbase_device *kbdev,
 
 	regdump->shader_present_lo = kbase_reg_read(kbdev,
 				GPU_CONTROL_REG(SHADER_PRESENT_LO));
+	if (kbdev->shader_present_lo_cfg != 0) {
+		regdump->shader_present_lo &=
+				kbdev->shader_present_lo_cfg;
+	}
+
 	regdump->shader_present_hi = kbase_reg_read(kbdev,
 				GPU_CONTROL_REG(SHADER_PRESENT_HI));
 

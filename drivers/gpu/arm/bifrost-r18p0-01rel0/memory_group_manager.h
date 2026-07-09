@@ -25,6 +25,8 @@
 #ifndef _MEMORY_GROUP_MANAGER_H_
 #define _MEMORY_GROUP_MANAGER_H_
 
+#include <linux/mm.h>
+#include <linux/mm_types.h>
 #include <mali_malisw.h>
 #ifdef CONFIG_MALI_LAST_BUFFER
 #include <linux/hisi/hisi_lb.h>
@@ -35,6 +37,7 @@
 #endif
 
 #define MEMORY_GROUP_MANAGER_NR_GROUPS 16
+#define LASTBUFFER_GID_DSS 4
 
 /* Memory type of memory group manager */
 enum memory_group_manager_memory_type {
@@ -94,6 +97,22 @@ struct memory_group_manager_ops {
 	void (*mgm_free_page)(
 		struct memory_group_manager_device *mgm_dev, int group_id,
 		struct page *page, unsigned int order);
+
+	/**
+	 * mgm_update_sizes - update the size to group_id in a group
+	 *
+	 * @mgm_dev:  The memory group manager through which the request
+	 *            is being made.
+	 * @group_id: A physical memory group ID. The meaning of this is
+	 *            defined by the systems integrator. Its valid range is
+	 *            0 .. MEMORY_GROUP_MANAGER_NR_GROUPS-1.
+	 * @order:    Page order for physical page size (order=0 means 4 KiB,
+	 *            order=9 means 2 MiB).
+	 * @is_alloc: true for alloc or false for free.
+	 */
+	void (*mgm_update_sizes) (
+		struct memory_group_manager_device *mgm_dev, int group_id,
+		unsigned int order, bool is_alloc);
 
 	/**
 	 * get_import_mem_id -- Get the physical memory group ID for the

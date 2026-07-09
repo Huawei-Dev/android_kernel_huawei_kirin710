@@ -35,6 +35,13 @@
 	    uint64_t x##_sizer; \
 	}
 
+#ifndef compat_uint_pointer
+#define compat_uint_pointer(x) \
+	union { \
+		unsigned int* x; \
+		uint64_t x##_sizer; \
+	}
+#endif
 
 // define arsr2p effect parameter
 struct arsr2p_info {
@@ -171,6 +178,7 @@ struct arsr1p_info {
 
 
 struct hiace_info {
+	int disp_panel_id;
 	uint32_t image_info;
 	uint32_t half_block_info;
 	uint32_t xyweight;
@@ -189,7 +197,7 @@ struct hiace_info {
 	uint32_t enable_update; // 1 valid; 0 invalid
 	uint32_t lut_update; // 1 valid; 0 invalid
 	uint32_t thminv;
-	unsigned int *lut;
+	compat_uint_pointer(lut);
 };
 
 struct dss_effect {
@@ -197,9 +205,9 @@ struct dss_effect {
 	bool arsr2p_sharp_support;
 	bool arsr1p_sharp_support;
 	bool acm_support;
-	bool sbl_support;
 	bool ace_support;
 	bool hiace_support;
+	bool post_hihdr_support;
 	bool lcp_igm_support;
 	bool lcp_gmp_support;
 	bool lcp_xcc_support;
@@ -215,8 +223,8 @@ struct dss_reg{
 
 /* ioctl update info */
 struct dss_effect_info {
+	int disp_panel_id; /* 0: inner panel; 1: outer panel */
 	uint32_t modules;
-	bool arsr1p_rog_initialized;
 
 	struct acm_info acm;
 	struct arsr1p_info arsr1p[2]; /* 0: normal arsr1p; 1: ROG arsr1p*/
@@ -226,10 +234,9 @@ struct dss_effect_info {
 	struct hiace_info hiace;
 };
 
-/* hisifb save info */
-struct hisifb_effect_info {
+/* dpufb save info */
+struct dpufb_effect_info {
 	uint32_t modules;
-	bool arsr1p_rog_initialized;
 
 	struct acm_info acm;
 	struct arsr1p_info arsr1p[2]; /* 0: normal arsr1p; 1: ROG arsr1p*/
