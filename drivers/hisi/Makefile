@@ -50,7 +50,6 @@ obj-y += modem/
 endif
 endif
 obj-y += max_power/
-obj-y += hisi_lmk/
 obj-$(CONFIG_HISI_PAGE_TRACKER) += hisi_page_tracker/
 obj-$(CONFIG_PERFHUB) += perfhub/
 obj-$(CONFIG_JPU_SUPPORT) += jpu/

@@ -87,25 +87,6 @@ static int base_size = 3000000; /* 3G */
 static ulong lowmem_kill_count;
 static ulong lowmem_free_mem;
 #endif
-#ifdef CONFIG_HISI_MULTI_KILL
-/*
- * lmk_multi_kill: select open/close multi kill
- * if lmk_multi_kill open
- *    1/selected process adj >= lmk_multi_fadj,
- *      we kill multi process max count = lmk_multi_fcount,
- *    2/selected process adj < lmk_multi_fadj,
- *      select process adj >= lmk_multi_sadj,
- *      we kill multi process max count = lmk_multi_scount,
- *    3/selected process adj < lmk_multi_sadj,
- *      we kill one process,
- */
-static int lmk_multi_kill;
-static int lmk_multi_fadj = 800;
-static int lmk_multi_fcount = 5;
-static int lmk_multi_sadj = 300;
-static int lmk_multi_scount = 3;
-static int lmk_timeout_inter = 1;
-#endif
 
 static unsigned long lowmem_deathpending_timeout;
 
@@ -177,9 +158,6 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 	int ret_tune;
 	int d_state_count = 0;
 
-#ifdef CONFIG_HISI_MULTI_KILL
-	int count = 0;
-#endif
 	static atomic_t atomic_lmk = ATOMIC_INIT(0);
 
 	ret_tune = hisi_lowmem_tune(&other_free, &other_file, sc);
@@ -214,9 +192,6 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 	}
 
 	rcu_read_lock();
-#ifdef CONFIG_HISI_MULTI_KILL
-kill_selected:
-#endif
 	for_each_process(tsk) {
 		struct task_struct *p;
 		short oom_score_adj;
@@ -253,12 +228,6 @@ kill_selected:
 				return SHRINK_STOP;
 			} else {
 				hisi_lowmem_dbg_timeout(tsk, p);
-#ifdef CONFIG_HISI_MULTI_KILL
-				if (lmk_multi_kill) {
-					task_unlock(p);
-					continue;
-				}
-#endif
 			}
 		}
 
@@ -316,19 +285,10 @@ kill_selected:
 					selected_tasksize *
 					(unsigned long)PAGE_SIZE);
 #ifdef CONFIG_HW_ZEROHUNG
-#ifdef CONFIG_HISI_MULTI_KILL
-		if (count  == 0)
+		lmkwp_report(selected, sc, cache_size, cache_limit,
+				selected_oom_score_adj, free);
 #endif
-			lmkwp_report(selected, sc, cache_size, cache_limit,
-					selected_oom_score_adj, free);
-#endif
-
-#ifdef CONFIG_HISI_MULTI_KILL
-		/*lint !e647*/
-		lowmem_deathpending_timeout = jiffies + lmk_timeout_inter * HZ;
-#else
 		lowmem_deathpending_timeout = jiffies + HZ;
-#endif
 
 #if defined CONFIG_LOG_JANK
 		lowmem_kill_count++;
@@ -349,19 +309,6 @@ kill_selected:
 
 	lowmem_print(4, "lowmem_scan %lu, %x, return %lu\n",
 		     sc->nr_to_scan, sc->gfp_mask, rem);
-
-#ifdef CONFIG_HISI_MULTI_KILL
-	if (selected && lmk_multi_kill) {
-		count++;
-		if (!(count >= lmk_multi_fcount ||
-			selected_oom_score_adj < lmk_multi_sadj ||
-			(selected_oom_score_adj < lmk_multi_fadj &&
-				count >= lmk_multi_scount))) {
-			selected = NULL;
-			goto kill_selected;
-		}
-	}
-#endif
 
 	rcu_read_unlock();
 	atomic_dec(&atomic_lmk);
@@ -485,12 +432,3 @@ module_param_named(debug_level, lowmem_debug_level, uint, 0644);
 module_param_named(kill_count, lowmem_kill_count, ulong, 0644);
 module_param_named(free_mem, lowmem_free_mem, ulong, 0644);
 #endif
-#ifdef CONFIG_HISI_MULTI_KILL
-module_param_named(lmk_multi_kill, lmk_multi_kill, int, 0644);
-module_param_named(lmk_multi_fadj, lmk_multi_fadj, int, 0644);
-module_param_named(lmk_multi_fcount, lmk_multi_fcount, int, 0644);
-module_param_named(lmk_multi_sadj, lmk_multi_sadj, int, 0644);
-module_param_named(lmk_multi_scount, lmk_multi_scount, int, 0644);
-module_param_named(lmk_timeout_inter, lmk_timeout_inter, int, 0644);
-#endif
-

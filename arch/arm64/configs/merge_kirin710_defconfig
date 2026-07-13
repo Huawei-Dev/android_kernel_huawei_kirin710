@@ -4692,13 +4692,6 @@ CONFIG_SR_TICK=y
 # CONFIG_SR_PM_DEBUG is not set
 
 #
-# Hisi lowmem killer
-#
-# CONFIG_HISI_LOWMEM is not set
-# CONFIG_HISI_LOWMEM_DBG is not set
-# CONFIG_HISI_MULTI_KILL is not set
-
-#
 # HW Vote options
 #
 CONFIG_HW_VOTE=y

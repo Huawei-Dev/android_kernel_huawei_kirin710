@@ -68,9 +68,6 @@ void end_swap_bio_write(struct bio *bio)
 			 MAJOR(bio_dev(bio)), MINOR(bio_dev(bio)),
 			 (unsigned long long)bio->bi_iter.bi_sector);
 		ClearPageReclaim(page);
-#ifdef CONFIG_HISI_LOWMEM
-		atomic_set(&swap_no_space, 1);
-#endif
 	}
 	end_page_writeback(page);
 	bio_put(bio);

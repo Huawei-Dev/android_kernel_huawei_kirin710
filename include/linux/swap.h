@@ -740,9 +740,5 @@ static inline bool mem_cgroup_swap_full(struct page *page)
 }
 #endif
 
-#ifdef CONFIG_HISI_LOWMEM
-extern atomic_t swap_no_space;
-#endif
-
 #endif /* __KERNEL__*/
 #endif /* _LINUX_SWAP_H */
