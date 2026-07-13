@@ -89,3 +89,4 @@ obj-$(CONFIG_HUAWEI_EMCOM) += emcom/
 obj-y += hisi_sim_adapt/
 obj-$(CONFIG_BOOT_DETECTOR) += hwbootfail/
 obj-$(CONFIG_HW_FDLEAK) += hwfdleak/
+obj-$(CONFIG_HW_GADGET) += hwusb/

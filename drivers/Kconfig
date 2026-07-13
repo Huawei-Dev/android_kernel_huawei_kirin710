@@ -223,8 +223,6 @@ source "drivers/log/Kconfig"
 
 source "drivers/hwzerohung/Kconfig"
 
-source "drivers/hwusb/Kconfig"
-
 source "drivers/hwpower/Kconfig"
 
 source "drivers/contexthub/Kconfig"
