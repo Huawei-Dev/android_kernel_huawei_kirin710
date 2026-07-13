@@ -5,14 +5,6 @@ menuconfig HISI_MM
 
 if HISI_MM
 
-config HISI_SLOW_PATH_COUNT
-	bool "page alloc enter slow path count"
-	default n
-	help
-	  Say 'Y' here is you want to count page alloc slow path.
-
-endif
-
 config HISI_PAGE_TRACE
 	bool "HISI page trace"
 	---help---
