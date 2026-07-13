@@ -227,8 +227,6 @@ source "drivers/hwusb/Kconfig"
 
 source "drivers/hwpower/Kconfig"
 
-source "drivers/hwsensors/Kconfig"
-
 source "drivers/contexthub/Kconfig"
 
 source "drivers/hwnet/Kconfig"

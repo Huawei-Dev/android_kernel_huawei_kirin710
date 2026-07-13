@@ -28,10 +28,6 @@ struct hall_interface_dev {
 	struct hall_interface_ops *p_ops;
 };
 
-#ifdef CONFIG_HUAWEI_HALL_INTERFACE
-int hall_interface_ops_register(struct hall_interface_ops *ops);
-bool hall_interface_get_hall_status(void);
-#else
 static inline int hall_interface_ops_register(struct hall_interface_ops *ops)
 {
 	return -1;
@@ -41,6 +37,5 @@ static inline bool hall_interface_get_hall_status(void)
 {
 	return false;
 }
-#endif /* CONFIG_HUAWEI_HALL_INTERFACE */
 
 #endif /* _HALL_INTERFACE_H_ */

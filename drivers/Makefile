@@ -204,7 +204,6 @@ obj-y += contexthub/
 obj-$(CONFIG_HUAWEI_PLATFORM) += huawei_platform/
 obj-$(CONFIG_HW_GADGET) += hwusb/
 obj-y += hwpower/
-obj-y += hwsensors/
 obj-$(CONFIG_CONNECTIVITY_HI110X) += connectivity/
 obj-$(CONFIG_HUAWEI_STORAGE_ROFA) += storage_rofa/
 
