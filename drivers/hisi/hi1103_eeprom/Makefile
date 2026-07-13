@@ -1,1 +1,0 @@
-obj-$(CONFIG_HISI1103_EEPROM)	+= hisi1103_eeprom.o
