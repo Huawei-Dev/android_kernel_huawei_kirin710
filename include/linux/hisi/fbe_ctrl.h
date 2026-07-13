@@ -49,14 +49,6 @@ struct fbex_sece_param {
 	u8 *metadata;
 };
 
-#ifdef CONFIG_FILE_BASED_ENCRYPTO
-bool fbex_slot_clean(u32 slot);
-void fbe3_flushcache_done(void);
-u32 fbex_enable_kdf(void);
-u32 fbex_restore_key(void);
-u32 get_metadata(u8 *buf, u32 len);
-u32 get_metadata_sece(struct fbex_sece_param *param);
-#else
 static bool fbex_slot_clean(u32 slot) {return false; }
 static inline void fbe3_flushcache_done(void) {}
 static inline u32 fbex_enable_kdf(void) {return 0; }
@@ -66,6 +58,5 @@ static inline u32 get_metadata_sece(struct fbex_sece_param *param _unused)
 {
 	return 0;
 }
-#endif
 
 #endif /* __FBE_CTRL_H_ */

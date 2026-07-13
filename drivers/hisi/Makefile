@@ -21,7 +21,6 @@ obj-$(CONFIG_BSP_SYSCOUNTER) += syscounter/
 obj-$(CONFIG_PLATFORM_SLIMBUS)+= slimbus/
 obj-$(CONFIG_HSDTTRACE) += hsdt_trace/
 obj-y += hhee/
-obj-$(CONFIG_FILE_BASED_ENCRYPTO) += file_encry/
 obj-$(CONFIG_HISI_KERNEL_HARDEN_DEBUG) += kernel_harden_test/
 
 obj-$(CONFIG_CODEC_DSP_MISC) += da_combine_dsp/
