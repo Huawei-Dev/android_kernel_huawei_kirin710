@@ -27,7 +27,6 @@ obj-$(CONFIG_CODEC_DSP_MISC) += da_combine_dsp/
 obj-y += l3cache/
 obj-$(CONFIG_HISEE) += hisee/
 obj-$(CONFIG_MSPC)  += mspc/
-obj-$(CONFIG_HIEPS) += hieps/
 ifneq ($(strip $(CFG_HISI_OPENSOURCE)), true)
 endif
 obj-$(CONFIG_DEV_IVP) += ivp/

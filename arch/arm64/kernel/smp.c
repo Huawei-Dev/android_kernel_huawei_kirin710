@@ -995,14 +995,6 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 
 #endif
 
-#ifdef CONFIG_HIEPS
-	case IPI_HIEPS_INFORM:
-		irq_enter();
-		hieps_active();
-		irq_exit();
-		break;
-#endif
-
 #ifdef CONFIG_HHEE
 	case IPI_HHEE_INFORM:
 		irq_enter();
