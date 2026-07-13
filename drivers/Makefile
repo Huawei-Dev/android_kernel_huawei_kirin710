@@ -202,7 +202,6 @@ obj-$(CONFIG_HW_ZEROHUNG) += hwzerohung/
 obj-$(CONFIG_AUDIOKIT) += devkit/audiokit/
 obj-y += contexthub/
 obj-$(CONFIG_HUAWEI_PLATFORM) += huawei_platform/
-obj-$(CONFIG_HW_FDLEAK) += hwfdleak/
 obj-$(CONFIG_HW_GADGET) += hwusb/
 obj-y += hwpower/
 obj-y += hwsensors/
