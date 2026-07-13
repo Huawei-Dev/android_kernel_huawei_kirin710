@@ -67,10 +67,6 @@ int ioctrl_get_ddr_vote_num(void __user *argp);
 int ioctrl_ddr_vote_data(void __user *argp);
 int ioctrl_clr_ddr_vote_data(void __user *argp);
 
-#ifdef CONFIG_LOWPM_DDR_STATE
-int ioctrl_get_ddr_state_num(void __user *argp);
-int ioctrl_ddr_state_data(void __user *argp);
-#else
 static inline int ioctrl_get_ddr_state_num(void __user *argp __attribute((unused)))
 {
 	return 0;
@@ -80,5 +76,4 @@ static inline int ioctrl_ddr_state_data(void __user *argp __attribute((unused)))
 {
 	return 0;
 }
-#endif
 #endif

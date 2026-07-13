@@ -25,7 +25,6 @@ obj-$(CONFIG_FILE_BASED_ENCRYPTO) += file_encry/
 obj-$(CONFIG_HISI_KERNEL_HARDEN_DEBUG) += kernel_harden_test/
 
 obj-$(CONFIG_CODEC_DSP_MISC) += da_combine_dsp/
-obj-y += dpm/
 obj-y += l3cache/
 obj-$(CONFIG_HISEE) += hisee/
 obj-$(CONFIG_MSPC)  += mspc/
@@ -62,9 +61,6 @@ obj-$(CONFIG_JPU_SUPPORT) += jpu/
 obj-$(CONFIG_HISI_TIMEKEEPER) += timekeeper/
 obj-$(CONFIG_TLB_CONFLICT_WORKAROUND) += tlb_conflict/
 obj-$(CONFIG_LPCPU_PMU_DUMP) += lpcpu_pmu_dump/
-ifeq ($(TARGET_VERSION_MODE),factory)
-obj-$(CONFIG_HISI_DIEID) += dieid/
-endif
 obj-$(CONFIG_HISPIPP) += ipp/
 obj-$(CONFIG_PERF_CTRL) += perf_ctrl/
 obj-$(CONFIG_VENDOR_RPMB) += rpmb/
