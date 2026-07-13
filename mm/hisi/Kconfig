@@ -3,8 +3,6 @@ menuconfig HISI_MM
 	---help---
 	  This option add some hisilicon mm codes, needed by following modules.
 
-if HISI_MM
-
 config HISI_PAGE_TRACE
 	bool "HISI page trace"
 	---help---
