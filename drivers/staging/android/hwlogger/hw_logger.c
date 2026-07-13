@@ -44,9 +44,6 @@
 #ifdef CONFIG_HW_FDLEAK
 #include <chipset_common/hwfdleak/fdleak.h>
 #endif
-#ifdef CONFIG_HW_ERECOVERY
-#include <chipset_common/hwerecovery/erecovery.h>
-#endif
 #include <chipset_common/hwmemcheck/memcheck.h>
 #include <asm/ioctls.h>
 
@@ -734,11 +731,6 @@ static long logger_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 #ifdef CONFIG_HW_FDLEAK
 		ret = fdleak_ioctl(file, cmd, arg);
 		if (ret != FDLEAK_CMD_INVALID)
-			return ret;
-#endif
-#ifdef CONFIG_HW_ERECOVERY
-		ret = erecovery_ioctl(file, cmd, arg);
-		if (ret != ERECOVERY_CMD_INVALID)
 			return ret;
 #endif
 		ret = memcheck_ioctl(file, cmd, arg);
