@@ -45,19 +45,6 @@ struct drg_dev_freq {
 
 #define MAX_DRG_MARGIN		1024U
 
-#ifdef CONFIG_DRG
-void drg_cpufreq_register(struct cpufreq_policy *policy);
-void drg_cpufreq_unregister(struct cpufreq_policy *policy);
-void drg_devfreq_register(struct devfreq *df);
-void drg_devfreq_unregister(struct devfreq *df);
-void drg_cpufreq_cooling_update(unsigned int cpu, unsigned int clip_freq);
-void drg_devfreq_cooling_update(struct devfreq *df, unsigned long clip_freq);
-unsigned int drg_cpufreq_check_limit(struct cpufreq_policy *policy,
-				     unsigned int target_freq);
-unsigned long drg_devfreq_check_limit(struct devfreq *df,
-				      unsigned long target_freq);
-int perf_ctrl_get_drg_dev_freq(void __user *uarg);
-#else
 static inline void drg_cpufreq_register(struct cpufreq_policy *policy) {}
 static inline void drg_cpufreq_unregister(struct cpufreq_policy *policy) {}
 static inline void drg_devfreq_register(struct devfreq *df) {}
@@ -82,7 +69,6 @@ static inline int perf_ctrl_get_drg_dev_freq(void __user *uarg)
 {
 	return -EFAULT;
 }
-#endif
 
 extern bool lpcpu_cluster_cpu_all_pwrdn(void);
 #endif /* _DRG_H */

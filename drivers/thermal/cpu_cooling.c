@@ -34,9 +34,6 @@
 
 #include <trace/events/thermal.h>
 
-#ifdef CONFIG_DRG
-#include <linux/drg.h>
-#endif
 #ifdef CONFIG_IPA_THERMAL
 #include <linux/lpm_thermal.h>
 #include <trace/events/thermal_power_allocator.h>
@@ -591,9 +588,6 @@ static int cpufreq_set_cur_state(struct thermal_cooling_device *cdev,
 
 #ifdef CONFIG_IPA_THERMAL
 	g_ipa_freq_limit[cur_cluster] = clip_freq;
-#endif
-#ifdef CONFIG_DRG
-	drg_cpufreq_cooling_update(cpu, clip_freq);
 #endif
 	cpufreq_update_policy(cpufreq_cdev->policy->cpu);
 

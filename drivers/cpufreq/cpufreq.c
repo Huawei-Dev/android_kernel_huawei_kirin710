@@ -31,9 +31,6 @@
 #include <linux/syscore_ops.h>
 #include <linux/tick.h>
 #include <trace/events/power.h>
-#ifdef CONFIG_DRG
-#include <linux/drg.h>
-#endif
 #ifdef CONFIG_FREQ_LIMIT_COUNTER
 #include <linux/hisi/perfhub.h>
 #endif
@@ -688,13 +685,8 @@ static ssize_t show_##file_name				\
 show_one(cpuinfo_min_freq, cpuinfo.min_freq);
 show_one(cpuinfo_max_freq, cpuinfo.max_freq);
 show_one(cpuinfo_transition_latency, cpuinfo.transition_latency);
-#ifdef CONFIG_DRG
-show_one(scaling_min_freq, user_policy.min);
-show_one(scaling_max_freq, user_policy.max);
-#else
 show_one(scaling_min_freq, min);
 show_one(scaling_max_freq, max);
-#endif
 
 __weak unsigned int arch_freq_get_on_cpu(int cpu)
 {
@@ -2028,10 +2020,6 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 
 	/* Make sure that target_freq is within supported range */
 	target_freq = clamp_val(target_freq, policy->min, policy->max);
-
-#ifdef CONFIG_DRG
-	target_freq = drg_cpufreq_check_limit(policy, target_freq);
-#endif
 
 	pr_debug("target for CPU %u: %u kHz, relation %u, requested %u kHz\n",
 		 policy->cpu, target_freq, relation, old_target_freq);

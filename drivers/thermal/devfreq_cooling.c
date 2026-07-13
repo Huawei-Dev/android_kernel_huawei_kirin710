@@ -28,9 +28,6 @@
 
 #include <trace/events/thermal.h>
 
-#ifdef CONFIG_DRG
-#include <linux/drg.h>
-#endif
 #ifdef CONFIG_ITS_IPA
 #include <linux/lpm_thermal.h>
 #include <linux/hisi/dpm_hwmon_user.h>
@@ -181,11 +178,6 @@ static int devfreq_cooling_set_cur_state(struct thermal_cooling_device *cdev,
 		return 0;
 
 	dev_dbg(dev, "Setting cooling state %lu\n", state);
-
-#ifdef CONFIG_DRG
-	if (state < dfc->freq_table_size)
-		drg_devfreq_cooling_update(df, dfc->freq_table[state]);
-#endif
 
 #ifdef CONFIG_IPA_THERMAL
 	if (state == THERMAL_NO_LIMIT) {

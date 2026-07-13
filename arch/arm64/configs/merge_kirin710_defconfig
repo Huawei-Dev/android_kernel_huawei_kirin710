@@ -4924,7 +4924,6 @@ CONFIG_HISI_SECS_CTRL=y
 # Performace Control
 #
 CONFIG_PERF_CTRL=y
-# CONFIG_DRG is not set
 
 #
 # RPMB support

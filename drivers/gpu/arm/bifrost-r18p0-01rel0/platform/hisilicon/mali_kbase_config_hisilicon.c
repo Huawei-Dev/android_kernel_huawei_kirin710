@@ -58,9 +58,6 @@
 #ifdef CONFIG_IPA_THERMAL
 #include <linux/thermal.h>
 #endif
-#ifdef CONFIG_DRG
-#include <linux/drg.h>
-#endif
 
 #include <linux/hisi/gpufreq.h>
 #include <linux/hisi/gpu_hook.h>
@@ -1041,10 +1038,6 @@ void hisi_gpu_devfreq_init(struct kbase_device *kbdev)
 	kbdev->devfreq = df;
 
 	hisi_gpu_devfreq_cooling_init(kbdev);
-
-#ifdef CONFIG_DRG
-	drg_devfreq_register(kbdev->devfreq);
-#endif
 }
 
 void hisi_gpu_devfreq_resume(const struct devfreq *df)
@@ -1119,10 +1112,6 @@ static void kbase_platform_term(struct kbase_device *kbdev)
 {
 	KBASE_DEBUG_ASSERT(kbdev != NULL);
 #ifdef CONFIG_PM_DEVFREQ
-#ifdef CONFIG_DRG
-	drg_devfreq_unregister(kbdev->devfreq);
-#endif
-
 	devfreq_remove_device(kbdev->devfreq);
 #endif
 

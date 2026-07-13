@@ -46,7 +46,6 @@ obj-$(CONFIG_SR)                      += pm/
 obj-$(CONFIG_HW_VOTE)                 += hw_vote/
 obj-$(CONFIG_GPUFREQ)                 += gpufreq/
 obj-$(CONFIG_ONSYS_AVS)                 += onsys_avs/
-obj-$(CONFIG_DRG)                     += drg/
 obj-$(CONFIG_HISI_AP_CP_DECOUPL)           += modem_decoupl/
 ifneq ($(link_kernel),false)
 ifneq (,$(findstring $(CONFIG_HISI_BALONG_MODEM),y m))

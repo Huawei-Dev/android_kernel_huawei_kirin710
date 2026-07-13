@@ -23,10 +23,6 @@
 #include "governor.h"
 #include <securec.h>
 
-#ifdef CONFIG_DRG
-#include <linux/drg.h>
-#endif
-
 #define DEFAULT_POLLING_INTERVAL_MS 50
 #define CMFUP_DEVFREQ_PLATFORM_DEVICE_NAME	"cmfup_devfreq"
 #define CMFUP_GOVERNOR_NAME	"cmfup_governor"
@@ -283,9 +279,6 @@ static int cmfup_devfreq_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "sysfs create err %d\n", ret);
 		goto remove_devfreq;
 	}
-#ifdef CONFIG_DRG
-	drg_devfreq_register(cmfup->devfreq);
-#endif
 	return 0;
 
 remove_devfreq:
@@ -302,9 +295,6 @@ static int cmfup_devfreq_remove(struct platform_device *pdev)
 	struct cmfup_devfreq *cmfup = platform_get_drvdata(pdev);
 
 	sysfs_remove_group(&cmfup->devfreq->dev.kobj, &dev_attr_group);
-#ifdef CONFIG_DRG
-	drg_devfreq_unregister(cmfup->devfreq);
-#endif
 	devfreq_remove_device(cmfup->devfreq);
 	dev_pm_opp_of_remove_table(&pdev->dev);
 	return 0;
