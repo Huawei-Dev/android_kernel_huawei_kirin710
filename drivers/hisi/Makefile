@@ -73,7 +73,6 @@ obj-$(CONFIG_PERFHUB) += perfhub/
 obj-$(CONFIG_HISI_ICS_IPU_PLATFORM) += ics/
 ifneq ($(NPU_CUT_MAKEFILE), yes)
 endif
-obj-$(CONFIG_ATF_KERNEL_BL31_LOG) += bl31_log/
 obj-y += bus_monitor/
 obj-$(CONFIG_SOC_MAD) += soc_mad/
 obj-$(CONFIG_HISI_AP_READY)	+= hisi_ap_ready/

@@ -42,7 +42,6 @@
 #include <linux/hisi/rdr_hisi_platform.h>
 #include <pr_log.h>
 #include <linux/hisi/hisi_hw_diag.h>
-#include <linux/hisi/bl31_log.h>
 #include <partition_macro.h>
 #include <securec.h>
 #include <bl31_platform_memory_def.h>
