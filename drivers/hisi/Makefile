@@ -4,7 +4,6 @@ NPU_CUT_MAKEFILE := yes
 endif
 endif
 obj-$(CONFIG_LPM_HKADC) += adc/
-obj-$(CONFIG_LPCPU_CCI_EXTRA) += cci_extra/
 obj-$(CONFIG_HISI_CMDLINE_PARSE)	+= cmdline/
 obj-$(CONFIG_HISI_IRQ_AFFINITY) += irq_affinity/
 obj-$(CONFIG_HISILICON_PLATFORM_MAILBOX)	+= mailbox/
