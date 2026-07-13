@@ -1,4 +1,4 @@
-﻿/*
+/*
  * da_separate_v5_driver codec driver.
  *
  * Copyright (c) Huawei Technologies Co., Ltd. 2020. All rights reserved.

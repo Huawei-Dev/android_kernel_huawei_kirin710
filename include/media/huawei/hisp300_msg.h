@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Huawei Technologies Co., Ltd. 2014-2020. All rights reserved.
  * Description: initial draft
  * Author: yancong
