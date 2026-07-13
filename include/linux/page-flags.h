@@ -119,14 +119,6 @@ enum pageflags {
 #ifdef CONFIG_HISI_CMA_DEBUG
 	PG_cmapin,
 #endif
-#ifdef CONFIG_HISI_PAGE_TRACE
-	PG_lslub,
-	PG_vmalloc,
-	PG_skb,
-	PG_ion,
-	PG_zspage,
-	PG_drv,
-#endif
 #ifdef CONFIG_VM_COPY
 	PG_vmcpy,
 #endif
@@ -429,15 +421,6 @@ TESTPAGEFLAG(Young, young, PF_ANY)
 SETPAGEFLAG(Young, young, PF_ANY)
 TESTCLEARFLAG(Young, young, PF_ANY)
 PAGEFLAG(Idle, idle, PF_ANY)
-#endif
-
-#ifdef CONFIG_HISI_PAGE_TRACE
-PAGEFLAG(Lslub, lslub, PF_ANY)
-PAGEFLAG(Vmalloc, vmalloc, PF_ANY)
-PAGEFLAG(ION, ion, PF_ANY)
-PAGEFLAG(SKB, skb, PF_ANY)
-PAGEFLAG(Zspage, zspage, PF_ANY)
-PAGEFLAG(Drv, drv, PF_ANY)
 #endif
 
 PAGEFLAG(GPU, gpu, PF_ANY)

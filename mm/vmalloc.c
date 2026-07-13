@@ -1559,9 +1559,6 @@ static void __vunmap(const void *addr, int deallocate_pages)
 
 			BUG_ON(!page);
 			__free_pages(page, 0);
-#ifdef CONFIG_HISI_PAGE_TRACE
-			mod_zone_page_state(page_zone(page), NR_VMALLOC_PAGES, -1);
-#endif
 		}
 
 		kvfree(area->pages);
@@ -1735,10 +1732,6 @@ static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
 			area->nr_pages = i;
 			goto fail;
 		}
-#ifdef CONFIG_HISI_PAGE_TRACE
-		SetPageVmalloc(page);
-		mod_zone_page_state(page_zone(page), NR_VMALLOC_PAGES, 1);
-#endif
 		area->pages[i] = page;
 		page_tracker_set_type(page, TRACK_VMALLOC, 0);
 		if (gfpflags_allow_blocking(gfp_mask|highmem_mask))
@@ -2821,8 +2814,4 @@ static int __init proc_vmalloc_init(void)
 }
 module_init(proc_vmalloc_init);
 
-#endif
-
-#ifdef CONFIG_HISI_PAGE_TRACE
-#include "hisi/vmalloc_track.c"
 #endif

@@ -649,10 +649,6 @@ back_from_confirm:
 			      ulen, transhdrlen, &ipc6,
 			      &fl6, (struct rt6_info *)dst,
 			      msg->msg_flags, &sockc_unused);
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (!err)
-		alloc_skb_with_frags_stats_inc(L2TP_IP6_SENDMSG_COUNT);
-#endif
 	if (err)
 		ip6_flush_pending_frames(sk);
 	else if (!(msg->msg_flags & MSG_MORE))

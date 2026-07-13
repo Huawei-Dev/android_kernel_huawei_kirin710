@@ -1226,10 +1226,6 @@ back_from_confirm:
 				  &cork, msg->msg_flags);
 #endif
 		err = PTR_ERR(skb);
-#ifdef CONFIG_HISI_PAGE_TRACE
-		if (!IS_ERR_OR_NULL(skb))
-			alloc_skb_with_frags_stats_inc(UDP_SENDMSG_1_COUNT);
-#endif
 		if (!IS_ERR_OR_NULL(skb))
 #ifdef CONFIG_WIFI_DELAY_STATISTIC
 		{
@@ -1277,10 +1273,6 @@ do_append_data:
 	err = ip_append_data(sk, fl4, getfrag, msg, ulen,
 			     sizeof(struct udphdr), &ipc, &rt,
 			     corkreq ? msg->msg_flags|MSG_MORE : msg->msg_flags);
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (!err)
-		alloc_skb_with_frags_stats_inc(UDP_SENDMSG_2_COUNT);
-#endif
 	if (err)
 		udp_flush_pending_frames(sk);
 	else if (!corkreq)

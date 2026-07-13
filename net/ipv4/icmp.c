@@ -397,9 +397,6 @@ static void icmp_push_reply(struct icmp_bxm *icmp_param,
 		skb->ip_summed = CHECKSUM_NONE;
 		ip_push_pending_frames(sk, fl4);
 	}
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(ICMP_PUSH_REPLY_COUNT);
-#endif
 }
 
 /*

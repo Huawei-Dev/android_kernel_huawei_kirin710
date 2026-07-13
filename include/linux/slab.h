@@ -16,9 +16,6 @@
 #include <linux/types.h>
 #include <linux/workqueue.h>
 #include <linux/mm.h>
-#ifdef CONFIG_HISI_PAGE_TRACE
-#include <linux/hisi/mem_trace.h>
-#endif
 /*
  * Flags to pass to kmem_cache_create().
  * The ones marked DEBUG are only valid if CONFIG_DEBUG_SLAB is set.
@@ -104,13 +101,8 @@
 #define SLAB_KASAN		0x00000000UL
 #endif
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-#define SLAB_HISI_NOTRACE     0x10000000UL
-#define SLAB_HISI_TRACE       0x20000000UL
-#else
 #define SLAB_HISI_NOTRACE     0x00000000UL
 #define SLAB_HISI_TRACE       0x00000000UL
-#endif
 /* The following flags affect the page allocator grouping pages by mobility */
 #define SLAB_RECLAIM_ACCOUNT	0x00020000UL		/* Objects are reclaimable */
 #define SLAB_TEMPORARY		SLAB_RECLAIM_ACCOUNT	/* Objects are short-lived */

@@ -1196,9 +1196,6 @@ static struct sk_buff *tun_alloc_skb(struct tun_file *tfile,
 				   &err, 0);
 	if (!skb)
 		return ERR_PTR(err);
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(TUN_ALLOC_SKB_COUNT);
-#endif
 	skb_reserve(skb, prepad);
 	skb_put(skb, linear);
 	skb->data_len = len - linear;

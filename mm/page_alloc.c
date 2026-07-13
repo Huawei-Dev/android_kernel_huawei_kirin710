@@ -85,10 +85,6 @@
 #include <linux/hisi/lowmem_killer.h>
 #endif
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-#include <linux/hisi/mem_trace.h>
-#endif
-
 #ifdef CONFIG_MEMCG_PROTECT_LRU
 #include <linux/protect_lru.h>
 #endif
@@ -4324,10 +4320,6 @@ out:
 		page_tracker_set_trace(page, _RET_IP_, order);/*lint !e571*/
 		page_trace_hook(gfp_mask, (unsigned char)MEM_ALLOC, _RET_IP_, page, order);/*lint !e571*/
 	}
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (page)
-		set_buddy_track(page, order, _RET_IP_);/*lint !e571*/
-#endif
 	return page;
 }
 EXPORT_SYMBOL(__alloc_pages_nodemask);
@@ -4421,22 +4413,6 @@ static struct page *__page_frag_cache_refill(struct page_frag_cache *nc,
 
 	nc->va = page ? page_address(page) : NULL;
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (likely(page)) {
-		int order = get_order(nc->size);
-		int i;
-		struct page *newpage = page;
-		unsigned int deta = 1U << (unsigned int)order;
-
-		for (i = 0; i < (1 << order); i++) {
-			if (!newpage)
-				break;
-			SetPageSKB(newpage);
-			newpage++;
-		}
-		mod_zone_page_state(page_zone(page), NR_SKB_PAGES, (long)deta);
-	}
-#endif
 	return page;
 }
 
@@ -4517,13 +4493,6 @@ void page_frag_free(void *addr)
 	struct page *page = virt_to_head_page(addr);
 
 	if (unlikely(put_page_testzero(page))) {
-#ifdef CONFIG_HISI_PAGE_TRACE
-		if (likely(page)) {
-			unsigned int deta = 1U << compound_order(page);
-			mod_zone_page_state(page_zone(page),
-			NR_SKB_PAGES, -(long)deta);
-		}
-#endif
 		__free_pages_ok(page, compound_order(page));
 	}
 }
@@ -6458,9 +6427,6 @@ void __paginginit free_area_init_node(int nid, unsigned long *zones_size,
 	printk(KERN_DEBUG "free_area_init_node: node %d, pgdat %08lx, node_mem_map %08lx\n",
 		nid, (unsigned long)pgdat,
 		(unsigned long)pgdat->node_mem_map);
-#endif
-#ifdef CONFIG_HISI_PAGE_TRACE
-	buddy_track_map(0);
 #endif
 	reset_deferred_meminit(pgdat);
 	free_area_init_core(pgdat);

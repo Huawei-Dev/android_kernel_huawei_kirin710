@@ -170,12 +170,6 @@ enum zone_stat_item {
 	NR_IONCACHE_PAGES,
 	NR_MALI_PAGES,
 	NR_SWAPCACHE,
-#ifdef CONFIG_HISI_PAGE_TRACE
-	NR_SKB_PAGES,
-	NR_VMALLOC_PAGES,
-	NR_LSLAB_PAGES,
-	NR_BUDDY_PAGES,
-#endif
 	NR_VM_ZONE_STAT_ITEMS };
 
 enum node_stat_item {

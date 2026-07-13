@@ -647,9 +647,6 @@ static int rawv6_send_hdrinc(struct sock *sk, struct msghdr *msg, int length,
 				  flags & MSG_DONTWAIT, &err);
 	if (!skb)
 		goto error;
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(RAW6_SEND_HDRINC_COUNT);
-#endif
 	skb_reserve(skb, hlen);
 
 	skb->protocol = htons(ETH_P_IPV6);

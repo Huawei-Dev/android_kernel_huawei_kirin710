@@ -1707,9 +1707,6 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
 				   PAGE_ALLOC_COSTLY_ORDER);
 	if (skb == NULL)
 		goto out;
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(UNIX_DGRAM_SENDMSG_COUNT);
-#endif
 	err = unix_scm_to_skb(&scm, skb, true);
 	if (err < 0)
 		goto out_free;
@@ -1906,9 +1903,6 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
 					   get_order(UNIX_SKB_FRAGS_SZ));
 		if (!skb)
 			goto out_err;
-#ifdef CONFIG_HISI_PAGE_TRACE
-		alloc_skb_with_frags_stats_inc(UNIX_STREAM_SENDMSG_COUNT);
-#endif
 		/* Only send the fds in the first buffer */
 		err = unix_scm_to_skb(&scm, skb, !fds_sent);
 		if (err < 0) {
@@ -1980,9 +1974,6 @@ alloc_skb:
 					      &err, 0);
 		if (!newskb)
 			goto err;
-#ifdef CONFIG_HISI_PAGE_TRACE
-		alloc_skb_with_frags_stats_inc(UNIX_STREAM_SENDPAGE_COUNT);
-#endif
 	}
 
 	/* we must acquire iolock as we modify already present

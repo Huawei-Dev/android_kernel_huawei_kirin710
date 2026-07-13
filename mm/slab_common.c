@@ -287,11 +287,6 @@ int slab_unmergeable(struct kmem_cache *s)
 	if (s->refcount < 0)
 		return 1;
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (s->flags & SLAB_HISI_NOTRACE)
-		return 1;
-#endif
-
 	return 0;
 }
 
@@ -314,10 +309,6 @@ struct kmem_cache *find_mergeable(size_t size, size_t align,
 	if (flags & SLAB_NEVER_MERGE)
 		return NULL;
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (flags & SLAB_HISI_NOTRACE)
-		return NULL;
-#endif
 	list_for_each_entry_reverse(s, &slab_root_caches, root_caches_node) {
 		if (slab_unmergeable(s))
 			continue;
@@ -1157,15 +1148,6 @@ void *kmalloc_order(size_t size, gfp_t flags, unsigned int order)
 	ret = page ? page_address(page) : NULL;
 	kmemleak_alloc(ret, size, 1, flags);
 	kasan_kmalloc_large(ret, size, flags);
-#if !defined(CONFIG_TRACING) && defined(CONFIG_HISI_PAGE_TRACE)
-	if (likely(ret)) {
-		unsigned int deta = 1U << order;
-
-		set_lslub_track(page, order, _RET_IP_);
-		mod_zone_page_state(page_zone(page),
-			NR_LSLAB_PAGES, (long)deta);
-	}
-#endif
 	return ret;
 }
 EXPORT_SYMBOL(kmalloc_order);
@@ -1174,16 +1156,6 @@ EXPORT_SYMBOL(kmalloc_order);
 void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
 {
 	void *ret = kmalloc_order(size, flags, order);
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (likely(ret)) {
-		struct page *page = virt_to_page(ret);
-		unsigned int deta = 1U << order;
-
-		set_lslub_track(page, order, _RET_IP_);
-		mod_zone_page_state(page_zone(page),
-			NR_LSLAB_PAGES, (long)deta);
-	}
-#endif
 	trace_kmalloc(_RET_IP_, ret, size, PAGE_SIZE << order, flags);
 	kmalloc_trace_hook((unsigned char)MEM_ALLOC, _RET_IP_, (unsigned long long)ret,/*lint !e571*/
                 (unsigned long long)virt_to_phys(ret), (unsigned int)size);

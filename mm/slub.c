@@ -47,10 +47,6 @@ static void set_harden_double_free_check_flags(bool status);
 static bool fill_random_malloc;
 #endif
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-#include <linux/hisi/mem_trace.h>
-#endif
-
 /*
  * Lock order:
  *   1. slab_mutex (Global Mutex)
@@ -2880,10 +2876,6 @@ redo:
 		memset(object, 0, s->object_size);
 
 	slab_post_alloc_hook(s, gfpflags, 1, &object);
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (likely(object) && (s->flags & SLAB_HISI_TRACE))
-		set_alloc_track(addr);
-#endif
 	return object;
 }
 
@@ -3163,11 +3155,6 @@ static __always_inline void slab_free(struct kmem_cache *s, struct page *page,
 	if (s->flags & SLAB_KASAN && !(s->flags & SLAB_TYPESAFE_BY_RCU))
 		return;
 	do_slab_free(s, page, head, tail, cnt, addr);
-
-#ifdef CONFIG_HISI_PAGE_TRACE
-	if (s->flags & SLAB_HISI_TRACE)
-		set_free_track(addr);
-#endif
 }
 
 #ifdef CONFIG_KASAN
@@ -4135,10 +4122,6 @@ void kfree(const void *x)
 {
 	struct page *page;
 	void *object = (void *)x;
-#ifdef CONFIG_HISI_PAGE_TRACE
-	unsigned int deta;
-#endif
-
 	trace_kfree(_RET_IP_, x);
 
 	if (unlikely(ZERO_OR_NULL_PTR(x)))
@@ -4152,10 +4135,6 @@ void kfree(const void *x)
 			(unsigned long long)virt_to_phys(x),
 			(unsigned int)(PAGE_SIZE << compound_order(page)));
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-		deta = 1U << compound_order(page);
-		mod_zone_page_state(page_zone(page), NR_LSLAB_PAGES, -(long)deta);
-#endif
 		__free_pages(page, compound_order(page));
 		return;
 	}
@@ -6282,8 +6261,4 @@ int set_harden_double_free_status(bool status)
 	set_harden_double_free_check_flags(status);
 	return 0;
 }
-#endif
-
-#ifdef CONFIG_HISI_PAGE_TRACE
-#include "hisi/slub_track.c"
 #endif

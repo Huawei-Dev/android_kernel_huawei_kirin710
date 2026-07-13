@@ -5021,9 +5021,6 @@ int tcp_send_rcvq(struct sock *sk, struct msghdr *msg, size_t size)
 				   &err, sk->sk_allocation);
 	if (!skb)
 		goto err;
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(TCP_SEND_RCVQ_COUNT);
-#endif
 	skb_put(skb, size - data_len);
 	skb->data_len = data_len;
 	skb->len = size;

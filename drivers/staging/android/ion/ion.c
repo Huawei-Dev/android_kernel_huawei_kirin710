@@ -178,9 +178,6 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	for_each_sg(buffer->sg_table->sgl, sg, buffer->sg_table->nents, i) {
 		sg_dma_address(sg) = sg_phys(sg);
 		sg_dma_len(sg) = sg->length;
-#ifdef CONFIG_HISI_PAGE_TRACE
-		SetPageION(sg_page(sg));
-#endif
 	}
 
 	if (buffer->heap->type != ION_HEAP_TYPE_CARVEOUT)

@@ -31,14 +31,6 @@ const struct trace_print_flags pageflag_names[] = {
 #ifdef CONFIG_TASK_PROTECT_LRU
 	{1UL << PG_protect,		"protect"	},
 #endif
-#ifdef CONFIG_HISI_PAGE_TRACE
-	{1UL << PG_lslub,                  "lslub"          },
-	{1UL << PG_vmalloc,                "vmalloc"        },
-	{1UL << PG_skb,                    "skb"            },
-	{1UL << PG_ion,                    "ion"            },
-	{1UL << PG_zspage,                 "zspage"         },
-	{1UL << PG_drv,                    "drv"            },
-#endif
 	{1UL << PG_gpu,                    "gpu"            },
 #ifdef CONFIG_VM_COPY
 	{1UL << PG_vmcpy,                  "vmcpy"          },

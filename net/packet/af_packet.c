@@ -2772,9 +2772,6 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
 				err = len_sum;
 			goto out_status;
 		}
-#ifdef CONFIG_HISI_PAGE_TRACE
-		alloc_skb_with_frags_stats_inc(TPACKET_SND_COUNT);
-#endif
 		tp_len = tpacket_fill_skb(po, skb, ph, dev, data, tp_len, proto,
 					  addr, hlen, copylen, &sockc);
 		if (likely(tp_len >= 0) &&
@@ -2865,9 +2862,6 @@ static struct sk_buff *packet_alloc_skb(struct sock *sk, size_t prepad,
 				   err, 0);
 	if (!skb)
 		return NULL;
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(PACKET_ALLOC_SKB_COUNT);
-#endif
 	skb_reserve(skb, reserve);
 	skb_put(skb, linear);
 	skb->data_len = len - linear;

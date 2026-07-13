@@ -4100,9 +4100,6 @@ void __init skb_init(void)
 						0,
 						SLAB_HWCACHE_ALIGN|SLAB_PANIC|SLAB_CACHE_DMA,
 						NULL);
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_init();
-#endif
 }
 
 static int
@@ -5797,33 +5794,3 @@ void skb_condense(struct sk_buff *skb)
 	 */
 	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
 }
-
-#ifdef CONFIG_HISI_PAGE_TRACE
-static atomic_t alloc_skb_with_frags_counts[MAX_ALLOC_SKB_WITH_FRAGS_COUNT];
-
-void alloc_skb_with_frags_stats_init(void)
-{
-	int i;
-
-	for (i = 0; i < MAX_ALLOC_SKB_WITH_FRAGS_COUNT; i++)
-		atomic_set(&alloc_skb_with_frags_counts[i], 0);
-}
-
-void alloc_skb_with_frags_stats_inc(int type)
-{
-	if (type < MAX_ALLOC_SKB_WITH_FRAGS_COUNT)
-		atomic_inc(&alloc_skb_with_frags_counts[type]);
-}
-
-void alloc_skb_with_frags_stats_show(void)
-{
-	int i;
-
-	pr_err("========alloc skb with frags stats start==========\n");
-	for (i = 0; i < MAX_ALLOC_SKB_WITH_FRAGS_COUNT; i++)
-		pr_err("%d : %d\n", i,
-			atomic_read(&alloc_skb_with_frags_counts[i]));
-
-	pr_err("========alloc skb with frags stats end==========\n");
-}
-#endif

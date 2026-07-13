@@ -128,10 +128,6 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 		    global_node_page_state(NR_SLAB_RECLAIMABLE));
 	show_val_kb(m, "SUnreclaim:     ",
 		    global_node_page_state(NR_SLAB_UNRECLAIMABLE));
-#ifdef CONFIG_HISI_PAGE_TRACE
-	show_val_kb(m, "SlabLarge:      ",
-		    global_zone_page_state(NR_LSLAB_PAGES));
-#endif
 	seq_printf(m, "KernelStack:    %8lu kB\n",
 		   global_zone_page_state(NR_KERNEL_STACK_KB));
 #ifdef CONFIG_SHADOW_CALL_STACK

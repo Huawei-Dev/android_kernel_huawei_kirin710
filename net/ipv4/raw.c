@@ -377,9 +377,6 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
 				  flags & MSG_DONTWAIT, &err);
 	if (!skb)
 		goto error;
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(RAW_SENDM_HDRINC_COUNT);
-#endif
 	skb_reserve(skb, hlen);
 
 	skb->priority = sk->sk_priority;

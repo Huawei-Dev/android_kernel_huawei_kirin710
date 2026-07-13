@@ -3,17 +3,6 @@ menuconfig HISI_MM
 	---help---
 	  This option add some hisilicon mm codes, needed by following modules.
 
-config HISI_PAGE_TRACE
-	bool "HISI page trace"
-	---help---
-	  This option enables hisi page trace, needed by memleak check modules.
-
-config HISI_PAGE_TRACE_TEST
-	bool "HISI page trace test"
-	depends on HISI_PAGE_TRACE
-	---help---
-	  This option enables hisi page trace test, needed by hisi page trace modules.
-
 config HISI_MEM_OFFLINE
 	bool "Dynamic Memory Region Offline driver"
 	depends on MEMORY_HOTPLUG

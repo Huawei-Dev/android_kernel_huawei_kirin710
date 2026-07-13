@@ -1670,9 +1670,6 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 		ip_flush_pending_frames(sk);
 		goto out;
 	}
-#ifdef CONFIG_HISI_PAGE_TRACE
-	alloc_skb_with_frags_stats_inc(IP_SEND_UNICAST_REPLY_COUNT);
-#endif
 	nskb = skb_peek(&sk->sk_write_queue);
 	if (nskb) {
 		if (arg->csumoffset >= 0)

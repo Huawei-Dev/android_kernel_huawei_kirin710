@@ -1064,13 +1064,6 @@ const char * const vmstat_text[] = {
 	"nr_mali_pages",
 	"nr_swapcache",
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-	"nr_skb_pages",
-	"nr_vmalloc_pages",
-	"nr_lslab_pages",
-	"nr_buddy_pages",
-#endif
-
 	/* enum numa_stat_item counters */
 #ifdef CONFIG_NUMA
 	"numa_hit",

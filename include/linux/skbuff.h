@@ -994,37 +994,6 @@ static inline struct sk_buff *alloc_skb(unsigned int size,
 	return __alloc_skb(size, priority, 0, NUMA_NO_NODE);
 }
 
-#ifdef CONFIG_HISI_PAGE_TRACE
-enum {
-	TCP_SEND_RCVQ_COUNT = 0,
-	TUN_ALLOC_SKB_COUNT,
-	TAP_ALLOC_SKB_COUNT,
-	PACKET_ALLOC_SKB_COUNT,
-	UNIX_DGRAM_SENDMSG_COUNT,
-	UNIX_STREAM_SENDMSG_COUNT,
-	UNIX_STREAM_SENDPAGE_COUNT,
-	BT_SKB_SEND_ALLOC_COUNT,
-	RAW_SENDM_HDRINC_COUNT,
-	MLD_NEWPACK_COUNT,
-	IGMP6_SEND_COUNT,
-	RAW6_SEND_HDRINC_COUNT,
-	TPACKET_SND_COUNT,
-	UDP_SENDMSG_1_COUNT,
-	UDP_SENDMSG_2_COUNT,
-	ICMP_PUSH_REPLY_COUNT,
-	IP_SEND_UNICAST_REPLY_COUNT,
-	UDPV6_SENDMSG_1_COUNT,
-	UDPV6_SENDMSG_2_COUNT,
-	ICMP6_SEND_COUNT,
-	L2TP_IP6_SENDMSG_COUNT,
-	ICMPV6_ECHO_REPLAY_COUNT,
-	MAX_ALLOC_SKB_WITH_FRAGS_COUNT,
-};
-void alloc_skb_with_frags_stats_init(void);
-void alloc_skb_with_frags_stats_inc(int type);
-void alloc_skb_with_frags_stats_show(void);
-#endif
-
 struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
 				     unsigned long data_len,
 				     int max_page_order,
