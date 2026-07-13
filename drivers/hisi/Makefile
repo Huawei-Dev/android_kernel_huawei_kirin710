@@ -66,7 +66,6 @@ obj-$(CONFIG_HISI_ICS_IPU_PLATFORM) += ics/
 ifneq ($(NPU_CUT_MAKEFILE), yes)
 endif
 obj-$(CONFIG_SOC_MAD) += soc_mad/
-obj-$(CONFIG_HISI_AP_READY)	+= hisi_ap_ready/
 obj-$(CONFIG_THEED) += thee/
 obj-$(CONFIG_SWITCH)        += switch/
 obj-$(CONFIG_HISI_BOOTDEVICE)   += bootdevice/
