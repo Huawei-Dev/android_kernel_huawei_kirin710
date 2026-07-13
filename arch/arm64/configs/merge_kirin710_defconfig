@@ -4919,7 +4919,6 @@ CONFIG_HISI_SECS_CTRL=y
 # CONFIG_HISPIPP is not set
 # CONFIG_HISP_DEBUG is not set
 # CONFIG_HISP_SMMU_BYPASS_DEBUG is not set
-# CONFIG_ACCURATE_DELAY is not set
 
 #
 # Performace Control

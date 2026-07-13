@@ -37,7 +37,6 @@
 #include <linux/slab.h>
 #include <linux/atomic.h>
 #include <linux/hisi/hisi_cpufreq_lowtemp.h>
-#include <linux/accurate_delay.h>
 #if defined(CONFIG_FB)
 #include <linux/notifier.h>
 #include <linux/fb.h>

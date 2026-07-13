@@ -22,6 +22,7 @@
 #include <linux/mutex.h>
 #include <linux/cdev.h>
 #include <linux/pm_wakeup.h>
+#include <asm-generic/delay.h>
 
 #define EVENT_CTS_HOME	172
 #define EVENT_HOLD	28
@@ -237,5 +238,9 @@ struct fp_sensor_info {
 };
 #endif
 
-#endif
+static void accurate_delay_100us(unsigned long us_100)
+{
+	udelay(100*us_100);
+}
 
+#endif
