@@ -48,9 +48,6 @@
 #include <linux/sched/cputime.h>
 #endif
 
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
 #include <linux/fdtable.h>
 #include <linux/sched/signal.h>
 
@@ -133,9 +130,6 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	struct ion_buffer *buffer;
 	struct sg_table *table;
 	struct scatterlist *sg;
-#ifdef CONFIG_HISI_LB
-	unsigned int plc_id;
-#endif
 	int ret;
 	int i;
 
@@ -192,23 +186,6 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	if (buffer->heap->type != ION_HEAP_TYPE_CARVEOUT)
 		atomic_long_add(buffer->size, &ion_total_size);
 
-#ifdef CONFIG_HISI_LB
-	if (flags & ION_FLAG_MM_LB_MASK) {
-		plc_id = ION_FLAG_2_PLC_ID(flags);
-		pr_info("MM ION LB %u\n", plc_id);
-
-		/*
-		 * will inv cache with normal va,
-		 * and need after set zero
-		 */
-		if (plc_id != PID_NPU) {
-			if (lb_sg_attach(plc_id, buffer->sg_table->sgl,
-				buffer->sg_table->nents))
-				goto err1;
-			buffer->plc_id = plc_id;
-		}
-	}
-#endif
 	init_dump(buffer);
 	mutex_lock(&dev->buffer_lock);
 	ion_buffer_add(dev, buffer);
@@ -216,43 +193,11 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 
 	return buffer;
 
-#ifdef CONFIG_HISI_LB
-err1:
-	heap->ops->free(buffer);
-#endif
 err2:
 	kfree(buffer);
 	return ERR_PTR(ret);
 }
 
-#ifdef CONFIG_HISI_LB
-static void ion_buffer_detach_lb(struct ion_buffer *buffer)
-{
-	int i;
-	struct scatterlist *sg = NULL;
-	struct sg_table *table = NULL;
-	unsigned int plc_id = buffer->plc_id;
-
-	pr_info("%s:magic-%lu,bufsize-0x%lx,lbsize-0x%lx\n", __func__,
-		buffer->magic, buffer->size, buffer->lb_size);
-
-	if (!buffer->sg_table || !buffer->sg_table->sgl)
-		return;
-
-	table = buffer->sg_table;
-	if (plc_id != PID_NPU) {
-		(void)lb_sg_detach(plc_id, table->sgl, table->nents);
-	} else {
-		for_each_sg(table->sgl, sg, table->nents, i) {
-			if (PageLB(sg_page(sg)))
-				(void)lb_pages_detach(plc_id, sg_page(sg),
-					sg->length >> PAGE_SHIFT);
-		}
-	}
-}
-#endif
-
-/*lint +e578 +e574*/
 void ion_buffer_destroy(struct ion_buffer *buffer)
 {
 	if (buffer->heap->type != ION_HEAP_TYPE_CARVEOUT)
@@ -264,14 +209,6 @@ void ion_buffer_destroy(struct ion_buffer *buffer)
 		buffer->heap->ops->unmap_kernel(buffer->heap, buffer);
 	}
 
-#ifdef CONFIG_HISI_LB
-	/*
-	 * will inv cache with gid va,
-	 * and need before free
-	 */
-	if (buffer->plc_id)
-		ion_buffer_detach_lb(buffer);
-#endif
 	buffer->heap->ops->free(buffer);
 	kfree(buffer);
 }
@@ -536,142 +473,12 @@ static int ion_dma_buf_end_cpu_access(struct dma_buf *dmabuf,
 	return 0;
 }
 
-/*lint -e574*/
-#ifdef CONFIG_HISI_LB
-static void ion_dma_buf_lb_err(struct sg_table *table, int nents, int pid)
-{
-	int i;
-	unsigned long len;
-	struct scatterlist *sg = NULL;
-
-	for_each_sg(table->sgl, sg, nents, i) {
-		if (!sg)
-			continue;
-
-		len = sg->length;
-		if (PageLB(sg_page(sg)))
-			(void)lb_pages_detach(pid, sg_page(sg),
-				len >> PAGE_SHIFT);
-	}
-}
-
-static int ion_dma_buf_attach_lb(struct dma_buf *dmabuf,
-	unsigned int pid, unsigned long offset, size_t size)
-{
-	int i;
-	unsigned long len;
-	struct scatterlist *sg = NULL;
-	struct sg_table *table = NULL;
-	struct ion_buffer *buffer = dmabuf->priv;
-
-	pr_info("%s:magic-%lu,bufsize-0x%lx,lbsize-0x%lx\n", __func__,
-		buffer->magic, buffer->size, size);
-
-	if (!pid || (offset + size) > buffer->size) {
-		pr_err("%s:offset or size is invalid\n", __func__);
-		return -EINVAL;
-	}
-
-	if (!IS_ALIGNED(size, SZ_1M) || !IS_ALIGNED(offset, SZ_1M)) {
-		pr_err("%s:offset or size is not aligned\n", __func__);
-		return -EINVAL;
-	}
-
-	if (!buffer || !buffer->sg_table || !buffer->sg_table->sgl)
-		return -EINVAL;
-
-	table = buffer->sg_table;
-
-	mutex_lock(&buffer->lock);
-	buffer->plc_id = pid;
-	buffer->offset = offset;
-	buffer->lb_size = size;
-
-	for_each_sg(table->sgl, sg, table->nents, i) {
-		len = sg->length;
-		if (size == 0)
-			break;
-
-		if (offset == 0) {
-			if (lb_pages_attach(pid, sg_page(sg),
-					len >> PAGE_SHIFT))
-				goto err;
-
-			size = size < len ? 0 : (size - len);
-		} else {
-			offset = offset < len ? 0 : (offset - len);
-		}
-	}
-
-	mutex_unlock(&buffer->lock);
-
-	return 0;
-err:
-	ion_dma_buf_lb_err(table, i, pid);
-	mutex_unlock(&buffer->lock);
-
-	pr_err("%s:lb attach fail\n", __func__);
-
-	return -EINVAL;
-}
-
-static int ion_dma_buf_detach_lb(struct dma_buf *dmabuf)
-{
-	int i;
-	unsigned long len;
-	struct scatterlist *sg = NULL;
-	struct sg_table *table = NULL;
-	struct ion_buffer *buffer = dmabuf->priv;
-	unsigned int pid;
-
-	if (!buffer || !buffer->sg_table || !buffer->plc_id)
-		return -EINVAL;
-
-	pr_info("%s:magic-%lu,bufsize-0x%lx,lbsize-0x%lx\n", __func__,
-		buffer->magic, buffer->size, buffer->lb_size);
-
-	pid = buffer->plc_id;
-	table = buffer->sg_table;
-	if (!table->sgl)
-		return -EINVAL;
-
-	mutex_lock(&buffer->lock);
-
-	for_each_sg(table->sgl, sg, table->nents, i) {
-		len = sg->length;
-		if (PageLB(sg_page(sg)))
-			(void)lb_pages_detach(pid, sg_page(sg),
-				len >> PAGE_SHIFT);
-	}
-
-	buffer->plc_id = 0;
-	mutex_unlock(&buffer->lock);
-
-	return 0;
-}
-
-static int ion_dma_buf_mk_lb_prot(struct dma_buf *dmabuf)
-{
-	struct ion_buffer *buffer = dmabuf->priv;
-	unsigned int prot = (unsigned int)buffer->plc_id << IOMMU_PORT_SHIFT;
-
-	return (int)prot;
-}
-
-#endif
-/*lint +e574*/
-
 static const struct dma_buf_ops dma_buf_ops = {
 	.map_dma_buf = ion_map_dma_buf,
 	.unmap_dma_buf = ion_unmap_dma_buf,
 	.mmap = ion_mmap,
 	.release = ion_dma_buf_release,
 	.attach = ion_dma_buf_attach,
-#ifdef CONFIG_HISI_LB
-	.attach_lb = ion_dma_buf_attach_lb,
-	.detach_lb = ion_dma_buf_detach_lb,
-	.mk_prot = ion_dma_buf_mk_lb_prot,
-#endif
 	.detach = ion_dma_buf_detatch,
 	.begin_cpu_access = ion_dma_buf_begin_cpu_access,
 	.end_cpu_access = ion_dma_buf_end_cpu_access,

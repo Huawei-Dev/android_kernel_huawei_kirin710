@@ -938,9 +938,7 @@ swiotlb_sync_single(struct device *hwdev, dma_addr_t dev_addr,
 	if (dir != DMA_FROM_DEVICE)
 		return;
 
-#ifndef CONFIG_HISI_LB
 	dma_mark_clean(phys_to_virt(paddr), size);
-#endif
 }
 
 void

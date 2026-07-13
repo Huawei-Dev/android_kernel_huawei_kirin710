@@ -23,10 +23,6 @@
 #define IOMMU_DEVICE (1 << 7)
 #define IOMMU_SEC    (1 << 8)
 #define IOMMU_EXEC   (1 << 9)
-#ifdef CONFIG_HISI_LB
-#define IOMMU_PORT_SHIFT	(12)
-#define IOMMU_PORT_MASK	(0xFF << IOMMU_PORT_SHIFT)
-#endif
 
 extern int of_get_iova_info(struct device_node *np, unsigned long *iova_start,
 			unsigned long *iova_size, unsigned long *iova_align);

@@ -83,19 +83,7 @@ extern unsigned long memory_end;
 
 #define virt_to_page(addr)	pfn_to_page(virt_to_pfn(addr))
 
-#if defined(CONFIG_HISI_LB_DEBUG)
-extern void __lb_assert_page(struct page *pg);
-#define lb_assert_page	__lb_assert_page
-#endif
-
-#if defined(CONFIG_HISI_LB_DEBUG)
-#define page_to_virt(page) ({ \
-		lb_assert_page(page); \
-		pfn_to_virt(page_to_pfn(page)); \
-		})
-#else
 #define page_to_virt(page)	pfn_to_virt(page_to_pfn(page))
-#endif
 
 #ifndef page_to_phys
 #define page_to_phys(page)      ((dma_addr_t)page_to_pfn(page) << PAGE_SHIFT)

@@ -28,9 +28,6 @@
 #include <linux/types.h>
 #include <linux/dma-mapping.h>
 #include <linux/hisi-iommu.h>
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
 #include <asm/barrier.h>
 
 #include "io-pgtable.h"
@@ -425,10 +422,6 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
 static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
 					   int prot)
 {
-#ifdef CONFIG_HISI_LB
-	int pid = 0;
-#endif
-
 	arm_lpae_iopte pte;
 
 	if (data->iop.fmt == ARM_64_LPAE_S1 ||
@@ -463,11 +456,6 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
 
 	if (prot & IOMMU_NOEXEC)
 		pte |= ARM_LPAE_PTE_XN;
-
-#ifdef CONFIG_HISI_LB
-	pid = (prot & IOMMU_PORT_MASK) >> IOMMU_PORT_SHIFT;
-	pte |= !pid  ?  0 : lb_pid_to_gidphys(pid);
-#endif
 
 	return pte;
 }

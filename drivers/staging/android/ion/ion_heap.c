@@ -25,9 +25,6 @@
 #include <uapi/linux/sched/types.h>
 #include <linux/scatterlist.h>
 #include <linux/vmalloc.h>
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
 #include "ion.h"
 
 void *ion_heap_map_kernel(struct ion_heap *heap,
@@ -49,14 +46,6 @@ void *ion_heap_map_kernel(struct ion_heap *heap,
 		pgprot = PAGE_KERNEL;
 	else
 		pgprot = pgprot_writecombine(PAGE_KERNEL);
-
-#ifdef CONFIG_HISI_LB
-	if (buffer->plc_id) {
-		pr_info("%s:magic-%lu,lb_pid-%u\n", __func__,
-			buffer->magic, buffer->plc_id);
-		lb_pid_prot_build(buffer->plc_id, &pgprot);
-	}
-#endif
 
 	for_each_sg(table->sgl, sg, table->nents, i) {
 		int npages_this_entry = PAGE_ALIGN(sg->length) / PAGE_SIZE;
@@ -81,22 +70,6 @@ void ion_heap_unmap_kernel(struct ion_heap *heap,
 	vunmap(buffer->vaddr);
 }
 
-#ifdef CONFIG_HISI_LB
-static int remap_lb_pfn_range(struct ion_buffer *buffer, struct page *page,
-	struct vm_area_struct *vma, unsigned long addr, unsigned long len)
-{
-	int ret = 0;
-	unsigned int gid_idx;
-	pgprot_t newprot = vma->vm_page_prot;
-
-	gid_idx = lb_page_to_gid(page);
-	newprot = pgprot_lb(newprot, gid_idx);
-	ret = remap_pfn_range(vma, addr, page_to_pfn(page), len, newprot);
-
-	return ret;
-}
-#endif
-
 void ion_lb_close(struct vm_area_struct *area)
 {
 	pr_info("%s:start-0x%lx,end-0x%lx\n", __func__, area->vm_start,
@@ -117,18 +90,6 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 	int i;
 	int ret;
 
-#ifdef CONFIG_HISI_LB
-	if (buffer->plc_id) {
-		pr_info("%s:magic-%lu,start-0x%lx,end-0x%lx\n", __func__,
-			buffer->magic, vma->vm_start, vma->vm_end);
-		if (!vma->vm_ops)
-			vma->vm_ops = &ion_lb_vm_ops;
-	}
-
-	if (buffer->plc_id && buffer->plc_id != PID_NPU)
-		lb_pid_prot_build(buffer->plc_id, &vma->vm_page_prot);
-#endif
-
 	for_each_sg(table->sgl, sg, table->nents, i) {
 		struct page *page = sg_page(sg);
 		unsigned long remainder = vma->vm_end - addr;
@@ -143,14 +104,8 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 			offset = 0;
 		}
 		len = min(len, remainder);
-
-#ifdef CONFIG_HISI_LB
-		if (buffer->plc_id == PID_NPU)
-			ret = remap_lb_pfn_range(buffer, page, vma, addr, len);
-		else
-#endif
-			ret = remap_pfn_range(vma, addr, page_to_pfn(page), len,
-				vma->vm_page_prot);
+		ret = remap_pfn_range(vma, addr, page_to_pfn(page), len,
+			vma->vm_page_prot);
 		if (ret)
 			return ret;
 		addr += len;

@@ -33,9 +33,6 @@
 #include <linux/bitops.h>
 #include <linux/hisi/page_tracker.h>
 #include <linux/hisi/rdr_hisi_ap_hook.h>
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
 
 #include <linux/uaccess.h>
 #include <asm/tlbflush.h>
@@ -1654,81 +1651,6 @@ void vunmap(const void *addr)
 		__vunmap(addr, 0);
 }
 EXPORT_SYMBOL(vunmap);
-
-#ifdef CONFIG_HISI_LB
-
-/**
- *	lb_vmap  -  map an array of lb pages into virtually contiguous space
- *	@pages:		array of page pointers
- *	@count:     number of pages to map
- *  @offset:    number of normal pages offset to the start of virtual space.
- *              pages[offset] is the beginning of the normal memory pages.
- *	@flags:		vm_area->flags
- *	@prot:		page protection for the mapping
- *
- *	Maps @count pages from @pages into contiguous kernel virtual
- *	space.
- */
-void *lb_vmap(struct page **pages, unsigned int count, unsigned int offset,
-		unsigned long flags, pgprot_t prot)
-{
-	int ret;
-	struct vm_struct *area = NULL;
-	unsigned long size; /* In bytes */
-	unsigned long vm_start, vm_end, vm_mid;
-
-	might_sleep();
-
-	if (count > totalram_pages)
-		return NULL;
-
-	/* All the pages are normal memory, directly call vmap. */
-	if (offset == 0)
-		return vmap(pages, count, flags, prot);
-
-	/* All the pages are last buffer, directly call vmap. */
-	if (count < offset) {
-		lb_prot_build(pages[0], &prot);
-		return vmap(pages, count, flags, prot);
-	}
-
-	/* Split the memory, the first part is last buffer, then the normal memory. */
-	size = (unsigned long)count << PAGE_SHIFT;
-	area = get_vm_area_caller(size, flags, __builtin_return_address(0));
-	if (!area)
-		return NULL;
-
-	vm_start = (unsigned long)area->addr;
-	vm_end = vm_start + get_vm_area_size(area);
-	vm_mid = vm_start + (unsigned long)(offset << PAGE_SHIFT);
-
-	/* For pages from last buffer, they mapped from the beginning of vm area.
-	 * Build the prot of last buffer first.
-	 */
-	lb_prot_build(pages[0], &prot);
-	ret = vmap_page_range_noflush(vm_start, vm_mid, prot, pages);
-	if (ret <= 0) {
-		vunmap(area->addr);
-		return NULL;
-	}
-
-	/* For pages from normal memory, they mapped from the end of last buffer.
-	 * Clear the last buffer prot for normal memory first.
-	 */
-	prot = pgprot_lb(prot, 0);
-	ret = vmap_page_range_noflush(vm_mid, vm_end, prot, pages + offset);
-	if (ret <= 0) {
-		vunmap(area->addr);
-		return NULL;
-	}
-
-	/* Mapping is done. flush the cache of whole vm area. */
-	flush_cache_vmap(vm_start, vm_end);
-	return area->addr;
-}
-EXPORT_SYMBOL(lb_vmap);
-
-#endif
 
 /**
  *	vmap  -  map an array of pages into virtually contiguous space

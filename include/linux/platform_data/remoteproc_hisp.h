@@ -20,13 +20,8 @@
 #include <asm/page.h>
 #include <linux/version.h>
 #include <linux/platform_data/hisp.h>
-#ifdef CONFIG_HISI_LB
-#define IOMMU_MASK (~(IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE | IOMMU_NOEXEC \
-		| IOMMU_MMIO | IOMMU_DEVICE | IOMMU_EXEC | IOMMU_PORT_MASK))
-#else
 #define IOMMU_MASK (~(IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE | IOMMU_NOEXEC \
 		| IOMMU_MMIO | IOMMU_DEVICE | IOMMU_EXEC))
-#endif
 #define ISP_FW_MEM_SHARED_SIZE   (0x1000)
 #define ISP_MAX_NUM_MAGIC        (0xFFFFFFFF)
 #define ISP_MAX_IOVA_MAGIC       (0xE0000000)

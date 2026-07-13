@@ -46,11 +46,6 @@
 #include <asm/fixmap.h>
 #include <linux/mmdebug.h>
 
-#if defined(CONFIG_HISI_LB_DEBUG)
-extern void __lb_assert_pte(pte_t pte);
-#define lb_assert_pte __lb_assert_pte
-#endif
-
 extern void __pte_error(const char *file, int line, unsigned long val);
 extern void __pmd_error(const char *file, int line, unsigned long val);
 extern void __pud_error(const char *file, int line, unsigned long val);
@@ -207,10 +202,6 @@ static inline pmd_t pmd_mkcont(pmd_t pmd)
 
 static inline void set_pte(pte_t *ptep, pte_t pte)
 {
-#if defined(CONFIG_HISI_LB_DEBUG)
-	lb_assert_pte(pte);
-#endif
-
 #ifdef CONFIG_ARM64_STRICT_BREAK_BEFORE_MAKE
 	pteval_t old = pte_val(*ptep);
 	pteval_t new = pte_val(pte);
@@ -416,11 +407,6 @@ static inline int pmd_protnone(pmd_t pmd)
 	__pgprot_modify(prot, PTE_ATTRINDX_MASK, PTE_ATTRINDX(MT_NORMAL_NC) | PTE_PXN | PTE_UXN)
 #define pgprot_device(prot) \
 	__pgprot_modify(prot, PTE_ATTRINDX_MASK, PTE_ATTRINDX(MT_DEVICE_nGnRE) | PTE_PXN | PTE_UXN)
-
-#ifdef CONFIG_HISI_LB
-#define pgprot_lb(prot, gid)	__pgprot_modify(prot, PTE_LB_MASK, PTE_LB(gid))
-#define pte_gid(pte)		((pte_val(pte) & PTE_LB_MASK) >> 36)
-#endif
 
 #define __HAVE_PHYS_MEM_ACCESS_PROT
 struct file;

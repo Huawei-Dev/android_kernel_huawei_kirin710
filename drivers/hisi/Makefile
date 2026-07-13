@@ -37,7 +37,6 @@ obj-$(CONFIG_SECURITY_INFO)                     += security_info/
 obj-y                                           += hisi_cma/
 obj-y                                           += hitest/
 obj-y                                           += tzdriver/
-obj-$(CONFIG_HISI_LB)                           += hisi_lb/
 obj-$(CONFIG_LOAD_IMAGE) += load_image/
 obj-$(CONFIG_HISI_SECS_CTRL) += secs_power_ctrl/
 obj-$(CONFIG_SR)                      += pm/

@@ -1,2 +1,2 @@
-source "drivers/hwusb/hw_gadget/Kconfig"
-source "drivers/hwusb/hw_usb/Kconfig"
+source "drivers/hisi/hwusb/hw_gadget/Kconfig"
+source "drivers/hisi/hwusb/hw_usb/Kconfig"

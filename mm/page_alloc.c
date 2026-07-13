@@ -4363,9 +4363,6 @@ EXPORT_SYMBOL(get_zeroed_page);
 
 void __free_pages(struct page *page, unsigned int order)
 {
-#ifdef CONFIG_HISI_LB
-	BUG_ON(PageLB(page) || PageLB(page + ((1 << order) - 1)));/*lint !e679*/
-#endif
 	VM_BUG_ON_PAGE(PageLRU(page) || !page_count(page), page);
 	BUG_ON(PageLRU(page) || !page_count(page));
 #ifdef CONFIG_VM_COPY

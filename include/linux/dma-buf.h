@@ -91,13 +91,6 @@ struct dma_buf_ops {
 	 */
 	void (*detach)(struct dma_buf *, struct dma_buf_attachment *);
 
-#ifdef CONFIG_HISI_LB
-	int (*attach_lb)(struct dma_buf *dmabuf, unsigned int pid,
-			unsigned long offset, size_t size);
-	int (*detach_lb)(struct dma_buf *dmabuf);
-
-	int (*mk_prot)(struct dma_buf *dmabuf);
-#endif
 	/**
 	 * @map_dma_buf:
 	 *
@@ -395,15 +388,9 @@ struct dma_buf *dma_buf_export(const struct dma_buf_export_info *exp_info);
 
 int dma_buf_fd(struct dma_buf *dmabuf, int flags);
 struct dma_buf *dma_buf_get(int fd);
-#ifdef CONFIG_HISI_LB
-int dma_buf_attach_lb(int fd, unsigned int pid, unsigned long offset,
-	size_t size);
-int dma_buf_detach_lb(int fd);
-#else
 static inline int dma_buf_attach_lb(int fd, unsigned int pid,
 	unsigned long offset, size_t size) { return 0; }
 static inline int dma_buf_detach_lb(int fd) { return 0; }
-#endif
 void dma_buf_put(struct dma_buf *dmabuf);
 
 struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *,

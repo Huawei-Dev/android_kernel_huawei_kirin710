@@ -604,43 +604,6 @@ int dma_buf_fd(struct dma_buf *dmabuf, int flags)
 }
 EXPORT_SYMBOL_GPL(dma_buf_fd);
 
-#ifdef CONFIG_HISI_LB
-int dma_buf_attach_lb(int fd, unsigned int pid, unsigned long offset,
-		size_t size)
-{
-	int res = 0;
-	struct dma_buf *dbf = NULL;
-
-	dbf = dma_buf_get(fd);
-	if (IS_ERR(dbf))
-		return -EINVAL;
-
-	if (dbf->ops->attach_lb)
-		res = dbf->ops->attach_lb(dbf, pid, offset, size);
-
-	dma_buf_put(dbf);
-
-	return res;
-}
-
-int dma_buf_detach_lb(int fd)
-{
-	int res = 0;
-	struct dma_buf *dbf = NULL;
-
-	dbf = dma_buf_get(fd);
-	if (IS_ERR(dbf))
-		return -EINVAL;
-
-	if (dbf->ops->detach_lb)
-		res = dbf->ops->detach_lb(dbf);
-
-	dma_buf_put(dbf);
-
-	return res;
-}
-#endif
-
 /**
  * dma_buf_get - returns the dma_buf structure related to an fd
  * @fd:	[in]	fd associated with the dma_buf to be returned

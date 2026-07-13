@@ -421,43 +421,6 @@ void __init mark_linear_text_alias_ro(void)
 			    PAGE_KERNEL_RO);
 }
 
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-static void lb_memblk_map_clear(pgd_t *pgd, int flags)
-{
-	int i;
-
-	for (i = 0; i < MAX_LB_MEMBLK_SP; i++) {
-		struct lb_memory_block *lbmem = &lb_memblk_sp[i];
-		if (lbmem->size) {
-			/*
-			 * Use section-level mappings here
-			 * so that we can mark the region
-			 * in section granularity and
-			 * up the mem perfermance for cam_mem.
-			 */
-			__map_memblock(pgd, lbmem->base,
-					lbmem->base + lbmem->size,
-					PAGE_KERNEL, flags);/*lint !e446*/
-			memblock_clear_nomap(lbmem->base,
-					     lbmem->size);
-		}
-	}
-}
-
-static void lb_memblk_mark_nomap(void)
-{
-	int i;
-
-	for (i = 0; i < MAX_LB_MEMBLK_SP; i++) {
-		struct lb_memory_block *lbmem = &lb_memblk_sp[i];;
-		if (lbmem->size)
-			memblock_mark_nomap(lbmem->base,
-					    lbmem->size);
-	}
-}
-
-#endif
-
 static void __init map_mem(pgd_t *pgd)
 {
 	phys_addr_t kernel_start = __pa_symbol(_text);
@@ -481,10 +444,6 @@ static void __init map_mem(pgd_t *pgd)
 				    resource_size(&crashk_res));
 #endif
 
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-	lb_memblk_mark_nomap();
-#endif
-
 	/* map all the memory banks */
 	for_each_memblock(memory, reg) {
 		phys_addr_t start = reg->base;
@@ -495,12 +454,7 @@ static void __init map_mem(pgd_t *pgd)
 		if (memblock_is_nomap(reg))
 			continue;
 
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-		__map_memblock(pgd, start, end, PAGE_KERNEL,
-				NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
-#else
 		__map_memblock(pgd, start, end, PAGE_KERNEL, flags);
-#endif
 	}
 
 	/*
@@ -530,10 +484,6 @@ static void __init map_mem(pgd_t *pgd)
 		memblock_clear_nomap(crashk_res.start,
 				     resource_size(&crashk_res));
 	}
-#endif
-
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-	lb_memblk_map_clear(pgd, flags);
 #endif
 }
 
@@ -791,10 +741,8 @@ void __init paging_init(void)
 	 * We only reuse the PGD from the swapper_pg_dir, not the pud + pmd
 	 * allocated with it.
 	 */
-#ifndef CONFIG_HISI_LB_L3_EXTENSION
 	memblock_free(__pa_symbol(swapper_pg_dir) + PAGE_SIZE,
 		      SWAPPER_DIR_SIZE - PAGE_SIZE);
-#endif
 }
 
 #ifdef CONFIG_MEMORY_HOTPLUG
@@ -1439,11 +1387,7 @@ void *__init fixmap_remap_fdt(phys_addr_t dt_phys)
 	if (!dt_virt)
 		return NULL;
 
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-	memblock_reserve(dt_phys, ALIGN(size, SZ_2M));
-#else
 	memblock_reserve(dt_phys, size);
-#endif
 
 	return dt_virt;
 }

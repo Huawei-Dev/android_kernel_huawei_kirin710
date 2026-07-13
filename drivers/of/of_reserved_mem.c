@@ -45,12 +45,6 @@ static  const char *cma_mem_reserved_array[MAX_RESERVED_REGIONS];
 #if defined(CONFIG_HAVE_MEMBLOCK)
 #include <linux/memblock.h>
 
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-struct lb_memory_block lb_memblk_sp[MAX_LB_MEMBLK_SP] = {
-	{.name = "mm-iris-sta-cma-pool", .base = 0, .size = 0,},
-};
-#endif
-
 int __init __weak early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
 	phys_addr_t align, phys_addr_t start, phys_addr_t end, bool nomap,
 	phys_addr_t *res_base)
@@ -294,30 +288,6 @@ static void __init __rmem_check_for_overlap(void)
 	}
 }
 
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-static void lb_memblk_addr_set(struct reserved_mem *rmem)
-{
-	struct lb_memory_block *lbmem = NULL;
-	unsigned long node = rmem->fdt_node;
-	int i;
-
-	if (!IS_ENABLED(CONFIG_CMA)) {
-		pr_err("%s: no CONFIG_CMA\n", __func__);
-		return;
-	}
-
-	for (i = 0; i < MAX_LB_MEMBLK_SP; i++) {
-		lbmem =  &lb_memblk_sp[i];
-		if (of_flat_dt_is_compatible(node, lbmem->name)) {
-			lbmem->base = rmem->base;
-			lbmem->size = rmem->size;
-		}
-
-	}
-
-}
-#endif
-
 /**
  * fdt_init_reserved_mem - allocate and init all saved reserved memory regions
  */
@@ -346,10 +316,6 @@ void __init fdt_init_reserved_mem(void)
 						 &rmem->base, &rmem->size);
 		if (err == 0)
 			__reserved_mem_init_node(rmem);
-
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-		lb_memblk_addr_set(rmem);
-#endif
 
 		if (of_get_flat_dt_prop(node, "visible_to_users", NULL))
 			continue;

@@ -84,15 +84,6 @@ enum ion_heap_type {
 #ifdef CONFIG_ZONE_MEDIA_OPT
 #define ION_FLAG_CAM_CMA_BUFFER (0x1 << 10)
 #endif
-#ifdef CONFIG_HISI_LB
-#define ION_FLAG_HISI_LB_PLC_S    (0x1UL << 12)
-#define ION_FLAG_HISI_LB_PLC_E    (0x1UL << 19)
-#define ION_FLAG_HISI_LB_SHIFT    12
-#define ION_FLAG_MM_LB_MASK     (0xffUL << 12)
-
-#define ION_FLAG_2_PLC_ID(flags) \
-	((flags & ION_FLAG_MM_LB_MASK) >> ION_FLAG_HISI_LB_SHIFT)
-#endif
 
 /**
  * DOC: Ion Userspace API

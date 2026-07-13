@@ -161,11 +161,6 @@
 #define PTE_AF			(_AT(pteval_t, 1) << 10)	/* Access Flag */
 #define PTE_NG			(_AT(pteval_t, 1) << 11)	/* nG */
 
-#ifdef CONFIG_HISI_LB
-#define PTE_LB_MASK		(_AT(pteval_t, 15) << 36)
-#define PTE_LB(i)		(_AT(pteval_t, i) << 36)	/* lb attr */
-#endif
-
 #define PTE_DBM			(_AT(pteval_t, 1) << 51)	/* Dirty Bit Management */
 #define PTE_CONT		(_AT(pteval_t, 1) << 52)	/* Contiguous range */
 #define PTE_PXN			(_AT(pteval_t, 1) << 53)	/* Privileged XN */

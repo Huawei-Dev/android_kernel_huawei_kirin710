@@ -3470,11 +3470,6 @@ static size_t arm_smmu_map_sg(struct iommu_domain *domain, unsigned long iova,
 		if (!IS_ALIGNED(s->offset, min_pagesz))
 			goto out_err;
 
-#ifdef CONFIG_HISI_LB
-		if (PageLB(pg))
-			phys |= PTE_LB(lb_page_to_gid(pg));
-#endif
-
 		ret = arm_iommu_map(domain,
 				iova + mapped, phys, s->length, prot);
 		if (ret)

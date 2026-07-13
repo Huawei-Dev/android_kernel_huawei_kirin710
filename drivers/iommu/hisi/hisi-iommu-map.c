@@ -411,11 +411,6 @@ static unsigned long __iommu_map_dmabuf(struct device *dev,
 {
 	unsigned long iova;
 
-#ifdef CONFIG_HISI_LB
-	if (dmabuf->ops->mk_prot)
-		prot = ((unsigned int)prot | dmabuf->ops->mk_prot(dmabuf));
-#endif
-
 	prot = (int)((unsigned int)prot | (IOMMU_READ | IOMMU_WRITE));
 	iova = do_iommu_map_sg(dev, table->sgl, prot, &iova_dom->size);
 	if (!iova)
@@ -1044,9 +1039,6 @@ static int mm_iommu_sg_node_map(
 		len = sg->length;
 		/* map lb first */
 		prot = IOMMU_READ | IOMMU_WRITE;
-#ifdef CONFIG_HISI_LB
-		prot = (u32)prot | (policy_id << IOMMU_PORT_SHIFT);
-#endif
 		if (dss->lb_size >= len) {
 			if (iommu_map(domain, iova, sg_phys(sg), len, prot)) {
 				pr_err("lb map fail length: 0x%zx\n", len);
@@ -1110,29 +1102,6 @@ static bool is_size_valid(size_t allsize, size_t l3size, size_t lbsize)
 	return ret;
 }
 
-#ifdef CONFIG_HISI_LB
-static int mm_idle_display_lb_attach(struct ion_buffer *buffer, u32 plc_id)
-{
-	int ret = 0;
-	struct sg_table *table = buffer->sg_table;
-
-	mutex_lock(&buffer->lock);
-	ret = lb_sg_attach(plc_id, table->sgl, sg_nents(table->sgl));
-	if (ret)
-		pr_err("idle display lb attach fail\n");
-	mutex_unlock(&buffer->lock);
-	return ret;
-}
-
-static void mm_idle_display_lb_detach(struct ion_buffer *buffer, u32 plc_id)
-{
-	struct sg_table *table = buffer->sg_table;
-
-	mutex_lock(&buffer->lock);
-	(void)lb_sg_detach(plc_id, table->sgl, sg_nents(table->sgl));
-	mutex_unlock(&buffer->lock);
-}
-#else
 static inline int mm_idle_display_lb_attach(struct ion_buffer *buffer,
 		u32 plc_id)
 {
@@ -1143,7 +1112,6 @@ static void mm_idle_display_lb_detach(struct ion_buffer *buffer, u32 plc_id)
 {
 	return;
 }
-#endif
 
 int hisi_iommu_idle_display_unmap(struct device *dev, unsigned long iova,
 		size_t size, u32 policy_id, struct dma_buf *dmabuf)

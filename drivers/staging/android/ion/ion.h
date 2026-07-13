@@ -92,12 +92,6 @@ struct ion_buffer {
 #if defined(CONFIG_ION_HISI_SECSG) || defined(CONFIG_ION_HISI_DMA_POOL)
 	unsigned int id;
 #endif
-
-#ifdef CONFIG_HISI_LB
-	unsigned int plc_id;
-	unsigned long offset;
-	size_t lb_size;
-#endif
 };
 void ion_buffer_destroy(struct ion_buffer *buffer);
 

@@ -20,26 +20,6 @@
 #include <linux/sizes.h>
 #include <linux/version.h>
 
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-enum ion_lb_pid_ids {
-	INVALID_PID = -1,
-	ION_LB_BYPASS = PID_BY_PASS,
-	ION_LB_CAMAIP = PID_CAMAIP,
-	ION_LB_GPUFBO = PID_GPUFBO,
-	ION_LB_GPUTXT = PID_GPUTXT,
-	ION_LB_IDISPLAY = PID_IDISPLAY,
-	ION_LB_NPU = PID_NPU,
-	ION_LB_VIDEO = PID_VIDEO,
-	ION_LB_CAMTOF = PID_CAMTOF,
-	ION_LB_TINY = PID_TINY,
-	ION_LB_AUDIO = PID_AUDIO,
-	ION_LB_VOICE = PID_VOICE,
-	ION_LB_ISPNN = PID_ISPNN,
-	ION_LB_MAX = PID_MAX,
-};
-#endif
-
 /**
  * These are the only ids that should be used for Ion heap ids.
  * The ids listed are the order in which allocation will be attempted

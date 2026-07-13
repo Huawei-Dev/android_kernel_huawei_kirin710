@@ -72,11 +72,6 @@ extern const int mmap_rnd_compat_bits_min;
 extern const int mmap_rnd_compat_bits_max;
 extern int mmap_rnd_compat_bits __read_mostly;
 #endif
-#ifdef CONFIG_HISI_LB
-extern int lb_pages_detach(unsigned int pid, struct page *pages, size_t count);
-extern unsigned int lb_page_to_gid(struct page *page);
-#endif
-
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
@@ -935,10 +930,6 @@ static inline void put_page(struct page *page)
 	}
 
 	if (put_page_testzero(page)) {
-#ifdef CONFIG_HISI_LB
-		if (PageLB(page))
-			lb_pages_detach(lb_page_to_gid(page), page, 1UL);
-#endif
 		__put_page(page);
 	}
 }

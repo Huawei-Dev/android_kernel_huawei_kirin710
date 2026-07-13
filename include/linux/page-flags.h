@@ -119,9 +119,6 @@ enum pageflags {
 #ifdef CONFIG_HISI_CMA_DEBUG
 	PG_cmapin,
 #endif
-#ifdef CONFIG_HISI_LB
-	PG_lb,
-#endif
 #ifdef CONFIG_HISI_PAGE_TRACE
 	PG_lslub,
 	PG_vmalloc,
@@ -432,10 +429,6 @@ TESTPAGEFLAG(Young, young, PF_ANY)
 SETPAGEFLAG(Young, young, PF_ANY)
 TESTCLEARFLAG(Young, young, PF_ANY)
 PAGEFLAG(Idle, idle, PF_ANY)
-#endif
-
-#ifdef CONFIG_HISI_LB
-PAGEFLAG(LB, lb, PF_ANY)
 #endif
 
 #ifdef CONFIG_HISI_PAGE_TRACE

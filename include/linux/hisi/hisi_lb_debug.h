@@ -16,15 +16,9 @@
 #define __HISI_LB_DEBUG__
 
 #include <linux/hisi/hisi_lb.h>
-#ifdef CONFIG_HISI_LB_DEBUG
-#define lb_assert_page  __lb_assert_page
-#define lb_assert_phys __lb_assert_phys
-#define lb_assert_pte __lb_assert_pte
-#else
 #define lb_assert_page(page) WARN_ON(0)
 
 #define lb_assert_phys(phys) WARN_ON(0)
 
 #define lb_assert_pte(pte) WARN_ON(0)
-#endif
 #endif

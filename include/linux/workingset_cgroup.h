@@ -31,21 +31,12 @@ void workingset_pagecache_record(
 	struct file *file, pgoff_t start_offset,
 	unsigned int count, bool is_pagefault);
 
-#ifdef CONFIG_HISI_LB
-static inline bool workingset_pagecache_skip_ptefault(struct vm_fault *vmf)
-{
-	return likely(!(current->ext_flags & PF_EXT_WSCG_MONITOR)) || !vmf ||
-		(vmf->flags & FAULT_FLAG_WRITE) || pte_gid(vmf->orig_pte) ||
-		PageSwapBacked(pte_page(vmf->orig_pte));
-}
-#else
 static inline bool workingset_pagecache_skip_ptefault(struct vm_fault *vmf)
 {
 	return likely(!(current->ext_flags & PF_EXT_WSCG_MONITOR)) || !vmf ||
 		(vmf->flags & FAULT_FLAG_WRITE) ||
 		PageSwapBacked(pte_page(vmf->orig_pte));
 }
-#endif
 
 static inline void workingset_pagecache_on_ptefault(struct vm_fault *vmf)
 {

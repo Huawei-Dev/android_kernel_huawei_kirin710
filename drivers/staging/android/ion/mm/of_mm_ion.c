@@ -35,9 +35,6 @@
 #include "mm_ion_priv.h"
 #include "ion.h"
 #include "sec_alloc.h"
-#ifdef CONFIG_HISI_LB
-#include <linux/hisi/hisi_lb.h>
-#endif
 
 #define MAX_D_TABLE_NUM  5
 #define MAX_MM_ION_DYNAMIC_AREA_NAME_LEN  64
@@ -317,9 +314,6 @@ static void mm_ion_flush_cache_all(void *dummy)
 		artemis_flush_cache_all();
 	} else {
 		flush_cache_all();
-#ifdef CONFIG_HISI_LB_L3_EXTENSION
-		lb_ci_cache_exclusive();
-#endif
 	}
 }
 void ion_flush_all_cpus_caches(void)
