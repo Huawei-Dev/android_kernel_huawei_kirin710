@@ -206,7 +206,6 @@ obj-$(CONFIG_LOGGER_EXTEND)	+= log/
 obj-$(CONFIG_BOOT_DETECTOR) += hwbootfail/
 obj-$(CONFIG_HUAWEI_HITRACE) += hitrace/
 obj-$(CONFIG_HW_ZEROHUNG) += hwzerohung/
-obj-$(CONFIG_HW_MEMCHECK) += hwmemcheck/
 obj-$(CONFIG_AUDIOKIT) += devkit/audiokit/
 obj-y += contexthub/
 # the cfi is for CFI test case

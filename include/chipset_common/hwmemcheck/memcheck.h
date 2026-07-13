@@ -2,10 +2,6 @@
 #define _MEMCHECK_H
 
 #ifdef __KERNEL__
-#ifdef CONFIG_HW_MEMCHECK
-#include <linux/types.h>
-#include <asm/ioctls.h>
-#endif
 #else /* __KERNEL__ */
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -182,12 +178,6 @@ struct task_type_read {
 	struct task_type_rec data[0];
 };
 
-#ifdef CONFIG_HW_MEMCHECK
-struct file;
-long memcheck_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
-int memcheck_report_lmk_oom(pid_t pid, pid_t tgid, const char *name,
-			    enum kill_type ktype, short adj, size_t pss);
-#else /* CONFIG_HW_MEMCHECK */
 static inline long memcheck_ioctl(struct file *file, unsigned int cmd,
 				  unsigned long arg)
 {
@@ -200,8 +190,6 @@ static inline int memcheck_report_lmk_oom(pid_t pid, pid_t tgid, const char *nam
 {
 	return 0;
 }
-#endif /* CONFIG_HW_MEMCHECK */
-
 #else /* __KERNEL__ */
 
 struct memstat_all {
