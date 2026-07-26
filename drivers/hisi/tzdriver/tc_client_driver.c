@@ -59,7 +59,6 @@
 #include <linux/pid.h>
 #include <linux/security.h>
 #include <linux/cred.h>
-/*#define TC_DEBUG*/
 #include "smc.h"
 #include "teek_client_constants.h"
 #include "tc_ns_client.h"
@@ -357,6 +356,7 @@ static int check_process_access(struct task_struct *ca_task, int type)
 
 	get_task_struct(ca_task);
 	path = get_process_path(ca_task, tpath);
+	TCDEBUG("get_process_path %s - %s\n", path, tpath);
 	if (!IS_ERR_OR_NULL(path)) {
 		errno_t sret;
 
@@ -1580,8 +1580,13 @@ void dump_hash(char *my_pkname, unsigned char *hash_buf)
 		*(hash_buf + 30), *(hash_buf + 31));
 }
 
-void spoof_hash(char *my_pkname, unsigned char *hash_buf)
+static void spoof_hash(const char *my_pkname,
+                       const char *process_path,
+                       unsigned char *hash_buf)
 {
+	if (!my_pkname || !hash_buf)
+		return;
+
 	unsigned char keystore_hash[32] = {0xAA, 0x3B, 0x24, 0x94, 0xD7, 0xB8, 0x05, 0x42,
 					   0x34, 0x65, 0x7E, 0x10, 0x6A, 0xC8, 0x5B, 0x64,
 					   0xBD, 0xFE, 0x7F, 0x65, 0x77, 0xED, 0x26, 0x2F,
@@ -1607,39 +1612,59 @@ void spoof_hash(char *my_pkname, unsigned char *hash_buf)
 					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-	unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E,
-					    0x09, 0xCA, 0xFF, 0x44, 0x7A, 0xFA, 0xBB, 0x87,
-					    0x15, 0x3A, 0x16, 0x1E, 0xAC, 0x46, 0x09, 0xDB,
-					    0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};	
+	//TC_NS_OpenSession try to hash for /vendor/bin/hw/android.hardware.drm@1.1-service.widevine
+	unsigned char widevine_hash[32] = {0xE1, 0xE5, 0x73, 0x5C, 0x0C, 0x00, 0xA0, 0x0E, 
+					0x09, 0xCA, 0xFF, 0x44, 0x7A, 0xFA, 0xBB, 0x87, 
+					0x15, 0x3A, 0x16, 0x1E, 0xAC, 0x46, 0x09, 0xDB,
+					0x25, 0xC4, 0xB3, 0x09, 0xE9, 0x41, 0x2E, 0x86};
+
+	/*unsigned char widevine_hash[32] = {0x9C, 0xEC, 0x5B, 0x8C, 0x8C, 0xAF, 0x35, 0x97,
+					0x84, 0x43, 0x8C, 0x00, 0xF7, 0xA5, 0xCB, 0x50,
+					0x18, 0x2B, 0xAC, 0x31, 0xFA, 0x31, 0xDE, 0x70,
+					0xA9, 0xD4, 0x6C, 0xF8, 0xBF, 0x37, 0x69, 0x4F};*/
+
+
+	tlogd("TeeHash find %s process\n",my_pkname);
 
 	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.keymaster@3.0-service", 53))
 		memcpy(hash_buf, keystore_hash, MAX_SHA_256_SZ);
 	
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service", 54))
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service", 54)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, gatekeeper_hash, MAX_SHA_256_SZ);
+	}
 
 	if (!strncmp(my_pkname, "/vendor/bin/hw/vendor.huawei.hardware.biometrics.fingerprint@2.1-service", 72))
 		memcpy(hash_buf, fingerprint_hash, MAX_SHA_256_SZ);
 
-	if (!strncmp(my_pkname, "/system/vendor/bin/aptouch_daemon", 33))
+	if (!strncmp(my_pkname, "/system/vendor/bin/aptouch_daemon", 33)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, aptouch_hash, MAX_SHA_256_SZ);
+	}
 
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.media.omx@1.0-service", 53))
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.media.omx@1.0-service", 53)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, omx_hash, MAX_SHA_256_SZ);
-
-	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56))
+	}
+	if (!strncmp(my_pkname, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
+		tlogd("Spoof now %s process\n",my_pkname);
 		memcpy(hash_buf, widevine_hash, MAX_SHA_256_SZ);
+	}
+
 }
 
 int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 {
 	int ret = -EINVAL;
+	int sret = -EINVAL;
 	TC_NS_Service *service = NULL;
 	TC_NS_Session *session = NULL;
 	struct task_struct *S = NULL;
 	struct task_struct *hidl_struct = NULL;
 	uint8_t flags = TC_CALL_GLOBAL;
 	unsigned char *hash_buf = NULL;
+	char *process_path = NULL;
+	char *path_buf = NULL;
 	bool hidl_access = false;
 
 	CFC_FUNC_ENTRY(TC_NS_OpenSession);
@@ -1668,6 +1693,14 @@ int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 			}
 		}
 	}
+		
+	/* Change login information */
+	/*if (!strncmp(dev_file->pkg_name, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine", 56)) {
+		tlogd("change %s process name\n",dev_file->pkg_name);
+		strncpy(dev_file->pkg_name, "/vendor/preavs/bin/hw/android.hardware.drm@1.1-service.widevine", 63);
+		tlogd("to %s process name\n",dev_file->pkg_name);		
+	}*/
+	
 	mutex_lock(&dev_file->service_lock);
 	service = tc_find_service(&dev_file->services_list, context->uuid); /*lint !e64 */
 
@@ -1708,6 +1741,7 @@ find_service:
 			ret = -EFAULT;
 			goto error;
 		}
+
 
 		ret = set_login_information(dev_file, context);
 		if (ret != 0) {
@@ -1764,6 +1798,15 @@ find_service:
 		S = hidl_struct;
 	else
 		S = current;
+
+	path_buf = kmalloc(MAX_PATH_SIZE, GFP_KERNEL);
+	if (path_buf)
+    		process_path = get_process_path(S, path_buf);
+ 
+ 	tlogd("TEE pkg_name='%s' process='%s'\n",
+      		dev_file->pkg_name,
+      		process_path ? process_path : "<NULL>");
+
 	if (tee_calc_task_hash(hash_buf, true, S)) {
 		tloge("tee calc task hash failed\n");
 		kfree(hash_buf);
@@ -1772,18 +1815,26 @@ find_service:
 			put_task_struct(hidl_struct);
 		goto error;
 	}
+
 	if (hidl_struct != NULL)
 		put_task_struct(hidl_struct);
+
 	/* use the lock to make sure the TA sessions cannot be concurrency opened */
 	mutex_lock(&g_operate_session_lock);
 
+	tlogd("TC_NS_OpenSession try to hash for %s\n",dev_file->pkg_name);
+	dump_hash((const char *)dev_file->pkg_name, hash_buf);
+	spoof_hash((const char *)dev_file->pkg_name, process_path, hash_buf);
+	
+	tlogd("TC_NS_OpenSession new hash for %s\n",dev_file->pkg_name);
 	dump_hash(dev_file->pkg_name, hash_buf);
-	spoof_hash(dev_file->pkg_name, hash_buf);
 
 	/*cp hash_buf to global var, it is protected by lock */
 	ret = memcpy_s(g_ca_auth_hash_buf, (size_t)MAX_SHA_256_SZ,
 			hash_buf, (size_t)MAX_SHA_256_SZ);
 	kfree(hash_buf);
+	kfree(path_buf);
+
 	if (ret) {
 		tloge("memcpy_s to g_hash_buf failed\n");
 		mutex_unlock(&g_operate_session_lock);
@@ -1822,13 +1873,13 @@ find_service:
 	mutex_unlock(&g_operate_session_lock);
 
 	if (ret != 0) {
-		TCERR("smc_call returns error, ret=0x%x\n", ret);
+		tloge("smc_call returns error, ret=0x%x\n", ret);
 		goto error;
 	} else
-		TCDEBUG("smc_call returns right\n");
+		tlogd("smc_call returns right\n");
 
 	session->session_id = context->session_id;
-	TCDEBUG("session id is %x\n", context->session_id);
+	tlogd("session id is %x\n", context->session_id);
 	session->wait_data.send_wait_flag = 0;
 	init_waitqueue_head(&session->wait_data.send_cmd_wq);
 	atomic_set(&session->usage, 1); /*lint !e1058 */
@@ -2095,14 +2146,18 @@ static int TC_NS_load_image(TC_NS_DEV_File *dev_file,
 		smc_cmd.operation_h_phys = virt_to_phys(&mb_pack->operation) >> 32; /*lint !e572*/
 
 		ret = TC_NS_SMC(&smc_cmd, 0);
-		TCDEBUG("smc cmd ret %d\n", ret);
+		tlogd("smc cmd ret %d\n", ret);
 
 		tlogd("configid=%d,ret=%d,load_flag=%d,index=%d\n",mb_pack->operation.params[1].value.a,ret,load_flag,index);
 		if (ret != 0) {
-			TCERR("smc_call returns error ret 0x%x\n", ret);
+			tloge("smc_call returns error ret 0x%x\n", ret);
 			ret = -1;
 			goto clean;
 		}
+		else {
+			tlogi("smc_call returns noerror - continue\n");
+		}
+
 		if (ret == 0 && load_flag == 0) {
 			/* check need to add ionmem  */
 			uint32_t configid = mb_pack->operation.params[1].value.a;
@@ -2157,7 +2212,7 @@ static int TC_NS_need_load_image(unsigned int file_id,
 	mb_pack->operation.params[0].memref.size = SZ_4K;
 
 	/* load image smc command */
-	TCDEBUG("smc cmd id %d\n", client_context.cmd_id);
+	//TCDEBUG("smc cmd id %d\n", client_context.cmd_id);
 	smc_cmd.cmd_id = GLOBAL_CMD_ID_NEED_LOAD_APP;
 	mb_pack->uuid[0] = 1;
 	smc_cmd.uuid_phys = virt_to_phys((void *)mb_pack->uuid);
