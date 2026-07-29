@@ -1670,7 +1670,9 @@ static void spoof_hash(const char *my_pkname,
         	apply_spoof_hash(my_pkname, hash_buf, cameradaemon_hash);
 	} else if (!strcmp(my_pkname, "sec_mem") && process_path && 
 			!strcmp(process_path, "/vendor/bin/hw/android.hardware.graphics.allocator@2.0-service")) {
-        	apply_spoof_hash(process_path, hash_buf, graphics_allocator_hash);
+	} else if (!strcmp(my_pkname, "sec_mem") && process_path && 
+			!strcmp(process_path, "/vendor/bin/hw/android.hardware.drm@1.1-service.widevine")) {
+        	apply_spoof_hash(process_path, hash_buf, drm_widevine_hash);
 	} else if (!strcmp(my_pkname, "/vendor/bin/hw/android.hardware.graphics.composer@2.2-service")) {
         	apply_spoof_hash(my_pkname, hash_buf, graphics_composer_hash);
 	}
@@ -2084,12 +2086,16 @@ static int TC_NS_load_image(TC_NS_DEV_File *dev_file,
 	uint32_t loaded_size = 0;
 	TEEC_UUID* uuidReturn = NULL;
 
+        tlogd("TC_NS_load_image");
+        
 	if (!is_valid_ta_size(ioctl_arg))
 		return -EINVAL;
 
 	mb_load_size = ioctl_arg->file_size > (SZ_1M-sizeof(load_flag)) ?
 		SZ_1M : ALIGN(ioctl_arg->file_size, SZ_4K);
 
+        tlogd("TC_NS_load_image (size=%d)", mb_load_size);
+        
 	/* we will try any possible to alloc mailbox mem to load TA */
 	for ( ; mb_load_size > 0; mb_load_size >>= 1) {
 		mb_load_mem = mailbox_alloc(mb_load_size, 0);
