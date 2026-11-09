@@ -551,12 +551,12 @@ rndis_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 
 			/* return the result */
 			spin_lock(&rndis->params->resp_lock);
-			buf = rndis_get_next_response(rndis->params, &n);
+			buf = rndis_get_next_response_locked(rndis->params, &n);
 			if (buf) {
 				memcpy(req->buf, buf, n);
 				req->complete = rndis_response_complete;
 				req->context = rndis;
-				rndis_free_response(rndis->params, buf);
+				rndis_free_response_locked(rndis->params, buf);
 				value = n;
 			}
 			spin_unlock(&rndis->params->resp_lock);

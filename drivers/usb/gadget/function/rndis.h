@@ -204,4 +204,13 @@ int  rndis_signal_disconnect(struct rndis_params *params);
 int  rndis_state(struct rndis_params *params);
 extern void rndis_set_host_mac(struct rndis_params *params, const u8 *addr);
 
+/*
+ * Caller must hold params->resp_lock.
+ */
+u8 *rndis_get_next_response_locked(struct rndis_params *params,
+				   u32 *length);
+
+void rndis_free_response_locked(struct rndis_params *params,
+				u8 *buf);
+
 #endif  /* _LINUX_RNDIS_H */

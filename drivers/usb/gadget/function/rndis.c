@@ -700,8 +700,8 @@ static int rndis_reset_response(struct rndis_params *params,
 	pr_info("%s\n", __func__);
 	/* drain the response queue */
 	spin_lock(&params->resp_lock);
-	while ((xbuf = rndis_get_next_response(params, &length)))
-		rndis_free_response(params, xbuf);
+	while ((xbuf = rndis_get_next_response_locked(params, &length)))
+		rndis_free_response_locked(params, xbuf);
 	spin_unlock(&params->resp_lock);
 
 	r = rndis_add_response(params, sizeof(rndis_reset_cmplt_type));
@@ -793,8 +793,8 @@ void rndis_uninit(struct rndis_params *params)
 
 	spin_lock(&params->resp_lock);
 	/* drain the response queue */
-	while ((buf = rndis_get_next_response(params, &length)))
-		rndis_free_response(params, buf);
+	while ((buf = rndis_get_next_response_locked(params, &length)))
+		rndis_free_response_locked(params, buf);
 	spin_unlock(&params->resp_lock);
 }
 EXPORT_SYMBOL_GPL(rndis_uninit);
@@ -1038,39 +1038,60 @@ void rndis_add_hdr(struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(rndis_add_hdr);
 
-void rndis_free_response(struct rndis_params *params, u8 *buf)
+void rndis_free_response_locked(struct rndis_params *params, u8 *buf)
 {
 	rndis_resp_t *r, *n;
 
-	spin_lock(&params->resp_lock);
 	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
 		if (r->buf == buf) {
 			list_del(&r->list);
 			kfree(r);
+			break;
 		}
 	}
+}
+EXPORT_SYMBOL_GPL(rndis_free_response_locked);
+
+void rndis_free_response(struct rndis_params *params, u8 *buf)
+{
+	spin_lock(&params->resp_lock);
+	rndis_free_response_locked(params, buf);
 	spin_unlock(&params->resp_lock);
 }
 EXPORT_SYMBOL_GPL(rndis_free_response);
 
-u8 *rndis_get_next_response(struct rndis_params *params, u32 *length)
+u8 *rndis_get_next_response_locked(struct rndis_params *params,
+				   u32 *length)
 {
 	rndis_resp_t *r, *n;
 
-	if (!length) return NULL;
+	if (!length)
+		return NULL;
 
-	spin_lock(&params->resp_lock);
 	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
 		if (!r->send) {
 			r->send = 1;
 			*length = r->length;
-			spin_unlock(&params->resp_lock);
 			return r->buf;
 		}
 	}
 
-	spin_unlock(&params->resp_lock);
 	return NULL;
+}
+EXPORT_SYMBOL_GPL(rndis_get_next_response_locked);
+
+u8 *rndis_get_next_response(struct rndis_params *params, u32 *length)
+{
+	u8 *buf;
+
+	if (!length)
+		return NULL;
+
+	spin_lock(&params->resp_lock);
+	buf = rndis_get_next_response_locked(params, length);
+	spin_unlock(&params->resp_lock);
+
+	return buf;
 }
 EXPORT_SYMBOL_GPL(rndis_get_next_response);
 
