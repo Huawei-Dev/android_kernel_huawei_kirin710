@@ -940,14 +940,18 @@ extern struct session_secure_info g_cur_session_secure_info;
 static int __generate_random_data(uint8_t *data, uint32_t size)
 {
 	uint32_t i;
+	int ret;
 
 	if (memset_s((void *)data, size, 0, size)) {
 		tloge("Clean the data buffer failed!\n");
 		return -EFAULT;
 	}
 
-	wait_for_random_bytes();
-	get_random_bytes((void *)data, sizeof(size));
+	ret = wait_for_random_bytes();
+	if (ret)
+		return ret;
+
+	get_random_bytes((void *)data, size);
 
 	for (i = 0; i < size; i++)
 		if (data[i] != 0)
