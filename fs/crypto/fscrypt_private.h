@@ -251,6 +251,25 @@ extern int __init fscrypt_init_keyring(void);
 
 /* keysetup.c */
 
+/*
+ * Huawei CE keeps the on-disk AES-GCM wrapped FEK format.  This is only a
+ * source-of-master-key adapter; it must not change the Huawei KDF or context.
+ * The returned key is held with key->sem read-locked until put().
+ */
+struct fscrypt_huawei_master_key {
+	struct key *key;
+	const u8 *raw;
+	bool from_fs_keyring;
+};
+
+extern int fscrypt_huawei_get_master_key(
+		const struct inode *inode,
+		const u8 descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE],
+		struct fscrypt_huawei_master_key *master);
+extern void fscrypt_huawei_put_master_key(
+		struct fscrypt_huawei_master_key *master);
+extern void fscrypt_unlink_master_key(struct fscrypt_info *ci);
+
 struct fscrypt_mode {
 	const char *friendly_name;
 	const char *cipher_str;

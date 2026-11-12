@@ -1102,6 +1102,10 @@ static int f2fs_drop_inode(struct inode *inode)
 		trace_f2fs_drop_inode(inode, 0);
 		return 0;
 	}
+	if (fscrypt_drop_inode(inode)) {
+		trace_f2fs_drop_inode(inode, 1);
+		return 1;
+	}
 	ret = generic_drop_inode(inode);
 	trace_f2fs_drop_inode(inode, ret);
 	return ret;
@@ -1300,6 +1304,7 @@ static void f2fs_put_super(struct super_block *sb)
 		kvfree(F2FS_OPTION(sbi).s_qf_names[i]);
 #endif
 	destroy_percpu_info(sbi);
+	fscrypt_sb_free(sb);
 	for (i = 0; i < NR_PAGE_TYPE; i++)
 		kvfree(sbi->write_io[i]);
 	kvfree(sbi);

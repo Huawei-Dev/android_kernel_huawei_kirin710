@@ -39,9 +39,7 @@ static int create_encryption_context_from_policy(struct inode *inode,
 	int res;
 	u8 nonce[FS_KEY_DERIVATION_NONCE_SIZE];
 	u8 plain_text[FS_KEY_DERIVATION_CIPHER_SIZE] = {0};
-	struct key *keyring_key = NULL;
-	struct fscrypt_key *master_key;
-	const struct user_key_payload *ukp;
+	struct fscrypt_huawei_master_key master;
 	struct crypto_aead *tfm = NULL;
 
 	ctx.format = FS_ENCRYPTION_CONTEXT_FORMAT_V2;
@@ -65,74 +63,32 @@ static int create_encryption_context_from_policy(struct inode *inode,
 	get_random_bytes(ctx.iv, FS_KEY_DERIVATION_IV_SIZE);
 	memcpy(plain_text, nonce, FS_KEY_DERIVATION_NONCE_SIZE);
 
-	/* get DEK */
-	keyring_key = fscrypt_request_key(ctx.master_key_descriptor,
-				FSCRYPT_KEY_DESC_PREFIX, FSCRYPT_KEY_DESC_PREFIX_SIZE);
-	if (IS_ERR(keyring_key)) {
-		if (inode->i_sb->s_cop->key_prefix) {
-			const u8 *prefix = inode->i_sb->s_cop->key_prefix;
-			int prefix_size;
+	/* Keep Huawei AES-GCM FEK wrapping, irrespective of keyring API. */
+	res = fscrypt_huawei_get_master_key(inode, ctx.master_key_descriptor,
+					  &master);
+	if (res)
+		return res;
 
-			prefix_size = strlen(prefix);
-			keyring_key = fscrypt_request_key(ctx.master_key_descriptor,
-						prefix, prefix_size);
-			if (!IS_ERR(keyring_key))
-				goto got_key;
-		}
-		return PTR_ERR(keyring_key);
-	}
-
-got_key:
-	if (keyring_key->type != &key_type_logon) {
-		printk_once(KERN_WARNING
-				"%s: key type must be logon\n", __func__);
-		res = -ENOKEY;
-		goto out;
-	}
-
-	down_read(&keyring_key->sem);
-
-	ukp = user_key_payload_rcu(keyring_key);
-	if (ukp->datalen != sizeof(struct fscrypt_key)) {
-		res = -EINVAL;
-		up_read(&keyring_key->sem);
-		goto out;
-	}
-
-	master_key = (struct fscrypt_key *)ukp->data;
-	//force the size equal to FS_AES_256_GCM_KEY_SIZE since user space might pass FS_AES_256_XTS_KEY_SIZE
-	master_key->size = FS_AES_256_GCM_KEY_SIZE;
-	if (master_key->size != FS_AES_256_GCM_KEY_SIZE) {
-		printk_once(KERN_WARNING
-				"%s: key size incorrect: %d\n",
-				__func__, master_key->size);
-		res = -ENOKEY;
-		up_read(&keyring_key->sem);
-		goto out;
-	}
-	tfm = (struct crypto_aead *)crypto_alloc_aead("gcm(aes)", 0, 0);
+	tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
 	if (IS_ERR(tfm)) {
-		up_read(&keyring_key->sem);
 		res = PTR_ERR(tfm);
 		tfm = NULL;
-		pr_err("fscrypt %s : tfm allocation failed!\n", __func__);
 		goto out;
 	}
-	res = fscrypt_set_gcm_key(tfm, master_key->raw);
-
-	up_read(&keyring_key->sem);
+	res = fscrypt_set_gcm_key(tfm, master.raw);
+	fscrypt_huawei_put_master_key(&master);
 	if (res)
-		goto out;
+		goto out_free;
 
 	res = fscrypt_derive_gcm_key(tfm, plain_text, ctx.nonce, ctx.iv, 1);
-	if (res)
-		goto out;
-
-	res = inode->i_sb->s_cop->set_context(inode, &ctx, sizeof(ctx), NULL);
+	if (!res)
+		res = inode->i_sb->s_cop->set_context(inode, &ctx,
+							 sizeof(ctx), NULL);
+out_free:
+	crypto_free_aead(tfm);
+	return res;
 out:
-	if (tfm)
-		crypto_free_aead(tfm);
-	key_put(keyring_key);
+	fscrypt_huawei_put_master_key(&master);
 	return res;
 }
 

@@ -312,7 +312,7 @@ static int f2fs_get_sdp_ece_crypt_info(struct inode *inode, void *fs_data)
 	if (res != sizeof(ctx))
 		return -EINVAL;
 
-	crypt_info = kmem_cache_alloc(fscrypt_info_cachep, GFP_NOFS);
+	crypt_info = kmem_cache_zalloc(fscrypt_info_cachep, GFP_NOFS);
 	if (!crypt_info)
 		return -ENOMEM;
 
@@ -523,7 +523,7 @@ static int f2fs_get_sdp_sece_crypt_info(struct inode *inode, void *fs_data)
 	if (res != sizeof(ctx))
 		return -EINVAL;
 
-	crypt_info = kmem_cache_alloc(fscrypt_info_cachep, GFP_NOFS);
+	crypt_info = kmem_cache_zalloc(fscrypt_info_cachep, GFP_NOFS);
 	if (!crypt_info)
 		return -ENOMEM;
 
@@ -636,6 +636,8 @@ int f2fs_change_to_sdp_crypto(struct inode *inode, void *fs_data)
 		return res;
 	}
 
+	/* SDP replaces the CE cipher/key; the CE fs-key reference must go. */
+	fscrypt_unlink_master_key(ci_info);
 	memcpy(ci_info->ci_master_key_descriptor, sdp_ctx.master_key_descriptor,
 		FSCRYPT_KEY_DESCRIPTOR_SIZE);
 	ci_info->ci_flags = sdp_ctx.flags;

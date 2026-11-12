@@ -121,110 +121,144 @@ struct key *fscrypt_request_key(const u8 *descriptor, const u8 *prefix,
 }
 
 /*
- * Search the current task's subscribed keyrings for a "logon" key with
- * description prefix:descriptor, and if found acquire a read lock on it and
- * return a pointer to its validated payload in *payload_ret.
+ * Obtain the raw master key for Huawei's AES-GCM wrapping scheme.
+ * Prefer the modern filesystem keyring populated by FS_IOC_ADD_ENCRYPTION_KEY,
+ * and retain legacy logon-key support for existing Huawei SDP/CE userspace.
+ *
+ * On success, master->key has an acquired reference and key->sem is read
+ * locked.  Its raw bytes must not be used after fscrypt_huawei_put_master_key.
  */
-static struct key *
-find_and_lock_process_key(const struct fscrypt_context *ctx,
-			  const char *prefix,
-			  const u8 descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE],
-			  unsigned int min_keysize,
-			  const struct fscrypt_key **payload_ret)
+int fscrypt_huawei_get_master_key(
+		const struct inode *inode,
+		const u8 descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE],
+		struct fscrypt_huawei_master_key *master)
 {
-	struct key *key;
+	struct fscrypt_key_specifier spec = {
+		.type = FSCRYPT_KEY_SPEC_TYPE_DESCRIPTOR,
+	};
+	struct fscrypt_master_key *mk;
 	const struct user_key_payload *ukp;
-	int prefix_size = strlen(prefix);
-	struct fscrypt_key *payload;
-
-	key = fscrypt_request_key(ctx->master_key_descriptor,
-				prefix, prefix_size);
-	if (IS_ERR(key))
-		return key;
-
-	down_read(&key->sem);
-	ukp = user_key_payload_locked(key);
-
-	if (!ukp) /* was the key revoked before we acquired its semaphore? */
-		goto invalid;
-
-	payload = (struct fscrypt_key *)ukp->data;
-
-	if (ukp->datalen != sizeof(struct fscrypt_key) ||
-	    payload->size < 1 || payload->size > FSCRYPT_MAX_KEY_SIZE) {
-		fscrypt_warn(NULL,
-			     "key with description '%s' has invalid payload",
-			     key->description);
-		goto invalid;
-	}
-	//force the size equal to FS_AES_256_GCM_KEY_SIZE since user space might pass FS_AES_256_XTS_KEY_SIZE
-	payload->size = FS_AES_256_GCM_KEY_SIZE;
-	if (payload->size != FS_AES_256_GCM_KEY_SIZE) {
-		fscrypt_warn(NULL,
-			     "key with description '%s' is too short (got %u bytes, need %u+ bytes)",
-			     key->description, payload->size, min_keysize);
-		goto invalid;
-	}
-
-	*payload_ret = payload;
-	return key;
-
-invalid:
-	up_read(&key->sem);
-	key_put(key);
-	return ERR_PTR(-ENOKEY);
-}
-
-/* Find the master key, then derive the inode's actual encryption key */
-static int find_and_derive_key(const struct inode *inode,
-			       struct fscrypt_info *crypt_info,
-			       const struct fscrypt_context *ctx,
-			       u8 *derived_key, unsigned int derived_keysize)
-{
-	struct key *key;
 	const struct fscrypt_key *payload;
-	struct crypto_aead *tfm = NULL;
-	u8 plain_text[FS_KEY_DERIVATION_CIPHER_SIZE] = {0};
+	const struct fscrypt_operations *cop = inode->i_sb->s_cop;
+	struct key *key;
 	int err;
 
-	key = find_and_lock_process_key(ctx, FSCRYPT_KEY_DESC_PREFIX,
-					ctx->master_key_descriptor,
-					derived_keysize, &payload);
-	if (key == ERR_PTR(-ENOKEY) && inode->i_sb->s_cop->key_prefix) {
-		key = find_and_lock_process_key(ctx, inode->i_sb->s_cop->key_prefix,
-						ctx->master_key_descriptor,
-						derived_keysize, &payload);
+	memset(master, 0, sizeof(*master));
+	memcpy(spec.u.descriptor, descriptor, FSCRYPT_KEY_DESCRIPTOR_SIZE);
+
+	key = fscrypt_find_master_key(inode->i_sb, &spec);
+	if (!IS_ERR(key)) {
+		down_read(&key->sem);
+		mk = key->payload.data[0];
+		if (!is_master_key_secret_present(&mk->mk_secret) ||
+		    mk->mk_secret.size < FS_AES_256_GCM_KEY_SIZE) {
+			err = -ENOKEY;
+			goto err_unlock;
+		}
+		master->key = key;
+		master->raw = mk->mk_secret.raw;
+		master->from_fs_keyring = true;
+		return 0;
 	}
+	if (PTR_ERR(key) != -ENOKEY)
+		return PTR_ERR(key);
+
+	/* Legacy fallback, needed for EMUI 9.1 SDP and older userspace. */
+	key = fscrypt_request_key(descriptor, FSCRYPT_KEY_DESC_PREFIX,
+				  FSCRYPT_KEY_DESC_PREFIX_SIZE);
+	if (key == ERR_PTR(-ENOKEY) && cop->key_prefix)
+		key = fscrypt_request_key(descriptor, cop->key_prefix,
+					  strlen(cop->key_prefix));
 	if (IS_ERR(key))
 		return PTR_ERR(key);
 
-	crypt_info->ci_key_index = (int) *(payload->raw + 63) & 0xff;
-
-	tfm = (struct crypto_aead *)crypto_alloc_aead("gcm(aes)", 0, 0);
-	if (IS_ERR(tfm)) {
-		up_read(&key->sem);
-		err = (int)PTR_ERR(tfm);
-		tfm = NULL;
-		pr_err("fscrypt %s : tfm allocation failed!\n", __func__);
-		goto out;
+	down_read(&key->sem);
+	if (key->type != &key_type_logon) {
+		err = -ENOKEY;
+		goto err_unlock;
 	}
-	err = fscrypt_set_gcm_key(tfm, payload->raw);
-	if (err)
-		goto out;
-	err = fscrypt_derive_gcm_key(tfm, ctx->nonce, plain_text, (u8 *)ctx->iv, 0);
-	if (err)
-		goto out;
-	memcpy(derived_key, plain_text, derived_keysize);
-	crypt_info->ci_gtfm = tfm;
-	up_read(&key->sem);
-	key_put(key);
+	ukp = user_key_payload_locked(key);
+	if (!ukp || ukp->datalen != sizeof(struct fscrypt_key)) {
+		err = -ENOKEY;
+		goto err_unlock;
+	}
+	payload = (const struct fscrypt_key *)ukp->data;
+	if (payload->size < FS_AES_256_GCM_KEY_SIZE ||
+	    payload->size > FSCRYPT_MAX_KEY_SIZE) {
+		err = -ENOKEY;
+		goto err_unlock;
+	}
+	/* Never modify the key payload under a read lock. */
+	master->key = key;
+	master->raw = payload->raw;
 	return 0;
 
-out:
-	if (tfm)
-		crypto_free_aead(tfm);
+err_unlock:
 	up_read(&key->sem);
 	key_put(key);
+	return err;
+}
+
+void fscrypt_huawei_put_master_key(struct fscrypt_huawei_master_key *master)
+{
+	if (!master->key)
+		return;
+	up_read(&master->key->sem);
+	key_put(master->key);
+	master->key = NULL;
+	master->raw = NULL;
+}
+
+/* Find the master key and unwrap Huawei's per-inode FEK with AES-GCM. */
+static int find_and_derive_key(const struct inode *inode,
+			       struct fscrypt_info *crypt_info,
+			       const struct fscrypt_context *ctx,
+			       u8 *derived_key, unsigned int derived_keysize,
+			       struct key **master_key_ret)
+{
+	struct fscrypt_huawei_master_key master;
+	struct crypto_aead *tfm;
+	u8 plain_text[FS_KEY_DERIVATION_CIPHER_SIZE] = { 0 };
+	int err;
+
+	err = fscrypt_huawei_get_master_key(inode, ctx->master_key_descriptor,
+					 &master);
+	if (err)
+		return err;
+
+	/* Huawei's slot index is stored at byte 63, outside the AES-GCM key. */
+	crypt_info->ci_key_index = master.raw[FSCRYPT_MAX_KEY_SIZE - 1];
+
+	tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
+	if (IS_ERR(tfm)) {
+		err = PTR_ERR(tfm);
+		goto out_put;
+	}
+	err = fscrypt_set_gcm_key(tfm, master.raw);
+	if (err)
+		goto out_free_tfm;
+	err = fscrypt_derive_gcm_key(tfm, ctx->nonce, plain_text,
+					   (u8 *)ctx->iv, 0);
+	if (err)
+		goto out_free_tfm;
+
+	memcpy(derived_key, plain_text, derived_keysize);
+	memzero_explicit(plain_text, sizeof(plain_text));
+	crypt_info->ci_gtfm = tfm;  /* needed by Huawei context inheritance */
+
+	if (master.from_fs_keyring) {
+		/* Caller links the inode while key->sem is still read-locked. */
+		*master_key_ret = master.key;
+		return 0;
+	}
+	fscrypt_huawei_put_master_key(&master);
+	return 0;
+
+out_free_tfm:
+	crypto_free_aead(tfm);
+out_put:
+	memzero_explicit(plain_text, sizeof(plain_text));
+	fscrypt_huawei_put_master_key(&master);
 	return err;
 }
 
@@ -272,6 +306,25 @@ select_encryption_mode(const struct fscrypt_info *ci, const struct inode *inode)
 	return ERR_PTR(-EINVAL);
 }
 
+/* Release a modern CE key reference, including during CE -> SDP conversion. */
+void fscrypt_unlink_master_key(struct fscrypt_info *ci)
+{
+	struct key *key = ci->ci_master_key;
+	struct fscrypt_master_key *mk;
+
+	if (!key)
+		return;
+	mk = key->payload.data[0];
+	spin_lock(&mk->mk_decrypted_inodes_lock);
+	list_del_init(&ci->ci_master_key_link);
+	spin_unlock(&mk->mk_decrypted_inodes_lock);
+	ci->ci_master_key = NULL;
+	if (refcount_dec_and_test(&mk->mk_refcount))
+		key_invalidate(key);
+	key_put(key);
+}
+EXPORT_SYMBOL_GPL(fscrypt_unlink_master_key);
+
 static void put_crypt_info(struct fscrypt_info *ci)
 {
 	void *prev = NULL;
@@ -279,6 +332,7 @@ static void put_crypt_info(struct fscrypt_info *ci)
 	if (!ci)
 		return;
 
+	fscrypt_unlink_master_key(ci);
 	key = ACCESS_ONCE(ci->ci_key);
 
 	prev = cmpxchg(&ci->ci_key, key, NULL);
@@ -366,6 +420,7 @@ out:
 int fscrypt_get_encryption_info(struct inode *inode)
 {
 	struct fscrypt_info *crypt_info, *ci;
+	struct key *master_key = NULL;
 	struct fscrypt_context ctx;
 	struct crypto_skcipher *ctfm;
 	struct fscrypt_mode *mode;
@@ -430,7 +485,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
 		return -EINVAL;
 	}
 
-	crypt_info = kmem_cache_alloc(fscrypt_info_cachep, GFP_NOFS);
+	crypt_info = kmem_cache_zalloc(fscrypt_info_cachep, GFP_NOFS);
 	if (!crypt_info)
 		return -ENOMEM;
 
@@ -454,6 +509,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
 		res = PTR_ERR(mode);
 		goto out;
 	}
+	crypt_info->ci_mode = mode;
 
 	/*
 	 * This cannot be a stack buffer because it is passed to the scatterlist
@@ -464,7 +520,8 @@ int fscrypt_get_encryption_info(struct inode *inode)
 	if (!raw_key)
 		goto out;
 
-	res = find_and_derive_key(inode, crypt_info, &ctx, raw_key, mode->keysize);
+	res = find_and_derive_key(inode, crypt_info, &ctx, raw_key,
+				  mode->keysize, &master_key);
 	if (res)
 		goto out;
 
@@ -517,9 +574,25 @@ int fscrypt_get_encryption_info(struct inode *inode)
 			goto out;
 		}
 	}
-	if (cmpxchg_release(&inode->i_crypt_info, NULL, crypt_info) == NULL)
+	if (cmpxchg_release(&inode->i_crypt_info, NULL, crypt_info) == NULL) {
+		if (master_key) {
+			struct fscrypt_master_key *mk =
+				master_key->payload.data[0];
+
+			refcount_inc(&mk->mk_refcount);
+			crypt_info->ci_master_key = key_get(master_key);
+			spin_lock(&mk->mk_decrypted_inodes_lock);
+			list_add(&crypt_info->ci_master_key_link,
+				 &mk->mk_decrypted_inodes);
+			spin_unlock(&mk->mk_decrypted_inodes_lock);
+		}
 		crypt_info = NULL;
+	}
 out:
+	if (master_key) {
+		up_read(&master_key->sem);
+		key_put(master_key);
+	}
 	if (res == -ENOKEY)
 		res = 0;
 	put_crypt_info(crypt_info);
