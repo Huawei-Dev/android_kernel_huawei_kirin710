@@ -1,6 +1,10 @@
 /dts-v1/;
 
 / {
+	hisi,boardname = "MAR_TL00_VB";
+	hisi,product_name = "MAR-TL00";
+	hisi,modem_id = "8e(";
+	hisi,boardid = <0x7 0x8 0x2 0x4>;
 	#address-cells = <0x2>;
 	#size-cells = <0x2>;
 	model = "kirin710";
@@ -7581,7 +7585,7 @@
 			alloc-ranges = <0x1 0x0 0x1 0x0>;
 			compatible = "hisi-camera-pool";
 			reusable;
-			status = "disable";
+			status = "ok";
 			visible_to_users;
 			phandle = <0x3fe>;
 		};
@@ -7689,12 +7693,12 @@
 			compatible = "hisi-sec-camera";
 			reg = <0x0 0x18000000 0x0 0xc00000>;
 			no-map;
-			status = "disabled";
+			status = "ok";
 		};
 
 		logo-buffer {
 			reg = <0x0 0x18c00000 0x0 0x3000000>;
-			status = "disabled";
+			status = "ok";
 			visible_to_users;
 		};
 
@@ -18007,7 +18011,7 @@
 		#address-cells = <0x2>;
 		#size-cells = <0x2>;
 		compatible = "hisilicon,hisifb";
-		fastboot_enable_flag = <0x0>;
+		fastboot_enable_flag = <0x1>;
 		fake_lcd_flag = <0x0>;
 		iommus = <0x21a>;
 		dss_base_phy = <0xe8600000>;
@@ -21026,7 +21030,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x80010001>;
 			hw,lcdkit-bl-support-mode = <0x1>;
 			hw,lcdkit-bl-enhance = <0x2710>;
@@ -21421,7 +21425,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x80010001>;
 			hw,lcdkit-bl-support-mode = <0x1>;
 			hw,lcdkit-bl-enhance = <0x2710>;
@@ -21816,7 +21820,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x80010001>;
 			hw,lcdkit-bl-support-mode = <0x1>;
 			hw,lcdkit-bl-enhance = <0x2710>;
@@ -22211,7 +22215,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x80010001>;
 			hw,lcdkit-bl-support-mode = <0x1>;
 			hw,lcdkit-bl-enhance = <0x2710>;
@@ -22610,7 +22614,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x80010001>;
 			hw,lcdkit-bl-support-mode = <0x1>;
 			hw,lcdkit-bl-enhance = <0x2710>;
@@ -23005,7 +23009,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x80010001>;
 			hw,lcdkit-bl-support-mode = <0x1>;
 			hw,lcdkit-bl-enhance = <0x2710>;
@@ -23368,7 +23372,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x10001>;
 			hw,lcdkit-bl-support-mode = <0x0>;
 			hw,lcdkit-bl-enhance = <0x0>;
@@ -23765,7 +23769,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x80010001>;
 			hw,lcdkit-bl-support-mode = <0x1>;
 			hw,lcdkit-bl-enhance = <0x2710>;
@@ -24399,7 +24403,7 @@
 			hw,lcdkit-iglobal-hist-slope-cut-ratio = <0x19a>;
 			hw,lcdkit-imax-lcd-luminance = <0x1f4>;
 			hw,lcdkit-imin-lcd-luminance = <0x3>;
-			hw,lcdkit-cfg-name = "/product/etc/display/effect/algorithm/hdr_engine.xml";
+			hw,lcdkit-cfg-name = "/odm/etc/display/effect/algorithm/hdr_engine.xml";
 			hw,lcdkit-effect-support-mode = <0x10001>;
 			hw,lcdkit-bl-support-mode = <0x0>;
 			hw,lcdkit-bl-enhance = <0x0>;
@@ -24472,7 +24476,7 @@
 
 	psci {
 		compatible = "arm,psci";
-		method = "smc";
+		method = "hvc";
 		cpu_suspend = <0xc4000001>;
 		cpu_off = <0x84000002>;
 		cpu_on = <0xc4000003>;
