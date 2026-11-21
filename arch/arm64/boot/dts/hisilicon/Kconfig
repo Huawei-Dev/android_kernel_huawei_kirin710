@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: GPL-2.0
+# Optional Kirin 710 DTB catalog family selector.
+# Source this file from arch/arm64/Kconfig (or another existing arm64 Kconfig)
+# and select exactly one option via the device's kernel defconfig.
+
+choice
+	prompt "Huawei Kirin 710 DTB catalog family"
+	depends on ARCH_HISI
+	default KIRIN710_DTB_NONE
+	help
+	  Select the board family to be compiled into the current kernel.
+	  The choice is made at BUILD TIME, not at boot time.
+
+config KIRIN710_DTB_NONE
+	bool "No Kirin 710 catalog"
+
+config KIRIN710_DTB_SNE
+	bool "SNE / Huawei Mate 20 Lite (sydneym)"
+
+config KIRIN710_DTB_POT
+	bool "POT / Huawei P Smart 2019"
+
+config KIRIN710_DTB_MAR
+	bool "MAR / Huawei P30 Lite"
+
+endchoice
